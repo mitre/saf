@@ -1,0 +1,10 @@
+{
+  "extends": [
+    "oclif",
+    "oclif-typescript"
+  ],
+  "rules": {
+    "unicorn/filename-case": "off",
+    "unicorn/prefer-node-protocol": "off"
+  }
+}

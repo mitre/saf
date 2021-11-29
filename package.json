@@ -1,0 +1,75 @@
+{
+  "name": "heimdall_tools",
+  "description": "HeimdallTools supplies several methods to convert output from various tools to \"Heimdall Data Format\"(HDF) format to be viewable in Heimdall.",
+  "version": "0.1.0",
+  "author": "Ryan Y Lin",
+  "bin": {
+    "heimdall_tools": "./bin/run"
+  },
+  "bugs": "https://github.com/mitre/heimdall_tools/issues",
+  "dependencies": {
+    "@aws-sdk/client-config-service": "^3.22.0",
+    "@mitre/hdf-converters": "^2.6.1",
+    "@oclif/command": "^1",
+    "@oclif/config": "^1",
+    "@oclif/plugin-help": "^3",
+    "csv-parse": "^4.16.0",
+    "fast-xml-parser": "^3.19.0",
+    "genversion": "^3.0.1",
+    "htmlparser2": "^6.1.0",
+    "inspecjs": "^2.6.1",
+    "lodash": "^4.17.21",
+    "tslib": "^1"
+  },
+  "devDependencies": {
+    "@oclif/dev-cli": "^1",
+    "@oclif/test": "^1",
+    "@types/chai": "^4",
+    "@types/mocha": "^5",
+    "@types/node": "^14",
+    "@types/tmp": "^0.2.2",
+    "chai": "^4",
+    "eslint": "^5.13",
+    "eslint-config-oclif": "^3.1",
+    "eslint-config-oclif-typescript": "^0.1",
+    "globby": "^10",
+    "mocha": "^5",
+    "tmp": "^0.2.1",
+    "ts-mocha": "^8.0.0",
+    "ts-node": "^8",
+    "typescript": "^3.3"
+  },
+  "engines": {
+    "node": ">=8.0.0"
+  },
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "homepage": "https://github.com/mitre/heimdall_tools",
+  "keywords": [
+    "oclif"
+  ],
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "oclif": {
+    "commands": "./lib/commands",
+    "bin": "heimdall_tools",
+    "plugins": [
+      "@oclif/plugin-help"
+    ]
+  },
+  "repository": "mitre/heimdall_tools",
+  "scripts": {
+    "lint": "eslint \"src/**/*.ts\" --fix",
+    "lint:ci": "eslint \"src/**/*.ts\" --max-warnings 0",
+    "postpack": "rm -f oclif.manifest.json",
+    "posttest": "eslint . --ext .ts --config .eslintrc",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "test": "ts-mocha --forbid-only \"test/**/*.test.ts\"",
+    "version": "oclif-dev readme && git add README.md"
+  },
+  "types": "lib/index.d.ts"
+}
