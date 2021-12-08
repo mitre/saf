@@ -14,10 +14,10 @@ describe('Test nikto', () => {
 
   test
   .stdout()
-  .command(['convert:nikto', '-j', path.resolve(__dirname, '../../sample_jsons/nikto/sample_input_report/zero.webappsecurity.json'), '-o', `${tmpobj.name}/niktotest.json`])
+  .command(['convert:nikto', '-j', path.resolve('./test/sample_jsons/nikto/sample_input_report/zero.webappsecurity.json'), '-o', `${tmpobj.name}/niktotest.json`])
   .it('hdf-converter output test', () => {
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/niktotest.json`, {encoding: 'utf-8'}))
-    const sample = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../sample_jsons/nikto/nikto-hdf.json'), {encoding: 'utf-8'}))
-    expect(JSON.stringify(omitVersions(test))).to.equal(JSON.stringify(omitVersions(sample)))
+    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_jsons/nikto/nikto-hdf.json'), {encoding: 'utf-8'}))
+    expect(omitVersions(test)).to.equal(omitVersions(sample))
   })
 })

@@ -14,10 +14,10 @@ describe('Test sarif', () => {
 
   test
   .stdout()
-  .command(['convert:sarif', '-j', path.resolve(__dirname, '../../sample_jsons/sarif/sample_input_report/sarif_input.sarif'), '-o', `${tmpobj.name}/sariftest.json`])
+  .command(['convert:sarif', '-j', path.resolve('./test/sample_jsons/sarif/sample_input_report/sarif_input.sarif'), '-o', `${tmpobj.name}/sariftest.json`])
   .it('hdf-converter output test', () => {
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/sariftest.json`, {encoding: 'utf-8'}))
-    const sample = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../sample_jsons/sarif/sarif-hdf.json'), {encoding: 'utf-8'}))
-    expect(JSON.stringify(omitVersions(test))).to.equal(JSON.stringify(omitVersions(sample)))
+    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_jsons/sarif/sarif-hdf.json'), {encoding: 'utf-8'}))
+    expect(omitVersions(test)).to.equal(omitVersions(sample))
   })
 })
