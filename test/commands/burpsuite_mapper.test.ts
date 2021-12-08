@@ -1,23 +1,23 @@
-import { expect, test } from '@oclif/test'
+import {expect, test} from '@oclif/test'
 import * as tmp from 'tmp'
-import * as path from 'path'
+import path from 'path'
 import fs from 'fs'
 import _ from 'lodash'
-import { ExecJSON } from 'inspecjs';
+import {ExecJSON} from 'inspecjs'
 
 function omitVersions(input: ExecJSON.Execution): Partial<ExecJSON.Execution> {
-  return _.omit(input, ['version', 'platform.release', 'profiles[0].sha256']);
+  return _.omit(input, ['version', 'platform.release', 'profiles[0].sha256'])
 }
 
 describe('Test burpsuite_mapper', () => {
-  const tmpobj = tmp.dirSync({ unsafeCleanup: true });
+  const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   test
-    .stdout()
-    .command(['burpsuite_mapper', '-x', path.resolve(__dirname, '../../sample_jsons/burpsuite_mapper/sample_input_report/zero.webappsecurity.com.min'), '-o', `${tmpobj.name}/burpsuitetest.json`])
-    .it(`hdf-converter output test`, ctx => {
-      const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/burpsuitetest.json`, { encoding: 'utf-8' }))
-      const sample = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../sample_jsons/burpsuite_mapper/burpsuite-hdf.json'), { encoding: 'utf-8' }))
-      expect(JSON.stringify(omitVersions(test))).to.equal(JSON.stringify(omitVersions(sample)))
-    })
+  .stdout()
+  .command(['burpsuite_mapper', '-x', path.resolve(__dirname, '../../sample_jsons/burpsuite_mapper/sample_input_report/zero.webappsecurity.com.min'), '-o', `${tmpobj.name}/burpsuitetest.json`])
+  .it('hdf-converter output test', () => {
+    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/burpsuitetest.json`, {encoding: 'utf-8'}))
+    const sample = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../sample_jsons/burpsuite_mapper/burpsuite-hdf.json'), {encoding: 'utf-8'}))
+    expect(JSON.stringify(omitVersions(test))).to.equal(JSON.stringify(omitVersions(sample)))
+  })
 })

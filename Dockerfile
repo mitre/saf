@@ -1,25 +1,25 @@
-FROM node:14-alpine as builder
+FROM node:lts-alpine as builder
 
-LABEL name="Heimdall Tools" \
+LABEL name="SAF" \
       vendor="MTIRE" \
-      version="${HEIMDALLTOOLS_VERSION}" \
+      version="${SAF_VERSION}" \
       release="1" \
-      url="https://github.com/mitre/heimdall_tools" \
-      description="HeimdallTools supplies several methods to convert output from various tools to \"Heimdall Data Format\"(HDF) format to be viewable in Heimdall" \
-      docs="https://github.com/mitre/heimdall_tools" \
+      url="https://github.com/mitre/saf" \
+      description="The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) brings together applications, techniques, libraries, and tools developed by MITRE and the security community to streamline security automation for systems and DevOps pipelines" \
+      docs="https://github.com/mitre/saf" \
       run="docker run -d --name ${NAME} ${IMAGE} <args>"
 
 RUN mkdir -p /share
 
 COPY . /build
 WORKDIR /build
-RUN yarn pack --install-if-needed --filename heimdall_tools.tgz
+RUN yarn pack --install-if-needed --filename saf.tgz
 
-FROM node:14-alpine
+FROM node:lts-alpine
 
-COPY --from=builder /build/heimdall_tools.tgz /build/
-RUN npm install -g /build/heimdall_tools.tgz
+COPY --from=builder /build/saf.tgz /build/
+RUN npm install -g /build/saf.tgz
 
-ENTRYPOINT ["heimdall_tools"]
+ENTRYPOINT ["saf"]
 VOLUME ["/share"]
 WORKDIR /share
