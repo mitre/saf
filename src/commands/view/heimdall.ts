@@ -14,10 +14,8 @@ export default class Heimdall extends Command {
 
   async run() {
     const {flags} = this.parse(Heimdall)
-    // eslint-disable-next-line no-console
     console.log(`Serving Heimdall on port ${flags.port}`)
     if (Number.isNaN(flags.port) || flags.port < 1 || flags.port >= 65536) {
-      // eslint-disable-next-line no-console
       console.error(`Error: ${process.argv[2]} is not a valid port.`)
       return
     }
