@@ -27,11 +27,13 @@ docker run -it -v$(pwd):/share mitre/saf
 docker run -it -v%cd%:/share mitre/saf
 ```
 
+
+
 ## Usage
 
-### Normalize
+### Convert
 
-Translating your data to and from Heimdall Data Format (HDF) is done using the `saf normalize` command.
+Translating your data to and from Heimdall Data Format (HDF) is done using the `saf convert` command.
 
 ```bash
 convert:asff             Translate a AWS Security Finding Format JSON into a
@@ -209,21 +211,21 @@ convert:zap              Translate a OWASP ZAP results JSON to HDF format Json
 
 ---
 
-### Visualize
+### View
 
-You can start a local Heimdall Lite instance to visualize your findings with the SAF CLI. To start an instance use the `saf visualize:heimdall` command:
+You can start a local Heimdall Lite instance to visualize your findings with the SAF CLI. To start an instance use the `saf view` command:
 
 
 
 ```
-convert:zap              Run an instance of Heimdall Lite to visualize 
+view                     Run an instance of Heimdall Lite to visualize 
                            your data
 
   OPTIONS
     -p, --port=PORT          Port To Expose Heimdall On (Default 3000)
 
   EXAMPLES
-    saf visualize:heimdall -p 8080
+    saf view -p 8080
 ```
 
 
