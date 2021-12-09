@@ -36,8 +36,7 @@ docker run -it -v%cd%:/share mitre/saf
 Translating your data to and from Heimdall Data Format (HDF) is done using the `saf convert` command.
 
 ```bash
-convert:asff             Translate a AWS Security Finding Format JSON into a
-                           Heimdall Data Format JSON file
+convert:asff             Translate a AWS Security Finding Format JSON into a Heimdall Data Format JSON file
   OPTIONS
     -i, --input=input          Input ASFF JSON File
     --securityhub=securityhub  Input AWS Security Standards File
@@ -48,10 +47,9 @@ convert:asff             Translate a AWS Security Finding Format JSON into a
     saf convert:asff -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
 #--------------------------------------------------------------------------------
 
-convert:burpsuite        Translate a BurpSuite Pro XML file into a Heimdall
-                           Data Format JSON file
+convert:burpsuite        Translate a BurpSuite Pro XML file into a Heimdall Data Format JSON file
   OPTIONS
-	  -i, --input=xml            Input BurpSuite Pro XML File
+    -i, --input=xml            Input BurpSuite Pro XML File
     -o, --output=output        Output HDF JSON File
     
 
