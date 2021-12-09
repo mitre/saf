@@ -1,6 +1,6 @@
 import {Command, flags} from '@oclif/command'
 import fs from 'fs'
-import {XCCDFResultsMapper as Mapper} from '@mitre/hdf-converters'
+import {JfrogXrayMapper as Mapper} from '@mitre/hdf-converters'
 
 function checkSuffix(input: string) {
   if (input.endsWith('.json')) {
@@ -9,10 +9,12 @@ function checkSuffix(input: string) {
   return `${input}.json`
 }
 
-export default class XCCDFResultsMapper extends Command {
-  static usage = 'xccdf_results -i, --input=XML -o, --output=OUTPUT'
+export default class JfrogXrayMapper extends Command {
+  static usage = 'jfrog_xray -i, --input=JSON -o, --output=OUTPUT'
 
-  static description = fs.readFileSync('./help/normalize/xccdf_results.md', {encoding: 'utf-8'})
+  static description = fs.readFileSync('./help/convert/jfrog_xray.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
+
+  static examples = [fs.readFileSync('./help/convert/jfrog_xray.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
 
   static flags = {
     help: flags.help({char: 'h'}),
@@ -21,7 +23,7 @@ export default class XCCDFResultsMapper extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(XCCDFResultsMapper)
+    const {flags} = this.parse(JfrogXrayMapper)
 
     const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))

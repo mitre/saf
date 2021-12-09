@@ -1,6 +1,6 @@
 import {Command, flags} from '@oclif/command'
 import fs from 'fs'
-import {BurpSuiteMapper as Mapper} from '@mitre/hdf-converters'
+import {SarifMapper as Mapper} from '@mitre/hdf-converters'
 
 function checkSuffix(input: string) {
   if (input.endsWith('.json')) {
@@ -9,12 +9,12 @@ function checkSuffix(input: string) {
   return `${input}.json`
 }
 
-export default class BurpsuiteMapper extends Command {
-  static usage = 'burpsuite -i, --input=XML -o, --output=OUTPUT'
+export default class SarifMapper extends Command {
+  static usage = 'sarif -i, --input=JSON -o, --output=OUTPUT'
 
-  static description = fs.readFileSync('./help/normalize/burpsuite.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
+  static description = fs.readFileSync('./help/convert/sarif.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
 
-  static examples = [fs.readFileSync('./help/normalize/burpsuite.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
+  static examples = [fs.readFileSync('./help/convert/sarif.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
 
   static flags = {
     help: flags.help({char: 'h'}),
@@ -23,7 +23,7 @@ export default class BurpsuiteMapper extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(BurpsuiteMapper)
+    const {flags} = this.parse(SarifMapper)
 
     const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))

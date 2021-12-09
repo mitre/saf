@@ -1,6 +1,6 @@
 import {Command, flags} from '@oclif/command'
-import * as fs from 'fs'
-import {FortifyMapper as Mapper} from '@mitre/hdf-converters'
+import fs from 'fs'
+import {DBProtectMapper as Mapper} from '@mitre/hdf-converters'
 
 function checkSuffix(input: string) {
   if (input.endsWith('.json')) {
@@ -9,12 +9,12 @@ function checkSuffix(input: string) {
   return `${input}.json`
 }
 
-export default class FortifyMapper extends Command {
-  static usage = 'fortify -i, --input=FVDL -o, --output=OUTPUT'
+export default class DBProtectMapper extends Command {
+  static usage = 'dbprotect -i, --input=XML -o, --output=OUTPUT'
 
-  static description = fs.readFileSync('./help/normalize/fortify.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
+  static description = fs.readFileSync('./help/convert/dbprotect.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
 
-  static examples = [fs.readFileSync('./help/normalize/fortify.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
+  static examples = [fs.readFileSync('./help/convert/dbprotect.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
 
   static flags = {
     help: flags.help({char: 'h'}),
@@ -23,7 +23,7 @@ export default class FortifyMapper extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(FortifyMapper)
+    const {flags} = this.parse(DBProtectMapper)
 
     const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))

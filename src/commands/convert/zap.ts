@@ -12,9 +12,9 @@ function checkSuffix(input: string) {
 export default class ZapMapper extends Command {
   static usage = 'zap -i, --input=JSON -n, --name=NAME -o, --output=OUTPUT'
 
-  static description = fs.readFileSync('./help/normalize/zap.md', {encoding: 'utf-8'})
+  static description = fs.readFileSync('./help/convert/zap.md', {encoding: 'utf-8'})
 
-  static examples = [fs.readFileSync('./help/normalize/zap.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
+  static examples = [fs.readFileSync('./help/convert/zap.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
 
   static flags = {
     help: flags.help({char: 'h'}),
