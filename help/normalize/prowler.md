@@ -2,4 +2,4 @@ Translate a Prowler-derived AWS Security Finding Format results from concatenate
 
 Examples:
 
-saf normalize:prowler -i <prowler-asff-json> -o <hdf-scan-results-json>
+  saf normalize:prowler -i prowler-asff.json -o output-hdf-name.json
