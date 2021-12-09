@@ -34,7 +34,7 @@ docker run -it -v%cd%:/share mitre/saf
 Translating your data to and from Heimdall Data Format (HDF) is done using the `saf normalize` command.
 
 ```bash
-normalize:asff             Translate a AWS Security Finding Format JSON into a
+convert:asff             Translate a AWS Security Finding Format JSON into a
                            Heimdall Data Format JSON file
   OPTIONS
     -i, --input=input          Input ASFF JSON File
@@ -42,11 +42,11 @@ normalize:asff             Translate a AWS Security Finding Format JSON into a
     -o, --output=output        Output HDF JSON File
 
   EXAMPLES
-    saf normalize:asff -i asff-findings.json -o output-file-name.json
-    saf normalize:asff -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
+    saf convert:asff -i asff-findings.json -o output-file-name.json
+    saf convert:asff -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
 #--------------------------------------------------------------------------------
 
-normalize:burpsuite        Translate a BurpSuite Pro XML file into a Heimdall
+convert:burpsuite        Translate a BurpSuite Pro XML file into a Heimdall
                            Data Format JSON file
   OPTIONS
 	  -i, --input=xml            Input BurpSuite Pro XML File
@@ -54,10 +54,10 @@ normalize:burpsuite        Translate a BurpSuite Pro XML file into a Heimdall
     
 
   EXAMPLES
-    saf normalize:burpsuite -i burpsuite_results.xml -o output-hdf-name.json
+    saf convert:burpsuite -i burpsuite_results.xml -o output-hdf-name.json
 #--------------------------------------------------------------------------------
 
-normalize:dbprotect        Translate a DBProtect report in "Check Results
+convert:dbprotect        Translate a DBProtect report in "Check Results
                            Details" XML format into a Heimdall Data Format JSON
                            file
   OPTIONS
@@ -65,20 +65,20 @@ normalize:dbprotect        Translate a DBProtect report in "Check Results
     -o, --output=output        Output HDF JSON File
 
   EXAMPLES
-    saf normalize:dbprotect -i check_results_details_report.xml -o output-hdf-name.json
+    saf convert:dbprotect -i check_results_details_report.xml -o output-hdf-name.json
 
 #--------------------------------------------------------------------------------
-normalize:fortify          Translate a Fortify results FVDL file into a Heimdall
+convert:fortify          Translate a Fortify results FVDL file into a Heimdall
                            Data Format JSON file
   OPTIONS
     -i, --input=input          Input FVDL File
     -o, --output=output        Output HDF JSON File
 
   EXAMPLES
-    saf normalize:fortify -i audit.fvdl -o output-hdf-name.json
+    saf convert:fortify -i audit.fvdl -o output-hdf-name.json
 
 #--------------------------------------------------------------------------------
-normalize:jfrog_xray       Translate a JFrog Xray results JSON file into a
+convert:jfrog_xray       Translate a JFrog Xray results JSON file into a
                            Heimdall Data Format JSON file
 
   OPTIONS
@@ -86,41 +86,41 @@ normalize:jfrog_xray       Translate a JFrog Xray results JSON file into a
     -o, --output=output        Output HDF JSON File
 
   EXAMPLES
-    saf normalize:jfrog_xray -i xray_results.json -o output-hdf-name.json
+    saf convert:jfrog_xray -i xray_results.json -o output-hdf-name.json
 
 #--------------------------------------------------------------------------------
 
-normalize:nessus           Translate a Nessus XML results file into a Heimdall
+convert:nessus           Translate a Nessus XML results file into a Heimdall
                            Data Format JSON file
   OPTIONS
     -i, --input=input          Input Nessus XML File
     -o, --output=output        Output HDF JSON File
 
   EXAMPLES
-    saf normalize:nessus -i nessus_results.xml -o output-hdf-name.json
+    saf convert:nessus -i nessus_results.xml -o output-hdf-name.json
 
 #--------------------------------------------------------------------------------
-normalize:netsparker       Translate a Netsparker XML results file into a
+convert:netsparker       Translate a Netsparker XML results file into a
                            Heimdall Data Format JSON file
   OPTIONS
     -i, --input=input          Input Netsparker XML File
     -o, --output=output        Output HDF JSON File
 
   EXAMPLES
-    saf normalize:netsparker -i netsparker_results.xml -o output-hdf-name.json
+    saf convert:netsparker -i netsparker_results.xml -o output-hdf-name.json
 
 #--------------------------------------------------------------------------------
-normalize:nikto            Translate a Nikto results JSON file into a Heimdall
+convert:nikto            Translate a Nikto results JSON file into a Heimdall
                            Data Format JSON file
   OPTIONS
     -i, --input=input          Input Nikto Results JSON File
     -o, --output=output        Output HDF JSON File
 
   EXAMPLES
-    saf normalize:nikto -i nikto-results.json -o output-hdf-name.json
+    saf convert:nikto -i nikto-results.json -o output-hdf-name.json
 
 #--------------------------------------------------------------------------------
-normalize:prowler          Translate a Prowler-derived AWS Security Finding
+convert:prowler          Translate a Prowler-derived AWS Security Finding
                            Format results from concatenated JSON blobs into a
                            Heimdall Data Format JSON file
   OPTIONS
@@ -128,10 +128,10 @@ normalize:prowler          Translate a Prowler-derived AWS Security Finding
     -o, --output=output        Output HDF JSON File
 
   EXAMPLES
-    saf normalize:prowler -i prowler-asff.json -o output-hdf-name.json
+    saf convert:prowler -i prowler-asff.json -o output-hdf-name.json
 
 #--------------------------------------------------------------------------------
-normalize:sarif            Translate a SARIF JSON file into a Heimdall Data
+convert:sarif            Translate a SARIF JSON file into a Heimdall Data
                            Format JSON file
   OPTIONS
     -i, --input=input          Input SARIF JSON File
@@ -146,10 +146,10 @@ normalize:sarif            Translate a SARIF JSON file into a Heimdall Data
       SARIF level not provided -> HDF impact 0.1 as default
 
   EXAMPLES
-    saf normalize:sarif -i sarif-results.json -o output-hdf-name.json
+    saf convert:sarif -i sarif-results.json -o output-hdf-name.json
 
 #--------------------------------------------------------------------------------
-normalize:scoutsuite       Translate a ScoutSuite results from a Javascript
+convert:scoutsuite       Translate a ScoutSuite results from a Javascript
                            object into a Heimdall Data Format JSON file
   OPTIONS
     -i, --input=input          Input ScoutSuite Results JS File
@@ -159,20 +159,20 @@ normalize:scoutsuite       Translate a ScoutSuite results from a Javascript
   	Note: Currently this mapper only supports AWS.
 
   EXAMPLES
-    saf normalize:scoutsuite -i scoutsuite-results.js -o output-hdf-name.json
+    saf convert:scoutsuite -i scoutsuite-results.js -o output-hdf-name.json
 
 #--------------------------------------------------------------------------------
-normalize:snyk             Translate a Snyk results JSON file into a Heimdall
+convert:snyk             Translate a Snyk results JSON file into a Heimdall
                            Data Format JSON file
   OPTIONS
     -i, --input=input          Input Snyk Results JSON File
     -o, --output=output        Output HDF JSON File
 
   EXAMPLES
-    saf normalize:snyk -i snyk_results.json -o output-hdf-name.json
+    saf convert:snyk -i snyk_results.json -o output-hdf-name.json
 
 #--------------------------------------------------------------------------------
-normalize:sonarqube        Pull SonarQube vulnerabilities for the specified
+convert:sonarqube        Pull SonarQube vulnerabilities for the specified
                            project name from an API and convert into a Heimdall
                            Data Format JSON file
   OPTIONS
@@ -182,20 +182,20 @@ normalize:sonarqube        Pull SonarQube vulnerabilities for the specified
     -o, --output=output          Output HDF JSON File
 
   EXAMPLES
-    saf normalize:sonarqube -n project_key -u http://sonar:9000 --auth YOUR_API_KEY -o output-hdf-name.json
+    saf convert:sonarqube -n project_key -u http://sonar:9000 --auth YOUR_API_KEY -o output-hdf-name.json
 
 #--------------------------------------------------------------------------------
-normalize:xccdf_results    Translate a SCAP client XCCDF-Results XML report to
+convert:xccdf_results    Translate a SCAP client XCCDF-Results XML report to
                            HDF format Json be viewed on Heimdall
   OPTIONS
     -i, --input=input          Input XCCDF Results XML File
     -o, --output=output        Output HDF JSON File
 
   EXAMPLES
-    saf normalize:xccdf_results -i results-xccdf.xml -o output-hdf-name.json
+    saf convert:xccdf_results -i results-xccdf.xml -o output-hdf-name.json
 
 #--------------------------------------------------------------------------------
-normalize:zap              Translate a OWASP ZAP results JSON to HDF format Json
+convert:zap              Translate a OWASP ZAP results JSON to HDF format Json
                            be viewed on Heimdall
   OPTIONS
     -i, --input=input          Input OWASP ZAP Results JSON File
@@ -203,7 +203,7 @@ normalize:zap              Translate a OWASP ZAP results JSON to HDF format Json
     -o, --output=output        Output HDF JSON File
 
   EXAMPLES
-    saf normalize:zap -i zap_results.json -n mitre.org -o output-hdf-name.json
+    saf convert:zap -i zap_results.json -n mitre.org -o output-hdf-name.json
 
 ```
 
@@ -216,7 +216,7 @@ You can start a local Heimdall Lite instance to visualize your findings with the
 
 
 ```
-normalize:zap              Run an instance of Heimdall Lite to visualize 
+convert:zap              Run an instance of Heimdall Lite to visualize 
                            your data
 
   OPTIONS
