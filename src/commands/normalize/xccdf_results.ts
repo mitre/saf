@@ -10,20 +10,20 @@ function checkSuffix(input: string) {
 }
 
 export default class XCCDFResultsMapper extends Command {
-  static usage = 'xccdf_results -x, --xml=XML -o, --output=OUTPUT'
+  static usage = 'xccdf_results -i, --input=XML -o, --output=OUTPUT'
 
   static description = fs.readFileSync('./help/convert/xccdf_results.md', {encoding: 'utf-8'})
 
   static flags = {
     help: flags.help({char: 'h'}),
-    xml: flags.string({char: 'x', required: true}),
+    input: flags.string({char: 'i', required: true}),
     output: flags.string({char: 'o', required: true}),
   }
 
   async run() {
     const {flags} = this.parse(XCCDFResultsMapper)
 
-    const converter = new Mapper(fs.readFileSync(flags.xml, {encoding: 'utf-8'}))
+    const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

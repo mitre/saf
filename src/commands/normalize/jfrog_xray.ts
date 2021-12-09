@@ -10,7 +10,7 @@ function checkSuffix(input: string) {
 }
 
 export default class JfrogXrayMapper extends Command {
-  static usage = 'jfrog_xray -j, --json=JSON -o, --output=OUTPUT'
+  static usage = 'jfrog_xray -i, --input=JSON -o, --output=OUTPUT'
 
   static description = fs.readFileSync('./help/convert/jfrog_xray.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
 
@@ -18,14 +18,14 @@ export default class JfrogXrayMapper extends Command {
 
   static flags = {
     help: flags.help({char: 'h'}),
-    json: flags.string({char: 'j', required: true}),
+    input: flags.string({char: 'i', required: true}),
     output: flags.string({char: 'o', required: true}),
   }
 
   async run() {
     const {flags} = this.parse(JfrogXrayMapper)
 
-    const converter = new Mapper(fs.readFileSync(flags.json, {encoding: 'utf-8'}))
+    const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

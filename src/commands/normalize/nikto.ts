@@ -10,7 +10,7 @@ function checkSuffix(input: string) {
 }
 
 export default class NiktoMapper extends Command {
-  static usage = 'nikto -j, --json=JSON -o, --output=OUTPUT'
+  static usage = 'nikto -i, --input=JSON -o, --output=OUTPUT'
 
   static description = fs.readFileSync('./help/convert/nikto.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
 
@@ -18,14 +18,14 @@ export default class NiktoMapper extends Command {
 
   static flags = {
     help: flags.help({char: 'h'}),
-    json: flags.string({char: 'j', required: true}),
+    input: flags.string({char: 'i', required: true}),
     output: flags.string({char: 'o', required: true}),
   }
 
   async run() {
     const {flags} = this.parse(NiktoMapper)
 
-    const converter = new Mapper(fs.readFileSync(flags.json, {encoding: 'utf-8'}))
+    const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

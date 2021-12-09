@@ -10,7 +10,7 @@ function checkSuffix(input: string) {
 }
 
 export default class DBProtectMapper extends Command {
-  static usage = 'dbprotect -x, --xml=XML -o, --output=OUTPUT'
+  static usage = 'dbprotect -i, --input=XML -o, --output=OUTPUT'
 
   static description = fs.readFileSync('./help/convert/dbprotect.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
 
@@ -18,14 +18,14 @@ export default class DBProtectMapper extends Command {
 
   static flags = {
     help: flags.help({char: 'h'}),
-    xml: flags.string({char: 'x', required: true}),
+    input: flags.string({char: 'i', required: true}),
     output: flags.string({char: 'o', required: true}),
   }
 
   async run() {
     const {flags} = this.parse(DBProtectMapper)
 
-    const converter = new Mapper(fs.readFileSync(flags.xml, {encoding: 'utf-8'}))
+    const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

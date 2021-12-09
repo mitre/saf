@@ -11,7 +11,7 @@ function checkSuffix(input: string) {
 }
 
 export default class SnykMapper extends Command {
-  static usage = 'snyk -j, --json=JSON -o, --output_prefix=OUTPUT_PREFIX'
+  static usage = 'snyk -i, --input=JSON -o, --output_prefix=OUTPUT_PREFIX'
 
   static description = fs.readFileSync('./help/convert/snyk.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
 
@@ -19,14 +19,14 @@ export default class SnykMapper extends Command {
 
   static flags = {
     help: flags.help({char: 'h'}),
-    json: flags.string({char: 'j', required: true}),
+    input: flags.string({char: 'i', required: true}),
     output_prefix: flags.string({char: 'o', required: true}),
   }
 
   async run() {
     const {flags} = this.parse(SnykMapper)
 
-    const converter = new Mapper(fs.readFileSync(flags.json, {encoding: 'utf-8'}))
+    const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
     const result = converter.toHdf()
     if (Array.isArray(result)) {
       for (const element of result) {

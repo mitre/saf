@@ -11,7 +11,7 @@ function checkSuffix(input: string) {
 }
 
 export default class NessusMapper extends Command {
-  static usage = 'nessus -x, --xml=XML -o, --output_prefix=OUTPUT_PREFIX'
+  static usage = 'nessus -i, --input=XML -o, --output_prefix=OUTPUT_PREFIX'
 
   static description = fs.readFileSync('./help/convert/nessus.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
 
@@ -19,14 +19,14 @@ export default class NessusMapper extends Command {
 
   static flags = {
     help: flags.help({char: 'h'}),
-    xml: flags.string({char: 'x', required: true}),
+    input: flags.string({char: 'i', required: true}),
     output_prefix: flags.string({char: 'o', required: true}),
   }
 
   async run() {
     const {flags} = this.parse(NessusMapper)
 
-    const converter = new Mapper(fs.readFileSync(flags.xml, {encoding: 'utf-8'}))
+    const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
     const result = converter.toHdf()
     if (Array.isArray(result)) {
       for (const element of result) {

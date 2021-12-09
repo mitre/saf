@@ -10,7 +10,7 @@ function checkSuffix(input: string) {
 }
 
 export default class ZapMapper extends Command {
-  static usage = 'zap -j, --json=JSON -n, --name=NAME -o, --output=OUTPUT'
+  static usage = 'zap -i, --input=JSON -n, --name=NAME -o, --output=OUTPUT'
 
   static description = fs.readFileSync('./help/convert/zap.md', {encoding: 'utf-8'})
 
@@ -18,7 +18,7 @@ export default class ZapMapper extends Command {
 
   static flags = {
     help: flags.help({char: 'h'}),
-    json: flags.string({char: 'j', required: true}),
+    input: flags.string({char: 'i', required: true}),
     name: flags.string({char: 'n', required: true}),
     output: flags.string({char: 'o', required: true}),
   }
@@ -26,7 +26,7 @@ export default class ZapMapper extends Command {
   async run() {
     const {flags} = this.parse(ZapMapper)
 
-    const converter = new Mapper(fs.readFileSync(flags.json, {encoding: 'utf-8'}), flags.name)
+    const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}), flags.name)
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

@@ -10,7 +10,7 @@ function checkSuffix(input: string) {
 }
 
 export default class ScoutsuiteMapper extends Command {
-  static usage = 'scoutsuite -j, --javascript=SCOUTSUITE-RESULTS-JS -o, --output=OUTPUT'
+  static usage = 'scoutsuite -i, --input=SCOUTSUITE-RESULTS-JS -o, --output=OUTPUT'
 
   static description = fs.readFileSync('./help/convert/scoutsuite.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
 
@@ -18,14 +18,14 @@ export default class ScoutsuiteMapper extends Command {
 
   static flags = {
     help: flags.help({char: 'h'}),
-    javascript: flags.string({char: 'j', required: true}),
+    input: flags.string({char: 'i', required: true}),
     output: flags.string({char: 'o', required: true}),
   }
 
   async run() {
     const {flags} = this.parse(ScoutsuiteMapper)
 
-    const converter = new Mapper(fs.readFileSync(flags.javascript, {encoding: 'utf-8'}))
+    const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }
