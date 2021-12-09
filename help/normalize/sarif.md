@@ -8,4 +8,4 @@ SARIF level to HDF impact Mapping:
   SARIF level not provided -> HDF impact 0.1 as default
 
 Examples:
-  saf convert:sarif [OPTIONS] -j <sarif-results-json> -o <hdf-scan-results.json>
+  saf normalize:sarif [OPTIONS] -j <sarif-results-json> -o <hdf-scan-results.json>

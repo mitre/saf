@@ -12,7 +12,7 @@ function checkSuffix(input: string) {
 export default class XCCDFResultsMapper extends Command {
   static usage = 'xccdf_results -i, --input=XML -o, --output=OUTPUT'
 
-  static description = fs.readFileSync('./help/convert/xccdf_results.md', {encoding: 'utf-8'})
+  static description = fs.readFileSync('./help/normalize/xccdf_results.md', {encoding: 'utf-8'})
 
   static flags = {
     help: flags.help({char: 'h'}),

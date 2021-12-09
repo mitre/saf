@@ -2,4 +2,4 @@ Pull SonarQube vulnerabilities for the specified project name from an API and co
 
 Examples:
 
-saf convert:sonarqube -n sonar_project_key -u http://sonar:9000 --auth YOUR_API_KEY -o scan_results.json
+saf normalize:sonarqube -n sonar_project_key -u http://sonar:9000 --auth YOUR_API_KEY -o scan_results.json

@@ -12,9 +12,9 @@ function checkSuffix(input: string) {
 export default class FortifyMapper extends Command {
   static usage = 'fortify -i, --input=FVDL -o, --output=OUTPUT'
 
-  static description = fs.readFileSync('./help/convert/fortify.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
+  static description = fs.readFileSync('./help/normalize/fortify.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
 
-  static examples = [fs.readFileSync('./help/convert/fortify.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
+  static examples = [fs.readFileSync('./help/normalize/fortify.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
 
   static flags = {
     help: flags.help({char: 'h'}),

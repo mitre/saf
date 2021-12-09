@@ -12,9 +12,9 @@ function checkSuffix(input: string) {
 export default class SonarQubeMapper extends Command {
   static usage = 'sonarqube -n <sonar_project_key> -u <http://your.sonar.instance:9000> --auth <your-sonar-api-key> -o <hdf-scan-results-json>'
 
-  static description = fs.readFileSync('./help/convert/sonarqube.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
+  static description = fs.readFileSync('./help/normalize/sonarqube.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
 
-  static examples = [fs.readFileSync('./help/convert/sonarqube.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
+  static examples = [fs.readFileSync('./help/normalize/sonarqube.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
 
   static flags = {
     help: flags.help({char: 'h'}),
