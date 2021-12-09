@@ -219,7 +219,7 @@ You can start a local Heimdall Lite instance to visualize your findings with the
 
 ```
 view                     Run an instance of Heimdall Lite to visualize 
-                           your data
+                         your data
 
   OPTIONS
     -p, --port=PORT          Port To Expose Heimdall On (Default 3000)
