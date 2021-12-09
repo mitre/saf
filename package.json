@@ -10,10 +10,13 @@
   "dependencies": {
     "@aws-sdk/client-config-service": "^3.22.0",
     "@mitre/hdf-converters": "^2.6.1",
+    "@mitre/heimdall-lite": "^2.6.2",
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/plugin-help": "^3",
+    "@types/express": "^4.17.13",
     "csv-parse": "^4.16.0",
+    "express": "^4.17.1",
     "fast-xml-parser": "^3.19.0",
     "genversion": "^3.0.1",
     "htmlparser2": "^6.1.0",
