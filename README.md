@@ -1,7 +1,6 @@
 # Security Automation Framework CLI
 
 
-
 ## Installation
 
 #### Installation via NPX
@@ -204,7 +203,7 @@ normalize:zap              Translate a OWASP ZAP results JSON to HDF format Json
     -o, --output=output        Output HDF JSON File
 
   EXAMPLES
-    saf normalize:zap -j zap_results.json -n mitre.org -o output-hdf-name.json
+    saf normalize:zap -i zap_results.json -n mitre.org -o output-hdf-name.json
 
 ```
 
@@ -212,9 +211,26 @@ normalize:zap              Translate a OWASP ZAP results JSON to HDF format Json
 
 ### Visualize
 
+You can start a local Heimdall Lite instance to visualize your findings with the SAF CLI. To start an instance use the `saf visualize:heimdall` command:
+
+
+
+```
+normalize:zap              Run an instance of Heimdall Lite to visualize 
+                           your data
+
+  OPTIONS
+    -p, --port=PORT          Port To Expose Heimdall On (Default 3000)
+
+  EXAMPLES
+    saf visualize:heimdall -p 8080
+```
+
 
 
 ---
+
+
 
 # License and Author
 
@@ -224,7 +240,7 @@ normalize:zap              Translate a OWASP ZAP results JSON to HDF format Json
 
 ### NOTICE
 
-© 2021 The MITRE Corporation.
+© 2018 The MITRE Corporation.
 
 Approved for Public Release; Distribution Unlimited. Case Number 18-3678.
 
