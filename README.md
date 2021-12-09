@@ -37,7 +37,7 @@ Translating your data to and from Heimdall Data Format (HDF) is done using the `
 
 ```bash
 convert:asff             Translate a AWS Security Finding Format JSON into a
-                           Heimdall Data Format JSON file
+                         Heimdall Data Format JSON file
   OPTIONS
     -i, --input=input          Input ASFF JSON File
     --securityhub=securityhub  Input AWS Security Standards File
@@ -49,7 +49,7 @@ convert:asff             Translate a AWS Security Finding Format JSON into a
 #--------------------------------------------------------------------------------
 
 convert:burpsuite        Translate a BurpSuite Pro XML file into a Heimdall
-                           Data Format JSON file
+                         Data Format JSON file
   OPTIONS
 	  -i, --input=xml            Input BurpSuite Pro XML File
     -o, --output=output        Output HDF JSON File
@@ -60,8 +60,8 @@ convert:burpsuite        Translate a BurpSuite Pro XML file into a Heimdall
 #--------------------------------------------------------------------------------
 
 convert:dbprotect        Translate a DBProtect report in "Check Results
-                           Details" XML format into a Heimdall Data Format JSON
-                           file
+                         Details" XML format into a Heimdall Data Format JSON
+                         file
   OPTIONS
     -i, --input=input          'Check Results Details' XML File
     -o, --output=output        Output HDF JSON File
@@ -71,7 +71,7 @@ convert:dbprotect        Translate a DBProtect report in "Check Results
 
 #--------------------------------------------------------------------------------
 convert:fortify          Translate a Fortify results FVDL file into a Heimdall
-                           Data Format JSON file
+                         Data Format JSON file
   OPTIONS
     -i, --input=input          Input FVDL File
     -o, --output=output        Output HDF JSON File
@@ -81,7 +81,7 @@ convert:fortify          Translate a Fortify results FVDL file into a Heimdall
 
 #--------------------------------------------------------------------------------
 convert:jfrog_xray       Translate a JFrog Xray results JSON file into a
-                           Heimdall Data Format JSON file
+                         Heimdall Data Format JSON file
 
   OPTIONS
     -i, --input=input          Input JFrog JSON File
@@ -93,7 +93,7 @@ convert:jfrog_xray       Translate a JFrog Xray results JSON file into a
 #--------------------------------------------------------------------------------
 
 convert:nessus           Translate a Nessus XML results file into a Heimdall
-                           Data Format JSON file
+                         Data Format JSON file
   OPTIONS
     -i, --input=input          Input Nessus XML File
     -o, --output=output        Output HDF JSON File
@@ -103,7 +103,7 @@ convert:nessus           Translate a Nessus XML results file into a Heimdall
 
 #--------------------------------------------------------------------------------
 convert:netsparker       Translate a Netsparker XML results file into a
-                           Heimdall Data Format JSON file
+                         Heimdall Data Format JSON file
   OPTIONS
     -i, --input=input          Input Netsparker XML File
     -o, --output=output        Output HDF JSON File
@@ -113,7 +113,7 @@ convert:netsparker       Translate a Netsparker XML results file into a
 
 #--------------------------------------------------------------------------------
 convert:nikto            Translate a Nikto results JSON file into a Heimdall
-                           Data Format JSON file
+                         Data Format JSON file
   OPTIONS
     -i, --input=input          Input Nikto Results JSON File
     -o, --output=output        Output HDF JSON File
@@ -123,8 +123,8 @@ convert:nikto            Translate a Nikto results JSON file into a Heimdall
 
 #--------------------------------------------------------------------------------
 convert:prowler          Translate a Prowler-derived AWS Security Finding
-                           Format results from concatenated JSON blobs into a
-                           Heimdall Data Format JSON file
+                         Format results from concatenated JSON blobs into a
+                         Heimdall Data Format JSON file
   OPTIONS
     -i, --input=input          Input Prowler ASFF JSON File
     -o, --output=output        Output HDF JSON File
@@ -134,7 +134,7 @@ convert:prowler          Translate a Prowler-derived AWS Security Finding
 
 #--------------------------------------------------------------------------------
 convert:sarif            Translate a SARIF JSON file into a Heimdall Data
-                           Format JSON file
+                         Format JSON file
   OPTIONS
     -i, --input=input          Input SARIF JSON File
     -o, --output=output        Output HDF JSON File
@@ -152,7 +152,7 @@ convert:sarif            Translate a SARIF JSON file into a Heimdall Data
 
 #--------------------------------------------------------------------------------
 convert:scoutsuite       Translate a ScoutSuite results from a Javascript
-                           object into a Heimdall Data Format JSON file
+                         object into a Heimdall Data Format JSON file
   OPTIONS
     -i, --input=input          Input ScoutSuite Results JS File
     -o, --output=output        Output HDF JSON File
@@ -165,7 +165,7 @@ convert:scoutsuite       Translate a ScoutSuite results from a Javascript
 
 #--------------------------------------------------------------------------------
 convert:snyk             Translate a Snyk results JSON file into a Heimdall
-                           Data Format JSON file
+                         Data Format JSON file
   OPTIONS
     -i, --input=input          Input Snyk Results JSON File
     -o, --output=output        Output HDF JSON File
@@ -175,8 +175,8 @@ convert:snyk             Translate a Snyk results JSON file into a Heimdall
 
 #--------------------------------------------------------------------------------
 convert:sonarqube        Pull SonarQube vulnerabilities for the specified
-                           project name from an API and convert into a Heimdall
-                           Data Format JSON file
+                         project name from an API and convert into a Heimdall
+                         Data Format JSON file
   OPTIONS
     -a, --auth=auth              SonarQube API Key
     -u, --url=url                SonarQube Base URL (Excluding '/api')
@@ -188,7 +188,7 @@ convert:sonarqube        Pull SonarQube vulnerabilities for the specified
 
 #--------------------------------------------------------------------------------
 convert:xccdf_results    Translate a SCAP client XCCDF-Results XML report to
-                           HDF format Json be viewed on Heimdall
+                         HDF format Json be viewed on Heimdall
   OPTIONS
     -i, --input=input          Input XCCDF Results XML File
     -o, --output=output        Output HDF JSON File
@@ -198,7 +198,7 @@ convert:xccdf_results    Translate a SCAP client XCCDF-Results XML report to
 
 #--------------------------------------------------------------------------------
 convert:zap              Translate a OWASP ZAP results JSON to HDF format Json
-                           be viewed on Heimdall
+                         be viewed on Heimdall
   OPTIONS
     -i, --input=input          Input OWASP ZAP Results JSON File
     -n, --name=name            Target Site Name
