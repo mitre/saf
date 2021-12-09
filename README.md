@@ -42,8 +42,8 @@ normalize:asff             Translate a AWS Security Finding Format JSON into a
     -o, --output=output        Output HDF JSON File
 
   EXAMPLES
-    saf asff_mapper -i asff-findings.json -o output-file-name.json
-    saf asff_mapper -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
+    saf normalize:asff -i asff-findings.json -o output-file-name.json
+    saf normalize:asff -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
 #--------------------------------------------------------------------------------
 
 normalize:burpsuite        Translate a BurpSuite Pro XML file into a Heimdall
