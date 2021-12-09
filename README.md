@@ -51,7 +51,7 @@ convert:asff             Translate a AWS Security Finding Format JSON into a
 convert:burpsuite        Translate a BurpSuite Pro XML file into a Heimdall
                          Data Format JSON file
   OPTIONS
-	  -i, --input=xml            Input BurpSuite Pro XML File
+    -i, --input=xml            Input BurpSuite Pro XML File
     -o, --output=output        Output HDF JSON File
     
 
@@ -60,8 +60,7 @@ convert:burpsuite        Translate a BurpSuite Pro XML file into a Heimdall
 #--------------------------------------------------------------------------------
 
 convert:dbprotect        Translate a DBProtect report in "Check Results
-                         Details" XML format into a Heimdall Data Format JSON
-                         file
+                         Details" XML format into a Heimdall Data Format JSON file
   OPTIONS
     -i, --input=input          'Check Results Details' XML File
     -o, --output=output        Output HDF JSON File
