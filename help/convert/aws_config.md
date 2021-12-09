@@ -25,4 +25,4 @@ Authentication with AWS:
         region = us-gov-west-1
         ```
 Examples:
-  saf normalize:aws_config -o aws_config_results.json
+  saf convert:aws_config -o aws_config_results.json

@@ -3,4 +3,4 @@ Translate a ScoutSuite results from a Javascript object into a Heimdall Data For
   Note: Currently this mapper only supports AWS.
 
 Examples:
-  saf normalize:scoutsuite -i scoutsuite-results.js -o output-hdf-name.json
+  saf convert:scoutsuite -i scoutsuite-results.js -o output-hdf-name.json

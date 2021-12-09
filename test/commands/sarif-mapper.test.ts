@@ -14,7 +14,7 @@ describe('Test sarif', () => {
 
   test
   .stdout()
-  .command(['normalize:sarif', '-i', path.resolve('./test/sample_jsons/sarif/sample_input_report/sarif_input.sarif'), '-o', `${tmpobj.name}/sariftest.json`])
+  .command(['convert:sarif', '-i', path.resolve('./test/sample_jsons/sarif/sample_input_report/sarif_input.sarif'), '-o', `${tmpobj.name}/sariftest.json`])
   .it('hdf-converter output test', () => {
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/sariftest.json`, {encoding: 'utf-8'}))
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_jsons/sarif/sarif-hdf.json'), {encoding: 'utf-8'}))
