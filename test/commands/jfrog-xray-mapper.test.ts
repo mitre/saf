@@ -1,23 +1,23 @@
-import { expect, test } from '@oclif/test'
+import {expect, test} from '@oclif/test'
 import * as tmp from 'tmp'
-import * as path from 'path'
+import path from 'path'
 import fs from 'fs'
 import _ from 'lodash'
-import { ExecJSON } from 'inspecjs';
+import {ExecJSON} from 'inspecjs'
 
 function omitVersions(input: ExecJSON.Execution): Partial<ExecJSON.Execution> {
-  return _.omit(input, ['version', 'platform.release', 'profiles[0].sha256']);
+  return _.omit(input, ['version', 'platform.release', 'profiles[0].sha256'])
 }
 
-describe('Test jfrog_xray_mapper', () => {
-  const tmpobj = tmp.dirSync({ unsafeCleanup: true });
+describe('Test jfrog_xray', () => {
+  const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   test
-    .stdout()
-    .command(['jfrog_xray_mapper', '-j', path.resolve(__dirname, '../../sample_jsons/jfrog_xray_mapper/sample_input_report/jfrog_xray_sample.json'), '-o', `${tmpobj.name}/jfrogtest.json`])
-    .it(`hdf-converter output test`, ctx => {
-      const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/jfrogtest.json`, { encoding: 'utf-8' }))
-      const sample = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../sample_jsons/jfrog_xray_mapper/jfrog-hdf.json'), { encoding: 'utf-8' }))
-      expect(JSON.stringify(omitVersions(test))).to.equal(JSON.stringify(omitVersions(sample)))
-    })
+  .stdout()
+  .command(['convert:jfrog_xray', '-i', path.resolve('./test/sample_jsons/jfrog_xray/sample_input_report/jfrog_xray_sample.json'), '-o', `${tmpobj.name}/jfrogtest.json`])
+  .it('hdf-converter output test', () => {
+    const converted = JSON.parse(fs.readFileSync(`${tmpobj.name}/jfrogtest.json`, {encoding: 'utf-8'}))
+    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_jsons/jfrog_xray/jfrog-hdf.json'), {encoding: 'utf-8'}))
+    expect(omitVersions(converted)).to.equal(omitVersions(sample))
+  })
 })
