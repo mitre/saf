@@ -1,23 +1,23 @@
-import { expect, test } from '@oclif/test'
+import {expect, test} from '@oclif/test'
 import * as tmp from 'tmp'
-import * as path from 'path'
+import path from 'path'
 import fs from 'fs'
 import _ from 'lodash'
-import { ExecJSON } from 'inspecjs';
+import {ExecJSON} from 'inspecjs'
 
 function omitVersions(input: ExecJSON.Execution): Partial<ExecJSON.Execution> {
-  return _.omit(input, ['version', 'platform.release', 'profiles[0].sha256']);
+  return _.omit(input, ['version', 'platform.release', 'profiles[0].sha256'])
 }
 
-describe('Test xccdf_results_mapper', () => {
-  const tmpobj = tmp.dirSync({ unsafeCleanup: true });
+describe('Test xccdf_results', () => {
+  const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   test
-    .stdout()
-    .command(['xccdf_results_mapper', '-x', path.resolve(__dirname, '../../sample_jsons/xccdf_results_mapper/sample_input_report/xccdf-results.xml'), '-o', `${tmpobj.name}/xccdfresultstest.json`])
-    .it(`hdf-converter output test`, ctx => {
-      const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/xccdfresultstest.json`, { encoding: 'utf-8' }))
-      const sample = JSON.parse(fs.readFileSync(path.resolve(__dirname, '../../sample_jsons/xccdf_results_mapper/xccdf-hdf.json'), { encoding: 'utf-8' }))
-      expect(JSON.stringify(omitVersions(test))).to.equal(JSON.stringify(omitVersions(sample)))
-    })
+  .stdout()
+  .command(['convert:xccdf_results', '-i', path.resolve('./test/sample_jsons/xccdf_results/sample_input_report/xccdf-results.xml'), '-o', `${tmpobj.name}/xccdfresultstest.json`])
+  .it('hdf-converter output test', () => {
+    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/xccdfresultstest.json`, {encoding: 'utf-8'}))
+    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_jsons/xccdf_results/xccdf-hdf.json'), {encoding: 'utf-8'}))
+    expect(omitVersions(test)).to.equal(omitVersions(sample))
+  })
 })
