@@ -3,7 +3,7 @@ import express from 'express'
 import path from 'path'
 
 export default class Heimdall extends Command {
-  static usage = 'visualize -p, --port=PORT'
+  static usage = 'view -p, --port=PORT'
 
   static description = 'Run an instance of Heimdall Lite to visualize your Data'
 
