@@ -16,7 +16,7 @@ export default class Heimdall extends Command {
     const {flags} = this.parse(Heimdall)
     console.log(`Serving Heimdall on port ${flags.port}`)
     if (Number.isNaN(flags.port) || flags.port < 1 || flags.port >= 65536) {
-      console.error(`Error: ${process.argv[2]} is not a valid port.`)
+      console.error(`Error: ${flags.port} is not a valid port.`)
       return
     }
     express()
