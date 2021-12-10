@@ -18,6 +18,6 @@ describe('Test jfrog_xray', () => {
   .it('hdf-converter output test', () => {
     const converted = JSON.parse(fs.readFileSync(`${tmpobj.name}/jfrogtest.json`, {encoding: 'utf-8'}))
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_jsons/jfrog_xray/jfrog-hdf.json'), {encoding: 'utf-8'}))
-    expect(omitVersions(converted)).to.equal(omitVersions(sample))
+    expect(omitVersions(converted)).to.eql(omitVersions(sample))
   })
 })
