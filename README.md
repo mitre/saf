@@ -73,9 +73,8 @@ convert:fortify          Translate a Fortify results FVDL file into a Heimdall
                          Data Format JSON file
   DESCRIPTION
     The fortify converter translates a Fortify results FVDL file (e.g., audit.fvdl)
-    into a HDF JSON that is viewable within Heimdall. The FVDL file is an XML file
-    that can be extracted from the Fortify FPR project file using standard file
-    compression tools.
+    into a HDF JSON. The FVDL file is an XML file that can be extracted from the
+    Fortify FPR project file using standard file compression tools.
   
   OPTIONS
     -i, --input=input          Input FVDL File
@@ -99,12 +98,18 @@ convert:jfrog_xray       Translate a JFrog Xray results JSON file into a
 
 convert:nessus           Translate a Nessus XML results file into a Heimdall
                          Data Format JSON file
-  OPTIONS
+  DESCRIPTION
+    The Nessus converter translates a Nessus-style XML results
+    file (e.g., .nessus file) into a Data Format JSON file.
+    
+    Supports compliance and vulnerability scans from Tenable.sc, Tenable.io, and ACAS.
+
+OPTIONS
     -i, --input=input          Input Nessus XML File
     -o, --output=output        Output HDF JSON File
 
   EXAMPLES
-    saf convert:nessus -i nessus_results.xml -o output-hdf-name.json
+    saf convert:nessus -i nessus_results.nessus -o output-hdf-name.json
 
 #--------------------------------------------------------------------------------
 convert:netsparker       Translate a Netsparker XML results file into a
