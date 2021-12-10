@@ -73,8 +73,8 @@ convert:fortify          Translate a Fortify results FVDL file into a Heimdall
                          Data Format JSON file
   DESCRIPTION
     The fortify converter translates a Fortify results FVDL file (e.g., audit.fvdl)
-    into a HDF format json that is viewable within Heimdall. The FVDL file is an XML
-    file that can be extracted from the Fortify FPR project file using standard file
+    into a HDF JSON that is viewable within Heimdall. The FVDL file is an XML file
+    that can be extracted from the Fortify FPR project file using standard file
     compression tools.
   
   OPTIONS
