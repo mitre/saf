@@ -20,7 +20,9 @@
     "htmlparser2": "^6.1.0",
     "inspecjs": "^2.6.1",
     "lodash": "^4.17.21",
-    "tslib": "^1"
+    "tslib": "^1",
+    "typescript": "^3.3",
+    "ts-node": "^8"
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1",
@@ -36,9 +38,7 @@
     "globby": "^10",
     "mocha": "^5",
     "tmp": "^0.2.1",
-    "ts-mocha": "^8.0.0",
-    "ts-node": "^8",
-    "typescript": "^3.3"
+    "ts-mocha": "^8.0.0"
   },
   "engines": {
     "node": ">=8.0.0"
