@@ -1,0 +1,27 @@
+name: Push SAF-CLI to NPM
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@master
+
+      - name: setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install project dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Pack all items that are published as packages
+        run: yarn pack
+
+      - name: Publish SAF CLI to NPM
+        run: npm publish --access public mitre-saf-v*.tgz
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
