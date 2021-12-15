@@ -1,8 +1,8 @@
 name: Push Heimdall Lite to Docker Hub on every merge to master and tag as latest
 
 on:
-  push:
-    branches: [ master ]
+  release:
+    types: [published]
 
 jobs:
   docker:
