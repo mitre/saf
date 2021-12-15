@@ -22,6 +22,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: Dockerfile.lite
+          file: Dockerfile
           push: true
-          tags: mitre/heimdall-lite:latest
+          tags: mitre/saf:latest
