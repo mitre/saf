@@ -12,9 +12,9 @@ function checkSuffix(input: string) {
 export default class ZapMapper extends Command {
   static usage = 'zap -i, --input=JSON -n, --name=NAME -o, --output=OUTPUT'
 
-  static description = fs.readFileSync('./help/convert/zap.md', {encoding: 'utf-8'})
+  static description = 'Translate a OWASP ZAP results JSON to HDF format Json be viewed on Heimdall'
 
-  static examples = [fs.readFileSync('./help/convert/zap.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
+  static examples = ['saf convert:zap -i zap_results.json -n site_name -o scan_results.json']
 
   static flags = {
     help: flags.help({char: 'h'}),

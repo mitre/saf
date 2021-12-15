@@ -12,9 +12,10 @@ function checkSuffix(input: string) {
 export default class ASFFMapper extends Command {
   static usage = 'asff -i <asff-finding-json> [--securityhub <standard-1-json> ... <standard-n-json>] -o <hdf-scan-results-json>'
 
-  static description = fs.readFileSync('./help/convert/asff.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
+  static description = 'Translate a AWS Security Finding Format JSON into a Heimdall Data Format JSON file'
 
-  static examples = [fs.readFileSync('./help/convert/asff.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
+  static examples = ['saf convert:asff -i asff-findings.json -o output-file-name.json',
+    'saf convert:asff -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json']
 
   static flags = {
     help: flags.help({char: 'h'}),

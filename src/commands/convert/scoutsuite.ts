@@ -12,9 +12,9 @@ function checkSuffix(input: string) {
 export default class ScoutsuiteMapper extends Command {
   static usage = 'scoutsuite -i, --input=SCOUTSUITE-RESULTS-JS -o, --output=OUTPUT'
 
-  static description = fs.readFileSync('./help/convert/scoutsuite.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
+  static description = 'Translate a ScoutSuite results from a Javascript object into a Heimdall Data Format JSON file\nNote: Currently this mapper only supports AWS.'
 
-  static examples = [fs.readFileSync('./help/convert/scoutsuite.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
+  static examples = ['saf convert:scoutsuite -i scoutsuite-results.js -o output-hdf-name.json']
 
   static flags = {
     help: flags.help({char: 'h'}),

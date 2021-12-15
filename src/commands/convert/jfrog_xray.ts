@@ -12,9 +12,9 @@ function checkSuffix(input: string) {
 export default class JfrogXrayMapper extends Command {
   static usage = 'jfrog_xray -i, --input=JSON -o, --output=OUTPUT'
 
-  static description = fs.readFileSync('./help/convert/jfrog_xray.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
+  static description = 'Translate a JFrog Xray results JSON file into a Heimdall Data Format JSON file'
 
-  static examples = [fs.readFileSync('./help/convert/jfrog_xray.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
+  static examples = ['saf convert:jfrog_xray -i xray_results.json -o output-hdf-name.json']
 
   static flags = {
     help: flags.help({char: 'h'}),

@@ -13,9 +13,9 @@ function checkSuffix(input: string) {
 export default class NessusMapper extends Command {
   static usage = 'nessus -i, --input=XML -o, --output_prefix=OUTPUT_PREFIX'
 
-  static description = fs.readFileSync('./help/convert/nessus.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
+  static description = "Translate a Nessus XML results file into a Heimdall Data Format JSON file\nThe current iteration maps all plugin families except 'Policy Compliance'\nA separate HDF JSON is generated for each host reported in the Nessus Report."
 
-  static examples = [fs.readFileSync('./help/convert/nessus.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
+  static examples = ['saf convert:nessus -i nessus_results.xml -o output-hdf-name.json']
 
   static flags = {
     help: flags.help({char: 'h'}),

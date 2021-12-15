@@ -12,9 +12,9 @@ function checkSuffix(input: string) {
 export default class NetsparkerMapper extends Command {
   static usage = 'netsparker -i, --input=XML -o, --output=OUTPUT'
 
-  static description = fs.readFileSync('./help/convert/netsparker.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
+  static description = 'Translate a Netsparker XML results file into a Heimdall Data Format JSON file\nThe current iteration only works with Netsparker Enterprise Vulnerabilities Scan.'
 
-  static examples = [fs.readFileSync('./help/convert/netsparker.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
+  static examples = ['saf convert:netsparker -i netsparker_results.xml -o output-hdf-name.json']
 
   static flags = {
     help: flags.help({char: 'h'}),

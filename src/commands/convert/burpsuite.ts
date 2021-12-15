@@ -12,9 +12,9 @@ function checkSuffix(input: string) {
 export default class BurpsuiteMapper extends Command {
   static usage = 'burpsuite -i, --input=XML -o, --output=OUTPUT'
 
-  static description = fs.readFileSync('./help/convert/burpsuite.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
+  static description = 'Translate a BurpSuite Pro XML file into a Heimdall Data Format JSON file'
 
-  static examples = [fs.readFileSync('./help/convert/burpsuite.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
+  static examples = ['saf convert:burpsuite -i burpsuite_results.xml -o output-hdf-name.json']
 
   static flags = {
     help: flags.help({char: 'h'}),

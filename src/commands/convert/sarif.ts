@@ -12,9 +12,9 @@ function checkSuffix(input: string) {
 export default class SarifMapper extends Command {
   static usage = 'sarif -i, --input=JSON -o, --output=OUTPUT'
 
-  static description = fs.readFileSync('./help/convert/sarif.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
+  static description = 'Translate a SARIF JSON file into a Heimdall Data Format JSON file\nSARIF level to HDF impact Mapping:\nSARIF level error -> HDF impact 0.7\nSARIF level warning -> HDF impact 0.5\nSARIF level note -> HDF impact 0.3\nSARIF level none -> HDF impact 0.1\nSARIF level not provided -> HDF impact 0.1 as default'
 
-  static examples = [fs.readFileSync('./help/convert/sarif.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
+  static examples = ['saf convert:sarif -i sarif-results.json -o output-hdf-name.json']
 
   static flags = {
     help: flags.help({char: 'h'}),

@@ -12,9 +12,9 @@ function checkSuffix(input: string) {
 export default class NiktoMapper extends Command {
   static usage = 'nikto -i, --input=JSON -o, --output=OUTPUT'
 
-  static description = fs.readFileSync('./help/convert/nikto.md', {encoding: 'utf-8'}).split('Examples:\n')[0]
+  static description = 'Translate a Nikto results JSON file into a Heimdall Data Format JSON file\nNote: Current this mapper only supports single target Nikto Scans'
 
-  static examples = [fs.readFileSync('./help/convert/nikto.md', {encoding: 'utf-8'}).split('Examples:\n')[1]]
+  static examples = ['saf convert:nikto -i nikto-results.json -o output-hdf-name.json']
 
   static flags = {
     help: flags.help({char: 'h'}),
