@@ -11,7 +11,7 @@ function checkSuffix(input: string) {
 }
 
 export default class AWSConfigMapper extends Command {
-  static usage = 'burpsuite -i, --input=XML -o, --output=OUTPUT'
+  static usage = 'convert:aws_config -a, --accessKeyId=accessKeyId -r, --region=region -s, --secretAccessKey=secretAccessKey -t, --sessionToken=sessionToken -o, --output=OUTPUT'
 
   static description = 'Pull Configuration findings from AWS Config and convert into a Heimdall Data Format JSON file'
 
