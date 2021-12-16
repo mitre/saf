@@ -264,6 +264,7 @@ view                     Run an instance of Heimdall Lite to visualize
 ### Authors
 
 -   Author:: Ryan Lin [Rlin232](https://github.com/rlin232)
+-   Author:: Camden Moors [camdenmoors](https://github.com/camdenmoors)
 
 ### NOTICE
 
