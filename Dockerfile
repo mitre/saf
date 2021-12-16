@@ -13,6 +13,7 @@ RUN mkdir -p /share
 
 COPY . /build
 WORKDIR /build
+RUN yarn global add typescript
 RUN yarn pack --install-if-needed --prod --filename saf.tgz
 
 FROM node:lts-alpine
