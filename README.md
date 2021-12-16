@@ -48,6 +48,21 @@ convert:asff             Translate a AWS Security Finding Format JSON into a
     saf convert:asff -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
 #--------------------------------------------------------------------------------
 
+convert:aws_config       Pull Configuration findings from AWS Config and convert
+                         into a Heimdall Data Format JSON file
+  OPTIONS
+    -a, --accessKeyId=accessKeyId
+    -h, --help                             show CLI help
+    -i, --insecure                         Bypass SSL verification, this is insecure.
+    -o, --output=output                    (required)
+    -r, --region=region                    (required)
+    -s, --secretAccessKey=secretAccessKey
+    -t, --sessionToken=sessionToken
+
+  EXAMPLES
+    saf convert:aws_config -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json
+#--------------------------------------------------------------------------------
+
 convert:burpsuite        Translate a BurpSuite Pro XML file into a Heimdall
                          Data Format JSON file
   OPTIONS
