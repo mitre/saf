@@ -32,4 +32,4 @@ jobs:
           context: .
           file: Dockerfile
           push: true
-          tags: mitre/saf:release-latest:${{ steps.format-tag.outputs.replaced }}
+          tags: mitre/saf:release-latest,mitre/saf:${{ steps.format-tag.outputs.replaced }}
