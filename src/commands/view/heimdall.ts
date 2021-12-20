@@ -3,7 +3,7 @@ import express from 'express'
 import path from 'path'
 
 export default class Heimdall extends Command {
-  static aliases = ['view']
+  static aliases = ['heimdall']
 
   static usage = 'view -p, --port=PORT'
 

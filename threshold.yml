@@ -1,0 +1,87 @@
+compliance:
+  min: 0
+  max: 100
+
+passed:
+  total:
+    min: 0
+    max: 100
+  critical:
+    min: -1
+    max: 100
+  high:
+    max: 100
+  medium:
+    min: -1
+    max: 100
+  low:
+    min: -1
+    max: 100
+
+failed:
+  total:
+    min: 0
+    max: 200
+  critical:
+    min: -1
+    max: 100
+  high:
+    min: -1
+    max: 100
+  medium:
+    min: -1
+    max: 100
+  low:
+    min: -1
+    max: 100
+
+skipped:
+  total:
+    min: 0
+    max: 100
+  critical:
+    min: -1
+    max: 100
+  high:
+    min: -1
+    max: 100
+  medium:
+    min: -1
+    max: 100
+  low:
+    min: -1
+    max: 100
+
+no_impact:
+  total:
+    min: -1
+    max: 100
+  critical:
+    min: -1
+    max: 100
+  high:
+    min: -1
+    max: 100
+  medium:
+    min: -1
+    max: 100
+  low:
+    min: -1
+    max: 100
+
+error:
+  total:
+    min: 0
+    max: 100
+  critical:
+    min: -1
+    max: 100
+  high:
+    min: -1
+    max: 100
+  medium:
+    min: -1
+    max: 100
+  low:
+    min: -1
+    max: 100
