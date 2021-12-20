@@ -248,9 +248,10 @@ view                     Run an instance of Heimdall Lite to visualize
 
   OPTIONS
     -p, --port=PORT          Port To Expose Heimdall On (Default 3000)
+    -f, --file=FILES        File(s) to automattically open in Heimdall
 
   EXAMPLES
-    saf view -p 8080
+    saf view -p 8080 --files red_hat_bad.json red_hat_good.json
 ```
 
 
