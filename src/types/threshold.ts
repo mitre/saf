@@ -15,38 +15,38 @@ export type StatusHash = ControlStatusHash & {
 export type ThresholdValues = {
     compliance?: {min?: number; max?: number};
     passed?: {
-      total: {min?: number; max?: number};
-      critical: {min?: number; max?: number};
-      high: {min?: number; max?: number};
-      medium: {min?: number; max?: number};
-      low: {min?: number; max?: number};
+      total: {controls?: string[]; min?: number; max?: number};
+      critical: {controls?: string[]; min?: number; max?: number};
+      high: {controls?: string[]; min?: number; max?: number};
+      medium: {controls?: string[]; min?: number; max?: number};
+      low: {controls?: string[]; min?: number; max?: number};
     };
     failed?: {
-      total: {min?: number; max?: number};
-      critical: {min?: number; max?: number};
-      high: {min?: number; max?: number};
-      medium: {min?: number; max?: number};
-      low: {min?: number; max?: number};
+      total: {controls?: string[]; min?: number; max?: number};
+      critical: {controls?: string[]; min?: number; max?: number};
+      high: {controls?: string[]; min?: number; max?: number};
+      medium: {controls?: string[]; min?: number; max?: number};
+      low: {controls?: string[]; min?: number; max?: number};
     };
     skipped?: {
-      total: {min?: number; max?: number};
-      critical: {min?: number; max?: number};
-      high: {min?: number; max?: number};
-      medium: {min?: number; max?: number};
-      low: {min?: number; max?: number};
+      total: {controls?: string[]; min?: number; max?: number};
+      critical: {controls?: string[]; min?: number; max?: number};
+      high: {controls?: string[]; min?: number; max?: number};
+      medium: {controls?: string[]; min?: number; max?: number};
+      low: {controls?: string[]; min?: number; max?: number};
     };
     no_impact?: {
-      total: {min?: number; max?: number};
-      critical: {min?: number; max?: number};
-      high: {min?: number; max?: number};
-      medium: {min?: number; max?: number};
-      low: {min?: number; max?: number};
+      total: {controls?: string[]; min?: number; max?: number};
+      critical: {controls?: string[]; min?: number; max?: number};
+      high: {controls?: string[]; min?: number; max?: number};
+      medium: {controls?: string[]; min?: number; max?: number};
+      low: {controls?: string[]; min?: number; max?: number};
     };
     error?: {
-      total: {min?: number; max?: number};
-      critical: {min?: number; max?: number};
-      high: {min?: number; max?: number};
-      medium: {min?: number; max?: number};
-      low: {min?: number; max?: number};
+      total: {controls?: string[]; min?: number; max?: number};
+      critical: {controls?: string[]; min?: number; max?: number};
+      high: {controls?: string[]; min?: number; max?: number};
+      medium: {controls?: string[]; min?: number; max?: number};
+      low: {controls?: string[]; min?: number; max?: number};
     };
   }

@@ -1,11 +1,11 @@
-import {StatusHash} from '@/types/threshold'
+import {StatusHash} from '../../types/threshold'
 import {ContextualizedProfile, ControlStatus, Severity} from 'inspecjs'
 
 export const severityTargetsObject = {
-  critical: ['passed.critical.min', 'passed.critical.max', 'failed.critical.min', 'failed.critical.max', 'skipped.critical.min', 'skipped.critical.max', 'no_impact.critical.min', 'no_impact.critical.max', 'error.critical.max'],
-  high: ['passed.high.min', 'passed.high.max', 'failed.high.min', 'failed.high.max', 'skipped.high.min', 'skipped.high.max', 'no_impact.high.min', 'no_impact.high.max', 'error.high.max'],
-  medium: ['passed.medium.min', 'passed.medium.max', 'failed.medium.min', 'failed.medium.max', 'skipped.medium.min', 'skipped.medium.max', 'no_impact.medium.min', 'no_impact.medium.max', 'error.medium.max'],
-  low: ['passed.low.min', 'passed.low.max', 'failed.low.min', 'failed.low.max', 'skipped.low.min', 'skipped.low.max', 'no_impact.low.min', 'no_impact.low.max', 'error.low.max'],
+  critical: ['passed.critical.min', 'passed.critical.max', 'failed.critical.min', 'failed.critical.max', 'skipped.critical.min', 'skipped.critical.max', 'no_impact.critical.min', 'no_impact.critical.max', 'error.critical.min', 'error.critical.max'],
+  high: ['passed.high.min', 'passed.high.max', 'failed.high.min', 'failed.high.max', 'skipped.high.min', 'skipped.high.max', 'no_impact.high.min', 'no_impact.high.max', 'error.high.min',  'error.high.max'],
+  medium: ['passed.medium.min', 'passed.medium.max', 'failed.medium.min', 'failed.medium.max', 'skipped.medium.min', 'skipped.medium.max', 'no_impact.medium.min', 'no_impact.medium.max', 'error.medium.min', 'error.medium.max'],
+  low: ['passed.low.min', 'passed.low.max', 'failed.low.min', 'failed.low.max', 'skipped.low.min', 'skipped.low.max', 'no_impact.low.min', 'no_impact.low.max', 'error.low.min', 'error.low.max'],
 }
 
 export function extractStatusCounts(profile: ContextualizedProfile, severity?: string) {
@@ -47,7 +47,6 @@ export function extractStatusCounts(profile: ContextualizedProfile, severity?: s
 }
 
 export function calculateCompliance(statusHash: StatusHash): number {
-  console.log(statusHash)
   const total = statusHash.Passed + statusHash.Failed + statusHash['Not Reviewed'] + statusHash['Profile Error']
   if (total === 0) {
     return 0
@@ -61,7 +60,7 @@ export function exitNonZeroIfTrue(condition: boolean, reason?: string) {
   }
 }
 
-export function  renameStatusName(statusName: string): string {
+export function renameStatusName(statusName: string): string {
   switch (statusName) {
   case 'passed':
     return 'Passed'
@@ -75,5 +74,22 @@ export function  renameStatusName(statusName: string): string {
     return 'Profile Error'
   default:
     return 'Profile Error'
+  }
+}
+
+export function reverseStatusName(statusName: string): string {
+  switch (statusName) {
+  case 'Passed':
+    return 'passed'
+  case 'Failed':
+    return 'failed'
+  case 'Not Reviewed':
+    return 'skipped'
+  case 'Not Applicable':
+    return 'no_impact'
+  case 'Profile Error':
+    return 'error'
+  default:
+    return 'error'
   }
 }

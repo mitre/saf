@@ -4,7 +4,7 @@ import YAML from 'yaml'
 import fs from 'fs'
 import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import _ from 'lodash'
-import {ThresholdValues} from '@/types/threshold'
+import {ThresholdValues} from '../../types/threshold'
 import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 
 export default class Threshold extends Command {
