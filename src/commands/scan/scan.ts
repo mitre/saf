@@ -1,7 +1,7 @@
 import {Command, flags} from '@oclif/command'
 
 export default class Scan extends Command {
-  static aliases = ['validate']
+  static aliases = ['scan']
 
   static description = 'Visit https://saf.mitre.org/#/validate to explore and run inspec profiles'
 

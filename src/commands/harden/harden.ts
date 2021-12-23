@@ -1,6 +1,8 @@
 import {Command, flags} from '@oclif/command'
 
 export default class Harden extends Command {
+  static aliases = ['harden']
+
   static description = 'Visit https://saf.mitre.org/#/harden to explore and run hardening scripts'
 
   static flags = {
@@ -11,4 +13,3 @@ export default class Harden extends Command {
     console.log('Visit https://saf.mitre.org/#/harden to explore and run hardening scripts')
   }
 }
-

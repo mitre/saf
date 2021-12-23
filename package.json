@@ -13,6 +13,7 @@
     "@oclif/config": "^1",
     "@oclif/dev-cli": "^1",
     "@oclif/plugin-help": "^3",
+    "@oclif/plugin-warn-if-update-available": "^2.0.3",
     "@oclif/test": "^1",
     "@types/chai": "^4",
     "@types/express": "^4.17.13",
@@ -64,8 +65,34 @@
     "commands": "./lib/commands",
     "bin": "saf",
     "plugins": [
-      "@oclif/plugin-help"
-    ]
+      "@oclif/plugin-help",
+      "@oclif/plugin-warn-if-update-available"
+    ],
+    "warn-if-update-available": {
+      "timeoutInDays": 1,
+      "registry": "https://www.npmjs.com/package/@mitre/saf",
+      "message": "<%= config.name %> update available from <%= chalk.greenBright(config.version) %> to <%= chalk.greenBright(latest) %>."
+    },
+    "topics": {
+      "convert": {
+        "description": "[Normalize]    Convert security results from all your security tools between common data formats"
+      },
+      "generate": {
+        "description": "[Validate]     Set pipeline thresholds"
+      },
+      "harden": {
+        "description": "[Harden]       Implement security baselines using Ansible, Chef, and Terraform content: Visit https://saf.mitre.org/#/harden to explore and run hardening scripts"
+      },
+      "scan": {
+        "description": "[Validate]     Scan to get detailed security testing results: Visit https://saf.mitre.org/#/validate to explore and run inspec profiles"
+      },
+      "validate": {
+        "description": "[Validate]     Verify pipeline thresholds"
+      },
+      "view": {
+        "description": "[Visualize]    Identify overall security status and deep-dive to solve specific security defects"
+      }
+    }
   },
   "repository": "mitre/saf",
   "scripts": {
