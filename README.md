@@ -1,16 +1,44 @@
 # Security Automation Framework CLI
 
+The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) brings together applications, techniques, libraries, and tools developed by MITRE and the security community to streamline security automation for systems and DevOps pipelines
+
+
+
+## Contents:
+
+- [SAF CLI Installation](https://github.com/mitre/saf#installation)
+  - [Via NPM](https://github.com/mitre/saf#installation-via-npm)
+  - [Via Docker](https://github.com/mitre/saf#installation-via-docker)
+
+* [SAF CLI Usage](https://github.com/mitre/saf#usage)
+  * [Generate](https://github.com/mitre/saf#usage)
+  * [Validate](https://github.com/mitre/saf#validate)
+  * [View](https://github.com/mitre/saf#view)
+  * [Convert](https://github.com/mitre/saf#convert)
+
+
 
 ## Installation
 
-#### Installation via NPX
+#### Installation via NPM
 
-The SAF CLI can be installed and kept up to date using [npx](https://www.npmjs.com/package/npx).
+The SAF CLI can be installed and kept up to date using `npm`, which is included with most versions of [NodeJS](https://nodejs.org/en/).
 
 ```bash
-npx @mitre/saf help
+npm install -g @mitre/saf
 ```
 
+
+
+#### Update via NPM
+
+To update the SAF CLI with `npm`:
+
+```bash
+update -g @mitre/saf
+```
+
+---
 
 
 #### Installation via Docker
@@ -29,11 +57,84 @@ docker run -it -v%cd%:/share mitre/saf
 
 
 
+#### Update via Docker
+
+To update the SAF CLI with `docker`:
+
+```bash
+docker pull mitre/saf:latest
+```
+
+
+
 ## Usage
+
+
+### Generate
+
+#### Thresholds
+
+Threshold files are used in CI to ensure minimum compliance levels and validate control severites and statuses using `saf validate:threshold`
+
+```
+generate:threshold      Generate a compliance template for "saf validate threshold"
+
+  OPTIONS
+    -c, --generateControlIds  Validate control IDs have the correct severity
+                              and status
+    -e, --exact               All counts should be exactly the same when
+                              validating not just less than or greater than
+    -i, --input               Input HDF JSON file
+    -o, --output              Output threshold YAML file
+
+	EXAMPLES
+  	saf generate:threshold -i rhel7-results.json -e -c -o output.yaml
+```
+
+---
+
+### Validate
+
+#### Thresholds
+
+```
+validate:threshold       Validate the compliance and status counts of an HDF file
+
+  OPTIONS
+    -F, --templateFile        Expected data template, generate one with
+    												  "saf generate:threshold"
+    -T, --templateInline=     Flattened JSON containing your validation thresholds
+                              (Intended for backwards compatibility with InSpec Tools)
+    -i, --input               Input HDF JSON file
+
+  EXAMPLES
+  	saf validate:threshold -i rhel7-results.json -F output.yaml
+```
+
+---
+
+### View
+
+You can start a local Heimdall Lite instance to visualize your findings with the SAF CLI. To start an instance use the `saf view` command:
+
+```
+view                     Run an instance of Heimdall Lite to visualize 
+                         your data
+
+  OPTIONS
+    -p, --port=PORT          Port To Expose Heimdall On (Default 3000)
+
+  EXAMPLES
+    saf view -p 8080
+```
+
+---
 
 ### Convert
 
 Translating your data to and from Heimdall Data Format (HDF) is done using the `saf convert` command.
+
+#### ASFF
 
 ```bash
 convert:asff             Translate a AWS Security Finding Format JSON into a
@@ -46,7 +147,13 @@ convert:asff             Translate a AWS Security Finding Format JSON into a
   EXAMPLES
     saf convert:asff -i asff-findings.json -o output-file-name.json
     saf convert:asff -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
-#--------------------------------------------------------------------------------
+```
+
+
+
+#### AWS Config
+
+```
 
 convert:aws_config       Pull Configuration findings from AWS Config and convert
                          into a Heimdall Data Format JSON file
@@ -61,8 +168,12 @@ convert:aws_config       Pull Configuration findings from AWS Config and convert
 
   EXAMPLES
     saf convert:aws_config -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json
-#--------------------------------------------------------------------------------
+```
 
+
+#### Burp Suite
+
+```
 convert:burpsuite        Translate a BurpSuite Pro XML file into a Heimdall
                          Data Format JSON file
   OPTIONS
@@ -72,7 +183,12 @@ convert:burpsuite        Translate a BurpSuite Pro XML file into a Heimdall
 
   EXAMPLES
     saf convert:burpsuite -i burpsuite_results.xml -o output-hdf-name.json
-#--------------------------------------------------------------------------------
+```
+
+
+#### DBProtect
+
+```
 
 convert:dbprotect        Translate a DBProtect report in "Check Results
                          Details" XML format into a Heimdall Data Format JSON file
@@ -82,8 +198,12 @@ convert:dbprotect        Translate a DBProtect report in "Check Results
 
   EXAMPLES
     saf convert:dbprotect -i check_results_details_report.xml -o output-hdf-name.json
+```
 
-#--------------------------------------------------------------------------------
+
+#### Fortify
+
+```
 convert:fortify          Translate a Fortify results FVDL file into a Heimdall
                          Data Format JSON file
   DESCRIPTION
@@ -97,8 +217,12 @@ convert:fortify          Translate a Fortify results FVDL file into a Heimdall
 
   EXAMPLES
     saf convert:fortify -i audit.fvdl -o output-hdf-name.json
+```
 
-#--------------------------------------------------------------------------------
+
+#### JFrog Xray
+
+```
 convert:jfrog_xray       Translate a JFrog Xray results JSON file into a
                          Heimdall Data Format JSON file
 
@@ -108,9 +232,12 @@ convert:jfrog_xray       Translate a JFrog Xray results JSON file into a
 
   EXAMPLES
     saf convert:jfrog_xray -i xray_results.json -o output-hdf-name.json
+```
 
-#--------------------------------------------------------------------------------
 
+#### Tennable Nessus
+
+```
 convert:nessus           Translate a Nessus XML results file into a Heimdall
                          Data Format JSON file
   DESCRIPTION
@@ -125,8 +252,12 @@ OPTIONS
 
   EXAMPLES
     saf convert:nessus -i nessus_results.nessus -o output-hdf-name.json
+```
 
-#--------------------------------------------------------------------------------
+
+#### Netsparker
+
+```
 convert:netsparker       Translate a Netsparker XML results file into a
                          Heimdall Data Format JSON file
   OPTIONS
@@ -135,8 +266,12 @@ convert:netsparker       Translate a Netsparker XML results file into a
 
   EXAMPLES
     saf convert:netsparker -i netsparker_results.xml -o output-hdf-name.json
+```
 
-#--------------------------------------------------------------------------------
+
+#### Nikto
+
+```
 convert:nikto            Translate a Nikto results JSON file into a Heimdall
                          Data Format JSON file
   OPTIONS
@@ -145,8 +280,12 @@ convert:nikto            Translate a Nikto results JSON file into a Heimdall
 
   EXAMPLES
     saf convert:nikto -i nikto-results.json -o output-hdf-name.json
+```
 
-#--------------------------------------------------------------------------------
+
+#### Prowler
+
+```
 convert:prowler          Translate a Prowler-derived AWS Security Finding
                          Format results from concatenated JSON blobs into a
                          Heimdall Data Format JSON file
@@ -156,8 +295,12 @@ convert:prowler          Translate a Prowler-derived AWS Security Finding
 
   EXAMPLES
     saf convert:prowler -i prowler-asff.json -o output-hdf-name.json
+```
 
-#--------------------------------------------------------------------------------
+
+#### Sarif
+
+```
 convert:sarif            Translate a SARIF JSON file into a Heimdall Data
                          Format JSON file
   OPTIONS
@@ -174,8 +317,12 @@ convert:sarif            Translate a SARIF JSON file into a Heimdall Data
 
   EXAMPLES
     saf convert:sarif -i sarif-results.json -o output-hdf-name.json
+```
 
-#--------------------------------------------------------------------------------
+
+#### Scoutsuite
+
+```
 convert:scoutsuite       Translate a ScoutSuite results from a Javascript
                          object into a Heimdall Data Format JSON file
   OPTIONS
@@ -187,8 +334,12 @@ convert:scoutsuite       Translate a ScoutSuite results from a Javascript
 
   EXAMPLES
     saf convert:scoutsuite -i scoutsuite-results.js -o output-hdf-name.json
+```
 
-#--------------------------------------------------------------------------------
+
+#### Snyk
+
+```
 convert:snyk             Translate a Snyk results JSON file into a Heimdall
                          Data Format JSON file
   OPTIONS
@@ -197,8 +348,12 @@ convert:snyk             Translate a Snyk results JSON file into a Heimdall
 
   EXAMPLES
     saf convert:snyk -i snyk_results.json -o output-hdf-name.json
+```
 
-#--------------------------------------------------------------------------------
+
+#### SonarQube
+
+```
 convert:sonarqube        Pull SonarQube vulnerabilities for the specified
                          project name from an API and convert into a Heimdall
                          Data Format JSON file
@@ -211,7 +366,10 @@ convert:sonarqube        Pull SonarQube vulnerabilities for the specified
   EXAMPLES
     saf convert:sonarqube -n project_key -u http://sonar:9000 --auth YOUR_API_KEY -o output-hdf-name.json
 
-#--------------------------------------------------------------------------------
+```
+#### XCCDF Results
+
+```
 convert:xccdf_results    Translate a SCAP client XCCDF-Results XML report to
                          HDF format Json be viewed on Heimdall
   OPTIONS
@@ -221,7 +379,10 @@ convert:xccdf_results    Translate a SCAP client XCCDF-Results XML report to
   EXAMPLES
     saf convert:xccdf_results -i results-xccdf.xml -o output-hdf-name.json
 
-#--------------------------------------------------------------------------------
+```
+#### OWASP ZAP
+
+```
 convert:zap              Translate a OWASP ZAP results JSON to HDF format Json
                          be viewed on Heimdall
   OPTIONS
@@ -231,30 +392,7 @@ convert:zap              Translate a OWASP ZAP results JSON to HDF format Json
 
   EXAMPLES
     saf convert:zap -i zap_results.json -n mitre.org -o output-hdf-name.json
-
 ```
-
----
-
-### View
-
-You can start a local Heimdall Lite instance to visualize your findings with the SAF CLI. To start an instance use the `saf view` command:
-
-
-
-```
-view                     Run an instance of Heimdall Lite to visualize 
-                         your data
-
-  OPTIONS
-    -p, --port=PORT          Port To Expose Heimdall On (Default 3000)
-    -f, --file=FILES        File(s) to automattically open in Heimdall
-
-  EXAMPLES
-    saf view -p 8080 --files red_hat_bad.json red_hat_good.json
-```
-
-
 
 ---
 
@@ -269,7 +407,7 @@ view                     Run an instance of Heimdall Lite to visualize
 
 ### NOTICE
 
-© 2018 The MITRE Corporation.
+© 2021 The MITRE Corporation.
 
 Approved for Public Release; Distribution Unlimited. Case Number 18-3678.
 

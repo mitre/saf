@@ -7,6 +7,8 @@
     "unicorn/filename-case": "off",
     "unicorn/prefer-node-protocol": "off",
     "unicorn/numeric-separators-style": "off",
-    "no-console": "off"
+    "no-console": "off",
+    "node/no-missing-import": "off",
+    "complexity": "off"
   }
 }
