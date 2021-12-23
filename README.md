@@ -35,7 +35,7 @@ npm install -g @mitre/saf
 To update the SAF CLI with `npm`:
 
 ```bash
-update -g @mitre/saf
+npm update -g @mitre/saf
 ```
 
 ---
