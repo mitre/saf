@@ -4,7 +4,7 @@ import _ from 'lodash'
 import fs from 'fs'
 import YAML from 'yaml'
 import {ThresholdValues} from '../../types/threshold'
-import {calculateCompliance, extractStatusCounts, getControlIdMap, renameStatusName, reverseStatusName, severityTargetsObject} from '../../utils/threshold'
+import {calculateCompliance, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 
 export default class GenerateThreshold extends Command {
   static aliases = ['threshold']

@@ -1,5 +1,5 @@
 import {ContextualizedProfile, ControlStatus, Severity} from 'inspecjs'
-import {ControlIDThresholdValues, StatusHash, ThresholdValues} from '../types/threshold'
+import {StatusHash, ThresholdValues} from '../types/threshold'
 import _ from 'lodash'
 
 export const severityTargetsObject = {
