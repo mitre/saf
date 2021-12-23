@@ -13,7 +13,7 @@ export default class Heimdall extends Command {
   static flags = {
     help: flags.help({char: 'h'}),
     port: flags.integer({char: 'p', required: false, default: 3000}),
-    file: flags.string({char: 'f', required: false, multiple: true}),
+    file: flags.string({char: 'f', required: false, multiple: true, hidden: true}), // Hidden until supported in Heimdall
   }
 
   async run() {
