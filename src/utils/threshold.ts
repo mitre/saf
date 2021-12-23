@@ -1,11 +1,51 @@
-import {StatusHash} from '../../types/threshold'
 import {ContextualizedProfile, ControlStatus, Severity} from 'inspecjs'
+import {ControlIDThresholdValues, StatusHash, ThresholdValues} from '../types/threshold'
+import _ from 'lodash'
 
 export const severityTargetsObject = {
-  critical: ['passed.critical.min', 'passed.critical.max', 'failed.critical.min', 'failed.critical.max', 'skipped.critical.min', 'skipped.critical.max', 'no_impact.critical.min', 'no_impact.critical.max', 'error.critical.min', 'error.critical.max'],
-  high: ['passed.high.min', 'passed.high.max', 'failed.high.min', 'failed.high.max', 'skipped.high.min', 'skipped.high.max', 'no_impact.high.min', 'no_impact.high.max', 'error.high.min',  'error.high.max'],
-  medium: ['passed.medium.min', 'passed.medium.max', 'failed.medium.min', 'failed.medium.max', 'skipped.medium.min', 'skipped.medium.max', 'no_impact.medium.min', 'no_impact.medium.max', 'error.medium.min', 'error.medium.max'],
-  low: ['passed.low.min', 'passed.low.max', 'failed.low.min', 'failed.low.max', 'skipped.low.min', 'skipped.low.max', 'no_impact.low.min', 'no_impact.low.max', 'error.low.min', 'error.low.max'],
+  critical: ['passed.critical.min', 'passed.critical.max', 'failed.critical.min', 'failed.critical.max', 'skipped.critical.min', 'skipped.critical.max', 'error.critical.min', 'error.critical.max'],
+  high: ['passed.high.min', 'passed.high.max', 'failed.high.min', 'failed.high.max', 'skipped.high.min', 'skipped.high.max', 'error.high.min',  'error.high.max'],
+  medium: ['passed.medium.min', 'passed.medium.max', 'failed.medium.min', 'failed.medium.max', 'skipped.medium.min', 'skipped.medium.max', 'error.medium.min', 'error.medium.max'],
+  low: ['passed.low.min', 'passed.low.max', 'failed.low.min', 'failed.low.max', 'skipped.low.min', 'skipped.low.max', 'error.low.min', 'error.low.max'],
+  none: ['no_impact.none.min', 'no_impact.none.max'],
+}
+
+export const statusSeverityPaths = {
+  critical: ['passed.critical.controls', 'failed.critical.controls', 'skipped.critical.controls', 'error.critical.controls'],
+  high: ['passed.high.controls', 'failed.high.controls', 'skipped.high.controls', 'error.high.controls'],
+  medium: ['passed.medium.controls', 'failed.medium.controls', 'skipped.medium.controls', 'error.medium.controls'],
+  low: ['passed.low.controls', 'failed.low.controls', 'skipped.low.controls', 'error.low.controls'],
+  none: ['no_impact.none.controls'],
+}
+
+export const emptyStatusAndSeverityCounts = {
+  passed: {
+    critical: [],
+    high: [],
+    medium: [],
+    low: [],
+  },
+  failed: {
+    critical: [],
+    high: [],
+    medium: [],
+    low: [],
+  },
+  skipped: {
+    critical: [],
+    high: [],
+    medium: [],
+    low: [],
+  },
+  no_impact: {
+    none: [],
+  },
+  error: {
+    critical: [],
+    high: [],
+    medium: [],
+    low: [],
+  },
 }
 
 export function extractStatusCounts(profile: ContextualizedProfile, severity?: string) {
@@ -77,7 +117,7 @@ export function renameStatusName(statusName: string): string {
   }
 }
 
-export function reverseStatusName(statusName: string): string {
+export function reverseStatusName(statusName: string): 'passed' | 'failed' | 'skipped' | 'no_impact' | 'error' {
   switch (statusName) {
   case 'Passed':
     return 'passed'
@@ -92,4 +132,18 @@ export function reverseStatusName(statusName: string): string {
   default:
     return 'error'
   }
+}
+
+export function getControlIdMap(profile: ContextualizedProfile, thresholds?: ThresholdValues) {
+  if (!thresholds) {
+    thresholds = {}
+  }
+  for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
+    const control = c.root
+    const severity = c.root.hdf.severity
+    const path = `${reverseStatusName(control.hdf.status)}.${severity}.controls`
+    const existingData = (_.get(thresholds, path) as string[]) || []
+    _.set(thresholds, path, [...existingData, control.data.id])
+  }
+  return thresholds
 }

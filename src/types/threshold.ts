@@ -12,6 +12,8 @@ export type StatusHash = ControlStatusHash & {
     Waived: number;
   };
 
+export type ControlIDThresholdValues = Record<string, Record<string, string[]>>
+
 export type ThresholdValues = {
     compliance?: {min?: number; max?: number};
     passed?: {

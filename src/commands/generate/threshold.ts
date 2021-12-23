@@ -4,7 +4,7 @@ import _ from 'lodash'
 import fs from 'fs'
 import YAML from 'yaml'
 import {ThresholdValues} from '../../types/threshold'
-import {calculateCompliance, extractStatusCounts, renameStatusName, reverseStatusName, severityTargetsObject} from '../../utils/threshold'
+import {calculateCompliance, extractStatusCounts, getControlIdMap, renameStatusName, reverseStatusName, severityTargetsObject} from '../../utils/threshold'
 
 export default class GenerateThreshold extends Command {
   static aliases = ['threshold']
@@ -13,7 +13,7 @@ export default class GenerateThreshold extends Command {
 
   static description = 'Generate a compliance template for "saf validate threshold"'
 
-  static examples: string[] | undefined = ['saf generate:threshold -i rhel7-results.json -e -c -o output.yaml']
+  static examples = ['saf generate:threshold -i rhel7-results.json -e -c -o output.yaml']
 
   static flags = {
     help: flags.help({char: 'h'}),
@@ -41,6 +41,7 @@ export default class GenerateThreshold extends Command {
     for (const [severity, severityTargets] of Object.entries(severityTargetsObject)) {
       const severityStatusCounts = extractStatusCounts(parsedProfile, severity)
       for (const severityTarget of severityTargets) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [statusName, _total, thresholdType] = severityTarget.split('.')
         if ((statusName === 'passed' && thresholdType === 'min') || flags.exact) {
           _.set(thresholds, severityTarget, _.get(severityStatusCounts, renameStatusName(statusName)))
@@ -52,13 +53,8 @@ export default class GenerateThreshold extends Command {
 
     // Expected control ID status and severity
     if (flags.generateControlIds) {
-      for (const c of parsedProfile.contains.filter(control => control.extendedBy.length === 0)) {
-        const control = c.root
-        const severity = c.root.hdf.severity
-        const path = `${reverseStatusName(control.hdf.status)}.${severity}.controls`
-        const existingData = (_.get(thresholds, path) as string[]) || []
-        _.set(thresholds, path, [...existingData, control.data.id])
-      }
+      getControlIdMap(parsedProfile, thresholds)
+      console.log(thresholds)
     }
 
     fs.writeFileSync(flags.output, YAML.stringify(thresholds))
