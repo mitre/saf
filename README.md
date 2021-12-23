@@ -1,16 +1,28 @@
 # Security Automation Framework CLI
 
+The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) brings together applications, techniques, libraries, and tools developed by MITRE and the security community to streamline security automation for systems and DevOps pipelines
 
 ## Installation
 
-#### Installation via NPX
+#### Installation via NPM
 
-The SAF CLI can be installed and kept up to date using [npx](https://www.npmjs.com/package/npx).
+The SAF CLI can be installed and kept up to date using `npm`, which is included with most versions of [NodeJS](https://nodejs.org/en/).
 
 ```bash
-npx @mitre/saf help
+npm install -g @mitre/saf
 ```
 
+
+
+#### Update via NPM
+
+To update the SAF CLI with `npm`:
+
+```bash
+update -g @mitre/saf
+```
+
+---
 
 
 #### Installation via Docker
@@ -25,6 +37,16 @@ docker run -it -v$(pwd):/share mitre/saf
 
 ```
 docker run -it -v%cd%:/share mitre/saf
+```
+
+
+
+### Update via Docker
+
+To update the SAF CLI with `docker`:
+
+```bash
+docker pull mitre/saf:latest
 ```
 
 
