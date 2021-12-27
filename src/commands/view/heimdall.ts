@@ -4,9 +4,9 @@ import fs from 'fs'
 import path from 'path'
 
 export default class Heimdall extends Command {
-  static aliases = ['view']
+  static aliases = ['heimdall']
 
-  static usage = 'view -p, --port=PORT'
+  static usage = 'view:heimdall -p, --port=PORT'
 
   static description = 'Run an instance of Heimdall Lite to visualize your Data'
 

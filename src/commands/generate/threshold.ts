@@ -39,7 +39,6 @@ export default class GenerateThreshold extends Command {
     for (const [severity, severityTargets] of Object.entries(severityTargetsObject)) {
       const severityStatusCounts = extractStatusCounts(parsedProfile, severity)
       for (const severityTarget of severityTargets) {
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [statusName, _total, thresholdType] = severityTarget.split('.')
         if ((statusName === 'passed' && thresholdType === 'min') || flags.exact) {
           _.set(thresholds, severityTarget, _.get(severityStatusCounts, renameStatusName(statusName)))

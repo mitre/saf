@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {Command, flags} from '@oclif/command'
 import flat from 'flat'
 import YAML from 'yaml'

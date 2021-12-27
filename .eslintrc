@@ -4,6 +4,7 @@
     "oclif-typescript"
   ],
   "rules": {
+    "@typescript-eslint/no-unused-vars": "off",
     "unicorn/filename-case": "off",
     "unicorn/prefer-node-protocol": "off",
     "unicorn/numeric-separators-style": "off",
