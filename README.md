@@ -12,10 +12,10 @@ The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) bring
 
 * [SAF CLI Usage](https://github.com/mitre/saf#usage)
   * Scan - Visit https://saf.mitre.org/#/validate to explore and run inspec profiles
-  * [Generate](https://github.com/mitre/saf#usage)
-  * [Validate](https://github.com/mitre/saf#validate)
-  * [View](https://github.com/mitre/saf#view)
-  * [Convert](https://github.com/mitre/saf#convert)
+  * [Generate](https://github.com/mitre/saf#usage) - Set pipeline thresholds
+  * [Validate](https://github.com/mitre/saf#validate) - Verify pipeline thresholds
+  * [View](https://github.com/mitre/saf#view) - Identify overall security status and deep-dive to solve specifc security defects
+  * [Convert](https://github.com/mitre/saf#convert) - Convert security results from all your security tools into a common data format
   * Harden - Visit https://saf.mitre.org/#/harden to explore and run hardening scripts
 
 
