@@ -156,7 +156,6 @@ convert:asff             Translate a AWS Security Finding Format JSON into a
 #### AWS Config
 
 ```
-
 convert:aws_config       Pull Configuration findings from AWS Config and convert
                          into a Heimdall Data Format JSON file
   OPTIONS
@@ -191,7 +190,6 @@ convert:burpsuite        Translate a BurpSuite Pro XML file into a Heimdall
 #### DBProtect
 
 ```
-
 convert:dbprotect        Translate a DBProtect report in "Check Results
                          Details" XML format into a Heimdall Data Format JSON file
   OPTIONS
