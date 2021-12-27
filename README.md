@@ -11,10 +11,12 @@ The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) bring
   - [Via Docker](https://github.com/mitre/saf#installation-via-docker)
 
 * [SAF CLI Usage](https://github.com/mitre/saf#usage)
+  * Scan - Visit https://saf.mitre.org/#/validate to explore and run inspec profiles
   * [Generate](https://github.com/mitre/saf#usage)
   * [Validate](https://github.com/mitre/saf#validate)
   * [View](https://github.com/mitre/saf#view)
   * [Convert](https://github.com/mitre/saf#convert)
+  * Harden - Visit https://saf.mitre.org/#/harden to explore and run hardening scripts
 
 
 
