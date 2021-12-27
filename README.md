@@ -12,10 +12,10 @@ The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) bring
 
 * [SAF CLI Usage](https://github.com/mitre/saf#usage)
   * Scan - Visit https://saf.mitre.org/#/validate to explore and run inspec profiles
-  * [Generate](https://github.com/mitre/saf#usage) - Set pipeline thresholds
-  * [Validate](https://github.com/mitre/saf#validate) - Verify pipeline thresholds
-  * [View](https://github.com/mitre/saf#view) - Identify overall security status and deep-dive to solve specifc security defects
-  * [Convert](https://github.com/mitre/saf#convert) - Convert security results from all your security tools into a common data format
+  * [Generate](#generate) - Set pipeline thresholds
+  * [Validate](#validate) - Verify pipeline thresholds
+  * [View](#view) - Identify overall security status and deep-dive to solve specifc security defects
+  * [Convert](#convert) - Convert security results from all your security tools into a common data format
   * Harden - Visit https://saf.mitre.org/#/harden to explore and run hardening scripts
 
 
@@ -117,18 +117,39 @@ validate:threshold       Validate the compliance and status counts of an HDF fil
 
 ### View
 
-You can start a local Heimdall Lite instance to visualize your findings with the SAF CLI. To start an instance use the `saf view` command:
+#### Heimdall
+
+You can start a local Heimdall Lite instance to visualize your findings with the SAF CLI. To start an instance use the `saf view:heimdall` command:
 
 ```
-view                     Run an instance of Heimdall Lite to visualize 
+view:heimdall            Run an instance of Heimdall Lite to visualize 
                          your data
 
   OPTIONS
     -p, --port=PORT          Port To Expose Heimdall On (Default 3000)
 
   EXAMPLES
-    saf view -p 8080
+    saf view:heimdall -p 8080
 ```
+
+
+
+#### Summary
+
+To get a quick compliance summary from an HDF file use the `saf view:summary` command:
+
+```
+view:summary            Get a quick compliance overview of an HDF file
+
+	OPTIONS
+		-i, --input=FILE         (required) Input HDF file
+		-j, --json               Output results as JSON
+	
+	EXAMPLES
+		saf view:summary -i rhel7-results.json
+```
+
+ 
 
 ---
 
