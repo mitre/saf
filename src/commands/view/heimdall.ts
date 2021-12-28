@@ -1,4 +1,6 @@
 import {Command, flags} from '@oclif/command'
+// eslint-disable-next-line node/no-extraneous-import
+import {getInstalledPathSync} from 'get-installed-path'
 import express from 'express'
 import fs from 'fs'
 import path from 'path'
@@ -46,9 +48,16 @@ export default class Heimdall extends Command {
     }
 
     flags.file ? console.log(`Serving Heimdall at http://localhost:${flags.port}/?predefinedLoad=true`) : console.log(`Serving Heimdall at http://localhost:${flags.port}`)
+    let installedPath = ''
+    try {
+      installedPath = getInstalledPathSync('@mitre/saf')
+    } catch {
+      installedPath = '.'
+    }
+
     express()
     .use(predefinedLoadJSON)
-    .use(express.static(path.join('./node_modules/@mitre/heimdall-lite/dist')))
+    .use(express.static(path.join(installedPath, 'node_modules/@mitre/heimdall-lite/dist')))
     .listen(flags.port)
   }
 }
