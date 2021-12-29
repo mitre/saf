@@ -2,7 +2,7 @@ import {Command, flags} from '@oclif/command'
 import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import fs from 'fs'
 import YAML from 'yaml'
-import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
+import {calculateCompliance, extractControlSummariesBySeverity, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 import _ from 'lodash'
 
 export default class Summary extends Command {
@@ -16,6 +16,7 @@ export default class Summary extends Command {
     help: flags.help({char: 'h'}),
     input: flags.string({char: 'i', required: true, description: 'Input HDF file'}),
     json: flags.boolean({char: 'j', required: false, description: 'Output results as JSON'}),
+    fullJson: flags.boolean({char: 'f', required: false, description: 'Include control information in summary'}),
   }
 
   static examples = ['saf view:summary -i rhel7-results.json']
@@ -28,7 +29,9 @@ export default class Summary extends Command {
     const overallStatusCounts = extractStatusCounts(parsedProfile)
     const overallCompliance = calculateCompliance(overallStatusCounts)
 
-    flags.json ? _.set(thresholds, 'compliance', overallCompliance) : console.log(`Overall Compliance: ${overallCompliance}%\n`)
+    if (!flags.fullJson) {
+      flags.json ? _.set(thresholds, 'compliance', overallCompliance) : console.log(`Overall Compliance: ${overallCompliance}%\n`)
+    }
 
     // Severity counts
     for (const [severity, severityTargets] of Object.entries(severityTargetsObject)) {
@@ -38,6 +41,15 @@ export default class Summary extends Command {
         _.set(thresholds, severityTarget.replace(`.${thresholdType}`, ''), _.get(severityStatusCounts, renameStatusName(statusName)))
       }
     }
-    flags.json ? console.log(JSON.stringify(thresholds, null, 2).trim()) : console.log(YAML.stringify(thresholds).trim())
+    if (flags.fullJson) {
+      const result = {
+        buckets: {},
+        status: thresholds,
+      }
+      result.buckets = extractControlSummariesBySeverity(parsedProfile)
+      console.log(JSON.stringify(result, null, 2).trim())
+    } else {
+      flags.json ? console.log(JSON.stringify(thresholds, null, 2).trim()) : console.log(YAML.stringify(thresholds).trim())
+    }
   }
 }

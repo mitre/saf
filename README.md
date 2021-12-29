@@ -143,10 +143,11 @@ view:summary            Get a quick compliance overview of an HDF file
 
 	OPTIONS
 		-i, --input=FILE         (required) Input HDF file
+    -f, --fullJson           Include control information in summary
 		-j, --json               Output results as JSON
 	
 	EXAMPLES
-		saf view:summary -i rhel7-results.json
+		saf view:summary -i rhel7-results.json -f
 ```
 
  
