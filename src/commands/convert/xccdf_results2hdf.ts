@@ -10,7 +10,7 @@ function checkSuffix(input: string) {
 }
 
 export default class XCCDFResultsMapper extends Command {
-  static usage = 'xccdf_results -i, --input=XML -o, --output=OUTPUT'
+  static usage = 'convert:xccdf_results2hdf -i, --input=XML -o, --output=OUTPUT'
 
   static description = 'Translate a SCAP client XCCDF-Results XML report to HDF format Json be viewed on Heimdall'
 

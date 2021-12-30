@@ -10,11 +10,11 @@ function checkSuffix(input: string) {
 }
 
 export default class BurpsuiteMapper extends Command {
-  static usage = 'burpsuite -i, --input=XML -o, --output=OUTPUT'
+  static usage = 'convert:burpsuite2hdf -i, --input=XML -o, --output=OUTPUT'
 
   static description = 'Translate a BurpSuite Pro XML file into a Heimdall Data Format JSON file'
 
-  static examples = ['saf convert:burpsuite -i burpsuite_results.xml -o output-hdf-name.json']
+  static examples = ['saf convert:burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json']
 
   static flags = {
     help: flags.help({char: 'h'}),

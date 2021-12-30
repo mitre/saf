@@ -10,11 +10,11 @@ function checkSuffix(input: string) {
 }
 
 export default class DBProtectMapper extends Command {
-  static usage = 'dbprotect -i, --input=XML -o, --output=OUTPUT'
+  static usage = 'convert:dbprotect2hdf -i, --input=XML -o, --output=OUTPUT'
 
   static description = 'Translate a DBProtect report in "Check Results Details" XML format into a Heimdall Data Format JSON file'
 
-  static examples = ['saf convert:dbprotect -i check_results_details_report.xml -o output-hdf-name.json']
+  static examples = ['saf convert:dbprotect2hdf -i check_results_details_report.xml -o output-hdf-name.json']
 
   static flags = {
     help: flags.help({char: 'h'}),

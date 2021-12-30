@@ -14,7 +14,7 @@ describe('Test scoutsuite', () => {
 
   test
   .stdout()
-  .command(['convert:scoutsuite', '-i', path.resolve('./test/sample_jsons/scoutsuite/sample_input_report/scoutsuite_sample.js'), '-o', `${tmpobj.name}/scoutsuitetest.json`])
+  .command(['convert:scoutsuite2hdf', '-i', path.resolve('./test/sample_jsons/scoutsuite/sample_input_report/scoutsuite_sample.js'), '-o', `${tmpobj.name}/scoutsuitetest.json`])
   .it('hdf-converter output test', () => {
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/scoutsuitetest.json`, {encoding: 'utf-8'}))
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_jsons/scoutsuite/scoutsuite-hdf.json'), {encoding: 'utf-8'}))

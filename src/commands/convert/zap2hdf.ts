@@ -10,11 +10,11 @@ function checkSuffix(input: string) {
 }
 
 export default class ZapMapper extends Command {
-  static usage = 'zap -i, --input=JSON -n, --name=NAME -o, --output=OUTPUT'
+  static usage = 'convert:zap2hdf -i, --input=JSON -n, --name=NAME -o, --output=OUTPUT'
 
   static description = 'Translate a OWASP ZAP results JSON to HDF format Json be viewed on Heimdall'
 
-  static examples = ['saf convert:zap -i zap_results.json -n site_name -o scan_results.json']
+  static examples = ['saf convert:zap2hdf -i zap_results.json -n site_name -o scan_results.json']
 
   static flags = {
     help: flags.help({char: 'h'}),

@@ -10,11 +10,11 @@ function checkSuffix(input: string) {
 }
 
 export default class NiktoMapper extends Command {
-  static usage = 'nikto -i, --input=JSON -o, --output=OUTPUT'
+  static usage = 'convert:nikto2hdf -i, --input=JSON -o, --output=OUTPUT'
 
   static description = 'Translate a Nikto results JSON file into a Heimdall Data Format JSON file\nNote: Current this mapper only supports single target Nikto Scans'
 
-  static examples = ['saf convert:nikto -i nikto-results.json -o output-hdf-name.json']
+  static examples = ['saf convert:nikto2hdf -i nikto-results.json -o output-hdf-name.json']
 
   static flags = {
     help: flags.help({char: 'h'}),
