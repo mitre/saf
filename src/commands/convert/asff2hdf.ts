@@ -1,8 +1,7 @@
 import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import {ASFFMapper as Mapper} from '@mitre/hdf-converters'
-import { checkSuffix } from '../../utils/global'
-
+import {checkSuffix} from '../../utils/global'
 
 export default class ASFFMapper extends Command {
   static usage = 'convert:asff2hdf -i <asff-finding-json> [--securityhub <standard-1-json> ... <standard-n-json>] -o <hdf-scan-results-json>'

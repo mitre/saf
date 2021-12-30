@@ -3,7 +3,6 @@ import fs from 'fs'
 import {BurpSuiteMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 
-
 export default class BurpsuiteMapper extends Command {
   static usage = 'convert:burpsuite2hdf -i, --input=XML -o, --output=OUTPUT'
 

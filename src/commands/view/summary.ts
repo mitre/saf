@@ -4,7 +4,7 @@ import fs from 'fs'
 import YAML from 'yaml'
 import {calculateCompliance, extractControlSummariesBySeverity, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 import _ from 'lodash'
-import { checkSuffix } from '../../utils/global'
+import {checkSuffix} from '../../utils/global'
 
 export default class Summary extends Command {
   static aliases = ['summary']
@@ -17,7 +17,7 @@ export default class Summary extends Command {
     help: flags.help({char: 'h'}),
     input: flags.string({char: 'i', required: true, description: 'Input HDF file'}),
     json: flags.boolean({char: 'j', required: false, description: 'Output results as JSON'}),
-    output: flags.string({char: 'o', required: false})
+    output: flags.string({char: 'o', required: false}),
   }
 
   static examples = ['saf view:summary -i rhel7-results.json']
