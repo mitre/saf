@@ -15,7 +15,7 @@ export default class Heimdall extends Command {
   static flags = {
     help: flags.help({char: 'h'}),
     port: flags.integer({char: 'p', required: false, default: 3000}),
-    file: flags.string({char: 'f', required: false, multiple: true, hidden: true}), // Hidden until supported in Heimdall
+    file: flags.string({char: 'f', required: false, multiple: true}),
   }
 
   async run() {
@@ -35,7 +35,7 @@ export default class Heimdall extends Command {
         return
       }
       parsedJSONs = flags.file.map(file => {
-        return {filename: file, data: JSON.parse(fs.readFileSync(file, 'utf-8'))}
+        return {filename: path.parse(file).base, data: fs.readFileSync(file, 'utf-8')}
       })
     }
 
