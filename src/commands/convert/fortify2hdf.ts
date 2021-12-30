@@ -1,13 +1,7 @@
 import {Command, flags} from '@oclif/command'
 import * as fs from 'fs'
 import {FortifyMapper as Mapper} from '@mitre/hdf-converters'
-
-function checkSuffix(input: string) {
-  if (input.endsWith('.json')) {
-    return input
-  }
-  return `${input}.json`
-}
+import {checkSuffix} from '../../utils/global'
 
 export default class FortifyMapper extends Command {
   static usage = 'fortify -i, --input=FVDL -o, --output=OUTPUT'

@@ -2,13 +2,7 @@ import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import {SnykResults as Mapper} from '@mitre/hdf-converters'
 import _ from 'lodash'
-
-function checkSuffix(input: string) {
-  if (input.endsWith('.json')) {
-    return input.split('.json')[0]
-  }
-  return input
-}
+import {checkSuffix} from '../../utils/global'
 
 export default class SnykMapper extends Command {
   static usage = 'snyk -i, --input=JSON -o, --output_prefix=OUTPUT_PREFIX'

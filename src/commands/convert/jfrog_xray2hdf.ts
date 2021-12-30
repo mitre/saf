@@ -1,13 +1,7 @@
 import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import {JfrogXrayMapper as Mapper} from '@mitre/hdf-converters'
-
-function checkSuffix(input: string) {
-  if (input.endsWith('.json')) {
-    return input
-  }
-  return `${input}.json`
-}
+import {checkSuffix} from '../../utils/global'
 
 export default class JfrogXrayMapper extends Command {
   static usage = 'jfrog_xray -i, --input=JSON -o, --output=OUTPUT'

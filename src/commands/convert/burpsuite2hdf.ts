@@ -1,13 +1,8 @@
 import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import {BurpSuiteMapper as Mapper} from '@mitre/hdf-converters'
+import {checkSuffix} from '../../utils/global'
 
-function checkSuffix(input: string) {
-  if (input.endsWith('.json')) {
-    return input
-  }
-  return `${input}.json`
-}
 
 export default class BurpsuiteMapper extends Command {
   static usage = 'burpsuite -i, --input=XML -o, --output=OUTPUT'

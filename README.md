@@ -210,6 +210,22 @@ convert:burpsuite        Translate a BurpSuite Pro XML file into a Heimdall
 ```
 
 
+#### HDF to Condensed JSON
+
+```
+convert:hdf2condensed        Condensed format used by some community members
+                             to pre-process data for elasticsearch and custom dashboards
+
+  OPTIONS
+    -i, --input=xml            Input HDF file
+    -o, --output=output        Output condensed JSON file
+    
+
+  EXAMPLES
+    saf convert:hdf2condensed -i rhel7-results.json -o rhel7-condensed.json
+```
+
+
 #### DBProtect
 
 ```

@@ -1,26 +1,22 @@
 import {Command, flags} from '@oclif/command'
 import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import fs from 'fs'
-import YAML from 'yaml'
 import {calculateCompliance, extractControlSummariesBySeverity, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 import _ from 'lodash'
-import { checkSuffix } from '../../utils/global'
+import {checkSuffix} from '../../utils/global'
 
 export default class Summary extends Command {
-  static aliases = ['summary']
+  static usage = 'hdf2condensed -i, --input=FILE -j, --json'
 
-  static usage = 'view -i, --input=FILE -j, --json'
-
-  static description = 'Get a quick compliance overview of an HDF file '
+  static description = 'Condensed format used by some community members to pre-process data for elasticsearch and custom dashboards'
 
   static flags = {
     help: flags.help({char: 'h'}),
     input: flags.string({char: 'i', required: true, description: 'Input HDF file'}),
-    json: flags.boolean({char: 'j', required: false, description: 'Output results as JSON'}),
-    output: flags.string({char: 'o', required: false})
+    output: flags.string({char: 'o', required: true, description: 'Output condensed JSON file'}),
   }
 
-  static examples = ['saf view:summary -i rhel7-results.json']
+  static examples = ['saf convert:hdf2condensed -i rhel7-results.json -o rhel7-condensed.json']
 
   async run() {
     const {flags} = this.parse(Summary)
@@ -30,7 +26,7 @@ export default class Summary extends Command {
     const overallStatusCounts = extractStatusCounts(parsedProfile)
     const overallCompliance = calculateCompliance(overallStatusCounts)
 
-    flags.json ? _.set(thresholds, 'compliance', overallCompliance) : console.log(`Overall Compliance: ${overallCompliance}%\n`)
+    _.set(thresholds, 'compliance', overallCompliance)
 
     // Severity counts
     for (const [severity, severityTargets] of Object.entries(severityTargetsObject)) {
@@ -40,9 +36,10 @@ export default class Summary extends Command {
         _.set(thresholds, severityTarget.replace(`.${thresholdType}`, ''), _.get(severityStatusCounts, renameStatusName(statusName)))
       }
     }
-    flags.json ? console.log(JSON.stringify(thresholds, null, 2)) : console.log(YAML.stringify(thresholds))
-    if (flags.output) {
-      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(flags.json ? JSON.stringify(thresholds) : YAML.stringify(thresholds)))
+    const result = {
+      buckets: extractControlSummariesBySeverity(parsedProfile),
+      status: thresholds,
     }
+    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(result))
   }
 }
