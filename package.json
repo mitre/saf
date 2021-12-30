@@ -7,8 +7,8 @@
   "bugs": "https://github.com/mitre/saf/issues",
   "dependencies": {
     "@aws-sdk/client-config-service": "^3.22.0",
-    "@mitre/hdf-converters": "^2.6.1",
-    "@mitre/heimdall-lite": "^2.6.2",
+    "@mitre/hdf-converters": "^2.6.6",
+    "@mitre/heimdall-lite": "^2.6.6",
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/dev-cli": "^1",
@@ -33,6 +33,7 @@
     "htmlparser2": "^6.1.0",
     "inspecjs": "^2.6.5",
     "lodash": "^4.17.21",
+    "open": "^8.4.0",
     "ts-node": "^8",
     "tslib": "^1",
     "typescript": "^3.3",

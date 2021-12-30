@@ -127,7 +127,8 @@ view:heimdall            Run an instance of Heimdall Lite to visualize
 
   OPTIONS
     -p, --port=PORT          Port To Expose Heimdall On (Default 3000)
-
+    -f, --file=FILE          File to display in Heimdall
+    -n, --noOpenBrowser      Don't open the default browser automatically
   EXAMPLES
     saf view:heimdall -p 8080
 ```
