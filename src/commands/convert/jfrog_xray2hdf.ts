@@ -4,11 +4,11 @@ import {JfrogXrayMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 
 export default class JfrogXrayMapper extends Command {
-  static usage = 'jfrog_xray -i, --input=JSON -o, --output=OUTPUT'
+  static usage = 'convet:jfrog_xray2hdf -i, --input=JSON -o, --output=OUTPUT'
 
   static description = 'Translate a JFrog Xray results JSON file into a Heimdall Data Format JSON file'
 
-  static examples = ['saf convert:jfrog_xray -i xray_results.json -o output-hdf-name.json']
+  static examples = ['saf convert:jfrog_xray2hdf -i xray_results.json -o output-hdf-name.json']
 
   static flags = {
     help: flags.help({char: 'h'}),

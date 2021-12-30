@@ -5,12 +5,12 @@ import { checkSuffix } from '../../utils/global'
 
 
 export default class ASFFMapper extends Command {
-  static usage = 'asff -i <asff-finding-json> [--securityhub <standard-1-json> ... <standard-n-json>] -o <hdf-scan-results-json>'
+  static usage = 'convert:asff2hdf -i <asff-finding-json> [--securityhub <standard-1-json> ... <standard-n-json>] -o <hdf-scan-results-json>'
 
   static description = 'Translate a AWS Security Finding Format JSON into a Heimdall Data Format JSON file'
 
-  static examples = ['saf convert:asff -i asff-findings.json -o output-file-name.json',
-    'saf convert:asff -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json']
+  static examples = ['saf convert:asff2hdf -i asff-findings.json -o output-file-name.json',
+    'saf convert:asff2hdf -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json']
 
   static flags = {
     help: flags.help({char: 'h'}),

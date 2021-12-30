@@ -4,11 +4,11 @@ import {SonarQubeResults as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 
 export default class SonarQubeMapper extends Command {
-  static usage = 'sonarqube -n <sonar_project_key> -u <http://your.sonar.instance:9000> --auth <your-sonar-api-key> -o <hdf-scan-results-json>'
+  static usage = 'convert:sonarqube2hdf -n <sonar_project_key> -u <http://your.sonar.instance:9000> --auth <your-sonar-api-key> -o <hdf-scan-results-json>'
 
   static description = 'Pull SonarQube vulnerabilities for the specified project name from an API and convert into a Heimdall Data Format JSON file'
 
-  static examples = ['saf convert:sonarqube -n sonar_project_key -u http://sonar:9000 --auth YOUR_API_KEY -o scan_results.json']
+  static examples = ['saf convert:sonarqube2hdf -n sonar_project_key -u http://sonar:9000 --auth YOUR_API_KEY -o scan_results.json']
 
   static flags = {
     help: flags.help({char: 'h'}),

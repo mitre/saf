@@ -5,11 +5,11 @@ import _ from 'lodash'
 import {checkSuffix} from '../../utils/global'
 
 export default class SnykMapper extends Command {
-  static usage = 'snyk -i, --input=JSON -o, --output_prefix=OUTPUT_PREFIX'
+  static usage = 'convert:snyk2hdf -i, --input=JSON -o, --output_prefix=OUTPUT_PREFIX'
 
   static description = 'Translate a Snyk results JSON file into a Heimdall Data Format JSON file\nA separate HDF JSON is generated for each project reported in the Snyk Report.'
 
-  static examples = ['saf convert:snyk -i snyk_results.json -o output-file-prefix']
+  static examples = ['saf convert:snyk2hdf -i snyk_results.json -o output-file-prefix']
 
   static flags = {
     help: flags.help({char: 'h'}),

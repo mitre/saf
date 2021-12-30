@@ -4,11 +4,11 @@ import {SarifMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 
 export default class SarifMapper extends Command {
-  static usage = 'sarif -i, --input=JSON -o, --output=OUTPUT'
+  static usage = 'convert:sarif2hdf -i, --input=JSON -o, --output=OUTPUT'
 
   static description = 'Translate a SARIF JSON file into a Heimdall Data Format JSON file\nSARIF level to HDF impact Mapping:\nSARIF level error -> HDF impact 0.7\nSARIF level warning -> HDF impact 0.5\nSARIF level note -> HDF impact 0.3\nSARIF level none -> HDF impact 0.1\nSARIF level not provided -> HDF impact 0.1 as default'
 
-  static examples = ['saf convert:sarif -i sarif-results.json -o output-hdf-name.json']
+  static examples = ['saf convert:sarif:2hdf -i sarif-results.json -o output-hdf-name.json']
 
   static flags = {
     help: flags.help({char: 'h'}),

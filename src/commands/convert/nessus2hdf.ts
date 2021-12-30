@@ -5,11 +5,11 @@ import _ from 'lodash'
 import {checkSuffix} from '../../utils/global'
 
 export default class NessusMapper extends Command {
-  static usage = 'nessus -i, --input=XML -o, --output_prefix=OUTPUT_PREFIX'
+  static usage = 'convet:nessus2hdf -i, --input=XML -o, --output_prefix=OUTPUT_PREFIX'
 
   static description = "Translate a Nessus XML results file into a Heimdall Data Format JSON file\nThe current iteration maps all plugin families except 'Policy Compliance'\nA separate HDF JSON is generated for each host reported in the Nessus Report."
 
-  static examples = ['saf convert:nessus -i nessus_results.xml -o output-hdf-name.json']
+  static examples = ['saf convert:nessus2hdf -i nessus_results.xml -o output-hdf-name.json']
 
   static flags = {
     help: flags.help({char: 'h'}),
