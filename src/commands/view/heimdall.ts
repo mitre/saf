@@ -15,9 +15,9 @@ export default class Heimdall extends Command {
 
   static flags = {
     help: flags.help({char: 'h'}),
-    port: flags.integer({char: 'p', required: false, default: 3000}),
-    files: flags.string({char: 'f', required: false, multiple: true}),
-    noOpenBrowser: flags.boolean({char: 'n', required: false, default: false})
+    port: flags.integer({char: 'p', required: false, default: 3000, description: 'Port To Expose Heimdall On (Default 3000)'}),
+    files: flags.string({char: 'f', required: false, multiple: true, description: 'File(s) to display in Heimdall'}),
+    noOpenBrowser: flags.boolean({char: 'n', required: false, default: false, description: "Don't open the default browser automatically"})
   }
 
   async run() {
