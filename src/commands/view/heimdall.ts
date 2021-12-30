@@ -17,7 +17,7 @@ export default class Heimdall extends Command {
     help: flags.help({char: 'h'}),
     port: flags.integer({char: 'p', required: false, default: 3000, description: 'Port To Expose Heimdall On (Default 3000)'}),
     files: flags.string({char: 'f', required: false, multiple: true, description: 'File(s) to display in Heimdall'}),
-    noOpenBrowser: flags.boolean({char: 'n', required: false, default: false, description: "Don't open the default browser automatically"})
+    noOpenBrowser: flags.boolean({char: 'n', required: false, default: false, description: "Don't open the default browser automatically"}),
   }
 
   async run() {
@@ -50,7 +50,7 @@ export default class Heimdall extends Command {
     }
 
     flags.files ? console.log(`Serving Heimdall at http://localhost:${flags.port}/?predefinedLoad=true`) : console.log(`Serving Heimdall at http://localhost:${flags.port}`)
-    if(!flags.noOpenBrowser) {
+    if (!flags.noOpenBrowser) {
       flags.files ? open('http://localhost:3000/?predefinedLoad=true') : open('http://localhost:3000/')
     }
     let installedPath = ''
