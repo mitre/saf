@@ -2181,14 +2181,14 @@ Satisfies: SRG-OS-000375-GPOS-00161,SRG-OS-000375-GPOS-00162&lt;/VulnDiscussion&
 
 Note: If the system does not have GNOME installed, this requirement is Not Applicable.
 
-Create a database to contain the system-wide screensaver settings (if it does not already exist) with the following command: 
+Create a database to contain the system-wide screensaver settings (if it does not already exist) with the following command:
 
 Note: The example is using the database local for the system, so if the system is using another database in "/etc/dconf/profile/user", the file should be created under the appropriate subdirectory.
 
 # touch /etc/dconf/db/local.d/00-defaults
 
 Edit "[org/gnome/login-screen]" and add or update the following line:
-enable-smartcard-authentication=true   
+enable-smartcard-authentication=true
 
 Update the system databases:
 # dconf update</cdf:fixtext>
@@ -2262,7 +2262,7 @@ The session lock is implemented at the point where session activity can be deter
                   <cdf:ident system="http://cyber.mil/cci">CCI-000057</cdf:ident>
                   <cdf:fixtext fixref="F-4523r88390_fix">Configure the operating system to prevent a user from overriding a screensaver lock after a 15-minute period of inactivity for graphical user interfaces.
 
-Create a database to contain the system-wide screensaver settings (if it does not already exist) with the following command: 
+Create a database to contain the system-wide screensaver settings (if it does not already exist) with the following command:
 
 Note: The example below is using the database "local" for the system, so if the system is using another database in "/etc/dconf/profile/user", the file should be created under the appropriate subdirectory.
 
@@ -2297,7 +2297,7 @@ The session lock is implemented at the point where session activity can be deter
                   <cdf:ident system="http://cyber.mil/cci">CCI-000057</cdf:ident>
                   <cdf:fixtext fixref="F-4526r88399_fix">Configure the operating system to initiate a session lock after a 15-minute period of inactivity for graphical user interfaces.
 
-Create a database to contain the system-wide screensaver settings (if it does not already exist) with the following command: 
+Create a database to contain the system-wide screensaver settings (if it does not already exist) with the following command:
 
 # touch /etc/dconf/db/local.d/00-screensaver
 
@@ -2339,7 +2339,7 @@ The ability to enable/disable a session lock is given to the user by default. Di
                   <cdf:ident system="http://cyber.mil/cci">CCI-000057</cdf:ident>
                   <cdf:fixtext fixref="F-4527r88402_fix">Configure the operating system to prevent a user from overriding a screensaver lock after a 15-minute period of inactivity for graphical user interfaces.
 
-Create a database to contain the system-wide screensaver settings (if it does not already exist) with the following command: 
+Create a database to contain the system-wide screensaver settings (if it does not already exist) with the following command:
 
 Note: The example below is using the database "local" for the system, so if the system is using another database in "/etc/dconf/profile/user", the file should be created under the appropriate subdirectory.
 
@@ -2374,7 +2374,7 @@ The session lock is implemented at the point where session activity can be deter
                   <cdf:ident system="http://cyber.mil/cci">CCI-000057</cdf:ident>
                   <cdf:fixtext fixref="F-4528r88405_fix">Configure the operating system to initiate a session lock for graphical user interfaces when a screensaver is activated.
 
-Create a database to contain the system-wide screensaver settings (if it does not already exist) with the following command: 
+Create a database to contain the system-wide screensaver settings (if it does not already exist) with the following command:
 
 # touch /etc/dconf/db/local.d/00-screensaver
 
@@ -2501,7 +2501,7 @@ Password complexity is one factor of several that determines how long it takes t
                   <cdf:ident system="http://cyber.mil/cci">CCI-000193</cdf:ident>
                   <cdf:fixtext fixref="F-4532r88417_fix">Configure the system to require at least one lower-case character when creating or changing a password.
 
-Add or modify the following line 
+Add or modify the following line
 in "/etc/security/pwquality.conf":
 
 lcredit = -1</cdf:fixtext>
@@ -2768,7 +2768,7 @@ ENCRYPT_METHOD SHA512</cdf:fixtext>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000196</cdf:ident>
                   <cdf:fixtext fixref="F-4541r88444_fix">Configure the operating system to store only SHA512 encrypted representations of passwords.
 
-Add or update the following line in "/etc/libuser.conf" in the [defaults] section: 
+Add or update the following line in "/etc/libuser.conf" in the [defaults] section:
 
 crypt_style = sha512</cdf:fixtext>
                   <cdf:fix id="F-4541r88444_fix"></cdf:fix>
@@ -2902,7 +2902,7 @@ PASS_MAX_DAYS     60</cdf:fixtext>
 Add the following line in "/etc/pam.d/system-auth" and "/etc/pam.d/password-auth" (or modify the line to have the required value):
 
 password    requisite     pam_pwhistory.so use_authtok remember=5 retry=3
-   
+
 Note: Manual changes to the listed files may be overwritten by the "authconfig" program. The "authconfig" program should not be used to update the configurations listed in this requirement.</cdf:fixtext>
                   <cdf:fix id="F-4546r88459_fix"></cdf:fix>
                   <cdf:check system="http://oval.mitre.org/XMLSchema/oval-definitions-5">
@@ -3031,7 +3031,7 @@ INACTIVE=0</cdf:fixtext>
             <cdf:Rule Id="xccdf_mil.disa.stig_rule_SV-204429r603261_rule" id="xccdf_mil.disa.stig_rule_SV-204429r603261_rule" severity="medium" weight="10.0">
                   <cdf:version update="http://iase.disa.mil/stigs">RHEL-07-010340</cdf:version>
                   <cdf:title>The Red Hat Enterprise Linux operating system must be configured so that users must provide a password for privilege escalation.</cdf:title>
-                  <cdf:description>&lt;VulnDiscussion&gt;Without re-authentication, users may access resources or perform tasks for which they do not have authorization. 
+                  <cdf:description>&lt;VulnDiscussion&gt;Without re-authentication, users may access resources or perform tasks for which they do not have authorization.
 
 When operating systems provide the capability to escalate a functional capability, it is critical the user re-authenticate.
 
@@ -3050,7 +3050,7 @@ Satisfies: SRG-OS-000373-GPOS-00156, SRG-OS-000373-GPOS-00157, SRG-OS-000373-GPO
 Check the configuration of the "/etc/sudoers" file with the following command:
 # visudo
 
-Remove any occurrences of "NOPASSWD" tags in the file.   
+Remove any occurrences of "NOPASSWD" tags in the file.
 
 Check the configuration of the /etc/sudoers.d/* files with the following command:
 # grep -i nopasswd /etc/sudoers.d/*
@@ -3068,7 +3068,7 @@ Remove any occurrences of "NOPASSWD" tags in the file.</cdf:fixtext>
             <cdf:Rule Id="xccdf_mil.disa.stig_rule_SV-204430r603261_rule" id="xccdf_mil.disa.stig_rule_SV-204430r603261_rule" severity="medium" weight="10.0">
                   <cdf:version update="http://iase.disa.mil/stigs">RHEL-07-010350</cdf:version>
                   <cdf:title>The Red Hat Enterprise Linux operating system must be configured so that users must re-authenticate for privilege escalation.</cdf:title>
-                  <cdf:description>&lt;VulnDiscussion&gt;Without re-authentication, users may access resources or perform tasks for which they do not have authorization. 
+                  <cdf:description>&lt;VulnDiscussion&gt;Without re-authentication, users may access resources or perform tasks for which they do not have authorization.
 
 When operating systems provide the capability to escalate a functional capability, it is critical the user reauthenticate.
 
@@ -3340,7 +3340,7 @@ ExecStart=-/bin/sh -c "/usr/sbin/sulogin; /usr/bin/systemctl --fail --no-block d
 Generate an encrypted grub2 password for root with the following command:
 
 Note: The hash generated is an example.
-  
+
 # grub2-setpassword
 Enter password:
 Confirm password:
@@ -3422,7 +3422,7 @@ Generate a new "grub.conf" file with the new password with the following command
 Generate an encrypted grub2 password for root with the following command:
 
 Note: The hash generated is an example.
-  
+
 # grub2-setpassword
 Enter password:
 Confirm password:
@@ -3511,7 +3511,7 @@ Detecting such changes and providing an automated response can help avoid uninte
                   <cdf:ident system="http://cyber.mil/legacy">V-71973</cdf:ident>
                   <cdf:ident system="http://cyber.mil/legacy">SV-86597</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-001744</cdf:ident>
-                  <cdf:fixtext fixref="F-36304r602622_fix">Configure the file integrity tool to run automatically on the system at least weekly. The following example output is generic. It will set cron to run AIDE daily, but other file integrity tools may be used:  
+                  <cdf:fixtext fixref="F-36304r602622_fix">Configure the file integrity tool to run automatically on the system at least weekly. The following example output is generic. It will set cron to run AIDE daily, but other file integrity tools may be used:
 
 # more /etc/cron.daily/aide
 #!/bin/bash
@@ -3648,7 +3648,7 @@ Add the following line to the created file:
 
 install dccp /bin/true
 
-Ensure that the DCCP module is blacklisted: 
+Ensure that the DCCP module is blacklisted:
 
 # vi /etc/modprobe.d/blacklist.conf
 
@@ -3814,7 +3814,7 @@ Red Hat offers the Extended Update Support (EUS) Add-On to a Red Hat Enterprise 
                   <cdf:ident system="http://cyber.mil/legacy">SV-86629</cdf:ident>
                   <cdf:ident system="http://cyber.mil/legacy">V-72005</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000366</cdf:ident>
-                  <cdf:fixtext fixref="F-4586r88579_fix">Change the UID of any account on the system, other than root, that has a UID of "0". 
+                  <cdf:fixtext fixref="F-4586r88579_fix">Change the UID of any account on the system, other than root, that has a UID of "0".
 
 If the account is associated with system commands or applications, the UID should be changed to one greater than "0" but less than "1000". Otherwise, assign a UID of greater than "1000" that has not already been assigned.</cdf:fixtext>
                   <cdf:fix id="F-4586r88579_fix"></cdf:fix>
@@ -3869,7 +3869,7 @@ In addition, if a local interactive user has a home directory defined that does 
 
 Note: The example will be for the user smithj, who has a home directory of "/home/smithj", a UID of "smithj", and a Group Identifier (GID) of "users" assigned in "/etc/passwd".
 
-# mkdir /home/smithj 
+# mkdir /home/smithj
 # chown smithj /home/smithj
 # chgrp users /home/smithj
 # chmod 0750 /home/smithj</cdf:fixtext>
@@ -4087,7 +4087,7 @@ The only authorized public directories are those temporary directories supplied 
                   <cdf:fixtext fixref="F-36309r602637_fix">Start the "tmp.mount" service with the following command:
 
 # systemctl enable tmp.mount
-   
+
 OR
 
 Edit the "/etc/fstab" file and ensure the "/tmp" directory is defined in the fstab with a device and mount point.</cdf:fixtext>
@@ -4122,7 +4122,7 @@ Satisfies: SRG-OS-000033-GPOS-00014, SRG-OS-000185-GPOS-00079, SRG-OS-000396-GPO
 
 To enable strict FIPS compliance, the fips=1 kernel option needs to be added to the kernel command line during system installation so key generation is done with FIPS-approved algorithms and continuous monitoring tests in place.
 
-Configure the operating system to implement DoD-approved encryption by following the steps below: 
+Configure the operating system to implement DoD-approved encryption by following the steps below:
 
 The fips=1 kernel option needs to be added to the kernel command line during system installation so that key generation is done with FIPS-approved algorithms and continuous monitoring tests in place. Users should also ensure that the system has plenty of entropy during the installation process by moving the mouse around, or if no mouse is available, ensuring that many keystrokes are typed. The recommended amount of keystrokes is 256 and more. Less than 256 keystrokes may generate a non-unique key.
 
@@ -4521,8 +4521,8 @@ network_failure_action = syslog</cdf:fixtext>
                   <cdf:ident system="http://cyber.mil/cci">CCI-001855</cdf:ident>
                   <cdf:fixtext fixref="F-4638r88735_fix">Configure the operating system to immediately notify the SA and ISSO (at a minimum) when the threshold for the repository maximum audit record storage capacity is reached.
 
-Uncomment or edit the "space_left_action" keyword in "/etc/audit/auditd.conf" and set it to "email". 
- 
+Uncomment or edit the "space_left_action" keyword in "/etc/audit/auditd.conf" and set it to "email".
+
 space_left_action = email</cdf:fixtext>
                   <cdf:fix id="F-4638r88735_fix"></cdf:fix>
                   <cdf:check system="http://oval.mitre.org/XMLSchema/oval-definitions-5">
@@ -4548,8 +4548,8 @@ space_left_action = email</cdf:fixtext>
                   <cdf:ident system="http://cyber.mil/cci">CCI-001855</cdf:ident>
                   <cdf:fixtext fixref="F-4639r88738_fix">Configure the operating system to immediately notify the SA and ISSO (at a minimum) when the threshold for the repository maximum audit record storage capacity is reached.
 
-Uncomment or edit the "action_mail_acct" keyword in "/etc/audit/auditd.conf" and set it to root and any other accounts associated with security personnel. 
- 
+Uncomment or edit the "action_mail_acct" keyword in "/etc/audit/auditd.conf" and set it to root and any other accounts associated with security personnel.
+
 action_mail_acct = root</cdf:fixtext>
                   <cdf:fix id="F-4639r88738_fix"></cdf:fix>
                   <cdf:check system="http://oval.mitre.org/XMLSchema/oval-definitions-5">
@@ -5483,9 +5483,9 @@ Satisfies: SRG-OS-000392-GPOS-00172, SRG-OS-000470-GPOS-00214, SRG-OS-000473-GPO
                   <cdf:ident system="http://cyber.mil/cci">CCI-000172</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000126</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-002884</cdf:ident>
-                  <cdf:fixtext fixref="F-4664r88813_fix">Configure the operating system to generate audit records when unsuccessful account access events occur. 
+                  <cdf:fixtext fixref="F-4664r88813_fix">Configure the operating system to generate audit records when unsuccessful account access events occur.
 
-Add or update the following rule in "/etc/audit/rules.d/audit.rules": 
+Add or update the following rule in "/etc/audit/rules.d/audit.rules":
 
 -w /var/run/faillock -p wa -k logins
 
@@ -5518,9 +5518,9 @@ Satisfies: SRG-OS-000392-GPOS-00172, SRG-OS-000470-GPOS-00214, SRG-OS-000473-GPO
                   <cdf:ident system="http://cyber.mil/cci">CCI-000126</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000172</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-002884</cdf:ident>
-                  <cdf:fixtext fixref="F-4665r88816_fix">Configure the operating system to generate audit records when successful account access events occur. 
+                  <cdf:fixtext fixref="F-4665r88816_fix">Configure the operating system to generate audit records when successful account access events occur.
 
-Add or update the following rule in "/etc/audit/rules.d/audit.rules": 
+Add or update the following rule in "/etc/audit/rules.d/audit.rules":
 
 -w /var/log/lastlog -p wa -k logins
 
@@ -5743,9 +5743,9 @@ Satisfies: SRG-OS-000037-GPOS-00015, SRG-OS-000042-GPOS-00020, SRG-OS-000392-GPO
                   <cdf:ident system="http://cyber.mil/cci">CCI-002884</cdf:ident>
                   <cdf:fixtext fixref="F-4671r462640_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "su" command occur.
 
-Add or update the following rule in "/etc/audit/rules.d/audit.rules": 
+Add or update the following rule in "/etc/audit/rules.d/audit.rules":
 
--a always,exit -F path=/usr/bin/su -F auid&gt;=1000 -F auid!=unset -k privileged-priv_change 
+-a always,exit -F path=/usr/bin/su -F auid&gt;=1000 -F auid!=unset -k privileged-priv_change
 
 The audit daemon must be restarted for the changes to take effect.</cdf:fixtext>
                   <cdf:fix id="F-4671r462640_fix"></cdf:fix>
@@ -5781,9 +5781,9 @@ Satisfies: SRG-OS-000037-GPOS-00015, SRG-OS-000042-GPOS-00020, SRG-OS-000392-GPO
                   <cdf:ident system="http://cyber.mil/cci">CCI-002884</cdf:ident>
                   <cdf:fixtext fixref="F-4672r462643_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "sudo" command occur.
 
-Add or update the following rule in "/etc/audit/rules.d/audit.rules": 
+Add or update the following rule in "/etc/audit/rules.d/audit.rules":
 
--a always,exit -F path=/usr/bin/sudo -F auid&gt;=1000 -F auid!=unset -k privileged-priv_change 
+-a always,exit -F path=/usr/bin/sudo -F auid&gt;=1000 -F auid!=unset -k privileged-priv_change
 
 The audit daemon must be restarted for the changes to take effect.</cdf:fixtext>
                   <cdf:fix id="F-4672r462643_fix"></cdf:fix>
@@ -5857,7 +5857,7 @@ Satisfies: SRG-OS-000037-GPOS-00015, SRG-OS-000042-GPOS-00020, SRG-OS-000392-GPO
                   <cdf:ident system="http://cyber.mil/cci">CCI-002884</cdf:ident>
                   <cdf:fixtext fixref="F-4674r462646_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "newgrp" command occur.
 
-Add or update the following rule in "/etc/audit/rules.d/audit.rules": 
+Add or update the following rule in "/etc/audit/rules.d/audit.rules":
 
 -a always,exit -F path=/usr/bin/newgrp -F auid&gt;=1000 -F auid!=unset -k privileged-priv_change
 
@@ -5895,7 +5895,7 @@ Satisfies: SRG-OS-000037-GPOS-00015, SRG-OS-000042-GPOS-00020, SRG-OS-000392-GPO
                   <cdf:ident system="http://cyber.mil/cci">CCI-002884</cdf:ident>
                   <cdf:fixtext fixref="F-4675r462649_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "chsh" command occur.
 
-Add or update the following rule in "/etc/audit/rules.d/audit.rules": 
+Add or update the following rule in "/etc/audit/rules.d/audit.rules":
 
 -a always,exit -F path=/usr/bin/chsh -F auid&gt;=1000 -F auid!=unset -k privileged-priv_change
 
@@ -5969,7 +5969,7 @@ Satisfies: SRG-OS-000042-GPOS-00020, SRG-OS-000392-GPOS-00172&lt;/VulnDiscussion
                   <cdf:ident system="http://cyber.mil/cci">CCI-002884</cdf:ident>
                   <cdf:fixtext fixref="F-4677r462655_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "umount" command occur.
 
-Add or update the following rule in "/etc/audit/rules.d/audit.rules": 
+Add or update the following rule in "/etc/audit/rules.d/audit.rules":
 
 -a always,exit -F path=/usr/bin/umount -F auid&gt;=1000 -F auid!=unset -k privileged-mount
 
@@ -6005,7 +6005,7 @@ Satisfies: SRG-OS-000042-GPOS-00020, SRG-OS-000392-GPOS-00172&lt;/VulnDiscussion
                   <cdf:ident system="http://cyber.mil/cci">CCI-002884</cdf:ident>
                   <cdf:fixtext fixref="F-4678r462658_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "postdrop" command occur.
 
-Add or update the following rule in "/etc/audit/rules.d/audit.rules": 
+Add or update the following rule in "/etc/audit/rules.d/audit.rules":
 
 -a always,exit -F path=/usr/sbin/postdrop -F auid&gt;=1000 -F auid!=unset -k privileged-postfix
 
@@ -6039,9 +6039,9 @@ Satisfies: SRG-OS-000042-GPOS-00020, SRG-OS-000392-GPOS-00172&lt;/VulnDiscussion
                   <cdf:ident system="http://cyber.mil/legacy">V-72177</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000135</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-002884</cdf:ident>
-                  <cdf:fixtext fixref="F-4679r462661_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "postqueue" command occur. 
+                  <cdf:fixtext fixref="F-4679r462661_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "postqueue" command occur.
 
-Add or update the following rule in "/etc/audit/rules.d/audit.rules": 
+Add or update the following rule in "/etc/audit/rules.d/audit.rules":
 
 -a always,exit -F path=/usr/sbin/postqueue -F auid&gt;=1000 -F auid!=unset -k privileged-postfix
 
@@ -6076,9 +6076,9 @@ Satisfies: SRG-OS-000042-GPOS-00020, SRG-OS-000392-GPOS-00172, SRG-OS-000471-GPO
                   <cdf:ident system="http://cyber.mil/cci">CCI-000135</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000172</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-002884</cdf:ident>
-                  <cdf:fixtext fixref="F-4680r462664_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "ssh-keysign" command occur. 
+                  <cdf:fixtext fixref="F-4680r462664_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "ssh-keysign" command occur.
 
-Add or update the following rule in "/etc/audit/rules.d/audit.rules": 
+Add or update the following rule in "/etc/audit/rules.d/audit.rules":
 
 -a always,exit -F path=/usr/libexec/openssh/ssh-keysign -F auid&gt;=1000 -F auid!=unset -k privileged-ssh
 
@@ -6113,9 +6113,9 @@ Satisfies: SRG-OS-000042-GPOS-00020, SRG-OS-000392-GPOS-00172, SRG-OS-000471-GPO
                   <cdf:ident system="http://cyber.mil/cci">CCI-000172</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000135</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-002884</cdf:ident>
-                  <cdf:fixtext fixref="F-4681r462667_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "crontab" command occur. 
+                  <cdf:fixtext fixref="F-4681r462667_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "crontab" command occur.
 
-Add or update the following rule in "/etc/audit/rules.d/audit.rules": 
+Add or update the following rule in "/etc/audit/rules.d/audit.rules":
 
 -a always,exit -F path=/usr/bin/crontab -F auid&gt;=1000 -F auid!=unset -k privileged-cron
 
@@ -6144,9 +6144,9 @@ When a user logs on, the auid is set to the uid of the account that is being aut
                   <cdf:ident system="http://cyber.mil/legacy">SV-86809</cdf:ident>
                   <cdf:ident system="http://cyber.mil/legacy">V-72185</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000172</cdf:ident>
-                  <cdf:fixtext fixref="F-4682r462670_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "pam_timestamp_check" command occur. 
+                  <cdf:fixtext fixref="F-4682r462670_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "pam_timestamp_check" command occur.
 
-Add or update the following rule in "/etc/audit/rules.d/audit.rules": 
+Add or update the following rule in "/etc/audit/rules.d/audit.rules":
 
 -a always,exit -F path=/usr/sbin/pam_timestamp_check -F auid&gt;=1000 -F auid!=unset -k privileged-pam
 
@@ -6163,7 +6163,7 @@ The audit daemon must be restarted for the changes to take effect.</cdf:fixtext>
             <cdf:Rule Id="xccdf_mil.disa.stig_rule_SV-204559r603261_rule" id="xccdf_mil.disa.stig_rule_SV-204559r603261_rule" severity="medium" weight="10.0">
                   <cdf:version update="http://iase.disa.mil/stigs">RHEL-07-030819</cdf:version>
                   <cdf:title>The Red Hat Enterprise Linux operating system must audit all uses of the create_module syscall.</cdf:title>
-                  <cdf:description>&lt;VulnDiscussion&gt;Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. 
+                  <cdf:description>&lt;VulnDiscussion&gt;Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one.
 
 Audit records can be generated from various components within the information system (e.g., module or policy filter).
 
@@ -6197,7 +6197,7 @@ The audit daemon must be restarted for the changes to take effect.</cdf:fixtext>
             <cdf:Rule Id="xccdf_mil.disa.stig_rule_SV-204560r603261_rule" id="xccdf_mil.disa.stig_rule_SV-204560r603261_rule" severity="medium" weight="10.0">
                   <cdf:version update="http://iase.disa.mil/stigs">RHEL-07-030820</cdf:version>
                   <cdf:title>The Red Hat Enterprise Linux operating system must audit all uses of the init_module syscall.</cdf:title>
-                  <cdf:description>&lt;VulnDiscussion&gt;Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. 
+                  <cdf:description>&lt;VulnDiscussion&gt;Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one.
 
 Audit records can be generated from various components within the information system (e.g., module or policy filter).
 
@@ -6211,7 +6211,7 @@ Satisfies: SRG-OS-000471-GPOS-00216, SRG-OS-000477-GPOS-00222&lt;/VulnDiscussion
                   <cdf:ident system="http://cyber.mil/legacy">SV-86811</cdf:ident>
                   <cdf:ident system="http://cyber.mil/legacy">V-72187</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000172</cdf:ident>
-                  <cdf:fixtext fixref="F-4684r88873_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "init_module" syscall occur. 
+                  <cdf:fixtext fixref="F-4684r88873_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "init_module" syscall occur.
 
 Add or update the following rules in "/etc/audit/rules.d/audit.rules":
 
@@ -6232,7 +6232,7 @@ The audit daemon must be restarted for the changes to take effect.</cdf:fixtext>
             <cdf:Rule Id="xccdf_mil.disa.stig_rule_SV-204561r603261_rule" id="xccdf_mil.disa.stig_rule_SV-204561r603261_rule" severity="medium" weight="10.0">
                   <cdf:version update="http://iase.disa.mil/stigs">RHEL-07-030821</cdf:version>
                   <cdf:title>The Red Hat Enterprise Linux operating system must audit all uses of the finit_module syscall.</cdf:title>
-                  <cdf:description>&lt;VulnDiscussion&gt;Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. 
+                  <cdf:description>&lt;VulnDiscussion&gt;Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one.
 
 Audit records can be generated from various components within the information system (e.g., module or policy filter).
 
@@ -6246,9 +6246,9 @@ Satisfies: SRG-OS-000471-GPOS-00216, SRG-OS-000477-GPOS-00222&lt;/VulnDiscussion
                   <cdf:ident system="http://cyber.mil/legacy">SV-93707</cdf:ident>
                   <cdf:ident system="http://cyber.mil/legacy">V-79001</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000172</cdf:ident>
-                  <cdf:fixtext fixref="F-4685r88876_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "finit_module" syscall occur. 
+                  <cdf:fixtext fixref="F-4685r88876_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "finit_module" syscall occur.
 
-Add or update the following rules in "/etc/audit/rules.d/audit.rules": 
+Add or update the following rules in "/etc/audit/rules.d/audit.rules":
 
 -a always,exit -F arch=b32 -S finit_module -k module-change
 
@@ -6267,7 +6267,7 @@ The audit daemon must be restarted for the changes to take effect.</cdf:fixtext>
             <cdf:Rule Id="xccdf_mil.disa.stig_rule_SV-204562r603261_rule" id="xccdf_mil.disa.stig_rule_SV-204562r603261_rule" severity="medium" weight="10.0">
                   <cdf:version update="http://iase.disa.mil/stigs">RHEL-07-030830</cdf:version>
                   <cdf:title>The Red Hat Enterprise Linux operating system must audit all uses of the delete_module syscall.</cdf:title>
-                  <cdf:description>&lt;VulnDiscussion&gt;Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. 
+                  <cdf:description>&lt;VulnDiscussion&gt;Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one.
 
 Audit records can be generated from various components within the information system (e.g., module or policy filter).
 
@@ -6281,9 +6281,9 @@ Satisfies: SRG-OS-000471-GPOS-00216, SRG-OS-000477-GPOS-00222&lt;/VulnDiscussion
                   <cdf:ident system="http://cyber.mil/legacy">SV-86813</cdf:ident>
                   <cdf:ident system="http://cyber.mil/legacy">V-72189</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000172</cdf:ident>
-                  <cdf:fixtext fixref="F-4686r88879_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "delete_module" syscall occur. 
+                  <cdf:fixtext fixref="F-4686r88879_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "delete_module" syscall occur.
 
-Add or update the following rules in "/etc/audit/rules.d/audit.rules": 
+Add or update the following rules in "/etc/audit/rules.d/audit.rules":
 
 -a always,exit -F arch=b32 -S delete_module -k module-change
 
@@ -6302,7 +6302,7 @@ The audit daemon must be restarted for the changes to take effect.</cdf:fixtext>
             <cdf:Rule Id="xccdf_mil.disa.stig_rule_SV-204563r603261_rule" id="xccdf_mil.disa.stig_rule_SV-204563r603261_rule" severity="medium" weight="10.0">
                   <cdf:version update="http://iase.disa.mil/stigs">RHEL-07-030840</cdf:version>
                   <cdf:title>The Red Hat Enterprise Linux operating system must audit all uses of the kmod command.</cdf:title>
-                  <cdf:description>&lt;VulnDiscussion&gt;Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. 
+                  <cdf:description>&lt;VulnDiscussion&gt;Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one.
 
 Audit records can be generated from various components within the information system (e.g., module or policy filter).
 
@@ -6317,7 +6317,7 @@ Satisfies: SRG-OS-000471-GPOS-00216, SRG-OS-000477-GPOS-00222&lt;/VulnDiscussion
                   <cdf:ident system="http://cyber.mil/legacy">SV-86815</cdf:ident>
                   <cdf:ident system="http://cyber.mil/legacy">V-72191</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000172</cdf:ident>
-                  <cdf:fixtext fixref="F-4687r462673_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "kmod" command occur. 
+                  <cdf:fixtext fixref="F-4687r462673_fix">Configure the operating system to generate audit records when successful/unsuccessful attempts to use the "kmod" command occur.
 
 Add or update the following rule in "/etc/audit/rules.d/audit.rules":
 
@@ -6788,9 +6788,9 @@ Issue the following command to make the changes take effect:
             <cdf:Rule Id="xccdf_mil.disa.stig_rule_SV-204585r603261_rule" id="xccdf_mil.disa.stig_rule_SV-204585r603261_rule" severity="medium" weight="10.0">
                   <cdf:version update="http://iase.disa.mil/stigs">RHEL-07-040300</cdf:version>
                   <cdf:title>The Red Hat Enterprise Linux operating system must be configured so that all networked systems have SSH installed.</cdf:title>
-                  <cdf:description>&lt;VulnDiscussion&gt;Without protection of the transmitted information, confidentiality and integrity may be compromised because unprotected communications can be intercepted and either read or altered. 
+                  <cdf:description>&lt;VulnDiscussion&gt;Without protection of the transmitted information, confidentiality and integrity may be compromised because unprotected communications can be intercepted and either read or altered.
 
-This requirement applies to both internal and external networks and all types of information system components from which information can be transmitted (e.g., servers, mobile devices, notebook computers, printers, copiers, scanners, and facsimile machines). Communication paths outside the physical protection of a controlled boundary are exposed to the possibility of interception and modification. 
+This requirement applies to both internal and external networks and all types of information system components from which information can be transmitted (e.g., servers, mobile devices, notebook computers, printers, copiers, scanners, and facsimile machines). Communication paths outside the physical protection of a controlled boundary are exposed to the possibility of interception and modification.
 
 Protecting the confidentiality and integrity of organizational information can be accomplished by physical means (e.g., employing physical distribution systems) or by logical means (e.g., employing cryptographic techniques). If physical means of protection are employed, logical means (cryptography) do not have to be employed, and vice versa.
 
@@ -7103,7 +7103,7 @@ The SSH service must be restarted for changes to take effect.</cdf:fixtext>
                   <cdf:ident system="http://cyber.mil/legacy">SV-86879</cdf:ident>
                   <cdf:ident system="http://cyber.mil/legacy">V-72255</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000366</cdf:ident>
-                  <cdf:fixtext fixref="F-4720r88981_fix">Note: SSH public key files may be found in other directories on the system depending on the installation. 
+                  <cdf:fixtext fixref="F-4720r88981_fix">Note: SSH public key files may be found in other directories on the system depending on the installation.
 
 Change the mode of public host key files under "/etc/ssh" to "0644" with the following command:
 
@@ -7158,7 +7158,7 @@ Change the mode of public host key files under "/etc/ssh" to "0644" with the fol
                   <cdf:ident system="http://cyber.mil/cci">CCI-001813</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000368</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-001814</cdf:ident>
-                  <cdf:fixtext fixref="F-4722r88987_fix">Uncomment the "GSSAPIAuthentication" keyword in "/etc/ssh/sshd_config" (this file may be named differently or be in a different location if using a version of SSH that is provided by a third-party vendor) and set the value to "no": 
+                  <cdf:fixtext fixref="F-4722r88987_fix">Uncomment the "GSSAPIAuthentication" keyword in "/etc/ssh/sshd_config" (this file may be named differently or be in a different location if using a version of SSH that is provided by a third-party vendor) and set the value to "no":
 
 GSSAPIAuthentication no
 
@@ -7299,7 +7299,7 @@ The SSH service must be restarted for changes to take effect.</cdf:fixtext>
                   <cdf:ident system="http://cyber.mil/legacy">SV-86899</cdf:ident>
                   <cdf:ident system="http://cyber.mil/legacy">V-72275</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000366</cdf:ident>
-                  <cdf:fixtext fixref="F-4729r89008_fix">Configure the operating system to provide users with feedback on when account accesses last occurred by setting the required configuration options in "/etc/pam.d/postlogin". 
+                  <cdf:fixtext fixref="F-4729r89008_fix">Configure the operating system to provide users with feedback on when account accesses last occurred by setting the required configuration options in "/etc/pam.d/postlogin".
 
 Add the following line to the top of "/etc/pam.d/postlogin":
 
@@ -7376,10 +7376,10 @@ session required pam_lastlog.so showfailed</cdf:fixtext>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000366</cdf:ident>
                   <cdf:fixtext fixref="F-4733r89020_fix">Set the system to the required kernel parameter by adding the following line to "/etc/sysctl.conf" or a configuration file in the /etc/sysctl.d/ directory (or modify the line to have the required value):
 
-net.ipv4.conf.all.accept_source_route = 0   
+net.ipv4.conf.all.accept_source_route = 0
 
 Issue the following command to make the changes take effect:
- 
+
 # sysctl -system</cdf:fixtext>
                   <cdf:fix id="F-4733r89020_fix"></cdf:fix>
                   <cdf:check system="http://oval.mitre.org/XMLSchema/oval-definitions-5">
@@ -7406,10 +7406,10 @@ Issue the following command to make the changes take effect:
                   <cdf:ident system="http://cyber.mil/cci">CCI-000366</cdf:ident>
                   <cdf:fixtext fixref="F-4736r89029_fix">Set the system to the required kernel parameter by adding the following line to "/etc/sysctl.conf" or a configuration file in the /etc/sysctl.d/ directory (or modify the line to have the required value):
 
-net.ipv4.conf.default.accept_source_route = 0   
+net.ipv4.conf.default.accept_source_route = 0
 
 Issue the following command to make the changes take effect:
- 
+
 # sysctl --system</cdf:fixtext>
                   <cdf:fix id="F-4736r89029_fix"></cdf:fix>
                   <cdf:check system="http://oval.mitre.org/XMLSchema/oval-definitions-5">
@@ -7438,7 +7438,7 @@ Issue the following command to make the changes take effect:
 
 net.ipv4.icmp_echo_ignore_broadcasts = 1
 
-Issue the following command to make the changes take effect: 
+Issue the following command to make the changes take effect:
 
 # sysctl --system</cdf:fixtext>
                   <cdf:fix id="F-4737r89032_fix"></cdf:fix>
@@ -7466,7 +7466,7 @@ Issue the following command to make the changes take effect:
                   <cdf:ident system="http://cyber.mil/cci">CCI-000366</cdf:ident>
                   <cdf:fixtext fixref="F-4738r89035_fix">Set the system to not accept IPv4 ICMP redirect messages by adding the following line to "/etc/sysctl.conf" or a configuration file in the /etc/sysctl.d/ directory (or modify the line to have the required value):
 
-net.ipv4.conf.default.accept_redirects = 0   
+net.ipv4.conf.default.accept_redirects = 0
 
 Issue the following command to make the changes take effect:
 
@@ -7496,7 +7496,7 @@ Issue the following command to make the changes take effect:
                   <cdf:ident system="http://cyber.mil/cci">CCI-000366</cdf:ident>
                   <cdf:fixtext fixref="F-4739r89038_fix">Set the system to ignore IPv4 ICMP redirect messages by adding the following line to "/etc/sysctl.conf" or a configuration file in the /etc/sysctl.d/ directory (or modify the line to have the required value):
 
-net.ipv4.conf.all.accept_redirects = 0   
+net.ipv4.conf.all.accept_redirects = 0
 
 Issue the following command to make the changes take effect:
 
@@ -7524,7 +7524,7 @@ Issue the following command to make the changes take effect:
                   <cdf:ident system="http://cyber.mil/legacy">SV-86915</cdf:ident>
                   <cdf:ident system="http://cyber.mil/legacy">V-72291</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000366</cdf:ident>
-                  <cdf:fixtext fixref="F-4740r89041_fix">Configure the system to not allow interfaces to perform IPv4 ICMP redirects by default. 
+                  <cdf:fixtext fixref="F-4740r89041_fix">Configure the system to not allow interfaces to perform IPv4 ICMP redirects by default.
 
 Set the system to the required kernel parameter by adding the following line to "/etc/sysctl.conf" or a configuration file in the /etc/sysctl.d/ directory (or modify the line to have the required value):
 
@@ -7555,7 +7555,7 @@ Issue the following command to make the changes take effect:
                   <cdf:ident system="http://cyber.mil/legacy">SV-86917</cdf:ident>
                   <cdf:ident system="http://cyber.mil/legacy">V-72293</cdf:ident>
                   <cdf:ident system="http://cyber.mil/cci">CCI-000366</cdf:ident>
-                  <cdf:fixtext fixref="F-4741r89044_fix">Configure the system to not allow interfaces to perform IPv4 ICMP redirects. 
+                  <cdf:fixtext fixref="F-4741r89044_fix">Configure the system to not allow interfaces to perform IPv4 ICMP redirects.
 
 Set the system to the required kernel parameter by adding the following line to "/etc/sysctl.conf" or a configuration file in the /etc/sysctl.d/ directory (or modify the line to have the required value):
 
