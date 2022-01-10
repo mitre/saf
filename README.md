@@ -340,7 +340,7 @@ convert:prowler2hdf         Translate a Prowler-derived AWS Security Finding
 #### Sarif
 
 ```
-convert:sarif:2hdf          Translate a SARIF JSON file into a Heimdall Data
+convert:sarif2hdf          Translate a SARIF JSON file into a Heimdall Data
                             Format JSON file
   OPTIONS
     -i, --input=input          Input SARIF JSON File
@@ -355,7 +355,7 @@ convert:sarif:2hdf          Translate a SARIF JSON file into a Heimdall Data
       SARIF level not provided -> HDF impact 0.1 as default
 
   EXAMPLES
-    saf convert:sarif:2hdf -i sarif-results.json -o output-hdf-name.json
+    saf convert:sarif2hdf -i sarif-results.json -o output-hdf-name.json
 ```
 
 
