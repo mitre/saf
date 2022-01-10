@@ -2,13 +2,7 @@ import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import {AwsConfigMapper as Mapper} from '@mitre/hdf-converters'
 import {ExecJSON} from 'inspecjs'
-
-function checkSuffix(input: string) {
-  if (input.endsWith('.json')) {
-    return input
-  }
-  return `${input}.json`
-}
+import {checkSuffix} from '../../utils/global'
 
 export default class AWSConfigMapper extends Command {
   static usage = 'convert:aws_config2hdf -a, --accessKeyId=accessKeyId -r, --region=region -s, --secretAccessKey=secretAccessKey -t, --sessionToken=sessionToken -o, --output=OUTPUT'

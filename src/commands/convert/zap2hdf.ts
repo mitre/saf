@@ -1,13 +1,7 @@
 import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import {ZapMapper as Mapper} from '@mitre/hdf-converters'
-
-function checkSuffix(input: string) {
-  if (input.endsWith('.json')) {
-    return input
-  }
-  return `${input}.json`
-}
+import {checkSuffix} from '../../utils/global'
 
 export default class ZapMapper extends Command {
   static usage = 'convert:zap2hdf -i, --input=JSON -n, --name=NAME -o, --output=OUTPUT'

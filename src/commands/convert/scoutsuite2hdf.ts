@@ -1,13 +1,7 @@
 import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import {ScoutsuiteMapper as Mapper} from '@mitre/hdf-converters'
-
-function checkSuffix(input: string) {
-  if (input.endsWith('.json')) {
-    return input
-  }
-  return `${input}.json`
-}
+import {checkSuffix} from '../../utils/global'
 
 export default class ScoutsuiteMapper extends Command {
   static usage = 'convert:scoutsuite2hdf -i, --input=SCOUTSUITE-RESULTS-JS -o, --output=OUTPUT'

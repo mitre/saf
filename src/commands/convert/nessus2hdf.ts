@@ -2,13 +2,7 @@ import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import {NessusResults as Mapper} from '@mitre/hdf-converters'
 import _ from 'lodash'
-
-function checkSuffix(input: string) {
-  if (input.endsWith('.json')) {
-    return input.split('.json')[0]
-  }
-  return input
-}
+import {checkSuffix} from '../../utils/global'
 
 export default class NessusMapper extends Command {
   static usage = 'convet:nessus2hdf -i, --input=XML -o, --output_prefix=OUTPUT_PREFIX'

@@ -1,13 +1,7 @@
 import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import {XCCDFResultsMapper as Mapper} from '@mitre/hdf-converters'
-
-function checkSuffix(input: string) {
-  if (input.endsWith('.json')) {
-    return input
-  }
-  return `${input}.json`
-}
+import {checkSuffix} from '../../utils/global'
 
 export default class XCCDFResultsMapper extends Command {
   static usage = 'convert:xccdf_results2hdf -i, --input=XML -o, --output=OUTPUT'
