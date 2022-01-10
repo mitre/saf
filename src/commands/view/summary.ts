@@ -42,8 +42,8 @@ export default class Summary extends Command {
     }
     // Total Counts
     for (const [type, counts] of Object.entries(thresholds)) {
-      let total = 0;
-      for(const [_severity, count] of Object.entries(counts)) {
+      let total = 0
+      for (const [_severity, count] of Object.entries(counts)) {
         total += count
       }
       _.set(thresholds, `${type}.total`, total)
