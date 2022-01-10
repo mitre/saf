@@ -29,7 +29,7 @@ export default class Summary extends Command {
     _.set(thresholds, 'compliance', overallCompliance)
 
     // Severity counts
-    for (const [severity, severityTargets] of Object.entries(severityTargetsObject)) {
+    for(const [severity, severityTargets] of Object.entries(severityTargetsObject)) {
       const severityStatusCounts = extractStatusCounts(parsedProfile, severity)
       for (const severityTarget of severityTargets) {
         const [statusName, _severity, thresholdType] = severityTarget.split('.')
