@@ -3,6 +3,7 @@
     "oclif",
     "oclif-typescript"
   ],
+  "ignorePatterns": [".github/**/*"],
   "rules": {
     "@typescript-eslint/no-unused-vars": "off",
     "unicorn/filename-case": "off",

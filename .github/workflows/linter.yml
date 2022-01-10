@@ -36,3 +36,9 @@ jobs:
 
      - name: Run lint
        run: yarn run lint:ci
+     
+     - name: Auto-lint if failure
+       if: ${{ failure() }}
+       uses: wearerequired/lint-action@v1
+       with:
+        eslint: true
