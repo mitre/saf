@@ -24,7 +24,7 @@ export default class Summary extends Command {
 
   async run() {
     const {flags} = this.parse(Summary)
-    const thresholds = {}
+    const thresholds: Record<string, Record<string, number>> = {}
     const parsedExecJSON = convertFileContextual(fs.readFileSync(flags.input, 'utf8'))
     const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
     const overallStatusCounts = extractStatusCounts(parsedProfile)
@@ -39,6 +39,14 @@ export default class Summary extends Command {
         const [statusName, _severity, thresholdType] = severityTarget.split('.')
         _.set(thresholds, severityTarget.replace(`.${thresholdType}`, ''), _.get(severityStatusCounts, renameStatusName(statusName)))
       }
+    }
+    // Total Counts
+    for (const [type, counts] of Object.entries(thresholds)) {
+      let total = 0;
+      for(const [_severity, count] of Object.entries(counts)) {
+        total += count
+      }
+      _.set(thresholds, `${type}.total`, total)
     }
     flags.json ? console.log(JSON.stringify(thresholds, null, 2)) : console.log(YAML.stringify(thresholds))
     if (flags.output) {
