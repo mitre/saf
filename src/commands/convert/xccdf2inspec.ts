@@ -113,12 +113,7 @@ export default class XCCDFResultsMapper extends Command {
         },
       }
       if ('ident' in group.Rule) {
-        let identifiers = []
-        if (Array.isArray(group.Rule.ident)) {
-          identifiers = group.Rule.ident
-        } else {
-          identifiers = [group.Rule.ident]
-        }
+        const identifiers = Array.isArray(group.Rule.ident) ? group.Rule.ident : [group.Rule.ident]
         // Grab CCI/NIST/Legacy identifiers
         identifiers.forEach(identifier => {
           if (identifier['@_system'].toLowerCase().endsWith('cci')) {
