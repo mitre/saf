@@ -13,6 +13,7 @@ RUN mkdir -p /share
 
 COPY . /build
 WORKDIR /build
+RUN rm -rf test
 RUN yarn --frozen-lockfile --production --network-timeout 600000
 RUN yarn pack --install-if-needed --prod --filename saf.tgz
 

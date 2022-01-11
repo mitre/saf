@@ -18,6 +18,9 @@ jobs:
       - name: Install project dependencies
         run: yarn install --frozen-lockfile
 
+      - name: Remove testing resources
+        run: rm -rf test
+
       - name: Pack all items that are published as packages
         run: yarn pack
 
