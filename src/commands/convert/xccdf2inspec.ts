@@ -18,6 +18,8 @@ export default class XCCDFResultsMapper extends Command {
     help: flags.help({char: 'h'}),
     input: flags.string({char: 'i', required: true, description: 'Path to the DISA STIG XCCDF file'}),
     metadata: flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
+    singleFile: flags.boolean({char: 's', required: false, default: false, description: 'Output the resulting controls as a single file'}),
+    useVulnerabilityId: flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')"}),
     output: flags.string({char: 'o', required: true, default: 'profile'}),
   }
 
@@ -99,7 +101,7 @@ export default class XCCDFResultsMapper extends Command {
       }
       // Create a barebones InSpec control
       const inspecControl: InSpecControl = {
-        id: group['@_id'],
+        id: flags.useVulnerabilityId ? group.Rule['@_id'].split('r')[0] : group['@_id'],
         title: group.Rule.title,
         desc: extractedDescription.VulnDiscussion.split('Satisfies: ')[0],
         impact: severityStringToImpact(group.Rule['@_severity']),
@@ -152,8 +154,16 @@ export default class XCCDFResultsMapper extends Command {
       inspecControls.push(inspecControl)
     }
     // Convert all extracted controls to Ruby/InSpec code
-    inspecControls.forEach(control => {
-      fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control))
-    })
+    if (!flags.singleFile) {
+      inspecControls.forEach(control => {
+        fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control))
+      })
+    } else {
+      const controlOutfile = fs.createWriteStream(path.join(flags.output, 'controls', 'controls.rb'), {flags: 'w'})
+      inspecControls.forEach(control => {
+        controlOutfile.write(inspecControlToRubyCode(control) + '\n\n')
+      })
+      controlOutfile.close()
+    }
   }
 }
