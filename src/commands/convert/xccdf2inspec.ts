@@ -109,7 +109,7 @@ export default class XCCDFResultsMapper extends Command {
           fix: group.Rule.fixtext['#text'],
           severity: impactStringToSeverity(severityStringToImpact(group.Rule['@_severity'])),
           gtitle: group.title,
-          satisfies: extractedDescription.VulnDiscussion.indexOf('Satisfies: ') !== -1 && extractedDescription.VulnDiscussion.split('Satisfies: ').length >= 1 ? extractedDescription.VulnDiscussion.split('Satisfies: ')[1].split(',').map(satisfaction => satisfaction.trim()) : undefined,
+          satisfies: extractedDescription.VulnDiscussion.includes('Satisfies: ') && extractedDescription.VulnDiscussion.split('Satisfies: ').length >= 1 ? extractedDescription.VulnDiscussion.split('Satisfies: ')[1].split(',').map(satisfaction => satisfaction.trim()) : undefined,
           gid: group['@_id'],
           rid: group.Rule['@_id'],
           stig_id: group.Rule.version,
