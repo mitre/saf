@@ -29,3 +29,11 @@ export interface InSpecControl {
         [key: string]: string | string[] | boolean | undefined;
     };
 }
+
+export interface InSpecMetaData {
+    maintainer?: string;
+    copyright?: string;
+    copyright_email?: string;
+    license?: string;
+    version?: string;
+}
