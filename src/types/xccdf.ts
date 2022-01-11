@@ -109,3 +109,18 @@ export interface Status {
     '#text':  string;
     '@_date': Date;
 }
+
+export interface DecodedDescription {
+    VulnDiscussion?: string;
+    FalsePositives?: string;
+    FalseNegatives?: string;
+    Documentable?: boolean;
+    Mitigations?: string;
+    SeverityOverrideGuidance?: string;
+    PotentialImpacts?: string;
+    ThirdPartyTools?: string;
+    MitigationControl?: string;
+    MitigationControls?: string;
+    Responsibility?: string;
+    IAControls?: string;
+}

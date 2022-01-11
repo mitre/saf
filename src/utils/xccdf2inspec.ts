@@ -1,6 +1,7 @@
 import parser from 'fast-xml-parser'
 import * as htmlparser from 'htmlparser2'
 import {InSpecControl} from '../types/inspec'
+import {DecodedDescription} from '../types/xccdf'
 
 const wrap = (s: string) => s.replace(
   /(?![^\n]{1,80}$)([^\n]{1,80})\s/g, '$1\n'
@@ -21,7 +22,7 @@ export function convertEncodedXmlIntoJson(
   })
 }
 
-export function convertEncodedHTMLIntoJson(encodedHTML?: string): Record<string, string> {
+export function convertEncodedHTMLIntoJson(encodedHTML?: string): DecodedDescription {
   if (encodedHTML) {
     const xmlChunks: string[] = []
     const htmlParser = new htmlparser.Parser({
@@ -52,7 +53,7 @@ export function severityStringToImpact(string: string): number {
   if (string.match(/crit(ical)?|severe/)?.length) {
     return 1.0
   }
-  throw new Error(`${string}' is not a valid severity value. It should be a Float between 0.0 and 1.0 or one of the approved keywords`)
+  throw new Error(`${string}' is not a valid severity value. It should be one of the approved keywords`)
 }
 
 export function impactStringToSeverity(impact: number): string {
@@ -89,7 +90,7 @@ export function inspecControlToRubyCode(control: InSpecControl): string {
   }
   result += `  impact ${control.impact}\n`
   Object.entries(control.tags).forEach(([tag, value]) => {
-    if (tag !== 'check' && tag !== 'fix') {
+    if (tag !== 'check' && tag !== 'fix' && value) {
       if (typeof value === 'object') {
         result += `  tag ${tag}: ${JSON.stringify(value)}\n`
       } else if (typeof value === 'string') {
