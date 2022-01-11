@@ -9,15 +9,15 @@ function omitVersions(input: ExecJSON.Execution): Partial<ExecJSON.Execution> {
   return _.omit(input, ['version', 'platform.release', 'profiles[0].sha256'])
 }
 
-describe('Test sarif', () => {
+describe('Test nikto', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   test
   .stdout()
-  .command(['convert:sarif2hdf', '-i', path.resolve('./test/sample_jsons/sarif/sample_input_report/sarif_input.sarif'), '-o', `${tmpobj.name}/sariftest.json`])
+  .command(['convert:nikto2hdf', '-i', path.resolve('./test/sample_data/nikto/sample_input_report/zero.webappsecurity.json'), '-o', `${tmpobj.name}/niktotest.json`])
   .it('hdf-converter output test', () => {
-    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/sariftest.json`, {encoding: 'utf-8'}))
-    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_jsons/sarif/sarif-hdf.json'), {encoding: 'utf-8'}))
+    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/niktotest.json`, {encoding: 'utf-8'}))
+    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/nikto/nikto-hdf.json'), {encoding: 'utf-8'}))
     expect(omitVersions(test)).to.eql(omitVersions(sample))
   })
 })
