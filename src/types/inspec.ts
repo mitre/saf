@@ -17,15 +17,16 @@ export interface InSpecControl {
         cci?: string[];
         legacy?: string[];
         nist?: string[];
-        false_positives?: string[];
+        false_negatives?: string;
+        false_positives?: string;
         documentable?: boolean;
-        mitigations?: string[];
+        mitigations?: string;
         severity_override_guidance?: string;
         potential_impacts?: string;
         third_party_tools?: string;
         mitigation_controls?: string;
         responsibility?: string;
-        ia_controls?: string[];
+        ia_controls?: string;
         [key: string]: string | string[] | boolean | undefined;
     };
 }

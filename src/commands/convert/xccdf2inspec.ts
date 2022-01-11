@@ -1,7 +1,7 @@
 /* eslint-disable no-negated-condition */
 import {Command, flags} from '@oclif/command'
 import fs from 'fs'
-import {DisaStig} from '../../types/xccdf'
+import {DecodedDescription, DisaStig} from '../../types/xccdf'
 import {InSpecControl, InSpecMetaData} from '../../types/inspec'
 import {convertEncodedHTMLIntoJson, convertEncodedXmlIntoJson, impactStringToSeverity, inspecControlToRubyCode, severityStringToImpact} from '../../utils/xccdf2inspec'
 import path from 'path'
@@ -89,16 +89,19 @@ export default class XCCDFResultsMapper extends Command {
     // Convert Controls
     for (const group of groups) {
       // Extract encoded XML values from the rule description
-      const extractedDescription = convertEncodedHTMLIntoJson(group.Rule?.description)
-      // Vulnerability must contain a rule
+      const extractedDescription: DecodedDescription = convertEncodedHTMLIntoJson(group.Rule?.description)
+      // Group must contain a vulnerability
       if (!group.Rule) {
         throw new Error(`Group exists without vulnerability ${group['@_id']}`)
+      }
+      if (!extractedDescription.VulnDiscussion) {
+        throw new Error('Vulnerability exists without VulnDiscussion')
       }
       // Create a barebones InSpec control
       const inspecControl: InSpecControl = {
         id: group['@_id'],
         title: group.Rule.title,
-        desc: extractedDescription.VulnDiscussion,
+        desc: extractedDescription.VulnDiscussion.split('Satisfies: ')[0],
         impact: severityStringToImpact(group.Rule['@_severity']),
         rationale: '',
         tags: {
@@ -106,10 +109,22 @@ export default class XCCDFResultsMapper extends Command {
           fix: group.Rule.fixtext['#text'],
           severity: impactStringToSeverity(severityStringToImpact(group.Rule['@_severity'])),
           gtitle: group.title,
+          satisfies: extractedDescription.VulnDiscussion.indexOf('Satisfies: ') !== -1 && extractedDescription.VulnDiscussion.split('Satisfies: ').length >= 1 ? extractedDescription.VulnDiscussion.split('Satisfies: ')[1].split(',').map(satisfaction => satisfaction.trim()) : undefined,
           gid: group['@_id'],
           rid: group.Rule['@_id'],
           stig_id: group.Rule.version,
           fix_id: group.Rule.fix['@_id'],
+          false_negatives: extractedDescription.FalseNegatives,
+          false_positives: extractedDescription.FalsePositives,
+          documentable: extractedDescription.Documentable,
+          mitigations: extractedDescription.Mitigations,
+          severity_override_guidance: extractedDescription.SeverityOverrideGuidance,
+          potential_impacts: extractedDescription.PotentialImpacts,
+          third_party_tools: extractedDescription.ThirdPartyTools,
+          mitigation_control: extractedDescription.MitigationControl, // This exists as mitigation_controls in inspec_tools, but is called mitigation_control in the xccdf, this shouldn't ever be defined but is still here for backwards compatibility
+          mitigation_controls: extractedDescription.MitigationControls,
+          responsibility: extractedDescription.Responsibility,
+          ia_controls: extractedDescription.IAControls,
         },
       }
       if ('ident' in group.Rule) {
