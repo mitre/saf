@@ -37,7 +37,7 @@ export function convertEncodedHTMLIntoJson(encodedHTML?: string): Record<string,
 }
 
 export function severityStringToImpact(string: string): number {
-  if (string.match(/none|na|n\/a|not[_|(\s*)]?applicable/i)?.length) {
+  if (string.match(/none|na|n\/a|not[\s()*_|]?applicable/i)?.length) {
     return 0.0
   }
   if (string.match(/low|cat(egory)?\s*(iii|3)/i)?.length) {
