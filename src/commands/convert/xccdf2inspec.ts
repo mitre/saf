@@ -91,7 +91,6 @@ export default class XCCDFResultsMapper extends Command {
     // Convert Controls
     for (const group of groups) {
       // Extract encoded XML values from the rule description
-      console.log(group['@_id'])
       const extractedDescription: DecodedDescription = convertEncodedHTMLIntoJson(group.Rule?.description)
       // Group must contain a vulnerability
       if (!group.Rule) {
