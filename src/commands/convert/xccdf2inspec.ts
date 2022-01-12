@@ -91,6 +91,7 @@ export default class XCCDFResultsMapper extends Command {
     // Convert Controls
     for (const group of groups) {
       // Extract encoded XML values from the rule description
+      console.log(group['@_id'])
       const extractedDescription: DecodedDescription = convertEncodedHTMLIntoJson(group.Rule?.description)
       // Group must contain a vulnerability
       if (!group.Rule) {
@@ -102,14 +103,14 @@ export default class XCCDFResultsMapper extends Command {
       // Create a barebones InSpec control
       const inspecControl: InSpecControl = {
         id: flags.useVulnerabilityId ? group.Rule['@_id'].split('r')[0] : group['@_id'],
-        title: group.Rule.title,
+        title: group.Rule['@_severity'] ? group.Rule.title : `[[[MISSING SEVERITY FROM STIG]]] ${group.Rule.title}`, // This should never happen, yet it does with SV-203750r380182_rule of the General_Purpose_Operating_System_SRG_V2R1_Manual-xccdf.xml
         desc: extractedDescription.VulnDiscussion.split('Satisfies: ')[0],
-        impact: severityStringToImpact(group.Rule['@_severity']),
+        impact: severityStringToImpact(group.Rule['@_severity'] || 'critical'),
         rationale: '',
         tags: {
           check: group.Rule.check['check-content'],
           fix: group.Rule.fixtext['#text'],
-          severity: impactStringToSeverity(severityStringToImpact(group.Rule['@_severity'])),
+          severity: impactStringToSeverity(severityStringToImpact(group.Rule['@_severity'] || 'critical')),
           gtitle: group.title,
           satisfies: extractedDescription.VulnDiscussion.includes('Satisfies: ') && extractedDescription.VulnDiscussion.split('Satisfies: ').length >= 1 ? extractedDescription.VulnDiscussion.split('Satisfies: ')[1].split(',').map(satisfaction => satisfaction.trim()) : undefined,
           gid: group['@_id'],
@@ -135,18 +136,18 @@ export default class XCCDFResultsMapper extends Command {
         identifiers.forEach(identifier => {
           if (identifier['@_system'].toLowerCase().endsWith('cci')) {
             _.set(inspecControl, 'tags.cci', _.get(inspecControl, 'tags.cci') || [])
-          inspecControl.tags.cci?.push(identifier['#text'])
-          if (identifier['#text'] in CCINistMappings) {
-            _.set(inspecControl, 'tags.nist', _.get(inspecControl, 'tags.nist') || [])
-            const nistMapping = _.get(CCINistMappings, identifier['#text'])
-            if (inspecControl.tags.nist?.indexOf(nistMapping) === -1) {
+            inspecControl.tags.cci?.push(identifier['#text'])
+            if (identifier['#text'] in CCINistMappings) {
+              _.set(inspecControl, 'tags.nist', _.get(inspecControl, 'tags.nist') || [])
+              const nistMapping = _.get(CCINistMappings, identifier['#text'])
+              if (inspecControl.tags.nist?.indexOf(nistMapping) === -1) {
               inspecControl.tags.nist?.push(nistMapping)
+              }
             }
-          }
           }
           if (identifier['@_system'].toLowerCase().endsWith('legacy')) {
             _.set(inspecControl, 'tags.legacy', _.get(inspecControl, 'tags.legacy') || [])
-        inspecControl.tags.legacy?.push(identifier['#text'])
+            inspecControl.tags.legacy?.push(identifier['#text'])
           }
         })
       }
