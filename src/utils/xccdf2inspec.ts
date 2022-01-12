@@ -46,11 +46,11 @@ export function convertEncodedHTMLIntoJson(encodedHTML?: string): DecodedDescrip
         extractedVulnDescription += `<${field}> ${value}`
       }
       cleaned = {
-        VulnDiscussion: extractedVulnDescription.replace(/\[\[\[REPLACE_LESS_THAN\]\]\]/, '"<"'),
+        VulnDiscussion: extractedVulnDescription.replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"'),
       }
       Object.entries(converted.VulnDiscussion).forEach(([key, value]) => {
         if (typeof value === 'string') {
-          cleaned[key] = (value as string).replace(/\[\[\[REPLACE_LESS_THAN\]\]\]/, '"<"')
+          cleaned[key] = (value as string).replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"')
         } else {
           cleaned[key] = (value as boolean)
         }
@@ -58,7 +58,7 @@ export function convertEncodedHTMLIntoJson(encodedHTML?: string): DecodedDescrip
     } else {
       Object.entries(converted).forEach(([key, value]) => {
         if (typeof value === 'string') {
-          cleaned[key] = (value as string).replace(/\[\[\[REPLACE_LESS_THAN\]\]\]/, '"<"')
+          cleaned[key] = (value as string).replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"')
         } else {
           cleaned[key] = (value as boolean)
         }
