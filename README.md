@@ -6,11 +6,12 @@ The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) bring
 
 ## Contents:
 
-- [SAF CLI Installation](https://github.com/mitre/saf#installation)
-  - [Via NPM](https://github.com/mitre/saf#installation-via-npm)
-  - [Via Docker](https://github.com/mitre/saf#installation-via-docker)
+- [SAF CLI Installation](#installation)
+  - [Via NPM](#installation-via-npm)
+  - [Via Docker](#installation-via-docker)
+  - [Via Windows Installer](#installation-via-windows-installer)
 
-* [SAF CLI Usage](https://github.com/mitre/saf#usage)
+* [SAF CLI Usage](#usage)
   * Scan - Visit https://saf.mitre.org/#/validate to explore and run inspec profiles
   * [Generate](#generate) - Set pipeline thresholds
   * [Validate](#validate) - Verify pipeline thresholds
@@ -67,7 +68,15 @@ To update the SAF CLI with `docker`:
 docker pull mitre/saf:latest
 ```
 
+---
 
+#### Installation via Windows Installer
+
+To install the latest release of the SAF CLI on Windows, download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases) page.
+
+#### Update via Windows Installer
+
+To update the SAF CLI on Windows, uninstall any existing version from your system and then download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases) page.
 
 ## Usage
 
