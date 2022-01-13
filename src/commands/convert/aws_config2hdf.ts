@@ -17,7 +17,7 @@ export default class AWSConfigMapper extends Command {
     secretAccessKey: flags.string({char: 's', required: false}),
     sessionToken: flags.string({char: 't', required: false}),
     region: flags.string({char: 'r', required: true}),
-    secure: flags.boolean({char: 'S', required: false, default: true, description: 'Enable SSL verification, disabling this is insecure.'}),
+    insecure: flags.boolean({char: 'i', required: false, default: false, description: 'Disable SSL verification, this is insecure.'}),
     output: flags.string({char: 'o', required: true}),
   }
 
@@ -52,7 +52,7 @@ export default class AWSConfigMapper extends Command {
         sessionToken: flags.sessionToken,
       },
       region: flags.region,
-    }, flags.secure) : new Mapper({region: flags.region}, flags.secure)
+    }, !flags.insecure) : new Mapper({region: flags.region}, !flags.insecure)
 
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(this.ensureRefs(await converter.toHdf())))
   }
