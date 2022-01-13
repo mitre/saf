@@ -54,10 +54,11 @@ export default class Heimdall extends Command {
       flags.files ? open('http://localhost:3000/?predefinedLoad=true') : open('http://localhost:3000/')
     }
     let installedPath = ''
+
     try {
       installedPath = getInstalledPathSync('@mitre/saf')
     } catch {
-      installedPath = '.'
+      installedPath = path.join(require.main?.path.replace('/bin', '').replace('\\bin', '') || '.')
     }
 
     express()
