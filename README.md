@@ -168,9 +168,9 @@ view:summary            Get a quick compliance overview of an HDF file
 
 Translating your data to and from Heimdall Data Format (HDF) is done using the `saf convert` command.
 
-#### ASFF
+#### ASFF to HDF
 
-```bash
+```
 convert:asff2hdf            Translate a AWS Security Finding Format JSON into a
                             Heimdall Data Format JSON file
   OPTIONS
@@ -183,9 +183,25 @@ convert:asff2hdf            Translate a AWS Security Finding Format JSON into a
     saf convert:asff2hdf -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
 ```
 
+#### HDF to ASFF
+
+```
+convert:hdf2asff            Translate a Heimdall Data Format JSON file into
+                            AWS Security Findings Format JSON file(s)
+  OPTIONS
+    -a, --accountId=accountId  (required) AWS Account ID
+    -h, --help                 show CLI help
+    -i, --input=input          (required) Input HDF JSON File
+    -o, --output=output        (required) Output ASFF JSONs Folder
+    -r, --region=region        (required) SecurityHub Region
+    -t, --target=target        (required) Unique name for target to track findings across time
+  
+  EXAMPLES
+    saf convert:hdf2asff -i rhel7.scan.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7-asff
+```
 
 
-#### AWS Config
+#### AWS Config to HDF
 
 ```
 convert:aws_config2hdf      Pull Configuration findings from AWS Config and convert
@@ -204,7 +220,7 @@ convert:aws_config2hdf      Pull Configuration findings from AWS Config and conv
 ```
 
 
-#### Burp Suite
+#### Burp Suite to HDF
 
 ```
 convert:burpsuite2hdf       Translate a BurpSuite Pro XML file into a Heimdall
@@ -235,7 +251,7 @@ convert:hdf2condensed        Condensed format used by some community members
 ```
 
 
-#### DBProtect
+#### DBProtect to HDF
 
 ```
 convert:dbprotect2hdf       Translate a DBProtect report in "Check Results
@@ -249,7 +265,7 @@ convert:dbprotect2hdf       Translate a DBProtect report in "Check Results
 ```
 
 
-#### Fortify
+#### Fortify to HDF
 
 ```
 convert:fortify2hdf         Translate a Fortify results FVDL file into a Heimdall
@@ -268,7 +284,7 @@ convert:fortify2hdf         Translate a Fortify results FVDL file into a Heimdal
 ```
 
 
-#### JFrog Xray
+#### JFrog Xray to HDF
 
 ```
 convert:jfrog_xray2hdf      Translate a JFrog Xray results JSON file into a
@@ -283,7 +299,7 @@ convert:jfrog_xray2hdf      Translate a JFrog Xray results JSON file into a
 ```
 
 
-#### Tennable Nessus
+#### Tennable Nessus to HDF
 
 ```
 convert:nessus2hdf          Translate a Nessus XML results file into a Heimdall
@@ -303,7 +319,7 @@ OPTIONS
 ```
 
 
-#### Netsparker
+#### Netsparker to HDF
 
 ```
 convert:netsparker2hdf      Translate a Netsparker XML results file into a
@@ -317,7 +333,7 @@ convert:netsparker2hdf      Translate a Netsparker XML results file into a
 ```
 
 
-#### Nikto
+#### Nikto to HDF
 
 ```
 convert:nikto2hdf           Translate a Nikto results JSON file into a Heimdall
@@ -331,7 +347,7 @@ convert:nikto2hdf           Translate a Nikto results JSON file into a Heimdall
 ```
 
 
-#### Prowler
+#### Prowler to HDF
 
 ```
 convert:prowler2hdf         Translate a Prowler-derived AWS Security Finding
@@ -346,7 +362,7 @@ convert:prowler2hdf         Translate a Prowler-derived AWS Security Finding
 ```
 
 
-#### Sarif
+#### Sarif to HDF
 
 ```
 convert:sarif2hdf          Translate a SARIF JSON file into a Heimdall Data
@@ -368,7 +384,7 @@ convert:sarif2hdf          Translate a SARIF JSON file into a Heimdall Data
 ```
 
 
-#### Scoutsuite
+#### Scoutsuite to HDF
 
 ```
 convert:scoutsuite2hdf       Translate a ScoutSuite results from a Javascript
@@ -385,7 +401,7 @@ convert:scoutsuite2hdf       Translate a ScoutSuite results from a Javascript
 ```
 
 
-#### Snyk
+#### Snyk to HDF
 
 ```
 convert:snyk2hdf             Translate a Snyk results JSON file into a Heimdall
@@ -399,7 +415,7 @@ convert:snyk2hdf             Translate a Snyk results JSON file into a Heimdall
 ```
 
 
-#### SonarQube
+#### SonarQube to HDF
 
 ```
 convert:sonarqube2hdf        Pull SonarQube vulnerabilities for the specified
@@ -415,7 +431,7 @@ convert:sonarqube2hdf        Pull SonarQube vulnerabilities for the specified
     saf convert:sonarqube2hdf -n project_key -u http://sonar:9000 --auth YOUR_API_KEY -o output-hdf-name.json
 
 ```
-#### XCCDF Results
+#### XCCDF Results to HDF
 
 ```
 convert:xccdf_results2hdf    Translate a SCAP client XCCDF-Results XML report to
@@ -428,7 +444,7 @@ convert:xccdf_results2hdf    Translate a SCAP client XCCDF-Results XML report to
     saf convert:xccdf_results2hdf -i results-xccdf.xml -o output-hdf-name.json
 
 ```
-#### OWASP ZAP
+#### OWASP ZAP to HDF
 
 ```
 convert:zap2hdf              Translate a OWASP ZAP results JSON to HDF format Json
