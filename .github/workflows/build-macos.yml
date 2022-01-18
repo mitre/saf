@@ -2,8 +2,6 @@ name: Build macOS Installer
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
 
 
 jobs:
@@ -25,8 +23,7 @@ jobs:
         run: rm -rf test
 
       - name: npm install and pack
-        run: |
-          yarn run oclif-dev pack:macos
+        run: yarn run oclif-dev pack:macos
 
       - name: Upload SAF-CLI macOS Installer Artifact
         uses: actions/upload-artifact@v2
