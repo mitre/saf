@@ -1,8 +1,8 @@
 // STIG Types
 import {default as cci2nistmap} from '../resources/cci2nist.json'
 import {Vulnerability} from '../types/STIG'
-
-const prompt = require('prompt-sync')()
+import promptSync from 'prompt-sync'
+const prompt = promptSync()
 
 export function extractSTIGUrl(findingDetails: string): string {
   const matches = findingDetails.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w\-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[.!/\\\w]*))?)/gs)
@@ -82,7 +82,7 @@ export function cklSeverityToResidualRiskLevel(severity: string) {
 }
 
 export function createCVD(vulnerability: Vulnerability): string {
-  if (vulnerability.FINDING_DETAILS?.indexOf('Solution :') !== -1) {
+  if (vulnerability.FINDING_DETAILS?.includes('Solution :')) {
     return `Rule Title: ${vulnerability.Rule_Title}\r\n\r\n${vulnerability.FINDING_DETAILS?.split('Solution :')[0]}`
   }
   return `Rule Title: ${vulnerability.Rule_Title}\r\n\r\n${vulnerability.FINDING_DETAILS}`
@@ -129,11 +129,11 @@ export function combineComments(vulnerability: Vulnerability, host: string) {
 }
 
 export function extractSolution(findingDetails: string): string | undefined {
-  if (findingDetails.indexOf('Solution') !== -1) {
+  if (findingDetails.includes('Solution')) {
     const matches = findingDetails.match(/Solution(.*)Message/gs)
     if (matches && matches.length !== 0) {
       const text = matches.join('').split('Solution : ')[1].trim()
-      if (text.indexOf('Message:') !== -1) {
+      if (text.includes('Message:')) {
         return text.split('Message:')[0].trim()
       }
       return text

@@ -112,18 +112,21 @@ export default class CKL2POAM extends Command {
                 })
               })
               if (iSTIG.VULN) {
-                vulnerabilities = vulnerabilities.concat(iSTIG.VULN.map(vulnerability => {
-                  const values: Record<string, unknown> = {}
-                  // Extract STIG_DATA
-                  vulnerability.STIG_DATA?.reverse().forEach(data => {
-                    values[data.VULN_ATTRIBUTE[0]] = data.ATTRIBUTE_DATA[0]
-                  })
-                  // Extract remaining fields (status, finding deails, comments, security override, and severity justification)
-                  Object.entries(vulnerability).forEach(([key, value]) => {
-                    values[key] = value[0]
-                  })
-                  return values
-                }))
+                vulnerabilities = [
+                  ...vulnerabilities,
+                  ...iSTIG.VULN.map(vulnerability => {
+                    const values: Record<string, unknown> = {}
+                    // Extract STIG_DATA
+                    vulnerability.STIG_DATA?.reverse().forEach(data => {
+                      values[data.VULN_ATTRIBUTE[0]] = data.ATTRIBUTE_DATA[0]
+                    })
+                    // Extract remaining fields (status, finding details, comments, security override, and severity justification)
+                    Object.entries(vulnerability).forEach(([key, value]) => {
+                      values[key] = value[0]
+                    })
+                    return values
+                  }),
+                ]
               }
             })
             logger.log({
