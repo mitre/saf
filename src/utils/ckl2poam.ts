@@ -1,4 +1,3 @@
-// STIG Types
 import {default as cci2nistmap} from '../resources/cci2nist.json'
 import {Vulnerability} from '../types/STIG'
 import promptSync from 'prompt-sync'
