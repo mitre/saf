@@ -22,7 +22,10 @@ jobs:
       - name: Remove testing resources
         run: rm -rf test
 
-      - name: npm install and pack
+      - name: Install project dependencies
+        run: npm install
+
+      - name: Pack windows executable
         run: yarn run oclif-dev pack:win
 
       - name: Upload SAF-CLI Build x64 Artifact
