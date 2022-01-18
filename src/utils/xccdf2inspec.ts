@@ -42,13 +42,13 @@ export function convertEncodedHTMLIntoJson(encodedHTML?: string): DecodedDescrip
     if (typeof converted.VulnDiscussion === 'object') { // Some STIGs have xml tags inside of the actual text which breaks processing, e.g U_ASD_STIG_V5R1_Manual-xccdf.xml and all Oracle Database STIGs
       let extractedVulnDescription = ''
       const remainingFields = _.omit(converted.VulnDiscussion, ['FalsePositives', 'FalseNegatives', 'Documentable', 'Mitigations', 'SeverityOverrideGuidance', 'PotentialImpacts', 'ThirdPartyTools', 'MitigationControl', 'Responsibility', 'IAControls'])
-      for (const [field, value] of Object.entries(remainingFields)) {
+      Object.entries(remainingFields).forEach(async ([field, value]) => {
         extractedVulnDescription += `<${field}> ${value}`
-      }
+      })
       cleaned = {
         VulnDiscussion: extractedVulnDescription.replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"'),
       }
-      Object.entries(converted.VulnDiscussion).forEach(([key, value]) => {
+      Object.entries(converted.VulnDiscussion).forEach(async ([key, value]) => {
         if (typeof value === 'string') {
           cleaned[key] = (value as string).replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"')
         } else {
@@ -56,7 +56,7 @@ export function convertEncodedHTMLIntoJson(encodedHTML?: string): DecodedDescrip
         }
       })
     } else {
-      Object.entries(converted).forEach(([key, value]) => {
+      Object.entries(converted).forEach(async ([key, value]) => {
         if (typeof value === 'string') {
           cleaned[key] = (value as string).replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"')
         } else {

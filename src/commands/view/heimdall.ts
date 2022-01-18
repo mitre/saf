@@ -1,10 +1,9 @@
 import {Command, flags} from '@oclif/command'
-// eslint-disable-next-line node/no-extraneous-import
-import {getInstalledPathSync} from 'get-installed-path'
 import express from 'express'
 import fs from 'fs'
 import path from 'path'
 import open from 'open'
+import {getInstalledPath} from '../../utils/global'
 
 export default class Heimdall extends Command {
   static aliases = ['heimdall']
@@ -53,14 +52,7 @@ export default class Heimdall extends Command {
     if (!flags.noOpenBrowser) {
       flags.files ? open('http://localhost:3000/?predefinedLoad=true') : open('http://localhost:3000/')
     }
-    let installedPath = ''
-
-    try {
-      installedPath = getInstalledPathSync('@mitre/saf')
-    } catch {
-      // eslint-disable-next-line unicorn/prefer-module
-      installedPath = path.join(require.main?.path.replace('/bin', '').replace('\\bin', '') || '.')
-    }
+    const installedPath = getInstalledPath()
 
     express()
     .use(predefinedLoadJSON)

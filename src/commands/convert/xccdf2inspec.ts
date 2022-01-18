@@ -9,7 +9,7 @@ import _ from 'lodash'
 import YAML from 'yaml'
 import {default as CCINistMappings} from '@mitre/hdf-converters/lib/data/cci-nist-mapping.json'
 
-export default class XCCDFResultsMapper extends Command {
+export default class XCCDF2InSpec extends Command {
   static usage = 'convert:xccdf2inspec -i, --input=XML -o, --output=FOLDER'
 
   static description = 'Translate a DISA STIG XCCDF XML file to a skeleton for an InSpec profile'
@@ -24,7 +24,7 @@ export default class XCCDFResultsMapper extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(XCCDFResultsMapper)
+    const {flags} = this.parse(XCCDF2InSpec)
 
     // Check if the output folder already exists
     if (!fs.existsSync(flags.output)) {
@@ -78,18 +78,18 @@ export default class XCCDFResultsMapper extends Command {
     profileInfo.referenceSource = parsedXML.Benchmark.reference['dc:source']
     // Convert camelCase and snake_case to human readable for README.md
     const readableMetadata: Record<string, string | number> = {}
-    for (const [key, value] of Object.entries(profileInfo)) {
+    Object.entries(profileInfo).forEach(async ([key, value]) => {
       // Filter out any undefined values and omit summary and title
       if (value && key !== 'summary' && key !== 'summary') {
         readableMetadata[_.startCase(key)] = value
       }
-    }
+    })
 
     // Write README.md
     fs.writeFileSync(path.join(flags.output, 'README.md'), `# ${profileInfo.name}\n${profileInfo.summary}\n---\n${YAML.stringify(readableMetadata)}`)
 
     // Convert Controls
-    for (const group of groups) {
+    groups.forEach(async group => {
       // Extract encoded XML values from the rule description
       const extractedDescription: DecodedDescription = convertEncodedHTMLIntoJson(group.Rule?.description)
       // Group must contain a vulnerability
@@ -132,7 +132,7 @@ export default class XCCDFResultsMapper extends Command {
       if ('ident' in group.Rule) {
         const identifiers = Array.isArray(group.Rule.ident) ? group.Rule.ident : [group.Rule.ident]
         // Grab CCI/NIST/Legacy identifiers
-        identifiers.forEach(identifier => {
+        identifiers.forEach(async identifier => {
           if (identifier['@_system'].toLowerCase().endsWith('cci')) {
             _.set(inspecControl, 'tags.cci', _.get(inspecControl, 'tags.cci') || [])
             inspecControl.tags.cci?.push(identifier['#text'])
@@ -152,15 +152,15 @@ export default class XCCDFResultsMapper extends Command {
       }
 
       inspecControls.push(inspecControl)
-    }
+    })
     // Convert all extracted controls to Ruby/InSpec code
     if (!flags.singleFile) {
-      inspecControls.forEach(control => {
+      inspecControls.forEach(async control => {
         fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control))
       })
     } else {
       const controlOutfile = fs.createWriteStream(path.join(flags.output, 'controls', 'controls.rb'), {flags: 'w'})
-      inspecControls.forEach(control => {
+      inspecControls.forEach(async control => {
         controlOutfile.write(inspecControlToRubyCode(control) + '\n\n')
       })
       controlOutfile.close()

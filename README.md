@@ -190,7 +190,6 @@ convert:hdf2asff            Translate a Heimdall Data Format JSON file into
                             AWS Security Findings Format JSON file(s)
   OPTIONS
     -a, --accountId=accountId  (required) AWS Account ID
-    -h, --help                 show CLI help
     -i, --input=input          (required) Input HDF JSON File
     -o, --output=output        (required) Output ASFF JSONs Folder
     -r, --region=region        (required) SecurityHub Region
@@ -208,7 +207,6 @@ convert:aws_config2hdf      Pull Configuration findings from AWS Config and conv
                             into a Heimdall Data Format JSON file
   OPTIONS
     -a, --accessKeyId=accessKeyId
-    -h, --help                             show CLI help
     -i, --insecure                         Bypass SSL verification, this is insecure.
     -o, --output=output                    (required)
     -r, --region=region                    (required)
@@ -233,6 +231,18 @@ convert:burpsuite2hdf       Translate a BurpSuite Pro XML file into a Heimdall
   EXAMPLES
     saf convert:burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json
 ```
+
+#### CKL to POA&M
+
+```
+convert:ckl2POAM            Translate DISA Checklist CKL file(s) to POA&M files
+
+  OPTIONS
+    -O, --officeOrg=officeOrg    Default value for Office/org (prompts for each file if not set)
+    -d, --deviceName=deviceName  Name of target device (prompts for each file if not set)
+    -i, --input=input            (required) Path to the DISA Checklist File(s)
+    -o, --output=output          (required) Path to output PO&M File(s)
+    -s, --rowsToSkip=rowsToSkip  [default: 4] Rows to leave between POA&M Items for milestone
 
 
 #### HDF to Condensed JSON
