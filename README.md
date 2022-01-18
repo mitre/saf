@@ -234,6 +234,8 @@ convert:burpsuite2hdf       Translate a BurpSuite Pro XML file into a Heimdall
 
 #### CKL to POA&M
 
+Note: Included CCI to NIST Mappings are the extracted from NIST.gov, for mappings specific to eMASS use [this](https://github.com/mitre/ckl2POAM/blob/main/resources/cci2nist.json) file instead. If you need access to this file please contact [saf@groups.mitre.org](mailto:saf@groups.mitre.org).
+
 ```
 convert:ckl2POAM            Translate DISA Checklist CKL file(s) to POA&M files
 
