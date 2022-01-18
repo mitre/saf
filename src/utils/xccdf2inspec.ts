@@ -8,10 +8,7 @@ const wrap = (s: string) => s.replace(
   /(?![^\n]{1,80}$)([^\n]{1,80})\s/g, '$1\n'
 )
 
-const escape = (s: string) => s.replace(/\\/g, '\\\\').replace(/'/g, '\\\'')
 const escapeQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
-
-const wrapAndEscape = (s: string) => escape(wrap(s))
 const wrapAndEscapeQuotes = (s: string) => escapeQuotes(wrap(s))
 
 export function convertEncodedXmlIntoJson(
@@ -88,7 +85,7 @@ export function severityStringToImpact(string: string): number {
   throw new Error(`${string}' is not a valid severity value. It should be one of the approved keywords`)
 }
 
-export function impactStringToSeverity(impact: number): string {
+export function impactNumberToSeverityString(impact: number): string {
   if (impact < 0.0 || impact > 1.0) {
     throw new Error('Impact cannot be less than 0.0 or greater than 1.0')
   } else {
@@ -110,26 +107,33 @@ export function impactStringToSeverity(impact: number): string {
 
 export function inspecControlToRubyCode(control: InSpecControl): string {
   let result = '# encoding: UTF-8\n\n'
-  result += `control '${control.id}' do\n`
-  result += `  title '${wrapAndEscape(control.title)}'\n`
-  result += `  desc '${wrapAndEscape(control.desc)}'\n`
-  result += `  desc 'rationale' '${wrapAndEscape(control.rationale)}'\n`
-  if (control.tags.check) {
-    result += `  desc 'check' "${wrapAndEscapeQuotes(control.tags.check)}"\n`
+
+  result += `control "${control.id}" do\n`
+  result += `  title "${wrapAndEscapeQuotes(control.title)}"\n`
+  result += `  desc "${wrapAndEscapeQuotes(control.desc)}"\n`
+
+  Object.entries(control.descs).forEach(([key, desc]) => {
+    if (desc) {
+      result += `  desc "${key}", "${wrapAndEscapeQuotes(desc)}"\n`
+    } else {
+      console.error(`${control.id} does not have a desc for the value ${key}`)
+    }
+  })
+
+  if (control.impact) {
+    result += `  impact ${control.impact}\n`
   }
-  if (control.tags.fix) {
-    result += `  desc 'fix' "${wrapAndEscapeQuotes(control.tags.fix)}"\n`
-  }
-  result += `  impact ${control.impact}\n`
+
   Object.entries(control.tags).forEach(([tag, value]) => {
-    if (tag !== 'check' && tag !== 'fix' && value) {
+    if (value) {
       if (typeof value === 'object') {
         result += `  tag ${tag}: ${JSON.stringify(value)}\n`
       } else if (typeof value === 'string') {
-        result += `  tag ${tag}: '${wrapAndEscape(value)}'\n`
+        result += `  tag ${tag}: "${wrapAndEscapeQuotes(value)}"\n`
       }
     }
   })
   result += 'end'
+
   return result
 }

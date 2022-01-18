@@ -1,5 +1,8 @@
 import {getInstalledPathSync} from 'get-installed-path'
+import _ from 'lodash'
 import path from 'path'
+
+export type SpreadsheetTypes = 'cis' | 'disa' |'general'
 
 export function checkSuffix(input: string) {
   if (input.endsWith('.json')) {
@@ -29,4 +32,35 @@ export function getInstalledPath(): string {
     installedPath = path.join(require.main?.path.replace('/bin', '').replace('\\bin', '') || '.')
   }
   return installedPath
+}
+
+export const arrayedPaths = ['tags.CCI', 'tags.NIST']
+
+export function findFieldIndex(field: string | string [], fields: (string | number)[], defaultIndex: number) {
+  if (Array.isArray(field)) {
+    return fields.indexOf(
+      fields.find(fieldsItem => fields.indexOf(fieldsItem) !== -1) || 'Field Not Defined'
+    )
+  }
+  return fields.indexOf(field) === -1 ? defaultIndex : fields.indexOf(field)
+}
+
+export function arrayNeededPaths(typeOfPath: string, values: any) {
+  if (arrayedPaths.includes(typeOfPath)) {
+    return [values]
+  }
+  return values
+}
+
+export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNumber: string | string[] | number, data: Record<string, any>, format?: SpreadsheetTypes): any {
+  if (typeof pathOrNumber === 'string') {
+    return arrayNeededPaths(typeOfPathOrNumber, _.get(data, pathOrNumber))
+  }
+  if (Array.isArray(pathOrNumber)) {
+    const foundPath = pathOrNumber.find(item => _.get(data, item)) || 'Field Not Defined'
+    return arrayNeededPaths(typeOfPathOrNumber, _.get(data, foundPath))
+  }
+  if (typeof pathOrNumber === 'number') {
+    return pathOrNumber
+  }
 }

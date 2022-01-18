@@ -1,4 +1,4 @@
-import {default as cci2nistmap} from '../resources/cci2nist.json'
+import {default as cci2nistmap} from '@mitre/hdf-converters/lib/data/cci-nist-mapping.json'
 import {Vulnerability} from '../types/STIG'
 import promptSync from 'prompt-sync'
 const prompt = promptSync()

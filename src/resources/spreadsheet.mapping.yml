@@ -1,0 +1,29 @@
+id:
+  - ID
+  - "recommendation #"
+title:
+  - Title
+  - title
+desc:
+  - Description
+  - Discussion
+  - description
+impact: 0.5
+desc.rationale:
+  - Rationale
+  - rationale statement
+desc.check:
+  - Audit
+  - audit procedure
+desc.fix:
+  - Remediation
+  - remediation procedure
+desc.impact_text:
+  - Impact
+tags.cis_controls:
+  - CIS Controls
+  - CIS controls
+tags.default_value:
+  - Default Value
+tags.references:
+  - References

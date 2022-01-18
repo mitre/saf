@@ -3,7 +3,7 @@ import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import {DecodedDescription, DisaStig} from '../../types/xccdf'
 import {InSpecControl, InSpecMetaData} from '../../types/inspec'
-import {convertEncodedHTMLIntoJson, convertEncodedXmlIntoJson, impactStringToSeverity, inspecControlToRubyCode, severityStringToImpact} from '../../utils/xccdf2inspec'
+import {convertEncodedHTMLIntoJson, convertEncodedXmlIntoJson, impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact} from '../../utils/xccdf2inspec'
 import path from 'path'
 import _ from 'lodash'
 import YAML from 'yaml'
@@ -109,7 +109,7 @@ export default class XCCDF2InSpec extends Command {
         tags: {
           check: group.Rule.check['check-content'],
           fix: group.Rule.fixtext['#text'],
-          severity: impactStringToSeverity(severityStringToImpact(group.Rule['@_severity'] || 'critical')),
+          severity: impactNumberToSeverityString(severityStringToImpact(group.Rule['@_severity'] || 'critical')),
           gtitle: group.title,
           satisfies: extractedDescription.VulnDiscussion.includes('Satisfies: ') && extractedDescription.VulnDiscussion.split('Satisfies: ').length >= 1 ? extractedDescription.VulnDiscussion.split('Satisfies: ')[1].split(',').map(satisfaction => satisfaction.trim()) : undefined,
           gid: group['@_id'],
