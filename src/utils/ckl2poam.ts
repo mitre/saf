@@ -114,7 +114,7 @@ export function cleanStatus(status: string) {
 }
 
 export function replaceSpecialCharacters(text: string): string {
-  return text.replace(/'/g, '`').replace(/"/g, '`').replace(/</g, '(').replace(/>/g, ')').replace(/\\/, '\\')
+  return text.replace(/'/g, '`').replace(/"/g, '`').replace(/</g, '(').replace(/>/g, ')').replace(/\\/g, '\\\\')
 }
 
 function cleanComments(comments: string): string {
