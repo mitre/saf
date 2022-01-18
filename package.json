@@ -71,6 +71,9 @@
       "@oclif/plugin-help",
       "@oclif/plugin-warn-if-update-available"
     ],
+    "macos": {
+      "identifier": "org.mitre.saf"
+    },
     "warn-if-update-available": {
       "timeoutInDays": 1,
       "registry": "https://www.npmjs.com/package/@mitre/saf",
