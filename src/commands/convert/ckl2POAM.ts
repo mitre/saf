@@ -10,7 +10,8 @@ import promptSync from 'prompt-sync'
 import XlsxPopulate from 'xlsx-populate'
 import moment from 'moment'
 import {cci2nist, cklSeverityToImpact, cklSeverityToLikelihood, cklSeverityToPOAMSeverity, cklSeverityToRelevanceOfThreat, cklSeverityToResidualRiskLevel, cleanStatus, combineComments, convertToRawSeverity, createCVD, extractSolution, extractSTIGUrl, replaceSpecialCharacters} from '../../utils/ckl2poam'
-import {getInstalledPath} from '../../utils/global'
+import {default as files} from '../../resources/files.json'
+import {dataURLtoU8Array} from '../../utils/global'
 
 const prompt = promptSync()
 const {printf} = format
@@ -137,7 +138,7 @@ export default class CKL2POAM extends Command {
             const officeOrg = flags.officeOrg || prompt('What should the default value be for Office/org? ')
             const host = flags.deviceName || prompt('What is the device name? ')
             // Read our template
-            XlsxPopulate.fromFileAsync(path.join(getInstalledPath(), 'src', 'resources', 'POA&M Template.xlsm')).then((workBook: any) => {
+            XlsxPopulate.fromDataAsync(dataURLtoU8Array(files.POAMTemplate.data)).then((workBook: any) => {
               // eMASS reads the first sheet in the notebook
               const sheet = workBook.sheet(0)
               // The current row we are on
