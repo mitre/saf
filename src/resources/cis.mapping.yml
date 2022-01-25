@@ -20,10 +20,12 @@ desc.check:
 desc.fix:
   - Remediation
   - remediation procedure
-desc.impact_text:
+desc.additional_information:
+  - Additional Information
+tags.impact:
   - Impact
 tags.cis_controls:
   - CIS Controls
   - CIS controls
-tags.default_value:
+desc.default_value:
   - Default Value

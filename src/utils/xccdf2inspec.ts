@@ -138,7 +138,7 @@ export function inspecControlToRubyCode(control: InSpecControl): string {
 
   if (control.refs) {
     control.refs.forEach(ref => {
-      result += `  ref: '${escapeQuotes(ref)}'\n`
+      result += `  ref '${escapeQuotes(ref)}'\n`
     })
   }
 

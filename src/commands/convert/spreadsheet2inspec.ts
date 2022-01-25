@@ -97,7 +97,7 @@ export default class Spreadsheet2HDF extends Command {
             throw new Error('Passed metadata file does not exist')
           }
         } else {
-          mappings = YAML.parse(fs.readFileSync(path.join(getInstalledPath(), 'src', 'resources', 'cis.mapping.yml'), 'utf-8'))
+          mappings = YAML.parse(fs.readFileSync(path.join(getInstalledPath(), 'src', 'resources', flags.mapping === 'disa' ? 'disa.mapping.yml' : 'cis.mapping.yml'), 'utf-8'))
         }
         if (usedRange) {
           // Get data from the spreadsheet into a 2D array
@@ -216,7 +216,7 @@ export default class Spreadsheet2HDF extends Command {
           throw new Error('Passed metadata file does not exist')
         }
       } else {
-        mappings = YAML.parse(fs.readFileSync(path.join(getInstalledPath(), 'src', 'resources', 'disa.mapping.yml'), 'utf-8'))
+        mappings = YAML.parse(fs.readFileSync(path.join(getInstalledPath(), 'src', 'resources', flags.mapping === 'disa' ? 'disa.mapping.yml' : 'cis.mapping.yml'), 'utf-8'))
       }
       // Assume we have a CSV file
       // Read the input file into lines
@@ -268,6 +268,57 @@ export default class Spreadsheet2HDF extends Command {
               newControl.tags?.nist?.push(_.get(CCINistMappings, cci))
             }
           })
+        }
+        if (newControl.ref) {
+          const urlMatches = newControl.ref.replace(/\r/g, '').replace(/\n/g, '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g)
+          if (urlMatches) {
+            newControl.refs = urlMatches
+          }
+          newControl.ref = undefined
+        }
+        if (flags.format === 'cis' && newControl.tags && newControl.tags.cis_controls && typeof newControl.tags.cis_controls === 'string') {
+          // Match standard CIS benchmark XLSX spreadsheets
+          // CIS controls are a string before they are parsed
+          let cisControlMatches = (newControl.tags.cis_controls as unknown as string).match(/CONTROL:v(\d) (\d+)\.?(\d*)/)
+          if (cisControlMatches) {
+            newControl.tags.cis_controls = []
+            const mappedCISControlsByVersion: Record<string, string[]> = {}
+            cisControlMatches.map(cisControl => cisControl.split(' ')).forEach(([revision, cisControl]) => {
+              const controlRevision = revision.split('CONTROL:v')[1]
+              const existingControls = _.get(mappedCISControlsByVersion, controlRevision) || []
+              existingControls.push(cisControl)
+              mappedCISControlsByVersion[controlRevision] = existingControls
+            })
+            Object.entries(mappedCISControlsByVersion).forEach(([version, controls]) => {
+              newControl.tags?.cis_controls?.push({
+                [version]: controls,
+              })
+            })
+          } else {
+            // Match parsed CIS benchmark PDFs
+            // CIS controls are a string before they are parsed
+            cisControlMatches = (newControl.tags.cis_controls as unknown as string).match(/v\d\W\r?\n\d.?\d?\d?/gi)
+            if (cisControlMatches) {
+              newControl.tags.cis_controls = []
+              const mappedCISControlsByVersion: Record<string, string[]> = {}
+              cisControlMatches.map((cisControl => cisControl.replace(/\r?\n/, '').split(' '))).forEach(([revision, cisControl]) => {
+                if (revision === 'v7') {
+                  if (cisControl in CISNistMappings) {
+                    newControl.tags?.nist?.push(_.get(CISNistMappings, cisControl))
+                  }
+                }
+                const revisionNumber = revision.replace('v', '')
+                const existingControls = _.get(mappedCISControlsByVersion, revisionNumber) || []
+                existingControls.push(cisControl)
+                mappedCISControlsByVersion[revisionNumber] = existingControls
+              })
+              Object.entries(mappedCISControlsByVersion).forEach(([version, controls]) => {
+                newControl.tags?.cis_controls?.push({
+                  [version]: controls,
+                })
+              })
+            }
+          }
         }
         inspecControls.push(newControl as unknown as InSpecControl)
       })
