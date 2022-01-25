@@ -269,6 +269,13 @@ export default class Spreadsheet2HDF extends Command {
             }
           })
         }
+        if (newControl.ref) {
+          const urlMatches = newControl.ref.replace(/\r/g, '').replace(/\n/g, '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g)
+          if (urlMatches) {
+            newControl.refs = urlMatches
+          }
+          newControl.ref = undefined
+        }
         inspecControls.push(newControl as unknown as InSpecControl)
       })
     })
