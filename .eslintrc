@@ -12,6 +12,7 @@
     "unicorn/no-zero-fractions": "off",
     "unicorn/no-array-for-each": "off",
     "unicorn/explicit-length-check": "off",
+    "new-cap": "off",
     "no-console": "off",
     "node/no-missing-import": "off",
     "complexity": "off"

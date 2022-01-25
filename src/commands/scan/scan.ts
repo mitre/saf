@@ -13,15 +13,15 @@ export default class Scan extends Command {
     target: flags.string({char: 't', description: 'Standard target URI (e.g ssh://root:password@192.168.1.1)'}),
     method: flags.string({char: 'm', default: 'ssh', options: ['ssh', 'winrm'], description: 'Transport method to evaluate profiles'}),
     username: flags.string({char: 'u', description: 'Username to authenticate with'}),
-    password: flags.string({char: 'P', description: 'Password to authenticate with'})
+    password: flags.string({char: 'P', description: 'Password to authenticate with'}),
   }
 
   async makeRequest(endpoint: string, method: 'GET' | 'POST', data?: Record<string, unknown>) {
     const request = got(`unix:/var/run/docker.sock:${endpoint}`, {
-        method: method,
-        json: data
+      method: method,
+      json: data,
     })
-    
+
     return request.json()
   }
 
@@ -29,7 +29,7 @@ export default class Scan extends Command {
     return got.get('https://raw.githubusercontent.com/mitre/mitre-saf/master/src/assets/data/baselines.json').json().then((profiles: any) => {
       const mappedProfiles: Record<string, string> = {}
       profiles.baselines.forEach((profile: any) => {
-        if(profile.link) {
+        if (profile.link) {
           mappedProfiles[profile.shortName] = profile.link
         }
       })
@@ -38,17 +38,17 @@ export default class Scan extends Command {
   }
 
   async handleContainerWebsocketConnection(id: string) {
-    var client = new ws(`ws+unix:///var/run/docker.sock:/containers/${id}/attach/ws?stream=1&stdout=1&stdin=1&logs=1`)
+    const client = new ws(`ws+unix:///var/run/docker.sock:/containers/${id}/attach/ws?stream=1&stdout=1&stdin=1&logs=1`)
 
     client.on('open', () => {
       console.log(`Connected to container ${id}`)
-    });
+    })
 
     client.on('message', (data: Buffer) => {
       console.log(data.toString())
-    });
+    })
 
-    client.on('error', (error) => {
+    client.on('error', error => {
       console.error(error)
     })
 
@@ -57,15 +57,15 @@ export default class Scan extends Command {
     })
   }
 
-  async createContainer(image: string, args: string[]): Promise<{Id: string, Warnings: string[]}> {
+  async createContainer(image: string, args: string[]): Promise<{Id: string; Warnings: string[]}> {
     return this.makeRequest('/containers/create', 'POST', {
-        Image: image,
-        Cmd: args
-    }) as Promise<{Id: string, Warnings: string[]}>
+      Image: image,
+      Cmd: args,
+    }) as Promise<{Id: string; Warnings: string[]}>
   }
 
   async getContainerInfo(id: string) {
-    return this.makeRequest(`/v1.24/containers/${id}/json`, "GET")
+    return this.makeRequest(`/v1.24/containers/${id}/json`, 'GET')
   }
 
   async startContainer(id: string) {
@@ -80,33 +80,32 @@ export default class Scan extends Command {
     const {flags} = this.parse(Scan)
 
     if (process.getuid() !== 0) {
-      throw new Error("Please run this command as root so SAF can communicate with the Docker interface")
+      throw new Error('Please run this command as root so SAF can communicate with the Docker interface')
     }
 
     const availableProfiles = Object.entries(await this.getProfiles())
 
-    if(flags.profile) {
+    if (flags.profile) {
       const profile = availableProfiles[flags.profile - 1]
-      if(profile) {
+      if (profile) {
         const [name, url] = profile
         console.log(`Selected profile ${name} (${url})`)
         // Create a CINC Auditor container
-        const containerId = await this.createContainer('cincproject/auditor', ['exec', '--help']).then((containerResponse) => containerResponse.Id)
+        const containerId = await this.createContainer('cincproject/auditor', ['exec', '--help']).then(containerResponse => containerResponse.Id)
         // Start the container
         await this.startContainer(containerId)
         // Get the logs from the container
         await this.handleContainerWebsocketConnection(containerId)
       } else {
-        console.error(`Invalid profile selected, please choose a number 1-${availableProfiles.length-2}`)
+        console.error(`Invalid profile selected, please choose a number 1-${availableProfiles.length - 2}`)
       }
     } else {
       availableProfiles.forEach(([shortName, url], index) => {
-        console.log(`${index+1}) ${shortName}`)
+        console.log(`${index + 1}) ${shortName}`)
       })
 
-      return console.log("No profile selected, please choose one of the profiles shown above.")
+      return console.log('No profile selected, please choose one of the profiles shown above.')
     }
-    
   }
 }
 
