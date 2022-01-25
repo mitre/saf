@@ -32,6 +32,10 @@ export default class Spreadsheet2HDF extends Command {
   async run() {
     const {flags} = this.parse(Spreadsheet2HDF)
 
+    if (flags.format === 'general' && !flags.mapping) {
+      throw new Error('Please provide your own mapping file for spreadsheets that do not follow CIS or DISA specifications, or use --format to specify a template')
+    }
+
     // Check if the output folder already exists
     if (fs.existsSync(flags.output)) {
       // Folder should not exist already
@@ -52,10 +56,6 @@ export default class Spreadsheet2HDF extends Command {
       } else {
         throw new Error('Passed metadata file does not exist')
       }
-    }
-
-    if (flags.format === 'general' && !flags.mapping) {
-      throw new Error('Please provide your own mapping for spreadsheets that do not follow CIS or DISA specifications')
     }
 
     const inspecControls: InSpecControl[] = []
@@ -117,7 +117,7 @@ export default class Spreadsheet2HDF extends Command {
             return mappedRecord
           })
           // Convert the mapped objects into controls
-          mappedRecords.forEach(record => {
+          mappedRecords.forEach((record, index) => {
             // Get the control ID
             let controlId = extractValueViaPathOrNumber('mappings.id', mappings.id, record)
             if (controlId) {
@@ -202,8 +202,7 @@ export default class Spreadsheet2HDF extends Command {
               inspecControls.push(newControl as unknown as InSpecControl)
             } else {
               // Possibly a section divider, possibly a bad mapping. Let the user know to verify
-              const title = extractValueViaPathOrNumber('mappings.title', mappings.title || 'Title', record) || 'Unknown title'
-              console.error(`Control "${title}" has no ID... skipping`)
+              console.error(`Control at index "${index}" has no ID... skipping`)
             }
           })
         }
@@ -237,7 +236,8 @@ export default class Spreadsheet2HDF extends Command {
         skip_empty_lines: true,
       })
 
-      records.forEach(record => {
+      records.forEach((record, index) => {
+        let skipControlDueToError = false
         const newControl: Partial<InSpecControl> = {
           refs: [],
           tags: {
@@ -246,11 +246,21 @@ export default class Spreadsheet2HDF extends Command {
           },
         }
         Object.entries(mappings).forEach(mapping => {
-          if (mapping[0] === 'id' && flags.controlNamePrefix) {
-            _.set(newControl, mapping[0].toLowerCase(), `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${extractValueViaPathOrNumber(mapping[0], mapping[1], record)}`)
+          if (mapping[0] === 'id') {
+            const value = extractValueViaPathOrNumber(mapping[0], mapping[1], record)
+            if (value) {
+              _.set(newControl, mapping[0].toLowerCase().replace('desc.', 'descs.'), `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${value}`)
+            } else {
+              console.error(`Control at index ${index} has no mapped control ID... skipping`)
+              skipControlDueToError = true
+            }
+          } else {
+            _.set(newControl, mapping[0].toLowerCase().replace('desc.', 'descs.'), extractValueViaPathOrNumber(mapping[0], mapping[1], record))
           }
-          _.set(newControl, mapping[0].toLowerCase(), extractValueViaPathOrNumber(mapping[0], mapping[1], record))
         })
+        if (skipControlDueToError) {
+          return
+        }
         if (newControl.tags && newControl.tags?.cci) {
           newControl.tags.nist = []
           newControl.tags.cci.forEach(cci => {

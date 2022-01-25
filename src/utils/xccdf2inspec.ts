@@ -110,8 +110,17 @@ export function inspecControlToRubyCode(control: InSpecControl): string {
   let result = '# encoding: UTF-8\n\n'
 
   result += `control "${control.id}" do\n`
-  result += `  title "${wrapAndEscapeQuotes(control.title)}"\n`
-  result += `  desc "${wrapAndEscapeQuotes(control.desc)}"\n`
+  if (control.title) {
+    result += `  title "${wrapAndEscapeQuotes(control.title)}"\n`
+  } else {
+    console.error(`${control.id} does not have a title`)
+  }
+
+  if (control.desc) {
+    result += `  desc "${wrapAndEscapeQuotes(control.desc)}"\n`
+  } else {
+    console.error(`${control.id} does not have a desc`)
+  }
 
   Object.entries(control.descs).forEach(([key, desc]) => {
     if (desc) {
@@ -123,6 +132,8 @@ export function inspecControlToRubyCode(control: InSpecControl): string {
 
   if (control.impact) {
     result += `  impact ${control.impact}\n`
+  } else {
+    console.error(`${control.id} does not have an impact`)
   }
 
   if (control.refs) {

@@ -34,7 +34,7 @@ export function getInstalledPath(): string {
   return installedPath
 }
 
-export const arrayedPaths = ['tags.CCI', 'tags.NIST']
+export const arrayedPaths = ['tags.cci', 'tags.nist']
 
 export function findFieldIndex(field: string | string [], fields: (string | number)[], defaultIndex: number) {
   if (Array.isArray(field)) {
@@ -46,7 +46,7 @@ export function findFieldIndex(field: string | string [], fields: (string | numb
 }
 
 export function arrayNeededPaths(typeOfPath: string, values: any) {
-  if (arrayedPaths.includes(typeOfPath)) {
+  if (arrayedPaths.includes(typeOfPath.toLowerCase())) {
     return [values]
   }
   return values
