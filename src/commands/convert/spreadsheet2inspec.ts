@@ -5,10 +5,10 @@ import parse from 'csv-parse/lib/sync'
 import {InSpecControl, InSpecMetaData} from '../../types/inspec'
 import YAML from 'yaml'
 import XlsxPopulate from 'xlsx-populate'
-import {impactNumberToSeverityString, inspecControlToRubyCode} from '../../utils/xccdf2inspec'
+import {impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact} from '../../utils/xccdf2inspec'
 import _ from 'lodash'
 import {CSVControl} from '../../types/csv'
-import {extractValueViaPathOrNumber, findFieldIndex, getInstalledPath, SpreadsheetTypes} from '../../utils/global'
+import {extractValueViaPathOrNumber, getInstalledPath, SpreadsheetTypes} from '../../utils/global'
 import {default as CCINistMappings} from '@mitre/hdf-converters/lib/data/cci-nist-mapping.json'
 import {default as CISNistMappings} from '../../resources/cis2nist.json'
 
@@ -29,6 +29,93 @@ export default class Spreadsheet2HDF extends Command {
     output: flags.string({char: 'o', required: true, description: 'Output InSpec profile folder'}),
   }
 
+  matchReferences(control: Partial<InSpecControl>): Partial<InSpecControl> {
+    if (control.ref) {
+      const urlMatches = control.ref.replace(/\r/g, '').replace(/\n/g, '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g)
+      if (urlMatches) {
+        control.refs = urlMatches
+      }
+      control.ref = undefined
+    }
+    return control
+  }
+
+  matchImpactFromSeverityIfImpactNotSet(control: Partial<InSpecControl>): Partial<InSpecControl> {
+    if (!control.impact && control.tags?.severity) {
+      control.impact = severityStringToImpact(control.tags.severity)
+    }
+    return control
+  }
+
+  matchCISControls(control: Partial<InSpecControl>, flags: {[name: string]: any}): Partial<InSpecControl> {
+    if (flags.format === 'cis' && control.tags && control.tags.cis_controls && typeof control.tags.cis_controls === 'string') {
+      // Match standard CIS benchmark XLSX spreadsheets
+      // CIS controls are a string before they are parsed
+      let cisControlMatches = (control.tags.cis_controls as unknown as string).match(/CONTROL:v(\d) (\d+)\.?(\d*)/)
+      if (cisControlMatches) {
+        control.tags.cis_controls = []
+        const mappedCISControlsByVersion: Record<string, string[]> = {}
+        cisControlMatches.map(cisControl => cisControl.split(' ')).forEach(([revision, cisControl]) => {
+          const controlRevision = revision.split('CONTROL:v')[1]
+          const existingControls = _.get(mappedCISControlsByVersion, controlRevision) || []
+          existingControls.push(cisControl)
+          mappedCISControlsByVersion[controlRevision] = existingControls
+        })
+        Object.entries(mappedCISControlsByVersion).forEach(([version, controls]) => {
+          if (version !== 'undefined') {
+            control.tags?.cis_controls?.push({
+              [version]: controls,
+            })
+          }
+        })
+      } else {
+        // Match parsed CIS benchmark PDFs
+        // CIS controls are a string before they are parsed
+        cisControlMatches = (control.tags?.cis_controls as unknown as string).match(/v\d\W\r?\n\d.?\d?\d?/gi)
+        if (cisControlMatches && control.tags) {
+          control.tags.cis_controls = []
+          const mappedCISControlsByVersion: Record<string, string[]> = {}
+          cisControlMatches.map((cisControl => cisControl.replace(/\r?\n/, '').split(' '))).forEach(([revision, cisControl]) => {
+            if (revision === 'v7') {
+              if (cisControl in CISNistMappings) {
+                control.tags?.nist?.push(_.get(CISNistMappings, cisControl))
+              }
+            }
+            const revisionNumber = revision.replace('v', '')
+            const existingControls = _.get(mappedCISControlsByVersion, revisionNumber) || []
+            existingControls.push(cisControl)
+            mappedCISControlsByVersion[revisionNumber] = existingControls
+          })
+          console.log(mappedCISControlsByVersion)
+          Object.entries(mappedCISControlsByVersion).forEach(([version, controls]) => {
+            if (version !== 'undefined') {
+              control.tags?.cis_controls?.push({
+                [version]: controls,
+              })
+            }
+          })
+        }
+      }
+    }
+    return control
+  }
+
+  extractCCIsFromText(control: Partial<InSpecControl>): Partial<InSpecControl> {
+    if (control.tags?.cci) {
+      const extractedCCIs: string[] = []
+      control.tags.cci.forEach(cci => {
+        const cciMatches = cci.match(/CCI-\d{4,}/g)
+        if (cciMatches) {
+          cciMatches.forEach(match => {
+            extractedCCIs.push(match)
+          })
+        }
+      })
+      control.tags.cci = extractedCCIs
+    }
+    return control
+  }
+
   async run() {
     const {flags} = this.parse(Spreadsheet2HDF)
 
@@ -39,8 +126,7 @@ export default class Spreadsheet2HDF extends Command {
     // Check if the output folder already exists
     if (fs.existsSync(flags.output)) {
       // Folder should not exist already
-      // throw new Error('Profile output folder already exists, please specify a new folder')
-      console.log('1')
+      throw new Error('Profile output folder already exists, please specify a new folder')
     } else {
       fs.mkdirSync(flags.output)
       fs.mkdirSync(path.join(flags.output, 'controls'))
@@ -56,6 +142,17 @@ export default class Spreadsheet2HDF extends Command {
       } else {
         throw new Error('Passed metadata file does not exist')
       }
+    }
+
+    // Read mapping file
+    if (flags.mapping) {
+      if (fs.existsSync(flags.mapping)) {
+        mappings = YAML.parse(fs.readFileSync(flags.mapping, 'utf-8'))
+      } else {
+        throw new Error('Passed metadata file does not exist')
+      }
+    } else {
+      mappings = YAML.parse(fs.readFileSync(path.join(getInstalledPath(), 'src', 'resources', flags.format === 'disa' ? 'disa.mapping.yml' : 'cis.mapping.yml'), 'utf-8'))
     }
 
     const inspecControls: InSpecControl[] = []
@@ -89,16 +186,6 @@ export default class Spreadsheet2HDF extends Command {
 
       workBook.sheets().forEach((sheet: any) => {
         const usedRange = sheet.usedRange()
-        // Read mapping file
-        if (flags.mapping) {
-          if (fs.existsSync(flags.mapping)) {
-            mappings = YAML.parse(fs.readFileSync(flags.mapping, 'utf-8'))
-          } else {
-            throw new Error('Passed metadata file does not exist')
-          }
-        } else {
-          mappings = YAML.parse(fs.readFileSync(path.join(getInstalledPath(), 'src', 'resources', flags.mapping === 'disa' ? 'disa.mapping.yml' : 'cis.mapping.yml'), 'utf-8'))
-        }
         if (usedRange) {
           // Get data from the spreadsheet into a 2D array
           const extractedData: (string | number)[][] = usedRange.value()
@@ -126,7 +213,7 @@ export default class Spreadsheet2HDF extends Command {
                 controlId += '0'
               }
               completedIds.push(controlId)
-              const newControl: Partial<InSpecControl> = {
+              let newControl: Partial<InSpecControl> = {
                 refs: [],
                 tags: {
                   nist: [],
@@ -148,57 +235,10 @@ export default class Spreadsheet2HDF extends Command {
                   )
                 }
               })
-              if (flags.format === 'cis' && newControl.tags && newControl.tags.cis_controls && typeof newControl.tags.cis_controls === 'string') {
-                // Match standard CIS benchmark XLSX spreadsheets
-                // CIS controls are a string before they are parsed
-                let cisControlMatches = (newControl.tags.cis_controls as unknown as string).match(/CONTROL:v(\d) (\d+)\.?(\d*)/)
-                if (cisControlMatches) {
-                  newControl.tags.cis_controls = []
-                  const mappedCISControlsByVersion: Record<string, string[]> = {}
-                  cisControlMatches.map(cisControl => cisControl.split(' ')).forEach(([revision, cisControl]) => {
-                    const controlRevision = revision.split('CONTROL:v')[1]
-                    const existingControls = _.get(mappedCISControlsByVersion, controlRevision) || []
-                    existingControls.push(cisControl)
-                    mappedCISControlsByVersion[controlRevision] = existingControls
-                  })
-                  Object.entries(mappedCISControlsByVersion).forEach(([version, controls]) => {
-                    newControl.tags?.cis_controls?.push({
-                      [version]: controls,
-                    })
-                  })
-                } else {
-                  // Match parsed CIS benchmark PDFs
-                  // CIS controls are a string before they are parsed
-                  cisControlMatches = (newControl.tags.cis_controls as unknown as string).match(/v\d\W\r?\n\d.?\d?\d?/gi)
-                  if (cisControlMatches) {
-                    newControl.tags.cis_controls = []
-                    const mappedCISControlsByVersion: Record<string, string[]> = {}
-                    cisControlMatches.map((cisControl => cisControl.replace(/\r?\n/, '').split(' '))).forEach(([revision, cisControl]) => {
-                      if (revision === 'v7') {
-                        if (cisControl in CISNistMappings) {
-                          newControl.tags?.nist?.push(_.get(CISNistMappings, cisControl))
-                        }
-                      }
-                      const revisionNumber = revision.replace('v', '')
-                      const existingControls = _.get(mappedCISControlsByVersion, revisionNumber) || []
-                      existingControls.push(cisControl)
-                      mappedCISControlsByVersion[revisionNumber] = existingControls
-                    })
-                    Object.entries(mappedCISControlsByVersion).forEach(([version, controls]) => {
-                      newControl.tags?.cis_controls?.push({
-                        [version]: controls,
-                      })
-                    })
-                  }
-                }
-              }
-              if (newControl.ref) {
-                const urlMatches = newControl.ref.replace(/\r/g, '').replace(/\n/g, '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g)
-                if (urlMatches) {
-                  newControl.refs = urlMatches
-                }
-                newControl.ref = undefined
-              }
+              newControl = this.matchReferences(newControl)
+              newControl = this.matchCISControls(newControl, flags)
+              newControl = this.matchImpactFromSeverityIfImpactNotSet(newControl)
+              newControl = this.extractCCIsFromText(newControl)
               inspecControls.push(newControl as unknown as InSpecControl)
             } else {
               // Possibly a section divider, possibly a bad mapping. Let the user know to verify
@@ -207,17 +247,7 @@ export default class Spreadsheet2HDF extends Command {
           })
         }
       })
-    }).catch((error: any) => {
-      // Read mapping file
-      if (flags.mapping) {
-        if (fs.existsSync(flags.mapping)) {
-          mappings = YAML.parse(fs.readFileSync(flags.mapping, 'utf-8'))
-        } else {
-          throw new Error('Passed metadata file does not exist')
-        }
-      } else {
-        mappings = YAML.parse(fs.readFileSync(path.join(getInstalledPath(), 'src', 'resources', flags.mapping === 'disa' ? 'disa.mapping.yml' : 'cis.mapping.yml'), 'utf-8'))
-      }
+    }).catch(() => {
       // Assume we have a CSV file
       // Read the input file into lines
       const inputDataLines = fs.readFileSync(flags.input, 'utf-8').split('\n')
@@ -238,7 +268,7 @@ export default class Spreadsheet2HDF extends Command {
 
       records.forEach((record, index) => {
         let skipControlDueToError = false
-        const newControl: Partial<InSpecControl> = {
+        let newControl: Partial<InSpecControl> = {
           refs: [],
           tags: {
             nist: [],
@@ -249,7 +279,7 @@ export default class Spreadsheet2HDF extends Command {
           if (mapping[0] === 'id') {
             const value = extractValueViaPathOrNumber(mapping[0], mapping[1], record)
             if (value) {
-              _.set(newControl, mapping[0].toLowerCase().replace('desc.', 'descs.'), `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${value}`)
+              _.set(newControl, mapping[0], `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${value}`)
             } else {
               console.error(`Control at index ${index} has no mapped control ID... skipping`)
               skipControlDueToError = true
@@ -269,57 +299,12 @@ export default class Spreadsheet2HDF extends Command {
             }
           })
         }
-        if (newControl.ref) {
-          const urlMatches = newControl.ref.replace(/\r/g, '').replace(/\n/g, '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g)
-          if (urlMatches) {
-            newControl.refs = urlMatches
-          }
-          newControl.ref = undefined
-        }
-        if (flags.format === 'cis' && newControl.tags && newControl.tags.cis_controls && typeof newControl.tags.cis_controls === 'string') {
-          // Match standard CIS benchmark XLSX spreadsheets
-          // CIS controls are a string before they are parsed
-          let cisControlMatches = (newControl.tags.cis_controls as unknown as string).match(/CONTROL:v(\d) (\d+)\.?(\d*)/)
-          if (cisControlMatches) {
-            newControl.tags.cis_controls = []
-            const mappedCISControlsByVersion: Record<string, string[]> = {}
-            cisControlMatches.map(cisControl => cisControl.split(' ')).forEach(([revision, cisControl]) => {
-              const controlRevision = revision.split('CONTROL:v')[1]
-              const existingControls = _.get(mappedCISControlsByVersion, controlRevision) || []
-              existingControls.push(cisControl)
-              mappedCISControlsByVersion[controlRevision] = existingControls
-            })
-            Object.entries(mappedCISControlsByVersion).forEach(([version, controls]) => {
-              newControl.tags?.cis_controls?.push({
-                [version]: controls,
-              })
-            })
-          } else {
-            // Match parsed CIS benchmark PDFs
-            // CIS controls are a string before they are parsed
-            cisControlMatches = (newControl.tags.cis_controls as unknown as string).match(/v\d\W\r?\n\d.?\d?\d?/gi)
-            if (cisControlMatches) {
-              newControl.tags.cis_controls = []
-              const mappedCISControlsByVersion: Record<string, string[]> = {}
-              cisControlMatches.map((cisControl => cisControl.replace(/\r?\n/, '').split(' '))).forEach(([revision, cisControl]) => {
-                if (revision === 'v7') {
-                  if (cisControl in CISNistMappings) {
-                    newControl.tags?.nist?.push(_.get(CISNistMappings, cisControl))
-                  }
-                }
-                const revisionNumber = revision.replace('v', '')
-                const existingControls = _.get(mappedCISControlsByVersion, revisionNumber) || []
-                existingControls.push(cisControl)
-                mappedCISControlsByVersion[revisionNumber] = existingControls
-              })
-              Object.entries(mappedCISControlsByVersion).forEach(([version, controls]) => {
-                newControl.tags?.cis_controls?.push({
-                  [version]: controls,
-                })
-              })
-            }
-          }
-        }
+
+        newControl = this.matchReferences(newControl)
+        newControl = this.matchCISControls(newControl, flags)
+        newControl = this.matchImpactFromSeverityIfImpactNotSet(newControl)
+        newControl = this.extractCCIsFromText(newControl)
+
         inspecControls.push(newControl as unknown as InSpecControl)
       })
     })

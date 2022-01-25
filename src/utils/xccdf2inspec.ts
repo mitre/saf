@@ -133,7 +133,7 @@ export function inspecControlToRubyCode(control: InSpecControl): string {
   if (control.impact) {
     result += `  impact ${control.impact}\n`
   } else {
-    console.error(`${control.id} does not have an impact`)
+    console.error(`${control.id} does not have an impact, please define impact within your mapping file or set tags.severity to set automatically`)
   }
 
   if (control.refs) {

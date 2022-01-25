@@ -6,10 +6,10 @@ title:
   - title
 desc:
   - Description
-  - Discussion
   - description
 ref:
   - References
+  - references
 impact: 0.5
 desc.rationale:
   - Rationale
@@ -22,10 +22,11 @@ desc.fix:
   - remediation procedure
 desc.additional_information:
   - Additional Information
-tags.impact:
+desc.impact_text:
   - Impact
+desc.default_value:
+  - Default Value
 tags.cis_controls:
   - CIS Controls
   - CIS controls
-desc.default_value:
-  - Default Value
+

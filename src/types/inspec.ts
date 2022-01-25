@@ -3,7 +3,7 @@ export interface InSpecControl {
     title: string;
     desc: string;
     descs: {[key: string]: string};
-    ref: string;
+    ref?: string;
     refs?: string[];
     rationale?: string;
     impact: number;
