@@ -24,6 +24,7 @@
     "@types/node": "^14",
     "@types/prompt-sync": "^4.1.1",
     "@types/tmp": "^0.2.2",
+    "@types/ws": "^8.2.2",
     "chai": "^4",
     "csv-parse": "^4.16.0",
     "express": "^4.17.1",
@@ -31,6 +32,7 @@
     "flat": "^5.0.2",
     "genversion": "^3.0.1",
     "get-installed-path": "^4.0.8",
+    "got-cjs": "^12.0.1",
     "htmlparser2": "^6.1.0",
     "inspecjs": "^2.6.5",
     "lodash": "^4.17.21",
@@ -41,6 +43,7 @@
     "tslib": "^1",
     "typescript": "^3.3",
     "winston": "^3.4.0",
+    "ws": "^8.4.2",
     "xlsx-populate": "^1.21.0",
     "xml2js": "^0.4.23",
     "yaml": "^1.10.2"
