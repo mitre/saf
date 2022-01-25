@@ -26,7 +26,7 @@ export default class Spreadsheet2HDF extends Command {
     format: flags.string({char: 'f', required: false, default: 'general', options: ['cis', 'disa', 'general']}),
     metadata: flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
     mapping: flags.string({char: 'M', required: false, description: 'Path to a YAML file with mappings for each field, by default, CIS Benchmark fields are used for XLSX, STIG Viewer CSV export is used by CSV'}),
-    output: flags.string({char: 'o', required: true}),
+    output: flags.string({char: 'o', required: true, description: 'Output InSpec profile folder'}),
   }
 
   async run() {
@@ -54,7 +54,7 @@ export default class Spreadsheet2HDF extends Command {
       }
     }
 
-    if (flags.format === 'general' && flags.mapping) {
+    if (flags.format === 'general' && !flags.mapping) {
       throw new Error('Please provide your own mapping for spreadsheets that do not follow CIS or DISA specifications')
     }
 
@@ -70,17 +70,6 @@ export default class Spreadsheet2HDF extends Command {
       license: metadata.license || 'Apache-2.0',
       summary: '"An InSpec Compliance Profile"',
       version: metadata.version || '0.1.0',
-    }
-
-    // Read mapping file
-    if (flags.mapping) {
-      if (fs.existsSync(flags.mapping)) {
-        mappings = YAML.parse(fs.readFileSync(flags.mapping, 'utf-8'))
-      } else {
-        throw new Error('Passed metadata file does not exist')
-      }
-    } else {
-      mappings = YAML.parse(fs.readFileSync(path.join(getInstalledPath(), 'src', 'resources', 'spreadsheet.mapping.yml'), 'utf-8'))
     }
 
     fs.writeFileSync(path.join(flags.output, 'inspec.yml'), YAML.stringify(profileInfo))
@@ -100,6 +89,16 @@ export default class Spreadsheet2HDF extends Command {
 
       workBook.sheets().forEach((sheet: any) => {
         const usedRange = sheet.usedRange()
+        // Read mapping file
+        if (flags.mapping) {
+          if (fs.existsSync(flags.mapping)) {
+            mappings = YAML.parse(fs.readFileSync(flags.mapping, 'utf-8'))
+          } else {
+            throw new Error('Passed metadata file does not exist')
+          }
+        } else {
+          mappings = YAML.parse(fs.readFileSync(path.join(getInstalledPath(), 'src', 'resources', 'cis.mapping.yml'), 'utf-8'))
+        }
         if (usedRange) {
           // Get data from the spreadsheet into a 2D array
           const extractedData: (string | number)[][] = usedRange.value()
@@ -128,6 +127,7 @@ export default class Spreadsheet2HDF extends Command {
               }
               completedIds.push(controlId)
               const newControl: Partial<InSpecControl> = {
+                refs: [],
                 tags: {
                   nist: [],
                   severity: impactNumberToSeverityString(extractValueViaPathOrNumber('mappings.impact', mappings.impact, record)),
@@ -154,12 +154,17 @@ export default class Spreadsheet2HDF extends Command {
                 let cisControlMatches = (newControl.tags.cis_controls as unknown as string).match(/CONTROL:v(\d) (\d+)\.?(\d*)/)
                 if (cisControlMatches) {
                   newControl.tags.cis_controls = []
+                  const mappedCISControlsByVersion: Record<string, string[]> = {}
                   cisControlMatches.map(cisControl => cisControl.split(' ')).forEach(([revision, cisControl]) => {
                     const controlRevision = revision.split('CONTROL:v')[1]
-                    newControl.tags?.cis_controls?.push(cisControl, `Rev_${controlRevision}`)
-                    if (cisControl in CISNistMappings) {
-                      newControl.tags?.nist?.push(_.get(CISNistMappings, cisControl))
-                    }
+                    const existingControls = _.get(mappedCISControlsByVersion, controlRevision) || []
+                    existingControls.push(cisControl)
+                    mappedCISControlsByVersion[controlRevision] = existingControls
+                  })
+                  Object.entries(mappedCISControlsByVersion).forEach(([version, controls]) => {
+                    newControl.tags?.cis_controls?.push({
+                      [version]: controls,
+                    })
                   })
                 } else {
                   // Match parsed CIS benchmark PDFs
@@ -167,16 +172,32 @@ export default class Spreadsheet2HDF extends Command {
                   cisControlMatches = (newControl.tags.cis_controls as unknown as string).match(/v\d\W\r?\n\d.?\d?\d?/gi)
                   if (cisControlMatches) {
                     newControl.tags.cis_controls = []
+                    const mappedCISControlsByVersion: Record<string, string[]> = {}
                     cisControlMatches.map((cisControl => cisControl.replace(/\r?\n/, '').split(' '))).forEach(([revision, cisControl]) => {
                       if (revision === 'v7') {
                         if (cisControl in CISNistMappings) {
                           newControl.tags?.nist?.push(_.get(CISNistMappings, cisControl))
                         }
                       }
-                      newControl.tags?.cis_controls?.push(cisControl, `Rev_${revision.replace('v', '')}`)
+                      const revisionNumber = revision.replace('v', '')
+                      const existingControls = _.get(mappedCISControlsByVersion, revisionNumber) || []
+                      existingControls.push(cisControl)
+                      mappedCISControlsByVersion[revisionNumber] = existingControls
+                    })
+                    Object.entries(mappedCISControlsByVersion).forEach(([version, controls]) => {
+                      newControl.tags?.cis_controls?.push({
+                        [version]: controls,
+                      })
                     })
                   }
                 }
+              }
+              if (newControl.ref) {
+                const urlMatches = newControl.ref.replace(/\r/g, '').replace(/\n/g, '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g)
+                if (urlMatches) {
+                  newControl.refs = urlMatches
+                }
+                newControl.ref = undefined
               }
               inspecControls.push(newControl as unknown as InSpecControl)
             } else {
@@ -188,7 +209,16 @@ export default class Spreadsheet2HDF extends Command {
         }
       })
     }).catch((error: any) => {
-      console.log(error)
+      // Read mapping file
+      if (flags.mapping) {
+        if (fs.existsSync(flags.mapping)) {
+          mappings = YAML.parse(fs.readFileSync(flags.mapping, 'utf-8'))
+        } else {
+          throw new Error('Passed metadata file does not exist')
+        }
+      } else {
+        mappings = YAML.parse(fs.readFileSync(path.join(getInstalledPath(), 'src', 'resources', 'disa.mapping.yml'), 'utf-8'))
+      }
       // Assume we have a CSV file
       // Read the input file into lines
       const inputDataLines = fs.readFileSync(flags.input, 'utf-8').split('\n')
@@ -209,6 +239,7 @@ export default class Spreadsheet2HDF extends Command {
 
       records.forEach(record => {
         const newControl: Partial<InSpecControl> = {
+          refs: [],
           tags: {
             nist: [],
             severity: impactNumberToSeverityString(extractValueViaPathOrNumber('mappings.impact', mappings.impact, record)),

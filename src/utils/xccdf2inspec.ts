@@ -8,8 +8,9 @@ const wrap = (s: string) => s.replace(
   /(?![^\n]{1,80}$)([^\n]{1,80})\s/g, '$1\n'
 )
 
-const escapeQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
-const wrapAndEscapeQuotes = (s: string) => escapeQuotes(wrap(s))
+const escapeQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/'/g, "\\'")
+const escapeDoubleQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
+const wrapAndEscapeQuotes = (s: string) => escapeDoubleQuotes(wrap(s))
 
 export function convertEncodedXmlIntoJson(
   encodedXml: string
@@ -124,10 +125,28 @@ export function inspecControlToRubyCode(control: InSpecControl): string {
     result += `  impact ${control.impact}\n`
   }
 
+  if (control.refs) {
+    control.refs.forEach(ref => {
+      result += `  ref: '${escapeQuotes(ref)}'\n`
+    })
+  }
+
   Object.entries(control.tags).forEach(([tag, value]) => {
     if (value) {
       if (typeof value === 'object') {
-        result += `  tag ${tag}: ${JSON.stringify(value)}\n`
+        if (Array.isArray(value) && typeof value[0] === 'string') {
+          result += `  tag ${tag}: ${JSON.stringify(value)}\n`
+        } else {
+          // Convert JSON Object to Ruby Hash
+          const stringifiedObject = JSON.stringify(value, null, 2)
+          .replace(/\n/g, '\n  ')
+          .replace(/\{\n {6}/g, '{')
+          .replace(/\[\n {8}/g, '[')
+          .replace(/\n {6}\]/g, ']')
+          .replace(/\n {4}\}/g, '}')
+          .replace(/": \[/g, '" => [')
+          result += `  tag ${tag}: ${stringifiedObject}\n`
+        }
       } else if (typeof value === 'string') {
         result += `  tag ${tag}: "${wrapAndEscapeQuotes(value)}"\n`
       }

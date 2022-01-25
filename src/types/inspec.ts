@@ -3,6 +3,8 @@ export interface InSpecControl {
     title: string;
     desc: string;
     descs: {[key: string]: string};
+    ref: string;
+    refs?: string[];
     rationale?: string;
     impact: number;
     tags: {
@@ -16,7 +18,7 @@ export interface InSpecControl {
         stig_id?: string;
         fix_id?: string;
         cci?: string[];
-        cis_controls?: string[];
+        cis_controls?: Record<string, string[]>[];
         nist?: string[];
         legacy?: string[];
         false_negatives?: string;
@@ -29,8 +31,7 @@ export interface InSpecControl {
         mitigation_controls?: string;
         responsibility?: string;
         ia_controls?: string;
-
-        [key: string]: string | string[] | boolean | undefined;
+        [key: string]: string | string[] | Record<string, string[]>[] | boolean | undefined;
     };
 }
 
