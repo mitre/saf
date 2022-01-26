@@ -11,6 +11,7 @@ import {CSVControl} from '../../types/csv'
 import {extractValueViaPathOrNumber, getInstalledPath, SpreadsheetTypes} from '../../utils/global'
 import {default as CCINistMappings} from '@mitre/hdf-converters/lib/data/cci-nist-mapping.json'
 import {default as CISNistMappings} from '../../resources/cis2nist.json'
+import {default as files} from '../../resources/files.json'
 
 export default class Spreadsheet2HDF extends Command {
   static usage = 'convert:spreadsheet2inspec -i, --input=<XLSX or CSV> -o, --output=FOLDER'
@@ -150,7 +151,7 @@ export default class Spreadsheet2HDF extends Command {
         throw new Error('Passed metadata file does not exist')
       }
     } else {
-      mappings = YAML.parse(fs.readFileSync(path.join(getInstalledPath(), 'src', 'resources', flags.format === 'disa' ? 'disa.mapping.yml' : 'cis.mapping.yml'), 'utf-8'))
+      mappings = YAML.parse(flags.format === 'disa' ? files['disa.mapping.yml'].data : files['cis.mapping.yml'].data)
     }
 
     const inspecControls: InSpecControl[] = []
