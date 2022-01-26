@@ -89,7 +89,7 @@ export default class XCCDF2InSpec extends Command {
     fs.writeFileSync(path.join(flags.output, 'README.md'), `# ${profileInfo.name}\n${profileInfo.summary}\n---\n${YAML.stringify(readableMetadata)}`)
 
     // Convert Controls
-    groups.forEach(async group => {
+    groups.forEach(group => {
       // Extract encoded XML values from the rule description
       const extractedDescription: DecodedDescription = convertEncodedHTMLIntoJson(group.Rule?.description)
       // Group must contain a vulnerability
@@ -134,7 +134,7 @@ export default class XCCDF2InSpec extends Command {
       if ('ident' in group.Rule) {
         const identifiers = Array.isArray(group.Rule.ident) ? group.Rule.ident : [group.Rule.ident]
         // Grab CCI/NIST/Legacy identifiers
-        identifiers.forEach(async identifier => {
+        identifiers.forEach(identifier => {
           if (identifier['@_system'].toLowerCase().endsWith('cci')) {
             _.set(inspecControl, 'tags.cci', _.get(inspecControl, 'tags.cci') || [])
             inspecControl.tags.cci?.push(identifier['#text'])
@@ -157,12 +157,12 @@ export default class XCCDF2InSpec extends Command {
     })
     // Convert all extracted controls to Ruby/InSpec code
     if (!flags.singleFile) {
-      inspecControls.forEach(async control => {
+      inspecControls.forEach(control => {
         fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control))
       })
     } else {
       const controlOutfile = fs.createWriteStream(path.join(flags.output, 'controls', 'controls.rb'), {flags: 'w'})
-      inspecControls.forEach(async control => {
+      inspecControls.forEach(control => {
         controlOutfile.write(inspecControlToRubyCode(control) + '\n\n')
       })
       controlOutfile.close()

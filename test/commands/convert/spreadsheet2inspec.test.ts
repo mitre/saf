@@ -2,7 +2,6 @@ import {expect, test} from '@oclif/test'
 import * as tmp from 'tmp'
 import path from 'path'
 import fs from 'fs'
-import _ from 'lodash'
 
 describe('Test spreadsheet2inspec', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})

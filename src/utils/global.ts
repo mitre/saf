@@ -49,23 +49,16 @@ export function getInstalledPath(): string {
 
 export const arrayedPaths = ['tags.cci', 'tags.nist']
 
-export function findFieldIndex(field: string | string [], fields: (string | number)[], defaultIndex: number) {
-  if (Array.isArray(field)) {
-    return fields.indexOf(
-      fields.find(fieldsItem => fields.includes(fieldsItem)) || 'Field Not Defined'
-    )
-  }
-  return fields.includes(field) ? defaultIndex : fields.indexOf(field)
-}
-
 export function arrayNeededPaths(typeOfPath: string, values: any) {
+  // Converts CCI and NIST values to Arrays
   if (arrayedPaths.includes(typeOfPath.toLowerCase())) {
     return [values]
   }
   return values
 }
 
-export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNumber: string | string[] | number, data: Record<string, any>, format?: SpreadsheetTypes): any {
+export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNumber: string | string[] | number, data: Record<string, any>): any {
+  // Maps paths from mapping file to target value
   if (typeof pathOrNumber === 'string') {
     return arrayNeededPaths(typeOfPathOrNumber, _.get(data, pathOrNumber))
   }

@@ -8,7 +8,7 @@ import XlsxPopulate from 'xlsx-populate'
 import {impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact} from '../../utils/xccdf2inspec'
 import _ from 'lodash'
 import {CSVControl} from '../../types/csv'
-import {extractValueViaPathOrNumber, getInstalledPath, SpreadsheetTypes} from '../../utils/global'
+import {extractValueViaPathOrNumber} from '../../utils/global'
 import {default as CCINistMappings} from '@mitre/hdf-converters/lib/data/cci-nist-mapping.json'
 import {default as CISNistMappings} from '../../resources/cis2nist.json'
 import {default as files} from '../../resources/files.json'
@@ -30,6 +30,7 @@ export default class Spreadsheet2HDF extends Command {
     output: flags.string({char: 'o', required: true, description: 'Output InSpec profile folder'}),
   }
 
+  // Extract URLs for references
   matchReferences(control: Partial<InSpecControl>): Partial<InSpecControl> {
     if (control.ref) {
       const urlMatches = control.ref.replace(/\r/g, '').replace(/\n/g, '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g)
@@ -41,6 +42,7 @@ export default class Spreadsheet2HDF extends Command {
     return control
   }
 
+  // Set impact from tags.severity if impact is not defined
   matchImpactFromSeverityIfImpactNotSet(control: Partial<InSpecControl>): Partial<InSpecControl> {
     if (!control.impact && control.tags?.severity) {
       control.impact = severityStringToImpact(control.tags.severity)
@@ -48,6 +50,7 @@ export default class Spreadsheet2HDF extends Command {
     return control
   }
 
+  // Extract CIS controls from control.tags.cis_controls (as string) into
   matchCISControls(control: Partial<InSpecControl>, flags: {[name: string]: any}): Partial<InSpecControl> {
     if (flags.format === 'cis' && control.tags && control.tags.cis_controls && typeof control.tags.cis_controls === 'string') {
       // Match standard CIS benchmark XLSX spreadsheets
@@ -172,7 +175,7 @@ export default class Spreadsheet2HDF extends Command {
 
     // Write README.md
     const readableMetadata: Record<string, string | number> = {}
-    Object.entries(profileInfo).forEach(async ([key, value]) => {
+    Object.entries(profileInfo).forEach(([key, value]) => {
       // Filter out any undefined values and omit summary and title
       if (value && key !== 'summary' && key !== 'summary') {
         readableMetadata[_.startCase(key)] = value
@@ -224,7 +227,7 @@ export default class Spreadsheet2HDF extends Command {
                   _.set(
                     newControl,
                     mapping[0].toLowerCase().replace('desc.', 'descs.'),
-                    `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${extractValueViaPathOrNumber(mapping[0], mapping[1], record, flags.format as SpreadsheetTypes)}`
+                    `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${extractValueViaPathOrNumber(mapping[0], mapping[1], record)}`
                   )
                 } else {
                   _.set(
@@ -253,10 +256,10 @@ export default class Spreadsheet2HDF extends Command {
       // Replace BOM if it exists
       inputDataLines[0] = inputDataLines[0].replace(/\uFEFF/g, '')
       // STIG Viewer embeds the classification level in the first and last line for CSV export, breaking parsing
-      if (inputDataLines[0].match(/~~~~~.*~~~~~/)?.length) {
+      if (/~~~~~.*~~~~~/.test(inputDataLines[0])) {
         inputDataLines.shift()
       }
-      if (inputDataLines[inputDataLines.length - 1].match(/~~~~~.*~~~~~/)?.length) {
+      if (/~~~~~.*~~~~~/.test(inputDataLines[inputDataLines.length - 1])) {
         inputDataLines.pop()
       }
 

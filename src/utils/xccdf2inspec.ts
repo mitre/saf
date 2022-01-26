@@ -8,9 +8,9 @@ const wrap = (s: string) => s.replace(
   /(?![^\n]{1,80}$)([^\n]{1,80})\s/g, '$1\n'
 )
 
-const escapeQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/'/g, "\\'")
-const escapeDoubleQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
-const wrapAndEscapeQuotes = (s: string) => escapeDoubleQuotes(wrap(s))
+const escapeQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/'/g, "\\'") // Escape backslashes and quotes
+const escapeDoubleQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/"/g, '\\"') // Escape backslashes and double quotes
+const wrapAndEscapeQuotes = (s: string) => escapeDoubleQuotes(wrap(s)) // Escape backslashes and quotes, and wrap long lines
 
 export function convertEncodedXmlIntoJson(
   encodedXml: string
@@ -40,13 +40,13 @@ export function convertEncodedHTMLIntoJson(encodedHTML?: string): DecodedDescrip
     if (typeof converted.VulnDiscussion === 'object') { // Some STIGs have xml tags inside of the actual text which breaks processing, e.g U_ASD_STIG_V5R1_Manual-xccdf.xml and all Oracle Database STIGs
       let extractedVulnDescription = ''
       const remainingFields = _.omit(converted.VulnDiscussion, ['FalsePositives', 'FalseNegatives', 'Documentable', 'Mitigations', 'SeverityOverrideGuidance', 'PotentialImpacts', 'ThirdPartyTools', 'MitigationControl', 'Responsibility', 'IAControls'])
-      Object.entries(remainingFields).forEach(async ([field, value]) => {
+      Object.entries(remainingFields).forEach(([field, value]) => {
         extractedVulnDescription += `<${field}> ${value}`
       })
       cleaned = {
         VulnDiscussion: extractedVulnDescription.replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"'),
       }
-      Object.entries(converted.VulnDiscussion).forEach(async ([key, value]) => {
+      Object.entries(converted.VulnDiscussion).forEach(([key, value]) => {
         if (typeof value === 'string') {
           cleaned[key] = (value as string).replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"')
         } else {
@@ -54,7 +54,7 @@ export function convertEncodedHTMLIntoJson(encodedHTML?: string): DecodedDescrip
         }
       })
     } else {
-      Object.entries(converted).forEach(async ([key, value]) => {
+      Object.entries(converted).forEach(([key, value]) => {
         if (typeof value === 'string') {
           cleaned[key] = (value as string).replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"')
         } else {
@@ -87,6 +87,7 @@ export function severityStringToImpact(string: string): number {
 }
 
 export function impactNumberToSeverityString(impact: number): string {
+  // Impact must be 0.0 - 1.0
   if (impact < 0.0 || impact > 1.0) {
     throw new Error('Impact cannot be less than 0.0 or greater than 1.0')
   } else {
