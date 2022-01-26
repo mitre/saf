@@ -76,10 +76,8 @@ export default class Spreadsheet2HDF extends Command {
           control.tags.cis_controls = []
           const mappedCISControlsByVersion: Record<string, string[]> = {}
           cisControlMatches.map((cisControl => cisControl.replace(/\r?\n/, '').split(' '))).forEach(([revision, cisControl]) => {
-            if (revision === 'v7') {
-              if (cisControl in CISNistMappings) {
-                control.tags?.nist?.push(_.get(CISNistMappings, cisControl))
-              }
+            if (revision === 'v7' && cisControl in CISNistMappings) {
+              control.tags?.nist?.push(_.get(CISNistMappings, cisControl))
             }
             const revisionNumber = revision.replace('v', '')
             const existingControls = _.get(mappedCISControlsByVersion, revisionNumber) || []
@@ -209,7 +207,7 @@ export default class Spreadsheet2HDF extends Command {
             let controlId = extractValueViaPathOrNumber('mappings.id', mappings.id, record)
             if (controlId) {
               // Prevent controls that get parsed from 1.10 to 1.1 from being over-written, this assumes the controls are in order
-              while (completedIds.indexOf(controlId) !== -1) {
+              while (completedIds.includes(controlId)) {
                 controlId += '0'
               }
               completedIds.push(controlId)

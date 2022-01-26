@@ -39,10 +39,10 @@ export const arrayedPaths = ['tags.cci', 'tags.nist']
 export function findFieldIndex(field: string | string [], fields: (string | number)[], defaultIndex: number) {
   if (Array.isArray(field)) {
     return fields.indexOf(
-      fields.find(fieldsItem => fields.indexOf(fieldsItem) !== -1) || 'Field Not Defined'
+      fields.find(fieldsItem => fields.includes(fieldsItem)) || 'Field Not Defined'
     )
   }
-  return fields.indexOf(field) === -1 ? defaultIndex : fields.indexOf(field)
+  return fields.includes(field) ? defaultIndex : fields.indexOf(field)
 }
 
 export function arrayNeededPaths(typeOfPath: string, values: any) {
