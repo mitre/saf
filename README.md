@@ -555,6 +555,7 @@ where the keys (`title`) are InSpec control attributess and the values (`- Title
 
 -   Author:: Ryan Lin [Rlin232](https://github.com/rlin232)
 -   Author:: Camden Moors [camdenmoors](https://github.com/camdenmoors)
+-   Author:: Will Dower [wdower](https://github.com/wdower)
 
 ### NOTICE
 
