@@ -16,7 +16,7 @@ describe('Test xccdf2inspec', () => {
     .it(`Has the same number of controls in the stig as generated - ${file}`, () => {
       const parsedXML: DisaStig = convertEncodedXmlIntoJson(fs.readFileSync(path.resolve('./test/sample_data/xccdf/stigs', file), 'utf-8'))
       const fileCount = fs.readdirSync(`${tmpobj.name}/${file}/controls/`).length
-      expect(parsedXML.Benchmark.Group.length).to.eql(fileCount)
+      expect(fileCount).to.eql(parsedXML.Benchmark.Group.length)
     })
   })
 })
