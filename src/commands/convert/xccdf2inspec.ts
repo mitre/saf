@@ -106,9 +106,11 @@ export default class XCCDF2InSpec extends Command {
         desc: extractedDescription.VulnDiscussion.split('Satisfies: ')[0],
         impact: severityStringToImpact(group.Rule['@_severity'] || 'critical'),
         rationale: '',
-        tags: {
+        descs: {
           check: group.Rule.check['check-content'],
           fix: group.Rule.fixtext['#text'],
+        },
+        tags: {
           severity: impactNumberToSeverityString(severityStringToImpact(group.Rule['@_severity'] || 'critical')),
           gtitle: group.title,
           satisfies: extractedDescription.VulnDiscussion.includes('Satisfies: ') && extractedDescription.VulnDiscussion.split('Satisfies: ').length >= 1 ? extractedDescription.VulnDiscussion.split('Satisfies: ')[1].split(',').map(satisfaction => satisfaction.trim()) : undefined,

@@ -122,13 +122,15 @@ export function inspecControlToRubyCode(control: InSpecControl): string {
     console.error(`${control.id} does not have a desc`)
   }
 
-  Object.entries(control.descs).forEach(([key, desc]) => {
-    if (desc) {
-      result += `  desc "${key}", "${wrapAndEscapeQuotes(desc)}"\n`
-    } else {
-      console.error(`${control.id} does not have a desc for the value ${key}`)
-    }
-  })
+  if (control.descs) {
+    Object.entries(control.descs).forEach(([key, desc]) => {
+      if (desc) {
+        result += `  desc "${key}", "${wrapAndEscapeQuotes(desc)}"\n`
+      } else {
+        console.error(`${control.id} does not have a desc for the value ${key}`)
+      }
+    })
+  }
 
   if (control.impact) {
     result += `  impact ${control.impact}\n`

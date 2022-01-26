@@ -542,7 +542,7 @@ ref:                          # InSpec keyword - saf will check this column for 
   - References                # and record each address as a ref attribute
 ```
 
-where the keys (`title`) are InSpec control attributess and the values (`- Title`) are the column headers in the input spreadsheet that correspond to that attribute.
+Where the keys (`title`) are InSpec control attributess and the values (`- Title`) are the column headers in the input spreadsheet that correspond to that attribute.
 
 
 ---
@@ -559,7 +559,7 @@ where the keys (`title`) are InSpec control attributess and the values (`- Title
 
 ### NOTICE
 
-© 2021 The MITRE Corporation.
+© 2022 The MITRE Corporation.
 
 Approved for Public Release; Distribution Unlimited. Case Number 18-3678.
 
