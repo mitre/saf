@@ -111,7 +111,6 @@
     "lint": "eslint \"**/*.ts\" --fix",
     "lint:ci": "eslint \"**/*.ts\" --max-warnings 0",
     "postpack": "rm -f oclif.manifest.json",
-    "posttest": "eslint . --ext .ts --config .eslintrc",
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
     "test": "ts-mocha --timeout 8000 --forbid-only \"test/**/*.test.ts\"",
     "version": "oclif-dev readme && git add README.md"
