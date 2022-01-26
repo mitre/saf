@@ -470,6 +470,81 @@ convert:zap2hdf              Translate a OWASP ZAP results JSON to HDF format Js
     saf convert:zap2hdf -i zap_results.json -n mitre.org -o output-hdf-name.json
 ```
 
+#### Spreadsheet (csv/xlsx) to InSpec
+
+You can use `saf convert:spreadsheet2inspec` to generate an InSpec profile structure from a spreadsheet file. 
+
+```
+convert:spreadsheet2inspec              Convert CSV STIGs or CIS XLSX benchmarks into a skeleton InSpec profile
+
+USAGE
+  $ saf convert:spreadsheet2inspec -i, --input=<XLSX or CSV> -o, --output=FOLDER
+
+OPTIONS
+  -M, --mapping=mapping                      Path to a YAML file with mappings for each
+                                             field, by default, CIS Benchmark fields are
+                                             used for XLSX, STIG Viewer CSV export is used
+                                             by CSV
+
+  -c, --controlNamePrefix=controlNamePrefix  Prefix for all control IDs
+
+  -f, --format=cis|disa|general              [default: general]
+
+  -h, --help                                 show CLI help
+
+  -i, --input=input                          (required)
+
+  -m, --metadata=metadata                    Path to a JSON file with additional metadata
+                                             for the inspec.yml file
+
+  -o, --output=output                        (required) Output InSpec profile folder
+
+EXAMPLE
+  saf convert:spreadsheet2inspec -i spreadsheet.xlsx -o profile
+```
+
+##### Notes
+
+- Specifying the `--format` flag as either `cis` or `disa` will parse the input spreadsheet according to the standard formats for CIS Benchmark exports and DISA STIG exports, respectively.
+- You can also use the `general` setting (the default) to parse an arbitrary spreadsheet, but if you do so, you must provide a mapping file with the `--mapping` flag so that `saf` can parse the input.
+- If you provide a non-standard spreadsheet, the first row of values are assumed to be column headers.
+
+##### Mapping Files
+
+Mapping files are YAML files that tell `saf` which columns in the input spreadsheet should be parsed. Mapping files are structured as following:
+
+``` yaml
+id:                           # Required
+  - ID
+  - "recommendation #"
+title:                        # Required
+  - Title                     # You can give more than one column header as a value for an
+  - title                     # attribute if you are not sure how it will be spelled in the input.
+desc:
+  - Description
+  - Discussion
+  - description
+impact: 0.5                  # If impact is set, its value will be used for every control
+desc.rationale:
+  - Rationale
+  - rationale statement
+desc.check:                   # Required
+  - Audit
+  - audit procedure
+desc.fix:
+  - Remediation
+  - remediation procedure
+desc.additional_information:  # You can define arbitrary values under desc and tag
+  - Additional Information    # if you have extra fields to record
+desc.default_value:
+  - Default Value
+ref:                          # InSpec keyword - saf will check this column for URLs (links to documentation)
+  - References                # and record each address as a ref attribute
+```
+
+Where the keys (`title`) are InSpec control attributess and the values (`- Title`) are the column headers in the input spreadsheet that correspond to that attribute.
+
+
 ---
 
 
@@ -480,10 +555,11 @@ convert:zap2hdf              Translate a OWASP ZAP results JSON to HDF format Js
 
 -   Author:: Ryan Lin [Rlin232](https://github.com/rlin232)
 -   Author:: Camden Moors [camdenmoors](https://github.com/camdenmoors)
+-   Author:: Will Dower [wdower](https://github.com/wdower)
 
 ### NOTICE
 
-© 2021 The MITRE Corporation.
+© 2022 The MITRE Corporation.
 
 Approved for Public Release; Distribution Unlimited. Case Number 18-3678.
 
