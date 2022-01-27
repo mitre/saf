@@ -3,8 +3,7 @@ import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import fs from 'fs'
 import YAML from 'yaml'
 import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
-import _, {flatten} from 'lodash'
-import {checkSuffix} from '../../utils/global'
+import _ from 'lodash'
 import flat from 'flat'
 
 export default class Summary extends Command {
@@ -58,7 +57,6 @@ export default class Summary extends Command {
       summaries[profileName] = (_.get(summaries, profileName) || [])
       summaries[profileName].push(summary)
     })
-    const result = ''
 
     const totals = {}
     Object.entries(summaries).forEach(([profileName, profileSummaries]) => {
