@@ -1,0 +1,38 @@
+name: Build Linux Installer
+
+on:
+  push:
+    branches: [ main ]
+    pull_request:
+      # The branches below must be a subset of the branches above
+      branches: [ main ]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-18.04
+    steps:
+      - uses: actions/checkout@master
+
+      - name: setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: "16.x"
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Remove testing resources
+        run: rm -rf test
+
+      - name: Install project dependencies
+        run: npm install
+
+      - name: Pack windows executable
+        run: yarn run oclif-dev pack:win
+
+      - name: npm install and pack
+        run: yarn run oclif-dev pack:deb
+      
+      - name: Upload SAF-CLI Build x64 Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: SAF-CLI Build x64
+          path: dist/win/*.deb
