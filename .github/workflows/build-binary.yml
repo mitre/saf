@@ -1,4 +1,4 @@
-name: Build Windows Executables
+name: Build SAF-CLI Installers
 
 on:
   push:
