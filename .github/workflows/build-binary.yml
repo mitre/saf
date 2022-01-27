@@ -30,8 +30,8 @@ jobs:
 
       - name: npm install and pack
         run: yarn run oclif-dev pack:macos
-            - name: Upload SAF-CLI Build x64 Artifact
 
+      - name: Upload SAF-CLI Build x64 Artifact
         uses: actions/upload-artifact@v2
         with:
           name: SAF-CLI Build x64
