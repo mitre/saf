@@ -5,7 +5,6 @@ import YAML from 'yaml'
 import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 import _ from 'lodash'
 import flat from 'flat'
-import pry from 'pryjs'
 import {convertFullPathToFilename} from '../../utils/global'
 
 export default class Summary extends Command {
