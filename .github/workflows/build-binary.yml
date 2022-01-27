@@ -36,9 +36,6 @@ jobs:
       - name: Convert Debian Package to RPM Package
         run: sudo alien --to-rpm dist/deb/saf_*amd64.deb
 
-      - name: Locate RPM
-        run: find .
-
       - name: Upload SAF-CLI Windows Build x64 Artifact
         uses: actions/upload-artifact@v2
         with:
@@ -60,5 +57,5 @@ jobs:
       - name: Upload SAF-CLI x64 RPM Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: SAF-CLI Debian Build x64
+          name: SAF-CLI RPM Build x64
           path: saf*.rpm
