@@ -1,4 +1,4 @@
-name: Build SAF-CLI Installers
+name: Build SAF-CLI Windows/Linux Installers
 
 on:
   push:
@@ -30,9 +30,6 @@ jobs:
       - name: Pack Windows Installer
         run: yarn run oclif-dev pack:win
 
-      - name: Pack macOS Installer
-        run: yarn run oclif-dev pack:macos
-
       - name: Pack Debian Package
         run: sudo yarn run oclif-dev pack:deb
 
@@ -53,12 +50,6 @@ jobs:
         with:
           name: SAF-CLI Build x86
           path: dist/win/saf-*-x86.exe
-
-      - name: Upload SAF-CLI macOS Installer Artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: SAF-CLI macOS Installer
-          path: dist/macos/saf-*.pkg
       
       - name: Upload SAF-CLI Debian x64 Artifact
         uses: actions/upload-artifact@v2
