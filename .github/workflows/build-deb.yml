@@ -4,7 +4,6 @@ on:
   push:
     branches: [ main ]
     pull_request:
-      # The branches below must be a subset of the branches above
       branches: [ main ]
 
 jobs:
@@ -26,13 +25,10 @@ jobs:
         run: npm install
 
       - name: Pack windows executable
-        run: yarn run oclif-dev pack:win
-
-      - name: npm install and pack
         run: yarn run oclif-dev pack:deb
 
-      - name: Upload SAF-CLI Build x64 Artifact
+      - name: Upload SAF-CLI Debian x64 Artifact
         uses: actions/upload-artifact@v2
         with:
           name: SAF-CLI Build x64
-          path: dist/win/*.deb
+          path: dist/deb/*.deb
