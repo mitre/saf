@@ -34,25 +34,25 @@ jobs:
         run: sudo yarn run oclif-dev pack:deb
 
       - name: Convert Debian Package to RPM Package
-        run: alien --to-rpm dist/deb/saf_*.deb
+        run: alien --to-rpm dist/deb/saf_*amd64.deb
 
       - name: Locate RPM
         run: find .
 
-      - name: Upload SAF-CLI Build x64 Artifact
+      - name: Upload SAF-CLI Windows Build x64 Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: SAF-CLI Build x64
+          name: SAF-CLI Windows Build x64
           path: dist/win/saf-*-x64.exe
 
-      - name: Upload SAF-CLI Build x86 Artifact
+      - name: Upload SAF-CLI Windows Build x86 Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: SAF-CLI Build x86
+          name: SAF-CLI Windows Build x86
           path: dist/win/saf-*-x86.exe
       
       - name: Upload SAF-CLI Debian x64 Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: SAF-CLI Build x64
+          name: SAF-CLI Debian Build x64
           path: dist/deb/saf_*.deb
