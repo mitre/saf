@@ -146,7 +146,7 @@ view:heimdall            Run an instance of Heimdall Lite to visualize
 
 #### Summary
 
-To get a quick compliance summary from an HDF file use the `saf view:summary` command:
+To get a quick compliance summary from an HDF file (grouped by profile name) use the `saf view:summary` command:
 
 ```
 view:summary            Get a quick compliance overview of an HDF file
