@@ -56,3 +56,9 @@ jobs:
         with:
           name: SAF-CLI Debian Build x64
           path: dist/deb/saf_*.deb
+
+      - name: Upload SAF-CLI x64 RPM Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: SAF-CLI Debian Build x64
+          path: saf*.rpm
