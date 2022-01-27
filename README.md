@@ -168,6 +168,11 @@ view:summary            Get a quick compliance overview of an HDF file
 
 Translating your data to and from Heimdall Data Format (HDF) is done using the `saf convert` command.
 
+#### Reccomend a Mapper
+See [the wiki](https://github.com/mitre/saf/wiki/How-to-recommend-development-of-a-mapper) for instructions on suggesting a mapping.
+
+---
+
 #### ASFF to HDF
 
 ```
