@@ -22,6 +22,13 @@ export function sliceIntoChunks(
   return res
 }
 
+export function convertFullPathToFilename(inputPath: string): string {
+  let filePath = inputPath.split('/')
+  const relativeFileName = filePath[filePath.length - 1]
+  filePath = relativeFileName.split('\\')
+  return filePath[filePath.length - 1]
+}
+
 export function dataURLtoU8Array(dataURL: string): Uint8Array {
   const arr = dataURL.split(',')
   const bstr = atob(arr[1])

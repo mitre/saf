@@ -1,10 +1,12 @@
 import {Command, flags} from '@oclif/command'
-import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
+import {ContextualizedEvaluation, ContextualizedProfile, convertFileContextual, ExecJSON} from 'inspecjs'
 import fs from 'fs'
 import YAML from 'yaml'
 import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 import _ from 'lodash'
 import flat from 'flat'
+import pry from 'pryjs'
+import {convertFullPathToFilename} from '../../utils/global'
 
 export default class Summary extends Command {
   static aliases = ['summary']
@@ -26,9 +28,13 @@ export default class Summary extends Command {
     const {flags} = this.parse(Summary)
     const summaries: Record<string, Record<string, Record<string, number>>[]> = {}
     const complianceScores: Record<string, number[]> = {}
+
+    const execJSONs: Record<string, ContextualizedEvaluation> = {}
     flags.input.forEach(file => {
+      execJSONs[file] = convertFileContextual(fs.readFileSync(file, 'utf8')) as ContextualizedEvaluation
+    })
+    Object.entries(execJSONs).forEach(([fileName, parsedExecJSON]) => {
       const summary: Record<string, Record<string, number>> = {}
-      const parsedExecJSON = convertFileContextual(fs.readFileSync(file, 'utf8'))
       const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
       const profileName = parsedProfile.data.name
       const overallStatusCounts = extractStatusCounts(parsedProfile)
@@ -36,7 +42,7 @@ export default class Summary extends Command {
 
       const existingCompliance = _.get(complianceScores, profileName) || []
       existingCompliance.push(overallCompliance)
-      _.set(complianceScores, profileName, existingCompliance)
+      _.set(complianceScores, `["${profileName.replace(/"/g, '\\"')}"]`, existingCompliance)
 
       // Severity counts
       for (const [severity, severityTargets] of Object.entries(severityTargetsObject)) {
@@ -65,9 +71,9 @@ export default class Summary extends Command {
         Object.entries(flattened).forEach(([key, value]) => {
           const existingValue = _.get(totals, `${profileName}.${key}`)
           if (existingValue) {
-            _.set(totals, `${profileName}.${key}`, existingValue + value)
+            _.set(totals, `["${profileName.replace(/"/g, '\\"')}"].${key}`, existingValue + value)
           } else {
-            _.set(totals, `${profileName}.${key}`, value)
+            _.set(totals, `["${profileName.replace(/"/g, '\\"')}"].${key}`, value)
           }
         })
       })
@@ -76,6 +82,12 @@ export default class Summary extends Command {
     Object.entries(totals).forEach(([profileName, profileValues]: any) => {
       printableSummaries.push({
         profileName: profileName,
+        // Extract filename from execJSONs
+        resultSets: Object.entries(execJSONs).filter(([fileName, execJSON]) => {
+          return execJSON.data.profiles[0].name === profileName
+        }).map(([filePath, execJSON]) => {
+          return convertFullPathToFilename(filePath)
+        }),
         compliance: _.mean(complianceScores[profileName]),
         ...profileValues,
       })
