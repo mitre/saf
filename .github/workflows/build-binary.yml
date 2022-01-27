@@ -34,7 +34,7 @@ jobs:
         run: sudo yarn run oclif-dev pack:deb
 
       - name: Convert Debian Package to RPM Package
-        run: alien --to-rpm dist/deb/saf_*amd64.deb
+        run: sudo alien --to-rpm dist/deb/saf_*amd64.deb
 
       - name: Locate RPM
         run: find .
