@@ -156,11 +156,11 @@ view:summary            Get a quick compliance overview of HDF files
 
 	OPTIONS
 		-i, --input=FILE         (required) Input HDF file(s)
-    -f, --fullJson           Include control information in summary
 		-j, --json               Output results as JSON
+    -o, --output=output
 	
-	EXAMPLES
-		saf view:summary -i rhel7-results.json -f
+	EXAMPLE
+		saf view:summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json...
 ```
 
  
