@@ -1,4 +1,4 @@
-name: Build Windows Executables
+name: Build SAF-CLI Windows/Linux Installers
 
 on:
   push:
@@ -25,17 +25,26 @@ jobs:
       - name: Install project dependencies
         run: npm install
 
-      - name: Pack windows executable
+      - name: Pack Windows Installer
         run: yarn run oclif-dev pack:win
 
-      - name: Upload SAF-CLI Build x64 Artifact
+      - name: Pack Debian Package
+        run: sudo yarn run oclif-dev pack:deb
+
+      - name: Upload SAF-CLI Windows Build x64 Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: SAF-CLI Build x64
+          name: SAF-CLI Windows Build x64
           path: dist/win/saf-*-x64.exe
 
-      - name: Upload SAF-CLI Build x86 Artifact
+      - name: Upload SAF-CLI Windows Build x86 Artifact
         uses: actions/upload-artifact@v2
         with:
-          name: SAF-CLI Build x86
+          name: SAF-CLI Windows Build x86
           path: dist/win/saf-*-x86.exe
+      
+      - name: Upload SAF-CLI Debian x64 Artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: SAF-CLI Debian Build x64
+          path: dist/deb/saf_*.deb
