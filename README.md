@@ -19,7 +19,10 @@ The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) bring
   * [Convert](#convert) - Convert security results from all your security tools into a common data format
   * Harden - Visit https://saf.mitre.org/#/harden to explore and run hardening scripts
 
+## Terminology:
 
+- "[Heimdall](https://github.com/mitre/heimdall2)" - our visualizer for all security result data
+- "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - our common data format to preserve and transform security data
 
 ## Installation
 
@@ -168,8 +171,8 @@ view:summary            Get a quick compliance overview of an HDF file
 
 Translating your data to and from Heimdall Data Format (HDF) is done using the `saf convert` command.
 
-#### Reccomend a Mapper
-See [the wiki](https://github.com/mitre/saf/wiki/How-to-recommend-development-of-a-mapper) for instructions on suggesting a mapping.
+#### Want to Recommend or Help Develop a Converter?
+See [the wiki](https://github.com/mitre/saf/wiki/How-to-recommend-development-of-a-mapper) on how to get started.
 
 ---
 
