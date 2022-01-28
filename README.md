@@ -154,13 +154,13 @@ To get a quick compliance summary from an HDF file (grouped by profile name) use
 ```
 view:summary            Get a quick compliance overview of HDF files
 
-	OPTIONS
-		-i, --input=FILE         (required) Input HDF file(s)
-		-j, --json               Output results as JSON
+  OPTIONS
+    -i, --input=FILE         (required) Input HDF file(s)
+    -j, --json               Output results as JSON
     -o, --output=output
 	
-	EXAMPLE
-		saf view:summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json...
+  EXAMPLE
+    saf view:summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json
 ```
 
  
