@@ -4,7 +4,7 @@ import {FromHdfToAsffMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix, sliceIntoChunks} from '../../utils/global'
 import path from 'path'
 
-export default class FortifyMapper extends Command {
+export default class HDF2ASFF extends Command {
   static usage = 'convert:hdf2asff -i, --input=HDF-JSON -o, --output=ASFF-JSON'
 
   static description = 'Translate a Heimdall Data Format JSON file into AWS Security Findings Format JSON file(s)'
@@ -21,7 +21,7 @@ export default class FortifyMapper extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(FortifyMapper)
+    const {flags} = this.parse(HDF2ASFF)
 
     const converter = new Mapper(JSON.parse(fs.readFileSync(flags.input, {encoding: 'utf-8'})), {
       awsAccountId: flags.accountId,

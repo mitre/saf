@@ -4,7 +4,7 @@ import {NessusResults as Mapper} from '@mitre/hdf-converters'
 import _ from 'lodash'
 import {checkSuffix} from '../../utils/global'
 
-export default class NessusMapper extends Command {
+export default class Nessus2HDF extends Command {
   static usage = 'convet:nessus2hdf -i, --input=XML -o, --output_prefix=OUTPUT_PREFIX'
 
   static description = "Translate a Nessus XML results file into a Heimdall Data Format JSON file\nThe current iteration maps all plugin families except 'Policy Compliance'\nA separate HDF JSON is generated for each host reported in the Nessus Report."
@@ -18,7 +18,7 @@ export default class NessusMapper extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(NessusMapper)
+    const {flags} = this.parse(Nessus2HDF)
 
     const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
     const result = converter.toHdf()

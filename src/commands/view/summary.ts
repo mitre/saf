@@ -1,5 +1,5 @@
 import {Command, flags} from '@oclif/command'
-import {ContextualizedEvaluation, ContextualizedProfile, convertFileContextual, ExecJSON} from 'inspecjs'
+import {ContextualizedEvaluation, ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import fs from 'fs'
 import YAML from 'yaml'
 import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'

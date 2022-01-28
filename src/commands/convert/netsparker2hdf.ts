@@ -3,7 +3,7 @@ import fs from 'fs'
 import {NetsparkerMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 
-export default class NetsparkerMapper extends Command {
+export default class Netsparker2HDF extends Command {
   static usage = 'convert netsparker2hdf -i, --input=XML -o, --output=OUTPUT'
 
   static description = 'Translate a Netsparker XML results file into a Heimdall Data Format JSON file\nThe current iteration only works with Netsparker Enterprise Vulnerabilities Scan.'
@@ -17,7 +17,7 @@ export default class NetsparkerMapper extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(NetsparkerMapper)
+    const {flags} = this.parse(Netsparker2HDF)
 
     const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))

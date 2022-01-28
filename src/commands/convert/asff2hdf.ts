@@ -3,7 +3,7 @@ import fs from 'fs'
 import {ASFFMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 
-export default class ASFFMapper extends Command {
+export default class ASFF2HDF extends Command {
   static usage = 'convert:asff2hdf -i <asff-finding-json> [--securityhub <standard-1-json> ... <standard-n-json>] -o <hdf-scan-results-json>'
 
   static description = 'Translate a AWS Security Finding Format JSON into a Heimdall Data Format JSON file'
@@ -19,7 +19,7 @@ export default class ASFFMapper extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(ASFFMapper)
+    const {flags} = this.parse(ASFF2HDF)
     let securityhub
     if (flags.securityhub) {
       securityhub = flags.securityhub.map(file => fs.readFileSync(file, {encoding: 'utf-8'}))

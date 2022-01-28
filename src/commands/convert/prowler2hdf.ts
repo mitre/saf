@@ -3,7 +3,7 @@ import fs from 'fs'
 import {ASFFMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 
-export default class ASFFMapper extends Command {
+export default class Prowler2HDF extends Command {
   static usage = 'convert:prowler2hdf -i <asff-finding-json> [--securityhub <standard-1-json> ... <standard-n-json>] -o <hdf-scan-results-json>'
 
   static description = 'Translate a Prowler-derived AWS Security Finding Format results from concatenated JSON blobs into a Heimdall Data Format JSON file'
@@ -17,7 +17,7 @@ export default class ASFFMapper extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(ASFFMapper)
+    const {flags} = this.parse(Prowler2HDF)
     // comes as an asff-json file which is basically all the findings concatenated into one file instead of putting it in the proper wrapper data structure
     const input = `{"Findings": [${fs.readFileSync(flags.input, {encoding: 'utf-8'}).trim().split('\n').join(',')}]}`
     const meta = {name: 'Prowler', title: 'Prowler Findings'}
