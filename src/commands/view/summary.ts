@@ -16,7 +16,7 @@ export default class Summary extends Command {
 
   static flags = {
     help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: true, multiple: true, description: 'Input HDF file'}),
+    input: flags.string({char: 'i', required: true, multiple: true, description: 'Input HDF files'}),
     json: flags.boolean({char: 'j', required: false, description: 'Output results as JSON'}),
     output: flags.string({char: 'o', required: false}),
   }

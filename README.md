@@ -152,10 +152,10 @@ view:heimdall            Run an instance of Heimdall Lite to visualize
 To get a quick compliance summary from an HDF file (grouped by profile name) use the `saf view:summary` command:
 
 ```
-view:summary            Get a quick compliance overview of an HDF file
+view:summary            Get a quick compliance overview of HDF files
 
 	OPTIONS
-		-i, --input=FILE         (required) Input HDF file
+		-i, --input=FILE         (required) Input HDF file(s)
     -f, --fullJson           Include control information in summary
 		-j, --json               Output results as JSON
 	
