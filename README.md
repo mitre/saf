@@ -111,6 +111,8 @@ generate:threshold      Generate a compliance template for "saf validate thresho
 
 #### Thresholds
 
+See the wiki for more infromation on [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
+
 ```
 validate:threshold       Validate the compliance and status counts of an HDF file
 
