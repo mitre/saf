@@ -33,6 +33,7 @@ export function cklStatus(status: ControlStatus): string {
   }
 }
 
+// Get segments/results as strings
 export function cklResults(segments?: HDFControlSegment[]): string {
   if (typeof segments === 'undefined') {
     return ''
