@@ -111,6 +111,8 @@ generate:threshold      Generate a compliance template for "saf validate thresho
 
 #### Thresholds
 
+See the wiki for more infromation on [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
+
 ```
 validate:threshold       Validate the compliance and status counts of an HDF file
 
@@ -154,13 +156,13 @@ To get a quick compliance summary from an HDF file (grouped by profile name) use
 ```
 view:summary            Get a quick compliance overview of HDF files
 
-	OPTIONS
-		-i, --input=FILE         (required) Input HDF file(s)
-    -f, --fullJson           Include control information in summary
-		-j, --json               Output results as JSON
+  OPTIONS
+    -i, --input=FILE         (required) Input HDF file(s)
+    -j, --json               Output results as JSON
+    -o, --output=output
 	
-	EXAMPLES
-		saf view:summary -i rhel7-results.json -f
+  EXAMPLE
+    saf view:summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json
 ```
 
  

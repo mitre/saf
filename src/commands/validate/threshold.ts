@@ -52,7 +52,7 @@ export default class Threshold extends Command {
     const targets = ['passed.total.min', 'passed.total.max', 'failed.total.min', 'failed.total.max', 'skipped.total.min', 'skipped.total.max', 'no_impact.total.min', 'no_impact.total.max', 'error.total.min', 'error.total.max']
     for (const statusThreshold of targets) {
       const [statusName, _total, thresholdType] = statusThreshold.split('.')
-      if (thresholdType === 'min' && _.get(thresholds, statusThreshold)) {
+      if (thresholdType === 'min' && _.get(thresholds, statusThreshold) !== undefined) {
         exitNonZeroIfTrue(
           Boolean(
             _.get(overallStatusCounts, renameStatusName(statusName))              <
@@ -60,7 +60,7 @@ export default class Threshold extends Command {
           ),
           `${statusThreshold}: ${_.get(overallStatusCounts, renameStatusName(statusName))} < ${_.get(thresholds, statusThreshold)}`
         )
-      } else if (thresholdType === 'max' && _.get(thresholds, statusThreshold)) {
+      } else if (thresholdType === 'max' && _.get(thresholds, statusThreshold) !== undefined) {
         exitNonZeroIfTrue(
           Boolean(
             _.get(overallStatusCounts, renameStatusName(statusName))              >
@@ -76,14 +76,14 @@ export default class Threshold extends Command {
       const criticalStatusCounts = extractStatusCounts(parsedExecJSON.contains[0] as ContextualizedProfile, severity)
       for (const statusCountThreshold of targetPaths) {
         const [statusName, _total, thresholdType] = statusCountThreshold.split('.')
-        if (thresholdType === 'min' && _.get(thresholds, statusCountThreshold)) {
+        if (thresholdType === 'min' && _.get(thresholds, statusCountThreshold) !== undefined) {
           exitNonZeroIfTrue(
             Boolean(
               _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold)
             ),
             `${statusCountThreshold}: ${_.get(criticalStatusCounts, renameStatusName(statusName))} < ${_.get(thresholds, statusCountThreshold)}`
           )
-        } else if (thresholdType === 'max' && _.get(thresholds, statusCountThreshold)) {
+        } else if (thresholdType === 'max' && _.get(thresholds, statusCountThreshold) !== undefined) {
           exitNonZeroIfTrue(
             Boolean(
               _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold)
