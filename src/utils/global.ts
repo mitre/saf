@@ -1,6 +1,9 @@
 import {getInstalledPathSync} from 'get-installed-path'
+import {ContextualizedEvaluation} from 'inspecjs'
+import {ExecJSONProfile} from 'inspecjs/lib/generated_parsers/v_1_0/exec-json'
 import _ from 'lodash'
 import path from 'path'
+import {ExtendedEvaluationFile} from '../types/checklist'
 
 export type SpreadsheetTypes = 'cis' | 'disa' |'general'
 
@@ -76,4 +79,31 @@ export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNu
   if (typeof pathOrNumber === 'number') {
     return pathOrNumber
   }
+}
+
+export function getProfileInfo(file: ExtendedEvaluationFile) {
+  let result = ''
+  const profile: ExecJSONProfile = _.get(file, 'evaluation.data.profiles[0]')
+  if (file.fileName) {
+    result += `File Name: ${file.fileName}\n`
+  }
+  if (profile.version) {
+    result += `Version: ${profile.version}\n`
+  }
+  if (profile.sha256) {
+    result += `SHA256 Hash: ${profile.sha256}\n`
+  }
+  if (profile.maintainer) {
+    result += `Maintainer: ${profile.maintainer}\n`
+  }
+  if (profile.copyright) {
+    result += `Copyright: ${profile.copyright}\n`
+  }
+  if (profile.copyright_email) {
+    result += `Copyright Email: ${profile.copyright_email}\n`
+  }
+  if (profile.controls.length) {
+    result += `Control Count: ${profile.controls.length}\n`
+  }
+  return result.trim()
 }
