@@ -6,7 +6,7 @@ import {v4} from 'uuid'
 import {default as files} from '../../resources/files.json'
 import Mustache from 'mustache'
 import {ExtendedEvaluationFile} from '../../types/checklist'
-import {getProfileInfo} from '../../utils/global'
+import {convertFullPathToFilename, getProfileInfo} from '../../utils/global'
 import {getDetails} from '../../utils/checklist'
 
 export default class HDF2CKL extends Command {
@@ -33,7 +33,7 @@ export default class HDF2CKL extends Command {
     // Check for passthrough fields
     const extendedEvaluation: ExtendedEvaluationFile = {
       evaluation: contextualizedEvaluation,
-      fileName: flags.input,
+      fileName: convertFullPathToFilename(flags.input),
       hostname: _.get(contextualizedEvaluation, 'evaluation.data.passthrough.hostname') || flags.hostname || '',
       fqdn: _.get(contextualizedEvaluation, 'evaluation.data.passthrough.fqdn') || flags.fqdn || '',
       mac: _.get(contextualizedEvaluation, 'evaluation.data.passthrough.mac') || flags.mac || '',
@@ -43,7 +43,7 @@ export default class HDF2CKL extends Command {
     const controls = extendedEvaluation.evaluation.contains.flatMap(profile => profile.contains) || []
 
     cklData = {
-      fileName: flags.input,
+      fileName: extendedEvaluation.fileName,
       hostname: extendedEvaluation.hostname,
       ip: extendedEvaluation.ip,
       mac: extendedEvaluation.mac,
