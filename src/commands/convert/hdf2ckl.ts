@@ -10,7 +10,7 @@ import {convertFullPathToFilename, getProfileInfo} from '../../utils/global'
 import {getDetails} from '../../utils/checklist'
 
 export default class HDF2CKL extends Command {
-  static usage = 'hdf2ckl -i, --input=<INPUT-CKL> -o, --output=<OUTPUT-CKL>'
+  static usage = 'hdf2ckl -i, --input=<INPUT-JSON> -o, --output=<OUTPUT-CKL>'
 
   static description = 'Translate a Heimdall Data Format JSON file into a DISA checklist file'
 
