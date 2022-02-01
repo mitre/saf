@@ -1,5 +1,5 @@
 import {Command, flags} from '@oclif/command'
-import {ContextualizedEvaluation, contextualizeEvaluation, ExecJSON} from 'inspecjs'
+import {ContextualizedEvaluation, contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
 import fs from 'fs'
 import ObjectsToCsv from 'objects-to-csv'
@@ -23,19 +23,8 @@ export default class HDF2CSV extends Command {
   static examples = ['saf convert:hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"']
 
   convertRows(evaluation: ContextualizedEvaluation, filename: string, fieldsToAdd: string[]): ControlSetRows {
-    const rows: ControlSetRows = []
     const controls = evaluation.contains.flatMap(profile => profile.contains) || []
-    const hitIds = new Set()
-    for (const ctrl of controls) {
-      const root = ctrl.root
-      if (hitIds.has(root.hdf.wraps.id)) {
-        continue
-      } else {
-        hitIds.add(root.hdf.wraps.id)
-        rows.push(convertRow(filename, root, fieldsToAdd))
-      }
-    }
-    return rows
+    return controls.map(ctrl => convertRow(filename, ctrl, fieldsToAdd))
   }
 
   async run() {
@@ -47,13 +36,13 @@ export default class HDF2CSV extends Command {
     rows = rows.map((row, index) => {
       const cleanedRow: Record<string, string> = {}
       for (const key in row) {
-        if ((row[key] as string).length > 32767) {
+        if ((row[key]).length > 32767) {
           if ('ID' in row) {
             console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`)
           } else {
             console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`)
           }
-          cleanedRow[key] = _.truncate(row[key] as string, {length: 32757, omission: 'TRUNCATED'})
+          cleanedRow[key] = _.truncate(row[key], {length: 32757, omission: 'TRUNCATED'})
         } else {
           cleanedRow[key] = row[key]
         }

@@ -1,4 +1,4 @@
-import {ContextualizedControl, ContextualizedEvaluation, ExecJSON, HDFControlSegment} from 'inspecjs'
+import {ContextualizedControl, ExecJSON, HDFControlSegment} from 'inspecjs'
 import _ from 'lodash'
 import {ControlSetRow} from '../types/csv'
 
@@ -52,27 +52,20 @@ function segmentsToString(segments: HDFControlSegment[] | undefined): string {
   if (segments) {
     let result = ''
     segments.forEach((segment: HDFControlSegment) => {
-      if (segment.message) {
-        result += `${segment.status.toUpperCase()} -- Test: ${
+      result += segment.message ?
+        `${segment.status.toUpperCase()} -- Test: ${
           segment.code_desc
-        }\r\nMessage: ${segment.message}\r\n\r\n`
-      } else {
-        result += `${segment.status.toUpperCase()} -- Test: ${
+        }\r\nMessage: ${segment.message}\r\n\r\n`        :
+        `${segment.status.toUpperCase()} -- Test: ${
           segment.code_desc
         }\r\n\r\n`
-      }
     })
     return result
   }
   return ''
 }
 
-function createOverlaidCode(
-  control: ContextualizedControl
-) {
-  return control.full_code
-}
-
+// Convert HDF into Single key-field values
 export function convertRow(
   filename: string,
   control: ContextualizedControl,
@@ -120,11 +113,11 @@ export function convertRow(
       break
       // Title
     case csvExportFields[3]:
-      result[csvExportFields[3]] = control.data.title
+      result[csvExportFields[3]] = control.data.title?.toString() || ''
       break
       // Description
     case csvExportFields[4]:
-      result[csvExportFields[4]] = control.data.desc
+      result[csvExportFields[4]] = control.data.desc?.toString() || ''
       break
       // Descriptions
     case csvExportFields[5]:
@@ -134,7 +127,7 @@ export function convertRow(
       break
       // Impact
     case csvExportFields[6]:
-      result[csvExportFields[6]] = control.data.impact
+      result[csvExportFields[6]] = control.data.impact.toString()
       break
       // Severity
     case csvExportFields[7]:
@@ -142,7 +135,7 @@ export function convertRow(
       break
       // Code
     case csvExportFields[8]:
-      result[csvExportFields[8]] = createOverlaidCode(control)
+      result[csvExportFields[8]] = control.full_code
       break
       // Check
     case csvExportFields[9]:
