@@ -175,8 +175,9 @@ Translating your data to and from Heimdall Data Format (HDF) is done using the `
 
 Want to Recommend or Help Develop a Converter? See [the wiki](https://github.com/mitre/saf/wiki/How-to-recommend-development-of-a-mapper) on how to get started.
 
+---
 
-#### From HDF
+### From HDF
 
 
 ##### HDF to ASFF
@@ -249,7 +250,7 @@ convert:hdf2csv             Translate a Heimdall Data Format JSON file into a
 
 ---
 
-#### To HDF
+### To HDF
 
 ##### ASFF to HDF
 
