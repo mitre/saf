@@ -49,6 +49,6 @@ export default class HDF2CSV extends Command {
       }
       return cleanedRow
     })
-    await new ObjectsToCsv(rows).toDisk(flags.output, {bom: true})
+    await new ObjectsToCsv(rows).toDisk(flags.output)
   }
 }
