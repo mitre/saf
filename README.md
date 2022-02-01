@@ -601,9 +601,7 @@ ref:                          # InSpec keyword - saf will check this column for 
 
 Where the keys (`title`) are InSpec control attributess and the values (`- Title`) are the column headers in the input spreadsheet that correspond to that attribute.
 
-
----
-
+&nbsp;
 
 
 # License and Author
