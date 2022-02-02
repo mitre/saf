@@ -86,9 +86,23 @@ To update the SAF CLI on Windows, uninstall any existing version from your syste
 
 ### Generate
 
+#### CKL Templates
+
+Checklist template files are used to give extra information to `saf convert:hdf2ckl`.
+
+```
+generate:ckl_metadata        Generate a checklist metadata template for "saf convert:hdf2ckl"
+
+  OPTIONS
+    -h, --help           show CLI help
+    -o, --output=output  (required) Output JSON File
+  
+  EXAMPLE
+    saf generate:ckl_metadata -o rhel_metadata.json
+```
 #### Thresholds
 
-Threshold files are used in CI to ensure minimum compliance levels and validate control severites and statuses using `saf validate:threshold`
+Threshold files are used in CI to ensure minimum compliance levels and validate control severities and statuses using `saf validate:threshold`
 
 ```
 generate:threshold      Generate a compliance template for "saf validate threshold"
@@ -101,7 +115,7 @@ generate:threshold      Generate a compliance template for "saf validate thresho
     -i, --input               Input HDF JSON file
     -o, --output              Output threshold YAML file
 
-	EXAMPLES
+	EXAMPLE
   	saf generate:threshold -i rhel7-results.json -e -c -o output.yaml
 ```
 
@@ -221,6 +235,7 @@ convert:hdf2checklist        Translate a Heimdall Data Format JSON file into a
     -H, --hostname=hostname  Hostname for CKL metadata
     -I, --ip=ip              IP address for CKL metadata
     -M, --mac=mac            MAC address for CKL metadata
+    -m, --metadata=metadata  Metadata JSON file, generate one with "saf generate:ckl_metadata"
     -h, --help               show CLI help
     -i, --input=input        (required) Input HDF file
     -o, --output=output      (required) Output CKL file
