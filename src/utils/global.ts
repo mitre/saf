@@ -3,7 +3,6 @@ import {ContextualizedEvaluation} from 'inspecjs'
 import {ExecJSONProfile} from 'inspecjs/lib/generated_parsers/v_1_0/exec-json'
 import _ from 'lodash'
 import path from 'path'
-import {ExtendedEvaluationFile} from '../types/checklist'
 
 export type SpreadsheetTypes = 'cis' | 'disa' |'general'
 
