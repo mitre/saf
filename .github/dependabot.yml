@@ -1,0 +1,11 @@
+version: 2
+updates:
+
+  # Maintain dependencies for npm
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: daily
+      time: "20:00"
+      timezone: America/New_York
+    open-pull-requests-limit: 99
