@@ -5,7 +5,7 @@ import fs from 'fs'
 import {v4} from 'uuid'
 import {default as files} from '../../resources/files.json'
 import Mustache from 'mustache'
-import {ExtendedEvaluationFile} from '../../types/checklist'
+import {CKLMetadata} from '../../types/checklist'
 import {convertFullPathToFilename, getProfileInfo} from '../../utils/global'
 import {getDetails} from '../../utils/checklist'
 
@@ -17,6 +17,7 @@ export default class HDF2CKL extends Command {
   static flags = {
     help: flags.help({char: 'h'}),
     input: flags.string({char: 'i', required: true, description: 'Input HDF file'}),
+    metadata: flags.string({char: 'm', required: false, description: 'Metadata JSON file, generate one with "saf generate:ckl_metadata"'}),
     output: flags.string({char: 'o', required: true, description: 'Output CKL file'}),
     hostname: flags.string({char: 'H', required: false, description: 'Hostname for CKL metadata'}),
     fqdn: flags.string({char: 'F', required: false, description: 'FQDN for CKL metadata'}),
@@ -28,31 +29,44 @@ export default class HDF2CKL extends Command {
 
   async run() {
     const {flags} = this.parse(HDF2CKL)
-    let cklData = {}
     const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, {encoding: 'utf-8'})))
-    // Check for passthrough fields
-    const extendedEvaluation: ExtendedEvaluationFile = {
-      evaluation: contextualizedEvaluation,
+    const profileName = contextualizedEvaluation.data.profiles[0].name
+    const controls = contextualizedEvaluation.contains.flatMap(profile => profile.contains) || []
+    let cklData = {}
+    const cklMetadata: CKLMetadata = {
       fileName: convertFullPathToFilename(flags.input),
-      hostname: _.get(contextualizedEvaluation, 'evaluation.data.passthrough.hostname') || flags.hostname || '',
-      fqdn: _.get(contextualizedEvaluation, 'evaluation.data.passthrough.fqdn') || flags.fqdn || '',
-      mac: _.get(contextualizedEvaluation, 'evaluation.data.passthrough.mac') || flags.mac || '',
-      ip: _.get(contextualizedEvaluation, 'evaluation.data.passthrough.ip') || flags.ip || '',
+      benchmark: {
+        title: null,
+        version: null,
+        plaintext: null,
+      },
+      stigid: profileName || null,
+      role: null,
+      type: null,
+      hostname: flags.hostname || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.hostname') || null,
+      ip: flags.ip || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.ip') ||  null,
+      mac: flags.mac || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.mac') || null,
+      fqdn: flags.fqdn || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.fqdn') ||  null,
+      tech_area: null,
+      target_key: null,
+      web_or_database: null,
+      web_db_site: null,
+      web_db_instance: null,
     }
-    const profileName = extendedEvaluation.evaluation.data.profiles[0].name
-    const controls = extendedEvaluation.evaluation.contains.flatMap(profile => profile.contains) || []
+
+    if (flags.metadata) {
+      const cklMetadataInput: CKLMetadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf-8'))
+      for (const field in cklMetadataInput) {
+        if (typeof cklMetadata[field] === 'string' || typeof cklMetadata[field] === 'object') {
+          cklMetadata[field] = cklMetadataInput[field]
+        }
+      }
+    }
 
     cklData = {
-      fileName: extendedEvaluation.fileName,
-      hostname: extendedEvaluation.hostname,
-      ip: extendedEvaluation.ip,
-      mac: extendedEvaluation.mac,
-      fqdn: extendedEvaluation.fqdn,
-      targetKey: 0,
-      description: 'desc',
-      startTime: new Date().toString(),
-      profileTitle: profileName,
-      profileInfo: getProfileInfo(extendedEvaluation),
+      releaseInfo: cklMetadata.benchmark.plaintext,
+      ...cklMetadata,
+      profileInfo: getProfileInfo(contextualizedEvaluation, cklMetadata.fileName),
       uuid: v4(),
       controls: controls.map(control => getDetails(control, profileName)),
     }
