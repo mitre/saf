@@ -1,4 +1,5 @@
 import {getInstalledPathSync} from 'get-installed-path'
+import {ContextualizedEvaluation} from 'inspecjs'
 import {ExecJSONProfile} from 'inspecjs/lib/generated_parsers/v_1_0/exec-json'
 import _ from 'lodash'
 import path from 'path'
@@ -80,12 +81,10 @@ export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNu
   }
 }
 
-export function getProfileInfo(file: ExtendedEvaluationFile): string {
+export function getProfileInfo(evaluation: ContextualizedEvaluation, fileName: string): string {
   let result = ''
-  const profile: ExecJSONProfile = _.get(file, 'evaluation.data.profiles[0]')
-  if (file.fileName) {
-    result += `File Name: ${file.fileName}\n`
-  }
+  const profile: ExecJSONProfile = _.get(evaluation, 'data.profiles[0]')
+  result += `File Name: ${fileName}\n`
   if (profile.version) {
     result += `Version: ${profile.version}\n`
   }
