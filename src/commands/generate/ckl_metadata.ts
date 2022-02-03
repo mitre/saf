@@ -5,7 +5,7 @@ import _ from 'lodash'
 
 const prompt = promptSync()
 
-export default class GenerateThreshold extends Command {
+export default class GenerateCKLMetadata extends Command {
   static usage = 'generate:ckl_metadata --output=<JSON-FILE>'
 
   static description = 'Generate a checklist metadata template for "saf convert:hdf2ckl"'
@@ -16,7 +16,7 @@ export default class GenerateThreshold extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(GenerateThreshold)
+    const {flags} = this.parse(GenerateCKLMetadata)
     console.log("Please fill in the following fields to the best of your ability, if you don't have a value, please leave the field empty.")
     const cklMetadata = {
       benchmark: {
