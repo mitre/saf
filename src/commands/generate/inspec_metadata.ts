@@ -1,7 +1,6 @@
 import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import promptSync from 'prompt-sync'
-import _ from 'lodash'
 
 const prompt = promptSync()
 
