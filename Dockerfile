@@ -22,6 +22,9 @@ FROM node:lts-alpine
 COPY --from=builder /build/saf.tgz /build/
 RUN npm install -g /build/saf.tgz
 
+# Useful for CI pipelines
+RUN apk add bash jq
+
 ENTRYPOINT ["saf"]
 VOLUME ["/share"]
 WORKDIR /share
