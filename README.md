@@ -94,12 +94,26 @@ Checklist template files are used to give extra information to `saf convert:hdf2
 generate:ckl_metadata        Generate a checklist metadata template for "saf convert:hdf2ckl"
 
   OPTIONS
-    -h, --help           show CLI help
     -o, --output=output  (required) Output JSON File
   
   EXAMPLE
     saf generate:ckl_metadata -o rhel_metadata.json
 ```
+
+#### InSpec Metadata
+
+InSpec metadata files are used to give extra information to `saf convert:*2inspec`.
+
+```
+generate:inspec_metadata        Generate an InSpec metadata file for "saf convert:*2inspec"
+
+  OPTIONS
+    -o, --output=output  (required) Output JSON File
+
+  EXAMPLE
+    saf generate:inspec_metadata -o ms_sql_baseline_metadata.json
+```
+
 #### Thresholds
 
 Threshold files are used in CI to ensure minimum compliance levels and validate control severities and statuses using `saf validate:threshold`

@@ -11,7 +11,7 @@ export default class GenerateInSpecMetadata extends Command {
 
   static flags = {
     help: flags.help({char: 'h'}),
-    output: flags.string({char: 'o', required: true}),
+    output: flags.string({char: 'o', required: true, description: 'Output JSON File'}),
   }
 
   async run() {
