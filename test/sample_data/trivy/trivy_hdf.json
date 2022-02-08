@@ -1,0 +1,274 @@
+{
+    "platform": {
+        "name": "Heimdall Tools",
+        "release": "2.6.7",
+        "target_id": ""
+    },
+    "profiles": [
+        {
+            "attributes": [],
+            "controls": [
+                {
+                    "code": "{\n  \"Findings\": [\n    {\n      \"SchemaVersion\": \"2018-10-08\",\n      \"Id\": \"golang:1.12-alpine (alpine 3.11.3)/CVE-2021-36159\",\n      \"ProductArn\": \"arn:aws:securityhub:us-east-1::product/aquasecurity/aquasecurity\",\n      \"GeneratorId\": \"Trivy\",\n      \"AwsAccountId\": \"123456789012\",\n      \"Types\": [\n        \"Software and Configuration Checks/Vulnerabilities/CVE\"\n      ],\n      \"CreatedAt\": \"2022-02-07T23:51:26.938789-05:00\",\n      \"UpdatedAt\": \"2022-02-07T23:51:26.938817-05:00\",\n      \"Severity\": {\n        \"Label\": \"CRITICAL\"\n      },\n      \"Title\": \"Trivy found a vulnerability to CVE-2021-36159 in container golang:1.12-alpine (alpine 3.11.3)\",\n      \"Description\": \"libfetch before 2021-07-26, as used in apk-tools, xbps, and other products, mishandles numeric strings for the FTP and HTTP protocols. The FTP passive mode implementation allows an out-of-bounds read because strtol is used to parse the relevant numbers into address bytes. It does not check if the line ends prematurely. If it does, the for-loop condition checks for the &#39;\\\\0&#39; terminator one byte too late.\",\n      \"Remediation\": {\n        \"Recommendation\": {\n          \"Text\": \"More information on this vulnerability is provided in the hyperlink\",\n          \"Url\": \"https://avd.aquasec.com/nvd/cve-2021-36159\"\n        }\n      },\n      \"ProductFields\": {\n        \"Product Name\": \"Trivy\"\n      },\n      \"Resources\": [\n        {\n          \"Type\": \"Container\",\n          \"Id\": \"golang:1.12-alpine (alpine 3.11.3)\",\n          \"Partition\": \"aws\",\n          \"Region\": \"us-east-1\",\n          \"Details\": {\n            \"Container\": {\n              \"ImageName\": \"golang:1.12-alpine (alpine 3.11.3)\"\n            },\n            \"Other\": {\n              \"CVE ID\": \"CVE-2021-36159\",\n              \"CVE Title\": \"\",\n              \"PkgName\": \"apk-tools\",\n              \"Installed Package\": \"2.10.4-r3\",\n              \"Patched Package\": \"2.10.7-r0\",\n              \"NvdCvssScoreV3\": \"9.1\",\n              \"NvdCvssVectorV3\": \"CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:H\",\n              \"NvdCvssScoreV2\": \"6.4\",\n              \"NvdCvssVectorV2\": \"AV:N/AC:L/Au:N/C:P/I:N/A:P\"\n            }\n          }\n        }\n      ],\n      \"RecordState\": \"ACTIVE\"\n    }\n  ]\n}",
+                    "desc": "libfetch before 2021-07-26, as used in apk-tools, xbps, and other products, mishandles numeric strings for the FTP and HTTP protocols. The FTP passive mode implementation allows an out-of-bounds read because strtol is used to parse the relevant numbers into address bytes. It does not check if the line ends prematurely. If it does, the for-loop condition checks for the &amp;#39;\\0&amp;#39; terminator one byte too late.",
+                    "descriptions": [
+                        {
+                            "data": "More information on this vulnerability is provided in the hyperlink\nhttps://avd.aquasec.com/nvd/cve-2021-36159",
+                            "label": "fix"
+                        }
+                    ],
+                    "id": "[aquasecurity/aquasecurity] Trivy",
+                    "impact": 0.9,
+                    "refs": [],
+                    "results": [
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.938817-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.939283-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.939749-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.94001-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.940279-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.940524-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.940792-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.941038-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.941302-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.941561-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.941815-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.942077-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.942328-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.942607-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.942885-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.943155-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.943438-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.94371-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.943977-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.944245-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.944524-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.944783-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.945056-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.94532-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.94558-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.945838-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.946111-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.94639-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.946659-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.946902-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.947149-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.947393-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.947634-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.94787-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.948105-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.948345-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.948585-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.948835-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.949084-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.94933-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.949583-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.949831-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.950071-05:00",
+                            "status": "skipped"
+                        },
+                        {
+                            "code_desc": "Resources: [Type: Container, Id: golang:1.12-alpine (alpine 3.11.3), Partition: aws, Region: us-east-1]",
+                            "start_time": "2022-02-07T23:51:26.950306-05:00",
+                            "status": "skipped"
+                        }
+                    ],
+                    "source_location": {},
+                    "tags": {
+                        "nist": [
+                            "SA-11",
+                            "RA-5"
+                        ]
+                    },
+                    "title": "aquasecurity/aquasecurity: Trivy found a vulnerability to CVE-2021-36159 in container golang:1.12-alpine (alpine 3.11.3)"
+                }
+            ],
+            "copyright": null,
+            "copyright_email": null,
+            "depends": [],
+            "groups": [],
+            "license": null,
+            "maintainer": null,
+            "name": "Trivy",
+            "sha256": "6a25d4b2d2e6daa678dea39f55a542b964caef5980d706fdffc6b533f5ecf488",
+            "status": "loaded",
+            "summary": "",
+            "supports": [],
+            "title": "Trivy Findings",
+            "version": ""
+        }
+    ],
+    "statistics": {
+        "duration": null
+    },
+    "version": "2.6.7"
+}
