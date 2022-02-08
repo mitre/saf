@@ -526,6 +526,22 @@ convert:sonarqube2hdf        Pull SonarQube vulnerabilities for the specified
 
 ```
 
+
+##### Trivy to HDF
+
+```
+convert:trivy2hdf         Translate a Trivy-derived AWS Security Finding
+                          Format results JSON file into a Heimdall Data Format
+                          JSON file
+  OPTIONS
+    -i, --input=input          Input Trivy ASFF JSON File
+    -o, --output=output        Output HDF JSON File
+
+  EXAMPLES
+    saf convert:trivy2hdf -i trivy_asff.json -o output-hdf-name.json
+```
+
+
 ##### XCCDF Results to HDF
 
 ```
