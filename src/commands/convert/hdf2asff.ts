@@ -59,7 +59,7 @@ export default class HDF2ASFF extends Command {
           }
         })
       ).then(async () => {
-        profileInfoFinding!.UpdatedAt = new Date().toISOString()
+        profileInfoFinding.UpdatedAt = new Date().toISOString()
         const profileInfoUploadCommand = new BatchImportFindingsCommand({
           Findings: [profileInfoFinding],
         })
