@@ -2,7 +2,7 @@ import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import path from 'path'
 import parse from 'csv-parse/lib/sync'
-import {InSpecControl, InSpecMetaData} from '../../types/inspec.d'
+import {InSpecControl, InSpecMetaData} from '../../types/inspec'
 import YAML from 'yaml'
 import XlsxPopulate from 'xlsx-populate'
 import {impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact} from '../../utils/xccdf2inspec'
@@ -14,11 +14,11 @@ import {default as CISNistMappings} from '../../resources/cis2nist.json'
 import {default as files} from '../../resources/files.json'
 
 export default class Spreadsheet2HDF extends Command {
-  static usage = 'convert:spreadsheet2inspec -i, --input=<XLSX or CSV> -o, --output=FOLDER'
+  static usage = 'generate:spreadsheet2inspec -i, --input=<XLSX or CSV> -o, --output=FOLDER'
 
   static description = 'Convert CSV STIGs or CIS XLSX benchmarks into a skeleton InSpec profile'
 
-  static examples = ['saf convert:spreadsheet2inspec -i spreadsheet.xlsx -o profile']
+  static examples = ['saf generate:spreadsheet2inspec -i spreadsheet.xlsx -o profile']
 
   static flags = {
     help: flags.help({char: 'h'}),
