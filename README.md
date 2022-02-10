@@ -133,6 +133,55 @@ generate:threshold      Generate a compliance template for "saf validate thresho
   	saf generate:threshold -i rhel7-results.json -e -c -o output.yaml
 ```
 
+#### Spreadsheet (csv/xlsx) to InSpec
+
+You can use `saf generate:spreadsheet2inspec` to generate an InSpec profile structure from a spreadsheet file. 
+
+```
+generate:spreadsheet2inspec              Generate a skeleton InSpec profile from a CSV STIGs or CIS XLSX benchmarks 
+
+USAGE
+  $ saf generate:spreadsheet2inspec -i, --input=<XLSX or CSV> -o, --output=FOLDER
+
+OPTIONS
+  -M, --mapping=mapping                      Path to a YAML file with mappings for each
+                                             field, by default, CIS Benchmark fields are
+                                             used for XLSX, STIG Viewer CSV export is used
+                                             by CSV
+
+  -c, --controlNamePrefix=controlNamePrefix  Prefix for all control IDs
+
+  -f, --format=cis|disa|general              [default: general]
+
+  -h, --help                                 show CLI help
+
+  -i, --input=input                          (required)
+
+  -m, --metadata=metadata                    Path to a JSON file with additional metadata
+                                             for the inspec.yml file
+
+  -o, --output=output                        (required) Output InSpec profile folder
+
+EXAMPLE
+  saf generate:spreadsheet2inspec -i spreadsheet.xlsx -o profile
+```
+
+#### XCCDF to InSpec
+```
+generate:xccdf2inspec              Generate a skeleton for an InSpec profile from a DISA STIG XCCDF XML file
+
+  USAGE
+    $ saf generate:xccdf2inspec -i, --input=XML -o, --output=FOLDER
+
+  OPTIONS
+    -h, --help                show CLI help
+    -i, --input=input         (required) Path to the DISA STIG XCCDF file
+    -m, --metadata=metadata   Path to a JSON file with additional metadata for the inspec.yml file
+    -o, --output=output       (required) [default: profile]
+    -r, --useVulnerabilityId  Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')
+    -s, --singleFile          Output the resulting controls as a single file
+```
+
 ---
 
 ### Validate
@@ -579,38 +628,7 @@ convert:zap2hdf              Translate a OWASP ZAP results JSON to HDF format Js
 
 #### Other
 
-##### Spreadsheet (csv/xlsx) to InSpec
 
-You can use `saf convert:spreadsheet2inspec` to generate an InSpec profile structure from a spreadsheet file. 
-
-```
-convert:spreadsheet2inspec              Convert CSV STIGs or CIS XLSX benchmarks into a skeleton InSpec profile
-
-USAGE
-  $ saf convert:spreadsheet2inspec -i, --input=<XLSX or CSV> -o, --output=FOLDER
-
-OPTIONS
-  -M, --mapping=mapping                      Path to a YAML file with mappings for each
-                                             field, by default, CIS Benchmark fields are
-                                             used for XLSX, STIG Viewer CSV export is used
-                                             by CSV
-
-  -c, --controlNamePrefix=controlNamePrefix  Prefix for all control IDs
-
-  -f, --format=cis|disa|general              [default: general]
-
-  -h, --help                                 show CLI help
-
-  -i, --input=input                          (required)
-
-  -m, --metadata=metadata                    Path to a JSON file with additional metadata
-                                             for the inspec.yml file
-
-  -o, --output=output                        (required) Output InSpec profile folder
-
-EXAMPLE
-  saf convert:spreadsheet2inspec -i spreadsheet.xlsx -o profile
-```
 
 ##### Notes
 
