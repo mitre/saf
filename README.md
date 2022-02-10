@@ -13,7 +13,7 @@ The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) bring
 
 * [SAF CLI Usage](#usage)
   * Scan - Visit https://saf.mitre.org/#/validate to explore and run inspec profiles
-  * [Generate](#generate) - Generate predefined options for data conversion and validation
+  * [Generate](#generate) - Generate InSpec validation code, set pipeline thresholds, and generate options to support other saf commands.
   * [Validate](#validate) - Verify pipeline thresholds
   * [View](#view) - Identify overall security status and deep-dive to solve specifc security defects
   * [Convert](#convert) - Convert security results from all your security tools into a common data format
