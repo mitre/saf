@@ -102,10 +102,10 @@ generate:ckl_metadata        Generate a checklist metadata template for "saf con
 
 #### InSpec Metadata
 
-InSpec metadata files are used to give extra information to `saf convert:*2inspec`.
+InSpec metadata files are used to give extra information to `saf convert:*2inspec_stub`.
 
 ```
-generate:inspec_metadata        Generate an InSpec metadata file for "saf convert:*2inspec"
+generate:inspec_metadata        Generate an InSpec metadata file for "saf convert:*2inspec_stub"
 
   OPTIONS
     -o, --output=output  (required) Output JSON File
