@@ -51,14 +51,17 @@ export default class Summary extends Command {
           _.set(summary, severityTarget.replace(`.${thresholdType}`, ''), _.get(severityStatusCounts, renameStatusName(statusName)))
         }
       }
+
       // Total Counts
       for (const [type, counts] of Object.entries(summary)) {
         let total = 0
         for (const [_severity, count] of Object.entries(counts)) {
           total += count
         }
+
         _.set(summary, `${type}.total`, total)
       }
+
       summaries[profileName] = (_.get(summaries, profileName) || [])
       summaries[profileName].push(summary)
     })

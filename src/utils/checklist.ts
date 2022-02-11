@@ -38,14 +38,17 @@ export function cklResults(segments?: HDFControlSegment[]): string {
   if (typeof segments === 'undefined') {
     return ''
   }
+
   return segments
   .map(segment => {
     if (segment.message) {
       return `${segment.status}\n${segment.code_desc}\n${segment.message}`
     }
+
     if (segment.skip_message) {
       return `${segment.status}\n${segment.code_desc}\n${segment.skip_message}`
     }
+
     return `${segment.status}\n${segment.code_desc}`
   })
   .join('\n--------------------------------\n')

@@ -23,7 +23,7 @@ export default class HDF2ASFF extends Command {
   async run() {
     const {flags} = this.parse(HDF2ASFF)
 
-    const converter = new Mapper(JSON.parse(fs.readFileSync(flags.input, {encoding: 'utf-8'})), {
+    const converter = new Mapper(JSON.parse(fs.readFileSync(flags.input, 'utf-8')), {
       awsAccountId: flags.accountId,
       region: flags.region,
       target: flags.target,

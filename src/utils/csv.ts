@@ -24,27 +24,29 @@ function descriptionsToString(
   descriptions?:
     | ExecJSON.ControlDescription[]
     | { [key: string]: unknown }
-    | null
+    | null,
 ): string {
   let result = ''
   if (Array.isArray(descriptions)) {
     // Caveats are the first thing displayed if defined
     // There should only ever be one, but better safe than sorry
     const caveats = descriptions.filter(
-      description => description.label === 'caveat'
+      description => description.label === 'caveat',
     )
     if (caveats.length) {
       descriptions = descriptions.filter(
-        description => description.label !== 'caveat'
+        description => description.label !== 'caveat',
       )
       caveats.forEach(caveat => {
         result += `${caveat.label}: ${caveat.data}`
       })
     }
+
     descriptions.forEach((description: ExecJSON.ControlDescription) => {
       result += `${description.label}: ${description.data}\r\n\r\n`
     })
   }
+
   return result
 }
 
@@ -62,6 +64,7 @@ function segmentsToString(segments: HDFControlSegment[] | undefined): string {
     })
     return result
   }
+
   return ''
 }
 
@@ -69,7 +72,7 @@ function segmentsToString(segments: HDFControlSegment[] | undefined): string {
 export function convertRow(
   filename: string,
   control: ContextualizedControl,
-  fieldsToAdd: string[]
+  fieldsToAdd: string[],
 ): ControlSetRow {
   let check = ''
   let fix = ''
@@ -80,23 +83,25 @@ export function convertRow(
   } else if (typeof control.data.descriptions === 'object') {
     const found = control.data.descriptions?.find(
       (description: ExecJSON.ControlDescription) =>
-        description.label.toLowerCase() === 'check'
+        description.label.toLowerCase() === 'check',
     )
     if (found) {
       check = found.data
     }
   }
+
   if (control.data.tags.fix) {
     fix = control.data.tags.fix
   } else if (typeof control.data.descriptions === 'object') {
     const found = control.data.descriptions?.find(
       (description: ExecJSON.ControlDescription) =>
-        description.label.toLowerCase() === 'fix'
+        description.label.toLowerCase() === 'fix',
     )
     if (found) {
       fix = found.data
     }
   }
+
   fieldsToAdd.forEach(field => {
     switch (field) {
     // Results Set
@@ -122,7 +127,7 @@ export function convertRow(
       // Descriptions
     case csvExportFields[5]:
       result[csvExportFields[5]] = descriptionsToString(
-        control.data.descriptions
+        control.data.descriptions,
       )
       break
       // Impact
@@ -156,7 +161,7 @@ export function convertRow(
       // Results
     case csvExportFields[13]:
       result[csvExportFields[13]] = segmentsToString(
-        control.hdf.segments
+        control.hdf.segments,
       )
       break
       // Is Waived
@@ -166,7 +171,7 @@ export function convertRow(
       // Waiver Data (JSON)
     case csvExportFields[15]:
       result[csvExportFields[15]] = JSON.stringify(
-        _.get(control, 'hdf.wraps.waiver_data')
+        _.get(control, 'hdf.wraps.waiver_data'),
       )
       break
     }
