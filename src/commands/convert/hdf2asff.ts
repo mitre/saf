@@ -49,7 +49,7 @@ export default class HDF2ASFF extends Command {
         })
       }
     }
-    
+
     if (flags.upload) {
       const profileInfoFinding: any = converted.pop()
       const client = new SecurityHubClient({region: flags.region})
