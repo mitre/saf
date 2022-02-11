@@ -144,22 +144,14 @@ USAGE
   $ saf generate:spreadsheet2inspec -i, --input=<XLSX or CSV> -o, --output=FOLDER
 
 OPTIONS
-  -M, --mapping=mapping                      Path to a YAML file with mappings for each
-                                             field, by default, CIS Benchmark fields are
-                                             used for XLSX, STIG Viewer CSV export is used
-                                             by CSV
-
+  -M, --mapping=mapping                      Path to a YAML file with mappings for each field, by default, CIS Benchmark
+                                             fields are used for XLSX, STIG Viewer CSV export is used by CSV
   -c, --controlNamePrefix=controlNamePrefix  Prefix for all control IDs
-
   -f, --format=cis|disa|general              [default: general]
-
   -h, --help                                 show CLI help
-
   -i, --input=input                          (required)
-
-  -m, --metadata=metadata                    Path to a JSON file with additional metadata
-                                             for the inspec.yml file
-
+  -l, --lineLength=lineLength                [default: 80] Characters between lines within InSpec controls
+  -m, --metadata=metadata                    Path to a JSON file with additional metadata for the inspec.yml file
   -o, --output=output                        (required) Output InSpec profile folder
 
 EXAMPLE
@@ -174,12 +166,13 @@ generate:xccdf2inspec              Generate a skeleton for an InSpec profile fro
     $ saf generate:xccdf2inspec -i, --input=XML -o, --output=FOLDER
 
   OPTIONS
-    -h, --help                show CLI help
-    -i, --input=input         (required) Path to the DISA STIG XCCDF file
-    -m, --metadata=metadata   Path to a JSON file with additional metadata for the inspec.yml file
-    -o, --output=output       (required) [default: profile]
-    -r, --useVulnerabilityId  Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')
-    -s, --singleFile          Output the resulting controls as a single file
+    -h, --help                    show CLI help
+    -i, --input=input             (required) Path to the DISA STIG XCCDF file
+    -l, --lineLength=lineLength   [default: 80] Characters between lines within InSpec controls
+    -m, --metadata=metadata       Path to a JSON file with additional metadata for the inspec.yml file
+    -o, --output=output           (required) [default: profile]
+    -r, --useVulnerabilityId      Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')
+    -s, --singleFile              Output the resulting controls as a single file
 ```
 
 ---
