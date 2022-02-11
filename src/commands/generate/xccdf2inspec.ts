@@ -20,6 +20,7 @@ export default class XCCDF2InSpec extends Command {
     metadata: flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
     singleFile: flags.boolean({char: 's', required: false, default: false, description: 'Output the resulting controls as a single file'}),
     useVulnerabilityId: flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')"}),
+    lineLength: flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
     output: flags.string({char: 'o', required: true, default: 'profile'}),
   }
 
@@ -158,12 +159,12 @@ export default class XCCDF2InSpec extends Command {
     // Convert all extracted controls to Ruby/InSpec code
     if (!flags.singleFile) {
       inspecControls.forEach(control => {
-        fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control))
+        fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control, flags.lineLength))
       })
     } else {
       const controlOutfile = fs.createWriteStream(path.join(flags.output, 'controls', 'controls.rb'), {flags: 'w'})
       inspecControls.forEach(control => {
-        controlOutfile.write(inspecControlToRubyCode(control) + '\n\n')
+        controlOutfile.write(inspecControlToRubyCode(control, flags.lineLength) + '\n\n')
       })
       controlOutfile.close()
     }
