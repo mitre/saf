@@ -2,7 +2,6 @@ import {expect, test} from '@oclif/test'
 import * as tmp from 'tmp'
 import path from 'path'
 import fs from 'fs'
-import _ from 'lodash'
 import {convertEncodedXmlIntoJson} from '../../../src/utils/xccdf2inspec'
 import {DisaStig} from '../../../src/types/xccdf'
 

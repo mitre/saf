@@ -78,7 +78,7 @@ export default class XCCDF2InSpec extends Command {
     profileInfo.referenceSource = parsedXML.Benchmark.reference['dc:source']
     // Convert camelCase and snake_case to human readable for README.md
     const readableMetadata: Record<string, string | number> = {}
-    Object.entries(profileInfo).forEach(async ([key, value]) => {
+    Object.entries(profileInfo).forEach(([key, value]) => {
       // Filter out any undefined values and omit summary and title
       if (value && key !== 'summary' && key !== 'summary') {
         readableMetadata[_.startCase(key)] = value
