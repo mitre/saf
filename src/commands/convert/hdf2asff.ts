@@ -48,7 +48,7 @@ export default class HDF2ASFF extends Command {
           try {
             const result = await client.send(uploadCommand)
             console.log(
-              `Uploaded ${chunk.length} controls. Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`
+              `Uploaded ${chunk.length} controls. Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
             )
             if (result.FailedFindings?.length) {
               console.error(`Failed to upload ${result.FailedCount} Findings`)
@@ -57,7 +57,7 @@ export default class HDF2ASFF extends Command {
           } catch (error) {
             console.error(`Failed to upload controls: ${error}`)
           }
-        })
+        }),
       ).then(async () => {
         profileInfoFinding.UpdatedAt = new Date().toISOString()
         const profileInfoUploadCommand = new BatchImportFindingsCommand({
@@ -66,7 +66,7 @@ export default class HDF2ASFF extends Command {
         const result = await client.send(profileInfoUploadCommand)
         console.info(`Statistics: ${profileInfoFinding.Description}`)
         console.info(
-          `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`
+          `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
         )
         if (result.FailedFindings?.length) {
           console.error(`Failed to upload ${result.FailedCount} Results Set Info Finding`)
@@ -74,6 +74,7 @@ export default class HDF2ASFF extends Command {
         }
       })
     }
+
     if (flags.output) {
       fs.mkdirSync(outputFolder)
       if (convertedSlices.length === 1) {
