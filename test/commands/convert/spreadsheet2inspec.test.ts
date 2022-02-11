@@ -8,7 +8,7 @@ describe('Test spreadsheet2inspec', () => {
 
   test
   .stdout()
-  .command(['convert:spreadsheet2inspec', '-i', path.resolve('./test/sample_data/csv/input/Ubuntu.csv'), '-o', `${tmpobj.name}/Ubuntu`, '--format', 'disa'])
+  .command(['generate:spreadsheet2inspec', '-i', path.resolve('./test/sample_data/csv/input/Ubuntu.csv'), '-o', `${tmpobj.name}/Ubuntu`, '--format', 'disa'])
   .it('Has the same number of controls in the CSV as generated - Ubuntu', () => {
     const fileCount = fs.readdirSync(`${tmpobj.name}/Ubuntu/controls/`).length
     expect(fileCount).to.eql(194)

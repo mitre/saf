@@ -13,7 +13,7 @@ The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) bring
 
 * [SAF CLI Usage](#usage)
   * Scan - Visit https://saf.mitre.org/#/validate to explore and run inspec profiles
-  * [Generate](#generate) - Generate predefined options for data conversion and validation
+  * [Generate](#generate) - Generate InSpec validation code, set pipeline thresholds, and generate options to support other saf commands.
   * [Validate](#validate) - Verify pipeline thresholds
   * [View](#view) - Identify overall security status and deep-dive to solve specifc security defects
   * [Convert](#convert) - Convert security results from all your security tools into a common data format
@@ -131,6 +131,55 @@ generate:threshold      Generate a compliance template for "saf validate thresho
 
 	EXAMPLE
   	saf generate:threshold -i rhel7-results.json -e -c -o output.yaml
+```
+
+#### Spreadsheet (csv/xlsx) to InSpec
+
+You can use `saf generate:spreadsheet2inspec` to generate an InSpec profile structure from a spreadsheet file. 
+
+```
+generate:spreadsheet2inspec              Generate a skeleton InSpec profile from a CSV STIGs or CIS XLSX benchmarks 
+
+USAGE
+  $ saf generate:spreadsheet2inspec -i, --input=<XLSX or CSV> -o, --output=FOLDER
+
+OPTIONS
+  -M, --mapping=mapping                      Path to a YAML file with mappings for each
+                                             field, by default, CIS Benchmark fields are
+                                             used for XLSX, STIG Viewer CSV export is used
+                                             by CSV
+
+  -c, --controlNamePrefix=controlNamePrefix  Prefix for all control IDs
+
+  -f, --format=cis|disa|general              [default: general]
+
+  -h, --help                                 show CLI help
+
+  -i, --input=input                          (required)
+
+  -m, --metadata=metadata                    Path to a JSON file with additional metadata
+                                             for the inspec.yml file
+
+  -o, --output=output                        (required) Output InSpec profile folder
+
+EXAMPLE
+  saf generate:spreadsheet2inspec -i spreadsheet.xlsx -o profile
+```
+
+#### XCCDF to InSpec
+```
+generate:xccdf2inspec              Generate a skeleton for an InSpec profile from a DISA STIG XCCDF XML file
+
+  USAGE
+    $ saf generate:xccdf2inspec -i, --input=XML -o, --output=FOLDER
+
+  OPTIONS
+    -h, --help                show CLI help
+    -i, --input=input         (required) Path to the DISA STIG XCCDF file
+    -m, --metadata=metadata   Path to a JSON file with additional metadata for the inspec.yml file
+    -o, --output=output       (required) [default: profile]
+    -r, --useVulnerabilityId  Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')
+    -s, --singleFile          Output the resulting controls as a single file
 ```
 
 ---
@@ -368,7 +417,7 @@ convert:fortify2hdf         Translate a Fortify results FVDL file into a Heimdal
     The fortify converter translates a Fortify results FVDL file (e.g., audit.fvdl)
     into a HDF JSON. The FVDL file is an XML file that can be extracted from the
     Fortify FPR project file using standard file compression tools.
-  
+
   OPTIONS
     -i, --input=input          Input FVDL File
     -o, --output=output        Output HDF JSON File
@@ -401,7 +450,7 @@ convert:nessus2hdf          Translate a Nessus XML results file into a Heimdall
   DESCRIPTION
     The Nessus converter translates a Nessus-style XML results
     file (e.g., .nessus file) into a Data Format JSON file.
-    
+
     Supports compliance and vulnerability scans from Tenable.sc, Tenable.io, and ACAS.
 
 OPTIONS
@@ -465,7 +514,7 @@ convert:sarif2hdf          Translate a SARIF JSON file into a Heimdall Data
     -i, --input=input          Input SARIF JSON File
     -o, --output=output        Output HDF JSON File
 
-	DESCRIPTION
+  DESCRIPTION
     SARIF level to HDF impact Mapping:
       SARIF level error -> HDF impact 0.7
       SARIF level warning -> HDF impact 0.5
@@ -487,8 +536,8 @@ convert:scoutsuite2hdf       Translate a ScoutSuite results from a Javascript
     -i, --input=input          Input ScoutSuite Results JS File
     -o, --output=output        Output HDF JSON File
 
-	DESCRIPTION
-  	Note: Currently this mapper only supports AWS.
+  DESCRIPTION
+    Note: Currently this mapper only supports AWS.
 
   EXAMPLES
     saf convert:scoutsuite2hdf -i scoutsuite-results.js -o output-hdf-name.json
@@ -526,6 +575,29 @@ convert:sonarqube2hdf        Pull SonarQube vulnerabilities for the specified
 
 ```
 
+
+##### Trivy to HDF
+
+```
+convert:trivy2hdf         Translate a Trivy-derived AWS Security Finding
+                          Format results JSON file into a Heimdall Data Format
+                          JSON file
+  OPTIONS
+    -i, --input=input          Input Trivy ASFF JSON File
+    -o, --output=output        Output HDF JSON File
+
+  DESCRIPTION
+    Note: Currently this mapper only supports the results of Trivy's `image`
+    subcommand (featuring the CVE findings) while using the ASFF template format
+    (which comes bundled with the repo).  An example call to Trivy to get this
+    type of file looks as follows:
+    AWS_REGION=us-east-1 AWS_ACCOUNT_ID=123456789012 trivy image --no-progress --format template --template "@/absolute_path_to/git_clone_of/trivy/contrib/asff.tpl" -o trivy_asff.json golang:1.12-alpine
+
+  EXAMPLES
+    saf convert:trivy2hdf -i trivy_asff.json -o output-hdf-name.json
+```
+
+
 ##### XCCDF Results to HDF
 
 ```
@@ -554,40 +626,9 @@ convert:zap2hdf              Translate a OWASP ZAP results JSON to HDF format Js
     saf convert:zap2hdf -i zap_results.json -n mitre.org -o output-hdf-name.json
 ```
 
-#### Other 
+#### Other
 
-##### Spreadsheet (csv/xlsx) to InSpec
 
-You can use `saf convert:spreadsheet2inspec` to generate an InSpec profile structure from a spreadsheet file. 
-
-```
-convert:spreadsheet2inspec              Convert CSV STIGs or CIS XLSX benchmarks into a skeleton InSpec profile
-
-USAGE
-  $ saf convert:spreadsheet2inspec -i, --input=<XLSX or CSV> -o, --output=FOLDER
-
-OPTIONS
-  -M, --mapping=mapping                      Path to a YAML file with mappings for each
-                                             field, by default, CIS Benchmark fields are
-                                             used for XLSX, STIG Viewer CSV export is used
-                                             by CSV
-
-  -c, --controlNamePrefix=controlNamePrefix  Prefix for all control IDs
-
-  -f, --format=cis|disa|general              [default: general]
-
-  -h, --help                                 show CLI help
-
-  -i, --input=input                          (required)
-
-  -m, --metadata=metadata                    Path to a JSON file with additional metadata
-                                             for the inspec.yml file
-
-  -o, --output=output                        (required) Output InSpec profile folder
-
-EXAMPLE
-  saf convert:spreadsheet2inspec -i spreadsheet.xlsx -o profile
-```
 
 ##### Notes
 
@@ -637,9 +678,10 @@ Where the keys (`title`) are InSpec control attributess and the values (`- Title
 
 ### Authors
 
--   Author:: Ryan Lin [Rlin232](https://github.com/rlin232)
--   Author:: Camden Moors [camdenmoors](https://github.com/camdenmoors)
--   Author:: Will Dower [wdower](https://github.com/wdower)
+- Author:: Will Dower [wdower](https://github.com/wdower)
+- Author:: Ryan Lin [Rlin232](https://github.com/rlin232)
+- Author:: Amndeep Singh Mann [Amndeep7](https://github.com/amndeep7)
+- Author:: Camden Moors [camdenmoors](https://github.com/camdenmoors)
 
 ### NOTICE
 
