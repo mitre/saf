@@ -10,7 +10,7 @@ import YAML from 'yaml'
 import {default as CCINistMappings} from '@mitre/hdf-converters/lib/data/cci-nist-mapping.json'
 
 export default class XCCDF2InSpec extends Command {
-  static usage = 'generate:xccdf2inspec -i, --input=XML -o, --output=FOLDER'
+  static usage = 'generate:xccdf2inspec_stub -i, --input=XML -o, --output=FOLDER'
 
   static description = 'Translate a DISA STIG XCCDF XML file to a skeleton for an InSpec profile'
 
@@ -22,6 +22,7 @@ export default class XCCDF2InSpec extends Command {
     useVulnerabilityId: flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')"}),
     output: flags.string({char: 'o', required: true, default: 'profile'}),
   }
+
 
   async run() {
     const {flags} = this.parse(XCCDF2InSpec)

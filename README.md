@@ -135,13 +135,13 @@ generate:threshold      Generate a compliance template for "saf validate thresho
 
 #### Spreadsheet (csv/xlsx) to InSpec
 
-You can use `saf generate:spreadsheet2inspec` to generate an InSpec profile structure from a spreadsheet file. 
+You can use `saf generate:spreadsheet2inspec_stub` to generate an InSpec profile structure from a spreadsheet file. 
 
 ```
-generate:spreadsheet2inspec              Generate a skeleton InSpec profile from a CSV STIGs or CIS XLSX benchmarks 
+generate:spreadsheet2inspec_stub              Generate an InSpec profile stub from a CSV STIGs or CIS XLSX benchmarks 
 
 USAGE
-  $ saf generate:spreadsheet2inspec -i, --input=<XLSX or CSV> -o, --output=FOLDER
+  $ saf generate:spreadsheet2inspec_stub -i, --input=<XLSX or CSV> -o, --output=FOLDER
 
 OPTIONS
   -M, --mapping=mapping                      Path to a YAML file with mappings for each
@@ -163,15 +163,15 @@ OPTIONS
   -o, --output=output                        (required) Output InSpec profile folder
 
 EXAMPLE
-  saf generate:spreadsheet2inspec -i spreadsheet.xlsx -o profile
+  saf generate:spreadsheet2inspec_stub -i spreadsheet.xlsx -o profile
 ```
 
-#### XCCDF to InSpec
+#### XCCDF to InSpec Stub
 ```
-generate:xccdf2inspec              Generate a skeleton for an InSpec profile from a DISA STIG XCCDF XML file
+generate:xccdf2inspec_stub              Generate an InSpec profile stub from a DISA STIG XCCDF XML file
 
   USAGE
-    $ saf generate:xccdf2inspec -i, --input=XML -o, --output=FOLDER
+    $ saf generate:xccdf2inspec_stub -i, --input=XML -o, --output=FOLDER
 
   OPTIONS
     -h, --help                show CLI help
