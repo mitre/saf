@@ -23,7 +23,6 @@ export default class XCCDF2InSpec extends Command {
     output: flags.string({char: 'o', required: true, default: 'profile'}),
   }
 
-
   async run() {
     const {flags} = this.parse(XCCDF2InSpec)
 
