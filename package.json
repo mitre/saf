@@ -53,7 +53,7 @@
     "yaml": "^1.10.2"
   },
   "devDependencies": {
-    "eslint": "^5.13",
+    "eslint": "^8.9",
     "eslint-config-oclif": "^3.1",
     "eslint-config-oclif-typescript": "^0.1",
     "mocha": "^9",
