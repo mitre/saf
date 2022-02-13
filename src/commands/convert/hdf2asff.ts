@@ -13,7 +13,7 @@ export default class HDF2ASFF extends Command {
 
   static description = 'Translate a Heimdall Data Format JSON file into AWS Security Findings Format JSON file(s)'
 
-  static examples = ['saf convert:hdf2asff -i rhel7.scan.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7.asff.json']
+  static examples = ['saf convert:hdf2asff -i rhel7.scan.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7.asff']
 
   static flags = {
     help: flags.help({char: 'h'}),
@@ -34,11 +34,24 @@ export default class HDF2ASFF extends Command {
       target: flags.target,
       input: flags.input,
     }).toAsff()
-    const profileInfoFinding: any = converted.pop()
     const convertedSlices = sliceIntoChunks(converted, 100)
     const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
 
+    if (flags.output) {
+      fs.mkdirSync(outputFolder)
+      if (convertedSlices.length === 1) {
+        const outfilePath = path.join(outputFolder, checkSuffix(flags.output))
+        fs.writeFileSync(outfilePath, JSON.stringify(convertedSlices[0]))
+      } else {
+        convertedSlices.forEach((slice, index) => {
+          const outfilePath = path.join(outputFolder, `${checkSuffix(flags.output || '').replace('.json', '')}.p${index}.json`)
+          fs.writeFileSync(outfilePath, JSON.stringify(slice))
+        })
+      }
+    }
+
     if (flags.upload) {
+      const profileInfoFinding: any = converted.pop()
       const client = new SecurityHubClient({region: flags.region})
       Promise.all(
         convertedSlices.map(async chunk => {
@@ -73,19 +86,6 @@ export default class HDF2ASFF extends Command {
           console.log(result.FailedFindings)
         }
       })
-    }
-
-    if (flags.output) {
-      fs.mkdirSync(outputFolder)
-      if (convertedSlices.length === 1) {
-        const outfilePath = path.join(outputFolder, checkSuffix(flags.output))
-        fs.writeFileSync(outfilePath, JSON.stringify(convertedSlices[0]))
-      } else {
-        convertedSlices.forEach((slice, index) => {
-          const outfilePath = path.join(outputFolder, `${checkSuffix(flags.output || '').replace('.json', '')}.p${index}.json`)
-          fs.writeFileSync(outfilePath, JSON.stringify(slice))
-        })
-      }
     }
   }
 }
