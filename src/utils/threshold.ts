@@ -73,10 +73,10 @@ export function extractStatusCounts(profile: ContextualizedProfile, severity?: s
         hash.PassedTests += (control.hdf.segments || []).length
       } else if (status === 'Failed') {
         hash.PassingTestsFailedControl += (control.hdf.segments || []).filter(
-          s => s.status === 'passed'
+          s => s.status === 'passed',
         ).length
         hash.FailedTests += (control.hdf.segments || []).filter(
-          s => s.status === 'failed'
+          s => s.status === 'failed',
         ).length
       } else if (status === 'Not Applicable' && control.hdf.waived) {
         hash.Waived += control.hdf.segments?.length || 0
@@ -92,6 +92,7 @@ export function calculateCompliance(statusHash: StatusHash): number {
   if (total === 0) {
     return 0
   }
+
   return Math.round((100 * statusHash.Passed) / total)
 }
 
@@ -139,6 +140,7 @@ export function getControlIdMap(profile: ContextualizedProfile, thresholds?: Thr
   if (!thresholds) {
     thresholds = {}
   }
+
   for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
     const control = c.root
     const severity = c.root.hdf.severity
@@ -146,19 +148,20 @@ export function getControlIdMap(profile: ContextualizedProfile, thresholds?: Thr
     const existingData = (_.get(thresholds, path) as string[]) || []
     _.set(thresholds, path, [...existingData, control.data.id])
   }
+
   return thresholds
 }
 
 function getDescriptionContentsOrUndefined(label: string, descriptions?: ControlDescription[] | {[key: string]: any} | null) {
   let found
   if (descriptions) {
-    // eslint-disable-next-line unicorn/no-array-for-each
     descriptions.forEach((description: any) => {
       if (description.label === label) {
         found = description.data
       }
     })
   }
+
   return found
 }
 
@@ -167,15 +170,19 @@ function cklControlStatus(control: ContextualizedControl, for_summary?: boolean)
   if (control.data.impact === 0) {
     return 'Not_Applicable'
   }
+
   if (statuses?.includes('error') || (statuses?.length === 0 && for_summary)) {
     return 'Profile_Error'
   }
+
   if (statuses?.includes('failed')) {
     return 'Open'
   }
+
   if (statuses?.includes('passed')) {
     return 'NotAFinding'
   }
+
   return 'Not_Reviewed'
 }
 
@@ -247,8 +254,10 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
     if (control.data.impact === 0) {
       extracted.message.push(`NOT_APPLICABLE -- Description: ${control.data.desc}\n\n`)
     }
+
     extracted.finding_details = controlFindingDetails(extracted, cklControlStatus(control, true))
     result[reverseStatusName(status)][control.data.id] = extracted
   }
+
   return result
 }

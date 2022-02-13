@@ -29,7 +29,7 @@ export default class HDF2CKL extends Command {
 
   async run() {
     const {flags} = this.parse(HDF2CKL)
-    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, {encoding: 'utf-8'})))
+    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf-8')))
     const profileName = contextualizedEvaluation.data.profiles[0].name
     const controls = contextualizedEvaluation.contains.flatMap(profile => profile.contains) || []
     let cklData = {}

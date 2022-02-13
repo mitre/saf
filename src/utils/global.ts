@@ -10,17 +10,19 @@ export function checkSuffix(input: string) {
   if (input.endsWith('.json')) {
     return input
   }
+
   return `${input}.json`
 }
 
 export function sliceIntoChunks(
   arr: any[],
-  chunkSize: number
+  chunkSize: number,
 ): any[][] {
   const res = []
   for (let i = 0; i < arr.length; i += chunkSize) {
     res.push(arr.slice(i, i + chunkSize))
   }
+
   return res
 }
 
@@ -38,6 +40,7 @@ export function dataURLtoU8Array(dataURL: string): Uint8Array {
   const u8arr = new Uint8Array(n)
 
   while (n--) {
+    // eslint-disable-next-line unicorn/prefer-code-point
     u8arr[n] = bstr.charCodeAt(n)
   }
 
@@ -53,6 +56,7 @@ export function getInstalledPath(): string {
     // eslint-disable-next-line unicorn/prefer-module
     installedPath = path.join(require.main?.path.replace('/bin', '').replace('\\bin', '') || '.')
   }
+
   return installedPath
 }
 
@@ -63,6 +67,7 @@ export function arrayNeededPaths(typeOfPath: string, values: any) {
   if (arrayedPaths.includes(typeOfPath.toLowerCase())) {
     return [values]
   }
+
   return values
 }
 
@@ -71,10 +76,12 @@ export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNu
   if (typeof pathOrNumber === 'string') {
     return arrayNeededPaths(typeOfPathOrNumber, _.get(data, pathOrNumber))
   }
+
   if (Array.isArray(pathOrNumber)) {
     const foundPath = pathOrNumber.find(item => _.get(data, item)) || 'Field Not Defined'
     return arrayNeededPaths(typeOfPathOrNumber, _.get(data, foundPath))
   }
+
   if (typeof pathOrNumber === 'number') {
     return pathOrNumber
   }
@@ -87,20 +94,26 @@ export function getProfileInfo(evaluation: ContextualizedEvaluation, fileName: s
   if (profile.version) {
     result += `Version: ${profile.version}\n`
   }
+
   if (profile.sha256) {
     result += `SHA256 Hash: ${profile.sha256}\n`
   }
+
   if (profile.maintainer) {
     result += `Maintainer: ${profile.maintainer}\n`
   }
+
   if (profile.copyright) {
     result += `Copyright: ${profile.copyright}\n`
   }
+
   if (profile.copyright_email) {
     result += `Copyright Email: ${profile.copyright_email}\n`
   }
+
   if (profile.controls.length) {
     result += `Control Count: ${profile.controls.length}\n`
   }
+
   return result.trim()
 }

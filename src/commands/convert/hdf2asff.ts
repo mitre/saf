@@ -13,7 +13,7 @@ export default class HDF2ASFF extends Command {
 
   static description = 'Translate a Heimdall Data Format JSON file into AWS Security Findings Format JSON file(s)'
 
-  static examples = ['saf convert:hdf2asff -i rhel7.scan.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7.asff.json']
+  static examples = ['saf convert:hdf2asff -i rhel7.scan.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7.asff']
 
   static flags = {
     help: flags.help({char: 'h'}),
@@ -28,7 +28,7 @@ export default class HDF2ASFF extends Command {
   async run() {
     const {flags} = this.parse(HDF2ASFF)
 
-    const converted = new Mapper(JSON.parse(fs.readFileSync(flags.input, {encoding: 'utf-8'})), {
+    const converted = new Mapper(JSON.parse(fs.readFileSync(flags.input, 'utf-8')), {
       awsAccountId: flags.accountId,
       region: flags.region,
       target: flags.target,
@@ -61,7 +61,7 @@ export default class HDF2ASFF extends Command {
           try {
             const result = await client.send(uploadCommand)
             console.log(
-              `Uploaded ${chunk.length} controls. Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`
+              `Uploaded ${chunk.length} controls. Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
             )
             if (result.FailedFindings?.length) {
               console.error(`Failed to upload ${result.FailedCount} Findings`)
@@ -70,7 +70,7 @@ export default class HDF2ASFF extends Command {
           } catch (error) {
             console.error(`Failed to upload controls: ${error}`)
           }
-        })
+        }),
       ).then(async () => {
         profileInfoFinding.UpdatedAt = new Date().toISOString()
         const profileInfoUploadCommand = new BatchImportFindingsCommand({
@@ -79,7 +79,7 @@ export default class HDF2ASFF extends Command {
         const result = await client.send(profileInfoUploadCommand)
         console.info(`Statistics: ${profileInfoFinding.Description}`)
         console.info(
-          `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`
+          `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
         )
         if (result.FailedFindings?.length) {
           console.error(`Failed to upload ${result.FailedCount} Results Set Info Finding`)
