@@ -5,7 +5,7 @@ import {calculateCompliance, extractControlSummariesBySeverity, extractStatusCou
 import _ from 'lodash'
 import {checkSuffix} from '../../utils/global'
 
-export default class Summary extends Command {
+export default class HDF2Condensed extends Command {
   static usage = 'hdf2condensed -i, --input=FILE -j, --json'
 
   static description = 'Condensed format used by some community members to pre-process data for elasticsearch and custom dashboards'
@@ -19,7 +19,7 @@ export default class Summary extends Command {
   static examples = ['saf convert:hdf2condensed -i rhel7-results.json -o rhel7-condensed.json']
 
   async run() {
-    const {flags} = this.parse(Summary)
+    const {flags} = this.parse(HDF2Condensed)
     const thresholds: Record<string, Record<string, number>> = {}
     const parsedExecJSON = convertFileContextual(fs.readFileSync(flags.input, 'utf8'))
     const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
@@ -36,14 +36,17 @@ export default class Summary extends Command {
         _.set(thresholds, severityTarget.replace(`.${thresholdType}`, ''), _.get(severityStatusCounts, renameStatusName(statusName)))
       }
     }
+
     // Total Counts
     for (const [type, counts] of Object.entries(thresholds)) {
       let total = 0
       for (const [_severity, count] of Object.entries(counts)) {
         total += count
       }
+
       _.set(thresholds, `${type}.total`, total)
     }
+
     const result = {
       buckets: extractControlSummariesBySeverity(parsedProfile),
       status: thresholds,

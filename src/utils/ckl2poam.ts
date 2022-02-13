@@ -1,4 +1,4 @@
-import {default as cci2nistmap} from '../resources/cci2nist.json'
+import {default as cci2nistmap} from '@mitre/hdf-converters/lib/data/cci-nist-mapping.json'
 import {Vulnerability} from '../types/STIG'
 import promptSync from 'prompt-sync'
 const prompt = promptSync()
@@ -15,6 +15,7 @@ export function extractSTIGUrl(findingDetails: string): string {
     })
     return match
   }
+
   return ''
 }
 
@@ -84,6 +85,7 @@ export function createCVD(vulnerability: Vulnerability): string {
   if (vulnerability.FINDING_DETAILS?.includes('Solution :')) {
     return `Rule Title: ${vulnerability.Rule_Title}\r\n\r\n${vulnerability.FINDING_DETAILS?.split('Solution :')[0]}`
   }
+
   return `Rule Title: ${vulnerability.Rule_Title}\r\n\r\n${vulnerability.FINDING_DETAILS}`
 }
 
@@ -124,6 +126,7 @@ export function combineComments(vulnerability: Vulnerability, host: string) {
   if (vulnerability.STATUS === 'Open') {
     return `${vulnerability.Rule_ID} failed on ${host}\r\n${cleanComments(vulnerability.COMMENTS || '')}`
   }
+
   return `${vulnerability.Rule_ID} not applicable on ${host}\r\n${cleanComments(vulnerability.COMMENTS || '')}\r\n\r\n${vulnerability.FINDING_DETAILS}`
 }
 
@@ -135,10 +138,13 @@ export function extractSolution(findingDetails: string): string | undefined {
       if (text.includes('Message:')) {
         return text.split('Message:')[0].trim()
       }
+
       return text
     }
+
     return ''
   }
+
   return ''
 }
 
@@ -147,7 +153,9 @@ export function cci2nist(cci: string) {
     if (cci in cci2nistmap) {
       return (cci2nistmap as Record<string, string>)[cci].replace(' ', '')
     }
+
     return prompt(`What is the NIST ID for CCI ${cci}? `)
   }
+
   return 'UM-1'
 }

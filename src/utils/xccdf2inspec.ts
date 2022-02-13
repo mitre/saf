@@ -5,17 +5,15 @@ import {InSpecControl} from '../types/inspec'
 import {DecodedDescription} from '../types/xccdf'
 
 const wrap = (s: string) => s.replace(
-  /(?![^\n]{1,80}$)([^\n]{1,80})\s/g, '$1\n'
+  /(?![^\n]{1,80}$)([^\n]{1,80})\s/g, '$1\n',
 )
 
-const escape = (s: string) => s.replace(/\\/g, '\\\\').replace(/'/g, '\\\'')
-const escapeQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/"/g, '\\"')
-
-const wrapAndEscape = (s: string) => escape(wrap(s))
-const wrapAndEscapeQuotes = (s: string) => escapeQuotes(wrap(s))
+const escapeQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/'/g, "\\'") // Escape backslashes and quotes
+const escapeDoubleQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/"/g, '\\"') // Escape backslashes and double quotes
+const wrapAndEscapeQuotes = (s: string) => escapeDoubleQuotes(wrap(s)) // Escape backslashes and quotes, and wrap long lines
 
 export function convertEncodedXmlIntoJson(
-  encodedXml: string
+  encodedXml: string,
 ): any {
   return parser.parse(encodedXml, {
     ignoreAttributes: false,
@@ -42,13 +40,13 @@ export function convertEncodedHTMLIntoJson(encodedHTML?: string): DecodedDescrip
     if (typeof converted.VulnDiscussion === 'object') { // Some STIGs have xml tags inside of the actual text which breaks processing, e.g U_ASD_STIG_V5R1_Manual-xccdf.xml and all Oracle Database STIGs
       let extractedVulnDescription = ''
       const remainingFields = _.omit(converted.VulnDiscussion, ['FalsePositives', 'FalseNegatives', 'Documentable', 'Mitigations', 'SeverityOverrideGuidance', 'PotentialImpacts', 'ThirdPartyTools', 'MitigationControl', 'Responsibility', 'IAControls'])
-      Object.entries(remainingFields).forEach(async ([field, value]) => {
+      Object.entries(remainingFields).forEach(([field, value]) => {
         extractedVulnDescription += `<${field}> ${value}`
       })
       cleaned = {
         VulnDiscussion: extractedVulnDescription.replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"'),
       }
-      Object.entries(converted.VulnDiscussion).forEach(async ([key, value]) => {
+      Object.entries(converted.VulnDiscussion).forEach(([key, value]) => {
         if (typeof value === 'string') {
           cleaned[key] = (value as string).replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"')
         } else {
@@ -56,7 +54,7 @@ export function convertEncodedHTMLIntoJson(encodedHTML?: string): DecodedDescrip
         }
       })
     } else {
-      Object.entries(converted).forEach(async ([key, value]) => {
+      Object.entries(converted).forEach(([key, value]) => {
         if (typeof value === 'string') {
           cleaned[key] = (value as string).replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"')
         } else {
@@ -64,8 +62,10 @@ export function convertEncodedHTMLIntoJson(encodedHTML?: string): DecodedDescrip
         }
       })
     }
+
     return cleaned
   }
+
   return {}
 }
 
@@ -73,63 +73,111 @@ export function severityStringToImpact(string: string): number {
   if (string.match(/none|na|n\/a|not[\s()*_|]?applicable/i)?.length) {
     return 0.0
   }
+
   if (string.match(/low|cat(egory)?\s*(iii|3)/i)?.length) {
     return 0.3
   }
+
   if (string.match(/med(ium)?|cat(egory)?\s*(ii|2)/)?.length) {
     return 0.5
   }
+
   if (string.match(/high|cat(egory)?\s*(i|1)/)?.length) {
     return 0.7
   }
+
   if (string.match(/crit(ical)?|severe/)?.length) {
     return 1.0
   }
+
   throw new Error(`${string}' is not a valid severity value. It should be one of the approved keywords`)
 }
 
-export function impactStringToSeverity(impact: number): string {
+export function impactNumberToSeverityString(impact: number): string {
+  // Impact must be 0.0 - 1.0
   if (impact < 0.0 || impact > 1.0) {
     throw new Error('Impact cannot be less than 0.0 or greater than 1.0')
   } else {
     if (impact >= 0.9) {
       return 'critical'
     }
+
     if (impact >= 0.7) {
       return 'high'
     }
+
     if (impact >= 0.4) {
       return 'medium'
     }
+
     if (impact >= 0.1) {
       return 'low'
     }
+
     return 'none'
   }
 }
 
 export function inspecControlToRubyCode(control: InSpecControl): string {
   let result = '# encoding: UTF-8\n\n'
-  result += `control '${control.id}' do\n`
-  result += `  title '${wrapAndEscape(control.title)}'\n`
-  result += `  desc '${wrapAndEscape(control.desc)}'\n`
-  result += `  desc 'rationale' '${wrapAndEscape(control.rationale)}'\n`
-  if (control.tags.check) {
-    result += `  desc 'check' "${wrapAndEscapeQuotes(control.tags.check)}"\n`
+
+  result += `control "${control.id}" do\n`
+  if (control.title) {
+    result += `  title "${wrapAndEscapeQuotes(control.title)}"\n`
+  } else {
+    console.error(`${control.id} does not have a title`)
   }
-  if (control.tags.fix) {
-    result += `  desc 'fix' "${wrapAndEscapeQuotes(control.tags.fix)}"\n`
+
+  if (control.desc) {
+    result += `  desc "${wrapAndEscapeQuotes(control.desc)}"\n`
+  } else {
+    console.error(`${control.id} does not have a desc`)
   }
-  result += `  impact ${control.impact}\n`
+
+  if (control.descs) {
+    Object.entries(control.descs).forEach(([key, desc]) => {
+      if (desc) {
+        result += `  desc "${key}", "${wrapAndEscapeQuotes(desc)}"\n`
+      } else {
+        console.error(`${control.id} does not have a desc for the value ${key}`)
+      }
+    })
+  }
+
+  if (control.impact) {
+    result += `  impact ${control.impact}\n`
+  } else {
+    console.error(`${control.id} does not have an impact, please define impact within your mapping file or set tags.severity to set automatically`)
+  }
+
+  if (control.refs) {
+    control.refs.forEach(ref => {
+      result += `  ref '${escapeQuotes(ref)}'\n`
+    })
+  }
+
   Object.entries(control.tags).forEach(([tag, value]) => {
-    if (tag !== 'check' && tag !== 'fix' && value) {
+    if (value) {
       if (typeof value === 'object') {
-        result += `  tag ${tag}: ${JSON.stringify(value)}\n`
+        if (Array.isArray(value) && typeof value[0] === 'string') {
+          result += `  tag ${tag}: ${JSON.stringify(value)}\n`
+        } else {
+          // Convert JSON Object to Ruby Hash
+          const stringifiedObject = JSON.stringify(value, null, 2)
+          .replace(/\n/g, '\n  ')
+          .replace(/\{\n {6}/g, '{')
+          .replace(/\[\n {8}/g, '[')
+          .replace(/\n {6}\]/g, ']')
+          .replace(/\n {4}\}/g, '}')
+          .replace(/": \[/g, '" => [')
+          result += `  tag ${tag}: ${stringifiedObject}\n`
+        }
       } else if (typeof value === 'string') {
-        result += `  tag ${tag}: '${wrapAndEscape(value)}'\n`
+        result += `  tag ${tag}: "${wrapAndEscapeQuotes(value)}"\n`
       }
     }
   })
   result += 'end'
+
   return result
 }

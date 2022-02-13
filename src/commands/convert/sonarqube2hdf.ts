@@ -3,7 +3,7 @@ import fs from 'fs'
 import {SonarQubeResults as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 
-export default class SonarQubeMapper extends Command {
+export default class Sonarqube2HDF extends Command {
   static usage = 'convert:sonarqube2hdf -n <sonar_project_key> -u <http://your.sonar.instance:9000> --auth <your-sonar-api-key> -o <hdf-scan-results-json>'
 
   static description = 'Pull SonarQube vulnerabilities for the specified project name from an API and convert into a Heimdall Data Format JSON file'
@@ -19,7 +19,7 @@ export default class SonarQubeMapper extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(SonarQubeMapper)
+    const {flags} = this.parse(Sonarqube2HDF)
     const converter = new Mapper(flags.url, flags.projectKey, flags.auth)
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(await converter.toHdf()))
   }

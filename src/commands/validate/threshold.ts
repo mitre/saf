@@ -31,6 +31,7 @@ export default class Threshold extends Command {
         const [key, value] = flattenedObject.split(':')
         toUnpack[key] = Number.parseInt(value, 10)
       }
+
       thresholds = flat.unflatten(toUnpack)
     } else if (flags.templateFile) {
       const parsed = YAML.parse(fs.readFileSync(flags.templateFile, 'utf8'))
@@ -48,25 +49,26 @@ export default class Threshold extends Command {
       exitNonZeroIfTrue(Boolean(thresholds.compliance.min && overallCompliance < thresholds.compliance.min), 'Overall compliance minimum was not satisfied') // Compliance Minimum
       exitNonZeroIfTrue(Boolean(thresholds.compliance.max && overallCompliance > thresholds.compliance.max), 'Overall compliance maximum was not satisfied') // Compliance Maximum
     }
+
     // Total Pass/Fail/Skipped/No Impact/Error
     const targets = ['passed.total.min', 'passed.total.max', 'failed.total.min', 'failed.total.max', 'skipped.total.min', 'skipped.total.max', 'no_impact.total.min', 'no_impact.total.max', 'error.total.min', 'error.total.max']
     for (const statusThreshold of targets) {
       const [statusName, _total, thresholdType] = statusThreshold.split('.')
-      if (thresholdType === 'min' && _.get(thresholds, statusThreshold)) {
+      if (thresholdType === 'min' && _.get(thresholds, statusThreshold) !== undefined) {
         exitNonZeroIfTrue(
           Boolean(
             _.get(overallStatusCounts, renameStatusName(statusName))              <
-            _.get(thresholds, statusThreshold)
+            _.get(thresholds, statusThreshold),
           ),
-          `${statusThreshold}: ${_.get(overallStatusCounts, renameStatusName(statusName))} < ${_.get(thresholds, statusThreshold)}`
+          `${statusThreshold}: ${_.get(overallStatusCounts, renameStatusName(statusName))} < ${_.get(thresholds, statusThreshold)}`,
         )
-      } else if (thresholdType === 'max' && _.get(thresholds, statusThreshold)) {
+      } else if (thresholdType === 'max' && _.get(thresholds, statusThreshold) !== undefined) {
         exitNonZeroIfTrue(
           Boolean(
             _.get(overallStatusCounts, renameStatusName(statusName))              >
-            _.get(thresholds, statusThreshold)
+            _.get(thresholds, statusThreshold),
           ),
-          `${statusThreshold}: ${_.get(overallStatusCounts, renameStatusName(statusName))} > ${_.get(thresholds, statusThreshold)}`
+          `${statusThreshold}: ${_.get(overallStatusCounts, renameStatusName(statusName))} > ${_.get(thresholds, statusThreshold)}`,
         )
       }
     }
@@ -76,19 +78,19 @@ export default class Threshold extends Command {
       const criticalStatusCounts = extractStatusCounts(parsedExecJSON.contains[0] as ContextualizedProfile, severity)
       for (const statusCountThreshold of targetPaths) {
         const [statusName, _total, thresholdType] = statusCountThreshold.split('.')
-        if (thresholdType === 'min' && _.get(thresholds, statusCountThreshold)) {
+        if (thresholdType === 'min' && _.get(thresholds, statusCountThreshold) !== undefined) {
           exitNonZeroIfTrue(
             Boolean(
-              _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold)
+              _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold),
             ),
-            `${statusCountThreshold}: ${_.get(criticalStatusCounts, renameStatusName(statusName))} < ${_.get(thresholds, statusCountThreshold)}`
+            `${statusCountThreshold}: ${_.get(criticalStatusCounts, renameStatusName(statusName))} < ${_.get(thresholds, statusCountThreshold)}`,
           )
-        } else if (thresholdType === 'max' && _.get(thresholds, statusCountThreshold)) {
+        } else if (thresholdType === 'max' && _.get(thresholds, statusCountThreshold) !== undefined) {
           exitNonZeroIfTrue(
             Boolean(
-              _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold)
+              _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold),
             ),
-            `${statusCountThreshold}: ${_.get(criticalStatusCounts, renameStatusName(statusName))} > ${_.get(thresholds, statusCountThreshold)}`
+            `${statusCountThreshold}: ${_.get(criticalStatusCounts, renameStatusName(statusName))} > ${_.get(thresholds, statusCountThreshold)}`,
           )
         }
       }
@@ -108,6 +110,7 @@ export default class Threshold extends Command {
               exitNonZeroIfTrue(true, `Expected ${targetPath} to contain ${expectedControlId} controls but it only contained [${actualControlIds?.join(', ')}]`) // Chai doesn't print the actual object diff anymore
             }
           }
+
           try {
             expect(expectedControlIds.length).to.equal(actualControlIds?.length)
           } catch {

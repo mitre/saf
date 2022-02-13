@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "SAF CLI",
+			"path": "./"
+		},
+		{
+			"name": "Commands",
+			"path": "./src/commands"
+		}
+	],
+	"settings": {}
+}

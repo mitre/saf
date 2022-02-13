@@ -3,7 +3,7 @@ import fs from 'fs'
 import {SarifMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 
-export default class SarifMapper extends Command {
+export default class Sarif2HDF extends Command {
   static usage = 'convert:sarif2hdf -i, --input=JSON -o, --output=OUTPUT'
 
   static description = 'Translate a SARIF JSON file into a Heimdall Data Format JSON file\nSARIF level to HDF impact Mapping:\nSARIF level error -> HDF impact 0.7\nSARIF level warning -> HDF impact 0.5\nSARIF level note -> HDF impact 0.3\nSARIF level none -> HDF impact 0.1\nSARIF level not provided -> HDF impact 0.1 as default'
@@ -17,9 +17,9 @@ export default class SarifMapper extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(SarifMapper)
+    const {flags} = this.parse(Sarif2HDF)
 
-    const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
+    const converter = new Mapper(fs.readFileSync(flags.input, 'utf-8'))
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

@@ -3,7 +3,7 @@ import fs from 'fs'
 import {BurpSuiteMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 
-export default class BurpsuiteMapper extends Command {
+export default class Burpsuite2HDF extends Command {
   static usage = 'convert:burpsuite2hdf -i, --input=XML -o, --output=OUTPUT'
 
   static description = 'Translate a BurpSuite Pro XML file into a Heimdall Data Format JSON file'
@@ -17,9 +17,9 @@ export default class BurpsuiteMapper extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(BurpsuiteMapper)
+    const {flags} = this.parse(Burpsuite2HDF)
 
-    const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
+    const converter = new Mapper(fs.readFileSync(flags.input, 'utf-8'))
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

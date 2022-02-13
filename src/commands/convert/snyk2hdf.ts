@@ -4,7 +4,7 @@ import {SnykResults as Mapper} from '@mitre/hdf-converters'
 import _ from 'lodash'
 import {checkSuffix} from '../../utils/global'
 
-export default class SnykMapper extends Command {
+export default class Snyk2HDF extends Command {
   static usage = 'convert:snyk2hdf -i, --input=JSON -o, --output_prefix=OUTPUT_PREFIX'
 
   static description = 'Translate a Snyk results JSON file into a Heimdall Data Format JSON file\nA separate HDF JSON is generated for each project reported in the Snyk Report.'
@@ -18,9 +18,8 @@ export default class SnykMapper extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(SnykMapper)
-
-    const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
+    const {flags} = this.parse(Snyk2HDF)
+    const converter = new Mapper(fs.readFileSync(flags.input, 'utf-8'))
     const result = converter.toHdf()
     if (Array.isArray(result)) {
       for (const element of result) {

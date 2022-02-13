@@ -1,4 +1,3 @@
-/* eslint-disable no-negated-condition */
 import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import path from 'path'
@@ -55,11 +54,13 @@ export default class CKL2POAM extends Command {
     if (!fs.existsSync(flags.output)) {
       fs.mkdirSync(flags.output)
     }
+
     flags.input.forEach(fileName => {
       // Ignore files that start with . (e.g .gitignore)
       if (fileName.startsWith('.')) {
         return
       }
+
       logger.log({
         level: 'info',
         file: fileName,
@@ -74,6 +75,7 @@ export default class CKL2POAM extends Command {
             message: `An error occurred opening the file ${fileName}: ${readFileError}`,
           })
         }
+
         // Parse the XML to a javascript object
         parser.parseString(data, function (parseFileError: any, result: STIG) {
           if (parseFileError) {
@@ -154,6 +156,7 @@ export default class CKL2POAM extends Command {
                   } else {
                     sheet.cell(`C${currentRow}`).value(replaceSpecialCharacters(createCVD(vulnerability)))
                   }
+
                   // Security Control Number
                   sheet.cell(`D${currentRow}`).value(cci2nist(vulnerability.CCI_REF || ''))
                   // Office/org
@@ -175,6 +178,7 @@ export default class CKL2POAM extends Command {
                       sheet.cell(`M${currentRow}`).value(combineComments(vulnerability, host))
                     }
                   }
+
                   // Raw Severity
                   sheet.cell(`N${currentRow}`).value(convertToRawSeverity(vulnerability.Severity || ''))
                   // Severity

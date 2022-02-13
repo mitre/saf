@@ -3,7 +3,7 @@ import fs from 'fs'
 import {JfrogXrayMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 
-export default class JfrogXrayMapper extends Command {
+export default class JfrogXray2HDF extends Command {
   static usage = 'convet:jfrog_xray2hdf -i, --input=JSON -o, --output=OUTPUT'
 
   static description = 'Translate a JFrog Xray results JSON file into a Heimdall Data Format JSON file'
@@ -17,9 +17,9 @@ export default class JfrogXrayMapper extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(JfrogXrayMapper)
+    const {flags} = this.parse(JfrogXray2HDF)
 
-    const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
+    const converter = new Mapper(fs.readFileSync(flags.input, 'utf-8'))
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

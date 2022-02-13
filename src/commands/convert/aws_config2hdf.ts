@@ -4,7 +4,7 @@ import {AwsConfigMapper as Mapper} from '@mitre/hdf-converters'
 import {ExecJSON} from 'inspecjs'
 import {checkSuffix} from '../../utils/global'
 
-export default class AWSConfigMapper extends Command {
+export default class AWSConfig2HDF extends Command {
   static usage = 'convert:aws_config2hdf -a, --accessKeyId=accessKeyId -r, --region=region -s, --secretAccessKey=secretAccessKey -t, --sessionToken=sessionToken -o, --output=OUTPUT'
 
   static description = 'Pull Configuration findings from AWS Config and convert into a Heimdall Data Format JSON file'
@@ -35,6 +35,7 @@ export default class AWSConfigMapper extends Command {
                 results: [],
               }
             }
+
             return control
           }),
         }
@@ -43,7 +44,7 @@ export default class AWSConfigMapper extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(AWSConfigMapper)
+    const {flags} = this.parse(AWSConfig2HDF)
 
     const converter = flags.accessKeyId && flags.secretAccessKey ? new Mapper({
       credentials: {

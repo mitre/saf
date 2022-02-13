@@ -16,8 +16,8 @@ describe('Test jfrog_xray', () => {
   .stdout()
   .command(['convert:jfrog_xray2hdf', '-i', path.resolve('./test/sample_data/jfrog_xray/sample_input_report/jfrog_xray_sample.json'), '-o', `${tmpobj.name}/jfrogtest.json`])
   .it('hdf-converter output test', () => {
-    const converted = JSON.parse(fs.readFileSync(`${tmpobj.name}/jfrogtest.json`, {encoding: 'utf-8'}))
-    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/jfrog_xray/jfrog-hdf.json'), {encoding: 'utf-8'}))
+    const converted = JSON.parse(fs.readFileSync(`${tmpobj.name}/jfrogtest.json`, 'utf-8'))
+    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/jfrog_xray/jfrog-hdf.json'), 'utf-8'))
     expect(omitVersions(converted)).to.eql(omitVersions(sample))
   })
 })
