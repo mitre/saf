@@ -4,6 +4,7 @@ import _ from 'lodash'
 import {InSpecControl} from '../types/inspec'
 import {DecodedDescription} from '../types/xccdf'
 
+// Breaks lines down to lineLength number of characters
 export function wrap(s: string, lineLength = 80): string {
   return s.replace(new RegExp(`(?![^\n]{1,${lineLength}}$)([^\n]{1,${lineLength}})`, 'g'), '$1\n')
 }
