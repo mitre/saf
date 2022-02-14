@@ -1,11 +1,9 @@
 import {Command, flags} from '@oclif/command'
 import * as fs from 'fs'
+import https from 'https'
 import {FromHdfToAsffMapper as Mapper} from '@mitre/hdf-converters'
 import path from 'path'
-import {
-  SecurityHubClient,
-  BatchImportFindingsCommand,
-} from '@aws-sdk/client-securityhub'
+import AWS from 'aws-sdk'
 import {checkSuffix, sliceIntoChunks} from '../../utils/global'
 
 export default class HDF2ASFF extends Command {
@@ -23,6 +21,7 @@ export default class HDF2ASFF extends Command {
     target: flags.string({char: 't', required: true, description: 'Unique name for target to track findings across time'}),
     upload: flags.boolean({char: 'u', required: false, description: 'Upload findings to AWS Security Hub'}),
     output: flags.string({char: 'o', required: false, description: 'Output ASFF JSON Folder'}),
+    insecure: flags.boolean({char: 'I', required: false, default: false, description: 'Disable SSL verification, this is insecure.'}),
   }
 
   async run() {
@@ -34,7 +33,7 @@ export default class HDF2ASFF extends Command {
       target: flags.target,
       input: flags.input,
     }).toAsff()
-    const convertedSlices = sliceIntoChunks(converted, 100)
+    let convertedSlices = sliceIntoChunks(converted, 100)
     const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
 
     if (flags.output) {
@@ -51,15 +50,25 @@ export default class HDF2ASFF extends Command {
     }
 
     if (flags.upload) {
-      const profileInfoFinding: any = converted.pop()
-      const client = new SecurityHubClient({region: flags.region})
+      const profileInfoFinding = converted.pop()
+      convertedSlices = sliceIntoChunks(converted, 100)
+
+      const clientOptions: AWS.SecurityHub.ClientConfiguration = {
+        region: flags.region,
+      }
+      AWS.config.update({
+        httpOptions: {
+          agent: new https.Agent({
+            rejectUnauthorized: !flags.insecure,
+          }),
+        },
+      })
+      const client = new AWS.SecurityHub(clientOptions)
+
       Promise.all(
-        convertedSlices.map(async chunk => {
-          const uploadCommand = new BatchImportFindingsCommand({
-            Findings: chunk,
-          })
+        convertedSlices.map(async (chunk, index) => {
           try {
-            const result = await client.send(uploadCommand)
+            const result = await client.batchImportFindings({Findings: chunk}).promise()
             console.log(
               `Uploaded ${chunk.length} controls. Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
             )
@@ -69,21 +78,21 @@ export default class HDF2ASFF extends Command {
             }
           } catch (error) {
             console.error(`Failed to upload controls: ${error}`)
+            fs.writeFileSync(index + '.json', JSON.stringify(chunk))
           }
         }),
       ).then(async () => {
-        profileInfoFinding.UpdatedAt = new Date().toISOString()
-        const profileInfoUploadCommand = new BatchImportFindingsCommand({
-          Findings: [profileInfoFinding],
-        })
-        const result = await client.send(profileInfoUploadCommand)
-        console.info(`Statistics: ${profileInfoFinding.Description}`)
-        console.info(
-          `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
-        )
-        if (result.FailedFindings?.length) {
-          console.error(`Failed to upload ${result.FailedCount} Results Set Info Finding`)
-          console.log(result.FailedFindings)
+        if(profileInfoFinding) {
+          profileInfoFinding.UpdatedAt = new Date().toISOString()
+          const result = await client.batchImportFindings({Findings: [profileInfoFinding as any]}).promise()
+          console.info(`Statistics: ${profileInfoFinding.Description}`)
+          console.info(
+            `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
+          )
+          if (result.FailedFindings?.length) {
+            console.error(`Failed to upload ${result.FailedCount} Results Set Info Finding`)
+            console.log(result.FailedFindings)
+          }
         }
       })
     }
