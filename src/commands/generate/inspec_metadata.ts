@@ -7,7 +7,7 @@ const prompt = promptSync()
 export default class GenerateInSpecMetadata extends Command {
   static usage = 'generate:inspec_metadata --output=<JSON-FILE>'
 
-  static description = 'Generate an InSpec metadata template for "saf convert:*2inspec"'
+  static description = 'Generate an InSpec metadata template for "saf convert:_stub"'
 
   static flags = {
     help: flags.help({char: 'h'}),
