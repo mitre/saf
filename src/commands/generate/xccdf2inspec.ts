@@ -36,6 +36,7 @@ export default class XCCDF2InSpec extends Command {
       // Folder should not exist already
       throw new Error('Profile output folder already exists, please specify a new folder')
     }
+
     // This will get overridden if a metadata file is passed
     let metadata: InSpecMetaData = {}
     // Read metadata file if passed
@@ -46,6 +47,7 @@ export default class XCCDF2InSpec extends Command {
         throw new Error('Passed metadata file does not exist')
       }
     }
+
     // Read XCCDF file
     const parsedXML: DisaStig = convertEncodedXmlIntoJson(fs.readFileSync(flags.input, 'utf-8'))
     // Extract groups (these contain controls)
@@ -70,10 +72,12 @@ export default class XCCDF2InSpec extends Command {
     if (parsedXML.Benchmark.status && parsedXML.Benchmark.status['#text'] && parsedXML.Benchmark.status['@_date']) {
       profileInfo.status = `${parsedXML.Benchmark.status['#text']} on ${parsedXML.Benchmark.status['@_date']}`
     }
+
     if (parsedXML.Benchmark['plain-text']) {
       const plainTextMetaDataValues = Array.isArray(parsedXML.Benchmark['plain-text']) ? parsedXML.Benchmark['plain-text'] : [parsedXML.Benchmark['plain-text']]
       profileInfo.release = plainTextMetaDataValues.find(metadataValue => metadataValue['@_id'].toLowerCase().trim() === 'release-info')?.['#text']
     }
+
     profileInfo.reference = parsedXML.Benchmark.reference['@_href']
     profileInfo.referenceBy = parsedXML.Benchmark.reference['dc:publisher']
     profileInfo.referenceSource = parsedXML.Benchmark.reference['dc:source']
@@ -97,9 +101,11 @@ export default class XCCDF2InSpec extends Command {
       if (!group.Rule) {
         throw new Error(`Group exists without vulnerability ${group['@_id']}`)
       }
+
       if (!extractedDescription.VulnDiscussion) {
         throw new Error('Vulnerability exists without VulnDiscussion')
       }
+
       // Create a barebones InSpec control
       const inspecControl: InSpecControl = {
         id: flags.useVulnerabilityId ? group.Rule['@_id'].split('r')[0] : group['@_id'],
@@ -143,10 +149,11 @@ export default class XCCDF2InSpec extends Command {
               _.set(inspecControl, 'tags.nist', _.get(inspecControl, 'tags.nist') || [])
               const nistMapping = _.get(CCINistMappings, identifier['#text'])
               if (inspecControl.tags.nist?.indexOf(nistMapping) === -1) {
-              inspecControl.tags.nist?.push(nistMapping)
+                inspecControl.tags.nist?.push(nistMapping)
               }
             }
           }
+
           if (identifier['@_system'].toLowerCase().endsWith('legacy')) {
             _.set(inspecControl, 'tags.legacy', _.get(inspecControl, 'tags.legacy') || [])
             inspecControl.tags.legacy?.push(identifier['#text'])

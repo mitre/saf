@@ -36,14 +36,17 @@ export default class HDF2Condensed extends Command {
         _.set(thresholds, severityTarget.replace(`.${thresholdType}`, ''), _.get(severityStatusCounts, renameStatusName(statusName)))
       }
     }
+
     // Total Counts
     for (const [type, counts] of Object.entries(thresholds)) {
       let total = 0
       for (const [_severity, count] of Object.entries(counts)) {
         total += count
       }
+
       _.set(thresholds, `${type}.total`, total)
     }
+
     const result = {
       buckets: extractControlSummariesBySeverity(parsedProfile),
       status: thresholds,

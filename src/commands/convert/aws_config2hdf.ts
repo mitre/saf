@@ -35,6 +35,7 @@ export default class AWSConfig2HDF extends Command {
                 results: [],
               }
             }
+
             return control
           }),
         }

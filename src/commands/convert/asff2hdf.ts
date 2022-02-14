@@ -22,9 +22,10 @@ export default class ASFF2HDF extends Command {
     const {flags} = this.parse(ASFF2HDF)
     let securityhub
     if (flags.securityhub) {
-      securityhub = flags.securityhub.map(file => fs.readFileSync(file, {encoding: 'utf-8'}))
+      securityhub = flags.securityhub.map(file => fs.readFileSync(file, 'utf-8'))
     }
-    const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}), securityhub)
+
+    const converter = new Mapper(fs.readFileSync(flags.input, 'utf-8'), securityhub)
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

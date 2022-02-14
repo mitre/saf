@@ -13,7 +13,7 @@ const escapeDoubleQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/"/g,
 const wrapAndEscapeQuotes = (s: string, lineLength?: number) => escapeDoubleQuotes(wrap(s, lineLength)) // Escape backslashes and quotes, and wrap long lines
 
 export function convertEncodedXmlIntoJson(
-  encodedXml: string
+  encodedXml: string,
 ): any {
   return parser.parse(encodedXml, {
     ignoreAttributes: false,
@@ -62,8 +62,10 @@ export function convertEncodedHTMLIntoJson(encodedHTML?: string): DecodedDescrip
         }
       })
     }
+
     return cleaned
   }
+
   return {}
 }
 
@@ -71,18 +73,23 @@ export function severityStringToImpact(string: string): number {
   if (string.match(/none|na|n\/a|not[\s()*_|]?applicable/i)?.length) {
     return 0.0
   }
+
   if (string.match(/low|cat(egory)?\s*(iii|3)/i)?.length) {
     return 0.3
   }
+
   if (string.match(/med(ium)?|cat(egory)?\s*(ii|2)/)?.length) {
     return 0.5
   }
+
   if (string.match(/high|cat(egory)?\s*(i|1)/)?.length) {
     return 0.7
   }
+
   if (string.match(/crit(ical)?|severe/)?.length) {
     return 1.0
   }
+
   throw new Error(`${string}' is not a valid severity value. It should be one of the approved keywords`)
 }
 
@@ -94,15 +101,19 @@ export function impactNumberToSeverityString(impact: number): string {
     if (impact >= 0.9) {
       return 'critical'
     }
+
     if (impact >= 0.7) {
       return 'high'
     }
+
     if (impact >= 0.4) {
       return 'medium'
     }
+
     if (impact >= 0.1) {
       return 'low'
     }
+
     return 'none'
   }
 }
