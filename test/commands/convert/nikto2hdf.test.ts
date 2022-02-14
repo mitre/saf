@@ -16,8 +16,8 @@ describe('Test nikto', () => {
   .stdout()
   .command(['convert:nikto2hdf', '-i', path.resolve('./test/sample_data/nikto/sample_input_report/zero.webappsecurity.json'), '-o', `${tmpobj.name}/niktotest.json`])
   .it('hdf-converter output test', () => {
-    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/niktotest.json`, {encoding: 'utf-8'}))
-    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/nikto/nikto-hdf.json'), {encoding: 'utf-8'}))
+    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/niktotest.json`, 'utf-8'))
+    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/nikto/nikto-hdf.json'), 'utf-8'))
     expect(omitVersions(test)).to.eql(omitVersions(sample))
   })
 })

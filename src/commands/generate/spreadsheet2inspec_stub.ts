@@ -27,7 +27,8 @@ export default class Spreadsheet2HDF extends Command {
     format: flags.string({char: 'f', required: false, default: 'general', options: ['cis', 'disa', 'general']}),
     metadata: flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
     mapping: flags.string({char: 'M', required: false, description: 'Path to a YAML file with mappings for each field, by default, CIS Benchmark fields are used for XLSX, STIG Viewer CSV export is used by CSV'}),
-    output: flags.string({char: 'o', required: true, description: 'Output InSpec profile folder', default: 'profile'}),
+    lineLength: flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
+    output: flags.string({char: 'o', required: true, description: 'Output InSpec profile folder'}),
   }
 
   // Extract URLs for references
@@ -37,8 +38,10 @@ export default class Spreadsheet2HDF extends Command {
       if (urlMatches) {
         control.refs = urlMatches
       }
+
       control.ref = undefined
     }
+
     return control
   }
 
@@ -47,6 +50,7 @@ export default class Spreadsheet2HDF extends Command {
     if (!control.impact && control.tags?.severity) {
       control.impact = severityStringToImpact(control.tags.severity)
     }
+
     return control
   }
 
@@ -83,6 +87,7 @@ export default class Spreadsheet2HDF extends Command {
             if (revision === 'v7' && cisControl in CISNistMappings) {
               control.tags?.nist?.push(_.get(CISNistMappings, cisControl))
             }
+
             const revisionNumber = revision.replace('v', '')
             const existingControls = _.get(mappedCISControlsByVersion, revisionNumber) || []
             existingControls.push(cisControl)
@@ -99,6 +104,7 @@ export default class Spreadsheet2HDF extends Command {
         }
       }
     }
+
     return control
   }
 
@@ -115,6 +121,7 @@ export default class Spreadsheet2HDF extends Command {
       })
       control.tags.cci = extractedCCIs
     }
+
     return control
   }
 
@@ -134,6 +141,7 @@ export default class Spreadsheet2HDF extends Command {
       fs.mkdirSync(path.join(flags.output, 'controls'))
       fs.mkdirSync(path.join(flags.output, 'libraries'))
     }
+
     let metadata: InSpecMetaData = {}
     let mappings: Record<string, string | string[] | number> = {}
 
@@ -199,6 +207,7 @@ export default class Spreadsheet2HDF extends Command {
               if (typeof record === 'string') {
                 mappedRecord[headers[index]] = record
               }
+
               if (typeof record === 'number') {
                 mappedRecord[headers[index]] = record.toString()
               }
@@ -214,6 +223,7 @@ export default class Spreadsheet2HDF extends Command {
               while (completedIds.includes(controlId)) {
                 controlId += '0'
               }
+
               completedIds.push(controlId)
               let newControl: Partial<InSpecControl> = {
                 refs: [],
@@ -227,13 +237,13 @@ export default class Spreadsheet2HDF extends Command {
                   _.set(
                     newControl,
                     mapping[0].toLowerCase().replace('desc.', 'descs.'),
-                    `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${extractValueViaPathOrNumber(mapping[0], mapping[1], record)}`
+                    `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${extractValueViaPathOrNumber(mapping[0], mapping[1], record)}`,
                   )
                 } else {
                   _.set(
                     newControl,
                     mapping[0].toLowerCase().replace('desc.', 'descs.'),
-                    extractValueViaPathOrNumber(mapping[0], mapping[1], record)
+                    extractValueViaPathOrNumber(mapping[0], mapping[1], record),
                   )
                 }
               })
@@ -259,6 +269,7 @@ export default class Spreadsheet2HDF extends Command {
       if (/~~~~~.*~~~~~/.test(inputDataLines[0])) {
         inputDataLines.shift()
       }
+
       if (/~~~~~.*~~~~~/.test(inputDataLines[inputDataLines.length - 1])) {
         inputDataLines.pop()
       }
@@ -293,6 +304,7 @@ export default class Spreadsheet2HDF extends Command {
         if (skipControlDueToError) {
           return
         }
+
         if (newControl.tags && newControl.tags?.cci) {
           newControl.tags.nist = []
           newControl.tags.cci.forEach(cci => {
@@ -313,7 +325,7 @@ export default class Spreadsheet2HDF extends Command {
 
     // Convert all extracted controls to Ruby/InSpec code
     inspecControls.forEach(control => {
-      fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control))
+      fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control, flags.lineLength))
     })
   }
 }

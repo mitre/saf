@@ -14,6 +14,9 @@
     "unicorn/no-array-for-each": "off",
     "unicorn/explicit-length-check": "off",
     "no-control-regex": "off",
+    "max-nested-callbacks": "off",
+    "unicorn/prefer-json-parse-buffer": "off",
+    "camelcase": "off", // Camel case fields are used in CKL
     "no-console": "off",
     "node/no-missing-import": "off",
     "complexity": "off"

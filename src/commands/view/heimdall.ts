@@ -35,6 +35,7 @@ export default class Heimdall extends Command {
         console.log('An option passed as a file was not a file')
         return
       }
+
       parsedJSONs = flags.files.map(file => {
         return {filename: path.parse(file).base, data: fs.readFileSync(file, 'utf-8')}
       })
@@ -45,6 +46,7 @@ export default class Heimdall extends Command {
       if (req.originalUrl.toLowerCase() === '/dynamic/predefinedload.json' && flags.files) {
         return res.json(parsedJSONs)
       }
+
       next()
     }
 
@@ -52,6 +54,7 @@ export default class Heimdall extends Command {
     if (!flags.noOpenBrowser) {
       flags.files ? open('http://localhost:3000/?predefinedLoad=true') : open('http://localhost:3000/')
     }
+
     const installedPath = getInstalledPath()
 
     express()

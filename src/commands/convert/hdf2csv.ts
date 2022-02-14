@@ -29,7 +29,7 @@ export default class HDF2CSV extends Command {
 
   async run() {
     const {flags} = this.parse(HDF2CSV)
-    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, {encoding: 'utf-8'})))
+    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf-8')))
 
     // Convert all controls from a file to ControlSetRows
     let rows: ControlSetRows = this.convertRows(contextualizedEvaluation, convertFullPathToFilename(flags.input), flags.fields.split(','))
@@ -42,11 +42,13 @@ export default class HDF2CSV extends Command {
           } else {
             console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`)
           }
+
           cleanedRow[key] = _.truncate(row[key], {length: 32757, omission: 'TRUNCATED'})
         } else {
           cleanedRow[key] = row[key]
         }
       }
+
       return cleanedRow
     })
     await new ObjectsToCsv(rows).toDisk(flags.output)

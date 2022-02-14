@@ -19,7 +19,7 @@ export default class Scoutsuite2HDF extends Command {
   async run() {
     const {flags} = this.parse(Scoutsuite2HDF)
 
-    const converter = new Mapper(fs.readFileSync(flags.input, {encoding: 'utf-8'}))
+    const converter = new Mapper(fs.readFileSync(flags.input, 'utf-8'))
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

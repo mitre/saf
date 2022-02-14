@@ -20,6 +20,7 @@ export default class XCCDF2InSpec extends Command {
     metadata: flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
     singleFile: flags.boolean({char: 's', required: false, default: false, description: 'Output the resulting controls as a single file'}),
     useVulnerabilityId: flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')"}),
+    lineLength: flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
     output: flags.string({char: 'o', required: true, default: 'profile'}),
   }
 
@@ -35,6 +36,7 @@ export default class XCCDF2InSpec extends Command {
       // Folder should not exist already
       throw new Error('Profile output folder already exists, please specify a new folder')
     }
+
     // This will get overridden if a metadata file is passed
     let metadata: InSpecMetaData = {}
     // Read metadata file if passed
@@ -45,6 +47,7 @@ export default class XCCDF2InSpec extends Command {
         throw new Error('Passed metadata file does not exist')
       }
     }
+
     // Read XCCDF file
     const parsedXML: DisaStig = convertEncodedXmlIntoJson(fs.readFileSync(flags.input, 'utf-8'))
     // Extract groups (these contain controls)
@@ -69,10 +72,12 @@ export default class XCCDF2InSpec extends Command {
     if (parsedXML.Benchmark.status && parsedXML.Benchmark.status['#text'] && parsedXML.Benchmark.status['@_date']) {
       profileInfo.status = `${parsedXML.Benchmark.status['#text']} on ${parsedXML.Benchmark.status['@_date']}`
     }
+
     if (parsedXML.Benchmark['plain-text']) {
       const plainTextMetaDataValues = Array.isArray(parsedXML.Benchmark['plain-text']) ? parsedXML.Benchmark['plain-text'] : [parsedXML.Benchmark['plain-text']]
       profileInfo.release = plainTextMetaDataValues.find(metadataValue => metadataValue['@_id'].toLowerCase().trim() === 'release-info')?.['#text']
     }
+
     profileInfo.reference = parsedXML.Benchmark.reference['@_href']
     profileInfo.referenceBy = parsedXML.Benchmark.reference['dc:publisher']
     profileInfo.referenceSource = parsedXML.Benchmark.reference['dc:source']
@@ -96,9 +101,11 @@ export default class XCCDF2InSpec extends Command {
       if (!group.Rule) {
         throw new Error(`Group exists without vulnerability ${group['@_id']}`)
       }
+
       if (!extractedDescription.VulnDiscussion) {
         throw new Error('Vulnerability exists without VulnDiscussion')
       }
+
       // Create a barebones InSpec control
       const inspecControl: InSpecControl = {
         id: flags.useVulnerabilityId ? group.Rule['@_id'].split('r')[0] : group['@_id'],
@@ -142,10 +149,11 @@ export default class XCCDF2InSpec extends Command {
               _.set(inspecControl, 'tags.nist', _.get(inspecControl, 'tags.nist') || [])
               const nistMapping = _.get(CCINistMappings, identifier['#text'])
               if (inspecControl.tags.nist?.indexOf(nistMapping) === -1) {
-              inspecControl.tags.nist?.push(nistMapping)
+                inspecControl.tags.nist?.push(nistMapping)
               }
             }
           }
+
           if (identifier['@_system'].toLowerCase().endsWith('legacy')) {
             _.set(inspecControl, 'tags.legacy', _.get(inspecControl, 'tags.legacy') || [])
             inspecControl.tags.legacy?.push(identifier['#text'])
@@ -158,12 +166,12 @@ export default class XCCDF2InSpec extends Command {
     // Convert all extracted controls to Ruby/InSpec code
     if (!flags.singleFile) {
       inspecControls.forEach(control => {
-        fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control))
+        fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control, flags.lineLength))
       })
     } else {
       const controlOutfile = fs.createWriteStream(path.join(flags.output, 'controls', 'controls.rb'), {flags: 'w'})
       inspecControls.forEach(control => {
-        controlOutfile.write(inspecControlToRubyCode(control) + '\n\n')
+        controlOutfile.write(inspecControlToRubyCode(control, flags.lineLength) + '\n\n')
       })
       controlOutfile.close()
     }

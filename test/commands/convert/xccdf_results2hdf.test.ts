@@ -16,8 +16,8 @@ describe('Test xccdf_results', () => {
   .stdout()
   .command(['convert:xccdf_results2hdf', '-i', path.resolve('./test/sample_data/xccdf_results/sample_input_report/xccdf-results.xml'), '-o', `${tmpobj.name}/xccdfresultstest.json`])
   .it('hdf-converter output test', () => {
-    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/xccdfresultstest.json`, {encoding: 'utf-8'}))
-    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/xccdf_results/xccdf-hdf.json'), {encoding: 'utf-8'}))
+    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/xccdfresultstest.json`, 'utf-8'))
+    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/xccdf_results/xccdf-hdf.json'), 'utf-8'))
     expect(omitVersions(test)).to.eql(omitVersions(sample))
   })
 })
