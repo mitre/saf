@@ -15,7 +15,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
   * Scan - Visit https://saf.mitre.org/#/validate to explore and run inspec profiles
   * [Generate](#generate) - Generate InSpec validation code, set pipeline thresholds, and generate options to support other saf commands.
   * [Validate](#validate) - Verify pipeline thresholds
-  * [View](#view) - Identify overall security status and deep-dive to solve specifc security defects
+  * [View](#view) - Identify overall security status and deep-dive to solve specific security defects
   * [Convert](#convert) - Convert security results from all your security tools into a common data format
   * Harden - Visit https://saf.mitre.org/#/harden to explore and run hardening scripts
 
@@ -135,7 +135,7 @@ generate:threshold      Generate a compliance template for "saf validate thresho
 
 #### Spreadsheet (csv/xlsx) to InSpec
 
-You can use `saf generate:spreadsheet2inspec_stub` to generate an InSpec profile structure from a spreadsheet file. 
+You can use `saf generate:spreadsheet2inspec_stub` to generate an InSpec profile stub from a spreadsheet file. 
 
 ```
 generate:spreadsheet2inspec_stub              Generate an InSpec profile stub from a CSV STIGs or CIS XLSX benchmarks 
@@ -160,7 +160,7 @@ OPTIONS
   -m, --metadata=metadata                    Path to a JSON file with additional metadata
                                              for the inspec.yml file
 
-  -o, --output=output                        (required) Output InSpec profile folder
+  -o, --output=output                        (required) [default: profile] Output InSpec profile stub folder
 
 EXAMPLE
   saf generate:spreadsheet2inspec_stub -i spreadsheet.xlsx -o profile
@@ -177,7 +177,7 @@ generate:xccdf2inspec_stub              Generate an InSpec profile stub from a D
     -h, --help                show CLI help
     -i, --input=input         (required) Path to the DISA STIG XCCDF file
     -m, --metadata=metadata   Path to a JSON file with additional metadata for the inspec.yml file
-    -o, --output=output       (required) [default: profile]
+    -o, --output=output       (required) [default: profile] Output InSpec profile stub folder
     -r, --useVulnerabilityId  Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')
     -s, --singleFile          Output the resulting controls as a single file
 ```
@@ -188,7 +188,7 @@ generate:xccdf2inspec_stub              Generate an InSpec profile stub from a D
 
 #### Thresholds
 
-See the wiki for more infromation on [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
+See the wiki for more information on [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
 
 ```
 validate:threshold       Validate the compliance and status counts of an HDF file
@@ -442,7 +442,7 @@ convert:jfrog_xray2hdf      Translate a JFrog Xray results JSON file into a
 ```
 
 
-##### Tennable Nessus to HDF
+##### Tenable Nessus to HDF
 
 ```
 convert:nessus2hdf          Translate a Nessus XML results file into a Heimdall
@@ -669,7 +669,7 @@ ref:                          # InSpec keyword - saf will check this column for 
   - References                # and record each address as a ref attribute
 ```
 
-Where the keys (`title`) are InSpec control attributess and the values (`- Title`) are the column headers in the input spreadsheet that correspond to that attribute.
+Where the keys (`title`) are InSpec control attributes and the values (`- Title`) are the column headers in the input spreadsheet that correspond to that attribute.
 
 &nbsp;
 
