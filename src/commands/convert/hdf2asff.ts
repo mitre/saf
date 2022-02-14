@@ -23,7 +23,7 @@ export default class HDF2ASFF extends Command {
     upload: flags.boolean({char: 'u', required: false, description: 'Upload findings to AWS Security Hub'}),
     output: flags.string({char: 'o', required: false, description: 'Output ASFF JSON Folder'}),
     insecure: flags.boolean({char: 'I', required: false, default: false, description: 'Disable SSL verification, this is insecure.'}),
-    certificate: flags.string({char: 'C', required: false, description: 'Trusted signing certificate file'})
+    certificate: flags.string({char: 'C', required: false, description: 'Trusted signing certificate file'}),
   }
 
   async run() {
@@ -56,17 +56,17 @@ export default class HDF2ASFF extends Command {
       convertedSlices = sliceIntoChunks(converted, 100)
 
       if (flags.insecure) {
-        console.log("WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate")
+        console.log('WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate')
       }
 
       const clientOptions: AWS.SecurityHub.ClientConfiguration = {
-        region: flags.region
+        region: flags.region,
       }
       AWS.config.update({
         httpOptions: {
           agent: new https.Agent({
             rejectUnauthorized: !flags.insecure,
-            ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf-8') : undefined
+            ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf-8') : undefined,
           }),
         },
       })
@@ -89,7 +89,6 @@ export default class HDF2ASFF extends Command {
             } else {
               console.error(`Failed to upload controls: ${error}`)
             }
-            
           }
         }),
       ).then(async () => {
