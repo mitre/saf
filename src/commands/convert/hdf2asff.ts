@@ -66,7 +66,7 @@ export default class HDF2ASFF extends Command {
       const client = new AWS.SecurityHub(clientOptions)
 
       Promise.all(
-        convertedSlices.map(async (chunk, index) => {
+        convertedSlices.map(async chunk => {
           try {
             const result = await client.batchImportFindings({Findings: chunk}).promise()
             console.log(
@@ -78,7 +78,6 @@ export default class HDF2ASFF extends Command {
             }
           } catch (error) {
             console.error(`Failed to upload controls: ${error}`)
-            fs.writeFileSync(index + '.json', JSON.stringify(chunk))
           }
         }),
       ).then(async () => {
