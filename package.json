@@ -6,8 +6,6 @@
   "bin": "./bin/run",
   "bugs": "https://github.com/mitre/saf/issues",
   "dependencies": {
-    "@aws-sdk/client-config-service": "^3.22.0",
-    "@aws-sdk/client-securityhub": "^3.50.0",
     "@mitre/hdf-converters": "^2.6.9",
     "@mitre/heimdall-lite": "^2.6.9",
     "@oclif/command": "^1",
@@ -28,6 +26,7 @@
     "@types/prompt-sync": "^4.1.1",
     "@types/tmp": "^0.2.2",
     "@types/uuid": "^8.3.4",
+    "aws-sdk": "^2.1074.0",
     "chai": "^4",
     "csv-parse": "^4.16.0",
     "express": "^4.17.1",

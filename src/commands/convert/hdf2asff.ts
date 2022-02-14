@@ -82,7 +82,7 @@ export default class HDF2ASFF extends Command {
           }
         }),
       ).then(async () => {
-        if(profileInfoFinding) {
+        if (profileInfoFinding) {
           profileInfoFinding.UpdatedAt = new Date().toISOString()
           const result = await client.batchImportFindings({Findings: [profileInfoFinding as any]}).promise()
           console.info(`Statistics: ${profileInfoFinding.Description}`)
