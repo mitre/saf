@@ -4,13 +4,14 @@ import _ from 'lodash'
 import {InSpecControl} from '../types/inspec'
 import {DecodedDescription} from '../types/xccdf'
 
-const wrap = (s: string) => s.replace(
-  /(?![^\n]{1,80}$)([^\n]{1,80})\s/g, '$1\n',
-)
+// Breaks lines down to lineLength number of characters
+export function wrap(s: string, lineLength = 80): string {
+  return s.replace(new RegExp(`(?![^\n]{1,${lineLength}}$)([^\n]{1,${lineLength}})`, 'g'), '$1\n')
+}
 
 const escapeQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/'/g, "\\'") // Escape backslashes and quotes
 const escapeDoubleQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/"/g, '\\"') // Escape backslashes and double quotes
-const wrapAndEscapeQuotes = (s: string) => escapeDoubleQuotes(wrap(s)) // Escape backslashes and quotes, and wrap long lines
+const wrapAndEscapeQuotes = (s: string, lineLength?: number) => escapeDoubleQuotes(wrap(s, lineLength)) // Escape backslashes and quotes, and wrap long lines
 
 export function convertEncodedXmlIntoJson(
   encodedXml: string,
@@ -118,18 +119,18 @@ export function impactNumberToSeverityString(impact: number): string {
   }
 }
 
-export function inspecControlToRubyCode(control: InSpecControl): string {
+export function inspecControlToRubyCode(control: InSpecControl, lineLength?: number): string {
   let result = '# encoding: UTF-8\n\n'
 
   result += `control "${control.id}" do\n`
   if (control.title) {
-    result += `  title "${wrapAndEscapeQuotes(control.title)}"\n`
+    result += `  title "${wrapAndEscapeQuotes(control.title, lineLength)}"\n`
   } else {
     console.error(`${control.id} does not have a title`)
   }
 
   if (control.desc) {
-    result += `  desc "${wrapAndEscapeQuotes(control.desc)}"\n`
+    result += `  desc "${wrapAndEscapeQuotes(control.desc, lineLength)}"\n`
   } else {
     console.error(`${control.id} does not have a desc`)
   }
@@ -137,7 +138,7 @@ export function inspecControlToRubyCode(control: InSpecControl): string {
   if (control.descs) {
     Object.entries(control.descs).forEach(([key, desc]) => {
       if (desc) {
-        result += `  desc "${key}", "${wrapAndEscapeQuotes(desc)}"\n`
+        result += `  desc "${key}", "${wrapAndEscapeQuotes(desc, lineLength)}"\n`
       } else {
         console.error(`${control.id} does not have a desc for the value ${key}`)
       }
@@ -173,7 +174,7 @@ export function inspecControlToRubyCode(control: InSpecControl): string {
           result += `  tag ${tag}: ${stringifiedObject}\n`
         }
       } else if (typeof value === 'string') {
-        result += `  tag ${tag}: "${wrapAndEscapeQuotes(value)}"\n`
+        result += `  tag ${tag}: "${wrapAndEscapeQuotes(value, lineLength)}"\n`
       }
     }
   })
