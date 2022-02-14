@@ -255,11 +255,13 @@ Want to Recommend or Help Develop a Converter? See [the wiki](https://github.com
 convert:hdf2asff            Translate a Heimdall Data Format JSON file into
                             AWS Security Findings Format JSON file(s)
   OPTIONS
-    -a, --accountId=accountId  (required) AWS Account ID
-    -i, --input=input          (required) Input HDF JSON File
-    -o, --output=output        (required) Output ASFF JSONs Folder
-    -r, --region=region        (required) SecurityHub Region
-    -t, --target=target        (required) Unique name for target to track findings across time
+    -a, --accountId=accountId      (required) AWS Account ID
+    -i, --input=input              (required) Input HDF JSON File
+    -o, --output=output            (required) Output ASFF JSONs Folder
+    -r, --region=region            (required) SecurityHub Region
+    -t, --target=target            (required) Unique name for target to track findings across time
+    -C, --certificate=certificate  Trusted signing certificate file
+    -I, --insecure                 Disable SSL verification, this is insecure.
   
   EXAMPLES
     saf convert:hdf2asff -i rhel7.scan.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7-asff
