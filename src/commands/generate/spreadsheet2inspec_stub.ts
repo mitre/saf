@@ -27,7 +27,7 @@ export default class Spreadsheet2HDF extends Command {
     format: flags.string({char: 'f', required: false, default: 'general', options: ['cis', 'disa', 'general']}),
     metadata: flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
     mapping: flags.string({char: 'M', required: false, description: 'Path to a YAML file with mappings for each field, by default, CIS Benchmark fields are used for XLSX, STIG Viewer CSV export is used by CSV'}),
-    output: flags.string({char: 'o', required: true, description: 'Output InSpec profile folder'}),
+    output: flags.string({char: 'o', required: true, description: 'Output InSpec profile folder', default: 'profile'}),
   }
 
   // Extract URLs for references
