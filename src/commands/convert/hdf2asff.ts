@@ -5,6 +5,7 @@ import {FromHdfToAsffMapper as Mapper} from '@mitre/hdf-converters'
 import path from 'path'
 import AWS from 'aws-sdk'
 import {checkSuffix, sliceIntoChunks} from '../../utils/global'
+import _ from 'lodash'
 
 export default class HDF2ASFF extends Command {
   static usage = 'convert:hdf2asff -i, --input=HDF-JSON -o, --output=ASFF-JSON'
@@ -22,6 +23,7 @@ export default class HDF2ASFF extends Command {
     upload: flags.boolean({char: 'u', required: false, description: 'Upload findings to AWS Security Hub'}),
     output: flags.string({char: 'o', required: false, description: 'Output ASFF JSON Folder'}),
     insecure: flags.boolean({char: 'I', required: false, default: false, description: 'Disable SSL verification, this is insecure.'}),
+    certificate: flags.string({char: 'C', required: false, description: 'Trusted signing certificate file'})
   }
 
   async run() {
@@ -53,13 +55,18 @@ export default class HDF2ASFF extends Command {
       const profileInfoFinding = converted.pop()
       convertedSlices = sliceIntoChunks(converted, 100)
 
+      if (flags.insecure) {
+        console.log("WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate")
+      }
+
       const clientOptions: AWS.SecurityHub.ClientConfiguration = {
-        region: flags.region,
+        region: flags.region
       }
       AWS.config.update({
         httpOptions: {
           agent: new https.Agent({
             rejectUnauthorized: !flags.insecure,
+            ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf-8') : undefined
           }),
         },
       })
@@ -77,7 +84,12 @@ export default class HDF2ASFF extends Command {
               console.log(result.FailedFindings)
             }
           } catch (error) {
-            console.error(`Failed to upload controls: ${error}`)
+            if (typeof error === 'object' && _.get(error, 'code', false) === 'NetworkingError') {
+              console.error(`Failed to upload controls: ${error}; Use --certificate to provide your own SSL intermediary certificate (in .crt format) or use the flag --insecure to ignore SSL`)
+            } else {
+              console.error(`Failed to upload controls: ${error}`)
+            }
+            
           }
         }),
       ).then(async () => {
