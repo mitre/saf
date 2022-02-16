@@ -1,12 +1,12 @@
 import {Command, flags} from '@oclif/command'
 import * as fs from 'fs'
+import https from 'https'
 import {FromHdfToAsffMapper as Mapper} from '@mitre/hdf-converters'
 import path from 'path'
-import {
-  SecurityHubClient,
-  BatchImportFindingsCommand,
-} from '@aws-sdk/client-securityhub'
+import AWS from 'aws-sdk'
 import {checkSuffix, sliceIntoChunks} from '../../utils/global'
+import _ from 'lodash'
+import {BatchImportFindingsRequestFindingList} from 'aws-sdk/clients/securityhub'
 
 export default class HDF2ASFF extends Command {
   static usage = 'convert:hdf2asff -i, --input=HDF-JSON -o, --output=ASFF-JSON'
@@ -23,6 +23,8 @@ export default class HDF2ASFF extends Command {
     target: flags.string({char: 't', required: true, description: 'Unique name for target to track findings across time'}),
     upload: flags.boolean({char: 'u', required: false, description: 'Upload findings to AWS Security Hub'}),
     output: flags.string({char: 'o', required: false, description: 'Output ASFF JSON Folder'}),
+    insecure: flags.boolean({char: 'I', required: false, default: false, description: 'Disable SSL verification, this is insecure.'}),
+    certificate: flags.string({char: 'C', required: false, description: 'Trusted signing certificate file'}),
   }
 
   async run() {
@@ -34,10 +36,10 @@ export default class HDF2ASFF extends Command {
       target: flags.target,
       input: flags.input,
     }).toAsff()
-    const convertedSlices = sliceIntoChunks(converted, 100)
-    const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
 
     if (flags.output) {
+      const convertedSlices = sliceIntoChunks(converted, 100)
+      const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
       fs.mkdirSync(outputFolder)
       if (convertedSlices.length === 1) {
         const outfilePath = path.join(outputFolder, checkSuffix(flags.output))
@@ -51,15 +53,30 @@ export default class HDF2ASFF extends Command {
     }
 
     if (flags.upload) {
-      const profileInfoFinding: any = converted.pop()
-      const client = new SecurityHubClient({region: flags.region})
+      const profileInfoFinding = converted.pop()
+      const convertedSlices = sliceIntoChunks(converted, 100)
+
+      if (flags.insecure) {
+        console.warn('WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate')
+      }
+
+      const clientOptions: AWS.SecurityHub.ClientConfiguration = {
+        region: flags.region,
+      }
+      AWS.config.update({
+        httpOptions: {
+          agent: new https.Agent({
+            rejectUnauthorized: !flags.insecure,
+            ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf-8') : undefined,
+          }),
+        },
+      })
+      const client = new AWS.SecurityHub(clientOptions)
+
       Promise.all(
         convertedSlices.map(async chunk => {
-          const uploadCommand = new BatchImportFindingsCommand({
-            Findings: chunk,
-          })
           try {
-            const result = await client.send(uploadCommand)
+            const result = await client.batchImportFindings({Findings: chunk}).promise()
             console.log(
               `Uploaded ${chunk.length} controls. Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
             )
@@ -68,22 +85,25 @@ export default class HDF2ASFF extends Command {
               console.log(result.FailedFindings)
             }
           } catch (error) {
-            console.error(`Failed to upload controls: ${error}`)
+            if (typeof error === 'object' && _.get(error, 'code', false) === 'NetworkingError') {
+              console.error(`Failed to upload controls: ${error}; Using --certificate to provide your own SSL intermediary certificate (in .crt format) or use the flag --insecure to ignore SSL might resolve this issue`)
+            } else {
+              console.error(`Failed to upload controls: ${error}`)
+            }
           }
         }),
       ).then(async () => {
-        profileInfoFinding.UpdatedAt = new Date().toISOString()
-        const profileInfoUploadCommand = new BatchImportFindingsCommand({
-          Findings: [profileInfoFinding],
-        })
-        const result = await client.send(profileInfoUploadCommand)
-        console.info(`Statistics: ${profileInfoFinding.Description}`)
-        console.info(
-          `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
-        )
-        if (result.FailedFindings?.length) {
-          console.error(`Failed to upload ${result.FailedCount} Results Set Info Finding`)
-          console.log(result.FailedFindings)
+        if (profileInfoFinding) {
+          profileInfoFinding.UpdatedAt = new Date().toISOString()
+          const result = await client.batchImportFindings({Findings: [profileInfoFinding as unknown] as BatchImportFindingsRequestFindingList}).promise()
+          console.info(`Statistics: ${profileInfoFinding.Description}`)
+          console.info(
+            `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
+          )
+          if (result.FailedFindings?.length) {
+            console.error(`Failed to upload ${result.FailedCount} Results Set Info Finding`)
+            console.log(result.FailedFindings)
+          }
         }
       })
     }
