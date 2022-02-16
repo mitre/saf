@@ -10,7 +10,7 @@ import YAML from 'yaml'
 import {default as CCINistMappings} from '@mitre/hdf-converters/lib/data/cci-nist-mapping.json'
 
 export default class XCCDF2InSpec extends Command {
-  static usage = 'generate:xccdf2inspec -i, --input=XML -o, --output=FOLDER'
+  static usage = 'generate:xccdf2inspec_stub -i, --input=XML -o, --output=FOLDER'
 
   static description = 'Translate a DISA STIG XCCDF XML file to a skeleton for an InSpec profile'
 
@@ -83,7 +83,7 @@ export default class XCCDF2InSpec extends Command {
     profileInfo.referenceSource = parsedXML.Benchmark.reference['dc:source']
     // Convert camelCase and snake_case to human readable for README.md
     const readableMetadata: Record<string, string | number> = {}
-    Object.entries(profileInfo).forEach(async ([key, value]) => {
+    Object.entries(profileInfo).forEach(([key, value]) => {
       // Filter out any undefined values and omit summary and title
       if (value && key !== 'summary' && key !== 'summary') {
         readableMetadata[_.startCase(key)] = value

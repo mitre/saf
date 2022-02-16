@@ -14,11 +14,11 @@ import {default as CISNistMappings} from '../../resources/cis2nist.json'
 import {default as files} from '../../resources/files.json'
 
 export default class Spreadsheet2HDF extends Command {
-  static usage = 'generate:spreadsheet2inspec -i, --input=<XLSX or CSV> -o, --output=FOLDER'
+  static usage = 'generate:spreadsheet2inspec_stub -i, --input=<XLSX or CSV> -o, --output=FOLDER'
 
   static description = 'Convert CSV STIGs or CIS XLSX benchmarks into a skeleton InSpec profile'
 
-  static examples = ['saf generate:spreadsheet2inspec -i spreadsheet.xlsx -o profile']
+  static examples = ['saf generate:spreadsheet2inspec_stub -i spreadsheet.xlsx -o profile']
 
   static flags = {
     help: flags.help({char: 'h'}),
