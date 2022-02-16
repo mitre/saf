@@ -261,7 +261,8 @@ convert:hdf2asff            Translate a Heimdall Data Format JSON file into
     -r, --region=region            (required) SecurityHub Region
     -t, --target=target            (required) Unique name for target to track findings across time
     -C, --certificate=certificate  Trusted signing certificate file
-    -I, --insecure                 Disable SSL verification, this is insecure.
+    -I, --insecure                 Disable SSL verification (WARNING: this is insecure)
+    -u, --upload                   Upload findings to AWS Security Hub
   
   EXAMPLES
     saf convert:hdf2asff -i rhel7.scan.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7-asff

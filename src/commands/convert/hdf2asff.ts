@@ -6,6 +6,7 @@ import path from 'path'
 import AWS from 'aws-sdk'
 import {checkSuffix, sliceIntoChunks} from '../../utils/global'
 import _ from 'lodash'
+import {BatchImportFindingsRequestFindingList} from 'aws-sdk/clients/securityhub'
 
 export default class HDF2ASFF extends Command {
   static usage = 'convert:hdf2asff -i, --input=HDF-JSON -o, --output=ASFF-JSON'
@@ -35,10 +36,10 @@ export default class HDF2ASFF extends Command {
       target: flags.target,
       input: flags.input,
     }).toAsff()
-    let convertedSlices = sliceIntoChunks(converted, 100)
-    const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
 
     if (flags.output) {
+      const convertedSlices = sliceIntoChunks(converted, 100)
+      const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
       fs.mkdirSync(outputFolder)
       if (convertedSlices.length === 1) {
         const outfilePath = path.join(outputFolder, checkSuffix(flags.output))
@@ -53,10 +54,10 @@ export default class HDF2ASFF extends Command {
 
     if (flags.upload) {
       const profileInfoFinding = converted.pop()
-      convertedSlices = sliceIntoChunks(converted, 100)
+      const convertedSlices = sliceIntoChunks(converted, 100)
 
       if (flags.insecure) {
-        console.log('WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate')
+        console.warn('WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate')
       }
 
       const clientOptions: AWS.SecurityHub.ClientConfiguration = {
@@ -85,7 +86,7 @@ export default class HDF2ASFF extends Command {
             }
           } catch (error) {
             if (typeof error === 'object' && _.get(error, 'code', false) === 'NetworkingError') {
-              console.error(`Failed to upload controls: ${error}; Use --certificate to provide your own SSL intermediary certificate (in .crt format) or use the flag --insecure to ignore SSL`)
+              console.error(`Failed to upload controls: ${error}; Using --certificate to provide your own SSL intermediary certificate (in .crt format) or use the flag --insecure to ignore SSL might resolve this issue`)
             } else {
               console.error(`Failed to upload controls: ${error}`)
             }
@@ -94,7 +95,7 @@ export default class HDF2ASFF extends Command {
       ).then(async () => {
         if (profileInfoFinding) {
           profileInfoFinding.UpdatedAt = new Date().toISOString()
-          const result = await client.batchImportFindings({Findings: [profileInfoFinding as any]}).promise()
+          const result = await client.batchImportFindings({Findings: [profileInfoFinding as unknown] as BatchImportFindingsRequestFindingList}).promise()
           console.info(`Statistics: ${profileInfoFinding.Description}`)
           console.info(
             `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
