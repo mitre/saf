@@ -5,7 +5,7 @@ import _ from 'lodash'
 import {checkSuffix} from '../../utils/global'
 
 export default class Snyk2HDF extends Command {
-  static usage = 'convert:snyk2hdf -i, --input=JSON -o, --output_prefix=OUTPUT_PREFIX'
+  static usage = 'convert:snyk2hdf -i, --input=JSON -o, --output=OUTPUT'
 
   static description = 'Translate a Snyk results JSON file into a Heimdall Data Format JSON file\nA separate HDF JSON is generated for each project reported in the Snyk Report.'
 
@@ -14,7 +14,7 @@ export default class Snyk2HDF extends Command {
   static flags = {
     help: flags.help({char: 'h'}),
     input: flags.string({char: 'i', required: true}),
-    output_prefix: flags.string({char: 'o', required: true}),
+    output: flags.string({char: 'o', required: true}),
   }
 
   async run() {
@@ -23,10 +23,10 @@ export default class Snyk2HDF extends Command {
     const result = converter.toHdf()
     if (Array.isArray(result)) {
       for (const element of result) {
-        fs.writeFileSync(`${checkSuffix(flags.output_prefix)}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
+        fs.writeFileSync(`${flags.output.replace(/.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
       }
     } else {
-      fs.writeFileSync(`${checkSuffix(flags.output_prefix)}.json`, JSON.stringify(result))
+      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(result))
     }
   }
 }
