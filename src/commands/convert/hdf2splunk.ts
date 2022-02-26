@@ -1,5 +1,4 @@
 import {Command, flags} from '@oclif/command'
-import _ from 'lodash'
 import {FromHDFToSplunkMapper} from '@mitre/hdf-converters'
 import {convertFullPathToFilename} from '../../utils/global'
 import fs from 'fs'
