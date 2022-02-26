@@ -4,7 +4,7 @@ import {convertFullPathToFilename} from '../../utils/global'
 import fs from 'fs'
 
 export default class HDF2Splunk extends Command {
-  static usage = 'hdf2splunk -i, --input=FILE -h, --host -P, --port -p, --protocol -t, --token -i, --index'
+  static usage = 'hdf2splunk -i, --input=FILE -H, --host -P, --port -p, --protocol -t, --token -i, --index'
 
   static description = 'Translate and upload a Heimdall Data Format JSON file into a Splunk server via its HTTP Event Collector'
 
