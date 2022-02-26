@@ -6,7 +6,7 @@
   "bin": "./bin/run",
   "bugs": "https://github.com/mitre/saf/issues",
   "dependencies": {
-    "@mitre/hdf-converters": "^2.6.10",
+    "@mitre/hdf-converters": "^2.6.13",
     "@mitre/heimdall-lite": "^2.6.10",
     "@oclif/command": "^1",
     "@oclif/config": "^1",
