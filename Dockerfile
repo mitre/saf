@@ -1,7 +1,7 @@
 FROM node:lts-alpine as builder
 
 LABEL name="SAF" \
-      vendor="MTIRE" \
+      vendor="The MITRE Corporation" \
       version="${SAF_VERSION}" \
       release="1" \
       url="https://github.com/mitre/saf" \
