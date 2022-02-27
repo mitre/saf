@@ -19,11 +19,12 @@ export default class HDF2ASFF extends Command {
     help: flags.help({char: 'h'}),
     accountId: flags.string({char: 'a', required: true, description: 'AWS Account ID'}),
     region: flags.string({char: 'r', required: true, description: 'SecurityHub Region'}),
+    specifyRegionAttribute: flags.boolean({char: 'R', required: false, description: 'Manually specify the top-level `Region` attribute - SecurityHub populates this attribute automatically and prohibits one from updating it using `BatchImportFindings` or `BatchUpdateFindings`'}),
     input: flags.string({char: 'i', required: true, description: 'Input HDF JSON File'}),
     target: flags.string({char: 't', required: true, description: 'Unique name for target to track findings across time'}),
     upload: flags.boolean({char: 'u', required: false, description: 'Upload findings to AWS Security Hub'}),
     output: flags.string({char: 'o', required: false, description: 'Output ASFF JSON Folder'}),
-    insecure: flags.boolean({char: 'I', required: false, default: false, description: 'Disable SSL verification, this is insecure.'}),
+    insecure: flags.boolean({char: 'I', required: false, default: false, description: 'Disable SSL verification, this is insecure'}),
     certificate: flags.string({char: 'C', required: false, description: 'Trusted signing certificate file'}),
   }
 
@@ -33,6 +34,7 @@ export default class HDF2ASFF extends Command {
     const converted = new Mapper(JSON.parse(fs.readFileSync(flags.input, 'utf-8')), {
       awsAccountId: flags.accountId,
       region: flags.region,
+      regionAttribute: flags.specifyRegionAttribute,
       target: flags.target,
       input: flags.input,
     }).toAsff()
