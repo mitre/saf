@@ -1,5 +1,5 @@
 import {Command, flags} from '@oclif/command'
-import * as fs from 'fs'
+import fs from 'fs'
 import https from 'https'
 import {FromHdfToAsffMapper as Mapper} from '@mitre/hdf-converters'
 import path from 'path'
