@@ -37,6 +37,6 @@ export default class ASFF2HDF extends Command {
     logger.info('Converted ASFF to HDF')
     logger.info(`Writing HDF to: ${checkSuffix(flags.output)}`)
     fs.writeFileSync(checkSuffix(flags.output), converted)
-    logger.verbose(`Converted HDF successfully written to ${checkSuffix(flags.output)}`)
+    logger.verbose(`HDF successfully written to ${checkSuffix(flags.output)}`)
   }
 }
