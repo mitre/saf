@@ -29,7 +29,7 @@ export function createWinstonLogger(
   })
 }
 
-export function getHDFSummary(hdf: ExecJSON.Execution) {
+export function getHDFSummary(hdf: ExecJSON.Execution): string {
   let summary = 'Execution<'
   const summaryObject: Summary = {
     profileNames: [],
