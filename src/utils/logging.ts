@@ -1,4 +1,16 @@
+import { ContextualizedControl, contextualizeEvaluation, ExecJSON } from 'inspecjs';
+import { CompletionTriggerKind } from 'typescript';
 import winston from 'winston';
+
+export type Summary = {
+    profileNames: string[];
+    controlCount: number;
+    passedCount: number;
+    failedCount: number;
+    notApplicableCount: number;
+    notReviewedCount: number;
+    errorCount: number;
+}
 
 export function createWinstonLogger(
   mapperName: string,
@@ -16,4 +28,49 @@ export function createWinstonLogger(
       )
     )
   });
+}
+
+export function getHDFSummary(hdf: ExecJSON.Execution) {
+    let summary = 'Execution<'
+    let summaryObject: Summary = {
+        profileNames: [],
+        controlCount: 0,
+        passedCount: 0,
+        failedCount: 0,
+        notApplicableCount: 0,
+        notReviewedCount: 0,
+        errorCount: 0
+    }
+    const contextualizedEvaluation = contextualizeEvaluation(hdf)
+    contextualizedEvaluation.contains.forEach((profile) => {
+        summaryObject.profileNames.push(profile.data.name)
+    })
+    let controls: readonly ContextualizedControl[] = contextualizedEvaluation.contains.flatMap(
+        (profile) => profile.contains
+    );
+    controls.forEach((control) => {
+        switch (control.hdf.status) {
+            case 'Passed':
+                summaryObject.passedCount += 1
+                break;
+            case 'Failed':
+                summaryObject.failedCount += 1
+                break;
+            case 'Not Applicable':
+                summaryObject.notApplicableCount += 1
+                break;
+            case 'Not Reviewed':
+                summaryObject.notReviewedCount += 1
+                break;
+            case 'Profile Error':
+                summaryObject.errorCount += 1
+                break;
+            default:
+                return
+        }
+    })
+
+    summary += `Profiles: [Profile<${summaryObject.profileNames.join('> Profile<')}>], Passed=${summaryObject.passedCount}, Failed=${summaryObject.failedCount}, Not Applicable=${summaryObject.notApplicableCount}, Not Reviewed=${summaryObject.notReviewedCount}>`
+
+    return summary
 }

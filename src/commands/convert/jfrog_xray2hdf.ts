@@ -1,10 +1,11 @@
 import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import {JfrogXrayMapper as Mapper} from '@mitre/hdf-converters'
-import {checkSuffix} from '../../utils/global'
+import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
+import { createWinstonLogger, getHDFSummary } from '../../utils/logging'
 
 export default class JfrogXray2HDF extends Command {
-  static usage = 'convet:jfrog_xray2hdf -i, --input=JSON -o, --output=OUTPUT'
+  static usage = 'convert:jfrog_xray2hdf -i, --input=JSON -o, --output=OUTPUT'
 
   static description = 'Translate a JFrog Xray results JSON file into a Heimdall Data Format JSON file'
 
@@ -14,12 +15,28 @@ export default class JfrogXray2HDF extends Command {
     help: flags.help({char: 'h'}),
     input: flags.string({char: 'i', required: true}),
     output: flags.string({char: 'o', required: true}),
+    logLevel: flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']})
   }
 
   async run() {
     const {flags} = this.parse(JfrogXray2HDF)
-
-    const converter = new Mapper(fs.readFileSync(flags.input, 'utf-8'))
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+    const logger = createWinstonLogger('JFrogXray2HDF', flags.logLevel)
+    // Read Data
+    logger.verbose(`Reading XRay Scan: ${flags.input}`)
+    const inputDataText = fs.readFileSync(flags.input, 'utf-8')
+    
+    // Strip Extra .json from output filename
+    const fileName = checkSuffix(flags.output)
+    logger.verbose(`Output Filename: ${fileName}`)
+    
+    // Convert the data
+    const converter = new Mapper(inputDataText)
+    logger.info("Starting conversion from JFrog Xray to HDF")
+    const converted = converter.toHdf()
+    
+    // Write to file
+    logger.info(`Output File "${convertFullPathToFilename(fileName)}": ${getHDFSummary(converted)}`)
+    fs.writeFileSync(fileName, JSON.stringify(converted))
+    logger.verbose(`Converted HDF successfully written to ${fileName}`)
   }
 }
