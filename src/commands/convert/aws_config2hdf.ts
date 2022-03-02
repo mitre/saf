@@ -3,6 +3,7 @@ import fs from 'fs'
 import {AwsConfigMapper as Mapper} from '@mitre/hdf-converters'
 import {ExecJSON} from 'inspecjs'
 import {checkSuffix} from '../../utils/global'
+import {createWinstonLogger} from '../../utils/logging'
 
 export default class AWSConfig2HDF extends Command {
   static usage = 'convert:aws_config2hdf -a, --accessKeyId=accessKeyId -r, --region=region -s, --secretAccessKey=secretAccessKey -t, --sessionToken=sessionToken -o, --output=OUTPUT'
@@ -19,6 +20,7 @@ export default class AWSConfig2HDF extends Command {
     region: flags.string({char: 'r', required: true}),
     insecure: flags.boolean({char: 'i', required: false, default: false, description: 'Disable SSL verification, this is insecure.'}),
     output: flags.string({char: 'o', required: true}),
+    logLevel: flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
   // Refs may not be defined if no resources were found
@@ -45,7 +47,9 @@ export default class AWSConfig2HDF extends Command {
 
   async run() {
     const {flags} = this.parse(AWSConfig2HDF)
+    const logger = createWinstonLogger('aws_config2hdf', flags.logLevel)
 
+    logger.info('Starting conversion from AWS Config to HDF')
     const converter = flags.accessKeyId && flags.secretAccessKey ? new Mapper({
       credentials: {
         accessKeyId: flags.accessKeyId || '',
@@ -55,6 +59,10 @@ export default class AWSConfig2HDF extends Command {
       region: flags.region,
     }, !flags.insecure) : new Mapper({region: flags.region}, !flags.insecure)
 
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(this.ensureRefs(await converter.toHdf())))
+    const converted = JSON.stringify(this.ensureRefs(await converter.toHdf()))
+    logger.info('Converted AWS Config to HDF')
+    logger.info(`Writing HDF to: ${checkSuffix(flags.output)}`)
+    fs.writeFileSync(checkSuffix(flags.output), converted)
+    logger.verbose(`HDF successfully written to ${checkSuffix(flags.output)}`)
   }
 }
