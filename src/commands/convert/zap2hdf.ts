@@ -38,6 +38,6 @@ export default class Zap2HDF extends Command {
     // Write to file
     logger.info(`Output File "${convertFullPathToFilename(fileName)}": ${getHDFSummary(converted)}`)
     fs.writeFileSync(fileName, JSON.stringify(converted))
-    logger.verbose(`Converted HDF successfully written to ${fileName}`)
+    logger.verbose(`HDF successfully written to ${fileName}`)
   }
 }

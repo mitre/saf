@@ -6,6 +6,7 @@ import ObjectsToCsv from 'objects-to-csv'
 import {ControlSetRows} from '../../types/csv'
 import {convertRow, csvExportFields} from '../../utils/csv'
 import {convertFullPathToFilename} from '../../utils/global'
+import {createWinstonLogger} from '../../utils/logging'
 
 export default class HDF2CSV extends Command {
   static usage = 'hdf2csv -i, --input <INPUT-JSON> -o, --output <OUTPUT-CSV> -f, --fields <CSV Fields>'
@@ -18,6 +19,7 @@ export default class HDF2CSV extends Command {
     output: flags.string({char: 'o', required: true, description: 'Output CSV file'}),
     fields: flags.string({char: 'f', required: false, default: csvExportFields.join(','), description: 'Fields to include in output CSV, separated by commas'}),
     noTruncate: flags.boolean({char: 't', required: false, default: false, description: "Don't truncate fields longer than 32,767 characters (the cell limit in Excel)"}),
+    logLevel: flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
   static examples = ['saf convert:hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"']
@@ -29,9 +31,15 @@ export default class HDF2CSV extends Command {
 
   async run() {
     const {flags} = this.parse(HDF2CSV)
+    const logger = createWinstonLogger('asff2hdf', flags.logLevel)
+
+    // Read data
+    logger.verbose(`Reading HDF file: ${flags.input}`)
     const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf-8')))
+    logger.verbose(`Output Filename: ${flags.output}`)
 
     // Convert all controls from a file to ControlSetRows
+    logger.info('Starting conversion from HDF to CSV')
     let rows: ControlSetRows = this.convertRows(contextualizedEvaluation, convertFullPathToFilename(flags.input), flags.fields.split(','))
     rows = rows.map((row, index) => {
       const cleanedRow: Record<string, string> = {}
@@ -52,5 +60,6 @@ export default class HDF2CSV extends Command {
       return cleanedRow
     })
     await new ObjectsToCsv(rows).toDisk(flags.output)
+    logger.info(`CSV data successfully written to ${flags.output}`)
   }
 }

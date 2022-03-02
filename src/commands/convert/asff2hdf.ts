@@ -1,8 +1,8 @@
 import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import {ASFFMapper as Mapper} from '@mitre/hdf-converters'
-import {checkSuffix} from '../../utils/global'
-import {createWinstonLogger} from '../../utils/logging'
+import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
+import {createWinstonLogger, getHDFSummary} from '../../utils/logging'
 
 export default class ASFF2HDF extends Command {
   static usage = 'convert:asff2hdf -i <asff-finding-json> [--securityhub <standard-1-json> ... <standard-n-json>] -o <hdf-scan-results-json>'
@@ -29,14 +29,22 @@ export default class ASFF2HDF extends Command {
       securityhub = flags.securityhub.map(file => fs.readFileSync(file, 'utf-8'))
     }
 
+    // Read Data
     logger.verbose(`Reading ASFF file: ${flags.input}`)
-    const inputData = fs.readFileSync(flags.input, 'utf-8')
+    const inputDataText = fs.readFileSync(flags.input, 'utf-8')
+
+    // Strip Extra .json from output filename
+    const fileName = checkSuffix(flags.output)
+    logger.verbose(`Output Filename: ${fileName}`)
+
+    // Convert the data
+    const converter = new Mapper(inputDataText, securityhub)
     logger.info('Starting conversion from ASFF to HDF')
-    const converter = new Mapper(inputData, securityhub)
-    const converted = JSON.stringify(converter.toHdf())
-    logger.info('Converted ASFF to HDF')
-    logger.info(`Writing HDF to: ${checkSuffix(flags.output)}`)
-    fs.writeFileSync(checkSuffix(flags.output), converted)
-    logger.verbose(`HDF successfully written to ${checkSuffix(flags.output)}`)
+    const converted = converter.toHdf()
+
+    // Write to file
+    logger.info(`Output File "${convertFullPathToFilename(fileName)}": ${getHDFSummary(converted)}`)
+    fs.writeFileSync(fileName, JSON.stringify(converted))
+    logger.verbose(`HDF successfully written to ${fileName}`)
   }
 }

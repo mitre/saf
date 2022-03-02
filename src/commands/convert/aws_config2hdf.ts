@@ -2,8 +2,8 @@ import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import {AwsConfigMapper as Mapper} from '@mitre/hdf-converters'
 import {ExecJSON} from 'inspecjs'
-import {checkSuffix} from '../../utils/global'
-import {createWinstonLogger} from '../../utils/logging'
+import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
+import {createWinstonLogger, getHDFSummary} from '../../utils/logging'
 
 export default class AWSConfig2HDF extends Command {
   static usage = 'convert:aws_config2hdf -a, --accessKeyId=accessKeyId -r, --region=region -s, --secretAccessKey=secretAccessKey -t, --sessionToken=sessionToken -o, --output=OUTPUT'
@@ -49,7 +49,11 @@ export default class AWSConfig2HDF extends Command {
     const {flags} = this.parse(AWSConfig2HDF)
     const logger = createWinstonLogger('aws_config2hdf', flags.logLevel)
 
-    logger.info('Starting conversion from AWS Config to HDF')
+    // Strip Extra .json from output filename
+    const fileName = checkSuffix(flags.output)
+    logger.verbose(`Output Filename: ${fileName}`)
+
+    // Convert the data
     const converter = flags.accessKeyId && flags.secretAccessKey ? new Mapper({
       credentials: {
         accessKeyId: flags.accessKeyId || '',
@@ -58,11 +62,14 @@ export default class AWSConfig2HDF extends Command {
       },
       region: flags.region,
     }, !flags.insecure) : new Mapper({region: flags.region}, !flags.insecure)
+    logger.info('Starting conversion from AWS Config to HDF')
 
-    const converted = JSON.stringify(this.ensureRefs(await converter.toHdf()))
+    const converted = this.ensureRefs(await converter.toHdf())
     logger.info('Converted AWS Config to HDF')
-    logger.info(`Writing HDF to: ${checkSuffix(flags.output)}`)
-    fs.writeFileSync(checkSuffix(flags.output), converted)
-    logger.verbose(`HDF successfully written to ${checkSuffix(flags.output)}`)
+
+    // Write to file
+    logger.info(`Output File "${convertFullPathToFilename(fileName)}": ${getHDFSummary(converted)}`)
+    fs.writeFileSync(fileName, JSON.stringify(converted))
+    logger.verbose(`HDF successfully written to ${fileName}`)
   }
 }

@@ -7,6 +7,7 @@ import AWS from 'aws-sdk'
 import {checkSuffix, sliceIntoChunks} from '../../utils/global'
 import _ from 'lodash'
 import {BatchImportFindingsRequestFindingList} from 'aws-sdk/clients/securityhub'
+import {createWinstonLogger} from '../../utils/logging'
 
 export default class HDF2ASFF extends Command {
   static usage = 'convert:hdf2asff -i, --input=HDF-JSON -o, --output=ASFF-JSON-Folder -a, --accountId=accountId -r, --region=region -t, --target=target -u, --upload'
@@ -25,29 +26,40 @@ export default class HDF2ASFF extends Command {
     output: flags.string({char: 'o', required: false, description: 'Output ASFF JSON Folder'}),
     insecure: flags.boolean({char: 'I', required: false, default: false, description: 'Disable SSL verification, this is insecure.'}),
     certificate: flags.string({char: 'C', required: false, description: 'Trusted signing certificate file'}),
+    logLevel: flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
   async run() {
     const {flags} = this.parse(HDF2ASFF)
+    const logger = createWinstonLogger('hdf2asff', flags.logLevel)
 
-    const converted = new Mapper(JSON.parse(fs.readFileSync(flags.input, 'utf-8')), {
+    // Read Data
+    logger.verbose(`Reading HDF file: ${flags.input}`)
+    const inputDataText = fs.readFileSync(flags.input, 'utf-8')
+
+    const converter = new Mapper(JSON.parse(inputDataText), {
       awsAccountId: flags.accountId,
       region: flags.region,
       target: flags.target,
       input: flags.input,
-    }).toAsff()
+    })
+    logger.info('Starting conversion from HDF to ASFF')
+    const converted = converter.toAsff()
 
     if (flags.output) {
       const convertedSlices = sliceIntoChunks(converted, 100)
       const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
       fs.mkdirSync(outputFolder)
+      logger.verbose(`Created output folder: ${outputFolder}`)
       if (convertedSlices.length === 1) {
         const outfilePath = path.join(outputFolder, checkSuffix(flags.output))
         fs.writeFileSync(outfilePath, JSON.stringify(convertedSlices[0]))
+        logger.verbose(`ASFF successfully written to ${outfilePath}`)
       } else {
         convertedSlices.forEach((slice, index) => {
           const outfilePath = path.join(outputFolder, `${checkSuffix(flags.output || '').replace('.json', '')}.p${index}.json`)
           fs.writeFileSync(outfilePath, JSON.stringify(slice))
+          logger.verbose(`ASFF successfully written to ${outfilePath}`)
         })
       }
     }
@@ -57,7 +69,7 @@ export default class HDF2ASFF extends Command {
       const convertedSlices = sliceIntoChunks(converted, 100)
 
       if (flags.insecure) {
-        console.warn('WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate')
+        logger.warn('WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate')
       }
 
       const clientOptions: AWS.SecurityHub.ClientConfiguration = {
@@ -77,12 +89,12 @@ export default class HDF2ASFF extends Command {
         convertedSlices.map(async chunk => {
           try {
             const result = await client.batchImportFindings({Findings: chunk}).promise()
-            console.log(
+            logger.info(
               `Uploaded ${chunk.length} controls. Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
             )
             if (result.FailedFindings?.length) {
               console.error(`Failed to upload ${result.FailedCount} Findings`)
-              console.log(result.FailedFindings)
+              logger.info(result.FailedFindings)
             }
           } catch (error) {
             if (typeof error === 'object' && _.get(error, 'code', false) === 'NetworkingError') {
@@ -96,13 +108,13 @@ export default class HDF2ASFF extends Command {
         if (profileInfoFinding) {
           profileInfoFinding.UpdatedAt = new Date().toISOString()
           const result = await client.batchImportFindings({Findings: [profileInfoFinding as unknown] as BatchImportFindingsRequestFindingList}).promise()
-          console.info(`Statistics: ${profileInfoFinding.Description}`)
-          console.info(
+          logger.info(`Statistics: ${profileInfoFinding.Description}`)
+          logger.info(
             `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
           )
           if (result.FailedFindings?.length) {
             console.error(`Failed to upload ${result.FailedCount} Results Set Info Finding`)
-            console.log(result.FailedFindings)
+            logger.info(result.FailedFindings)
           }
         }
       })

@@ -46,7 +46,7 @@ export default class Snyk2HDF extends Command {
       logger.verbose(`Output Filename: ${fileName}`)
       logger.info(`Output File "${convertFullPathToFilename(fileName)}": ${getHDFSummary(converted)}`)
       fs.writeFileSync(fileName, JSON.stringify(converted))
-      logger.verbose(`Converted HDF successfully written to ${fileName}`)
+      logger.verbose(`HDF successfully written to ${fileName}`)
     }
   }
 }
