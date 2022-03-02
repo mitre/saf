@@ -40,7 +40,7 @@ export default class HDF2CKL extends Command {
     // Strip Extra .json from output filename
     const fileName = flags.output
     logger.verbose(`Output Filename: ${fileName}`)
-    
+
     const profileName = contextualizedEvaluation.data.profiles[0].name
     const controls = contextualizedEvaluation.contains.flatMap(profile => profile.contains) || []
     let cklData = {}
