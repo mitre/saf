@@ -3,7 +3,7 @@ import fs from 'fs'
 import {NessusResults as Mapper} from '@mitre/hdf-converters'
 import _ from 'lodash'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
-import { createWinstonLogger, getHDFSummary } from '../../utils/logging'
+import {createWinstonLogger, getHDFSummary} from '../../utils/logging'
 
 export default class Nessus2HDF extends Command {
   static usage = 'convert:nessus2hdf -i, --input=XML -o, --output=OUTPUT'
@@ -16,7 +16,7 @@ export default class Nessus2HDF extends Command {
     help: flags.help({char: 'h'}),
     input: flags.string({char: 'i', required: true}),
     output: flags.string({char: 'o', required: true}),
-    logLevel: flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']})
+    logLevel: flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
   async run() {
@@ -28,11 +28,10 @@ export default class Nessus2HDF extends Command {
 
     // Strip Extra .json from output filename
     const fileName = checkSuffix(flags.output)
-    
 
     // Convert the data
     const converter = new Mapper(inputDataText)
-    logger.info("Starting conversion from Nessus to HDF")
+    logger.info('Starting conversion from Nessus to HDF')
     const result = converter.toHdf()
     if (Array.isArray(result)) {
       result.forEach((element, idx) => {

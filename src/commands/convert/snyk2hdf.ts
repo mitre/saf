@@ -3,7 +3,7 @@ import fs from 'fs'
 import {SnykResults as Mapper} from '@mitre/hdf-converters'
 import _ from 'lodash'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
-import { createWinstonLogger, getHDFSummary } from '../../utils/logging'
+import {createWinstonLogger, getHDFSummary} from '../../utils/logging'
 
 export default class Snyk2HDF extends Command {
   static usage = 'convert:snyk2hdf -i, --input=JSON -o, --output=OUTPUT'
@@ -16,7 +16,7 @@ export default class Snyk2HDF extends Command {
     help: flags.help({char: 'h'}),
     input: flags.string({char: 'i', required: true}),
     output: flags.string({char: 'o', required: true}),
-    logLevel: flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']})
+    logLevel: flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
   async run() {
@@ -26,14 +26,12 @@ export default class Snyk2HDF extends Command {
     // Read Data
     logger.verbose(`Reading Snyk Scan: ${flags.input}`)
     const inputDataText = fs.readFileSync(flags.input, 'utf-8')
-    
 
-    
     // Convert the data
     const converter = new Mapper(inputDataText)
-    logger.info("Starting conversion from Snyk to HDF")
+    logger.info('Starting conversion from Snyk to HDF')
     const converted = converter.toHdf()
-    
+
     // Write to file
     if (Array.isArray(converted)) {
       for (const element of converted) {

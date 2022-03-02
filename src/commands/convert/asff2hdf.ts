@@ -2,7 +2,7 @@ import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import {ASFFMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
-import { createWinstonLogger } from '../../utils/logging'
+import {createWinstonLogger} from '../../utils/logging'
 
 export default class ASFF2HDF extends Command {
   static usage = 'convert:asff2hdf -i <asff-finding-json> [--securityhub <standard-1-json> ... <standard-n-json>] -o <hdf-scan-results-json>'
@@ -17,7 +17,7 @@ export default class ASFF2HDF extends Command {
     input: flags.string({char: 'i', required: true}),
     securityhub: flags.string({required: false, multiple: true}),
     output: flags.string({char: 'o', required: true}),
-    logLevel: flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']})
+    logLevel: flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
   async run() {
@@ -28,7 +28,7 @@ export default class ASFF2HDF extends Command {
       logger.verbose('Reading ASFF standards')
       securityhub = flags.securityhub.map(file => fs.readFileSync(file, 'utf-8'))
     }
-    
+
     logger.verbose(`Reading ASFF file: ${flags.input}`)
     const inputData = fs.readFileSync(flags.input, 'utf-8')
     logger.info('Starting conversion from ASFF to HDF')

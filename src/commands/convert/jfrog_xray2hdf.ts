@@ -2,7 +2,7 @@ import {Command, flags} from '@oclif/command'
 import fs from 'fs'
 import {JfrogXrayMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
-import { createWinstonLogger, getHDFSummary } from '../../utils/logging'
+import {createWinstonLogger, getHDFSummary} from '../../utils/logging'
 
 export default class JfrogXray2HDF extends Command {
   static usage = 'convert:jfrog_xray2hdf -i, --input=JSON -o, --output=OUTPUT'
@@ -15,7 +15,7 @@ export default class JfrogXray2HDF extends Command {
     help: flags.help({char: 'h'}),
     input: flags.string({char: 'i', required: true}),
     output: flags.string({char: 'o', required: true}),
-    logLevel: flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']})
+    logLevel: flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
   async run() {
@@ -24,16 +24,16 @@ export default class JfrogXray2HDF extends Command {
     // Read Data
     logger.verbose(`Reading XRay Scan: ${flags.input}`)
     const inputDataText = fs.readFileSync(flags.input, 'utf-8')
-    
+
     // Strip Extra .json from output filename
     const fileName = checkSuffix(flags.output)
     logger.verbose(`Output Filename: ${fileName}`)
-    
+
     // Convert the data
     const converter = new Mapper(inputDataText)
-    logger.info("Starting conversion from JFrog Xray to HDF")
+    logger.info('Starting conversion from JFrog Xray to HDF')
     const converted = converter.toHdf()
-    
+
     // Write to file
     logger.info(`Output File "${convertFullPathToFilename(fileName)}": ${getHDFSummary(converted)}`)
     fs.writeFileSync(fileName, JSON.stringify(converted))
