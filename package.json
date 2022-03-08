@@ -7,8 +7,8 @@
   "bugs": "https://github.com/mitre/saf/issues",
   "dependencies": {
     "@aws-sdk/client-config-service": "^3.53.0",
-    "@mitre/hdf-converters": "^2.6.13",
-    "@mitre/heimdall-lite": "^2.6.10",
+    "@mitre/hdf-converters": "^2.6.14",
+    "@mitre/heimdall-lite": "^2.6.14",
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/dev-cli": "^1",
@@ -48,7 +48,7 @@
     "tslib": "^2",
     "typescript": "^4.5",
     "uuid": "^8.3.2",
-    "winston": "^3.4.0",
+    "winston": "^3.6.0",
     "xlsx-populate": "^1.21.0",
     "xml2js": "^0.4.23",
     "yaml": "^1.10.2"
