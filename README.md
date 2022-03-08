@@ -320,6 +320,28 @@ convert:hdf2csv             Translate a Heimdall Data Format JSON file into a
     saf convert:hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"
 ```
 
+##### HDF to Splunk
+
+**Notice**: HDF to Splunk requires configuration on the Splunk server. See [Splunk Configuration](https://github.com/mitre/saf/wiki/Splunk-Configuration)
+
+```
+convert:hdf2splunk           Translate and upload a Heimdall Data Format JSON file into a Splunk server
+
+  OPTIONS
+    -H, --host=host                         (required) Splunk Hostname or IP
+    -I, --index=index                       (required) Splunk index to import HDF data into
+    -L, --logLevel=info|warn|debug|verbose  [default: info]
+    -P, --port=port                         [default: 8089] Splunk management port (also known as the Universal Forwarder port)
+    -h, --help                              show CLI help
+    -i, --input=input                       (required) Input HDF file
+    -p, --password=password                 (required) Your Splunk password
+    -s, --scheme=http|https                 [default: https] HTTP Scheme used for communication with splunk
+    -u, --username=username                 (required) Your Splunk username
+
+  EXAMPLE
+    saf convert:hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf
+```
+
 &nbsp;
 
 ---
