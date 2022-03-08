@@ -322,7 +322,7 @@ convert:hdf2csv             Translate a Heimdall Data Format JSON file into a
 
 ##### HDF to Splunk
 
-**Notice**: HDF to Splunk requires configuration on the Splunk server. See [Splunk Configuration](https://github.com/mitre/saf/wiki/Splunk-Configuration)
+**Notice**: HDF to Splunk requires configuration on the Splunk server. See [Splunk Configuration](https://github.com/mitre/saf/wiki/Splunk-Configuration).
 
 ```
 convert:hdf2splunk           Translate and upload a Heimdall Data Format JSON file into a Splunk server
