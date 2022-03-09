@@ -16,7 +16,6 @@ export default class ASFF2HDF extends BaseCommand {
 
   static flags = {
     ...BaseCommand.flags,
-    input: flags.string({char: 'i', required: true}),
     securityhub: flags.string({required: false, multiple: true}),
   }
 
@@ -26,7 +25,7 @@ export default class ASFF2HDF extends BaseCommand {
     let securityhub
     if (flags.securityhub) {
       this.logger.verbose('Reading ASFF standards')
-      securityhub = flags.securityhub.map(file => fs.readFileSync(file, 'utf-8'))
+      securityhub = flags.securityhub.map((file: fs.PathOrFileDescriptor) => fs.readFileSync(file, 'utf-8'))
     }
 
     // Read Data

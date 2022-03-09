@@ -18,7 +18,6 @@ export default class HDF2CKL extends BaseCommand {
 
   static flags = {
     ...BaseCommand.flags,
-    input: flags.string({char: 'i', required: true, description: 'Input HDF file'}),
     metadata: flags.string({char: 'm', required: false, description: 'Metadata JSON file, generate one with "saf generate:ckl_metadata"'}),
     hostname: flags.string({char: 'H', required: false, description: 'Hostname for CKL metadata'}),
     fqdn: flags.string({char: 'F', required: false, description: 'FQDN for CKL metadata'}),

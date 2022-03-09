@@ -6,6 +6,7 @@ import {AwsConfigMapper as Mapper} from '@mitre/hdf-converters'
 import {ExecJSON} from 'inspecjs'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import {getHDFSummary} from '../../utils/logging'
+import _ from 'lodash'
 
 export default class AWSConfig2HDF extends BaseCommand {
   static usage = 'convert:aws_config2hdf -a, --accessKeyId=accessKeyId -r, --region=region -s, --secretAccessKey=secretAccessKey -t, --sessionToken=sessionToken -o, --output=OUTPUT'
@@ -16,6 +17,7 @@ export default class AWSConfig2HDF extends BaseCommand {
 
   static flags = {
     ...BaseCommand.flags,
+    ..._.omit(BaseCommand.flags, 'input'),
     accessKeyId: flags.string({char: 'a', required: false}),
     secretAccessKey: flags.string({char: 's', required: false}),
     sessionToken: flags.string({char: 't', required: false}),

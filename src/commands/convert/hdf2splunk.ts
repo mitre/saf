@@ -5,7 +5,7 @@ import {FromHDFToSplunkMapper} from '@mitre/hdf-converters'
 import {convertFullPathToFilename} from '../../utils/global'
 import fs from 'fs'
 import _ from 'lodash'
-import {createWinstonLogger, getHDFSummary} from '../../utils/logging'
+import {getHDFSummary} from '../../utils/logging'
 
 export default class HDF2Splunk extends BaseCommand {
   static usage = 'hdf2splunk -i, --input=FILE -H, --host -P, --port -p, --protocol -t, --token -i, --index'
@@ -15,7 +15,6 @@ export default class HDF2Splunk extends BaseCommand {
   static flags = {
     ...BaseCommand.flags,
     ..._.omit(BaseCommand.flags, 'output'),
-    input: flags.string({char: 'i', required: true, description: 'Input HDF file'}),
     host: flags.string({char: 'H', required: true, description: 'Splunk Hostname or IP'}),
     port: flags.integer({char: 'P', required: false, description: 'Splunk management port (also known as the Universal Forwarder port)', default: 8089}),
     scheme: flags.string({char: 's', required: false, description: 'HTTP Scheme used for communication with splunk', default: 'https', options: ['http', 'https']}),
@@ -30,7 +29,7 @@ export default class HDF2Splunk extends BaseCommand {
   async run() {
     const flags = this.parsedFlags as OutputFlags<typeof HDF2Splunk.flags>
     this.logger.warn('Please ensure the necessary configuration changes for your Splunk server have been configured to prevent data loss. See https://github.com/mitre/saf/wiki/Splunk-Configuration')
-    
+
     // Read data
     this.logger.verbose(`Reading HDF file: ${flags.input}`)
     const inputFile = JSON.parse(fs.readFileSync(flags.input, 'utf-8'))

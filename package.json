@@ -12,6 +12,7 @@
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/dev-cli": "^1",
+    "@oclif/parser": "^3.8.7",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-warn-if-update-available": "^2.0.3",
     "@oclif/test": "^1",

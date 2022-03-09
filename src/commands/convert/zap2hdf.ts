@@ -15,7 +15,6 @@ export default class Zap2HDF extends BaseCommand {
 
   static flags = {
     ...BaseCommand.flags,
-    input: flags.string({char: 'i', required: true}),
     name: flags.string({char: 'n', required: true}),
   }
 

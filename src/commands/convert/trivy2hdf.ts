@@ -15,7 +15,6 @@ export default class Trivy2HDF extends BaseCommand {
 
   static flags = {
     ...BaseCommand.flags,
-    input: flags.string({char: 'i', required: true}),
   }
 
   async run() {

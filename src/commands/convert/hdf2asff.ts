@@ -21,7 +21,6 @@ export default class HDF2ASFF extends BaseCommand {
     ...BaseCommand.flags,
     accountId: flags.string({char: 'a', required: true, description: 'AWS Account ID'}),
     region: flags.string({char: 'r', required: true, description: 'SecurityHub Region'}),
-    input: flags.string({char: 'i', required: true, description: 'Input HDF JSON File'}),
     target: flags.string({char: 't', required: true, description: 'Unique name for target to track findings across time'}),
     upload: flags.boolean({char: 'u', required: false, description: 'Upload findings to AWS Security Hub'}),
     insecure: flags.boolean({char: 'I', required: false, default: false, description: 'Disable SSL verification, this is insecure.'}),

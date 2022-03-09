@@ -16,7 +16,6 @@ export default class HDF2CSV extends BaseCommand {
 
   static flags = {
     ...BaseCommand.flags,
-    input: flags.string({char: 'i', required: true, description: 'Input HDF file'}),
     fields: flags.string({char: 'f', required: false, default: csvExportFields.join(','), description: 'Fields to include in output CSV, separated by commas'}),
     noTruncate: flags.boolean({char: 't', required: false, default: false, description: "Don't truncate fields longer than 32,767 characters (the cell limit in Excel)"}),
   }

@@ -14,7 +14,6 @@ export default class HDF2Condensed extends BaseCommand {
 
   static flags = {
     ...BaseCommand.flags,
-    input: flags.string({char: 'i', required: true, description: 'Input HDF file'}),
   }
 
   static examples = ['saf convert:hdf2condensed -i rhel7-results.json -o rhel7-condensed.json']

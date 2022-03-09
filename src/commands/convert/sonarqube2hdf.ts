@@ -5,6 +5,7 @@ import fs from 'fs'
 import {SonarQubeResults as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import {getHDFSummary} from '../../utils/logging'
+import _ from 'lodash'
 
 export default class Sonarqube2HDF extends BaseCommand {
   static usage = 'convert:sonarqube2hdf -n <sonar_project_key> -u <http://your.sonar.instance:9000> --auth <your-sonar-api-key> -o <hdf-scan-results-json>'
@@ -15,6 +16,7 @@ export default class Sonarqube2HDF extends BaseCommand {
 
   static flags = {
     ...BaseCommand.flags,
+    ..._.omit(BaseCommand.flags, 'input'),
     auth: flags.string({char: 'a', required: true}),
     projectKey: flags.string({char: 'n', required: true}),
     url: flags.string({char: 'u', required: true}),
