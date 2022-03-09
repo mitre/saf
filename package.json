@@ -1,14 +1,14 @@
 {
   "name": "@mitre/saf",
   "description": "The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) brings together applications, techniques, libraries, and tools developed by MITRE and the security community to streamline security automation for systems and DevOps pipelines",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "author": "The MITRE Security Automation Framework",
   "bin": "./bin/run",
   "bugs": "https://github.com/mitre/saf/issues",
   "dependencies": {
     "@aws-sdk/client-config-service": "^3.53.0",
-    "@mitre/hdf-converters": "^2.6.13",
-    "@mitre/heimdall-lite": "^2.6.10",
+    "@mitre/hdf-converters": "^2.6.14",
+    "@mitre/heimdall-lite": "^2.6.14",
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/dev-cli": "^1",
