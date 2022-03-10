@@ -348,6 +348,24 @@ convert:hdf2splunk           Translate and upload a Heimdall Data Format JSON fi
 
 ### To HDF
 
+##### * to HDF
+
+```
+convert                  Translate an unknown filetype into a Heimdall Data Format JSON
+
+OPTIONS
+  -h, --help           show CLI help
+  -i, --input=input    (required) Input file
+  -o, --output=output  (required)
+
+EXAMPLES
+  saf convert -i burpsuite_results.xml -o output-hdf-name.json
+  saf convert -i check_results_details_report.xml -o output-hdf-name.json
+  saf convert -i xray_results.json -o output-hdf-name.json
+  saf convert -i nessus_results.xml -o output-hdf-name.json
+```
+
+
 ##### ASFF to HDF
 
 ```
