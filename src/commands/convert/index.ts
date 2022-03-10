@@ -62,7 +62,7 @@ export default class Convert extends Command {
     const {flags} = this.parse(Convert)
     const inputData = fs.readFileSync(flags.input, 'utf-8')
     const filename = convertFullPathToFilename(flags.input)
-    const typeGuess = await this.guessType({
+    const typeGuess = this.guessType({
       data: inputData,
       filename: convertFullPathToFilename(flags.input),
     })
@@ -101,10 +101,10 @@ export default class Convert extends Command {
     }
   }
 
-  async guessType(guessOptions: {
+  guessType(guessOptions: {
     data: string;
     filename: string;
-  }): Promise<string> {
+  }): string {
     try {
       const parsed = JSON.parse(guessOptions.data)
       const object = Array.isArray(parsed) ? parsed[0] : parsed
