@@ -12,6 +12,7 @@
     "unicorn/better-regex": "off",
     "unicorn/no-zero-fractions": "off",
     "unicorn/no-array-for-each": "off",
+    "unicorn/no-array-reduce": "off",
     "unicorn/explicit-length-check": "off",
     "no-control-regex": "off",
     "max-nested-callbacks": "off",
