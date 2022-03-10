@@ -79,15 +79,15 @@ export function severityStringToImpact(string: string): number {
     return 0.3
   }
 
-  if (string.match(/med(ium)?|cat(egory)?\s*(ii|2)/)?.length) {
+  if (string.match(/med(ium)?|cat(egory)?\s*(ii|2)/i)?.length) {
     return 0.5
   }
 
-  if (string.match(/high|cat(egory)?\s*(i|1)/)?.length) {
+  if (string.match(/high|cat(egory)?\s*(i|1)/i)?.length) {
     return 0.7
   }
 
-  if (string.match(/crit(ical)?|severe/)?.length) {
+  if (string.match(/crit(ical)?|severe/i)?.length) {
     return 1.0
   }
 
