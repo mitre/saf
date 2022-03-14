@@ -1,6 +1,5 @@
 import BaseCommand from '../../utils/base-command'
 import {OutputFlags} from '@oclif/parser'
-import {flags} from '@oclif/command'
 import fs from 'fs'
 import {DBProtectMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'

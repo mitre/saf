@@ -16,6 +16,7 @@ export default class Sonarqube2HDF extends BaseCommand {
 
   static flags = {
     ...BaseCommand.flags,
+    input: flags.string({hidden: true}),
     ..._.omit(BaseCommand.flags, 'input'),
     auth: flags.string({char: 'a', required: true}),
     projectKey: flags.string({char: 'n', required: true}),

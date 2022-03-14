@@ -14,6 +14,8 @@ export default class HDF2Splunk extends BaseCommand {
 
   static flags = {
     ...BaseCommand.flags,
+    // TODO: resolve the ommitted flags as oclif adds functionality
+    output: flags.string({hidden: true}),
     ..._.omit(BaseCommand.flags, 'output'),
     host: flags.string({char: 'H', required: true, description: 'Splunk Hostname or IP'}),
     port: flags.integer({char: 'P', required: false, description: 'Splunk management port (also known as the Universal Forwarder port)', default: 8089}),

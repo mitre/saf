@@ -1,6 +1,5 @@
 import BaseCommand from '../../utils/base-command'
 import {OutputFlags} from '@oclif/parser'
-import {flags} from '@oclif/command'
 import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import fs from 'fs'
 import {calculateCompliance, extractControlSummariesBySeverity, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'

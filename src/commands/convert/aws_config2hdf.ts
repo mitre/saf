@@ -17,6 +17,7 @@ export default class AWSConfig2HDF extends BaseCommand {
 
   static flags = {
     ...BaseCommand.flags,
+    input: flags.string({hidden: true}),
     ..._.omit(BaseCommand.flags, 'input'),
     accessKeyId: flags.string({char: 'a', required: false}),
     secretAccessKey: flags.string({char: 's', required: false}),

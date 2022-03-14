@@ -1,6 +1,5 @@
 import BaseCommand from '../../utils/base-command'
 import {OutputFlags} from '@oclif/parser'
-import {flags} from '@oclif/command'
 import fs from 'fs'
 import {JfrogXrayMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
@@ -19,10 +18,11 @@ export class JfrogXray2HDF extends BaseCommand {
 
   async run() {
     const flags = this.parsedFlags as OutputFlags<typeof JfrogXray2HDF.flags>
+    console.log('From Jfrog RUN function ' + JfrogXray2HDF.inputFileData)
 
     // Read Data
-    this.logger.verbose(`Reading XRay Scan: ${flags.input}`)
-    const inputDataText = fs.readFileSync(flags.input, 'utf-8')
+    this.logger.verbose('Reading XRay Scan')
+    const inputDataText = JfrogXray2HDF.inputFileData || fs.readFileSync(flags.input, 'utf-8')
 
     // Strip Extra .json from output filename
     const fileName = checkSuffix(flags.output)

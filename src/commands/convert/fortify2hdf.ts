@@ -1,6 +1,5 @@
 import BaseCommand from '../../utils/base-command'
 import {OutputFlags} from '@oclif/parser'
-import {flags} from '@oclif/command'
 import * as fs from 'fs'
 import {FortifyMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
