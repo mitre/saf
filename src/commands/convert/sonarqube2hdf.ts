@@ -1,4 +1,4 @@
-import BaseCommand from '../../utils/base-command'
+import BaseCommand, {omitFlags} from '../../utils/base-command'
 import {OutputFlags} from '@oclif/parser'
 import {flags} from '@oclif/command'
 import fs from 'fs'
@@ -15,9 +15,7 @@ export default class Sonarqube2HDF extends BaseCommand {
   static examples = ['saf convert:sonarqube2hdf -n sonar_project_key -u http://sonar:9000 --auth YOUR_API_KEY -o scan_results.json']
 
   static flags = {
-    ...BaseCommand.flags,
-    input: flags.string({hidden: true}),
-    ..._.omit(BaseCommand.flags, 'input'),
+    ...omitFlags(['input']),
     auth: flags.string({char: 'a', required: true}),
     projectKey: flags.string({char: 'n', required: true}),
     url: flags.string({char: 'u', required: true}),
