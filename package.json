@@ -9,12 +9,11 @@
     "@aws-sdk/client-config-service": "^3.53.0",
     "@mitre/hdf-converters": "^2.6.14",
     "@mitre/heimdall-lite": "^2.6.14",
-    "@oclif/command": "^1",
-    "@oclif/config": "^1",
-    "@oclif/dev-cli": "^1",
-    "@oclif/plugin-help": "^5",
+    "@oclif/core": "^1.6.0",
+    "@oclif/plugin-version": "^1",
+    "@oclif/plugin-plugins": "^2.0.1",
     "@oclif/plugin-warn-if-update-available": "^2.0.3",
-    "@oclif/test": "^1",
+    "@oclif/test": "^2.1.0",
     "@types/chai": "^4",
     "@types/express": "^4.17.13",
     "@types/flat": "^5.0.2",
@@ -42,6 +41,7 @@
     "moment": "^2.29.1",
     "mustache": "^4.2.0",
     "objects-to-csv": "^1.3.6",
+    "oclif": "^2",
     "open": "^8.4.0",
     "prompt-sync": "^4.1.6",
     "ts-node": "^10",
@@ -64,7 +64,7 @@
     "ts-mocha": "^9.0.2"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=12.0.0"
   },
   "files": [
     "/bin",
@@ -80,10 +80,14 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "oclif": {
+    "main": "lib/index.js",
     "commands": "./lib/commands",
+    "additionalHelpFlags": ["-h"],
+    "additionalVersionFlags": ["-v"],
     "bin": "saf",
     "plugins": [
-      "@oclif/plugin-help",
+      "@oclif/plugin-version",
+      "@oclif/plugin-plugins",
       "@oclif/plugin-warn-if-update-available"
     ],
     "macos": {
@@ -94,6 +98,7 @@
       "registry": "https://www.npmjs.com/package/@mitre/saf",
       "message": "<%= config.name %> update available from <%= chalk.greenBright(config.version) %> to <%= chalk.greenBright(latest) %>."
     },
+    "topicSeparator": ":",
     "topics": {
       "convert": {
         "description": "[Normalize]    Convert security results from all your security tools between common data formats"
@@ -120,9 +125,9 @@
     "lint": "eslint \"**/*.ts\" --fix",
     "lint:ci": "eslint \"**/*.ts\" --max-warnings 0",
     "postpack": "rm -f oclif.manifest.json",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
+    "prepack": "rm -rf lib && tsc -b && oclif manifest && oclif readme",
     "test": "ts-mocha --timeout 8000 --forbid-only \"test/**/*.test.ts\"",
-    "version": "oclif-dev readme && git add README.md"
+    "version": "oclif readme && git add README.md"
   },
   "types": "lib/index.d.ts"
 }

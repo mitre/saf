@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import {FromHDFToSplunkMapper} from '@mitre/hdf-converters'
 import {convertFullPathToFilename} from '../../utils/global'
 import fs from 'fs'
@@ -10,21 +10,21 @@ export default class HDF2Splunk extends Command {
   static description = 'Translate and upload a Heimdall Data Format JSON file into a Splunk server via its HTTP Event Collector'
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: true, description: 'Input HDF file'}),
-    host: flags.string({char: 'H', required: true, description: 'Splunk Hostname or IP'}),
-    port: flags.integer({char: 'P', required: false, description: 'Splunk management port (also known as the Universal Forwarder port)', default: 8089}),
-    scheme: flags.string({char: 's', required: false, description: 'HTTP Scheme used for communication with splunk', default: 'https', options: ['http', 'https']}),
-    username: flags.string({char: 'u', required: true, description: 'Your Splunk username'}),
-    password: flags.string({char: 'p', required: true, description: 'Your Splunk password'}),
-    index: flags.string({char: 'I', required: true, description: 'Splunk index to import HDF data into'}),
-    logLevel: flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true, description: 'Input HDF file'}),
+    host: Flags.string({char: 'H', required: true, description: 'Splunk Hostname or IP'}),
+    port: Flags.integer({char: 'P', required: false, description: 'Splunk management port (also known as the Universal Forwarder port)', default: 8089}),
+    scheme: Flags.string({char: 's', required: false, description: 'HTTP Scheme used for communication with splunk', default: 'https', options: ['http', 'https']}),
+    username: Flags.string({char: 'u', required: true, description: 'Your Splunk username'}),
+    password: Flags.string({char: 'p', required: true, description: 'Your Splunk password'}),
+    index: Flags.string({char: 'I', required: true, description: 'Splunk index to import HDF data into'}),
+    logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
   static examples = ['saf convert:hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf']
 
   async run() {
-    const {flags} = this.parse(HDF2Splunk)
+    const {flags} = await this.parse(HDF2Splunk)
     const logger = createWinstonLogger('hdf2splunk', flags.logLevel)
     logger.warn('Please ensure the necessary configuration changes for your Splunk server have been configured to prevent data loss. See https://github.com/mitre/saf/wiki/Splunk-Configuration')
     const inputFile = JSON.parse(fs.readFileSync(flags.input, 'utf-8'))

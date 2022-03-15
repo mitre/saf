@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import flat from 'flat'
 import YAML from 'yaml'
 import fs from 'fs'
@@ -14,14 +14,14 @@ export default class Threshold extends Command {
   static description = 'Validate the compliance and status counts of an HDF file'
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: true}),
-    templateInline: flags.string({char: 'T', required: false}),
-    templateFile: flags.string({char: 'F', required: false, description: 'Expected data template, generate one with "saf generate:threshold"'}),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true}),
+    templateInline: Flags.string({char: 'T', required: false}),
+    templateFile: Flags.string({char: 'F', required: false, description: 'Expected data template, generate one with "saf generate:threshold"'}),
   }
 
   async run() {
-    const {flags} = this.parse(Threshold)
+    const {flags} = await this.parse(Threshold)
     let thresholds: ThresholdValues = {}
     if (flags.templateInline) {
       // Need to do some processing to convert this into valid JSON

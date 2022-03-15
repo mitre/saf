@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {BurpSuiteMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
@@ -11,13 +11,13 @@ export default class Burpsuite2HDF extends Command {
   static examples = ['saf convert:burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json']
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: true}),
-    output: flags.string({char: 'o', required: true}),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true}),
+    output: Flags.string({char: 'o', required: true}),
   }
 
   async run() {
-    const {flags} = this.parse(Burpsuite2HDF)
+    const {flags} = await this.parse(Burpsuite2HDF)
 
     const converter = new Mapper(fs.readFileSync(flags.input, 'utf-8'))
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))

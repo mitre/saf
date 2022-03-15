@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {ASFFMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
@@ -11,13 +11,13 @@ export default class Trivy2HDF extends Command {
   static examples = ['saf convert:trivy2hdf -i trivy-asff.json -o output-hdf-name.json']
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: true}),
-    output: flags.string({char: 'o', required: true}),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true}),
+    output: Flags.string({char: 'o', required: true}),
   }
 
   async run() {
-    const {flags} = this.parse(Trivy2HDF)
+    const {flags} = await this.parse(Trivy2HDF)
     // comes as an _asff.json file which is basically the array of findings but without the surrounding object; however, could also be properly formed asff since it depends on the template used
     let input = fs.readFileSync(flags.input, 'utf-8').trim()
     if (Array.isArray(JSON.parse(input))) {
