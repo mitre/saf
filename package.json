@@ -80,8 +80,7 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "oclif": {
-    "main": "lib/index.js",
-    "commands": "./lib/commands",
+    "commands": "./src/commands",
     "additionalHelpFlags": ["-h"],
     "additionalVersionFlags": ["-v"],
     "bin": "saf",
