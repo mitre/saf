@@ -80,7 +80,7 @@
   "license": "Apache-2.0",
   "main": "lib/index.js",
   "oclif": {
-    "commands": "./src/commands",
+    "commands": "./lib/commands",
     "additionalHelpFlags": ["-h"],
     "additionalVersionFlags": ["-v"],
     "bin": "saf",
@@ -123,6 +123,7 @@
   "scripts": {
     "lint": "eslint \"**/*.ts\" --fix",
     "lint:ci": "eslint \"**/*.ts\" --max-warnings 0",
+    "dev": "rm -rf lib && tsc -b && ./bin/run",
     "postpack": "rm -f oclif.manifest.json",
     "prepack": "rm -rf lib && tsc -b && oclif manifest && oclif readme",
     "test": "ts-mocha --timeout 8000 --forbid-only \"test/**/*.test.ts\"",
