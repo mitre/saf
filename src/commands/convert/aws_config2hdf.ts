@@ -1,4 +1,4 @@
-import BaseCommand from '../../utils/base-command'
+import BaseCommand, {omitFlags} from '../../utils/base-command'
 import {OutputFlags} from '@oclif/parser'
 import {flags} from '@oclif/command'
 import fs from 'fs'
@@ -16,9 +16,7 @@ export default class AWSConfig2HDF extends BaseCommand {
   static examples = ['saf convert:aws_config2hdf -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json']
 
   static flags = {
-    ...BaseCommand.flags,
-    input: flags.string({hidden: true}),
-    ..._.omit(BaseCommand.flags, 'input'),
+    ...omitFlags(['input']),
     accessKeyId: flags.string({char: 'a', required: false}),
     secretAccessKey: flags.string({char: 's', required: false}),
     sessionToken: flags.string({char: 't', required: false}),

@@ -18,8 +18,8 @@ export function omitFlags(flagsToOmit: string[]): typeof BaseCommand.flags {
 export default abstract class BaseCommand extends Command {
   static flags = {
     help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: false, description: 'Input file to be converted'}),
-    output: flags.string({char: 'o', required: false}),
+    input: flags.string({char: 'i', required: true, description: 'Input file to be converted'}),
+    output: flags.string({char: 'o', required: true}),
     logLevel: flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
     listAllCommands: flags.boolean({char: 'A', required: false, description: 'List all SAF CLI commands'}),
   }
