@@ -12,7 +12,7 @@ async function read(stream: NodeJS.ReadStream, logger: any) {
 }
 
 export function omitFlags(flagsToOmit: string[]): typeof BaseCommand.flags {
-  return _.omit(flags, flagsToOmit) as unknown as typeof BaseCommand.flags
+  return _.omit(BaseCommand.flags, flagsToOmit) as unknown as typeof BaseCommand.flags
 }
 
 export default abstract class BaseCommand extends Command {
