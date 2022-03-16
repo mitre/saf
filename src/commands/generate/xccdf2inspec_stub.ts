@@ -19,13 +19,18 @@ export default class XCCDF2InSpec extends Command {
     input: flags.string({char: 'i', required: true, description: 'Path to the DISA STIG XCCDF file'}),
     metadata: flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
     singleFile: flags.boolean({char: 's', required: false, default: false, description: 'Output the resulting controls as a single file'}),
-    useVulnerabilityId: flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')"}),
+    useVulnerabilityId: flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX') for InSpec control IDs"}),
+    useStigID: flags.boolean({char: 'S', required: false, default: false, description: "Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs"}),
     lineLength: flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
     output: flags.string({char: 'o', required: true, default: 'profile'}),
   }
 
   async run() {
     const {flags} = this.parse(XCCDF2InSpec)
+
+    if (flags.useStigID && flags.useVulnerabilityId) {
+      throw new Error('Cannot use both STIG ID and Vulnerability ID for Control IDs')
+    }
 
     // Check if the output folder already exists
     if (!fs.existsSync(flags.output)) {
@@ -106,9 +111,16 @@ export default class XCCDF2InSpec extends Command {
         throw new Error('Vulnerability exists without VulnDiscussion')
       }
 
+      let controlID = group['@_id']
+      if (flags.useVulnerabilityId) {
+        controlID = group.Rule['@_id'].split('r')[0]
+      } else if (flags.useStigID) {
+        controlID = group.Rule.version
+      }
+
       // Create a barebones InSpec control
       const inspecControl: InSpecControl = {
-        id: flags.useVulnerabilityId ? group.Rule['@_id'].split('r')[0] : group['@_id'],
+        id: controlID,
         title: group.Rule['@_severity'] ? group.Rule.title : `[[[MISSING SEVERITY FROM STIG]]] ${group.Rule.title}`, // This should never happen, yet it does with SV-203750r380182_rule of the General_Purpose_Operating_System_SRG_V2R1_Manual-xccdf.xml
         desc: extractedDescription.VulnDiscussion.split('Satisfies: ')[0],
         impact: severityStringToImpact(group.Rule['@_severity'] || 'critical'),
