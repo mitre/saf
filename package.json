@@ -97,7 +97,7 @@
       "registry": "https://www.npmjs.com/package/@mitre/saf",
       "message": "<%= config.name %> update available from <%= chalk.greenBright(config.version) %> to <%= chalk.greenBright(latest) %>."
     },
-    "topicSeparator": ":",
+    "topicSeparator": " ",
     "topics": {
       "convert": {
         "description": "[Normalize]    Convert security results from all your security tools between common data formats"
