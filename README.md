@@ -344,7 +344,7 @@ convert:hdf2splunk           Translate and upload a Heimdall Data Format JSON fi
 HDF Splunk Schema documentation: https://github.com/mitre/heimdall2/blob/master/libs/hdf-converters/src/converters-from-hdf/splunk/Schemas.md#schemas
 ##### Previewing HDF Data Within Splunk:
 A full raw search query:
-```
+```sql
 index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) values(meta.filetype) list(meta.profile_sha256) values(meta.hdf_splunk_schema) first(meta.status)  list(meta.status)  list(meta.is_baseline) values(title) last(code) list(code) values(desc) values(descriptions.*)  values(id) values(impact) list(refs{}.*) list(results{}.*) list(source_location{}.*) values(tags.*)  by meta.guid id 
 | join  meta.guid 
     [search index="hdf"  meta.subtype=header | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(statistics.duration)  list(platform.*) list(version)  by meta.guid] 
@@ -353,7 +353,7 @@ index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) value
 
 ```
 A formatted table search query:
-```
+```sql
 index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) values(meta.filetype) list(meta.profile_sha256) values(meta.hdf_splunk_schema) first(meta.status)  list(meta.status)  list(meta.is_baseline) values(title) last(code) list(code) values(desc) values(descriptions.*)  values(id) values(impact) list(refs{}.*) list(results{}.*) list(source_location{}.*) values(tags.*)  by meta.guid id 
 | join  meta.guid 
     [search index="hdf"  meta.subtype=header | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(statistics.duration)  list(platform.*) list(version)  by meta.guid] 
