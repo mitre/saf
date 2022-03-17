@@ -1,10 +1,13 @@
-name: Build SAF CLI Docker Image on every Pull Request or Push to Main
+name: Build and Test SAF CLI Docker Image on every Pull Request or Push to Main
 
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+
+env:
+  TEST_TAG: saf:testTag
 
 jobs:
   docker:
@@ -20,4 +23,9 @@ jobs:
         with:
           context: .
           file: Dockerfile
-          push: false
+          push: false          
+          tags: ${{ env.TEST_TAG }}
+      - name: Test
+        run: |
+          docker run --rm ${{ env.TEST_TAG }}
+          
