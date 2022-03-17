@@ -23,7 +23,8 @@ jobs:
         with:
           context: .
           file: Dockerfile
-          push: false          
+          push: false
+          load: true          
           tags: ${{ env.TEST_TAG }}
       - name: Test
         run: |
