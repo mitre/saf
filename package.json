@@ -11,6 +11,7 @@
     "@mitre/heimdall-lite": "^2.6.14",
     "@oclif/core": "^1.6.0",
     "@oclif/plugin-version": "^1",
+    "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.0.1",
     "@oclif/plugin-warn-if-update-available": "^2.0.3",
     "@oclif/test": "^2.1.0",
@@ -87,6 +88,7 @@
     "plugins": [
       "@oclif/plugin-version",
       "@oclif/plugin-plugins",
+      "@oclif/plugin-help",
       "@oclif/plugin-warn-if-update-available"
     ],
     "macos": {
