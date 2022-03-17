@@ -19,18 +19,14 @@ export default class XCCDF2InSpec extends Command {
     input: flags.string({char: 'i', required: true, description: 'Path to the DISA STIG XCCDF file'}),
     metadata: flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
     singleFile: flags.boolean({char: 's', required: false, default: false, description: 'Output the resulting controls as a single file'}),
-    useVulnerabilityId: flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX') for InSpec control IDs"}),
-    useStigID: flags.boolean({char: 'S', required: false, default: false, description: "Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs"}),
+    useVulnerabilityId: flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX') for InSpec control IDs", exclusive: ['useStigID']}),
+    useStigID: flags.boolean({char: 'S', required: false, default: false, description: "Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs", exclusive: ['useVulnerabilityId']}),
     lineLength: flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
     output: flags.string({char: 'o', required: true, default: 'profile'}),
   }
 
   async run() {
     const {flags} = this.parse(XCCDF2InSpec)
-
-    if (flags.useStigID && flags.useVulnerabilityId) {
-      throw new Error('Cannot use both STIG ID and Vulnerability ID for Control IDs')
-    }
 
     // Check if the output folder already exists
     if (!fs.existsSync(flags.output)) {
