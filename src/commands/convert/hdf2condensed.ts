@@ -40,7 +40,7 @@ export default class HDF2Condensed extends Command {
     // Total Counts
     for (const [type, counts] of Object.entries(thresholds)) {
       let total = 0
-      for (const [_severity, count] of Object.entries(counts)) {
+      for (const [, count] of Object.entries(counts)) {
         total += count
       }
 

@@ -32,7 +32,7 @@ export default class Summary extends Command {
     flags.input.forEach(file => {
       execJSONs[file] = convertFileContextual(fs.readFileSync(file, 'utf8')) as ContextualizedEvaluation
     })
-    Object.entries(execJSONs).forEach(([fileName, parsedExecJSON]) => {
+    Object.entries(execJSONs).forEach(([, parsedExecJSON]) => {
       const summary: Record<string, Record<string, number>> = {}
       const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
       const profileName = parsedProfile.data.name
@@ -55,7 +55,7 @@ export default class Summary extends Command {
       // Total Counts
       for (const [type, counts] of Object.entries(summary)) {
         let total = 0
-        for (const [_severity, count] of Object.entries(counts)) {
+        for (const [, count] of Object.entries(counts)) {
           total += count
         }
 
@@ -85,9 +85,9 @@ export default class Summary extends Command {
       printableSummaries.push({
         profileName: profileName,
         // Extract filename from execJSONs
-        resultSets: Object.entries(execJSONs).filter(([fileName, execJSON]) => {
+        resultSets: Object.entries(execJSONs).filter(([, execJSON]) => {
           return execJSON.data.profiles[0].name === profileName
-        }).map(([filePath, execJSON]) => {
+        }).map(([filePath]) => {
           return convertFullPathToFilename(filePath)
         }),
         compliance: _.mean(complianceScores[profileName]),
