@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 
 export default class Scan extends Command {
   static aliases = ['scan']
@@ -6,7 +6,7 @@ export default class Scan extends Command {
   static description = 'Visit https://saf.mitre.org/#/validate to explore and run inspec profiles'
 
   static flags = {
-    help: flags.help({char: 'h'}),
+    help: Flags.help({char: 'h'}),
   }
 
   async run() {

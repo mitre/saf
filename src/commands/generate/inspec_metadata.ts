@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import promptSync from 'prompt-sync'
 
@@ -10,12 +10,12 @@ export default class GenerateInSpecMetadata extends Command {
   static description = 'Generate an InSpec metadata template for "saf convert:_stub"'
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    output: flags.string({char: 'o', required: true, description: 'Output JSON File'}),
+    help: Flags.help({char: 'h'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output JSON File'}),
   }
 
   async run() {
-    const {flags} = this.parse(GenerateInSpecMetadata)
+    const {flags} = await this.parse(GenerateInSpecMetadata)
     console.log("Please fill in the following fields to the best of your ability, if you don't have a value, please leave the field empty.")
     const inspecMetadata = {
       maintainer: prompt({ask: 'Who is the maintainer? '}) || null,
