@@ -1,5 +1,5 @@
 /* eslint-disable no-negated-condition */
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {DecodedDescription, DisaStig} from '../../types/xccdf'
 import {InSpecControl, InSpecMetaData} from '../../types/inspec'
@@ -15,18 +15,18 @@ export default class XCCDF2InSpec extends Command {
   static description = 'Translate a DISA STIG XCCDF XML file to a skeleton for an InSpec profile'
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: true, description: 'Path to the DISA STIG XCCDF file'}),
-    metadata: flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
-    singleFile: flags.boolean({char: 's', required: false, default: false, description: 'Output the resulting controls as a single file'}),
-    useVulnerabilityId: flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX') for InSpec control IDs", exclusive: ['useStigID']}),
-    useStigID: flags.boolean({char: 'S', required: false, default: false, description: "Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs", exclusive: ['useVulnerabilityId']}),
-    lineLength: flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
-    output: flags.string({char: 'o', required: true, default: 'profile'}),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true, description: 'Path to the DISA STIG XCCDF file'}),
+    metadata: Flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
+    singleFile: Flags.boolean({char: 's', required: false, default: false, description: 'Output the resulting controls as a single file'}),
+    useVulnerabilityId: Flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')", exclusive: ['useStigID']}),
+    useStigID: Flags.boolean({char: 'S', required: false, default: false, description: "Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs", exclusive: ['useVulnerabilityId']}),
+    lineLength: Flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
+    output: Flags.string({char: 'o', required: true, default: 'profile'}),
   }
 
   async run() {
-    const {flags} = this.parse(XCCDF2InSpec)
+    const {flags} = await this.parse(XCCDF2InSpec)
 
     // Check if the output folder already exists
     if (!fs.existsSync(flags.output)) {

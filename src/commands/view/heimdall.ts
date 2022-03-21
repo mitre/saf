@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import express from 'express'
 import fs from 'fs'
 import path from 'path'
@@ -13,14 +13,14 @@ export default class Heimdall extends Command {
   static description = 'Run an instance of Heimdall Lite to visualize your Data'
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    port: flags.integer({char: 'p', required: false, default: 3000, description: 'Port To Expose Heimdall On (Default 3000)'}),
-    files: flags.string({char: 'f', required: false, multiple: true, description: 'File(s) to display in Heimdall'}),
-    noOpenBrowser: flags.boolean({char: 'n', required: false, default: false, description: "Don't open the default browser automatically"}),
+    help: Flags.help({char: 'h'}),
+    port: Flags.integer({char: 'p', required: false, default: 3000, description: 'Port To Expose Heimdall On (Default 3000)'}),
+    files: Flags.string({char: 'f', required: false, multiple: true, description: 'File(s) to display in Heimdall'}),
+    noOpenBrowser: Flags.boolean({char: 'n', required: false, default: false, description: "Don't open the default browser automatically"}),
   }
 
   async run() {
-    const {flags, args} = this.parse(Heimdall)
+    const {flags, args} = await this.parse(Heimdall)
     let parsedJSONs: Record<string, any>[] = []
 
     // Is the defined port valid?

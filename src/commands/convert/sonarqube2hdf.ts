@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {SonarQubeResults as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
@@ -11,15 +11,15 @@ export default class Sonarqube2HDF extends Command {
   static examples = ['saf convert:sonarqube2hdf -n sonar_project_key -u http://sonar:9000 --auth YOUR_API_KEY -o scan_results.json']
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    auth: flags.string({char: 'a', required: true}),
-    projectKey: flags.string({char: 'n', required: true}),
-    url: flags.string({char: 'u', required: true}),
-    output: flags.string({char: 'o', required: true}),
+    help: Flags.help({char: 'h'}),
+    auth: Flags.string({char: 'a', required: true}),
+    projectKey: Flags.string({char: 'n', required: true}),
+    url: Flags.string({char: 'u', required: true}),
+    output: Flags.string({char: 'o', required: true}),
   }
 
   async run() {
-    const {flags} = this.parse(Sonarqube2HDF)
+    const {flags} = await this.parse(Sonarqube2HDF)
     const converter = new Mapper(flags.url, flags.projectKey, flags.auth)
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(await converter.toHdf()))
   }

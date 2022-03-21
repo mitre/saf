@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import {contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
 import fs from 'fs'
@@ -15,20 +15,20 @@ export default class HDF2CKL extends Command {
   static description = 'Translate a Heimdall Data Format JSON file into a DISA checklist file'
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: true, description: 'Input HDF file'}),
-    metadata: flags.string({char: 'm', required: false, description: 'Metadata JSON file, generate one with "saf generate:ckl_metadata"'}),
-    output: flags.string({char: 'o', required: true, description: 'Output CKL file'}),
-    hostname: flags.string({char: 'H', required: false, description: 'Hostname for CKL metadata'}),
-    fqdn: flags.string({char: 'F', required: false, description: 'FQDN for CKL metadata'}),
-    mac: flags.string({char: 'M', required: false, description: 'MAC address for CKL metadata'}),
-    ip: flags.string({char: 'I', required: false, description: 'IP address for CKL metadata'}),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true, description: 'Input HDF file'}),
+    metadata: Flags.string({char: 'm', required: false, description: 'Metadata JSON file, generate one with "saf generate:ckl_metadata"'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output CKL file'}),
+    hostname: Flags.string({char: 'H', required: false, description: 'Hostname for CKL metadata'}),
+    fqdn: Flags.string({char: 'F', required: false, description: 'FQDN for CKL metadata'}),
+    mac: Flags.string({char: 'M', required: false, description: 'MAC address for CKL metadata'}),
+    ip: Flags.string({char: 'I', required: false, description: 'IP address for CKL metadata'}),
   }
 
   static examples = ['saf convert:hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90']
 
   async run() {
-    const {flags} = this.parse(HDF2CKL)
+    const {flags} = await this.parse(HDF2CKL)
     const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf-8')))
     const profileName = contextualizedEvaluation.data.profiles[0].name
     const controls = contextualizedEvaluation.contains.flatMap(profile => profile.contains) || []

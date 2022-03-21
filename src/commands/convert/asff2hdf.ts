@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {ASFFMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
@@ -12,14 +12,14 @@ export default class ASFF2HDF extends Command {
     'saf convert:asff2hdf -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json']
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: true}),
-    securityhub: flags.string({required: false, multiple: true}),
-    output: flags.string({char: 'o', required: true}),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true}),
+    securityhub: Flags.string({required: false, multiple: true}),
+    output: Flags.string({char: 'o', required: true}),
   }
 
   async run() {
-    const {flags} = this.parse(ASFF2HDF)
+    const {flags} = await this.parse(ASFF2HDF)
     let securityhub
     if (flags.securityhub) {
       securityhub = flags.securityhub.map(file => fs.readFileSync(file, 'utf-8'))

@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 
 export default class Harden extends Command {
   static aliases = ['harden']
@@ -6,7 +6,7 @@ export default class Harden extends Command {
   static description = 'Visit https://saf.mitre.org/#/harden to explore and run hardening scripts'
 
   static flags = {
-    help: flags.help({char: 'h'}),
+    help: Flags.help({char: 'h'}),
   }
 
   async run() {
