@@ -167,13 +167,14 @@ generate xccdf2inspec_stub              Generate an InSpec profile stub from a D
     $ saf generate xccdf2inspec_stub -i, --input=XML -o, --output=FOLDER
 
   OPTIONS
-    -h, --help                show CLI help
-    -i, --input=input         (required) Path to the DISA STIG XCCDF file
-    -m, --metadata=metadata   Path to a JSON file with additional metadata for the inspec.yml file
-    -l, --lineLength=lineLength   [default: 80] Characters between lines within InSpec controls
-    -o, --output=output       (required) [default: profile] Output InSpec profile stub folder
-    -r, --useVulnerabilityId  Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')
-    -s, --singleFile          Output the resulting controls as a single file
+    -h, --help                   show CLI help
+    -S, --useStigID              Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs
+    -i, --input=input            (required) Path to the DISA STIG XCCDF file
+    -l, --lineLength=lineLength  [default: 80] Characters between lines within InSpec controls
+    -m, --metadata=metadata      Path to a JSON file with additional metadata for the inspec.yml file
+    -o, --output=output          (required) [default: profile]
+    -r, --useVulnerabilityId     Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX') for InSpec control IDs
+    -s, --singleFile             Output the resulting controls as a single file
 ```
 
 ---

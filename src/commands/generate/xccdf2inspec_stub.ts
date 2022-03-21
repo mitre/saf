@@ -19,7 +19,8 @@ export default class XCCDF2InSpec extends Command {
     input: Flags.string({char: 'i', required: true, description: 'Path to the DISA STIG XCCDF file'}),
     metadata: Flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
     singleFile: Flags.boolean({char: 's', required: false, default: false, description: 'Output the resulting controls as a single file'}),
-    useVulnerabilityId: Flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')"}),
+    useVulnerabilityId: Flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')", exclusive: ['useStigID']}),
+    useStigID: Flags.boolean({char: 'S', required: false, default: false, description: "Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs", exclusive: ['useVulnerabilityId']}),
     lineLength: Flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
     output: Flags.string({char: 'o', required: true, default: 'profile'}),
   }
@@ -106,9 +107,16 @@ export default class XCCDF2InSpec extends Command {
         throw new Error('Vulnerability exists without VulnDiscussion')
       }
 
+      let controlID = group['@_id']
+      if (flags.useVulnerabilityId) {
+        controlID = group.Rule['@_id'].split('r')[0]
+      } else if (flags.useStigID) {
+        controlID = group.Rule.version
+      }
+
       // Create a barebones InSpec control
       const inspecControl: InSpecControl = {
-        id: flags.useVulnerabilityId ? group.Rule['@_id'].split('r')[0] : group['@_id'],
+        id: controlID,
         title: group.Rule['@_severity'] ? group.Rule.title : `[[[MISSING SEVERITY FROM STIG]]] ${group.Rule.title}`, // This should never happen, yet it does with SV-203750r380182_rule of the General_Purpose_Operating_System_SRG_V2R1_Manual-xccdf.xml
         desc: extractedDescription.VulnDiscussion.split('Satisfies: ')[0],
         impact: severityStringToImpact(group.Rule['@_severity'] || 'critical'),
