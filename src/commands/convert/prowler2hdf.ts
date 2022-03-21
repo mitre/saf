@@ -20,8 +20,7 @@ export default class Prowler2HDF extends Command {
     const {flags} = this.parse(Prowler2HDF)
     // comes as an asff-json file which is basically all the findings concatenated into one file instead of putting it in the proper wrapper data structure
     const input = `{"Findings": [${fs.readFileSync(flags.input, 'utf-8').trim().split('\n').join(',')}]}`
-    const meta = {name: 'Prowler', title: 'Prowler Findings'}
-    const converter = new Mapper(input, undefined, meta)
+    const converter = new Mapper(input)
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }
