@@ -59,7 +59,6 @@
     "eslint-config-oclif": "^4.0",
     "eslint-config-oclif-typescript": "^1.0.2",
     "eslint-plugin-unicorn": "^40.1.0",
-    "oclif": "^2",
     "mocha": "^9",
     "tmp": "^0.2.1",
     "ts-mocha": "^9.0.2"
@@ -127,8 +126,7 @@
     "lint:ci": "eslint \"**/*.ts\" --max-warnings 0",
     "dev": "rm -rf lib && tsc -b && ./bin/run",
     "prepack": "rm -rf lib && tsc -b",
-    "test": "ts-mocha --timeout 8000 --forbid-only \"test/**/*.test.ts\"",
-    "version": "oclif readme && git add README.md"
+    "test": "ts-mocha --timeout 8000 --forbid-only \"test/**/*.test.ts\""
   },
   "types": "lib/index.d.ts"
 }
