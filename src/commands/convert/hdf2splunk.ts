@@ -17,6 +17,7 @@ export default class HDF2Splunk extends Command {
     scheme: Flags.string({char: 's', required: false, description: 'HTTP Scheme used for communication with splunk', default: 'https', options: ['http', 'https']}),
     username: Flags.string({char: 'u', required: true, description: 'Your Splunk username'}),
     password: Flags.string({char: 'p', required: true, description: 'Your Splunk password'}),
+    token: Flags.string({char: 't', required: true, description: 'Your Splunk API Token'}),
     index: Flags.string({char: 'I', required: true, description: 'Splunk index to import HDF data into'}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
@@ -35,8 +36,8 @@ export default class HDF2Splunk extends Command {
       scheme: flags.scheme as 'http' | 'https',  // Types as defined by flags
       username: flags.username,
       password: flags.password,
+      sessionKey: flags.token,
       index: flags.index,
-      insecure: true, // The Splunk SDK's requestOptions somehow broke on release of the mapper, this will be fixed in mitre/heimdall2#2675
     }, convertFullPathToFilename(flags.input))
   }
 }
