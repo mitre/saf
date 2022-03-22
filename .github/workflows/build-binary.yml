@@ -26,7 +26,7 @@ jobs:
         run: npm install
 
       - name: Pack Windows Installer
-        run: npx -y oclif pack:win
+        run: sudo npx -y oclif pack:win
 
       - name: Pack Debian Package
         run: sudo npx -y oclif pack:deb

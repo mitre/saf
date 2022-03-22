@@ -23,7 +23,7 @@ jobs:
         run: rm -rf test
 
       - name: npm install and pack
-        run: npx -y oclif-dev pack:macos
+        run: sudo npx -y oclif pack:macos
 
       - name: Upload SAF-CLI macOS Installer Artifact
         uses: actions/upload-artifact@v2
