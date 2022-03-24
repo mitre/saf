@@ -5,11 +5,11 @@ import {ExecJSON} from 'inspecjs'
 import {checkSuffix} from '../../utils/global'
 
 export default class AWSConfig2HDF extends Command {
-  static usage = 'convert:aws_config2hdf -a, --accessKeyId=accessKeyId -r, --region=region -s, --secretAccessKey=secretAccessKey -t, --sessionToken=sessionToken -o, --output=OUTPUT'
+  static usage = 'convert aws_config2hdf -a, --accessKeyId=accessKeyId -r, --region=region -s, --secretAccessKey=secretAccessKey -t, --sessionToken=sessionToken -o, --output=OUTPUT'
 
   static description = 'Pull Configuration findings from AWS Config and convert into a Heimdall Data Format JSON file'
 
-  static examples = ['saf convert:aws_config2hdf -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json']
+  static examples = ['saf convert aws_config2hdf -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json']
 
   static flags = {
     help: Flags.help({char: 'h'}),

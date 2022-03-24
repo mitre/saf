@@ -21,7 +21,7 @@ export default class Summary extends Command {
     output: Flags.string({char: 'o', required: false}),
   }
 
-  static examples = ['saf view:summary -i rhel7-results.json']
+  static examples = ['saf view summary -i rhel7-results.json']
 
   async run() {
     const {flags} = await this.parse(Summary)

@@ -10,7 +10,7 @@ import YAML from 'yaml'
 import {default as CCINistMappings} from '@mitre/hdf-converters/lib/data/cci-nist-mapping.json'
 
 export default class XCCDF2InSpec extends Command {
-  static usage = 'generate:xccdf2inspec_stub -i, --input=XML -o, --output=FOLDER'
+  static usage = 'generate xccdf2inspec_stub -i, --input=XML -o, --output=FOLDER'
 
   static description = 'Translate a DISA STIG XCCDF XML file to a skeleton for an InSpec profile'
 

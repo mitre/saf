@@ -4,7 +4,7 @@ import {XCCDFResultsMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 
 export default class XCCDFResults2HDF extends Command {
-  static usage = 'convert:xccdf_results2hdf -i, --input=XML -o, --output=OUTPUT'
+  static usage = 'convert xccdf_results2hdf -i, --input=XML -o, --output=OUTPUT'
 
   static description = 'Translate a SCAP client XCCDF-Results XML report to HDF format Json be viewed on Heimdall'
 

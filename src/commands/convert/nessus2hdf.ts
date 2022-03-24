@@ -9,7 +9,7 @@ export default class Nessus2HDF extends Command {
 
   static description = "Translate a Nessus XML results file into a Heimdall Data Format JSON file\nThe current iteration maps all plugin families except 'Policy Compliance'\nA separate HDF JSON is generated for each host reported in the Nessus Report."
 
-  static examples = ['saf convert:nessus2hdf -i nessus_results.xml -o output-hdf-name.json']
+  static examples = ['saf convert nessus2hdf -i nessus_results.xml -o output-hdf-name.json']
 
   static flags = {
     help: Flags.help({char: 'h'}),
