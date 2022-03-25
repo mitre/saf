@@ -9,7 +9,7 @@ import {impactNumberToSeverityString, inspecControlToRubyCode, severityStringToI
 import _ from 'lodash'
 import {CSVControl} from '../../types/csv'
 import {extractValueViaPathOrNumber} from '../../utils/global'
-import {default as CCINistMappings} from '@mitre/hdf-converters/lib/data/cci-nist-mapping.json'
+import {CciNistMappingData} from '@mitre/hdf-converters'
 import {default as CISNistMappings} from '../../resources/cis2nist.json'
 import {default as files} from '../../resources/files.json'
 
@@ -308,8 +308,8 @@ export default class Spreadsheet2HDF extends Command {
         if (newControl.tags && newControl.tags?.cci) {
           newControl.tags.nist = []
           newControl.tags.cci.forEach(cci => {
-            if (cci in CCINistMappings) {
-              newControl.tags?.nist?.push(_.get(CCINistMappings, cci))
+            if (cci in CciNistMappingData) {
+              newControl.tags?.nist?.push(_.get(CciNistMappingData, cci))
             }
           })
         }
