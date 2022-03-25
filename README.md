@@ -205,7 +205,7 @@ validate threshold       Validate the compliance and status counts of an HDF fil
 
 #### Heimdall
 
-You can start a local Heimdall Lite instance to visualize your findings with the SAF CLI. To start an instance use the `saf view:heimdall` command:
+You can start a local Heimdall Lite instance to visualize your findings with the SAF CLI. To start an instance use the `saf view heimdall` command:
 
 ```
 view:heimdall            Run an instance of Heimdall Lite to visualize 
@@ -216,14 +216,14 @@ view:heimdall            Run an instance of Heimdall Lite to visualize
     -f, --file=FILE          File(s) to display in Heimdall
     -n, --noOpenBrowser      Don't open the default browser automatically
   EXAMPLES
-    saf view:heimdall -p 8080
+    saf view heimdall -p 8080
 ```
 
 
 
 #### Summary
 
-To get a quick compliance summary from an HDF file (grouped by profile name) use the `saf view:summary` command:
+To get a quick compliance summary from an HDF file (grouped by profile name) use the `saf view summary` command:
 
 ```
 view:summary            Get a quick compliance overview of HDF files
@@ -234,7 +234,7 @@ view:summary            Get a quick compliance overview of HDF files
     -o, --output=output
 	
   EXAMPLE
-    saf view:summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json
+    saf view summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json
 ```
 
  
@@ -329,18 +329,20 @@ convert hdf2csv             Translate a Heimdall Data Format JSON file into a
 convert hdf2splunk           Translate and upload a Heimdall Data Format JSON file into a Splunk server
 
   OPTIONS
-    -H, --host=host                         (required) Splunk Hostname or IP
-    -I, --index=index                       (required) Splunk index to import HDF data into
-    -L, --logLevel=info|warn|debug|verbose  [default: info]
-    -P, --port=port                         [default: 8089] Splunk management port (also known as the Universal Forwarder port)
-    -h, --help                              show CLI help
-    -i, --input=input                       (required) Input HDF file
-    -p, --password=password                 (required) Your Splunk password
-    -s, --scheme=http|https                 [default: https] HTTP Scheme used for communication with splunk
-    -u, --username=username                 (required) Your Splunk username
+    -h, --help               Show CLI help.
+    -H, --host=<value>       (required) Splunk Hostname or IP
+    -I, --index=<value>      (required) Splunk index to import HDF data into
+    -L, --logLevel=<option>  [default: info] <options: info|warn|debug|verbose>
+    -P, --port=<value>       [default: 8089] Splunk management port (also known as the Universal Forwarder port)s
+    -i, --input=<value>      (required) Input HDF file
+    -p, --password=<value>   Your Splunk password
+    -s, --scheme=<option>    [default: https] HTTP Scheme used for communication with Splunk <options: http|https>
+    -t, --token=<value>      Your Splunk API Token
+    -u, --username=<value>   Your Splunk username
 
   EXAMPLE
     saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf
+    saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf
 ```
 HDF Splunk Schema documentation: https://github.com/mitre/heimdall2/blob/master/libs/hdf-converters/src/converters-from-hdf/splunk/Schemas.md#schemas
 ##### Previewing HDF Data Within Splunk:

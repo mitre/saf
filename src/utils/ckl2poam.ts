@@ -1,4 +1,4 @@
-import {default as cci2nistmap} from '@mitre/hdf-converters/lib/data/cci-nist-mapping.json'
+import {CciNistMappingData} from '@mitre/hdf-converters'
 import {Vulnerability} from '../types/STIG'
 import promptSync from 'prompt-sync'
 const prompt = promptSync()
@@ -150,8 +150,8 @@ export function extractSolution(findingDetails: string): string | undefined {
 
 export function cci2nist(cci: string) {
   if (typeof cci === 'string') {
-    if (cci in cci2nistmap) {
-      return (cci2nistmap as Record<string, string>)[cci].replace(' ', '')
+    if (cci in CciNistMappingData) {
+      return (CciNistMappingData as unknown as Record<string, string>)[cci].replace(' ', '')
     }
 
     return prompt(`What is the NIST ID for CCI ${cci}? `)

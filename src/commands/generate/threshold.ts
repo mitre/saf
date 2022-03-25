@@ -7,11 +7,11 @@ import {ThresholdValues} from '../../types/threshold'
 import {calculateCompliance, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 
 export default class GenerateThreshold extends Command {
-  static usage = 'generate:threshold -i, --input=JSON -o, --output=YAML -e, --exact -c, --generateControlIds'
+  static usage = 'generate threshold -i, --input=JSON -o, --output=YAML -e, --exact -c, --generateControlIds'
 
   static description = 'Generate a compliance template for "saf validate threshold"'
 
-  static examples = ['saf generate:threshold -i rhel7-results.json -e -c -o output.yaml']
+  static examples = ['saf generate threshold -i rhel7-results.json -e -c -o output.yaml']
 
   static flags = {
     help: Flags.help({char: 'h'}),

@@ -8,7 +8,7 @@ export default class Netsparker2HDF extends Command {
 
   static description = 'Translate a Netsparker XML results file into a Heimdall Data Format JSON file\nThe current iteration only works with Netsparker Enterprise Vulnerabilities Scan.'
 
-  static examples = ['saf convert:netsparker2hdf -i netsparker_results.xml -o output-hdf-name.json']
+  static examples = ['saf convert netsparker2hdf -i netsparker_results.xml -o output-hdf-name.json']
 
   static flags = {
     help: Flags.help({char: 'h'}),

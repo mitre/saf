@@ -16,7 +16,7 @@ export default class HDF2Condensed extends Command {
     output: Flags.string({char: 'o', required: true, description: 'Output condensed JSON file'}),
   }
 
-  static examples = ['saf convert:hdf2condensed -i rhel7-results.json -o rhel7-condensed.json']
+  static examples = ['saf convert hdf2condensed -i rhel7-results.json -o rhel7-condensed.json']
 
   async run() {
     const {flags} = await this.parse(HDF2Condensed)

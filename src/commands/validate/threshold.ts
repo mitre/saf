@@ -9,7 +9,7 @@ import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlI
 import {expect} from 'chai'
 
 export default class Threshold extends Command {
-  static usage = 'validate:threshold -i, --input=JSON -T, --templateInline="JSON Data" -F --templateFile=YAML File'
+  static usage = 'validate threshold -i, --input=JSON -T, --templateInline="JSON Data" -F --templateFile=YAML File'
 
   static description = 'Validate the compliance and status counts of an HDF file'
 
@@ -17,7 +17,7 @@ export default class Threshold extends Command {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true}),
     templateInline: Flags.string({char: 'T', required: false}),
-    templateFile: Flags.string({char: 'F', required: false, description: 'Expected data template, generate one with "saf generate:threshold"'}),
+    templateFile: Flags.string({char: 'F', required: false, description: 'Expected data template, generate one with "saf generate threshold"'}),
   }
 
   async run() {

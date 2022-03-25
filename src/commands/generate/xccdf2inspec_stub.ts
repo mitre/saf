@@ -7,10 +7,10 @@ import {convertEncodedHTMLIntoJson, convertEncodedXmlIntoJson, impactNumberToSev
 import path from 'path'
 import _ from 'lodash'
 import YAML from 'yaml'
-import {default as CCINistMappings} from '@mitre/hdf-converters/lib/data/cci-nist-mapping.json'
+import {CciNistMappingData} from '@mitre/hdf-converters'
 
 export default class XCCDF2InSpec extends Command {
-  static usage = 'generate:xccdf2inspec_stub -i, --input=XML -o, --output=FOLDER'
+  static usage = 'generate xccdf2inspec_stub -i, --input=XML -o, --output=FOLDER'
 
   static description = 'Translate a DISA STIG XCCDF XML file to a skeleton for an InSpec profile'
 
@@ -153,9 +153,9 @@ export default class XCCDF2InSpec extends Command {
           if (identifier['@_system'].toLowerCase().endsWith('cci')) {
             _.set(inspecControl, 'tags.cci', _.get(inspecControl, 'tags.cci') || [])
             inspecControl.tags.cci?.push(identifier['#text'])
-            if (identifier['#text'] in CCINistMappings) {
+            if (identifier['#text'] in CciNistMappingData) {
               _.set(inspecControl, 'tags.nist', _.get(inspecControl, 'tags.nist') || [])
-              const nistMapping = _.get(CCINistMappings, identifier['#text'])
+              const nistMapping = _.get(CciNistMappingData, identifier['#text'])
               if (inspecControl.tags.nist?.indexOf(nistMapping) === -1) {
                 inspecControl.tags.nist?.push(nistMapping)
               }
