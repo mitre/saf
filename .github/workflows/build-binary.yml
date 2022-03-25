@@ -26,10 +26,10 @@ jobs:
         run: npm install
 
       - name: Pack Windows Installer
-        run: sudo npx -y oclif pack:win
+        run: yarn run oclif pack win
 
       - name: Pack Debian Package
-        run: sudo npx -y oclif pack:deb
+        run: sudo yarn run oclif pack deb
 
       - name: Upload SAF-CLI Windows Build x64 Artifact
         uses: actions/upload-artifact@v2
