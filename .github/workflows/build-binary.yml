@@ -35,13 +35,13 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: SAF-CLI Windows Build x64
-          path: dist/win/saf-*-x64.exe
+          path: dist/win32/saf-*-x64.exe
 
       - name: Upload SAF-CLI Windows Build x86 Artifact
         uses: actions/upload-artifact@v2
         with:
           name: SAF-CLI Windows Build x86
-          path: dist/win/saf-*-x86.exe
+          path: dist/win32/saf-*-x86.exe
       
       - name: Upload SAF-CLI Debian x64 Artifact
         uses: actions/upload-artifact@v2
