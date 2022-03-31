@@ -288,7 +288,7 @@ convert hdf2condensed        Condensed format used by some community members
 
 ##### HDF to Checklist
 ```
-convert hdf2checklist        Translate a Heimdall Data Format JSON file into a
+convert hdf2ckl              Translate a Heimdall Data Format JSON file into a
                              DISA checklist file
 
   OPTIONS
