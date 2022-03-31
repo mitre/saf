@@ -1,6 +1,5 @@
 import {expect, test} from '@oclif/test'
 import path from 'path'
-import _ from 'lodash'
 
 describe('Test validate threshold', () => {
   test
