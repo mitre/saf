@@ -51,24 +51,16 @@ export default class Threshold extends Command {
     }
 
     // Total Pass/Fail/Skipped/No Impact/Error
-    const targets = ['passed.total.min', 'passed.total.max', 'failed.total.min', 'failed.total.max', 'skipped.total.min', 'skipped.total.max', 'no_impact.total.min', 'no_impact.total.max', 'error.total.min', 'error.total.max']
+    const targets = ['passed.total', 'passed.total', 'failed.total', 'failed.total', 'skipped.total', 'skipped.total', 'no_impact.total', 'no_impact.total', 'error.total', 'error.total']
     for (const statusThreshold of targets) {
-      const [statusName, _total, thresholdType] = statusThreshold.split('.')
-      if (thresholdType === 'min' && _.get(thresholds, statusThreshold) !== undefined) {
+      const [statusName, _total] = statusThreshold.split('.')
+      if (_.get(thresholds, statusThreshold) !== undefined) {
         exitNonZeroIfTrue(
           Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName))              <
+            _.get(overallStatusCounts, renameStatusName(statusName))              !==
             _.get(thresholds, statusThreshold),
           ),
           `${statusThreshold}: ${_.get(overallStatusCounts, renameStatusName(statusName))} < ${_.get(thresholds, statusThreshold)}`,
-        )
-      } else if (thresholdType === 'max' && _.get(thresholds, statusThreshold) !== undefined) {
-        exitNonZeroIfTrue(
-          Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName))              >
-            _.get(thresholds, statusThreshold),
-          ),
-          `${statusThreshold}: ${_.get(overallStatusCounts, renameStatusName(statusName))} > ${_.get(thresholds, statusThreshold)}`,
         )
       }
     }
