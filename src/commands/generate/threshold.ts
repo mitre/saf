@@ -48,6 +48,16 @@ export default class GenerateThreshold extends Command {
       }
     }
 
+    // Total counts
+    const severityStatusCounts = extractStatusCounts(parsedProfile)
+    _.set(thresholds, 'passed.total', severityStatusCounts.Passed)
+    _.set(thresholds, 'failed.total', severityStatusCounts.Failed)
+    _.set(thresholds, 'skipped.total', severityStatusCounts['Not Reviewed'])
+    _.set(thresholds, 'error.total', severityStatusCounts['Profile Error'])
+    _.set(thresholds, 'no_impact.total', severityStatusCounts['Not Applicable'])
+
+    console.log(thresholds)
+
     // Expected control ID status and severity
     if (flags.generateControlIds) {
       getControlIdMap(parsedProfile, thresholds)
