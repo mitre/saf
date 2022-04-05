@@ -1,6 +1,6 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import {ASFFMapper as Mapper} from '@mitre/hdf-converters'
+import {ASFFResults as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 
 export default class Trivy2HDF extends Command {
