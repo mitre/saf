@@ -374,6 +374,13 @@ index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) value
 
 ##### ASFF to HDF
 
+Output|Use|Command
+---|---|---
+ASFF json|All the findings that will be fed into the mapper|aws securityhub get-findings > asff.json
+AWS SecurityHub enabled standards json|Get all the enabled standards so you can get their identifiers|aws securityhub get-enabled-standards > asff_standards.json
+AWS SecurityHub standard controls json|Get all the controls for a standard that will be fed into the mapper|aws securityhub describe-standards-controls --standards-subscription-arn "arn:aws:securityhub:us-east-1:123456789123:subscription/cis-aws-foundations-benchmark/v/1.2.0" > asff_cis_standard.json
+
+
 ```
 convert asff2hdf            Translate a AWS Security Finding Format JSON into a
                             Heimdall Data Format JSON file
