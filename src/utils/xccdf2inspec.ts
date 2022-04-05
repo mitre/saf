@@ -6,7 +6,19 @@ import {DecodedDescription} from '../types/xccdf'
 
 // Breaks lines down to lineLength number of characters
 export function wrap(s: string, lineLength = 80): string {
-  return s.replace(new RegExp(`(?![^\n]{1,${lineLength}}$)([^\n]{1,${lineLength}})`, 'g'), '$1\n')
+  let currentLineLength = 0
+  let finalString = ''
+  s.split(' ').forEach(word => {
+    if (currentLineLength + word.length < lineLength || word.length >= lineLength) {
+      currentLineLength += word.length
+      finalString += word + ' '
+    } else {
+      currentLineLength = word.length
+      finalString += `\n${word} `
+    }
+  })
+
+  return finalString.trim()
 }
 
 const escapeQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/'/g, "\\'") // Escape backslashes and quotes
@@ -79,15 +91,15 @@ export function severityStringToImpact(string: string): number {
     return 0.3
   }
 
-  if (string.match(/med(ium)?|cat(egory)?\s*(ii|2)/)?.length) {
+  if (string.match(/med(ium)?|cat(egory)?\s*(ii|2)/i)?.length) {
     return 0.5
   }
 
-  if (string.match(/high|cat(egory)?\s*(i|1)/)?.length) {
+  if (string.match(/high|cat(egory)?\s*(i|1)/i)?.length) {
     return 0.7
   }
 
-  if (string.match(/crit(ical)?|severe/)?.length) {
+  if (string.match(/crit(ical)?|severe/i)?.length) {
     return 1.0
   }
 

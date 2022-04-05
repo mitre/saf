@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
 import parse from 'csv-parse/lib/sync'
@@ -9,26 +9,26 @@ import {impactNumberToSeverityString, inspecControlToRubyCode, severityStringToI
 import _ from 'lodash'
 import {CSVControl} from '../../types/csv'
 import {extractValueViaPathOrNumber} from '../../utils/global'
-import {default as CCINistMappings} from '@mitre/hdf-converters/lib/data/cci-nist-mapping.json'
+import {CciNistMappingData} from '@mitre/hdf-converters'
 import {default as CISNistMappings} from '../../resources/cis2nist.json'
 import {default as files} from '../../resources/files.json'
 
 export default class Spreadsheet2HDF extends Command {
-  static usage = 'generate:spreadsheet2inspec_stub -i, --input=<XLSX or CSV> -o, --output=FOLDER'
+  static usage = 'generate spreadsheet2inspec_stub -i, --input=<XLSX or CSV> -o, --output=FOLDER'
 
   static description = 'Convert CSV STIGs or CIS XLSX benchmarks into a skeleton InSpec profile'
 
-  static examples = ['saf generate:spreadsheet2inspec_stub -i spreadsheet.xlsx -o profile']
+  static examples = ['saf generate spreadsheet2inspec_stub -i spreadsheet.xlsx -o profile']
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: true}),
-    controlNamePrefix: flags.string({char: 'c', required: false, default: '', description: 'Prefix for all control IDs'}),
-    format: flags.string({char: 'f', required: false, default: 'general', options: ['cis', 'disa', 'general']}),
-    metadata: flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
-    mapping: flags.string({char: 'M', required: false, description: 'Path to a YAML file with mappings for each field, by default, CIS Benchmark fields are used for XLSX, STIG Viewer CSV export is used by CSV'}),
-    lineLength: flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
-    output: flags.string({char: 'o', required: true, description: 'Output InSpec profile folder'}),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true}),
+    controlNamePrefix: Flags.string({char: 'c', required: false, default: '', description: 'Prefix for all control IDs'}),
+    format: Flags.string({char: 'f', required: false, default: 'general', options: ['cis', 'disa', 'general']}),
+    metadata: Flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
+    mapping: Flags.string({char: 'M', required: false, description: 'Path to a YAML file with mappings for each field, by default, CIS Benchmark fields are used for XLSX, STIG Viewer CSV export is used by CSV'}),
+    lineLength: Flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output InSpec profile folder'}),
   }
 
   // Extract URLs for references
@@ -126,7 +126,7 @@ export default class Spreadsheet2HDF extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(Spreadsheet2HDF)
+    const {flags} = await this.parse(Spreadsheet2HDF)
 
     if (flags.format === 'general' && !flags.mapping) {
       throw new Error('Please provide your own mapping file for spreadsheets that do not follow CIS or DISA specifications, or use --format to specify a template')
@@ -308,8 +308,8 @@ export default class Spreadsheet2HDF extends Command {
         if (newControl.tags && newControl.tags?.cci) {
           newControl.tags.nist = []
           newControl.tags.cci.forEach(cci => {
-            if (cci in CCINistMappings) {
-              newControl.tags?.nist?.push(_.get(CCINistMappings, cci))
+            if (cci in CciNistMappingData) {
+              newControl.tags?.nist?.push(_.get(CciNistMappingData, cci))
             }
           })
         }

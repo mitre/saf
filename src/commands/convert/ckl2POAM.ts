@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
@@ -33,23 +33,23 @@ const logger = createLogger({
 const STARTING_ROW = 8 // The row we start inserting controls into
 
 export default class CKL2POAM extends Command {
-  static usage = 'convert:ckl2POAM -i, --input=FILE -o, --output=FOLDER'
+  static usage = 'convert ckl2POAM -i, --input=FILE -o, --output=FOLDER'
 
   static description = 'Translate DISA Checklist CKL file(s) to POA&M files'
 
-  static aliases = ['convert:ckl2poam']
+  static aliases = ['convert ckl2poam']
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: true, multiple: true, description: 'Path to the DISA Checklist File(s)'}),
-    officeOrg: flags.string({char: 'O', required: false, default: '', description: 'Default value for Office/org (prompts for each file if not set)'}),
-    deviceName: flags.string({char: 'd', required: false, default: '', description: 'Name of target device (prompts for each file if not set)'}),
-    rowsToSkip: flags.integer({char: 's', required: false, default: 4, description: 'Rows to leave between POA&M Items for milestones'}),
-    output: flags.string({char: 'o', required: true, description: 'Path to output PO&M File(s)'}),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true, multiple: true, description: 'Path to the DISA Checklist File(s)'}),
+    officeOrg: Flags.string({char: 'O', required: false, default: '', description: 'Default value for Office/org (prompts for each file if not set)'}),
+    deviceName: Flags.string({char: 'd', required: false, default: '', description: 'Name of target device (prompts for each file if not set)'}),
+    rowsToSkip: Flags.integer({char: 's', required: false, default: 4, description: 'Rows to leave between POA&M Items for milestones'}),
+    output: Flags.string({char: 'o', required: true, description: 'Path to output PO&M File(s)'}),
   }
 
   async run() {
-    const {flags} = this.parse(CKL2POAM)
+    const {flags} = await this.parse(CKL2POAM)
     // Create output folder if it doesn't exist already
     if (!fs.existsSync(flags.output)) {
       fs.mkdirSync(flags.output)

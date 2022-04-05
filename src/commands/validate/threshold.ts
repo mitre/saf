@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import flat from 'flat'
 import YAML from 'yaml'
 import fs from 'fs'
@@ -9,19 +9,19 @@ import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlI
 import {expect} from 'chai'
 
 export default class Threshold extends Command {
-  static usage = 'validate:threshold -i, --input=JSON -T, --templateInline="JSON Data" -F --templateFile=YAML File'
+  static usage = 'validate threshold -i, --input=JSON -T, --templateInline="JSON Data" -F --templateFile=YAML File'
 
   static description = 'Validate the compliance and status counts of an HDF file'
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: true}),
-    templateInline: flags.string({char: 'T', required: false}),
-    templateFile: flags.string({char: 'F', required: false, description: 'Expected data template, generate one with "saf generate:threshold"'}),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true}),
+    templateInline: Flags.string({char: 'T', required: false}),
+    templateFile: Flags.string({char: 'F', required: false, description: 'Expected data template, generate one with "saf generate threshold"'}),
   }
 
   async run() {
-    const {flags} = this.parse(Threshold)
+    const {flags} = await this.parse(Threshold)
     let thresholds: ThresholdValues = {}
     if (flags.templateInline) {
       // Need to do some processing to convert this into valid JSON
@@ -51,24 +51,16 @@ export default class Threshold extends Command {
     }
 
     // Total Pass/Fail/Skipped/No Impact/Error
-    const targets = ['passed.total.min', 'passed.total.max', 'failed.total.min', 'failed.total.max', 'skipped.total.min', 'skipped.total.max', 'no_impact.total.min', 'no_impact.total.max', 'error.total.min', 'error.total.max']
+    const targets = ['passed.total', 'passed.total', 'failed.total', 'failed.total', 'skipped.total', 'skipped.total', 'no_impact.total', 'no_impact.total', 'error.total', 'error.total']
     for (const statusThreshold of targets) {
-      const [statusName, _total, thresholdType] = statusThreshold.split('.')
-      if (thresholdType === 'min' && _.get(thresholds, statusThreshold) !== undefined) {
+      const [statusName, _total] = statusThreshold.split('.')
+      if (_.get(thresholds, statusThreshold) !== undefined) {
         exitNonZeroIfTrue(
           Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName))              <
+            _.get(overallStatusCounts, renameStatusName(statusName))              !==
             _.get(thresholds, statusThreshold),
           ),
           `${statusThreshold}: ${_.get(overallStatusCounts, renameStatusName(statusName))} < ${_.get(thresholds, statusThreshold)}`,
-        )
-      } else if (thresholdType === 'max' && _.get(thresholds, statusThreshold) !== undefined) {
-        exitNonZeroIfTrue(
-          Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName))              >
-            _.get(thresholds, statusThreshold),
-          ),
-          `${statusThreshold}: ${_.get(overallStatusCounts, renameStatusName(statusName))} > ${_.get(thresholds, statusThreshold)}`,
         )
       }
     }

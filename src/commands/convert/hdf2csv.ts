@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import {ContextualizedEvaluation, contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
 import fs from 'fs'
@@ -13,14 +13,14 @@ export default class HDF2CSV extends Command {
   static description = 'Translate a Heimdall Data Format JSON file into a Comma Separated Values (CSV) file'
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: true, description: 'Input HDF file'}),
-    output: flags.string({char: 'o', required: true, description: 'Output CSV file'}),
-    fields: flags.string({char: 'f', required: false, default: csvExportFields.join(','), description: 'Fields to include in output CSV, separated by commas'}),
-    noTruncate: flags.boolean({char: 't', required: false, default: false, description: "Don't truncate fields longer than 32,767 characters (the cell limit in Excel)"}),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true, description: 'Input HDF file'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output CSV file'}),
+    fields: Flags.string({char: 'f', required: false, default: csvExportFields.join(','), description: 'Fields to include in output CSV, separated by commas'}),
+    noTruncate: Flags.boolean({char: 't', required: false, default: false, description: "Don't truncate fields longer than 32,767 characters (the cell limit in Excel)"}),
   }
 
-  static examples = ['saf convert:hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"']
+  static examples = ['saf convert hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"']
 
   convertRows(evaluation: ContextualizedEvaluation, filename: string, fieldsToAdd: string[]): ControlSetRows {
     const controls = evaluation.contains.flatMap(profile => profile.contains) || []
@@ -28,7 +28,7 @@ export default class HDF2CSV extends Command {
   }
 
   async run() {
-    const {flags} = this.parse(HDF2CSV)
+    const {flags} = await this.parse(HDF2CSV)
     const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf-8')))
 
     // Convert all controls from a file to ControlSetRows

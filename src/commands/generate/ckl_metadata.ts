@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import promptSync from 'prompt-sync'
 import _ from 'lodash'
@@ -6,17 +6,17 @@ import _ from 'lodash'
 const prompt = promptSync()
 
 export default class GenerateCKLMetadata extends Command {
-  static usage = 'generate:ckl_metadata --output=<JSON-FILE>'
+  static usage = 'generate ckl_metadata --output=<JSON-FILE>'
 
-  static description = 'Generate a checklist metadata template for "saf convert:hdf2ckl"'
+  static description = 'Generate a checklist metadata template for "saf convert hdf2ckl"'
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    output: flags.string({char: 'o', required: true}),
+    help: Flags.help({char: 'h'}),
+    output: Flags.string({char: 'o', required: true}),
   }
 
   async run() {
-    const {flags} = this.parse(GenerateCKLMetadata)
+    const {flags} = await this.parse(GenerateCKLMetadata)
     console.log("Please fill in the following fields to the best of your ability, if you don't have a value, please leave the field empty.")
     const cklMetadata = {
       benchmark: {
