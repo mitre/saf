@@ -1,5 +1,5 @@
 import {Command, Flags} from '@oclif/core'
-import * as fs from 'fs'
+import fs from 'fs'
 import https from 'https'
 import {FromHdfToAsffMapper as Mapper} from '@mitre/hdf-converters'
 import path from 'path'
@@ -19,6 +19,7 @@ export default class HDF2ASFF extends Command {
     help: Flags.help({char: 'h'}),
     accountId: Flags.string({char: 'a', required: true, description: 'AWS Account ID'}),
     region: Flags.string({char: 'r', required: true, description: 'SecurityHub Region'}),
+    specifyRegionAttribute: Flags.boolean({char: 'R', required: false, description: 'Manually specify the top-level `Region` attribute - SecurityHub populates this attribute automatically and prohibits one from updating it using `BatchImportFindings` or `BatchUpdateFindings`'}),
     input: Flags.string({char: 'i', required: true, description: 'Input HDF JSON File'}),
     target: Flags.string({char: 't', required: true, description: 'Unique name for target to track findings across time'}),
     upload: Flags.boolean({char: 'u', required: false, description: 'Upload findings to AWS Security Hub'}),
@@ -33,6 +34,7 @@ export default class HDF2ASFF extends Command {
     const converted = new Mapper(JSON.parse(fs.readFileSync(flags.input, 'utf-8')), {
       awsAccountId: flags.accountId,
       region: flags.region,
+      regionAttribute: flags.specifyRegionAttribute,
       target: flags.target,
       input: flags.input,
     }).toAsff()

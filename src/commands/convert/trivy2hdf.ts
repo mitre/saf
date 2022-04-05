@@ -24,8 +24,7 @@ export default class Trivy2HDF extends Command {
       input = `{"Findings": ${fs.readFileSync(flags.input, 'utf-8').trim()}}`
     }
 
-    const meta = {name: 'Trivy', title: 'Trivy Findings'}
-    const converter = new Mapper(input, undefined, meta)
+    const converter = new Mapper(input)
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }
