@@ -147,7 +147,7 @@ OPTIONS
   -M, --mapping=mapping                      Path to a YAML file with mappings for each field, by default, CIS Benchmark
                                              fields are used for XLSX, STIG Viewer CSV export is used by CSV
   -c, --controlNamePrefix=controlNamePrefix  Prefix for all control IDs
-  -e, --disableCharacterEncodingHeader  Remove the "# encoding: UTF-8" comment at the top of each control
+  -e, --encodingHeader  Remove the "# encoding: UTF-8" comment at the top of each control
   -f, --format=cis|disa|general              [default: general]
   -h, --help                                 show CLI help
   -i, --input=input                          (required)
@@ -170,7 +170,7 @@ generate xccdf2inspec_stub              Generate an InSpec profile stub from a D
   OPTIONS
     -h, --help                   show CLI help
     -S, --useStigID              Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs
-    -e, --disableCharacterEncodingHeader  Remove the "# encoding: UTF-8" comment at the top of each control
+    -e, --encodingHeader         Add the "# encoding: UTF-8" comment at the top of each control
     -i, --input=input            (required) Path to the DISA STIG XCCDF file
     -l, --lineLength=lineLength  [default: 80] Characters between lines within InSpec controls
     -m, --metadata=metadata      Path to a JSON file with additional metadata for the inspec.yml file
