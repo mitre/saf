@@ -123,8 +123,8 @@ export default class XCCDF2InSpec extends Command {
         impact: severityStringToImpact(group.Rule['@_severity'] || 'critical'),
         rationale: '',
         descs: {
-          check: group.Rule.check['check-content'],
-          fix: group.Rule.fixtext['#text'],
+          check: typeof group.Rule.check === 'string' ? group.Rule.check : group.Rule.check['check-content'],
+          fix: typeof group.Rule.fixtext === 'string' ? group.Rule.fixtext : group.Rule.fixtext['#text'],
         },
         tags: {
           severity: impactNumberToSeverityString(severityStringToImpact(group.Rule['@_severity'] || 'critical')),
@@ -133,7 +133,7 @@ export default class XCCDF2InSpec extends Command {
           gid: group['@_id'],
           rid: group.Rule['@_id'],
           stig_id: group.Rule.version,
-          fix_id: group.Rule.fix['@_id'],
+          fix_id: group.Rule.fix ? group.Rule.fix['@_id'] : undefined,
           false_negatives: extractedDescription.FalseNegatives,
           false_positives: extractedDescription.FalsePositives,
           documentable: extractedDescription.Documentable,
