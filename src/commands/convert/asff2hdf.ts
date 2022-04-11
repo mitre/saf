@@ -4,6 +4,9 @@ import {ASFFResults as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
+import AWS from 'aws-sdk'
+import https from 'https'
+import {GetFindingsRequest} from 'aws-sdk/clients/securityhub'
 
 export default class ASFF2HDF extends Command {
   static usage =
@@ -19,27 +22,36 @@ export default class ASFF2HDF extends Command {
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({
-      char: 'i',
-      required: true,
-      description: 'Input ASFF JSON file',
-    }),
-    securityhub: Flags.string({
-      required: false,
-      multiple: true,
-      description:
-        'Additional input files to provide context that an ASFF file needs such as the CIS AWS Foundations or AWS Foundational Security Best Practices documents (in ASFF compliant JSON form)',
-    }),
-    output: Flags.string({
-      char: 'o',
-      required: true,
-      description: 'Output HDF JSON folder',
-    }),
+    input: Flags.string({char: 'i', required: true, description: 'Input ASFF JSON file'}),
+    insecure: Flags.boolean({char: 'I', required: false, default: false, description: 'Disable SSL verification, this is insecure.'}),
+    securityhub: Flags.string({required: false, multiple: true, description: 'Additional input files to provide context that an ASFF file needs such as the CIS AWS Foundations or AWS Foundational Security Best Practices documents (in ASFF compliant JSON form)'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON folder'}),
+    certificate: Flags.string({char: 'C', required: false, description: 'Trusted signing certificate file'}),
   };
 
   async run() {
     const {flags} = await this.parse(ASFF2HDF)
     let securityhub
+
+    const findings: string[] = []
+    if (flags.input) {
+      const data = fs.readFileSync(flags.input, 'utf-8')
+      try {
+        const convertedJson = JSON.parse(data)
+      } catch {
+        findings.push(...data.split('\n'))
+      }
+    }
+
+    AWS.config.update({
+      httpOptions: {
+        agent: new https.Agent({
+          rejectUnauthorized: !flags.insecure,
+          ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf-8') : undefined,
+        }),
+      },
+    })
+
     if (flags.securityhub) {
       securityhub = flags.securityhub.map(file =>
         fs.readFileSync(file, 'utf-8'),
@@ -47,7 +59,7 @@ export default class ASFF2HDF extends Command {
     }
 
     const converter = new Mapper(
-      fs.readFileSync(flags.input, 'utf-8'),
+      findings.join('\n'),
       securityhub,
     )
     const results = converter.toHdf()
