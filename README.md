@@ -625,6 +625,32 @@ convert sonarqube2hdf        Pull SonarQube vulnerabilities for the specified
 
 ```
 
+##### Splunk to HDF
+```
+convert splunk2hdf           Pull HDF data from your Splunk instance back into an HDF file
+
+USAGE
+  $ saf splunk2hdf -i, --input=FILE -H, --host -P, --port -p, --protocol -t, --token -i, --index
+
+FLAGS
+  -H, --host=<value>       (required) Splunk Hostname or IP
+  -I, --index=<value>      (required) Splunk index to query HDF data from
+  -L, --logLevel=<option>  [default: info]
+                           <options: info|warn|debug|verbose>
+  -P, --port=<value>       [default: 8089] Splunk management port (also known as the Universal Forwarder port)
+  -i, --input=<value>...   GUID(s) or Filename(s) of files to convert
+  -o, --output=<value>     Output HDF JSON Folder
+  -p, --password=<value>   Your Splunk password
+  -s, --scheme=<option>    [default: https] HTTP Scheme used for communication with splunk
+                           <options: http|https>
+  -t, --token=<value>      Your Splunk API Token
+  -u, --username=<value>   Your Splunk username
+
+EXAMPLES
+  saf convert splunk2hdf -H 127.0.0.1 -u admin -p Valid_password! -I hdf -i some-file-in-your-splunk-instance.json yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder
+  saf convert splunk2hdf -I hdf -H 127.0.0.1 -t your.splunk.token -o output-folder
+```
+
 
 ##### Trivy to HDF
 

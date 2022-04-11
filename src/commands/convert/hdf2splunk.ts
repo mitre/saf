@@ -7,7 +7,7 @@ import {createWinstonLogger, getHDFSummary} from '../../utils/logging'
 export default class HDF2Splunk extends Command {
   static usage = 'hdf2splunk -i, --input=FILE -H, --host -P, --port -p, --protocol -t, --token -i, --index'
 
-  static description = 'Translate and upload a Heimdall Data Format JSON file into a Splunk server via its HTTP Event Collector'
+  static description = 'Pull HDF data from your Splunk instance back into an HDF file'
 
   static flags = {
     help: Flags.help({char: 'h'}),
@@ -22,7 +22,7 @@ export default class HDF2Splunk extends Command {
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
-  static examples = ['saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf', 'saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf']
+  static examples = ['saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf', 'saf convert splunk2hdf -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf']
 
   async run() {
     const {flags} = await this.parse(HDF2Splunk)
