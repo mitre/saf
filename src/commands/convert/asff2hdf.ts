@@ -56,15 +56,14 @@ export default class ASFF2HDF extends Command {
       } catch {
         findings.push(...data.split('\n'))
       }
+
       // If we've been passed a Security Standards JSON
       if (flags.securityhub) {
         securityhub = flags.securityhub.map(file =>
           fs.readFileSync(file, 'utf-8'),
         )
       }
-    }
-    // Flag to pull findings from AWS Security Hub
-    else if (flags.aws) {
+    } else if (flags.aws) { // Flag to pull findings from AWS Security Hub
       AWS.config.update({
         httpOptions: {
           agent: new https.Agent({
@@ -82,7 +81,7 @@ export default class ASFF2HDF extends Command {
       const client = new AWS.SecurityHub(clientOptions)
       // Pagination
       let nextToken = null
-      let filters: AwsSecurityFindingFilters = {};
+      let filters: AwsSecurityFindingFilters = {}
 
       // Filter by target name
       if (flags.target) {
@@ -92,7 +91,7 @@ export default class ASFF2HDF extends Command {
           }),
         }
       }
-      
+
       logger.info('Starting collection of Findings')
       const queryParams = {Filters: filters, MaxResults: 100}
       // Get findings
@@ -104,11 +103,12 @@ export default class ASFF2HDF extends Command {
         findings.push(...getFindingsResult.Findings.map(finding => JSON.stringify(finding)))
         nextToken = getFindingsResult.NextToken
       }
-      nextToken = null;
+
+      nextToken = null
 
       logger.info('Starting collection of security standards')
       const standards: AWS.SecurityHub.GetEnabledStandardsResponse = {
-        StandardsSubscriptions: []
+        StandardsSubscriptions: [],
       }
 
       // Get acive security standards subscriptions (enabled standards)
@@ -121,12 +121,12 @@ export default class ASFF2HDF extends Command {
           standards.StandardsSubscriptions?.push(...getStandardsResult.StandardsSubscriptions)
           nextToken = getStandardsResult.NextToken
         } else {
-          logger.debug("No more enabled standards found")
-          break;
+          logger.debug('No more enabled standards found')
+          break
         }
       }
 
-      // Store for the HDF converter 
+      // Store for the HDF converter
       securityhub = [JSON.stringify(standards)]
     }
 
