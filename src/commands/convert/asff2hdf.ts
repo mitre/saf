@@ -4,12 +4,10 @@ import {ASFFResults as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
-import AWS, {AWSError} from 'aws-sdk'
+import AWS from 'aws-sdk'
 import https from 'https'
-import {AwsSecurityFindingFilters, GetFindingsRequest} from 'aws-sdk/clients/securityhub'
+import {AwsSecurityFindingFilters} from 'aws-sdk/clients/securityhub'
 import {createWinstonLogger} from '../../utils/logging'
-import {PromiseResult} from 'aws-sdk/lib/request'
-import {GetFindingsResponse} from 'aws-sdk/clients/guardduty'
 
 export default class ASFF2HDF extends Command {
   static usage =
@@ -65,7 +63,6 @@ export default class ASFF2HDF extends Command {
         )
       }
     }
-
     // Flag to pull findings from AWS Security Hub
     else if (flags.aws) {
       AWS.config.update({
@@ -97,7 +94,7 @@ export default class ASFF2HDF extends Command {
       }
       
       logger.info('Starting collection of Findings')
-      let queryParams = {Filters: filters, MaxResults: 100}
+      const queryParams = {Filters: filters, MaxResults: 100}
       // Get findings
       while (nextToken !== undefined) {
         logger.debug(`Querying for NextToken: ${nextToken}`)
@@ -137,7 +134,7 @@ export default class ASFF2HDF extends Command {
       findings.join('\n'),
       securityhub,
     )
-    
+
     const results = converter.toHdf()
 
     fs.mkdirSync(flags.output)
