@@ -118,6 +118,8 @@ Want to Recommend or Help Develop a Converter? See [the wiki](https://github.com
 
 ##### HDF to ASFF
 
+Note: Uploading findings into AWS Security hub requires configuration of the AWS CLI, see [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.
+
 ```
 convert hdf2asff            Translate a Heimdall Data Format JSON file into
                             AWS Security Findings Format JSON file(s)
@@ -305,6 +307,8 @@ convert asff2hdf            Translate a AWS Security Finding Format JSON into a
 
 
 ##### AWS Config to HDF
+
+Note: Pulling AWS Config results data requires configuration of the AWS CLI, see [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.
 
 ```
 convert aws_config2hdf      Pull Configuration findings from AWS Config and convert
