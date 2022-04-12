@@ -33,7 +33,7 @@ export default class ASFF2HDF extends Command {
     output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON folder'}),
     certificate: Flags.string({char: 'C', required: false, description: 'Trusted signing certificate file'}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
-    target: Flags.string({char: 't', required: true, multiple: true, description: 'Target ID(s) to pull from Security Hub (maximum 10)'}),
+    target: Flags.string({char: 't', required: false, multiple: true, description: 'Target ID(s) to pull from Security Hub (maximum 10), leave blank for non-HDF findings'}),
   };
 
   async run() {
@@ -42,8 +42,10 @@ export default class ASFF2HDF extends Command {
     let securityhub
 
     const findings: string[] = []
+    // If we've been passed an input file
     if (flags.input) {
       const data = fs.readFileSync(flags.input, 'utf-8')
+      // Attempt to convert to one finding per line
       try {
         const convertedJson = JSON.parse(data)
         if (Array.isArray(convertedJson)) {
@@ -56,11 +58,22 @@ export default class ASFF2HDF extends Command {
       } catch {
         findings.push(...data.split('\n'))
       }
-    } else if (flags.aws) {
+      // If we've been passed a Security Standards JSON
+      if (flags.securityhub) {
+        securityhub = flags.securityhub.map(file =>
+          fs.readFileSync(file, 'utf-8'),
+        )
+      }
+    }
+
+    // Flag to pull findings from AWS Security Hub
+    else if (flags.aws) {
       AWS.config.update({
         httpOptions: {
           agent: new https.Agent({
+            // Disable HTTPS verification if requested
             rejectUnauthorized: !flags.insecure,
+            // Pass an SSL certificate to trust
             ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf-8') : undefined,
           }),
         },
@@ -68,15 +81,24 @@ export default class ASFF2HDF extends Command {
       const clientOptions: AWS.SecurityHub.ClientConfiguration = {
         region: flags.region,
       }
+      // Create our SecurityHub client
       const client = new AWS.SecurityHub(clientOptions)
+      // Pagination
       let nextToken = null
-      const filters: AwsSecurityFindingFilters = {
-        Id: flags.target.map(target => {
-          return {Value: target, Comparison: 'PREFIX'}
-        }),
+      let filters: AwsSecurityFindingFilters = {};
+
+      // Filter by target name
+      if (flags.target) {
+        filters = {
+          Id: flags.target.map(target => {
+            return {Value: target, Comparison: 'PREFIX'}
+          }),
+        }
       }
+      
       logger.info('Starting collection of Findings')
-      const queryParams = {Filters: filters, MaxResults: 100}
+      let queryParams = {Filters: filters, MaxResults: 100}
+      // Get findings
       while (nextToken !== undefined) {
         logger.debug(`Querying for NextToken: ${nextToken}`)
         _.set(queryParams, 'NextToken', nextToken)
@@ -85,18 +107,37 @@ export default class ASFF2HDF extends Command {
         findings.push(...getFindingsResult.Findings.map(finding => JSON.stringify(finding)))
         nextToken = getFindingsResult.NextToken
       }
-    }
+      nextToken = null;
 
-    if (flags.securityhub) {
-      securityhub = flags.securityhub.map(file =>
-        fs.readFileSync(file, 'utf-8'),
-      )
+      logger.info('Starting collection of security standards')
+      const standards: AWS.SecurityHub.GetEnabledStandardsResponse = {
+        StandardsSubscriptions: []
+      }
+
+      // Get acive security standards subscriptions (enabled standards)
+      while (nextToken !== undefined) {
+        logger.debug(`Querying for NextToken: ${nextToken}`)
+        _.set(queryParams, 'NextToken', nextToken)
+        const getStandardsResult = await client.getEnabledStandards().promise()
+        logger.debug(`Received: ${getStandardsResult.StandardsSubscriptions?.length} standards`)
+        if (getStandardsResult.StandardsSubscriptions) {
+          standards.StandardsSubscriptions?.push(...getStandardsResult.StandardsSubscriptions)
+          nextToken = getStandardsResult.NextToken
+        } else {
+          logger.debug("No more enabled standards found")
+          break;
+        }
+      }
+
+      // Store for the HDF converter 
+      securityhub = [JSON.stringify(standards)]
     }
 
     const converter = new Mapper(
       findings.join('\n'),
       securityhub,
     )
+    
     const results = converter.toHdf()
 
     fs.mkdirSync(flags.output)
