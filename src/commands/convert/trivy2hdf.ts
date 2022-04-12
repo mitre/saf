@@ -2,6 +2,8 @@ import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {ASFFResults as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
+import _ from 'lodash'
+import path from 'path'
 
 export default class Trivy2HDF extends Command {
   static usage = 'convert trivy2hdf -i <asff-finding-json> [--securityhub <standard-1-json> ... <standard-n-json>] -o <hdf-scan-results-json>'
@@ -25,7 +27,23 @@ export default class Trivy2HDF extends Command {
     }
 
     const converter = new Mapper(input)
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+    const results = converter.toHdf()
+
+    if (Object.keys(results).length > 1) {
+      _.forOwn(results, (result, filename) => {
+        fs.writeFileSync(
+          path.join(flags.output, checkSuffix(filename)),
+          JSON.stringify(result),
+        )
+      })
+    } else {
+      _.forOwn(results, (result, filename) => {
+        fs.writeFileSync(
+          path.join(flags.output),
+          JSON.stringify(result),
+        )
+      })
+    }
   }
 }
 
