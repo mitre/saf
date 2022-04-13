@@ -153,9 +153,9 @@ export default class XCCDF2InSpec extends Command {
           if (identifier['@_system'].toLowerCase().endsWith('cci')) {
             _.set(inspecControl, 'tags.cci', _.get(inspecControl, 'tags.cci') || [])
             inspecControl.tags.cci?.push(identifier['#text'])
-            if (identifier['#text'] in CciNistMappingData) {
+            if (identifier['#text'] in CciNistMappingData.data) {
               _.set(inspecControl, 'tags.nist', _.get(inspecControl, 'tags.nist') || [])
-              const nistMapping = _.get(CciNistMappingData, identifier['#text'])
+              const nistMapping = _.get(CciNistMappingData.data, identifier['#text'])
               if (inspecControl.tags.nist?.indexOf(nistMapping) === -1) {
                 inspecControl.tags.nist?.push(nistMapping)
               }
