@@ -2,7 +2,7 @@
 
 The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) brings together applications, techniques, libraries, and tools developed by MITRE and the security community to streamline security automation for systems and DevOps pipelines
 
-The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimdall_tools) and [InSpec Tools](https://github.com/mitre/inspec_tools). 
+The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimdall_tools) and [InSpec Tools](https://github.com/mitre/inspec_tools).
 
 ## Terminology:
 
@@ -12,39 +12,69 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 ## Contents:
 
 - [SAF CLI Installation](#installation)
+
   - [Via NPM](#installation-via-npm)
   - [Via Docker](#installation-via-docker)
   - [Via Windows Installer](#installation-via-windows-installer)
 
-* [SAF CLI Usage](#usage)
-  * [Convert](#convert) - Convert security results from all your security tools into a common data format
-      *  [HDF to AWS Security Hub](#hdf-to-asff)
-      *  [AWS Security Hub to HDF](#asff-to-hdf)
-      *  [HDF to Splunk](#hdf-to-splunk)
-      *  [Splunk to HDF](#splunk-to-HDF)
-      *  [AWS Config to HDF](#aws-config-to-hdf)
-      *  [Snyk to HDF](#snyk-to-hdf)
-      *  [Trivy to HDF](#trivy-to-hdf)
-      *  [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
-      *  [DBProtect to HDF](#dbprotect-to-hdf)
-      *  [HDF to CSV](#hdf-to-csv)
-      *  [Netsparker to HDF](#netsparker-to-hdf)
-      *  [Burp Suite to HDF](#burp-suite-to-hdf)
-      *  [SonarQube to HDF](#sonarqube-to-hdf)
-      *  [OWASP ZAP to HDF](#owasp-zap-to-hdf)
-      *  [Prowler to HDF](#prowler-to-hdf)
-      *  [Fortify to HDF](#fortify-to-hdf)
-      *  [JFrog Xray to HDF](#jfrog-xray-to-hdf)
-      *  [Nikto to HDF](#nikto-to-hdf)
-      *  [Sarif to HDF](#sarif-to-hdf)
-      *  [Scoutsuite to HDF](#scoutsuite-to-hdf)
-      *  [HDF to DISA Checklist](#hdf-to-checklist)
-      *  [DISA XCCDF Results to HDF](#xccdf-results-to-hdf)
-  * [View](#view) - Identify overall security status and deep-dive to solve specific security defects
-  * [Validate](#validate) - Verify pipeline thresholds
-  * [Generate](#generate) - Generate InSpec validation code, set pipeline thresholds, and generate options to support other saf commands.
-  * Scan - Visit https://saf.mitre.org/#/validate to explore and run inspec profiles
-  * Harden - Visit https://saf.mitre.org/#/harden to explore and run hardening scripts
+- [Security Automation Framework CLI](#security-automation-framework-cli)
+  - [Terminology:](#terminology)
+  - [Contents:](#contents)
+  - [Installation](#installation)
+      - [Installation via NPM](#installation-via-npm)
+      - [Update via NPM](#update-via-npm)
+      - [Installation via Docker](#installation-via-docker)
+      - [Update via Docker](#update-via-docker)
+      - [Installation via Windows Installer](#installation-via-windows-installer)
+      - [Update via Windows Installer](#update-via-windows-installer)
+  - [Usage](#usage)
+    - [Convert](#convert)
+    - [From HDF](#from-hdf)
+        - [HDF to ASFF](#hdf-to-asff)
+      - [HDF to Splunk](#hdf-to-splunk)
+        - [Previewing HDF Data Within Splunk:](#previewing-hdf-data-within-splunk)
+        - [HDF to Condensed JSON](#hdf-to-condensed-json)
+        - [HDF to Checklist](#hdf-to-checklist)
+        - [HDF to CSV](#hdf-to-csv)
+        - [Previewing HDF Data Within Splunk:](#previewing-hdf-data-within-splunk-1)
+    - [To HDF](#to-hdf)
+        - [ASFF to HDF](#asff-to-hdf)
+        - [AWS Config to HDF](#aws-config-to-hdf)
+        - [Burp Suite to HDF](#burp-suite-to-hdf)
+        - [CKL to POA&M](#ckl-to-poam)
+        - [DBProtect to HDF](#dbprotect-to-hdf)
+        - [Fortify to HDF](#fortify-to-hdf)
+        - [JFrog Xray to HDF](#jfrog-xray-to-hdf)
+        - [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
+        - [Netsparker to HDF](#netsparker-to-hdf)
+        - [Nikto to HDF](#nikto-to-hdf)
+        - [Prowler to HDF](#prowler-to-hdf)
+        - [Sarif to HDF](#sarif-to-hdf)
+        - [Scoutsuite to HDF](#scoutsuite-to-hdf)
+        - [Snyk to HDF](#snyk-to-hdf)
+        - [SonarQube to HDF](#sonarqube-to-hdf)
+        - [Trivy to HDF](#trivy-to-hdf)
+        - [XCCDF Results to HDF](#xccdf-results-to-hdf)
+        - [OWASP ZAP to HDF](#owasp-zap-to-hdf)
+    - [View](#view)
+      - [Heimdall](#heimdall)
+      - [Summary](#summary)
+    - [Validate](#validate)
+      - [Thresholds](#thresholds)
+    - [Generate](#generate)
+      - [CKL Templates](#ckl-templates)
+      - [InSpec Metadata](#inspec-metadata)
+      - [Thresholds](#thresholds-1)
+      - [Spreadsheet (csv/xlsx) to InSpec](#spreadsheet-csvxlsx-to-inspec)
+      - [XCCDF to InSpec Stub](#xccdf-to-inspec-stub)
+      - [Other](#other)
+        - [Notes](#notes)
+        - [Mapping Files](#mapping-files)
+- [License and Author](#license-and-author)
+    - [Authors](#authors)
+    - [NOTICE](#notice)
+    - [NOTICE](#notice-1)
+    - [NOTICE](#notice-2)
 
 ## Installation
 
@@ -56,8 +86,6 @@ The SAF CLI can be installed and kept up to date using `npm`, which is included 
 npm install -g @mitre/saf
 ```
 
-
-
 #### Update via NPM
 
 To update the SAF CLI with `npm`:
@@ -68,22 +96,19 @@ npm update -g @mitre/saf
 
 ---
 
-
 #### Installation via Docker
 
-**On Linux and Mac:** 
+**On Linux and Mac:**
 
 ```
 docker run -it -v$(pwd):/share mitre/saf
 ```
 
-**On Windows:** 
+**On Windows:**
 
 ```
 docker run -it -v%cd%:/share mitre/saf
 ```
-
-
 
 #### Update via Docker
 
@@ -104,6 +129,7 @@ To install the latest release of the SAF CLI on Windows, download and run the mo
 To update the SAF CLI on Windows, uninstall any existing version from your system and then download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases) page.
 
 ## Usage
+
 ---
 
 ### Convert
@@ -112,9 +138,7 @@ Translating your data to and from Heimdall Data Format (HDF) is done using the `
 
 Want to Recommend or Help Develop a Converter? See [the wiki](https://github.com/mitre/saf/wiki/How-to-recommend-development-of-a-mapper) on how to get started.
 
-
 ### From HDF
-
 
 ##### HDF to ASFF
 
@@ -132,11 +156,12 @@ convert hdf2asff            Translate a Heimdall Data Format JSON file into
     -C, --certificate=certificate  Trusted signing certificate file
     -I, --insecure                 Disable SSL verification (WARNING: this is insecure)
     -u, --upload                   Upload findings to AWS Security Hub
-  
+
   EXAMPLES
     saf convert hdf2asff -i rhel7.scan.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7-asff
     saf convert hdf2asff -i rhel7.scan.json -a 123456789 -r us-east-1 -t rhel7_example_host -u
 ```
+
 #### HDF to Splunk
 
 **Notice**: HDF to Splunk requires configuration on the Splunk server. See [Splunk Configuration](https://github.com/mitre/saf/wiki/Splunk-Configuration).
@@ -160,28 +185,33 @@ convert hdf2splunk           Translate and upload a Heimdall Data Format JSON fi
     saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf
     saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf
 ```
+
 HDF Splunk Schema documentation: https://github.com/mitre/heimdall2/blob/master/libs/hdf-converters/src/converters-from-hdf/splunk/Schemas.md#schemas
+
 ##### Previewing HDF Data Within Splunk:
+
 A full raw search query:
+
 ```sql
-index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) values(meta.filetype) list(meta.profile_sha256) values(meta.hdf_splunk_schema) first(meta.status)  list(meta.status)  list(meta.is_baseline) values(title) last(code) list(code) values(desc) values(descriptions.*)  values(id) values(impact) list(refs{}.*) list(results{}.*) list(source_location{}.*) values(tags.*)  by meta.guid id 
-| join  meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=header | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(statistics.duration)  list(platform.*) list(version)  by meta.guid] 
-| join meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=profile | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(meta.profile_sha256) list(meta.is_baseline)  last(summary) list(summary) list(sha256) list(supports{}.*) last(name) list(name) list(copyright) list(maintainer) list(copyright_email) last(version) list(version) list(license) list(title) list(parent_profile) list(depends{}.*) list(controls{}.*) list(attributes{}.*) list(status) by meta.guid] 
+index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) values(meta.filetype) list(meta.profile_sha256) values(meta.hdf_splunk_schema) first(meta.status)  list(meta.status)  list(meta.is_baseline) values(title) last(code) list(code) values(desc) values(descriptions.*)  values(id) values(impact) list(refs{}.*) list(results{}.*) list(source_location{}.*) values(tags.*)  by meta.guid id
+| join  meta.guid
+    [search index="<<YOUR INDEX>>"  meta.subtype=header | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(statistics.duration)  list(platform.*) list(version)  by meta.guid]
+| join meta.guid
+    [search index="<<YOUR INDEX>>"  meta.subtype=profile | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(meta.profile_sha256) list(meta.is_baseline)  last(summary) list(summary) list(sha256) list(supports{}.*) last(name) list(name) list(copyright) list(maintainer) list(copyright_email) last(version) list(version) list(license) list(title) list(parent_profile) list(depends{}.*) list(controls{}.*) list(attributes{}.*) list(status) by meta.guid]
 
 ```
+
 A formatted table search query:
+
 ```sql
-index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) values(meta.filetype) list(meta.profile_sha256) values(meta.hdf_splunk_schema) first(meta.status)  list(meta.status)  list(meta.is_baseline) values(title) last(code) list(code) values(desc) values(descriptions.*)  values(id) values(impact) list(refs{}.*) list(results{}.*) list(source_location{}.*) values(tags.*)  by meta.guid id 
-| join  meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=header | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(statistics.duration)  list(platform.*) list(version)  by meta.guid] 
-| join meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=profile | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(meta.profile_sha256) list(meta.is_baseline)  last(summary) list(summary) list(sha256) list(supports{}.*) last(name) list(name) list(copyright) list(maintainer) list(copyright_email) last(version) list(version) list(license) list(title) list(parent_profile) list(depends{}.*) list(controls{}.*) list(attributes{}.*) list(status) by meta.guid] 
+index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) values(meta.filetype) list(meta.profile_sha256) values(meta.hdf_splunk_schema) first(meta.status)  list(meta.status)  list(meta.is_baseline) values(title) last(code) list(code) values(desc) values(descriptions.*)  values(id) values(impact) list(refs{}.*) list(results{}.*) list(source_location{}.*) values(tags.*)  by meta.guid id
+| join  meta.guid
+    [search index="<<YOUR INDEX>>"  meta.subtype=header | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(statistics.duration)  list(platform.*) list(version)  by meta.guid]
+| join meta.guid
+    [search index="<<YOUR INDEX>>"  meta.subtype=profile | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(meta.profile_sha256) list(meta.is_baseline)  last(summary) list(summary) list(sha256) list(supports{}.*) last(name) list(name) list(copyright) list(maintainer) list(copyright_email) last(version) list(version) list(license) list(title) list(parent_profile) list(depends{}.*) list(controls{}.*) list(attributes{}.*) list(status) by meta.guid]
 | rename values(meta.filename) AS "Results Set", values(meta.filetype) AS "Scan Type", list(statistics.duration) AS "Scan Duration", first(meta.status) AS "Control Status", list(results{}.status) AS "Test(s) Status", id AS "ID", values(title) AS "Title", values(desc) AS "Description", values(impact) AS "Impact", last(code) AS Code, values(descriptions.check) AS "Check", values(descriptions.fix) AS "Fix", values(tags.cci{}) AS "CCI IDs", list(results{}.code_desc) AS "Results Description",  list(results{}.skip_message) AS "Results Skip Message (if applicable)", values(tags.nist{}) AS "NIST SP 800-53 Controls", last(name) AS "Scan (Profile) Name", last(summary) AS "Scan (Profile) Summary", last(version) AS "Scan (Profile) Version"
 | table meta.guid "Results Set" "Scan Type" "Scan (Profile) Name" ID "NIST SP 800-53 Controls" Title "Control Status" "Test(s) Status" "Results Description" "Results Skip Message (if applicable)"  Description Impact Severity  Check Fix "CCI IDs" Code "Scan Duration" "Scan (Profile) Summary" "Scan (Profile) Version"
 ```
-
 
 ##### HDF to Condensed JSON
 
@@ -192,14 +222,14 @@ convert hdf2condensed        Condensed format used by some community members
   OPTIONS
     -i, --input=xml            Input HDF file
     -o, --output=output        Output condensed JSON file
-    
+
 
   EXAMPLES
     saf convert hdf2condensed -i rhel7-results.json -o rhel7-condensed.json
 ```
 
-
 ##### HDF to Checklist
+
 ```
 convert hdf2ckl              Translate a Heimdall Data Format JSON file into a
                              DISA checklist file
@@ -219,6 +249,7 @@ convert hdf2ckl              Translate a Heimdall Data Format JSON file into a
 ```
 
 ##### HDF to CSV
+
 ```
 convert hdf2csv             Translate a Heimdall Data Format JSON file into a
                             Comma Separated Values (CSV) file
@@ -233,7 +264,6 @@ convert hdf2csv             Translate a Heimdall Data Format JSON file into a
   EXAMPLE
     saf convert hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"
 ```
-
 
 **Notice**: HDF to Splunk requires configuration on the Splunk server. See [Splunk Configuration](https://github.com/mitre/saf/wiki/Splunk-Configuration).
 
@@ -256,24 +286,30 @@ convert hdf2splunk           Translate and upload a Heimdall Data Format JSON fi
     saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf
     saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf
 ```
+
 HDF Splunk Schema documentation: https://github.com/mitre/heimdall2/blob/master/libs/hdf-converters/src/converters-from-hdf/splunk/Schemas.md#schemas
+
 ##### Previewing HDF Data Within Splunk:
+
 A full raw search query:
+
 ```sql
-index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) values(meta.filetype) list(meta.profile_sha256) values(meta.hdf_splunk_schema) first(meta.status)  list(meta.status)  list(meta.is_baseline) values(title) last(code) list(code) values(desc) values(descriptions.*)  values(id) values(impact) list(refs{}.*) list(results{}.*) list(source_location{}.*) values(tags.*)  by meta.guid id 
-| join  meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=header | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(statistics.duration)  list(platform.*) list(version)  by meta.guid] 
-| join meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=profile | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(meta.profile_sha256) list(meta.is_baseline)  last(summary) list(summary) list(sha256) list(supports{}.*) last(name) list(name) list(copyright) list(maintainer) list(copyright_email) last(version) list(version) list(license) list(title) list(parent_profile) list(depends{}.*) list(controls{}.*) list(attributes{}.*) list(status) by meta.guid] 
+index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) values(meta.filetype) list(meta.profile_sha256) values(meta.hdf_splunk_schema) first(meta.status)  list(meta.status)  list(meta.is_baseline) values(title) last(code) list(code) values(desc) values(descriptions.*)  values(id) values(impact) list(refs{}.*) list(results{}.*) list(source_location{}.*) values(tags.*)  by meta.guid id
+| join  meta.guid
+    [search index="<<YOUR INDEX>>"  meta.subtype=header | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(statistics.duration)  list(platform.*) list(version)  by meta.guid]
+| join meta.guid
+    [search index="<<YOUR INDEX>>"  meta.subtype=profile | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(meta.profile_sha256) list(meta.is_baseline)  last(summary) list(summary) list(sha256) list(supports{}.*) last(name) list(name) list(copyright) list(maintainer) list(copyright_email) last(version) list(version) list(license) list(title) list(parent_profile) list(depends{}.*) list(controls{}.*) list(attributes{}.*) list(status) by meta.guid]
 
 ```
+
 A formatted table search query:
+
 ```sql
-index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) values(meta.filetype) list(meta.profile_sha256) values(meta.hdf_splunk_schema) first(meta.status)  list(meta.status)  list(meta.is_baseline) values(title) last(code) list(code) values(desc) values(descriptions.*)  values(id) values(impact) list(refs{}.*) list(results{}.*) list(source_location{}.*) values(tags.*)  by meta.guid id 
-| join  meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=header | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(statistics.duration)  list(platform.*) list(version)  by meta.guid] 
-| join meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=profile | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(meta.profile_sha256) list(meta.is_baseline)  last(summary) list(summary) list(sha256) list(supports{}.*) last(name) list(name) list(copyright) list(maintainer) list(copyright_email) last(version) list(version) list(license) list(title) list(parent_profile) list(depends{}.*) list(controls{}.*) list(attributes{}.*) list(status) by meta.guid] 
+index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) values(meta.filetype) list(meta.profile_sha256) values(meta.hdf_splunk_schema) first(meta.status)  list(meta.status)  list(meta.is_baseline) values(title) last(code) list(code) values(desc) values(descriptions.*)  values(id) values(impact) list(refs{}.*) list(results{}.*) list(source_location{}.*) values(tags.*)  by meta.guid id
+| join  meta.guid
+    [search index="<<YOUR INDEX>>"  meta.subtype=header | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(statistics.duration)  list(platform.*) list(version)  by meta.guid]
+| join meta.guid
+    [search index="<<YOUR INDEX>>"  meta.subtype=profile | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(meta.profile_sha256) list(meta.is_baseline)  last(summary) list(summary) list(sha256) list(supports{}.*) last(name) list(name) list(copyright) list(maintainer) list(copyright_email) last(version) list(version) list(license) list(title) list(parent_profile) list(depends{}.*) list(controls{}.*) list(attributes{}.*) list(status) by meta.guid]
 | rename values(meta.filename) AS "Results Set", values(meta.filetype) AS "Scan Type", list(statistics.duration) AS "Scan Duration", first(meta.status) AS "Control Status", list(results{}.status) AS "Test(s) Status", id AS "ID", values(title) AS "Title", values(desc) AS "Description", values(impact) AS "Impact", last(code) AS Code, values(descriptions.check) AS "Check", values(descriptions.fix) AS "Fix", values(tags.cci{}) AS "CCI IDs", list(results{}.code_desc) AS "Results Description",  list(results{}.skip_message) AS "Results Skip Message (if applicable)", values(tags.nist{}) AS "NIST SP 800-53 Controls", last(name) AS "Scan (Profile) Name", last(summary) AS "Scan (Profile) Summary", last(version) AS "Scan (Profile) Version"
 | table meta.guid "Results Set" "Scan Type" "Scan (Profile) Name" ID "NIST SP 800-53 Controls" Title "Control Status" "Test(s) Status" "Results Description" "Results Skip Message (if applicable)"  Description Impact Severity  Check Fix "CCI IDs" Code "Scan Duration" "Scan (Profile) Summary" "Scan (Profile) Version"
 ```
@@ -286,12 +322,11 @@ index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) value
 
 ##### ASFF to HDF
 
-Output|Use|Command
----|---|---
-ASFF json|All the findings that will be fed into the mapper|aws securityhub get-findings > asff.json
-AWS SecurityHub enabled standards json|Get all the enabled standards so you can get their identifiers|aws securityhub get-enabled-standards > asff_standards.json
-AWS SecurityHub standard controls json|Get all the controls for a standard that will be fed into the mapper|aws securityhub describe-standards-controls --standards-subscription-arn "arn:aws:securityhub:us-east-1:123456789123:subscription/cis-aws-foundations-benchmark/v/1.2.0" > asff_cis_standard.json
-
+| Output                                 | Use                                                                  | Command                                                                                                                                                                                           |
+| -------------------------------------- | -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| ASFF json                              | All the findings that will be fed into the mapper                    | aws securityhub get-findings > asff.json                                                                                                                                                          |
+| AWS SecurityHub enabled standards json | Get all the enabled standards so you can get their identifiers       | aws securityhub get-enabled-standards > asff_standards.json                                                                                                                                       |
+| AWS SecurityHub standard controls json | Get all the controls for a standard that will be fed into the mapper | aws securityhub describe-standards-controls --standards-subscription-arn "arn:aws:securityhub:us-east-1:123456789123:subscription/cis-aws-foundations-benchmark/v/1.2.0" > asff_cis_standard.json |
 
 ```
 convert asff2hdf            Translate a AWS Security Finding Format JSON into a
@@ -305,7 +340,6 @@ convert asff2hdf            Translate a AWS Security Finding Format JSON into a
     saf convert asff2hdf -i asff-findings.json -o output-file-name.json
     saf convert asff2hdf -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
 ```
-
 
 ##### AWS Config to HDF
 
@@ -326,7 +360,6 @@ convert aws_config2hdf      Pull Configuration findings from AWS Config and conv
     saf convert aws_config2hdf -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json
 ```
 
-
 ##### Burp Suite to HDF
 
 ```
@@ -335,7 +368,7 @@ convert burpsuite2hdf       Translate a BurpSuite Pro XML file into a Heimdall
   OPTIONS
     -i, --input=xml            Input BurpSuite Pro XML File
     -o, --output=output        Output HDF JSON File
-    
+
 
   EXAMPLES
     saf convert burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json
@@ -356,8 +389,6 @@ convert ckl2POAM            Translate DISA Checklist CKL file(s) to POA&M files
     -s, --rowsToSkip=rowsToSkip  [default: 4] Rows to leave between POA&M Items for milestone
 ```
 
-
-
 ##### DBProtect to HDF
 
 ```
@@ -370,7 +401,6 @@ convert dbprotect2hdf       Translate a DBProtect report in "Check Results
   EXAMPLES
     saf convert dbprotect2hdf -i check_results_details_report.xml -o output-hdf-name.json
 ```
-
 
 ##### Fortify to HDF
 
@@ -390,7 +420,6 @@ convert fortify2hdf         Translate a Fortify results FVDL file into a Heimdal
     saf convert fortify2hdf -i audit.fvdl -o output-hdf-name.json
 ```
 
-
 ##### JFrog Xray to HDF
 
 ```
@@ -404,7 +433,6 @@ convert jfrog_xray2hdf      Translate a JFrog Xray results JSON file into a
   EXAMPLES
     saf convert jfrog_xray2hdf -i xray_results.json -o output-hdf-name.json
 ```
-
 
 ##### Tenable Nessus to HDF
 
@@ -425,7 +453,6 @@ OPTIONS
     saf convert nessus2hdf -i nessus_results.nessus -o output-hdf-name.json
 ```
 
-
 ##### Netsparker to HDF
 
 ```
@@ -438,7 +465,6 @@ convert netsparker2hdf      Translate a Netsparker XML results file into a
   EXAMPLES
     saf convert netsparker2hdf -i netsparker_results.xml -o output-hdf-name.json
 ```
-
 
 ##### Nikto to HDF
 
@@ -453,7 +479,6 @@ convert nikto2hdf           Translate a Nikto results JSON file into a Heimdall
     saf convert nikto2hdf -i nikto-results.json -o output-hdf-name.json
 ```
 
-
 ##### Prowler to HDF
 
 ```
@@ -467,7 +492,6 @@ convert prowler2hdf         Translate a Prowler-derived AWS Security Finding
   EXAMPLES
     saf convert prowler2hdf -i prowler-asff.json -o output-hdf-name.json
 ```
-
 
 ##### Sarif to HDF
 
@@ -490,7 +514,6 @@ convert sarif2hdf          Translate a SARIF JSON file into a Heimdall Data
     saf convert sarif2hdf -i sarif-results.json -o output-hdf-name.json
 ```
 
-
 ##### Scoutsuite to HDF
 
 ```
@@ -507,7 +530,6 @@ convert scoutsuite2hdf       Translate a ScoutSuite results from a Javascript
     saf convert scoutsuite2hdf -i scoutsuite-results.js -o output-hdf-name.json
 ```
 
-
 ##### Snyk to HDF
 
 ```
@@ -520,7 +542,6 @@ convert snyk2hdf             Translate a Snyk results JSON file into a Heimdall
   EXAMPLES
     saf convert snyk2hdf -i snyk_results.json -o output-hdf-name.json
 ```
-
 
 ##### SonarQube to HDF
 
@@ -538,7 +559,6 @@ convert sonarqube2hdf        Pull SonarQube vulnerabilities for the specified
     saf convert sonarqube2hdf -n project_key -u http://sonar:9000 --auth YOUR_API_KEY -o output-hdf-name.json
 
 ```
-
 
 ##### Trivy to HDF
 
@@ -560,7 +580,6 @@ convert trivy2hdf         Translate a Trivy-derived AWS Security Finding
   EXAMPLES
     saf convert trivy2hdf -i trivy_asff.json -o output-hdf-name.json
 ```
-
 
 ##### XCCDF Results to HDF
 
@@ -599,7 +618,7 @@ convert zap2hdf              Translate a OWASP ZAP results JSON to HDF format Js
 You can start a local Heimdall Lite instance to visualize your findings with the SAF CLI. To start an instance use the `saf view heimdall` command:
 
 ```
-view:heimdall            Run an instance of Heimdall Lite to visualize 
+view:heimdall            Run an instance of Heimdall Lite to visualize
                          your data
 
   OPTIONS
@@ -609,8 +628,6 @@ view:heimdall            Run an instance of Heimdall Lite to visualize
   EXAMPLES
     saf view heimdall -p 8080
 ```
-
-
 
 #### Summary
 
@@ -623,7 +640,7 @@ view:summary            Get a quick compliance overview of HDF files
     -i, --input=FILE         (required) Input HDF file(s)
     -j, --json               Output results as JSON
     -o, --output=output
-	
+
   EXAMPLE
     saf view summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json
 ```
@@ -650,7 +667,6 @@ validate threshold       Validate the compliance and status counts of an HDF fil
   	saf validate threshold -i rhel7-results.json -F output.yaml
 ```
 
-
 ---
 
 ### Generate
@@ -664,7 +680,7 @@ generate ckl_metadata        Generate a checklist metadata template for "saf con
 
   OPTIONS
     -o, --output=output  (required) Output JSON File
-  
+
   EXAMPLE
     saf generate ckl_metadata -o rhel_metadata.json
 ```
@@ -704,10 +720,10 @@ generate threshold      Generate a compliance template for "saf validate thresho
 
 #### Spreadsheet (csv/xlsx) to InSpec
 
-You can use `saf generate spreadsheet2inspec_stub` to generate an InSpec profile stub from a spreadsheet file. 
+You can use `saf generate spreadsheet2inspec_stub` to generate an InSpec profile stub from a spreadsheet file.
 
 ```
-generate spreadsheet2inspec_stub              Generate an InSpec profile stub from a CSV STIGs or CIS XLSX benchmarks 
+generate spreadsheet2inspec_stub              Generate an InSpec profile stub from a CSV STIGs or CIS XLSX benchmarks
 
 USAGE
   $ saf generate spreadsheet2inspec_stub -i, --input=<XLSX or CSV> -o, --output=FOLDER
@@ -729,6 +745,7 @@ EXAMPLE
 ```
 
 #### XCCDF to InSpec Stub
+
 ```
 generate xccdf2inspec_stub              Generate an InSpec profile stub from a DISA STIG XCCDF XML file
 
@@ -746,13 +763,7 @@ generate xccdf2inspec_stub              Generate an InSpec profile stub from a D
     -s, --singleFile             Output the resulting controls as a single file
 ```
 
-
- 
-
-
 #### Other
-
-
 
 ##### Notes
 
@@ -764,39 +775,38 @@ generate xccdf2inspec_stub              Generate an InSpec profile stub from a D
 
 Mapping files are YAML files that tell `saf` which columns in the input spreadsheet should be parsed. Mapping files are structured as following:
 
-``` yaml
-id:                           # Required
+```yaml
+id: # Required
   - ID
   - "recommendation #"
-title:                        # Required
-  - Title                     # You can give more than one column header as a value for an
-  - title                     # attribute if you are not sure how it will be spelled in the input.
+title: # Required
+  - Title # You can give more than one column header as a value for an
+  - title # attribute if you are not sure how it will be spelled in the input.
 desc:
   - Description
   - Discussion
   - description
-impact: 0.5                  # If impact is set, its value will be used for every control
+impact: 0.5 # If impact is set, its value will be used for every control
 desc.rationale:
   - Rationale
   - rationale statement
-desc.check:                   # Required
+desc.check: # Required
   - Audit
   - audit procedure
 desc.fix:
   - Remediation
   - remediation procedure
-desc.additional_information:  # You can define arbitrary values under desc and tag
-  - Additional Information    # if you have extra fields to record
+desc.additional_information: # You can define arbitrary values under desc and tag
+  - Additional Information # if you have extra fields to record
 desc.default_value:
   - Default Value
-ref:                          # InSpec keyword - saf will check this column for URLs (links to documentation)
-  - References                # and record each address as a ref attribute
+ref: # InSpec keyword - saf will check this column for URLs (links to documentation)
+  - References # and record each address as a ref attribute
 ```
 
 Where the keys (`title`) are InSpec control attributes and the values (`- Title`) are the column headers in the input spreadsheet that correspond to that attribute.
 
 &nbsp;
-
 
 # License and Author
 
