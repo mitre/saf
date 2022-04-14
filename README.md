@@ -145,7 +145,6 @@ convert hdf2asff            Translate a Heimdall Data Format JSON file into
 convert hdf2splunk           Translate and upload a Heimdall Data Format JSON file into a Splunk server
 
   OPTIONS
-    -h, --help               Show CLI help.
     -H, --host=<value>       (required) Splunk Hostname or IP
     -I, --index=<value>      (required) Splunk index to import HDF data into
     -L, --logLevel=<option>  [default: info] <options: info|warn|debug|verbose>
@@ -210,7 +209,6 @@ convert hdf2ckl              Translate a Heimdall Data Format JSON file into a
     -I, --ip=ip              IP address for CKL metadata
     -M, --mac=mac            MAC address for CKL metadata
     -m, --metadata=metadata  Metadata JSON file, generate one with "saf generate ckl_metadata"
-    -h, --help               show CLI help
     -i, --input=input        (required) Input HDF file
     -o, --output=output      (required) Output CKL file
 
@@ -225,7 +223,6 @@ convert hdf2csv             Translate a Heimdall Data Format JSON file into a
 
   OPTIONS
     -f, --fields=fields  [default: All Fields] Fields to include in output CSV, separated by commas
-    -h, --help           show CLI help
     -i, --input=input    (required) Input HDF file
     -o, --output=output  (required) Output CSV file
     -t, --noTruncate     Don't truncate fields longer than 32,767 characters (the cell limit in Excel)
@@ -241,7 +238,6 @@ convert hdf2csv             Translate a Heimdall Data Format JSON file into a
 convert hdf2splunk           Translate and upload a Heimdall Data Format JSON file into a Splunk server
 
   OPTIONS
-    -h, --help               Show CLI help.
     -H, --host=<value>       (required) Splunk Hostname or IP
     -I, --index=<value>      (required) Splunk index to import HDF data into
     -L, --logLevel=<option>  [default: info] <options: info|warn|debug|verbose>
@@ -717,8 +713,8 @@ OPTIONS
                                              fields are used for XLSX, STIG Viewer CSV export is used by CSV
   -c, --controlNamePrefix=controlNamePrefix  Prefix for all control IDs
   -f, --format=cis|disa|general              [default: general]
-  -h, --help                                 show CLI help
   -i, --input=input                          (required)
+  -e, --encodingHeader                       Add the "# encoding: UTF-8" comment at the top of each control
   -l, --lineLength=lineLength                [default: 80] Characters between lines within InSpec controls
   -m, --metadata=metadata                    Path to a JSON file with additional metadata for the inspec.yml file
   -o, --output=output                        (required) [default: profile] Output InSpec profile stub folder
@@ -736,10 +732,10 @@ generate xccdf2inspec_stub              Generate an InSpec profile stub from a D
     $ saf generate xccdf2inspec_stub -i, --input=XML -o, --output=FOLDER
 
   OPTIONS
-    -h, --help                   show CLI help
     -S, --useStigID              Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs
     -i, --input=input            (required) Path to the DISA STIG XCCDF file
     -l, --lineLength=lineLength  [default: 80] Characters between lines within InSpec controls
+    -e, --encodingHeader         Add the "# encoding: UTF-8" comment at the top of each control
     -m, --metadata=metadata      Path to a JSON file with additional metadata for the inspec.yml file
     -o, --output=output          (required) [default: profile]
     -r, --useVulnerabilityId     Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX') for InSpec control IDs
