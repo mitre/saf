@@ -126,15 +126,16 @@ convert hdf2asff            Translate a Heimdall Data Format JSON file into
   OPTIONS
     -a, --accountId=accountId      (required) AWS Account ID
     -i, --input=input              (required) Input HDF JSON File
-    -o, --output=output            (required) Output ASFF JSONs Folder
     -r, --region=region            (required) SecurityHub Region
     -t, --target=target            (required) Unique name for target to track findings across time
+    -o, --output=output            Output ASFF JSONs Folder
     -C, --certificate=certificate  Trusted signing certificate file
     -I, --insecure                 Disable SSL verification (WARNING: this is insecure)
     -u, --upload                   Upload findings to AWS Security Hub
   
   EXAMPLES
     saf convert hdf2asff -i rhel7.scan.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7-asff
+    saf convert hdf2asff -i rhel7.scan.json -a 123456789 -r us-east-1 -t rhel7_example_host -u
 ```
 #### HDF to Splunk
 
