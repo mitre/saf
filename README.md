@@ -30,32 +30,27 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
   - [Usage](#usage)
     - [Convert](#convert)
     - [From HDF](#from-hdf)
-        - [HDF to ASFF](#hdf-to-asff)
+      - [HDF to ASFF](#hdf-to-asff)
       - [HDF to Splunk](#hdf-to-splunk)
-        - [Previewing HDF Data Within Splunk:](#previewing-hdf-data-within-splunk)
-        - [HDF to Condensed JSON](#hdf-to-condensed-json)
-        - [HDF to Checklist](#hdf-to-checklist)
-        - [HDF to CSV](#hdf-to-csv)
-        - [Previewing HDF Data Within Splunk:](#previewing-hdf-data-within-splunk-1)
     - [To HDF](#to-hdf)
-        - [ASFF to HDF](#asff-to-hdf)
-        - [AWS Config to HDF](#aws-config-to-hdf)
-        - [Burp Suite to HDF](#burp-suite-to-hdf)
-        - [CKL to POA&M](#ckl-to-poam)
-        - [DBProtect to HDF](#dbprotect-to-hdf)
-        - [Fortify to HDF](#fortify-to-hdf)
-        - [JFrog Xray to HDF](#jfrog-xray-to-hdf)
-        - [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
-        - [Netsparker to HDF](#netsparker-to-hdf)
-        - [Nikto to HDF](#nikto-to-hdf)
-        - [Prowler to HDF](#prowler-to-hdf)
-        - [Sarif to HDF](#sarif-to-hdf)
-        - [Scoutsuite to HDF](#scoutsuite-to-hdf)
-        - [Snyk to HDF](#snyk-to-hdf)
-        - [SonarQube to HDF](#sonarqube-to-hdf)
-        - [Trivy to HDF](#trivy-to-hdf)
-        - [XCCDF Results to HDF](#xccdf-results-to-hdf)
-        - [OWASP ZAP to HDF](#owasp-zap-to-hdf)
+      - [ASFF to HDF](#asff-to-hdf)
+      - [AWS Config to HDF](#aws-config-to-hdf)
+      - [Burp Suite to HDF](#burp-suite-to-hdf)
+      - [CKL to POA&M](#ckl-to-poam)
+      - [DBProtect to HDF](#dbprotect-to-hdf)
+      - [Fortify to HDF](#fortify-to-hdf)
+      - [JFrog Xray to HDF](#jfrog-xray-to-hdf)
+      - [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
+      - [Netsparker to HDF](#netsparker-to-hdf)
+      - [Nikto to HDF](#nikto-to-hdf)
+      - [Prowler to HDF](#prowler-to-hdf)
+      - [Sarif to HDF](#sarif-to-hdf)
+      - [Scoutsuite to HDF](#scoutsuite-to-hdf)
+      - [Snyk to HDF](#snyk-to-hdf)
+      - [SonarQube to HDF](#sonarqube-to-hdf)
+      - [Trivy to HDF](#trivy-to-hdf)
+      - [XCCDF Results to HDF](#xccdf-results-to-hdf)
+      - [OWASP ZAP to HDF](#owasp-zap-to-hdf)
     - [View](#view)
       - [Heimdall](#heimdall)
       - [Summary](#summary)
@@ -70,11 +65,6 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       - [Other](#other)
         - [Notes](#notes)
         - [Mapping Files](#mapping-files)
-- [License and Author](#license-and-author)
-    - [Authors](#authors)
-    - [NOTICE](#notice)
-    - [NOTICE](#notice-1)
-    - [NOTICE](#notice-2)
 
 ## Installation
 
@@ -129,8 +119,6 @@ To install the latest release of the SAF CLI on Windows, download and run the mo
 To update the SAF CLI on Windows, uninstall any existing version from your system and then download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases) page.
 
 ## Usage
-
----
 
 ### Convert
 
