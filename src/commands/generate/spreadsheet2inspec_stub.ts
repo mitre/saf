@@ -25,6 +25,7 @@ export default class Spreadsheet2HDF extends Command {
     input: Flags.string({char: 'i', required: true}),
     controlNamePrefix: Flags.string({char: 'c', required: false, default: '', description: 'Prefix for all control IDs'}),
     format: Flags.string({char: 'f', required: false, default: 'general', options: ['cis', 'disa', 'general']}),
+    encodingHeader: Flags.boolean({char: 'e', required: false, default: false, description: 'Add the "# encoding: UTF-8" comment at the top of each control'}),
     metadata: Flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
     mapping: Flags.string({char: 'M', required: false, description: 'Path to a YAML file with mappings for each field, by default, CIS Benchmark fields are used for XLSX, STIG Viewer CSV export is used by CSV'}),
     lineLength: Flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
@@ -325,7 +326,7 @@ export default class Spreadsheet2HDF extends Command {
 
     // Convert all extracted controls to Ruby/InSpec code
     inspecControls.forEach(control => {
-      fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control, flags.lineLength))
+      fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader))
     })
   }
 }
