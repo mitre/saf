@@ -309,8 +309,8 @@ export default class Spreadsheet2HDF extends Command {
         if (newControl.tags && newControl.tags?.cci) {
           newControl.tags.nist = []
           newControl.tags.cci.forEach(cci => {
-            if (cci in CciNistMappingData) {
-              newControl.tags?.nist?.push(_.get(CciNistMappingData, cci))
+            if (cci in CciNistMappingData.data) {
+              newControl.tags?.nist?.push(_.get(CciNistMappingData.data, cci))
             }
           })
         }
