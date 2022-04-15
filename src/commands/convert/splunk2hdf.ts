@@ -35,6 +35,11 @@ export default class Splunk2HDF extends Command {
     const {flags} = await this.parse(Splunk2HDF)
     const logger = createWinstonLogger('splunk2hdf', flags.logLevel)
 
+    if (!(flags.username && flags.password) && !flags.token) {
+      logger.error('Please provide either a Username and Password or a Splunk token')
+      throw new Error('Please provide either a Username and Password or a Splunk token')
+    }
+
     const mapper = new SplunkMapper({
       host: flags.host,
       port: flags.port,
@@ -44,11 +49,6 @@ export default class Splunk2HDF extends Command {
       sessionKey: flags.token,
       index: flags.index,
     }, false, logger)
-
-    if (!(flags.username && flags.password) && !flags.token) {
-      logger.error('Please provide either a Username and Password or a Splunk token')
-      throw new Error('Please provide either a Username and Password or a Splunk token')
-    }
 
     if (flags.input && flags.output) {
       const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
@@ -88,9 +88,9 @@ export default class Splunk2HDF extends Command {
         ['File Name', 'GUID', 'Imported At'],
       ]
 
-      const executionsAvialable = await this.searchExecutions(mapper, '*')
+      const executionsAvailable = await this.searchExecutions(mapper, '*')
 
-      executionsAvialable.forEach(execution => {
+      executionsAvailable.forEach(execution => {
         availableExecutionsTable.push([_.get(execution, 'meta.filename') || null, _.get(execution, 'meta.guid') || null, _.get(execution, 'meta.parse_time') || null])
       })
 
