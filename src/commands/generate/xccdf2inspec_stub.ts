@@ -22,6 +22,7 @@ export default class XCCDF2InSpec extends Command {
     useVulnerabilityId: Flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')", exclusive: ['useStigID']}),
     useStigID: Flags.boolean({char: 'S', required: false, default: false, description: "Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs", exclusive: ['useVulnerabilityId']}),
     lineLength: Flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
+    encodingHeader: Flags.boolean({char: 'e', required: false, default: false, description: 'Add the "# encoding: UTF-8" comment at the top of each control'}),
     output: Flags.string({char: 'o', required: true, default: 'profile'}),
   }
 
@@ -153,9 +154,9 @@ export default class XCCDF2InSpec extends Command {
           if (identifier['@_system'].toLowerCase().endsWith('cci')) {
             _.set(inspecControl, 'tags.cci', _.get(inspecControl, 'tags.cci') || [])
             inspecControl.tags.cci?.push(identifier['#text'])
-            if (identifier['#text'] in CciNistMappingData) {
+            if (identifier['#text'] in CciNistMappingData.data) {
               _.set(inspecControl, 'tags.nist', _.get(inspecControl, 'tags.nist') || [])
-              const nistMapping = _.get(CciNistMappingData, identifier['#text'])
+              const nistMapping = _.get(CciNistMappingData.data, identifier['#text'])
               if (inspecControl.tags.nist?.indexOf(nistMapping) === -1) {
                 inspecControl.tags.nist?.push(nistMapping)
               }
@@ -174,12 +175,12 @@ export default class XCCDF2InSpec extends Command {
     // Convert all extracted controls to Ruby/InSpec code
     if (!flags.singleFile) {
       inspecControls.forEach(control => {
-        fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control, flags.lineLength))
+        fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader))
       })
     } else {
       const controlOutfile = fs.createWriteStream(path.join(flags.output, 'controls', 'controls.rb'), {flags: 'w'})
       inspecControls.forEach(control => {
-        controlOutfile.write(inspecControlToRubyCode(control, flags.lineLength) + '\n\n')
+        controlOutfile.write(inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader) + '\n\n')
       })
       controlOutfile.close()
     }

@@ -150,8 +150,8 @@ export function extractSolution(findingDetails: string): string | undefined {
 
 export function cci2nist(cci: string) {
   if (typeof cci === 'string') {
-    if (cci in CciNistMappingData) {
-      return (CciNistMappingData as unknown as Record<string, string>)[cci].replace(' ', '')
+    if (cci in CciNistMappingData.data) {
+      return (CciNistMappingData.data as unknown as Record<string, string>)[cci].replace(' ', '')
     }
 
     return prompt(`What is the NIST ID for CCI ${cci}? `)
