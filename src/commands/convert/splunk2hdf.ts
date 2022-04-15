@@ -7,9 +7,9 @@ import fs from 'fs'
 import path from 'path'
 
 export default class Splunk2HDF extends Command {
-  static usage = 'splunk2hdf -i, --input=FILE -H, --host -P, --port -p, --protocol -t, --token -i, --index'
+  static usage = 'splunk2hdf -i, --input=<filename/GUID> -H, --host -P, --port -p, --protocol -t, --token -i, --index -o, --output=<output-folder>'
 
-  static description = 'Translate and upload a Heimdall Data Format JSON file into a Splunk server via its HTTP Event Collector'
+  static description = 'Pull HDF data from your Splunk instance back into an HDF file'
 
   static flags = {
     help: Flags.help({char: 'h'}),
@@ -25,7 +25,7 @@ export default class Splunk2HDF extends Command {
     output: Flags.string({char: 'o', required: false, description: 'Output HDF JSON Folder'}),
   }
 
-  static examples = ['saf convert splunk2hdf -H 127.0.0.1 -u admin -p Valid_password! -I hdf -i some-file-in-your-splunk-instance.json yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder', 'saf convert hdf2splunk -I hdf -H 127.0.0.1 -t your.splunk.token -o output-folder']
+  static examples = ['saf convert splunk2hdf -H 127.0.0.1 -u admin -p Valid_password! -I hdf -i some-file-in-your-splunk-instance.json yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder']
 
   async searchExecutions(mapper: SplunkMapper, filename: string, index?: string) {
     return mapper.queryData(`search index="${index ? index : '*'}" meta.filename="${filename ? filename : '*'}" meta.subtype="header" | head 100`)
