@@ -23,8 +23,8 @@ export default class ASFF2HDF extends Command {
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: false, description: 'Input ASFF JSON file'}),
-    aws: Flags.boolean({char: 'a', required: false, description: 'Pull findings from AWS Security Hub'}),
+    input: Flags.string({char: 'i', required: false, description: 'Input ASFF JSON file', exclusive: ['aws']}),
+    aws: Flags.boolean({char: 'a', required: false, description: 'Pull findings from AWS Security Hub', exclusive: ['input']}),
     region: Flags.string({char: 'r', required: false, description: 'Security Hub region to pull findings from'}),
     insecure: Flags.boolean({char: 'I', required: false, default: false, description: 'Disable SSL verification, this is insecure.'}),
     securityhub: Flags.string({required: false, multiple: true, description: 'Additional input files to provide context that an ASFF file needs such as the CIS AWS Foundations or AWS Foundational Security Best Practices documents (in ASFF compliant JSON form)'}),
@@ -93,7 +93,7 @@ export default class ASFF2HDF extends Command {
       }
 
       logger.info('Starting collection of Findings')
-      const queryParams = {Filters: filters, MaxResults: 100}
+      let queryParams: Record<string, unknown> = {Filters: filters, MaxResults: 100}
       // Get findings
       while (nextToken !== undefined) {
         logger.debug(`Querying for NextToken: ${nextToken}`)
@@ -107,27 +107,54 @@ export default class ASFF2HDF extends Command {
       nextToken = null
 
       logger.info('Starting collection of security standards')
-      const standards: AWS.SecurityHub.GetEnabledStandardsResponse = {
-        StandardsSubscriptions: [],
-      }
+      const enabledStandards: AWS.SecurityHub.StandardsSubscriptions = []
 
-      // Get acive security standards subscriptions (enabled standards)
+      queryParams = _.omit(queryParams, ['Filters'])
+
+      // Get active security standards subscriptions (enabled standards)
       while (nextToken !== undefined) {
         logger.debug(`Querying for NextToken: ${nextToken}`)
-        _.set(queryParams, 'NextToken', nextToken)
-        const getStandardsResult = await client.getEnabledStandards().promise()
+        
+        const getStandardsResult = await client.getEnabledStandards({NextToken: nextToken}).promise()
+        console.log(getStandardsResult)
         logger.debug(`Received: ${getStandardsResult.StandardsSubscriptions?.length} standards`)
-        if (getStandardsResult.StandardsSubscriptions) {
-          standards.StandardsSubscriptions?.push(...getStandardsResult.StandardsSubscriptions)
+        if (getStandardsResult.StandardsSubscriptions?.length === 100) {
+          enabledStandards.push(...getStandardsResult.StandardsSubscriptions)
           nextToken = getStandardsResult.NextToken
+          _.set(queryParams, 'NextToken', nextToken)
         } else {
-          logger.debug('No more enabled standards found')
+          if (getStandardsResult.StandardsSubscriptions) {
+            enabledStandards.push(...getStandardsResult.StandardsSubscriptions)
+          } else {
+            logger.debug('No more enabled standards found')
+          }
           break
         }
       }
+      
+      securityhub = []
+      // Describe the controls to give context to the mapper
+      for (const standard of enabledStandards) {
+        nextToken = null
+        const standardsControls: AWS.SecurityHub.StandardsControls = []
 
-      // Store for the HDF converter
-      securityhub = [JSON.stringify(standards)]
+        while (nextToken !== undefined) {
+          logger.debug(`Querying for NextToken: ${nextToken}`)
+          _.set(queryParams, 'NextToken', nextToken)
+          const getStandardsResult = await client.describeStandardsControls({StandardsSubscriptionArn: standard.StandardsSubscriptionArn}).promise()
+          console.log(getStandardsResult)
+          logger.info(`Received: ${getStandardsResult.Controls?.length} Controls`)
+          if (getStandardsResult.Controls) {
+            standardsControls.push(...getStandardsResult.Controls)
+            nextToken = getStandardsResult.NextToken
+          } else {
+            logger.debug('No more enabled standards found')
+            break
+          }
+        }
+        securityhub.push(JSON.stringify({Controls: standardsControls}))
+      }
+      console.log(securityhub)
     }
 
     const converter = new Mapper(
