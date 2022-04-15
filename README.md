@@ -648,7 +648,7 @@ FLAGS
 
 EXAMPLES
   saf convert splunk2hdf -H 127.0.0.1 -u admin -p Valid_password! -I hdf -i some-file-in-your-splunk-instance.json yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder
-  saf convert splunk2hdf -I hdf -H 127.0.0.1 -t your.splunk.token -o output-folder
+  saf convert splunk2hdf -I hdf -H 127.0.0.1 -t your.splunk.token
 ```
 
 
