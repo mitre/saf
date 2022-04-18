@@ -21,7 +21,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       *  [HDF to AWS Security Hub](#hdf-to-asff)
       *  [AWS Security Hub to HDF](#asff-to-hdf)
       *  [HDF to Splunk](#hdf-to-splunk)
-      *  [Splunk to HDF](#splunk-to-HDF)
+      *  [Splunk to HDF](#splunk-to-hdf)
       *  [AWS Config to HDF](#aws-config-to-hdf)
       *  [Snyk to HDF](#snyk-to-hdf)
       *  [Trivy to HDF](#trivy-to-hdf)
@@ -182,22 +182,6 @@ index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) value
 ```
 
 
-##### HDF to Condensed JSON
-
-```
-convert hdf2condensed        Condensed format used by some community members
-                             to pre-process data for elasticsearch and custom dashboards
-
-  OPTIONS
-    -i, --input=xml            Input HDF file
-    -o, --output=output        Output condensed JSON file
-    
-
-  EXAMPLES
-    saf convert hdf2condensed -i rhel7-results.json -o rhel7-condensed.json
-```
-
-
 ##### HDF to Checklist
 ```
 convert hdf2ckl              Translate a Heimdall Data Format JSON file into a
@@ -231,48 +215,23 @@ convert hdf2csv             Translate a Heimdall Data Format JSON file into a
     saf convert hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"
 ```
 
-
-**Notice**: HDF to Splunk requires configuration on the Splunk server. See [Splunk Configuration](https://github.com/mitre/saf/wiki/Splunk-Configuration).
+##### HDF to Condensed JSON
 
 ```
-convert hdf2splunk           Translate and upload a Heimdall Data Format JSON file into a Splunk server
+convert hdf2condensed        Condensed format used by some community members
+                             to pre-process data for elasticsearch and custom dashboards
 
   OPTIONS
-    -H, --host=<value>       (required) Splunk Hostname or IP
-    -I, --index=<value>      (required) Splunk index to import HDF data into
-    -L, --logLevel=<option>  [default: info] <options: info|warn|debug|verbose>
-    -P, --port=<value>       [default: 8089] Splunk management port (also known as the Universal Forwarder port)s
-    -i, --input=<value>      (required) Input HDF file
-    -p, --password=<value>   Your Splunk password
-    -s, --scheme=<option>    [default: https] HTTP Scheme used for communication with Splunk <options: http|https>
-    -t, --token=<value>      Your Splunk API Token
-    -u, --username=<value>   Your Splunk username
+    -i, --input=xml            Input HDF file
+    -o, --output=output        Output condensed JSON file
+    
 
-  EXAMPLE
-    saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf
-    saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf
+  EXAMPLES
+    saf convert hdf2condensed -i rhel7-results.json -o rhel7-condensed.json
 ```
-HDF Splunk Schema documentation: https://github.com/mitre/heimdall2/blob/master/libs/hdf-converters/src/converters-from-hdf/splunk/Schemas.md#schemas
-##### Previewing HDF Data Within Splunk:
-A full raw search query:
-```sql
-index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) values(meta.filetype) list(meta.profile_sha256) values(meta.hdf_splunk_schema) first(meta.status)  list(meta.status)  list(meta.is_baseline) values(title) last(code) list(code) values(desc) values(descriptions.*)  values(id) values(impact) list(refs{}.*) list(results{}.*) list(source_location{}.*) values(tags.*)  by meta.guid id 
-| join  meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=header | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(statistics.duration)  list(platform.*) list(version)  by meta.guid] 
-| join meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=profile | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(meta.profile_sha256) list(meta.is_baseline)  last(summary) list(summary) list(sha256) list(supports{}.*) last(name) list(name) list(copyright) list(maintainer) list(copyright_email) last(version) list(version) list(license) list(title) list(parent_profile) list(depends{}.*) list(controls{}.*) list(attributes{}.*) list(status) by meta.guid] 
 
-```
-A formatted table search query:
-```sql
-index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) values(meta.filetype) list(meta.profile_sha256) values(meta.hdf_splunk_schema) first(meta.status)  list(meta.status)  list(meta.is_baseline) values(title) last(code) list(code) values(desc) values(descriptions.*)  values(id) values(impact) list(refs{}.*) list(results{}.*) list(source_location{}.*) values(tags.*)  by meta.guid id 
-| join  meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=header | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(statistics.duration)  list(platform.*) list(version)  by meta.guid] 
-| join meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=profile | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(meta.profile_sha256) list(meta.is_baseline)  last(summary) list(summary) list(sha256) list(supports{}.*) last(name) list(name) list(copyright) list(maintainer) list(copyright_email) last(version) list(version) list(license) list(title) list(parent_profile) list(depends{}.*) list(controls{}.*) list(attributes{}.*) list(status) by meta.guid] 
-| rename values(meta.filename) AS "Results Set", values(meta.filetype) AS "Scan Type", list(statistics.duration) AS "Scan Duration", first(meta.status) AS "Control Status", list(results{}.status) AS "Test(s) Status", id AS "ID", values(title) AS "Title", values(desc) AS "Description", values(impact) AS "Impact", last(code) AS Code, values(descriptions.check) AS "Check", values(descriptions.fix) AS "Fix", values(tags.cci{}) AS "CCI IDs", list(results{}.code_desc) AS "Results Description",  list(results{}.skip_message) AS "Results Skip Message (if applicable)", values(tags.nist{}) AS "NIST SP 800-53 Controls", last(name) AS "Scan (Profile) Name", last(summary) AS "Scan (Profile) Summary", last(version) AS "Scan (Profile) Version"
-| table meta.guid "Results Set" "Scan Type" "Scan (Profile) Name" ID "NIST SP 800-53 Controls" Title "Control Status" "Test(s) Status" "Results Description" "Results Skip Message (if applicable)"  Description Impact Severity  Check Fix "CCI IDs" Code "Scan Duration" "Scan (Profile) Summary" "Scan (Profile) Version"
-```
+
+
 
 &nbsp;
 
