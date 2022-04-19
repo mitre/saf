@@ -621,8 +621,7 @@ See the wiki for more information on [template files](https://github.com/mitre/s
 validate threshold       Validate the compliance and status counts of an HDF file
 
   OPTIONS
-    -F, --templateFile        Expected data template, generate one with
-    												  "saf generate threshold"
+    -F, --templateFile        Expected data template, generate one with "saf generate threshold"
     -T, --templateInline=     Flattened JSON containing your validation thresholds
                               (Intended for backwards compatibility with InSpec Tools)
     -i, --input               Input HDF JSON file
