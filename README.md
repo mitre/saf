@@ -544,7 +544,7 @@ convert trivy2hdf         Translate a Trivy-derived AWS Security Finding
 
 
 ##### XCCDF Results to HDF
-
+NOTE: `xccdf_results2hdf` only supports native OpenSCAP output and SCC output.
 ```
 convert xccdf_results2hdf    Translate a SCAP client XCCDF-Results XML report to
                              HDF format Json be viewed on Heimdall
