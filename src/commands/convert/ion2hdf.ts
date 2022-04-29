@@ -5,7 +5,7 @@ import fs from 'fs'
 import path from 'path'
 
 export default class ION2HDF extends Command {
-  static usage = 'ion2hdf ';
+  static usage = 'convert ion2hdf -a, --apiKey -t, --team <team-name> -o, --output <output-folder> -p, --project <project-name> -A, --allProjects (true/false)';
 
   static description =
     'Pull and translate SBOM data from Ion Channel into Heimdall Data Format';
@@ -32,7 +32,6 @@ export default class ION2HDF extends Command {
       char: 'p',
       description: 'The name of the project(s) you would like to pull',
       multiple: true,
-      required: false,
     }),
     allProjects: Flags.boolean({
       char: 'A',
