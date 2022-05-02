@@ -4,8 +4,8 @@ import {createWinstonLogger} from '../../utils/logging'
 import fs from 'fs'
 import path from 'path'
 
-export default class ION2HDF extends Command {
-  static usage = 'convert ion2hdf -a, --apiKey -t, --team <team-name> -o, --output <output-folder> -p, --project <project-name> -A, --allProjects (true/false)';
+export default class IonChannel2HDF extends Command {
+  static usage = 'convert ionchannel2hdf -a, --apiKey -t, --team <team-name> -o, --output <output-folder> -p, --project <project-name> -A, --allProjects (true/false)';
 
   static description =
     'Pull and translate SBOM data from Ion Channel into Heimdall Data Format';
@@ -46,8 +46,8 @@ export default class ION2HDF extends Command {
   };
 
   async run() {
-    const {flags} = await this.parse(ION2HDF)
-    const logger = createWinstonLogger('Ion2HDF', flags.logLevel)
+    const {flags} = await this.parse(IonChannel2HDF)
+    const logger = createWinstonLogger('IonChannel2HDF', flags.logLevel)
 
     logger.debug('Creating Ion Channel API Client')
     const apiClient = new IonChannelAPIMapper(flags.apiKey)

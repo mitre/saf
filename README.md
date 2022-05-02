@@ -24,6 +24,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       *  [Splunk to HDF](#splunk-to-hdf)
       *  [AWS Config to HDF](#aws-config-to-hdf)
       *  [Snyk to HDF](#snyk-to-hdf)
+      *  [Ion Channel to HDF](#ion-channel-2-hdf)
       *  [Trivy to HDF](#trivy-to-hdf)
       *  [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
       *  [DBProtect to HDF](#dbprotect-to-hdf)
@@ -360,6 +361,25 @@ convert jfrog_xray2hdf      Translate a JFrog Xray results JSON file into a
     saf convert jfrog_xray2hdf -i xray_results.json -o output-hdf-name.json
 ```
 
+##### Ion Channel 2 HDF
+
+```
+convert ionchannel2hdf      Pull and translate SBOM data from Ion Channel a
+                            into Heimdall Data Format JSON file
+
+FLAGS
+  -A, --allProjects         Pull all projects available within your team
+  -L, --logLevel=<option>   [default: info]
+                            <options: info|warn|debug|verbose>
+  -a, --apiKey=<value>      (required) API Key from Ion Channel user settings
+  -h, --help                Show CLI help.
+  -o, --output=<value>      (required) Output HDF JSON folder
+  -p, --project=<value>...  The name of the project(s) you would like to pull
+  -t, --teamName=<value>    (required) Your team name that contains the project(s) you would like to pull data from
+
+DESCRIPTION
+  Pull and translate SBOM data from Ion Channel into Heimdall Data Format
+```
 
 ##### Tenable Nessus to HDF
 
