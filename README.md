@@ -376,9 +376,6 @@ FLAGS
   -o, --output=<value>      (required) Output HDF JSON folder
   -p, --project=<value>...  The name of the project(s) you would like to pull
   -t, --teamName=<value>    (required) Your team name that contains the project(s) you would like to pull data from
-
-DESCRIPTION
-  Pull and translate SBOM data from Ion Channel into Heimdall Data Format
 ```
 
 ##### Tenable Nessus to HDF
