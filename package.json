@@ -52,7 +52,7 @@
     "winston": "^3.6.0",
     "xlsx-populate": "^1.21.0",
     "xml2js": "^0.4.23",
-    "yaml": "^1.10.2"
+    "yaml": "^2.1.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.11.0",
