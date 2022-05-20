@@ -364,18 +364,20 @@ convert jfrog_xray2hdf      Translate a JFrog Xray results JSON file into a
 ##### Ion Channel 2 HDF
 
 ```
-convert ionchannel2hdf      Pull and translate SBOM data from Ion Channel a
-                            into Heimdall Data Format JSON file
+convert ionchannel2hdf      Pull and translate SBOM data from Ion Channel
+                            into a Heimdall Data Format JSON file
 
 FLAGS
   -A, --allProjects         Pull all projects available within your team
   -L, --logLevel=<option>   [default: info]
                             <options: info|warn|debug|verbose>
-  -a, --apiKey=<value>      (required) API Key from Ion Channel user settings
+  -a, --apiKey=<value>      API Key from Ion Channel user settings
   -h, --help                Show CLI help.
-  -o, --output=<value>      (required) Output HDF JSON folder
+  -i, --input=<value>...    Input Ion Channel JSON File(s)
+  -o, --output=<value>      (required) Output JSON folder
   -p, --project=<value>...  The name of the project(s) you would like to pull
-  -t, --teamName=<value>    (required) Your team name that contains the project(s) you would like to pull data from
+  --raw                     Output Ion Channel raw data
+  -t, --teamName=<value>    Your team name that contains the project(s) you would like to pull data from
 ```
 
 ##### Tenable Nessus to HDF
