@@ -33,7 +33,7 @@ export default class IonChannel2HDF extends Command {
     output: Flags.string({
       char: 'o',
       required: true,
-      description: 'Output HDF JSON folder',
+      description: 'Output JSON folder',
     }),
     raw: Flags.boolean({
       description: 'Output Ion Channel raw data',
