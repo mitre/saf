@@ -65,11 +65,11 @@ export default class IonChannel2HDF extends Command {
       throw new Error('Please either provide a list of input files or set the api key and the team name.')
     }
 
-    if (flags.allProjects) {
+    if (flags.apiKey && flags.teamName && flags.allProjects) {
       logger.debug('Creating Ion Channel API Client')
-      const apiClient = new IonChannelAPIMapper(flags.apiKey!)
+      const apiClient = new IonChannelAPIMapper(flags.apiKey)
       logger.debug(`Setting team to ${flags.teamName}`)
-      await apiClient.setTeam(flags.teamName!)
+      await apiClient.setTeam(flags.teamName)
       logger.debug(`Set team to ID ${apiClient.teamId}`)
 
       fs.mkdirSync(flags.output)
@@ -90,11 +90,11 @@ export default class IonChannel2HDF extends Command {
 
         fs.writeFileSync(path.join(flags.output, filename), JSON.stringify(json))
       }
-    } else if (Array.isArray(flags.project)) {
+    } else if (flags.apiKey && flags.teamName && Array.isArray(flags.project)) {
       logger.debug('Creating Ion Channel API Client')
-      const apiClient = new IonChannelAPIMapper(flags.apiKey!)
+      const apiClient = new IonChannelAPIMapper(flags.apiKey)
       logger.debug(`Setting team to ${flags.teamName}`)
-      await apiClient.setTeam(flags.teamName!)
+      await apiClient.setTeam(flags.teamName)
       logger.debug(`Set team to ID ${apiClient.teamId}`)
 
       fs.mkdirSync(flags.output)
