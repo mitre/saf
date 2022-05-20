@@ -5,7 +5,7 @@ import fs from 'fs'
 import path from 'path'
 
 export default class IonChannel2HDF extends Command {
-  static usage = 'convert ionchannel2hdf -a, --apiKey -t, --team <team-name> -o, --output <output-folder> -p, --project <project-name> -A, --allProjects (true/false)';
+  static usage = 'convert ionchannel2hdf -a, --apiKey -t, --team <team-name> -o, --output <output-folder> --raw -p, --project <project-name> -A, --allProjects (true/false)';
 
   static description =
     'Pull and translate SBOM data from Ion Channel into Heimdall Data Format';
@@ -28,6 +28,7 @@ export default class IonChannel2HDF extends Command {
       required: true,
       description: 'Output HDF JSON folder',
     }),
+    raw: Flags.boolean({description: 'Output IonChannel raw data'}),
     project: Flags.string({
       char: 'p',
       description: 'The name of the project(s) you would like to pull',
@@ -61,7 +62,17 @@ export default class IonChannel2HDF extends Command {
         logger.info(`Pulling findings from ${project.name}`)
         apiClient.projectId = project.id
         apiClient.analysisId = project.analysis_summary.analysis_id
-        fs.writeFileSync(path.join(flags.output, project.name + '.json'), JSON.stringify(await apiClient.toHdf()))
+        let filename = ''
+        let json = {}
+        if (flags.raw) {
+          filename = project.name + '_raw.json'
+          json = await apiClient.getAnalysis()
+        } else {
+          filename = project.name + '.json'
+          json = await apiClient.toHdf()
+        }
+
+        fs.writeFileSync(path.join(flags.output, filename), JSON.stringify(json))
       }
     } else if (Array.isArray(flags.project)) {
       fs.mkdirSync(flags.output)
@@ -69,7 +80,17 @@ export default class IonChannel2HDF extends Command {
         logger.info(`Pulling findings from ${projectName}`)
         await apiClient.setProject(projectName)
         logger.debug(`Set project ID ${apiClient.projectId}`)
-        fs.writeFileSync(path.join(flags.output, projectName + '.json'), JSON.stringify(await apiClient.toHdf()))
+        let filename = ''
+        let json = {}
+        if (flags.raw) {
+          filename = projectName + '_raw.json'
+          json = await apiClient.getAnalysis()
+        } else {
+          filename = projectName + '.json'
+          json = await apiClient.toHdf()
+        }
+
+        fs.writeFileSync(path.join(flags.output, filename), JSON.stringify(json))
       }
     } else {
       throw new TypeError('Please provide either list of projects or use --allProjects')
