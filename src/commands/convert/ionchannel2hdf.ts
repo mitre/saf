@@ -66,7 +66,7 @@ export default class IonChannel2HDF extends Command {
         let json = {}
         if (flags.raw) {
           filename = project.name + '_raw.json'
-          json = await apiClient.getAnalysis()
+          json = await apiClient.getAnalysis().then(({analysis}) => analysis)
         } else {
           filename = project.name + '.json'
           json = await apiClient.toHdf()
@@ -84,7 +84,7 @@ export default class IonChannel2HDF extends Command {
         let json = {}
         if (flags.raw) {
           filename = projectName + '_raw.json'
-          json = await apiClient.getAnalysis()
+          json = await apiClient.getAnalysis().then(({analysis}) => analysis)
         } else {
           filename = projectName + '.json'
           json = await apiClient.toHdf()
