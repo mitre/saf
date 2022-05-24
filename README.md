@@ -253,13 +253,13 @@ AWS SecurityHub standard controls json|Get all the controls for a standard that 
 convert asff2hdf            Translate a AWS Security Finding Format JSON into a
                             Heimdall Data Format JSON file
   OPTIONS
-    -i, --input=input          Input ASFF JSON File
+    -i, --input=input          (required) Input ASFF JSON File
     --securityhub=securityhub  Input AWS Security Standards File
-    -o, --output=output        Output HDF JSON File
+    -o, --output=output        (required) Output HDF JSON File
 
   EXAMPLES
     saf convert asff2hdf -i asff-findings.json -o output-file-name.json
-    saf convert asff2hdf -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
+    saf convert asff2hdf -i asff-findings.json --securityhub <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
 ```
 
 
