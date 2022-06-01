@@ -1,0 +1,19 @@
+[
+    {
+      "control_id": "V-61409",
+      "explanation":
+        "Audit logs are automatically backed up and preserved as necessary",
+      "frequency": "monthly",
+      "status": "passed",
+      "updated": "2099-05-02",
+      "updated_by": "Json Smith, Security"
+    },
+    {
+      "control_id": "V-61449",
+      "explanation": "Database Jobs are reviewed before they are put into production",
+      "frequency": "daily",
+      "status": "passed",
+      "updated": "2022-01-02",
+      "updated_by": "Alec Hardison, Security"
+    }
+]
