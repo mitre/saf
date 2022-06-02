@@ -12,8 +12,8 @@ export default class HDF2XCCDF extends Command {
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true}),
-    output: Flags.string({char: 'o', required: true}),
+    input: Flags.string({char: 'i', required: true, description: 'Input HDF file'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output HDF file'}),
   }
 
   async run() {

@@ -21,6 +21,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       *  [HDF to AWS Security Hub](#hdf-to-asff)
       *  [AWS Security Hub to HDF](#asff-to-hdf)
       *  [HDF to Splunk](#hdf-to-splunk)
+      *  [HDF to XCCDF](#hdf-to-xccdf)
       *  [Splunk to HDF](#splunk-to-hdf)
       *  [AWS Config to HDF](#aws-config-to-hdf)
       *  [Snyk to HDF](#snyk-to-hdf)
@@ -160,6 +161,20 @@ convert hdf2splunk           Translate and upload a Heimdall Data Format JSON fi
     saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf
     saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf
 ```
+
+#### HDF to XCCDF
+```
+Translate an HDF file into an XCCDF XML
+
+FLAGS
+  -h, --help            Show CLI help.
+  -i, --input=<value>   (required) Input HDF file
+  -o, --output=<value>  (required) Output XCCDF file
+
+EXAMPLES
+  $ saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml
+```
+
 HDF Splunk Schema documentation: https://github.com/mitre/heimdall2/blob/master/libs/hdf-converters/src/converters-from-hdf/splunk/Schemas.md#schemas
 ##### Previewing HDF Data Within Splunk:
 A full raw search query:
