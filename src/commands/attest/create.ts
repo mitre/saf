@@ -1,9 +1,13 @@
 import {Command, Flags} from '@oclif/core'
-import {AdvanceDateFrequency, Attestation} from '@mitre/hdf-converters'
+import {Attestation} from '@mitre/hdf-converters'
 import fs from 'fs'
 import AccurateSearch from 'accurate-search'
+import XlsxPopulate from 'xlsx-populate'
 import { ExecJSON } from 'inspecjs'
 import promptSync from 'prompt-sync'
+import {default as files} from '../../resources/files.json'
+import { dataURLtoU8Array } from '../../utils/global'
+import moment from 'moment'
 
 const prompt = promptSync()
 
@@ -12,7 +16,7 @@ export default class CreateAttestations extends Command {
         help: Flags.help({char: 'h'}),
         input: Flags.string({char: 'i', description: 'An input HDF file to aid in selecting controls'}),
         output: Flags.string({char: 'o', required: true, description: 'The output filename'}),
-        type: Flags.string({char: 't', description: 'The output file type', default: 'json', options: ['json', 'xlsx', 'yml']}),
+        format: Flags.string({char: 't', description: 'The output file type', default: 'json', options: ['json', 'xlsx', 'yml']}),
     }
 
     getStatus() {
@@ -33,7 +37,7 @@ export default class CreateAttestations extends Command {
         return {
             control_id: id,
             explanation: prompt("Attestation explanation: ") || '',
-            frequency: prompt(`Frequency (daily/every3days/weekly/every2weeks/monthly/quarterly/semiannually/annually): `) as unknown as AdvanceDateFrequency,
+            frequency: prompt(`Frequency (daily/every3days/weekly/every2weeks/monthly/quarterly/semiannually/annually): `),
             status: this.getStatus(),
             updated: new Date().toISOString(),
             updated_by: prompt("Updated By: ") || ''
@@ -84,8 +88,25 @@ export default class CreateAttestations extends Command {
 
         console.log(flags)
 
-        if (flags.type == 'json') {
+        if (flags.format == 'json') {
             fs.writeFileSync(flags.output, JSON.stringify(attestations, null, 2))
+        } else if (flags.format === 'xlsx') {
+            XlsxPopulate.fromDataAsync(dataURLtoU8Array(files.AttestationTemplate.data)).then((workBook: any) => {
+                const sheet = workBook.sheet(0)
+                // The current row we are on
+                let currentRow = 2;
+                attestations.forEach((attestation) => {
+                    sheet.cell(`A${currentRow}`).value(attestation.control_id)
+                    sheet.cell(`B${currentRow}`).value(attestation.explanation)
+                    sheet.cell(`C${currentRow}`).value(attestation.frequency)
+                    sheet.cell(`D${currentRow}`).value(attestation.status)
+                    sheet.cell(`E${currentRow}`).value(attestation.updated)
+                    sheet.cell(`F${currentRow}`).value(attestation.updated_by)
+                    currentRow++;
+                })
+                console.log(workBook)
+                return workBook.toFileAsync(flags.output)
+            })
         }
     }
 }
