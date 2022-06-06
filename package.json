@@ -7,7 +7,7 @@
   "bugs": "https://github.com/mitre/saf/issues",
   "dependencies": {
     "@aws-sdk/client-config-service": "^3.53.0",
-    "@mitre/hdf-converters": "file:../heimdall2/libs/hdf-converters/mitre-hdf-converters-v2.6.24.tgz",
+    "@mitre/hdf-converters": "file:../heimdall2/libs/hdf-converters/mitre-hdf-converters-v2.6.25.tgz",
     "@mitre/heimdall-lite": "^2.6.25",
     "@oclif/core": "^1.6.0",
     "@oclif/plugin-help": "^5",

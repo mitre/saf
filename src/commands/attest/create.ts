@@ -14,16 +14,25 @@ const prompt = promptSync()
 export default class CreateAttestations extends Command {
     static flags = {
       help: Flags.help({char: 'h'}),
-      input: Flags.string({char: 'i', description: 'An input HDF file to aid in selecting controls'}),
+      input: Flags.string({char: 'i', description: '(optional) An input HDF file to search for controls'}),
       output: Flags.string({char: 'o', required: true, description: 'The output filename'}),
-      format: Flags.string({char: 't', description: 'The output file type', default: 'json', options: ['json', 'xlsx', 'yml']}),
+      format: Flags.string({char: 't', description: '(optional) The output file type', default: 'json', options: ['json', 'xlsx', 'yml', 'yaml']}),
+    }
+
+    promptForever(promptValue: string): string {
+      while (true) {
+        const ret = prompt(promptValue)
+        if (ret.trim() !== '') {
+          return ret
+        }
+      }
     }
 
     getStatus(): 'passed' | 'failed' {
       const validPassResponses = new Set(['p', 'passed', 'pass'])
       const validFailResponses = new Set(['f', 'failed', 'fail', 'failure'])
       while (true) {
-        const input = prompt('Status ((p)assed/(f)ailed): ') || ''
+        const input = prompt('Enter status ((p)assed/(f)ailed): ') || ''
         if (validPassResponses.has(input.trim().toLowerCase())) {
           return 'passed'
         }
@@ -37,11 +46,11 @@ export default class CreateAttestations extends Command {
     promptForAttestation(id: string): Attestation {
       return {
         control_id: id,
-        explanation: prompt('Attestation explanation: ') || '',
-        frequency: prompt('Frequency (1d/3d/1wk/2wk/1m/3m/6m/1y/custom): '),
+        explanation: this.promptForever('Attestation explanation: '),
+        frequency: this.promptForever('Frequency (1d/3d/1wk/2wk/1m/3m/6m/1y/1.5y/custom): '),
         status: this.getStatus(),
         updated: new Date().toISOString(),
-        updated_by: prompt('Updated By: ') || '',
+        updated_by: this.promptForever('Updated By: '),
       }
     }
 
@@ -61,7 +70,7 @@ export default class CreateAttestations extends Command {
           })
         })
         while (true) {
-          const input = prompt("Enter a control ID, search term, or 'q' if done: ")
+          const input = prompt("Enter a control ID, search for a control, or enter 'q' to exit: ")
           if (input.trim().toLowerCase() === 'q') {
             break
           } else if (input in controls) {
@@ -78,7 +87,7 @@ export default class CreateAttestations extends Command {
         }
       } else {
         while (true) {
-          const input = prompt("Enter a control ID or 'q' if done: ")
+          const input = prompt("Enter a control ID or enter 'q' to exit: ")
           if (input.trim().toLowerCase() === 'q') {
             break
           } else {
@@ -86,7 +95,6 @@ export default class CreateAttestations extends Command {
           }
         }
       }
-
 
       switch (flags.format) {
       case 'json': {
