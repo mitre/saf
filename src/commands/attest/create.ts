@@ -19,7 +19,7 @@ export default class CreateAttestations extends Command {
       format: Flags.string({char: 't', description: 'The output file type', default: 'json', options: ['json', 'xlsx', 'yml']}),
     }
 
-    getStatus() {
+    getStatus(): 'passed' | 'failed' {
       const validPassResponses = new Set(['p', 'passed', 'pass'])
       const validFailResponses = new Set(['f', 'failed', 'fail', 'failure'])
       while (true) {
