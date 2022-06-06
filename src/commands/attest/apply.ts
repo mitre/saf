@@ -2,6 +2,7 @@ import {Command, Flags} from '@oclif/core'
 import {ExecJSON} from 'inspecjs'
 import {addAttestationToHDF, Attestation, parseXLSXAttestations} from '@mitre/hdf-converters'
 import _ from 'lodash'
+import yaml from 'yaml'
 import fs from 'fs'
 import path from 'path'
 import {convertFullPathToFilename} from '../../utils/global'
@@ -26,16 +27,20 @@ export default class ApplyAttestation extends Command {
           // Do we have an attestations JSON?
           if (Array.isArray(inputData) && inputData.length > 0 && _.get(inputData, '[0].control_id')) {
             attestations.push(...inputData)
+          } else if (Array.isArray(_.get(inputData, 'plugins.inspec-reporter-json-hdf.attestations'))) {
+            attestations.push(..._.get(inputData, 'plugins.inspec-reporter-json-hdf.attestations'))
           } else if ('profiles' in inputData) {
-            // Maybe an execution
             executions[convertFullPathToFilename(inputFile)] = inputData
           } else {
             throw new Error(`Unknown input file: ${inputFile}`)
           }
         } catch {
+          inputData = fs.readFileSync(inputFile, 'utf-8')
           // Do we have a spreadsheet?
           if (inputFile.toLowerCase().endsWith('xlsx')) {
             attestations.push(...(await parseXLSXAttestations(fs.readFileSync(inputFile, null))))
+          } else if (inputFile.toLowerCase().endsWith('yml') || inputFile.toLowerCase().endsWith('yaml')) {
+            attestations.push(...yaml.parse(inputData))
           } else {
             throw new Error(`Unknown input file: ${inputFile}`)
           }

@@ -20,6 +20,7 @@
     "camelcase": "off", // Camel case fields are used in CKL
     "no-console": "off",
     "node/no-missing-import": "off",
-    "complexity": "off"
+    "complexity": "off",
+    "no-constant-condition": "off"
   }
 }
