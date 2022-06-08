@@ -8,10 +8,10 @@ export const severityTargetsObject = {
   high: ['passed.high.min', 'passed.high.max', 'failed.high.min', 'failed.high.max', 'skipped.high.min', 'skipped.high.max', 'error.high.min',  'error.high.max'],
   medium: ['passed.medium.min', 'passed.medium.max', 'failed.medium.min', 'failed.medium.max', 'skipped.medium.min', 'skipped.medium.max', 'error.medium.min', 'error.medium.max'],
   low: ['passed.low.min', 'passed.low.max', 'failed.low.min', 'failed.low.max', 'skipped.low.min', 'skipped.low.max', 'error.low.min', 'error.low.max'],
-  none: ['no_impact.none.min', 'no_impact.none.max']
+  none: ['no_impact.none.min', 'no_impact.none.max'],
 }
 
-export const totalMin = ['passed.total.min', 'failed.total.min','skipped.total.min', 'error.total.min']
+export const totalMin = ['passed.total.min', 'failed.total.min', 'skipped.total.min', 'error.total.min']
 export const totalMax = ['passed.total.max', 'failed.total.max', 'skipped.total.max', 'error.total.max']
 
 export const statusSeverityPaths = {

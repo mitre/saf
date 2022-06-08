@@ -17,7 +17,7 @@ describe('Test validate threshold', () => {
     ),
   ])
   .it('Validate threshold test - Triple Overlay Valid Counts', ctx => {
-    expect(ctx.stdout).to.equal('')
+    expect(ctx.stdout).to.equal('All validation tests passed\n')
     expect(ctx.stderr).to.equal('')
   })
 
@@ -36,7 +36,7 @@ describe('Test validate threshold', () => {
     ),
   ])
   .catch(error => {
-    expect(error.message).to.equal('failed.total: 55 != 54')
+    expect(error.message).to.equal('failed.total: Recieved 55 != Expected 54')
   })
   .it(
     'Validate threshold test - Triple Overlay Invalid Total Counts',

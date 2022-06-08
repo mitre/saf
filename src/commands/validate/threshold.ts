@@ -85,7 +85,7 @@ export default class Threshold extends Command {
             _.get(overallStatusCounts, renameStatusName(statusName))              <
             _.get(thresholds, totalMinimum),
           ),
-          `${totalMinimum}: Recieved ${_.get(overallStatusCounts, renameStatusName(statusName))} < Expected ${_.get(thresholds, totalMinimum)}`
+          `${totalMinimum}: Recieved ${_.get(overallStatusCounts, renameStatusName(statusName))} < Expected ${_.get(thresholds, totalMinimum)}`,
         )
       }
     }
@@ -98,7 +98,7 @@ export default class Threshold extends Command {
             _.get(overallStatusCounts, renameStatusName(statusName))              >
             _.get(thresholds, totalMaximum),
           ),
-          `${totalMaximum}: Recieved ${_.get(overallStatusCounts, renameStatusName(statusName))} > Expected ${_.get(thresholds, totalMaximum)}`
+          `${totalMaximum}: Recieved ${_.get(overallStatusCounts, renameStatusName(statusName))} > Expected ${_.get(thresholds, totalMaximum)}`,
         )
       }
     }
@@ -150,6 +150,6 @@ export default class Threshold extends Command {
       }
     }
 
-    console.log("All validation tests passed")
+    console.log('All validation tests passed')
   }
 }
