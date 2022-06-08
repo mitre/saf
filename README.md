@@ -659,7 +659,7 @@ validate threshold       Validate the compliance and status counts of an HDF fil
     -T, --templateInline=     Flattened JSON containing your validation thresholds
                               (Intended for backwards compatibility with InSpec Tools)
     -i, --input               Input HDF JSON file
-    -m, --totalMinimum        Treat Pass/Fail/Skipped/No Impact/Error total counts as an minimum
+    -m, --totalMinimum        Treat Pass/Fail/Skipped/No Impact/Error total counts as a minimum
                               requirement, if this is false, it will be an exact requirement
 
   EXAMPLES
