@@ -23,7 +23,7 @@ COPY --from=builder /build/saf.tgz /build/
 RUN npm install -g /build/saf.tgz
 
 # Useful for CI pipelines
-RUN apk add bash jq
+RUN apk add bash jq curl ca-certificates
 
 ENTRYPOINT ["saf"]
 VOLUME ["/share"]
