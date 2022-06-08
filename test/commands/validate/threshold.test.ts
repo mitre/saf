@@ -36,7 +36,7 @@ describe('Test validate threshold', () => {
     ),
   ])
   .catch(error => {
-    expect(error.message).to.equal('failed.total: 55 < 54')
+    expect(error.message).to.equal('failed.total: 55 != 54')
   })
   .it(
     'Validate threshold test - Triple Overlay Invalid Total Counts',
