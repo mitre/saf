@@ -13,6 +13,8 @@
     "unicorn/no-zero-fractions": "off",
     "unicorn/no-array-for-each": "off",
     "unicorn/explicit-length-check": "off",
+    "unicorn/no-process-exit": "off",
+    "no-process-exit": "off",
     "no-await-in-loop": "off",
     "no-control-regex": "off",
     "max-nested-callbacks": "off",

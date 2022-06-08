@@ -24,22 +24,27 @@ export default class ApplyAttestation extends Command {
         let inputData
         try {
           inputData = JSON.parse(fs.readFileSync(inputFile, 'utf-8'))
-          // Do we have an attestations JSON?
           if (Array.isArray(inputData) && inputData.length > 0 && _.get(inputData, '[0].control_id')) {
+            // We have an attestations JSON
             attestations.push(...inputData)
           } else if (Array.isArray(_.get(inputData, 'plugins.inspec-reporter-json-hdf.attestations'))) {
+            // We have a legacy Inspec Tools attestations file
             attestations.push(..._.get(inputData, 'plugins.inspec-reporter-json-hdf.attestations'))
           } else if ('profiles' in inputData) {
+            // We have an execution file
             executions[convertFullPathToFilename(inputFile)] = inputData
           } else {
-            throw new Error(`Unknown input file: ${inputFile}`)
+            // Unknown file
+            console.error(`Unknown input file: ${inputFile}`)
+            process.exit(1)
           }
         } catch {
           inputData = fs.readFileSync(inputFile, 'utf-8')
-          // Do we have a spreadsheet?
           if (inputFile.toLowerCase().endsWith('xlsx')) {
+            // We have a spreadsheet
             attestations.push(...(await parseXLSXAttestations(fs.readFileSync(inputFile, null))))
           } else if (inputFile.toLowerCase().endsWith('yml') || inputFile.toLowerCase().endsWith('yaml')) {
+            // We have a YAML
             attestations.push(...yaml.parse(inputData))
           } else {
             throw new Error(`Unknown input file: ${inputFile}`)
@@ -49,6 +54,10 @@ export default class ApplyAttestation extends Command {
 
       if (Object.entries(executions).length > 1) {
         fs.mkdirSync(flags.output)
+      }
+
+      if (Object.keys(executions).length === 0) {
+        throw new Error('Please provide at least one HDF file')
       }
 
       Object.entries(executions).forEach(([originalFilename, execution]) => {

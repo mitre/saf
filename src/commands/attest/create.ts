@@ -9,6 +9,7 @@ import {default as files} from '../../resources/files.json'
 import {dataURLtoU8Array} from '../../utils/global'
 import yaml from 'yaml'
 
+const MAX_SEARCH_RESULTS = 5
 const prompt = promptSync()
 
 export default class CreateAttestations extends Command {
@@ -63,12 +64,13 @@ export default class CreateAttestations extends Command {
         const evaluation = JSON.parse(fs.readFileSync(flags.input, 'utf-8')) as ExecJSON.Execution
         const search = new AccurateSearch()
         const controls: Record<string, ExecJSON.Control> = {}
-        evaluation.profiles.forEach(profile => {
-          profile.controls.forEach(control => {
+        for (const profile of evaluation.profiles) {
+          for (const control of profile.controls) {
             controls[control.id] = control
             search.addText(control.id, control.id + ': ' + (control.title || '') + ' ' + control.desc || '')
-          })
-        })
+          }
+        }
+
         while (true) {
           const input = prompt("Enter a control ID, search for a control, or enter 'q' to exit: ")
           if (input.trim().toLowerCase() === 'q') {
@@ -78,7 +80,7 @@ export default class CreateAttestations extends Command {
             const attestation = this.promptForAttestation(control.id)
             attestations.push(attestation)
           } else {
-            const ids = search.search(input).slice(0, 5)
+            const ids = search.search(input).slice(0, MAX_SEARCH_RESULTS)
             ids.forEach((id: string) => {
               const control = controls[id]
               console.log(`\t${control.id}: ${control.title?.replace(/\n/g, '').replace(/\s\s+/g, ' ')}`)
@@ -99,14 +101,12 @@ export default class CreateAttestations extends Command {
       switch (flags.format) {
       case 'json': {
         fs.writeFileSync(flags.output, JSON.stringify(attestations, null, 2))
-
         break
       }
 
       case 'xlsx': {
         XlsxPopulate.fromDataAsync(dataURLtoU8Array(files.AttestationTemplate.data)).then((workBook: any) => {
           const sheet = workBook.sheet(0)
-          // The current row we are on
           let currentRow = 2
           attestations.forEach(attestation => {
             sheet.cell(`A${currentRow}`).value(attestation.control_id)
@@ -119,17 +119,18 @@ export default class CreateAttestations extends Command {
           })
           return workBook.toFileAsync(flags.output)
         })
-
         break
       }
 
       case 'yaml':
       case 'yml': {
         fs.writeFileSync(flags.output, yaml.stringify(attestations))
-
         break
       }
-      // No default
+
+      default: {
+        throw new Error('Invalid file output type')
+      }
       }
     }
 }
