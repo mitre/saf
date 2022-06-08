@@ -659,6 +659,8 @@ validate threshold       Validate the compliance and status counts of an HDF fil
     -T, --templateInline=     Flattened JSON containing your validation thresholds
                               (Intended for backwards compatibility with InSpec Tools)
     -i, --input               Input HDF JSON file
+    -m, --totalMinimum        Treat passed.total/failed.total/etc as an minimum requirement, if this
+                              is false, it will be an exact requirement
 
   EXAMPLES
   	saf validate threshold -i rhel7-results.json -F output.yaml
