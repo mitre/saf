@@ -6,8 +6,8 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
 ## Terminology:
 
-- "[Heimdall](https://github.com/mitre/heimdall2)" - our visualizer for all security result data
-- "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - our common data format to preserve and transform security data
+- "[Heimdall](https://github.com/mitre/heimdall2)" - Our visualizer for all security result data
+- "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - Our common data format to preserve and transform security data
 
 ## Contents:
 
