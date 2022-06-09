@@ -8,7 +8,6 @@ import {ThresholdValues} from '../../types/threshold'
 import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject, statusSeverityPaths, totalMax, totalMin} from '../../utils/threshold'
 import {expect} from 'chai'
 
-
 export default class Threshold extends Command {
   static usage = 'validate threshold -i, --input=JSON -T, --templateInline="JSON Data" -F --templateFile=YAML File'
 
