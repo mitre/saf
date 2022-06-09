@@ -36,7 +36,7 @@ describe('Test validate threshold', () => {
     ),
   ])
   .catch(error => {
-    expect(error.message).to.equal('failed.total: Recieved 55 != Expected 54')
+    expect(error.message).to.equal('failed.total: Received 55 != Expected 54')
   })
   .it(
     'Validate threshold test - Triple Overlay Invalid Total Counts',
@@ -78,7 +78,7 @@ describe('Test validate threshold', () => {
     path.resolve(
       './test/sample_data/HDF/input/thresholds/triple_overlay_profile_example.json.counts.totalMinMax.yml',
     )]).catch(error => {
-    expect(error.message).to.equal('passed.total.max: Recieved 19 > Expected 18')
+    expect(error.message).to.equal('passed.total.max: Received 19 > Expected 18')
   })
   .it('Validate threshold minMaxTotal - Triple Overlay Compliance')
 })
