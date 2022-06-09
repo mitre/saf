@@ -42,7 +42,7 @@ describe('Test validate threshold', () => {
     'Validate threshold test - Triple Overlay Invalid Total Counts',
     ctx => {
       expect(ctx.stdout).to.equal('')
-    }
+    },
   )
 
   test
@@ -70,14 +70,14 @@ describe('Test validate threshold', () => {
 
   test.stdout().stderr()
   .command(['validate threshold',
-  '-i',
-  path.resolve(
-    './test/sample_data/HDF/input/triple_overlay_profile_example.json',
-  ),
-  '--templateFile',
-  path.resolve(
-    './test/sample_data/HDF/input/thresholds/triple_overlay_profile_example.json.counts.totalMinMax.yml',
-  )]).catch((error) => {
+    '-i',
+    path.resolve(
+      './test/sample_data/HDF/input/triple_overlay_profile_example.json',
+    ),
+    '--templateFile',
+    path.resolve(
+      './test/sample_data/HDF/input/thresholds/triple_overlay_profile_example.json.counts.totalMinMax.yml',
+    )]).catch(error => {
     expect(error.message).to.equal('passed.total.max: Recieved 19 > Expected 18')
   })
   .it('Validate threshold minMaxTotal - Triple Overlay Compliance')
