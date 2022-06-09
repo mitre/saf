@@ -125,7 +125,7 @@ export default class IonChannel2HDF extends Command {
             checkSuffix(convertFullPathToFilename(filename)),
           ),
           JSON.stringify(
-            (new IonChannelMapper(fs.readFileSync(filename, 'utf-8'))).toHdf(),
+            (new IonChannelMapper(fs.readFileSync(filename, 'utf8'))).toHdf(),
           ),
         )
       }

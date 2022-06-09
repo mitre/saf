@@ -56,8 +56,6 @@ export default class GenerateThreshold extends Command {
     _.set(thresholds, 'error.total', severityStatusCounts['Profile Error'])
     _.set(thresholds, 'no_impact.total', severityStatusCounts['Not Applicable'])
 
-    console.log(thresholds)
-
     // Expected control ID status and severity
     if (flags.generateControlIds) {
       getControlIdMap(parsedProfile, thresholds)
