@@ -29,7 +29,7 @@ export default class HDF2CKL extends Command {
 
   async run() {
     const {flags} = await this.parse(HDF2CKL)
-    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf-8')))
+    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf8')))
     const profileName = contextualizedEvaluation.data.profiles[0].name
     const controls = contextualizedEvaluation.contains.flatMap(profile => profile.contains) || []
     let cklData = {}
@@ -55,7 +55,7 @@ export default class HDF2CKL extends Command {
     }
 
     if (flags.metadata) {
-      const cklMetadataInput: CKLMetadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf-8'))
+      const cklMetadataInput: CKLMetadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf8'))
       for (const field in cklMetadataInput) {
         if (typeof cklMetadata[field] === 'string' || typeof cklMetadata[field] === 'object') {
           cklMetadata[field] = cklMetadataInput[field]
