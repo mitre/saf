@@ -78,7 +78,7 @@ export default class Threshold extends Command {
     }
 
     for (const totalMinimum of totalMin) {
-      const [statusName,] = totalMinimum.split('.')
+      const [statusName] = totalMinimum.split('.')
       if (_.get(thresholds, totalMinimum) !== undefined) {
         exitNonZeroIfTrue(
           Boolean(
@@ -91,7 +91,7 @@ export default class Threshold extends Command {
     }
 
     for (const totalMaximum of totalMax) {
-      const [statusName,] = totalMaximum.split('.')
+      const [statusName] = totalMaximum.split('.')
       if (_.get(thresholds, totalMaximum) !== undefined) {
         exitNonZeroIfTrue(
           Boolean(
