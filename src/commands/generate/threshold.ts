@@ -54,7 +54,7 @@ export default class GenerateThreshold extends Command {
     _.set(thresholds, 'failed.total.max', severityStatusCounts.Failed)
     _.set(thresholds, 'skipped.total.max', severityStatusCounts['Not Reviewed'])
     _.set(thresholds, 'error.total.max', severityStatusCounts['Profile Error'])
-    _.set(thresholds, 'no_impact.total.min', severityStatusCounts['Not Applicable'])
+    _.set(thresholds, 'no_impact.total.max', severityStatusCounts['Not Applicable'])
 
     // Expected control ID status and severity
     if (flags.generateControlIds) {
