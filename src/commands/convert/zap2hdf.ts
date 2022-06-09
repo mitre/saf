@@ -20,7 +20,7 @@ export default class Zap2HDF extends Command {
   async run() {
     const {flags} = await this.parse(Zap2HDF)
 
-    const converter = new Mapper(fs.readFileSync(flags.input, 'utf-8'), flags.name)
+    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'), flags.name)
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }
