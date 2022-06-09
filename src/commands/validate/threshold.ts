@@ -18,7 +18,6 @@ export default class Threshold extends Command {
     input: Flags.string({char: 'i', required: true}),
     templateInline: Flags.string({char: 'T', required: false}),
     templateFile: Flags.string({char: 'F', required: false, description: 'Expected data template, generate one with "saf generate threshold"'}),
-    totalMinimum: Flags.boolean({char: 'm', required: false, default: false, description: 'Treat passed.total/failed.total/etc as an minimum requirement, if this is false, it will be an exact requirement.'}),
   }
 
   async run() {
@@ -56,24 +55,14 @@ export default class Threshold extends Command {
     const targets = ['passed.total', 'failed.total', 'skipped.total', 'no_impact.total', 'error.total']
     for (const statusThreshold of targets) {
       const [statusName, _total] = statusThreshold.split('.')
-      if (_.get(thresholds, statusThreshold) !== undefined && typeof _.get(thresholds, statusThreshold) !== 'object') {
-        if (flags.totalMinimum) {
-          exitNonZeroIfTrue(
-            Boolean(
-              _.get(overallStatusCounts, renameStatusName(statusName))              <
-              _.get(thresholds, statusThreshold),
-            ),
-            `${statusThreshold}: Recieved ${_.get(overallStatusCounts, renameStatusName(statusName))} < Expected ${_.get(thresholds, statusThreshold)}`,
-          )
-        } else {
-          exitNonZeroIfTrue(
-            Boolean(
-              _.get(overallStatusCounts, renameStatusName(statusName))              !==
-              _.get(thresholds, statusThreshold),
-            ),
-            `${statusThreshold}: Recieved ${_.get(overallStatusCounts, renameStatusName(statusName))} != Expected ${_.get(thresholds, statusThreshold)}`,
-          )
-        }
+      if (_.get(thresholds, statusThreshold) !== undefined) {
+        exitNonZeroIfTrue(
+          Boolean(
+            _.get(overallStatusCounts, renameStatusName(statusName))              !==
+            _.get(thresholds, statusThreshold),
+          ),
+          `${statusThreshold}: ${_.get(overallStatusCounts, renameStatusName(statusName))} != ${_.get(thresholds, statusThreshold)}`,
+        )
       }
     }
 
