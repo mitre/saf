@@ -8,6 +8,7 @@ import {ThresholdValues} from '../../types/threshold'
 import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject, statusSeverityPaths, totalMax, totalMin} from '../../utils/threshold'
 import {expect} from 'chai'
 
+
 export default class Threshold extends Command {
   static usage = 'validate threshold -i, --input=JSON -T, --templateInline="JSON Data" -F --templateFile=YAML File'
 
@@ -61,7 +62,7 @@ export default class Threshold extends Command {
             _.get(overallStatusCounts, renameStatusName(statusName))              !==
             _.get(thresholds, statusThreshold),
           ),
-          `${statusThreshold}: Recieved ${_.get(overallStatusCounts, renameStatusName(statusName))} != Expected ${_.get(thresholds, statusThreshold)}`,
+          `${statusThreshold}: Received ${_.get(overallStatusCounts, renameStatusName(statusName))} != Expected ${_.get(thresholds, statusThreshold)}`,
         )
       }
     }
@@ -74,7 +75,7 @@ export default class Threshold extends Command {
             _.get(overallStatusCounts, renameStatusName(statusName))              <
             _.get(thresholds, totalMinimum),
           ),
-          `${totalMinimum}: Recieved ${_.get(overallStatusCounts, renameStatusName(statusName))} < Expected ${_.get(thresholds, totalMinimum)}`,
+          `${totalMinimum}: Received ${_.get(overallStatusCounts, renameStatusName(statusName))} < Expected ${_.get(thresholds, totalMinimum)}`,
         )
       }
     }
@@ -87,7 +88,7 @@ export default class Threshold extends Command {
             _.get(overallStatusCounts, renameStatusName(statusName))              >
             _.get(thresholds, totalMaximum),
           ),
-          `${totalMaximum}: Recieved ${_.get(overallStatusCounts, renameStatusName(statusName))} > Expected ${_.get(thresholds, totalMaximum)}`,
+          `${totalMaximum}: Received ${_.get(overallStatusCounts, renameStatusName(statusName))} > Expected ${_.get(thresholds, totalMaximum)}`,
         )
       }
     }
@@ -102,14 +103,14 @@ export default class Threshold extends Command {
             Boolean(
               _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold),
             ),
-            `${statusCountThreshold}: Recieved ${_.get(criticalStatusCounts, renameStatusName(statusName))} < Expected ${_.get(thresholds, statusCountThreshold)}`,
+            `${statusCountThreshold}: Received ${_.get(criticalStatusCounts, renameStatusName(statusName))} < Expected ${_.get(thresholds, statusCountThreshold)}`,
           )
         } else if (thresholdType === 'max' && _.get(thresholds, statusCountThreshold) !== undefined) {
           exitNonZeroIfTrue(
             Boolean(
               _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold),
             ),
-            `${statusCountThreshold}: Recieved ${_.get(criticalStatusCounts, renameStatusName(statusName))} > Expected ${_.get(thresholds, statusCountThreshold)}`,
+            `${statusCountThreshold}: Received ${_.get(criticalStatusCounts, renameStatusName(statusName))} > Expected ${_.get(thresholds, statusCountThreshold)}`,
           )
         }
       }
