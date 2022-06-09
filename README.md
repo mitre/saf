@@ -6,8 +6,8 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
 ## Terminology:
 
-- "[Heimdall](https://github.com/mitre/heimdall2)" - our visualizer for all security result data
-- "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - our common data format to preserve and transform security data
+- "[Heimdall](https://github.com/mitre/heimdall2)" - Our visualizer for all security result data
+- "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - Our common data format to preserve and transform security data
 
 ## Contents:
 
@@ -21,9 +21,11 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       *  [HDF to AWS Security Hub](#hdf-to-asff)
       *  [AWS Security Hub to HDF](#asff-to-hdf)
       *  [HDF to Splunk](#hdf-to-splunk)
+      *  [HDF to XCCDF](#hdf-to-xccdf)
       *  [Splunk to HDF](#splunk-to-hdf)
       *  [AWS Config to HDF](#aws-config-to-hdf)
       *  [Snyk to HDF](#snyk-to-hdf)
+      *  [Ion Channel to HDF](#ion-channel-2-hdf)
       *  [Trivy to HDF](#trivy-to-hdf)
       *  [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
       *  [DBProtect to HDF](#dbprotect-to-hdf)
@@ -159,6 +161,20 @@ convert hdf2splunk           Translate and upload a Heimdall Data Format JSON fi
     saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf
     saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf
 ```
+
+#### HDF to XCCDF
+```
+Translate an HDF file into an XCCDF XML
+
+FLAGS
+  -h, --help            Show CLI help.
+  -i, --input=<value>   (required) Input HDF file
+  -o, --output=<value>  (required) Output XCCDF file
+
+EXAMPLES
+  $ saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml
+```
+
 HDF Splunk Schema documentation: https://github.com/mitre/heimdall2/blob/master/libs/hdf-converters/src/converters-from-hdf/splunk/Schemas.md#schemas
 ##### Previewing HDF Data Within Splunk:
 A full raw search query:
@@ -252,13 +268,13 @@ AWS SecurityHub standard controls json|Get all the controls for a standard that 
 convert asff2hdf            Translate a AWS Security Finding Format JSON into a
                             Heimdall Data Format JSON file
   OPTIONS
-    -i, --input=input          Input ASFF JSON File
+    -i, --input=input          (required) Input ASFF JSON File
     --securityhub=securityhub  Input AWS Security Standards File
-    -o, --output=output        Output HDF JSON File
+    -o, --output=output        (required) Output HDF JSON File
 
   EXAMPLES
     saf convert asff2hdf -i asff-findings.json -o output-file-name.json
-    saf convert asff2hdf -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
+    saf convert asff2hdf -i asff-findings.json --securityhub <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
 ```
 
 
@@ -360,6 +376,24 @@ convert jfrog_xray2hdf      Translate a JFrog Xray results JSON file into a
     saf convert jfrog_xray2hdf -i xray_results.json -o output-hdf-name.json
 ```
 
+##### Ion Channel 2 HDF
+
+```
+convert ionchannel2hdf      Pull and translate SBOM data from Ion Channel
+                            into a Heimdall Data Format JSON file
+
+FLAGS
+  -A, --allProjects         Pull all projects available within your team
+  -L, --logLevel=<option>   [default: info]
+                            <options: info|warn|debug|verbose>
+  -a, --apiKey=<value>      API Key from Ion Channel user settings
+  -h, --help                Show CLI help.
+  -i, --input=<value>...    Input Ion Channel JSON File(s)
+  -o, --output=<value>      (required) Output JSON folder
+  -p, --project=<value>...  The name of the project(s) you would like to pull
+  --raw                     Output Ion Channel raw data
+  -t, --teamName=<value>    Your team name that contains the project(s) you would like to pull data from
+```
 
 ##### Tenable Nessus to HDF
 
@@ -625,6 +659,8 @@ validate threshold       Validate the compliance and status counts of an HDF fil
     -T, --templateInline=     Flattened JSON containing your validation thresholds
                               (Intended for backwards compatibility with InSpec Tools)
     -i, --input               Input HDF JSON file
+    -m, --totalMinimum        Treat Pass/Fail/Skipped/No Impact/Error total counts as a minimum
+                              requirement, if this is false, it will be an exact requirement
 
   EXAMPLES
   	saf validate threshold -i rhel7-results.json -F output.yaml
