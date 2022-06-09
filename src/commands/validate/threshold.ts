@@ -55,13 +55,13 @@ export default class Threshold extends Command {
     const targets = ['passed.total', 'failed.total', 'skipped.total', 'no_impact.total', 'error.total']
     for (const statusThreshold of targets) {
       const [statusName, _total] = statusThreshold.split('.')
-      if (_.get(thresholds, statusThreshold) !== undefined) {
+      if (_.get(thresholds, statusThreshold) !== undefined && typeof _.get(thresholds, statusThreshold) !== 'object') {
         exitNonZeroIfTrue(
           Boolean(
             _.get(overallStatusCounts, renameStatusName(statusName))              !==
             _.get(thresholds, statusThreshold),
           ),
-          `${statusThreshold}: ${_.get(overallStatusCounts, renameStatusName(statusName))} != ${_.get(thresholds, statusThreshold)}`,
+          `${statusThreshold}: Recieved ${_.get(overallStatusCounts, renameStatusName(statusName))} != Expected ${_.get(thresholds, statusThreshold)}`,
         )
       }
     }
