@@ -18,7 +18,7 @@ export default class Twistlock2HDF extends Command {
 
   async run() {
     const {flags} = await this.parse(Twistlock2HDF)
-    let input = fs.readFileSync(flags.input, 'utf8')
+    const input = fs.readFileSync(flags.input, 'utf8')
 
     const converter = new Mapper(input)
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
