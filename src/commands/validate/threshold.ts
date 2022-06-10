@@ -16,8 +16,8 @@ export default class Threshold extends Command {
   static flags = {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true}),
-    templateInline: Flags.string({char: 'T', required: false}),
-    templateFile: Flags.string({char: 'F', required: false, description: 'Expected data template, generate one with "saf generate threshold"'}),
+    templateInline: Flags.string({char: 'T', required: false, exclusive: ['templateFile']}),
+    templateFile: Flags.string({char: 'F', required: false, exclusive: ['templateInline'],  description: 'Expected data template, generate one with "saf generate threshold"'}),
   }
 
   async run() {

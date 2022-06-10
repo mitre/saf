@@ -716,8 +716,13 @@ generate inspec_metadata        Generate an InSpec metadata file for "saf conver
 
 Threshold files are used in CI to ensure minimum compliance levels and validate control severities and statuses using `saf validate threshold`
 
+See the wiki for more information on [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
+
 ```
-generate threshold      Generate a compliance template for "saf validate threshold"
+generate threshold      Generate a compliance template for "saf validate threshold". 
+                        Default output states that you must have your current
+                        control counts or better (More Passes and/or less
+                        Fails/Skips/Not Applicable/No Impact/Errors)
 
   OPTIONS
     -c, --generateControlIds  Validate control IDs have the correct severity
