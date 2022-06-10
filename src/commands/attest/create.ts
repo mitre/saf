@@ -76,9 +76,7 @@ export default class CreateAttestations extends Command {
           if (input.trim().toLowerCase() === 'q') {
             break
           } else if (input in controls) {
-            const control = controls[input]
-            const attestation = this.promptForAttestation(control.id)
-            attestations.push(attestation)
+            attestations.push(this.promptForAttestation(controls[input].id))
           } else {
             const ids = search.search(input).slice(0, MAX_SEARCH_RESULTS)
             for (const id of ids) {
@@ -106,7 +104,7 @@ export default class CreateAttestations extends Command {
 
       case 'xlsx': {
         XlsxPopulate.fromDataAsync(dataURLtoU8Array(files.AttestationTemplate.data)).then((workBook: any) => {
-          const sheet = workBook.sheet(0)
+          const sheet = workBook.sheet(0) // Attestations worksheet
           let currentRow = 2
           for (const attestation of attestations) {
             sheet.cell(`A${currentRow}`).value(attestation.control_id)
