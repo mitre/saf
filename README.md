@@ -369,8 +369,8 @@ convert twistlock2hdf        Translate a Twistlock CLI output file into an Heimd
                              Data Format JSON file
   FLAGS
   -h, --help            Show CLI help.
-  -i, --input=<value>   (required)
-  -o, --output=<value>  (required)
+  -i, --input=<value>   (required) Input Twistlock file
+  -o, --output=<value>  (required) Output HDF file
 
   EXAMPLES
     saf convert twistlock2hdf -i twistlock.json -o output-hdf-name.json
