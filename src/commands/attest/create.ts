@@ -61,7 +61,7 @@ export default class CreateAttestations extends Command {
       const attestations: Attestation[] = []
 
       if (flags.input) {
-        const evaluation = JSON.parse(fs.readFileSync(flags.input, 'utf-8')) as ExecJSON.Execution
+        const evaluation = JSON.parse(fs.readFileSync(flags.input, 'utf8')) as ExecJSON.Execution
         const search = new AccurateSearch()
         const controls: Record<string, ExecJSON.Control> = {}
         for (const profile of evaluation.profiles) {

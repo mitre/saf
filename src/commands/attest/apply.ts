@@ -23,7 +23,7 @@ export default class ApplyAttestation extends Command {
       for (const inputFile of flags.input) {
         let inputData
         try {
-          inputData = JSON.parse(fs.readFileSync(inputFile, 'utf-8'))
+          inputData = JSON.parse(fs.readFileSync(inputFile, 'utf8'))
           if (Array.isArray(inputData) && inputData.length > 0 && _.get(inputData, '[0].control_id')) {
             // We have an attestations JSON
             attestations.push(...inputData)
@@ -39,7 +39,7 @@ export default class ApplyAttestation extends Command {
             process.exit(1)
           }
         } catch {
-          inputData = fs.readFileSync(inputFile, 'utf-8')
+          inputData = fs.readFileSync(inputFile, 'utf8')
           if (inputFile.toLowerCase().endsWith('xlsx')) {
             // We have a spreadsheet
             attestations.push(...(await parseXLSXAttestations(fs.readFileSync(inputFile, null))))
