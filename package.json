@@ -32,7 +32,7 @@
     "chai": "^4",
     "csv-parse": "^4.16.0",
     "express": "^4.17.1",
-    "fast-xml-parser": "^3.19.0",
+    "fast-xml-parser": "^4.0.8",
     "flat": "^5.0.2",
     "get-installed-path": "^4.0.8",
     "htmlparser2": "^7.2.0",
