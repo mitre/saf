@@ -361,6 +361,20 @@ convert fortify2hdf         Translate a Fortify results FVDL file into a Heimdal
     saf convert fortify2hdf -i audit.fvdl -o output-hdf-name.json
 ```
 
+##### Twistlock to HDF
+
+```
+convert twistlock2hdf        Translate a Twistlock CLI output file into an Heimdall
+                             Data Format JSON file
+  FLAGS
+  -h, --help            Show CLI help.
+  -i, --input=<value>   (required)
+  -o, --output=<value>  (required)
+
+  EXAMPLES
+    saf convert twistlock2hdf -i twistlock.json -o output-hdf-name.json
+```
+
 
 ##### JFrog Xray to HDF
 
