@@ -81,10 +81,10 @@ export default class CreateAttestations extends Command {
             attestations.push(attestation)
           } else {
             const ids = search.search(input).slice(0, MAX_SEARCH_RESULTS)
-            ids.forEach((id: string) => {
+            for (const id of ids) {
               const control = controls[id]
               console.log(`\t${control.id}: ${control.title?.replace(/\n/g, '').replace(/\s\s+/g, ' ')}`)
-            })
+            }
           }
         }
       } else {
@@ -108,7 +108,7 @@ export default class CreateAttestations extends Command {
         XlsxPopulate.fromDataAsync(dataURLtoU8Array(files.AttestationTemplate.data)).then((workBook: any) => {
           const sheet = workBook.sheet(0)
           let currentRow = 2
-          attestations.forEach(attestation => {
+          for (const attestation of attestations) {
             sheet.cell(`A${currentRow}`).value(attestation.control_id)
             sheet.cell(`B${currentRow}`).value(attestation.explanation)
             sheet.cell(`C${currentRow}`).value(attestation.frequency)
@@ -116,7 +116,8 @@ export default class CreateAttestations extends Command {
             sheet.cell(`E${currentRow}`).value(attestation.updated)
             sheet.cell(`F${currentRow}`).value(attestation.updated_by)
             currentRow++
-          })
+          }
+
           return workBook.toFileAsync(flags.output)
         })
         break
