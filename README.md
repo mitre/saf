@@ -25,6 +25,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       *  [Splunk to HDF](#splunk-to-hdf)
       *  [AWS Config to HDF](#aws-config-to-hdf)
       *  [Snyk to HDF](#snyk-to-hdf)
+      *  [Twistlock to HDF](#twistlock-to-hdf)
       *  [Ion Channel to HDF](#ion-channel-2-hdf)
       *  [Trivy to HDF](#trivy-to-hdf)
       *  [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
@@ -359,6 +360,20 @@ convert fortify2hdf         Translate a Fortify results FVDL file into a Heimdal
 
   EXAMPLES
     saf convert fortify2hdf -i audit.fvdl -o output-hdf-name.json
+```
+
+##### Twistlock to HDF
+
+```
+convert twistlock2hdf        Translate a Twistlock CLI output file into an Heimdall
+                             Data Format JSON file
+  FLAGS
+  -h, --help            Show CLI help.
+  -i, --input=<value>   (required)
+  -o, --output=<value>  (required)
+
+  EXAMPLES
+    saf convert twistlock2hdf -i twistlock.json -o output-hdf-name.json
 ```
 
 

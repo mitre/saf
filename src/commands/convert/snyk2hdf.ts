@@ -19,7 +19,7 @@ export default class Snyk2HDF extends Command {
 
   async run() {
     const {flags} = await this.parse(Snyk2HDF)
-    const converter = new Mapper(fs.readFileSync(flags.input, 'utf-8'))
+    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'))
     const result = converter.toHdf()
     if (Array.isArray(result)) {
       for (const element of result) {
