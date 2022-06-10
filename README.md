@@ -25,6 +25,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       *  [Splunk to HDF](#splunk-to-hdf)
       *  [AWS Config to HDF](#aws-config-to-hdf)
       *  [Snyk to HDF](#snyk-to-hdf)
+      *  [Twistlock to HDF](#twistlock-to-hdf)
       *  [Ion Channel to HDF](#ion-channel-2-hdf)
       *  [Trivy to HDF](#trivy-to-hdf)
       *  [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
