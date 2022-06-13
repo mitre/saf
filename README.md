@@ -6,8 +6,8 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
 ## Terminology:
 
-- "[Heimdall](https://github.com/mitre/heimdall2)" - our visualizer for all security result data
-- "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - our common data format to preserve and transform security data
+- "[Heimdall](https://github.com/mitre/heimdall2)" - Our visualizer for all security result data
+- "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - Our common data format to preserve and transform security data
 
 ## Contents:
 
@@ -21,9 +21,11 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       *  [HDF to AWS Security Hub](#hdf-to-asff)
       *  [AWS Security Hub to HDF](#asff-to-hdf)
       *  [HDF to Splunk](#hdf-to-splunk)
+      *  [HDF to XCCDF](#hdf-to-xccdf)
       *  [Splunk to HDF](#splunk-to-hdf)
       *  [AWS Config to HDF](#aws-config-to-hdf)
       *  [Snyk to HDF](#snyk-to-hdf)
+      *  [Twistlock to HDF](#twistlock-to-hdf)
       *  [Ion Channel to HDF](#ion-channel-2-hdf)
       *  [Trivy to HDF](#trivy-to-hdf)
       *  [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
@@ -160,6 +162,20 @@ convert hdf2splunk           Translate and upload a Heimdall Data Format JSON fi
     saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf
     saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf
 ```
+
+#### HDF to XCCDF
+```
+Translate an HDF file into an XCCDF XML
+
+FLAGS
+  -h, --help            Show CLI help.
+  -i, --input=<value>   (required) Input HDF file
+  -o, --output=<value>  (required) Output XCCDF file
+
+EXAMPLES
+  $ saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml
+```
+
 HDF Splunk Schema documentation: https://github.com/mitre/heimdall2/blob/master/libs/hdf-converters/src/converters-from-hdf/splunk/Schemas.md#schemas
 ##### Previewing HDF Data Within Splunk:
 A full raw search query:
@@ -344,6 +360,20 @@ convert fortify2hdf         Translate a Fortify results FVDL file into a Heimdal
 
   EXAMPLES
     saf convert fortify2hdf -i audit.fvdl -o output-hdf-name.json
+```
+
+##### Twistlock to HDF
+
+```
+convert twistlock2hdf        Translate a Twistlock CLI output file into an Heimdall
+                             Data Format JSON file
+  FLAGS
+  -h, --help            Show CLI help.
+  -i, --input=<value>   (required) Input Twistlock file
+  -o, --output=<value>  (required) Output HDF file
+
+  EXAMPLES
+    saf convert twistlock2hdf -i twistlock.json -o output-hdf-name.json
 ```
 
 

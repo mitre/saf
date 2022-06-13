@@ -149,7 +149,7 @@ export default class Spreadsheet2HDF extends Command {
     // Read metadata file if passed
     if (flags.metadata) {
       if (fs.existsSync(flags.metadata)) {
-        metadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf-8'))
+        metadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf8'))
       } else {
         throw new Error('Passed metadata file does not exist')
       }
@@ -158,7 +158,7 @@ export default class Spreadsheet2HDF extends Command {
     // Read mapping file
     if (flags.mapping) {
       if (fs.existsSync(flags.mapping)) {
-        mappings = YAML.parse(fs.readFileSync(flags.mapping, 'utf-8'))
+        mappings = YAML.parse(fs.readFileSync(flags.mapping, 'utf8'))
       } else {
         throw new Error('Passed metadata file does not exist')
       }
@@ -263,7 +263,7 @@ export default class Spreadsheet2HDF extends Command {
     }).catch(() => {
       // Assume we have a CSV file
       // Read the input file into lines
-      const inputDataLines = fs.readFileSync(flags.input, 'utf-8').split('\n')
+      const inputDataLines = fs.readFileSync(flags.input, 'utf8').split('\n')
       // Replace BOM if it exists
       inputDataLines[0] = inputDataLines[0].replace(/\uFEFF/g, '')
       // STIG Viewer embeds the classification level in the first and last line for CSV export, breaking parsing

@@ -29,7 +29,7 @@ export default class HDF2CSV extends Command {
 
   async run() {
     const {flags} = await this.parse(HDF2CSV)
-    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf-8')))
+    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf8')))
 
     // Convert all controls from a file to ControlSetRows
     let rows: ControlSetRows = this.convertRows(contextualizedEvaluation, convertFullPathToFilename(flags.input), flags.fields.split(','))

@@ -34,7 +34,7 @@ export default class HDF2Splunk extends Command {
     }
 
     logger.warn('Please ensure the necessary configuration changes for your Splunk server have been configured to prevent data loss. See https://github.com/mitre/saf/wiki/Splunk-Configuration')
-    const inputFile = JSON.parse(fs.readFileSync(flags.input, 'utf-8'))
+    const inputFile = JSON.parse(fs.readFileSync(flags.input, 'utf8'))
     logger.info(`Input File "${convertFullPathToFilename(flags.input)}": ${getHDFSummary(inputFile)}`)
     await new FromHDFToSplunkMapper(inputFile, logger).toSplunk({
       host: flags.host,
