@@ -46,6 +46,7 @@ export default class CKL2POAM extends Command {
     deviceName: Flags.string({char: 'd', required: false, default: '', description: 'Name of target device (prompts for each file if not set)'}),
     rowsToSkip: Flags.integer({char: 's', required: false, default: 4, description: 'Rows to leave between POA&M Items for milestones'}),
     output: Flags.string({char: 'o', required: true, description: 'Path to output PO&M File(s)'}),
+    defaultNIST: Flags.string({char: 'n', required: false, description: 'Default NIST tags to use when no CCI reference is found'}),
   }
 
   async run() {
@@ -158,7 +159,12 @@ export default class CKL2POAM extends Command {
                   }
 
                   // Security Control Number
-                  sheet.cell(`D${currentRow}`).value(cci2nist(vulnerability.CCI_REF || ''))
+                  if (vulnerability.CCI_REF) {
+                    sheet.cell(`D${currentRow}`).value(cci2nist(vulnerability.CCI_REF))
+                  } else if (flags.defaultNIST) {
+                    sheet.cell(`D${currentRow}`).value(flags.defaultNIST)
+                  }
+
                   // Office/org
                   sheet.cell(`E${currentRow}`).value(officeOrg)
                   // Security Checks
