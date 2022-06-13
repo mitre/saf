@@ -67,7 +67,7 @@ export default class CreateAttestations extends Command {
         for (const profile of evaluation.profiles) {
           for (const control of profile.controls) {
             controls[control.id] = control
-            search.addText(control.id, `${control.id} ${control.title} ${control.desc}`)
+            search.addText(control.id, `${control.id}: ${control.title || ''} ${control.desc || ''}`)
           }
         }
 
