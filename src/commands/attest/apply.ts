@@ -62,13 +62,13 @@ export default class ApplyAttestation extends Command {
         throw new Error('Please provide at least one HDF file')
       }
 
-      Object.entries(executions).forEach(([originalFilename, execution]) => {
+      for (const [originalFilename, execution] of Object.entries(executions)) {
         const applied = addAttestationToHDF(execution, attestations)
         if (Object.entries(executions).length <= 1) {
           fs.writeFileSync(flags.output, JSON.stringify(applied, null, 2))
         } else {
           fs.writeFileSync(path.join(flags.output, originalFilename), JSON.stringify(applied, null, 2))
         }
-      })
+      }
     }
 }
