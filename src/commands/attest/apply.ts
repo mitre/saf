@@ -53,7 +53,9 @@ export default class ApplyAttestation extends Command {
       }
 
       if (Object.entries(executions).length > 1) {
-        fs.mkdirSync(flags.output)
+        if (!fs.existsSync(flags.output)) {
+          fs.mkdirSync(flags.output)
+        }
       }
 
       if (Object.keys(executions).length === 0) {
