@@ -2,12 +2,7 @@ import {expect, test} from '@oclif/test'
 import * as tmp from 'tmp'
 import path from 'path'
 import fs from 'fs'
-import _ from 'lodash'
-import {ExecJSON} from 'inspecjs'
-
-function omitVersions(input: ExecJSON.Execution): Partial<ExecJSON.Execution> {
-  return _.omit(input, ['version', 'platform.release', 'profiles[0].sha256'])
-}
+import {omitHDFChangingFields} from '../utils'
 
 describe('Test jfrog_xray', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
@@ -18,6 +13,6 @@ describe('Test jfrog_xray', () => {
   .it('hdf-converter output test', () => {
     const converted = JSON.parse(fs.readFileSync(`${tmpobj.name}/jfrogtest.json`, 'utf8'))
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/jfrog_xray/jfrog-hdf.json'), 'utf8'))
-    expect(omitVersions(converted)).to.eql(omitVersions(sample))
+    expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
 })
