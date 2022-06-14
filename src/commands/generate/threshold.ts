@@ -9,7 +9,7 @@ import {calculateCompliance, extractStatusCounts, getControlIdMap, renameStatusN
 export default class GenerateThreshold extends Command {
   static usage = 'generate threshold -i, --input=JSON -o, --output=YAML -e, --exact -c, --generateControlIds'
 
-  static description = 'Generate a compliance template for "saf validate threshold"'
+  static description = 'Generate a compliance template for "saf validate threshold". Default output states that you must have your current control counts or better (More Passes and/or less Fails/Skips/Not Applicable/No Impact/Errors)'
 
   static examples = ['saf generate threshold -i rhel7-results.json -e -c -o output.yaml']
 
