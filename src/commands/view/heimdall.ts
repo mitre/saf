@@ -37,7 +37,7 @@ export default class Heimdall extends Command {
       }
 
       parsedJSONs = flags.files.map(file => {
-        return {filename: path.parse(file).base, data: fs.readFileSync(file, 'utf-8')}
+        return {filename: path.parse(file).base, data: fs.readFileSync(file, 'utf8')}
       })
     }
 

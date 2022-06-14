@@ -42,7 +42,7 @@ export default class ASFF2HDF extends Command {
     const findings: string[] = []
     // If we've been passed an input file
     if (flags.input) {
-      const data = fs.readFileSync(flags.input, 'utf-8')
+      const data = fs.readFileSync(flags.input, 'utf8')
       // Attempt to convert to one finding per line
       try {
         const convertedJson = JSON.parse(data)
@@ -60,7 +60,7 @@ export default class ASFF2HDF extends Command {
       // If we've been passed a Security Standards JSON
       if (flags.securityhub) {
         securityhub = flags.securityhub.map(file =>
-          fs.readFileSync(file, 'utf-8'),
+          fs.readFileSync(file, 'utf8'),
         )
       }
     } else if (flags.aws) { // Flag to pull findings from AWS Security Hub
@@ -70,7 +70,7 @@ export default class ASFF2HDF extends Command {
             // Disable HTTPS verification if requested
             rejectUnauthorized: !flags.insecure,
             // Pass an SSL certificate to trust
-            ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf-8') : undefined,
+            ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf8') : undefined,
           }),
         },
       })
@@ -114,7 +114,7 @@ export default class ASFF2HDF extends Command {
       // Get active security standards subscriptions (enabled standards)
       while (nextToken !== undefined) {
         logger.debug(`Querying for NextToken: ${nextToken}`)
-        
+
         const getStandardsResult = await client.getEnabledStandards({NextToken: nextToken}).promise()
         console.log(getStandardsResult)
         logger.debug(`Received: ${getStandardsResult.StandardsSubscriptions?.length} standards`)
@@ -128,10 +128,11 @@ export default class ASFF2HDF extends Command {
           } else {
             logger.debug('No more enabled standards found')
           }
+
           break
         }
       }
-      
+
       securityhub = []
       // Describe the controls to give context to the mapper
       for (const standard of enabledStandards) {
@@ -152,8 +153,10 @@ export default class ASFF2HDF extends Command {
             break
           }
         }
+
         securityhub.push(JSON.stringify({Controls: standardsControls}))
       }
+
       console.log(securityhub)
     }
 

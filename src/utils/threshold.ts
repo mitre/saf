@@ -11,6 +11,9 @@ export const severityTargetsObject = {
   none: ['no_impact.none.min', 'no_impact.none.max'],
 }
 
+export const totalMin = ['passed.total.min', 'failed.total.min', 'skipped.total.min', 'error.total.min']
+export const totalMax = ['passed.total.max', 'failed.total.max', 'skipped.total.max', 'error.total.max']
+
 export const statusSeverityPaths = {
   critical: ['passed.critical.controls', 'failed.critical.controls', 'skipped.critical.controls', 'error.critical.controls'],
   high: ['passed.high.controls', 'failed.high.controls', 'skipped.high.controls', 'error.high.controls'],

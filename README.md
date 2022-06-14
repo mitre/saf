@@ -6,8 +6,8 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
 ## Terminology:
 
-- "[Heimdall](https://github.com/mitre/heimdall2)" - our visualizer for all security result data
-- "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - our common data format to preserve and transform security data
+- "[Heimdall](https://github.com/mitre/heimdall2)" - Our visualizer for all security result data
+- "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - Our common data format to preserve and transform security data
 
 ## Contents:
 
@@ -21,9 +21,12 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       *  [HDF to AWS Security Hub](#hdf-to-asff)
       *  [AWS Security Hub to HDF](#asff-to-hdf)
       *  [HDF to Splunk](#hdf-to-splunk)
-      *  [Splunk to HDF](#splunk-to-HDF)
+      *  [HDF to XCCDF](#hdf-to-xccdf)
+      *  [Splunk to HDF](#splunk-to-hdf)
       *  [AWS Config to HDF](#aws-config-to-hdf)
       *  [Snyk to HDF](#snyk-to-hdf)
+      *  [Twistlock to HDF](#twistlock-to-hdf)
+      *  [Ion Channel to HDF](#ion-channel-2-hdf)
       *  [Trivy to HDF](#trivy-to-hdf)
       *  [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
       *  [DBProtect to HDF](#dbprotect-to-hdf)
@@ -159,6 +162,20 @@ convert hdf2splunk           Translate and upload a Heimdall Data Format JSON fi
     saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf
     saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf
 ```
+
+#### HDF to XCCDF
+```
+Translate an HDF file into an XCCDF XML
+
+FLAGS
+  -h, --help            Show CLI help.
+  -i, --input=<value>   (required) Input HDF file
+  -o, --output=<value>  (required) Output XCCDF file
+
+EXAMPLES
+  $ saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml
+```
+
 HDF Splunk Schema documentation: https://github.com/mitre/heimdall2/blob/master/libs/hdf-converters/src/converters-from-hdf/splunk/Schemas.md#schemas
 ##### Previewing HDF Data Within Splunk:
 A full raw search query:
@@ -179,22 +196,6 @@ index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) value
     [search index="<<YOUR INDEX>>"  meta.subtype=profile | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(meta.profile_sha256) list(meta.is_baseline)  last(summary) list(summary) list(sha256) list(supports{}.*) last(name) list(name) list(copyright) list(maintainer) list(copyright_email) last(version) list(version) list(license) list(title) list(parent_profile) list(depends{}.*) list(controls{}.*) list(attributes{}.*) list(status) by meta.guid] 
 | rename values(meta.filename) AS "Results Set", values(meta.filetype) AS "Scan Type", list(statistics.duration) AS "Scan Duration", first(meta.status) AS "Control Status", list(results{}.status) AS "Test(s) Status", id AS "ID", values(title) AS "Title", values(desc) AS "Description", values(impact) AS "Impact", last(code) AS Code, values(descriptions.check) AS "Check", values(descriptions.fix) AS "Fix", values(tags.cci{}) AS "CCI IDs", list(results{}.code_desc) AS "Results Description",  list(results{}.skip_message) AS "Results Skip Message (if applicable)", values(tags.nist{}) AS "NIST SP 800-53 Controls", last(name) AS "Scan (Profile) Name", last(summary) AS "Scan (Profile) Summary", last(version) AS "Scan (Profile) Version"
 | table meta.guid "Results Set" "Scan Type" "Scan (Profile) Name" ID "NIST SP 800-53 Controls" Title "Control Status" "Test(s) Status" "Results Description" "Results Skip Message (if applicable)"  Description Impact Severity  Check Fix "CCI IDs" Code "Scan Duration" "Scan (Profile) Summary" "Scan (Profile) Version"
-```
-
-
-##### HDF to Condensed JSON
-
-```
-convert hdf2condensed        Condensed format used by some community members
-                             to pre-process data for elasticsearch and custom dashboards
-
-  OPTIONS
-    -i, --input=xml            Input HDF file
-    -o, --output=output        Output condensed JSON file
-    
-
-  EXAMPLES
-    saf convert hdf2condensed -i rhel7-results.json -o rhel7-condensed.json
 ```
 
 
@@ -231,48 +232,23 @@ convert hdf2csv             Translate a Heimdall Data Format JSON file into a
     saf convert hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"
 ```
 
-
-**Notice**: HDF to Splunk requires configuration on the Splunk server. See [Splunk Configuration](https://github.com/mitre/saf/wiki/Splunk-Configuration).
+##### HDF to Condensed JSON
 
 ```
-convert hdf2splunk           Translate and upload a Heimdall Data Format JSON file into a Splunk server
+convert hdf2condensed        Condensed format used by some community members
+                             to pre-process data for elasticsearch and custom dashboards
 
   OPTIONS
-    -H, --host=<value>       (required) Splunk Hostname or IP
-    -I, --index=<value>      (required) Splunk index to import HDF data into
-    -L, --logLevel=<option>  [default: info] <options: info|warn|debug|verbose>
-    -P, --port=<value>       [default: 8089] Splunk management port (also known as the Universal Forwarder port)s
-    -i, --input=<value>      (required) Input HDF file
-    -p, --password=<value>   Your Splunk password
-    -s, --scheme=<option>    [default: https] HTTP Scheme used for communication with Splunk <options: http|https>
-    -t, --token=<value>      Your Splunk API Token
-    -u, --username=<value>   Your Splunk username
+    -i, --input=xml            Input HDF file
+    -o, --output=output        Output condensed JSON file
+    
 
-  EXAMPLE
-    saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf
-    saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf
+  EXAMPLES
+    saf convert hdf2condensed -i rhel7-results.json -o rhel7-condensed.json
 ```
-HDF Splunk Schema documentation: https://github.com/mitre/heimdall2/blob/master/libs/hdf-converters/src/converters-from-hdf/splunk/Schemas.md#schemas
-##### Previewing HDF Data Within Splunk:
-A full raw search query:
-```sql
-index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) values(meta.filetype) list(meta.profile_sha256) values(meta.hdf_splunk_schema) first(meta.status)  list(meta.status)  list(meta.is_baseline) values(title) last(code) list(code) values(desc) values(descriptions.*)  values(id) values(impact) list(refs{}.*) list(results{}.*) list(source_location{}.*) values(tags.*)  by meta.guid id 
-| join  meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=header | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(statistics.duration)  list(platform.*) list(version)  by meta.guid] 
-| join meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=profile | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(meta.profile_sha256) list(meta.is_baseline)  last(summary) list(summary) list(sha256) list(supports{}.*) last(name) list(name) list(copyright) list(maintainer) list(copyright_email) last(version) list(version) list(license) list(title) list(parent_profile) list(depends{}.*) list(controls{}.*) list(attributes{}.*) list(status) by meta.guid] 
 
-```
-A formatted table search query:
-```sql
-index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) values(meta.filetype) list(meta.profile_sha256) values(meta.hdf_splunk_schema) first(meta.status)  list(meta.status)  list(meta.is_baseline) values(title) last(code) list(code) values(desc) values(descriptions.*)  values(id) values(impact) list(refs{}.*) list(results{}.*) list(source_location{}.*) values(tags.*)  by meta.guid id 
-| join  meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=header | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(statistics.duration)  list(platform.*) list(version)  by meta.guid] 
-| join meta.guid 
-    [search index="<<YOUR INDEX>>"  meta.subtype=profile | stats values(meta.filename) values(meta.filetype) values(meta.hdf_splunk_schema) list(meta.profile_sha256) list(meta.is_baseline)  last(summary) list(summary) list(sha256) list(supports{}.*) last(name) list(name) list(copyright) list(maintainer) list(copyright_email) last(version) list(version) list(license) list(title) list(parent_profile) list(depends{}.*) list(controls{}.*) list(attributes{}.*) list(status) by meta.guid] 
-| rename values(meta.filename) AS "Results Set", values(meta.filetype) AS "Scan Type", list(statistics.duration) AS "Scan Duration", first(meta.status) AS "Control Status", list(results{}.status) AS "Test(s) Status", id AS "ID", values(title) AS "Title", values(desc) AS "Description", values(impact) AS "Impact", last(code) AS Code, values(descriptions.check) AS "Check", values(descriptions.fix) AS "Fix", values(tags.cci{}) AS "CCI IDs", list(results{}.code_desc) AS "Results Description",  list(results{}.skip_message) AS "Results Skip Message (if applicable)", values(tags.nist{}) AS "NIST SP 800-53 Controls", last(name) AS "Scan (Profile) Name", last(summary) AS "Scan (Profile) Summary", last(version) AS "Scan (Profile) Version"
-| table meta.guid "Results Set" "Scan Type" "Scan (Profile) Name" ID "NIST SP 800-53 Controls" Title "Control Status" "Test(s) Status" "Results Description" "Results Skip Message (if applicable)"  Description Impact Severity  Check Fix "CCI IDs" Code "Scan Duration" "Scan (Profile) Summary" "Scan (Profile) Version"
-```
+
+
 
 &nbsp;
 
@@ -293,13 +269,13 @@ AWS SecurityHub standard controls json|Get all the controls for a standard that 
 convert asff2hdf            Translate a AWS Security Finding Format JSON into a
                             Heimdall Data Format JSON file
   OPTIONS
-    -i, --input=input          Input ASFF JSON File
+    -i, --input=input          (required) Input ASFF JSON File
     --securityhub=securityhub  Input AWS Security Standards File
-    -o, --output=output        Output HDF JSON File
+    -o, --output=output        (required) Output HDF JSON File
 
   EXAMPLES
     saf convert asff2hdf -i asff-findings.json -o output-file-name.json
-    saf convert asff2hdf -i asff-findings.json --sh <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
+    saf convert asff2hdf -i asff-findings.json --securityhub <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
 ```
 
 
@@ -386,6 +362,20 @@ convert fortify2hdf         Translate a Fortify results FVDL file into a Heimdal
     saf convert fortify2hdf -i audit.fvdl -o output-hdf-name.json
 ```
 
+##### Twistlock to HDF
+
+```
+convert twistlock2hdf        Translate a Twistlock CLI output file into an Heimdall
+                             Data Format JSON file
+  FLAGS
+  -h, --help            Show CLI help.
+  -i, --input=<value>   (required) Input Twistlock file
+  -o, --output=<value>  (required) Output HDF file
+
+  EXAMPLES
+    saf convert twistlock2hdf -i twistlock.json -o output-hdf-name.json
+```
+
 
 ##### JFrog Xray to HDF
 
@@ -401,6 +391,24 @@ convert jfrog_xray2hdf      Translate a JFrog Xray results JSON file into a
     saf convert jfrog_xray2hdf -i xray_results.json -o output-hdf-name.json
 ```
 
+##### Ion Channel 2 HDF
+
+```
+convert ionchannel2hdf      Pull and translate SBOM data from Ion Channel
+                            into a Heimdall Data Format JSON file
+
+FLAGS
+  -A, --allProjects         Pull all projects available within your team
+  -L, --logLevel=<option>   [default: info]
+                            <options: info|warn|debug|verbose>
+  -a, --apiKey=<value>      API Key from Ion Channel user settings
+  -h, --help                Show CLI help.
+  -i, --input=<value>...    Input Ion Channel JSON File(s)
+  -o, --output=<value>      (required) Output JSON folder
+  -p, --project=<value>...  The name of the project(s) you would like to pull
+  --raw                     Output Ion Channel raw data
+  -t, --teamName=<value>    Your team name that contains the project(s) you would like to pull data from
+```
 
 ##### Tenable Nessus to HDF
 
@@ -535,6 +543,32 @@ convert sonarqube2hdf        Pull SonarQube vulnerabilities for the specified
 
 ```
 
+##### Splunk to HDF
+```
+convert splunk2hdf           Pull HDF data from your Splunk instance back into an HDF file
+
+USAGE
+  $ saf splunk2hdf -i, --input=FILE -H, --host -P, --port -p, --protocol -t, --token -i, --index
+
+FLAGS
+  -H, --host=<value>       (required) Splunk Hostname or IP
+  -I, --index=<value>      (required) Splunk index to query HDF data from
+  -L, --logLevel=<option>  [default: info]
+                           <options: info|warn|debug|verbose>
+  -P, --port=<value>       [default: 8089] Splunk management port (also known as the Universal Forwarder port)
+  -i, --input=<value>...   GUID(s) or Filename(s) of files to convert
+  -o, --output=<value>     Output HDF JSON Folder
+  -p, --password=<value>   Your Splunk password
+  -s, --scheme=<option>    [default: https] HTTP Scheme used for communication with splunk
+                           <options: http|https>
+  -t, --token=<value>      Your Splunk API Token
+  -u, --username=<value>   Your Splunk username
+
+EXAMPLES
+  saf convert splunk2hdf -H 127.0.0.1 -u admin -p Valid_password! -I hdf -i some-file-in-your-splunk-instance.json yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder
+  saf convert splunk2hdf -I hdf -H 127.0.0.1 -t your.splunk.token
+```
+
 
 ##### Trivy to HDF
 
@@ -559,7 +593,7 @@ convert trivy2hdf         Translate a Trivy-derived AWS Security Finding
 
 
 ##### XCCDF Results to HDF
-
+NOTE: `xccdf_results2hdf` only supports native OpenSCAP output and SCC output.
 ```
 convert xccdf_results2hdf    Translate a SCAP client XCCDF-Results XML report to
                              HDF format Json be viewed on Heimdall
@@ -636,8 +670,7 @@ See the wiki for more information on [template files](https://github.com/mitre/s
 validate threshold       Validate the compliance and status counts of an HDF file
 
   OPTIONS
-    -F, --templateFile        Expected data template, generate one with
-    												  "saf generate threshold"
+    -F, --templateFile        Expected data template, generate one with "saf generate threshold"
     -T, --templateInline=     Flattened JSON containing your validation thresholds
                               (Intended for backwards compatibility with InSpec Tools)
     -i, --input               Input HDF JSON file

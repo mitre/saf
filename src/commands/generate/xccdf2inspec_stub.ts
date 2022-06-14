@@ -44,14 +44,14 @@ export default class XCCDF2InSpec extends Command {
     // Read metadata file if passed
     if (flags.metadata) {
       if (fs.existsSync(flags.metadata)) {
-        metadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf-8'))
+        metadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf8'))
       } else {
         throw new Error('Passed metadata file does not exist')
       }
     }
 
     // Read XCCDF file
-    const parsedXML: DisaStig = convertEncodedXmlIntoJson(fs.readFileSync(flags.input, 'utf-8'))
+    const parsedXML: DisaStig = convertEncodedXmlIntoJson(fs.readFileSync(flags.input, 'utf8'))
     // Extract groups (these contain controls)
     const groups = parsedXML.Benchmark.Group
     // All of our extracted controls to be converted into Ruby/InSpec code

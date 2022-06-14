@@ -7,7 +7,7 @@ import {createWinstonLogger, getHDFSummary} from '../../utils/logging'
 export default class HDF2Splunk extends Command {
   static usage = 'hdf2splunk -i, --input=FILE -H, --host -P, --port -p, --protocol -t, --token -i, --index'
 
-  static description = 'Translate and upload a Heimdall Data Format JSON file into a Splunk server via its HTTP Event Collector'
+  static description = 'Translate and upload a Heimdall Data Format JSON file into a Splunk server'
 
   static flags = {
     help: Flags.help({char: 'h'}),
@@ -34,7 +34,7 @@ export default class HDF2Splunk extends Command {
     }
 
     logger.warn('Please ensure the necessary configuration changes for your Splunk server have been configured to prevent data loss. See https://github.com/mitre/saf/wiki/Splunk-Configuration')
-    const inputFile = JSON.parse(fs.readFileSync(flags.input, 'utf-8'))
+    const inputFile = JSON.parse(fs.readFileSync(flags.input, 'utf8'))
     logger.info(`Input File "${convertFullPathToFilename(flags.input)}": ${getHDFSummary(inputFile)}`)
     await new FromHDFToSplunkMapper(inputFile, logger).toSplunk({
       host: flags.host,

@@ -5,7 +5,7 @@ import _ from 'lodash'
 import {checkSuffix} from '../../utils/global'
 
 export default class Nessus2HDF extends Command {
-  static usage = 'convet:nessus2hdf -i, --input=XML -o, --output=OUTPUT'
+  static usage = 'convert nessus2hdf -i, --input=XML -o, --output=OUTPUT'
 
   static description = "Translate a Nessus XML results file into a Heimdall Data Format JSON file\nThe current iteration maps all plugin families except 'Policy Compliance'\nA separate HDF JSON is generated for each host reported in the Nessus Report."
 
@@ -20,7 +20,7 @@ export default class Nessus2HDF extends Command {
   async run() {
     const {flags} = await this.parse(Nessus2HDF)
 
-    const converter = new Mapper(fs.readFileSync(flags.input, 'utf-8'))
+    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'))
     const result = converter.toHdf()
     if (Array.isArray(result)) {
       for (const element of result) {
