@@ -2,12 +2,7 @@ import {expect, test} from '@oclif/test'
 import * as tmp from 'tmp'
 import path from 'path'
 import fs from 'fs'
-import _ from 'lodash'
-import {ExecJSON} from 'inspecjs'
-
-function omitVersions(input: ExecJSON.Execution): Partial<ExecJSON.Execution> {
-  return _.omit(input, ['version', 'platform.release', 'profiles[0].sha256'])
-}
+import {omitHDFChangingFields} from '../utils'
 
 describe('Test zap', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
@@ -18,7 +13,7 @@ describe('Test zap', () => {
   .it('hdf-converter output test - webgoat', () => {
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/zaptest-webgoat.json`, 'utf8'))
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/zap/zap-webgoat-hdf.json'), 'utf8'))
-    expect(omitVersions(test)).to.eql(omitVersions(sample))
+    expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
   })
   test
   .stdout()
@@ -26,6 +21,6 @@ describe('Test zap', () => {
   .it('hdf-converter output test - zero.webappsecurity', () => {
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/zaptest-webappsecurity.json`, 'utf8'))
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/zap/zap-webappsecurity-hdf.json'), 'utf8'))
-    expect(omitVersions(test)).to.eql(omitVersions(sample))
+    expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
   })
 })
