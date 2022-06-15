@@ -271,7 +271,7 @@ convert asff2hdf            Translate a AWS Security Finding Format JSON into a
   OPTIONS
     -i, --input=input          (required) Input ASFF JSON File
     --securityhub=securityhub  Input AWS Security Standards File
-    -o, --output=output        (required) Output HDF JSON File
+    -o, --output=output        (required) Output HDF Folder
 
   EXAMPLES
     saf convert asff2hdf -i asff-findings.json -o output-file-name.json
@@ -466,7 +466,7 @@ convert prowler2hdf         Translate a Prowler-derived AWS Security Finding
                             Heimdall Data Format JSON file
   OPTIONS
     -i, --input=input          Input Prowler ASFF JSON File
-    -o, --output=output        Output HDF JSON File
+    -o, --output=output        Output HDF Folder
 
   EXAMPLES
     saf convert prowler2hdf -i prowler-asff.json -o output-hdf-name.json
@@ -574,11 +574,10 @@ EXAMPLES
 
 ```
 convert trivy2hdf         Translate a Trivy-derived AWS Security Finding
-                          Format results JSON file into a Heimdall Data Format
-                          JSON file
+                          Format results JSON file into a Heimdall Data Format JSON file
   OPTIONS
     -i, --input=input          Input Trivy ASFF JSON File
-    -o, --output=output        Output HDF JSON File
+    -o, --output=output        Output HDF folder
 
   DESCRIPTION
     Note: Currently this mapper only supports the results of Trivy's `image`
