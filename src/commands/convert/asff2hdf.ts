@@ -101,12 +101,12 @@ export default class ASFF2HDF extends Command {
         const getFindingsResult = await client.getFindings(queryParams).promise()
         logger.debug(`Received: ${getFindingsResult.Findings.length} findings`)
         findings.push(...getFindingsResult.Findings.map(finding => JSON.stringify(finding)))
-        nextToken = getFindingsResult.NextToken
+        nextToken = undefined
       }
 
       nextToken = null
 
-      logger.info('Starting collection of security standards')
+      logger.info('Starting collection of enabled security standards')
       const enabledStandards: AWS.SecurityHub.StandardsSubscriptions = []
 
       queryParams = _.omit(queryParams, ['Filters'])
@@ -115,16 +115,14 @@ export default class ASFF2HDF extends Command {
       while (nextToken !== undefined) {
         logger.debug(`Querying for NextToken: ${nextToken}`)
 
-        const getStandardsResult = await client.getEnabledStandards({NextToken: nextToken}).promise()
-        console.log(getStandardsResult)
-        logger.debug(`Received: ${getStandardsResult.StandardsSubscriptions?.length} standards`)
-        if (getStandardsResult.StandardsSubscriptions?.length === 100) {
-          enabledStandards.push(...getStandardsResult.StandardsSubscriptions)
-          nextToken = getStandardsResult.NextToken
-          _.set(queryParams, 'NextToken', nextToken)
+        const getEnabledStandardsResult: any = await client.getEnabledStandards({NextToken: nextToken}).promise()
+        logger.debug(`Received: ${getEnabledStandardsResult.StandardsSubscriptions?.length} standards`)
+        if (getEnabledStandardsResult.StandardsSubscriptions?.length === 100) {
+          enabledStandards.push(...getEnabledStandardsResult.StandardsSubscriptions)
+          nextToken = getEnabledStandardsResult.NextToken
         } else {
-          if (getStandardsResult.StandardsSubscriptions) {
-            enabledStandards.push(...getStandardsResult.StandardsSubscriptions)
+          if (getEnabledStandardsResult.StandardsSubscriptions) {
+            enabledStandards.push(...getEnabledStandardsResult.StandardsSubscriptions)
           } else {
             logger.debug('No more enabled standards found')
           }
@@ -141,13 +139,12 @@ export default class ASFF2HDF extends Command {
 
         while (nextToken !== undefined) {
           logger.debug(`Querying for NextToken: ${nextToken}`)
-          _.set(queryParams, 'NextToken', nextToken)
-          const getStandardsResult = await client.describeStandardsControls({StandardsSubscriptionArn: standard.StandardsSubscriptionArn}).promise()
-          console.log(getStandardsResult)
-          logger.info(`Received: ${getStandardsResult.Controls?.length} Controls`)
-          if (getStandardsResult.Controls) {
-            standardsControls.push(...getStandardsResult.Controls)
-            nextToken = getStandardsResult.NextToken
+          const getEnabledStandardsResult = await client.describeStandardsControls({StandardsSubscriptionArn: standard.StandardsSubscriptionArn, NextToken: nextToken}).promise() as any
+          console.log(getEnabledStandardsResult)
+          logger.info(`Received: ${getEnabledStandardsResult.Controls?.length} Controls`)
+          if (getEnabledStandardsResult.Controls) {
+            standardsControls.push(...getEnabledStandardsResult.Controls)
+            nextToken = getEnabledStandardsResult.NextToken
           } else {
             logger.debug('No more enabled standards found')
             break
@@ -156,8 +153,8 @@ export default class ASFF2HDF extends Command {
 
         securityhub.push(JSON.stringify({Controls: standardsControls}))
       }
-
-      console.log(securityhub)
+    } else {
+      throw new Error('Please select an input file or --aws to pull findings from AWS')
     }
 
     const converter = new Mapper(
@@ -166,6 +163,8 @@ export default class ASFF2HDF extends Command {
     )
 
     const results = converter.toHdf()
+
+    console.log(results)
 
     fs.mkdirSync(flags.output)
     _.forOwn(results, (result, filename) => {
