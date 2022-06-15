@@ -168,6 +168,8 @@ export default class CKL2POAM extends Command {
                   // Scheduled Completion Date
                   // Default is one year from today
                   sheet.cell(`H${currentRow}`).value(aYearFromNow)
+                  // Source Identifying Vulnerability
+                  sheet.cell(`K${currentRow}`).value(infos.title || '')
                   // Status
                   sheet.cell(`L${currentRow}`).value(cleanStatus(vulnerability.STATUS || ''))
                   // Comments
