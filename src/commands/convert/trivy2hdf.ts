@@ -37,7 +37,7 @@ export default class Trivy2HDF extends Command {
         )
       })
     } else {
-      _.forOwn(results, (result, filename) => {
+      _.forOwn(results, result => {
         fs.writeFileSync(
           path.join(flags.output),
           JSON.stringify(result),
