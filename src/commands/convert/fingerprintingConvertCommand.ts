@@ -1,25 +1,8 @@
 import { Command, Flags } from '@oclif/core'
 import * as fs from 'fs'
 import {
-  ASFFResults as ASFFResultsMapper,
-  BurpSuiteMapper,
-  DBProtectMapper,
-  fingerprint,
-  IonChannelMapper,
-  JfrogXrayMapper,
-  NessusResults,
-  NetsparkerMapper,
-  NiktoMapper,
-  PrismaMapper,
-  SarifMapper,
-  ScoutsuiteMapper,
-  SnykResults,
-  TwistlockMapper,
-  XCCDFResultsMapper,
-  ZapMapper
+  fingerprint
 } from '@mitre/hdf-converters';
-import { checkSuffix } from '../../utils/global'
-import { matchesProperty } from 'lodash';
 import { OutputFlags, Input } from '@oclif/core/lib/interfaces/parser';
 
 export default abstract class FingerprintingConvertCommand extends Command {
