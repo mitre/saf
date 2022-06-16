@@ -10,7 +10,7 @@ import XlsxPopulate from 'xlsx-populate'
 import moment from 'moment'
 import {cci2nist, cklSeverityToImpact, cklSeverityToLikelihood, cklSeverityToPOAMSeverity, cklSeverityToRelevanceOfThreat, cklSeverityToResidualRiskLevel, cleanStatus, combineComments, convertToRawSeverity, createCVD, extractSolution, extractSTIGUrl, replaceSpecialCharacters} from '../../utils/ckl2poam'
 import {default as files} from '../../resources/files.json'
-import {dataURLtoU8Array} from '../../utils/global'
+import {convertFullPathToFilename, dataURLtoU8Array} from '../../utils/global'
 
 const prompt = promptSync()
 const {printf} = format
@@ -168,6 +168,8 @@ export default class CKL2POAM extends Command {
                   // Scheduled Completion Date
                   // Default is one year from today
                   sheet.cell(`H${currentRow}`).value(aYearFromNow)
+                  // Source Identifying Vulnerability
+                  sheet.cell(`K${currentRow}`).value(infos.title || '')
                   // Status
                   sheet.cell(`L${currentRow}`).value(cleanStatus(vulnerability.STATUS || ''))
                   // Comments
@@ -199,7 +201,7 @@ export default class CKL2POAM extends Command {
                   currentRow += flags.rowsToSkip + 1
                 }
               })
-              return workBook.toFileAsync(path.join(flags.output, `${fileName}-${moment(new Date()).format('YYYY-MM-DD-HHmm')}.xlsm`))
+              return workBook.toFileAsync(path.join(flags.output, `${convertFullPathToFilename(fileName)}-${moment(new Date()).format('YYYY-MM-DD-HHmm')}.xlsm`))
             })
           }
         })
