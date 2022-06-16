@@ -6,7 +6,7 @@ import path from 'path'
 import FingerprintingConvertCommand from './fingerprintingConvertCommand'
 
 function getInputFilename(): string {
-  const inputFileIndex = process.argv.findIndex((param, index) => param.toLowerCase() === '-i' || param.toLowerCase() === '--input')
+  const inputFileIndex = process.argv.findIndex(param => param.toLowerCase() === '-i' || param.toLowerCase() === '--input')
   if (inputFileIndex === -1) {
     return process.env.INPUT_FILE || ''
   }
