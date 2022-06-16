@@ -4,27 +4,28 @@ import {
   fingerprint
 } from '@mitre/hdf-converters';
 import { OutputFlags, Input } from '@oclif/core/lib/interfaces/parser';
+import { convertFullPathToFilename } from '../../utils/global';
 
 export default abstract class FingerprintingConvertCommand extends Command {
   static flags = {
-    input: Flags.string({ required: true }),
-    output: Flags.string({ required: true })
+    input: Flags.string({ required: true, description: 'Input results set file' }),
+    output: Flags.string({ required: true, description: 'Output results sets' })
   }
 
-  static additionalFlags = {};
+  protected additionalFlags = {};
 
   protected static detectedType = "";
 
   protected parsedFlags?: OutputFlags<typeof FingerprintingConvertCommand.flags>;
 
-  async init() {
-    const { flags } = await this.parse(this.constructor as Input<typeof FingerprintingConvertCommand.flags>)
-    this.parsedFlags = flags
-    const fileType = fingerprint({ data: fs.readFileSync(this.parsedFlags.input, 'utf-8'), filename: this.parsedFlags.input })
+  getFlagsForInputFile(path: string) {
+
+    console.log(this.argv)
+    const fileType = fingerprint({ data: fs.readFileSync(path, 'utf-8'), filename: convertFullPathToFilename(path) })
 
     switch (fileType) {
       case 'asff':
-        FingerprintingConvertCommand.additionalFlags = {
+        return {
           securityhub: Flags.string({
             required: false,
             multiple: true,
@@ -70,7 +71,7 @@ export default abstract class FingerprintingConvertCommand extends Command {
         FingerprintingConvertCommand.detectedType = 'xccdf';
         break;
       case 'zap':
-        FingerprintingConvertCommand.additionalFlags = {
+        return {
           name: Flags.string({
             char: 'n',
             required: true
@@ -80,8 +81,14 @@ export default abstract class FingerprintingConvertCommand extends Command {
         break;
 
       default:
-        throw new Error(`Unknown filetype provided: `); // TODO figure out what error we wanna print out
+        throw new Error(`Unknown filetype provided: ${path}`); // TODO figure out what error we wanna print out
     }
+  }
+
+  async init() {
+    const { flags } = await this.parse(this.constructor as Input<typeof FingerprintingConvertCommand.flags>)
+    this.parsedFlags = flags
+    
 
   }
 }

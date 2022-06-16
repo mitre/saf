@@ -6,16 +6,27 @@ import { checkSuffix } from '../../utils/global'
 import path from 'path';
 import FingerprintingConvertCommand from "./fingerprintingConvertCommand";
 
+function getInputFilename(): string {
+  const inputFileIndex = process.argv.findIndex((param, index) => param.toLowerCase() === '-i' || param.toLowerCase() === '--input')
+  console.log(inputFileIndex)
+  if (inputFileIndex === -1) {
+    console.log(process.env)
+    return process.env.INPUT_FILE || ''
+  } else {
+    return process.argv[inputFileIndex+1]
+  }
+}
+
 export default class Convert extends FingerprintingConvertCommand {
   static usage = 'convert -i --input=INPUT, -o --output=OUTPUT '
 
-  static description = 'Translate any supported file-based input into a Heimdall Data Format JSON file'
+  static description = 'Translate any supported file-based security results set into Heimdall Data Format'
 
-  static examples = ['saf convert -i snyk_results.json -o output-file-prefix']
+  static examples = ['saf convert -i input -o output']
 
   static flags = {
     ...FingerprintingConvertCommand.flags,
-    ...FingerprintingConvertCommand.additionalFlags
+    ...FingerprintingConvertCommand.prototype.getFlagsForInputFile(getInputFilename())
   }
 
   async run() {
