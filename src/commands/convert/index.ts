@@ -1,4 +1,4 @@
-import { ASFFResults, BurpSuiteMapper, DBProtectMapper, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, SarifMapper, ScoutsuiteMapper, SnykMapper, TwistlockMapper, XCCDFResultsMapper, ZapMapper } from "@mitre/hdf-converters";
+import { ASFFResults, BurpSuiteMapper, DBProtectMapper, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockMapper, XCCDFResultsMapper, ZapMapper } from "@mitre/hdf-converters";
 import { Command, Flags } from '@oclif/core'
 import fs from 'fs';
 import _ from 'lodash';
@@ -13,7 +13,7 @@ export default class Convert extends FingerprintingConvertCommand {
   }
 
   async run() {
-    const flags = await this.parse(Convert);
+    const flags: any = await this.parse(Convert);
     let converter;
 
     switch (FingerprintingConvertCommand.detectedType) {
@@ -74,10 +74,16 @@ export default class Convert extends FingerprintingConvertCommand {
       case 'scoutsuite':
         converter = new ScoutsuiteMapper(fs.readFileSync(flags.input, 'utf8'))
         fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
-        break;
       case 'snyk':
-        converter = new SnykMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        converter = new SnykResults(fs.readFileSync(flags.input, 'utf8'))
+        const result = converter.toHdf()
+        if (Array.isArray(result)) {
+          for (const element of result) {
+            fs.writeFileSync(`${flags.output.replace(/.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
+          }
+        } else {
+          fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(result))
+        }
         break;
       case 'twistlock':
         converter = new TwistlockMapper(fs.readFileSync(flags.input, 'utf8'))
