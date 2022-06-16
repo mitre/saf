@@ -7,6 +7,12 @@ import path from 'path';
 import FingerprintingConvertCommand from "./fingerprintingConvertCommand";
 
 export default class Convert extends FingerprintingConvertCommand {
+  static usage = 'convert -i --input=INPUT, -o --output=OUTPUT '
+
+  static description = 'Translate any supported file-based input into a Heimdall Data Format JSON file'
+
+  static examples = ['saf convert -i snyk_results.json -o output-file-prefix']
+
   static flags = {
     ...FingerprintingConvertCommand.flags,
     ...FingerprintingConvertCommand.additionalFlags
