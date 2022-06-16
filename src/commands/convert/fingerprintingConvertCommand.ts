@@ -20,7 +20,7 @@ export default abstract class FingerprintingConvertCommand extends Command {
   async init() {
     const { flags } = await this.parse(this.constructor as Input<typeof FingerprintingConvertCommand.flags>)
     this.parsedFlags = flags
-    const fileType = fingerprint(fs.readFileSync(this.parsedFlags.input, 'utf-8'))
+    const fileType = fingerprint({ data: fs.readFileSync(this.parsedFlags.input, 'utf-8'), filename: this.parsedFlags.input })
 
     switch (fileType) {
       case 'asff':
