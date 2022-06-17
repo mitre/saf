@@ -49,7 +49,9 @@ export default abstract class FingerprintingConvertCommand extends Command {
       case 'xccdf':
         return {}
       default:
-        throw new Error(`Unknown filetype provided: ${path}`)
+        throw new Error(`Unknown filetype provided: ${path}
+        \nThe generic convert command should only be used for taking supported file-based security results and converting into Heimdall Data Format
+        \nFor more information, run "saf convert --help"`)
       }
     }
 
