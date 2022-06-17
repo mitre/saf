@@ -17,65 +17,46 @@ export default abstract class FingerprintingConvertCommand extends Command {
   protected parsedFlags?: OutputFlags<typeof FingerprintingConvertCommand.flags>;
 
   getFlagsForInputFile(path: string) {
-    const fileType = fingerprint({data: fs.readFileSync(path, 'utf8'), filename: convertFullPathToFilename(path)})
+    if (path) {
+      const fileType = fingerprint({data: fs.readFileSync(path, 'utf8'), filename: convertFullPathToFilename(path)})
 
-    switch (fileType) {
-    case 'asff':
-      FingerprintingConvertCommand.detectedType = 'asff'
-      return {
-        securityhub: Flags.string({
-          required: false,
-          multiple: true,
-          description: 'Additional input files to provide context that an ASFF file needs such as the CIS AWS Foundations or AWS Foundational Security Best Practices documents (in ASFF compliant JSON form)',
-        }),
+      switch (fileType) {
+      case 'asff':
+        FingerprintingConvertCommand.detectedType = 'asff'
+        return {
+          securityhub: Flags.string({
+            required: false,
+            multiple: true,
+            description: 'Additional input files to provide context that an ASFF file needs such as the CIS AWS Foundations or AWS Foundational Security Best Practices documents (in ASFF compliant JSON form)',
+          }),
+        }
+      case 'zap':
+        FingerprintingConvertCommand.detectedType = 'zap'
+        return {
+          name: Flags.string({
+            char: 'n',
+            required: true,
+          }),
+        }
+      case 'burp':
+      case 'dbProtect':
+      case 'fortify':
+      case 'jfrog':
+      case 'nessus':
+      case 'netsparker':
+      case 'nikto':
+      case 'sarif':
+      case 'scoutsuite':
+      case 'snyk':
+      case 'twistlock':
+      case 'xccdf':
+        return {}
+      default:
+        throw new Error(`Unknown filetype provided: ${path}`)
       }
-    case 'burp':
-      FingerprintingConvertCommand.detectedType = 'burp'
-      break
-    case 'dbProtect':
-      FingerprintingConvertCommand.detectedType = 'dbProtect'
-      break
-    case 'fortify':
-      FingerprintingConvertCommand.detectedType = 'fortify'
-      break
-    case 'jfrog':
-      FingerprintingConvertCommand.detectedType = 'jfrog'
-      break
-    case 'nessus':
-      FingerprintingConvertCommand.detectedType = 'nessus'
-      break
-    case 'netsparker':
-      FingerprintingConvertCommand.detectedType = 'netsparker'
-      break
-    case 'nikto':
-      FingerprintingConvertCommand.detectedType = 'nikto'
-      break
-    case 'sarif':
-      FingerprintingConvertCommand.detectedType = 'sarif'
-      break
-    case 'scoutsuite':
-      FingerprintingConvertCommand.detectedType = 'scoutsuite'
-      break
-    case 'snyk':
-      FingerprintingConvertCommand.detectedType = 'snyk'
-      break
-    case 'twistlock':
-      FingerprintingConvertCommand.detectedType = 'twistlock'
-      break
-    case 'xccdf':
-      FingerprintingConvertCommand.detectedType = 'xccdf'
-      break
-    case 'zap':
-      FingerprintingConvertCommand.detectedType = 'zap'
-      return {
-        name: Flags.string({
-          char: 'n',
-          required: true,
-        }),
-      }
-    default:
-      throw new Error(`Unknown filetype provided: ${path}`)
     }
+
+    return {}
   }
 
   async init() {
