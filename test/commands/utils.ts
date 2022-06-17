@@ -13,7 +13,7 @@ export function omitHDFChangingFields(
           return {
             ...control,
             attestation_data: {
-              ..._.omit(control.attestation_data, 'updated')
+              ..._.omit(control.attestation_data, 'updated'),
             },
             results: control.results.map(result => {
               return {
