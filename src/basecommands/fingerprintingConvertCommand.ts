@@ -6,8 +6,8 @@ import {convertFullPathToFilename} from '../utils/global'
 
 export default abstract class FingerprintingConvertCommand extends Command {
   static flags = {
-    input: Flags.string({required: true, description: 'Input results set file'}),
-    output: Flags.string({required: true, description: 'Output results sets'}),
+    input: Flags.string({char: 'i', required: true, description: 'Input results set file'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output results sets'}),
   }
 
   protected additionalFlags = {};
