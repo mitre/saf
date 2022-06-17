@@ -133,7 +133,7 @@
     "lint:ci": "eslint \"**/*.ts\" --max-warnings 0",
     "dev": "rm -rf lib && tsc -b && ./bin/run",
     "prepack": "rm -rf lib && tsc -b",
-    "test": "ts-mocha --timeout 8000 --forbid-only \"test/**/*.test.ts\""
+    "test": "ts-mocha --reporter-option maxDiffSize=9999999999 --timeout 8000 --forbid-only \"test/**/*.test.ts\""
   },
   "types": "lib/index.d.ts"
 }
