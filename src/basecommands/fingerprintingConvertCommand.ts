@@ -18,11 +18,9 @@ export default abstract class FingerprintingConvertCommand extends Command {
 
   getFlagsForInputFile(path: string) {
     if (path) {
-      const fileType = fingerprint({data: fs.readFileSync(path, 'utf8'), filename: convertFullPathToFilename(path)})
-
-      switch (fileType) {
+      FingerprintingConvertCommand.detectedType = fingerprint({data: fs.readFileSync(path, 'utf8'), filename: convertFullPathToFilename(path)})
+      switch (FingerprintingConvertCommand.detectedType) {
       case 'asff':
-        FingerprintingConvertCommand.detectedType = 'asff'
         return {
           securityhub: Flags.string({
             required: false,
@@ -31,7 +29,6 @@ export default abstract class FingerprintingConvertCommand extends Command {
           }),
         }
       case 'zap':
-        FingerprintingConvertCommand.detectedType = 'zap'
         return {
           name: Flags.string({
             char: 'n',

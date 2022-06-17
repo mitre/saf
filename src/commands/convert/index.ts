@@ -3,7 +3,7 @@ import fs from 'fs'
 import _ from 'lodash'
 import {checkSuffix} from '../../utils/global'
 import path from 'path'
-import FingerprintingConvertCommand from './fingerprintingConvertCommand'
+import FingerprintingConvertCommand from '../../basecommands/fingerprintingConvertCommand'
 
 function getInputFilename(): string {
   console.log(process.argv)
@@ -17,8 +17,6 @@ function getInputFilename(): string {
 }
 
 export default class Convert extends FingerprintingConvertCommand {
-  static usage = 'convert -i --input=INPUT, -o --output=OUTPUT '
-
   static description = 'Translate any supported file-based security results set into Heimdall Data Format'
 
   static examples = ['saf convert -i input -o output']
@@ -137,7 +135,7 @@ export default class Convert extends FingerprintingConvertCommand {
     }
 
     case 'zap': {
-      converter = new ZapMapper(fs.readFileSync(flags.input, 'utf8'), _.get(flags, 'name'))
+      converter = new ZapMapper(fs.readFileSync(flags.input, 'utf8'), _.get(flags, 'name') as string)
       fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
       break
     }
