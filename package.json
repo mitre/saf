@@ -131,6 +131,7 @@
   "scripts": {
     "lint": "eslint \"**/*.ts\" --fix",
     "lint:ci": "eslint \"**/*.ts\" --max-warnings 0",
+    "pack-hdf-converters": "original_dir=$(pwd) && cd ${HEIMDALL2_PATH:-../heimdall2/libs/hdf-converters/} && git switch ${HEIMDALL_BRANCH:-master} && yarn pack && cd $original_dir && npm i ../heimdall2/libs/hdf-converters/mitre-hdf-converters-v*.tgz && yarn prepack",
     "dev": "rm -rf lib && tsc -b && ./bin/run",
     "prepack": "rm -rf lib && tsc -b",
     "test": "ts-mocha --timeout 8000 --forbid-only \"test/**/*.test.ts\""
