@@ -61,8 +61,7 @@ export default class Threshold extends Command {
             _.get(overallStatusCounts, renameStatusName(statusName)) !==
             _.get(thresholds, statusThreshold),
           ),
-          `${statusThreshold}: Validation failed. Number of received total passed controls (${_.get(thresholds, statusThreshold)})
-          is not equal to the expected number of passed controls (${_.get(overallStatusCounts, renameStatusName(statusName))})`
+          `${statusThreshold}: Validation failed. Number of received total passed controls (${_.get(thresholds, statusThreshold)}) is not equal to the expected number of passed controls (${_.get(overallStatusCounts, renameStatusName(statusName))})`
         )
       }
     }
@@ -75,8 +74,7 @@ export default class Threshold extends Command {
             _.get(overallStatusCounts, renameStatusName(statusName)) <
             _.get(thresholds, totalMinimum),
           ),
-          `${totalMinimum}: Validation failed. Number of received total passed controls (${_.get(overallStatusCounts, renameStatusName(statusName))})
-          is less than the expected number of passed controls (${_.get(thresholds, totalMinimum)})`
+          `${totalMinimum}: Validation failed. Number of received total passed controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is less than the expected number of passed controls (${_.get(thresholds, totalMinimum)})`
         )
       }
     }
@@ -89,8 +87,7 @@ export default class Threshold extends Command {
             _.get(overallStatusCounts, renameStatusName(statusName)) >
             _.get(thresholds, totalMaximum),
           ),
-          `${totalMaximum}: Validation failed. Number of received total passed controls (${_.get(overallStatusCounts, renameStatusName(statusName))})
-          is greater than the expected number of passed controls (${_.get(thresholds, totalMaximum)})`
+          `${totalMaximum}: Validation failed. Number of received total passed controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is greater than the expected number of passed controls (${_.get(thresholds, totalMaximum)})`
         )
       }
     }
@@ -105,16 +102,14 @@ export default class Threshold extends Command {
             Boolean(
               _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold),
             ),
-            `${statusCountThreshold}: Validation failed. Number of received total passed controls (${_.get(criticalStatusCounts, renameStatusName(statusName))})
-            is less than the expected number of passed controls (${_.get(thresholds, statusCountThreshold)})`,
+            `${statusCountThreshold}: Validation failed. Number of received total passed controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is less than the expected number of passed controls (${_.get(thresholds, statusCountThreshold)})`,
           )
         } else if (thresholdType === 'max' && _.get(thresholds, statusCountThreshold) !== undefined) {
           exitNonZeroIfTrue(
             Boolean(
               _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold),
             ),
-            `${statusCountThreshold}: Validation failed. Number of received total passed controls (${_.get(criticalStatusCounts, renameStatusName(statusName))})
-            is greater than the expected number of passed controls (${_.get(thresholds, statusCountThreshold)})`,
+            `${statusCountThreshold}: Validation failed. Number of received total passed controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is greater than the expected number of passed controls (${_.get(thresholds, statusCountThreshold)})`,
           )
         }
       }
