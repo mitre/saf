@@ -7,7 +7,7 @@
   "bugs": "https://github.com/mitre/saf/issues",
   "dependencies": {
     "@aws-sdk/client-config-service": "^3.53.0",
-    "@mitre/hdf-converters": "^2.6.27",
+    "@mitre/hdf-converters": "file:../heimdall2/libs/hdf-converters/mitre-hdf-converters-v2.6.27.tgz",
     "@mitre/heimdall-lite": "^2.6.27",
     "@oclif/core": "^1.6.0",
     "@oclif/plugin-help": "^5",
@@ -131,7 +131,9 @@
   "scripts": {
     "lint": "eslint \"**/*.ts\" --fix",
     "lint:ci": "eslint \"**/*.ts\" --max-warnings 0",
-    "pack-hdf-converters": "original_dir=$(pwd) && cd ${HEIMDALL2_PATH:-../heimdall2/libs/hdf-converters/} && git switch ${HEIMDALL_BRANCH:-master} && yarn pack && cd $original_dir && npm i ../heimdall2/libs/hdf-converters/mitre-hdf-converters-v*.tgz && yarn prepack",
+    "experiment": "echo ${first} && cd ../",
+    "demo": "echo \"Hello $npm_config_first $npm_config_last\"",
+    "pack-hdf-converters": "original_dir=$(pwd) && cd ${npm_config_heimdall:-../heimdall2} && cd libs/hdf-converters/ && git switch ${branch:-master} && yarn pack && cd $original_dir && npm i ../heimdall2/libs/hdf-converters/mitre-hdf-converters-v*.tgz && yarn prepack",
     "dev": "rm -rf lib && tsc -b && ./bin/run",
     "prepack": "rm -rf lib && tsc -b",
     "test": "ts-mocha --timeout 8000 --forbid-only \"test/**/*.test.ts\""
