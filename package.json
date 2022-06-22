@@ -131,8 +131,6 @@
   "scripts": {
     "lint": "eslint \"**/*.ts\" --fix",
     "lint:ci": "eslint \"**/*.ts\" --max-warnings 0",
-    "experiment": "echo ${first} && cd ../",
-    "demo": "echo \"Hello $npm_config_first $npm_config_last\"",
     "pack-hdf-converters": "original_dir=$(pwd) && cd ${npm_config_heimdall:-../heimdall2} && cd libs/hdf-converters/ && git switch ${branch:-master} && git fetch && yarn install && yarn pack && cd $original_dir && npm i && npm i ${npm_config_heimdall:-../heimdall2}/libs/hdf-converters/mitre-hdf-converters-v*.tgz && yarn prepack",
     "dev": "rm -rf lib && tsc -b && ./bin/run",
     "prepack": "rm -rf lib && tsc -b",
