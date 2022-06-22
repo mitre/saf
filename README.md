@@ -17,6 +17,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
   - [Via Windows Installer](#installation-via-windows-installer)
 
 * [SAF CLI Usage](#usage)
+  * [Attest](#attest) - Create and Apply attestations in JSON, YAML, and XLSX format
   * [Convert](#convert) - Convert security results from all your security tools into a common data format
       *  [HDF to AWS Security Hub](#hdf-to-asff)
       *  [AWS Security Hub to HDF](#asff-to-hdf)
@@ -108,6 +109,32 @@ To update the SAF CLI on Windows, uninstall any existing version from your syste
 
 ## Usage
 ---
+
+### Attest
+
+Attesting to 'Not Reviewed' controls can be done with the `saf attest` commands. `saf attest create` lets you create attestation files and `saf attest apply` lets you apply attestation files
+
+#### Create Attestations
+```
+attest create              Create attestation files for use with `saf attest apply`
+
+  OPTIONS
+    -h, --help             Show CLI help.
+    -i, --input=<value>    (optional) An input HDF file used to search for controls
+    -o, --output=<value>   (required) The output filename
+    -t, --format=<option>  [default: json] (optional) The output file type
+                           <options: json|xlsx|yml|yaml>
+```
+
+#### Apply Attestations
+```
+attest apply              Apply one or more attestation files to one or more HDF results sets
+
+  OPTIONS
+    -h, --help              Show CLI help.
+    -i, --input=<value>...  (required) Your input HDF and Attestation file(s)
+    -o, --output=<value>    (required) Output file or folder (for multiple executions)
+```
 
 ### Convert
 
