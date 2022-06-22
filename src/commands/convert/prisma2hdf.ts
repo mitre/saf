@@ -1,7 +1,6 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {PrismaMapper as Mapper} from '@mitre/hdf-converters'
-import {checkSuffix} from '../../utils/global'
 import path from 'path'
 import _ from 'lodash'
 
