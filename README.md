@@ -33,6 +33,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       *  [Burp Suite to HDF](#burp-suite-to-hdf)
       *  [SonarQube to HDF](#sonarqube-to-hdf)
       *  [OWASP ZAP to HDF](#owasp-zap-to-hdf)
+      *  [Prisma to HDF](#prisma-to-hdf)
       *  [Prowler to HDF](#prowler-to-hdf)
       *  [Fortify to HDF](#fortify-to-hdf)
       *  [JFrog Xray to HDF](#jfrog-xray-to-hdf)
@@ -486,6 +487,21 @@ convert nikto2hdf           Translate a Nikto results JSON file into a Heimdall
     saf convert nikto2hdf -i nikto-results.json -o output-hdf-name.json
 ```
 
+##### Prisma to HDF
+
+```
+convert prisma2hdf         Translate a Prisma Cloud Scan Report CSV file into a Heimdall Data Format
+                          JSON file
+  OPTIONS
+    -i, --input=input          Prisma Cloud Scan Report CSV
+    -o, --output=output        Output HDF JSON File
+
+  DESCRIPTION
+    Note: This mapper generates multiple output files, named by corresponding host names
+
+  EXAMPLES
+    saf convert prisma2hdf -i prisma.csv -o output-hdf-name.json
+```
 
 ##### Prowler to HDF
 
