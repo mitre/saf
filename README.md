@@ -501,7 +501,7 @@ convert prowler2hdf         Translate a Prowler-derived AWS Security Finding
                             Heimdall Data Format JSON file
   OPTIONS
     -i, --input=input          Input Prowler ASFF JSON File
-    -o, --output=output        Output HDF Folder
+    -o, --output=output        Output HDF folder
 
   EXAMPLES
     saf convert prowler2hdf -i prowler-asff.json -o output-hdf-name.json
