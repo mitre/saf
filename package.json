@@ -133,7 +133,7 @@
     "lint": "eslint \"**/*.ts\" --fix",
     "lint:ci": "eslint \"**/*.ts\" --max-warnings 0",
     "pack-hdf-converters": "run-script-os",
-    "pack-hdf-converters:win32": "echo \"hello\"",
+    "pack-hdf-converters:win32": "set original_dir=\"%(cd)%\" && cd \"${npm_config_heimdall:-../heimdall2}\" && cd libs/hdf-converters/ && git switch \"${npm_config_branch:-master}\"&& git fetch && yarn install && yarn pack && cd \"%original_dir%\" && npm i && npm i \"${npm_config_heimdall:-../heimdall2}\"/libs/hdf-converters/mitre-hdf-converters-v*.tgz && yarn prepack",
     "pack-hdf-converters:darwin:linux": "original_dir=\"$(pwd)\" && cd \"${npm_config_heimdall:-../heimdall2}\" && cd libs/hdf-converters/ && git switch \"${npm_config_branch:-master}\" && git fetch && yarn install && yarn pack && cd \"$original_dir\" && npm i && npm i \"${npm_config_heimdall:-../heimdall2}\"/libs/hdf-converters/mitre-hdf-converters-v*.tgz && yarn prepack",
     "dev": "rm -rf lib && tsc -b && ./bin/run",
     "prepack": "rm -rf lib && tsc -b",
