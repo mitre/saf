@@ -55,7 +55,7 @@ export default class ASFF2HDF extends Command {
         findings.push(...data.split('\n'))
       }
 
-      // If we've been passed a Security Standards JSON
+      // If we've been passed any Security Standards JSONs
       if (flags.securityhub) {
         securityhub = flags.securityhub.map(file =>
           fs.readFileSync(file, 'utf8'),
