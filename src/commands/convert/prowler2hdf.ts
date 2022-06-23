@@ -1,7 +1,7 @@
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import fs from 'fs'
-import {ASFFResults as Mapper} from '@mitre/hdf-converters'
-import {checkSuffix} from '../../utils/global'
+import { ASFFResults as Mapper } from '@mitre/hdf-converters'
+import { checkInput, checkSuffix } from '../../utils/global'
 
 export default class Prowler2HDF extends Command {
   static usage = 'convert prowler2hdf -i <asff-finding-json> [--securityhub <standard-1-json> ... <standard-n-json>] -o <hdf-scan-results-json>'
@@ -11,15 +11,19 @@ export default class Prowler2HDF extends Command {
   static examples = ['saf convert prowler2hdf -i prowler-asff.json -o output-hdf-name.json']
 
   static flags = {
-    help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true}),
-    output: Flags.string({char: 'o', required: true}),
+    help: Flags.help({ char: 'h' }),
+    input: Flags.string({ char: 'i', required: true }),
+    output: Flags.string({ char: 'o', required: true }),
   }
 
   async run() {
-    const {flags} = await this.parse(Prowler2HDF)
+    const { flags } = await this.parse(Prowler2HDF)
     // comes as an asff-json file which is basically all the findings concatenated into one file instead of putting it in the proper wrapper data structure
     const input = `{"Findings": [${fs.readFileSync(flags.input, 'utf8').trim().split('\n').join(',')}]}`
+
+    // Check for correct input type
+    checkInput({ data: input, filename: flags.input }, 'asff', 'Prowler-derived AWS Security Finding Format results')
+
     const converter = new Mapper(input)
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }

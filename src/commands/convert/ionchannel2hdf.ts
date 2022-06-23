@@ -1,7 +1,7 @@
-import {IonChannelAPIMapper, IonChannelMapper} from '@mitre/hdf-converters'
-import {Command, Flags} from '@oclif/core'
-import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
-import {createWinstonLogger} from '../../utils/logging'
+import { IonChannelAPIMapper, IonChannelMapper } from '@mitre/hdf-converters'
+import { Command, Flags } from '@oclif/core'
+import { checkInput, checkSuffix, convertFullPathToFilename } from '../../utils/global'
+import { createWinstonLogger } from '../../utils/logging'
 import fs from 'fs'
 import path from 'path'
 
@@ -12,7 +12,7 @@ export default class IonChannel2HDF extends Command {
     'Pull and translate SBOM data from Ion Channel into Heimdall Data Format';
 
   static flags = {
-    help: Flags.help({char: 'h'}),
+    help: Flags.help({ char: 'h' }),
     input: Flags.string({
       char: 'i',
       description: 'Input IonChannel JSON file',
@@ -58,7 +58,7 @@ export default class IonChannel2HDF extends Command {
   };
 
   async run() {
-    const {flags} = await this.parse(IonChannel2HDF)
+    const { flags } = await this.parse(IonChannel2HDF)
     const logger = createWinstonLogger('IonChannel2HDF', flags.logLevel)
 
     if (!Array.isArray(flags.input) && !(flags.apiKey && flags.teamName)) {
@@ -82,7 +82,7 @@ export default class IonChannel2HDF extends Command {
         let json = {}
         if (flags.raw) {
           filename = project.name + '_raw.json'
-          json = await apiClient.getAnalysis().then(({analysis}) => analysis)
+          json = await apiClient.getAnalysis().then(({ analysis }) => analysis)
         } else {
           filename = project.name + '.json'
           json = await apiClient.toHdf()
@@ -106,7 +106,7 @@ export default class IonChannel2HDF extends Command {
         let json = {}
         if (flags.raw) {
           filename = projectName + '_raw.json'
-          json = await apiClient.getAnalysis().then(({analysis}) => analysis)
+          json = await apiClient.getAnalysis().then(({ analysis }) => analysis)
         } else {
           filename = projectName + '.json'
           json = await apiClient.toHdf()
@@ -118,6 +118,10 @@ export default class IonChannel2HDF extends Command {
       logger.debug('Processing input files')
       fs.mkdirSync(flags.output)
       for (const filename of flags.input) {
+        // Check for correct input type
+        const data = fs.readFileSync(filename, 'utf8')
+        checkInput({ data: data, filename: filename }, 'ionchannel', 'IonChannel JSON')
+
         logger.debug(`Processing...${filename}`)
         fs.writeFileSync(
           path.join(
@@ -125,7 +129,7 @@ export default class IonChannel2HDF extends Command {
             checkSuffix(convertFullPathToFilename(filename)),
           ),
           JSON.stringify(
-            (new IonChannelMapper(fs.readFileSync(filename, 'utf8'))).toHdf(),
+            (new IonChannelMapper(data)).toHdf(),
           ),
         )
       }

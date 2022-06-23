@@ -48,11 +48,6 @@ export default abstract class FingerprintingConvertCommand extends Command {
         case 'twistlock':
         case 'xccdf':
           return {}
-        default:
-          throw new Error(`Unknown filetype provided: ${path}
-        \nThe generic convert command should only be used for taking supported file-based security results and converting into Heimdall Data Format
-        \nFor more information, run "saf convert --help"
-        \nFor a list of supported formats, see https://github.com/mitre/heimdall2/tree/master/libs/hdf-converters#supported-formats`)
       }
     }
 
