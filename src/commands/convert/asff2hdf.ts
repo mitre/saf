@@ -1,7 +1,7 @@
-import { Command, Flags } from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import { ASFFResults as Mapper } from '@mitre/hdf-converters'
-import { checkSuffix, checkInput } from '../../utils/global'
+import {ASFFResults as Mapper} from '@mitre/hdf-converters'
+import {checkSuffix, checkInput} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
 
@@ -18,7 +18,7 @@ export default class ASFF2HDF extends Command {
   ];
 
   static flags = {
-    help: Flags.help({ char: 'h' }),
+    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,
@@ -38,11 +38,11 @@ export default class ASFF2HDF extends Command {
   };
 
   async run() {
-    const { flags } = await this.parse(ASFF2HDF)
+    const {flags} = await this.parse(ASFF2HDF)
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8')
-    checkInput({ data: data, filename: flags.input }, 'asff', 'AWS Security Finding Format JSON')
+    checkInput({data: data, filename: flags.input}, 'asff', 'AWS Security Finding Format JSON')
 
     let securityhub
     if (flags.securityhub) {
