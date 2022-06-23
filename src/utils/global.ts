@@ -1,7 +1,7 @@
-import { fingerprint } from '@mitre/hdf-converters'
-import { getInstalledPathSync } from 'get-installed-path'
-import { ContextualizedEvaluation, ExecJSON } from 'inspecjs'
-import { ExecJSONProfile } from 'inspecjs/lib/generated_parsers/v_1_0/exec-json'
+import {fingerprint} from '@mitre/hdf-converters'
+import {getInstalledPathSync} from 'get-installed-path'
+import {ContextualizedEvaluation, ExecJSON} from 'inspecjs'
+import {ExecJSONProfile} from 'inspecjs/lib/generated_parsers/v_1_0/exec-json'
 import _ from 'lodash'
 import path from 'path'
 
@@ -136,7 +136,7 @@ export function getDescription(
 
 // Check if file input is of given type - throw error if not
 export function checkInput(guessOptions: { data: string, filename: string }, desiredType: string, desiredFormat: string): void {
-  const detectedType = fingerprint({ data: guessOptions.data, filename: convertFullPathToFilename(guessOptions.filename) })
+  const detectedType = fingerprint({data: guessOptions.data, filename: convertFullPathToFilename(guessOptions.filename)})
   if (!(detectedType === desiredType))
     throw new Error(`Unable to process input file\
       \nDetected input type: ${detectedType === '' ? 'unknown or none' : `${detectedType} - did you mean to run this converter instead?`}\
