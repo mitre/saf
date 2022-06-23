@@ -1,12 +1,12 @@
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import flat from 'flat'
 import YAML from 'yaml'
 import fs from 'fs'
-import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
+import { ContextualizedProfile, convertFileContextual } from 'inspecjs'
 import _ from 'lodash'
-import {ThresholdValues} from '../../types/threshold'
-import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject, statusSeverityPaths, totalMax, totalMin} from '../../utils/threshold'
-import {expect} from 'chai'
+import { ThresholdValues } from '../../types/threshold'
+import { calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject, statusSeverityPaths, totalMax, totalMin } from '../../utils/threshold'
+import { expect } from 'chai'
 
 export default class Threshold extends Command {
   static usage = 'validate threshold -i, --input=JSON -T, --templateInline="JSON Data" -F --templateFile=YAML File'
@@ -14,14 +14,14 @@ export default class Threshold extends Command {
   static description = 'Validate the compliance and status counts of an HDF file'
 
   static flags = {
-    help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true}),
-    templateInline: Flags.string({char: 'T', required: false, exclusive: ['templateFile']}),
-    templateFile: Flags.string({char: 'F', required: false, exclusive: ['templateInline'], description: 'Expected data template, generate one with "saf generate threshold"'}),
+    help: Flags.help({ char: 'h' }),
+    input: Flags.string({ char: 'i', required: true }),
+    templateInline: Flags.string({ char: 'T', required: false, exclusive: ['templateFile'] }),
+    templateFile: Flags.string({ char: 'F', required: false, exclusive: ['templateInline'], description: 'Expected data template, generate one with "saf generate threshold"' }),
   }
 
   async run() {
-    const {flags} = await this.parse(Threshold)
+    const { flags } = await this.parse(Threshold)
     let thresholds: ThresholdValues = {}
     if (flags.templateInline) {
       // Need to do some processing to convert this into valid JSON
@@ -61,7 +61,7 @@ export default class Threshold extends Command {
             _.get(overallStatusCounts, renameStatusName(statusName)) !==
             _.get(thresholds, statusThreshold),
           ),
-          `${statusThreshold}: Validation failed. Number of received total passed controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is not equal to the expected number of passed controls (${_.get(thresholds, statusThreshold)})`,
+          `${statusThreshold}: Threshold not met. Number of received total ${statusThreshold.split(".")[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is not equal to your set threshold for the number of ${statusThreshold.split(".")[0]} controls (${_.get(thresholds, statusThreshold)})`,
         )
       }
     }
@@ -74,7 +74,7 @@ export default class Threshold extends Command {
             _.get(overallStatusCounts, renameStatusName(statusName)) <
             _.get(thresholds, totalMinimum),
           ),
-          `${totalMinimum}: Validation failed. Number of received total passed controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is less than the expected number of passed controls (${_.get(thresholds, totalMinimum)})`,
+          `${totalMinimum}: Threshold not met. Number of received total ${totalMinimum.split(".")[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${totalMinimum.split(".")[0]} controls (${_.get(thresholds, totalMinimum)})`,
         )
       }
     }
@@ -87,7 +87,7 @@ export default class Threshold extends Command {
             _.get(overallStatusCounts, renameStatusName(statusName)) >
             _.get(thresholds, totalMaximum),
           ),
-          `${totalMaximum}: Validation failed. Number of received total passed controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is greater than the expected number of passed controls (${_.get(thresholds, totalMaximum)})`,
+          `${totalMaximum}: Threshold not met. Number of received total ${totalMaximum.split(".")[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${totalMaximum.split(".")[0]} controls (${_.get(thresholds, totalMaximum)})`,
         )
       }
     }
@@ -102,14 +102,14 @@ export default class Threshold extends Command {
             Boolean(
               _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold),
             ),
-            `${statusCountThreshold}: Validation failed. Number of received total passed controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is less than the expected number of passed controls (${_.get(thresholds, statusCountThreshold)})`,
+            `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split(".")[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${statusCountThreshold.split(".")[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
           )
         } else if (thresholdType === 'max' && _.get(thresholds, statusCountThreshold) !== undefined) {
           exitNonZeroIfTrue(
             Boolean(
               _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold),
             ),
-            `${statusCountThreshold}: Validation failed. Number of received total passed controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is greater than the expected number of passed controls (${_.get(thresholds, statusCountThreshold)})`,
+            `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split(".")[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${statusCountThreshold.split(".")[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
           )
         }
       }
