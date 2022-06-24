@@ -1,6 +1,6 @@
 ECHO OFF
 
-SET CYPRESS_INSTALL_BINARY=0 
+SET CYPRESS_INSTALL_BINARY=0
 SET PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 SET original_dir=%cd%
@@ -12,8 +12,6 @@ IF DEFINED npm_config_heimdall (
   CD ../heimdall2/libs/hdf-converters/
 )
 
-REM CD libs/hdf-converters
-
 IF DEFINED npm_config_branch (
   git switch %npm_config_branch%
 ) ELSE (
@@ -22,12 +20,12 @@ IF DEFINED npm_config_branch (
 
 git fetch
 git pull
-yarn install 
+yarn install
 yarn pack
 
-CD %original_dir% 
+CD %original_dir%
 
-npm i 
+npm i
 
 IF DEFINED npm_config_heimdall (
   npm i %npm_config_heimdall%/libs/hdf-converters/mitre-hdf-converters-v*.tgz
