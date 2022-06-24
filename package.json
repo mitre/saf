@@ -134,7 +134,7 @@
     "lint:ci": "eslint \"**/*.ts\" --max-warnings 0",
     "pack-hdf-converters": "run-script-os",
     "pack-hdf-converters:win32": "pack-hdf-converters.bat",
-    "pack-hdf-converters:darwin:linux": "pack-hdf-converters.sh",
+    "pack-hdf-converters:darwin:linux": "chmod u+r+x pack-hdf-converters.sh && ./pack-hdf-converters.sh",
     "dev": "rm -rf lib && tsc -b && ./bin/run",
     "prepack": "rm -rf lib && tsc -b",
     "test": "ts-mocha --timeout 8000 --forbid-only \"test/**/*.test.ts\""
