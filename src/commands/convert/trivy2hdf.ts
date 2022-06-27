@@ -1,19 +1,21 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {ASFFResults as Mapper} from '@mitre/hdf-converters'
-import {checkInput, checkSuffix} from '../../utils/global'
+import {checkSuffix} from '../../utils/global'
+import _ from 'lodash'
+import path from 'path'
 
 export default class Trivy2HDF extends Command {
-  static usage = 'convert trivy2hdf -i <asff-finding-json> [--securityhub <standard-1-json> ... <standard-n-json>] -o <hdf-scan-results-json>'
+  static usage = 'convert trivy2hdf -i <trivy-finding-json> -o <hdf-output-folder>'
 
   static description = 'Translate a Trivy-derived AWS Security Finding Format results from concatenated JSON blobs into a Heimdall Data Format JSON file'
 
-  static examples = ['saf convert trivy2hdf -i trivy-asff.json -o output-hdf-name.json']
+  static examples = ['saf convert trivy2hdf -i trivy-asff.json -o output-folder']
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true}),
-    output: Flags.string({char: 'o', required: true}),
+    input: Flags.string({char: 'i', required: true, description: 'Input Trivy ASFF JSON File'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output folder'}),
   }
 
   async run() {
@@ -24,11 +26,19 @@ export default class Trivy2HDF extends Command {
       input = `{"Findings": ${fs.readFileSync(flags.input, 'utf8').trim()}}`
     }
 
-    // Check for correct input type
-    checkInput({data: input, filename: flags.input}, 'asff', 'Trivy-derived AWS Security Finding Format results')
-
     const converter = new Mapper(input)
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+    const results = converter.toHdf()
+
+    if (!fs.existsSync(flags.output)) {
+      fs.mkdirSync(flags.output)
+    }
+
+    _.forOwn(results, (result, filename) => {
+      fs.writeFileSync(
+        path.join(flags.output, checkSuffix(filename)),
+        JSON.stringify(result),
+      )
+    })
   }
 }
 
