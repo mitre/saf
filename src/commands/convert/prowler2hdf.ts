@@ -2,26 +2,33 @@ import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {ASFFResults as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
+import _ from 'lodash'
+import path from 'path'
 
 export default class Prowler2HDF extends Command {
-  static usage = 'convert prowler2hdf -i <asff-finding-json> [--securityhub <standard-1-json> ... <standard-n-json>] -o <hdf-scan-results-json>'
+  static usage = 'convert prowler2hdf -i <prowler-finding-json> -o <hdf-output-folder>'
 
   static description = 'Translate a Prowler-derived AWS Security Finding Format results from concatenated JSON blobs into a Heimdall Data Format JSON file'
 
-  static examples = ['saf convert prowler2hdf -i prowler-asff.json -o output-hdf-name.json']
+  static examples = ['saf convert prowler2hdf -i prowler-asff.json -o output-folder']
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true}),
-    output: Flags.string({char: 'o', required: true}),
+    input: Flags.string({char: 'i', required: true, description: 'Input Prowler ASFF JSON file'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output folder'}),
   }
 
   async run() {
     const {flags} = await this.parse(Prowler2HDF)
-    // comes as an asff-json file which is basically all the findings concatenated into one file instead of putting it in the proper wrapper data structure
-    const input = `{"Findings": [${fs.readFileSync(flags.input, 'utf8').trim().split('\n').join(',')}]}`
-    const converter = new Mapper(input)
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'))
+    const results = converter.toHdf()
+
+    _.forOwn(results, (result, filename) => {
+      fs.writeFileSync(
+        path.join(flags.output, checkSuffix(filename)),
+        JSON.stringify(result),
+      )
+    })
   }
 }
 
