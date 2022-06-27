@@ -10,7 +10,7 @@ import {AwsSecurityFindingFilters} from 'aws-sdk/clients/securityhub'
 import {createWinstonLogger} from '../../utils/logging'
 
 // Should be no more than 100
-const API_MAX_RESULTS = 100;
+const API_MAX_RESULTS = 100
 
 export default class ASFF2HDF extends Command {
   static description =
@@ -52,23 +52,23 @@ export default class ASFF2HDF extends Command {
         } else if ('Findings' in convertedJson) {
           findings.push(...convertedJson.Findings.map((finding: Record<string, unknown>) => JSON.stringify(finding)))
         } else if ('Controls' in convertedJson) {
-          throw new Error("Invalid ASFF findings format - a standards standards was passed to --input instead of --securityhub")
+          throw new Error('Invalid ASFF findings format - a standards standards was passed to --input instead of --securityhub')
         } else {
-          throw new Error("Invalid ASFF findings format - unknown input type")
+          throw new Error('Invalid ASFF findings format - unknown input type')
         }
-      } catch (exception) {
+      } catch (error) {
         const splitLines = data.split('\n')
-        
+
         if (splitLines.length === 0) {
           logger.error('Invalid ASFF findings format - no lines found')
-          throw exception
-        } 
+          throw error
+        }
 
         try {
           findings.push(...splitLines.map(finding => JSON.stringify(JSON.parse(finding))))
-        } catch (exception) {
+        } catch (error) {
           logger.error('Invalid ASFF findings format - unable to parse JSON')
-          throw exception
+          throw error
         }
       }
 
@@ -130,10 +130,10 @@ export default class ASFF2HDF extends Command {
       while (nextToken !== undefined) {
         logger.debug(`Querying for NextToken: ${nextToken}`)
         const getEnabledStandardsResult: any = await client.getEnabledStandards({NextToken: nextToken}).promise()
-        
+
         logger.debug(`Received: ${getEnabledStandardsResult.StandardsSubscriptions?.length} standards`)
         enabledStandards.push(...getEnabledStandardsResult.StandardsSubscriptions)
-        
+
         nextToken = getEnabledStandardsResult.NextToken
       }
 
