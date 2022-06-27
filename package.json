@@ -7,9 +7,18 @@
   "bugs": "https://github.com/mitre/saf/issues",
   "dependencies": {
     "@aws-sdk/client-config-service": "^3.53.0",
+<<<<<<< HEAD
+    "@mitre/hdf-converters": "^2.6.14",
+    "@mitre/heimdall-lite": "^2.6.14",
+    "@oclif/command": "^1",
+    "@oclif/config": "^1",
+    "@oclif/dev-cli": "^1",
+    "@oclif/parser": "^3.8.7",
+=======
     "@mitre/hdf-converters": "^2.6.27",
     "@mitre/heimdall-lite": "^2.6.27",
     "@oclif/core": "^1.6.0",
+>>>>>>> main
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.0.1",
     "@oclif/plugin-version": "^1",
@@ -28,7 +37,11 @@
     "@types/tmp": "^0.2.2",
     "@types/uuid": "^8.3.4",
     "@types/xml2js": "^0.4.9",
+<<<<<<< HEAD
+    "@types/winston": "^2.4.4",
+=======
     "accurate-search": "^1.2.15",
+>>>>>>> main
     "aws-sdk": "^2.1074.0",
     "chai": "^4",
     "csv-parse": "^4.16.0",

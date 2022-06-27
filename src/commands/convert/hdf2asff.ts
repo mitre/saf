@@ -1,5 +1,12 @@
+<<<<<<< HEAD
+import BaseCommand from '../../utils/base-command'
+import {OutputFlags} from '@oclif/parser'
+import {flags} from '@oclif/command'
+import * as fs from 'fs'
+=======
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
+>>>>>>> main
 import https from 'https'
 import {FromHdfToAsffMapper as Mapper} from '@mitre/hdf-converters'
 import path from 'path'
@@ -8,14 +15,38 @@ import {checkSuffix, sliceIntoChunks} from '../../utils/global'
 import _ from 'lodash'
 import {BatchImportFindingsRequestFindingList} from 'aws-sdk/clients/securityhub'
 
+<<<<<<< HEAD
+export default class HDF2ASFF extends BaseCommand {
+  static usage = 'convert:hdf2asff -i, --input=HDF-JSON -o, --output=ASFF-JSON-Folder -a, --accountId=accountId -r, --region=region -t, --target=target -u, --upload'
+=======
 export default class HDF2ASFF extends Command {
   static usage = 'convert hdf2asff -i, --input=HDF-JSON -o, --output=ASFF-JSON-Folder -a, --accountId=accountId -r, --region=region -t, --target=target -u, --upload'
+>>>>>>> main
 
   static description = 'Translate a Heimdall Data Format JSON file into AWS Security Findings Format JSON file(s) and/or upload to AWS Security Hub'
 
   static examples = ['saf convert hdf2asff -i rhel7-scan_02032022A.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7.asff', 'saf convert hdf2asff -i rds_mysql_i123456789scan_03042022A.json -a 987654321 -r us-west-1 -t Instance_i123456789 -u', 'saf convert hdf2asff -i snyk_acme_project5_hdf_04052022A.json -a 2143658798 -r us-east-1 -t acme_project5 -o snyk_acme_project5 -u']
 
   static flags = {
+<<<<<<< HEAD
+    ...BaseCommand.flags,
+    accountId: flags.string({char: 'a', required: true, description: 'AWS Account ID'}),
+    region: flags.string({char: 'r', required: true, description: 'SecurityHub Region'}),
+    target: flags.string({char: 't', required: true, description: 'Unique name for target to track findings across time'}),
+    upload: flags.boolean({char: 'u', required: false, description: 'Upload findings to AWS Security Hub'}),
+    insecure: flags.boolean({char: 'I', required: false, default: false, description: 'Disable SSL verification, this is insecure.'}),
+    certificate: flags.string({char: 'C', required: false, description: 'Trusted signing certificate file'}),
+  }
+
+  async run() {
+    const flags = this.parsedFlags as OutputFlags<typeof HDF2ASFF.flags>
+
+    // Read Data
+    this.logger.verbose(`Reading HDF file: ${flags.input}`)
+    const inputDataText = fs.readFileSync(flags.input, 'utf-8')
+
+    const converter = new Mapper(JSON.parse(inputDataText), {
+=======
     help: Flags.help({char: 'h'}),
     accountId: Flags.string({char: 'a', required: true, description: 'AWS Account ID'}),
     region: Flags.string({char: 'r', required: true, description: 'SecurityHub Region'}),
@@ -32,24 +63,30 @@ export default class HDF2ASFF extends Command {
     const {flags} = await this.parse(HDF2ASFF)
 
     const converted = new Mapper(JSON.parse(fs.readFileSync(flags.input, 'utf8')), {
+>>>>>>> main
       awsAccountId: flags.accountId,
       region: flags.region,
       regionAttribute: flags.specifyRegionAttribute,
       target: flags.target,
       input: flags.input,
-    }).toAsff()
+    })
+    this.logger.info('Starting conversion from HDF to ASFF')
+    const converted = converter.toAsff()
 
     if (flags.output) {
       const convertedSlices = sliceIntoChunks(converted, 100)
       const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
       fs.mkdirSync(outputFolder)
+      this.logger.verbose(`Created output folder: ${outputFolder}`)
       if (convertedSlices.length === 1) {
         const outfilePath = path.join(outputFolder, checkSuffix(flags.output))
         fs.writeFileSync(outfilePath, JSON.stringify(convertedSlices[0]))
+        this.logger.verbose(`ASFF successfully written to ${outfilePath}`)
       } else {
         convertedSlices.forEach((slice, index) => {
           const outfilePath = path.join(outputFolder, `${checkSuffix(flags.output || '').replace('.json', '')}.p${index}.json`)
           fs.writeFileSync(outfilePath, JSON.stringify(slice))
+          this.logger.verbose(`ASFF successfully written to ${outfilePath}`)
         })
       }
     }
@@ -59,7 +96,7 @@ export default class HDF2ASFF extends Command {
       const convertedSlices = sliceIntoChunks(converted, 100)
 
       if (flags.insecure) {
-        console.warn('WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate')
+        this.logger.warn('WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate')
       }
 
       const clientOptions: AWS.SecurityHub.ClientConfiguration = {
@@ -79,12 +116,12 @@ export default class HDF2ASFF extends Command {
         convertedSlices.map(async chunk => {
           try {
             const result = await client.batchImportFindings({Findings: chunk}).promise()
-            console.log(
+            this.logger.info(
               `Uploaded ${chunk.length} controls. Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
             )
             if (result.FailedFindings?.length) {
               console.error(`Failed to upload ${result.FailedCount} Findings`)
-              console.log(result.FailedFindings)
+              this.logger.info(result.FailedFindings)
             }
           } catch (error) {
             if (typeof error === 'object' && _.get(error, 'code', false) === 'NetworkingError') {
@@ -98,13 +135,13 @@ export default class HDF2ASFF extends Command {
         if (profileInfoFinding) {
           profileInfoFinding.UpdatedAt = new Date().toISOString()
           const result = await client.batchImportFindings({Findings: [profileInfoFinding as unknown] as BatchImportFindingsRequestFindingList}).promise()
-          console.info(`Statistics: ${profileInfoFinding.Description}`)
-          console.info(
+          this.logger.info(`Statistics: ${profileInfoFinding.Description}`)
+          this.logger.info(
             `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
           )
           if (result.FailedFindings?.length) {
             console.error(`Failed to upload ${result.FailedCount} Results Set Info Finding`)
-            console.log(result.FailedFindings)
+            this.logger.info(result.FailedFindings)
           }
         }
       })
