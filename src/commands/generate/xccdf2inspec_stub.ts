@@ -1,5 +1,5 @@
 /* eslint-disable no-negated-condition */
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {DecodedDescription, DisaStig} from '../../types/xccdf'
 import {InSpecControl, InSpecMetaData} from '../../types/inspec'
@@ -7,25 +7,27 @@ import {convertEncodedHTMLIntoJson, convertEncodedXmlIntoJson, impactNumberToSev
 import path from 'path'
 import _ from 'lodash'
 import YAML from 'yaml'
-import {default as CCINistMappings} from '@mitre/hdf-converters/lib/data/cci-nist-mapping.json'
+import {CciNistMappingData} from '@mitre/hdf-converters'
 
 export default class XCCDF2InSpec extends Command {
-  static usage = 'generate:xccdf2inspec_stub -i, --input=XML -o, --output=FOLDER'
+  static usage = 'generate xccdf2inspec_stub -i, --input=XML -o, --output=FOLDER'
 
   static description = 'Translate a DISA STIG XCCDF XML file to a skeleton for an InSpec profile'
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: true, description: 'Path to the DISA STIG XCCDF file'}),
-    metadata: flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
-    singleFile: flags.boolean({char: 's', required: false, default: false, description: 'Output the resulting controls as a single file'}),
-    useVulnerabilityId: flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')"}),
-    lineLength: flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
-    output: flags.string({char: 'o', required: true, default: 'profile'}),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true, description: 'Path to the DISA STIG XCCDF file'}),
+    metadata: Flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
+    singleFile: Flags.boolean({char: 's', required: false, default: false, description: 'Output the resulting controls as a single file'}),
+    useVulnerabilityId: Flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')", exclusive: ['useStigID']}),
+    useStigID: Flags.boolean({char: 'S', required: false, default: false, description: "Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs", exclusive: ['useVulnerabilityId']}),
+    lineLength: Flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
+    encodingHeader: Flags.boolean({char: 'e', required: false, default: false, description: 'Add the "# encoding: UTF-8" comment at the top of each control'}),
+    output: Flags.string({char: 'o', required: true, default: 'profile'}),
   }
 
   async run() {
-    const {flags} = this.parse(XCCDF2InSpec)
+    const {flags} = await this.parse(XCCDF2InSpec)
 
     // Check if the output folder already exists
     if (!fs.existsSync(flags.output)) {
@@ -42,14 +44,14 @@ export default class XCCDF2InSpec extends Command {
     // Read metadata file if passed
     if (flags.metadata) {
       if (fs.existsSync(flags.metadata)) {
-        metadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf-8'))
+        metadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf8'))
       } else {
         throw new Error('Passed metadata file does not exist')
       }
     }
 
     // Read XCCDF file
-    const parsedXML: DisaStig = convertEncodedXmlIntoJson(fs.readFileSync(flags.input, 'utf-8'))
+    const parsedXML: DisaStig = convertEncodedXmlIntoJson(fs.readFileSync(flags.input, 'utf8'))
     // Extract groups (these contain controls)
     const groups = parsedXML.Benchmark.Group
     // All of our extracted controls to be converted into Ruby/InSpec code
@@ -106,16 +108,23 @@ export default class XCCDF2InSpec extends Command {
         throw new Error('Vulnerability exists without VulnDiscussion')
       }
 
+      let controlID = group['@_id']
+      if (flags.useVulnerabilityId) {
+        controlID = group.Rule['@_id'].split('r')[0]
+      } else if (flags.useStigID) {
+        controlID = group.Rule.version
+      }
+
       // Create a barebones InSpec control
       const inspecControl: InSpecControl = {
-        id: flags.useVulnerabilityId ? group.Rule['@_id'].split('r')[0] : group['@_id'],
+        id: controlID,
         title: group.Rule['@_severity'] ? group.Rule.title : `[[[MISSING SEVERITY FROM STIG]]] ${group.Rule.title}`, // This should never happen, yet it does with SV-203750r380182_rule of the General_Purpose_Operating_System_SRG_V2R1_Manual-xccdf.xml
         desc: extractedDescription.VulnDiscussion.split('Satisfies: ')[0],
         impact: severityStringToImpact(group.Rule['@_severity'] || 'critical'),
         rationale: '',
         descs: {
-          check: group.Rule.check['check-content'],
-          fix: group.Rule.fixtext['#text'],
+          check: typeof group.Rule.check === 'string' ? group.Rule.check : group.Rule.check['check-content'],
+          fix: typeof group.Rule.fixtext === 'string' ? group.Rule.fixtext : group.Rule.fixtext['#text'],
         },
         tags: {
           severity: impactNumberToSeverityString(severityStringToImpact(group.Rule['@_severity'] || 'critical')),
@@ -124,7 +133,7 @@ export default class XCCDF2InSpec extends Command {
           gid: group['@_id'],
           rid: group.Rule['@_id'],
           stig_id: group.Rule.version,
-          fix_id: group.Rule.fix['@_id'],
+          fix_id: group.Rule.fix ? group.Rule.fix['@_id'] : undefined,
           false_negatives: extractedDescription.FalseNegatives,
           false_positives: extractedDescription.FalsePositives,
           documentable: extractedDescription.Documentable,
@@ -145,9 +154,9 @@ export default class XCCDF2InSpec extends Command {
           if (identifier['@_system'].toLowerCase().endsWith('cci')) {
             _.set(inspecControl, 'tags.cci', _.get(inspecControl, 'tags.cci') || [])
             inspecControl.tags.cci?.push(identifier['#text'])
-            if (identifier['#text'] in CCINistMappings) {
+            if (identifier['#text'] in CciNistMappingData.data) {
               _.set(inspecControl, 'tags.nist', _.get(inspecControl, 'tags.nist') || [])
-              const nistMapping = _.get(CCINistMappings, identifier['#text'])
+              const nistMapping = _.get(CciNistMappingData.data, identifier['#text'])
               if (inspecControl.tags.nist?.indexOf(nistMapping) === -1) {
                 inspecControl.tags.nist?.push(nistMapping)
               }
@@ -166,12 +175,12 @@ export default class XCCDF2InSpec extends Command {
     // Convert all extracted controls to Ruby/InSpec code
     if (!flags.singleFile) {
       inspecControls.forEach(control => {
-        fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control, flags.lineLength))
+        fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader))
       })
     } else {
       const controlOutfile = fs.createWriteStream(path.join(flags.output, 'controls', 'controls.rb'), {flags: 'w'})
       inspecControls.forEach(control => {
-        controlOutfile.write(inspecControlToRubyCode(control, flags.lineLength) + '\n\n')
+        controlOutfile.write(inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader) + '\n\n')
       })
       controlOutfile.close()
     }

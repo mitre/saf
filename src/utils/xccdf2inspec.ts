@@ -6,7 +6,19 @@ import {DecodedDescription} from '../types/xccdf'
 
 // Breaks lines down to lineLength number of characters
 export function wrap(s: string, lineLength = 80): string {
-  return s.replace(new RegExp(`(?![^\n]{1,${lineLength}}$)([^\n]{1,${lineLength}})`, 'g'), '$1\n')
+  let currentLineLength = 0
+  let finalString = ''
+  s.split(' ').forEach(word => {
+    if (currentLineLength + word.length < lineLength || word.length >= lineLength) {
+      currentLineLength += word.length
+      finalString += word + ' '
+    } else {
+      currentLineLength = word.length
+      finalString += `\n${word} `
+    }
+  })
+
+  return finalString.trim()
 }
 
 const escapeQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/'/g, "\\'") // Escape backslashes and quotes
@@ -119,8 +131,8 @@ export function impactNumberToSeverityString(impact: number): string {
   }
 }
 
-export function inspecControlToRubyCode(control: InSpecControl, lineLength?: number): string {
-  let result = '# encoding: UTF-8\n\n'
+export function inspecControlToRubyCode(control: InSpecControl, lineLength?: number, showUtfEncoding?: boolean): string {
+  let result = showUtfEncoding ? '# encoding: UTF-8\n\n' : ''
 
   result += `control "${control.id}" do\n`
   if (control.title) {

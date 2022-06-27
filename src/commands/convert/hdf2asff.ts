@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 import BaseCommand from '../../utils/base-command'
 import {OutputFlags} from '@oclif/parser'
 import {flags} from '@oclif/command'
 import * as fs from 'fs'
+=======
+import {Command, Flags} from '@oclif/core'
+import fs from 'fs'
+>>>>>>> main
 import https from 'https'
 import {FromHdfToAsffMapper as Mapper} from '@mitre/hdf-converters'
 import path from 'path'
@@ -10,14 +15,20 @@ import {checkSuffix, sliceIntoChunks} from '../../utils/global'
 import _ from 'lodash'
 import {BatchImportFindingsRequestFindingList} from 'aws-sdk/clients/securityhub'
 
+<<<<<<< HEAD
 export default class HDF2ASFF extends BaseCommand {
   static usage = 'convert:hdf2asff -i, --input=HDF-JSON -o, --output=ASFF-JSON-Folder -a, --accountId=accountId -r, --region=region -t, --target=target -u, --upload'
+=======
+export default class HDF2ASFF extends Command {
+  static usage = 'convert hdf2asff -i, --input=HDF-JSON -o, --output=ASFF-JSON-Folder -a, --accountId=accountId -r, --region=region -t, --target=target -u, --upload'
+>>>>>>> main
 
   static description = 'Translate a Heimdall Data Format JSON file into AWS Security Findings Format JSON file(s) and/or upload to AWS Security Hub'
 
-  static examples = ['saf convert:hdf2asff -i rhel7-scan_02032022A.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7.asff', 'saf convert:hdf2asff -i rds_mysql_i123456789scan_03042022A.json -a 987654321 -r us-west-1 -t Instance_i123456789 -u', 'saf convert:hdf2asff -i snyk_acme_project5_hdf_04052022A.json -a 2143658798 -r us-east-1 -t acme_project5 -o snyk_acme_project5 -u']
+  static examples = ['saf convert hdf2asff -i rhel7-scan_02032022A.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7.asff', 'saf convert hdf2asff -i rds_mysql_i123456789scan_03042022A.json -a 987654321 -r us-west-1 -t Instance_i123456789 -u', 'saf convert hdf2asff -i snyk_acme_project5_hdf_04052022A.json -a 2143658798 -r us-east-1 -t acme_project5 -o snyk_acme_project5 -u']
 
   static flags = {
+<<<<<<< HEAD
     ...BaseCommand.flags,
     accountId: flags.string({char: 'a', required: true, description: 'AWS Account ID'}),
     region: flags.string({char: 'r', required: true, description: 'SecurityHub Region'}),
@@ -35,8 +46,27 @@ export default class HDF2ASFF extends BaseCommand {
     const inputDataText = fs.readFileSync(flags.input, 'utf-8')
 
     const converter = new Mapper(JSON.parse(inputDataText), {
+=======
+    help: Flags.help({char: 'h'}),
+    accountId: Flags.string({char: 'a', required: true, description: 'AWS Account ID'}),
+    region: Flags.string({char: 'r', required: true, description: 'SecurityHub Region'}),
+    specifyRegionAttribute: Flags.boolean({char: 'R', required: false, description: 'Manually specify the top-level `Region` attribute - SecurityHub populates this attribute automatically and prohibits one from updating it using `BatchImportFindings` or `BatchUpdateFindings`'}),
+    input: Flags.string({char: 'i', required: true, description: 'Input HDF JSON File'}),
+    target: Flags.string({char: 't', required: true, description: 'Unique name for target to track findings across time'}),
+    upload: Flags.boolean({char: 'u', required: false, description: 'Upload findings to AWS Security Hub'}),
+    output: Flags.string({char: 'o', required: false, description: 'Output ASFF JSON Folder'}),
+    insecure: Flags.boolean({char: 'I', required: false, default: false, description: 'Disable SSL verification, this is insecure.'}),
+    certificate: Flags.string({char: 'C', required: false, description: 'Trusted signing certificate file'}),
+  }
+
+  async run() {
+    const {flags} = await this.parse(HDF2ASFF)
+
+    const converted = new Mapper(JSON.parse(fs.readFileSync(flags.input, 'utf8')), {
+>>>>>>> main
       awsAccountId: flags.accountId,
       region: flags.region,
+      regionAttribute: flags.specifyRegionAttribute,
       target: flags.target,
       input: flags.input,
     })
@@ -76,7 +106,7 @@ export default class HDF2ASFF extends BaseCommand {
         httpOptions: {
           agent: new https.Agent({
             rejectUnauthorized: !flags.insecure,
-            ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf-8') : undefined,
+            ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf8') : undefined,
           }),
         },
       })

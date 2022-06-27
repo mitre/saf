@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import BaseCommand from '../../utils/base-command'
 import {OutputFlags} from '@oclif/parser'
 import fs from 'fs'
@@ -7,12 +8,22 @@ import {getHDFSummary} from '../../utils/logging'
 
 export default class Trivy2HDF extends BaseCommand {
   static usage = 'convert:trivy2hdf -i <asff-finding-json> [--securityhub <standard-1-json> ... <standard-n-json>] -o <hdf-scan-results-json>'
+=======
+import {Command, Flags} from '@oclif/core'
+import fs from 'fs'
+import {ASFFResults as Mapper} from '@mitre/hdf-converters'
+import {checkSuffix} from '../../utils/global'
+
+export default class Trivy2HDF extends Command {
+  static usage = 'convert trivy2hdf -i <asff-finding-json> [--securityhub <standard-1-json> ... <standard-n-json>] -o <hdf-scan-results-json>'
+>>>>>>> main
 
   static description = 'Translate a Trivy-derived AWS Security Finding Format results from concatenated JSON blobs into a Heimdall Data Format JSON file'
 
-  static examples = ['saf convert:trivy2hdf -i trivy-asff.json -o output-hdf-name.json']
+  static examples = ['saf convert trivy2hdf -i trivy-asff.json -o output-hdf-name.json']
 
   static flags = {
+<<<<<<< HEAD
     ...BaseCommand.flags,
   }
 
@@ -43,6 +54,23 @@ export default class Trivy2HDF extends BaseCommand {
     this.logger.info(`Output File "${convertFullPathToFilename(fileName)}": ${getHDFSummary(converted)}`)
     fs.writeFileSync(fileName, JSON.stringify(converted))
     this.logger.verbose(`HDF successfully written to ${fileName}`)
+=======
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true}),
+    output: Flags.string({char: 'o', required: true}),
+  }
+
+  async run() {
+    const {flags} = await this.parse(Trivy2HDF)
+    // comes as an _asff.json file which is basically the array of findings but without the surrounding object; however, could also be properly formed asff since it depends on the template used
+    let input = fs.readFileSync(flags.input, 'utf8').trim()
+    if (Array.isArray(JSON.parse(input))) {
+      input = `{"Findings": ${fs.readFileSync(flags.input, 'utf8').trim()}}`
+    }
+
+    const converter = new Mapper(input)
+    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+>>>>>>> main
   }
 }
 

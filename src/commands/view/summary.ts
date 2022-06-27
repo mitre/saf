@@ -1,4 +1,4 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import {ContextualizedEvaluation, ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import fs from 'fs'
 import YAML from 'yaml'
@@ -15,16 +15,16 @@ export default class Summary extends Command {
   static description = 'Get a quick compliance overview of an HDF file '
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: true, multiple: true, description: 'Input HDF files'}),
-    json: flags.boolean({char: 'j', required: false, description: 'Output results as JSON'}),
-    output: flags.string({char: 'o', required: false}),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true, multiple: true, description: 'Input HDF files'}),
+    json: Flags.boolean({char: 'j', required: false, description: 'Output results as JSON'}),
+    output: Flags.string({char: 'o', required: false}),
   }
 
-  static examples = ['saf view:summary -i rhel7-results.json']
+  static examples = ['saf view summary -i rhel7-results.json']
 
   async run() {
-    const {flags} = this.parse(Summary)
+    const {flags} = await this.parse(Summary)
     const summaries: Record<string, Record<string, Record<string, number>>[]> = {}
     const complianceScores: Record<string, number[]> = {}
 
@@ -32,7 +32,7 @@ export default class Summary extends Command {
     flags.input.forEach(file => {
       execJSONs[file] = convertFileContextual(fs.readFileSync(file, 'utf8')) as ContextualizedEvaluation
     })
-    Object.entries(execJSONs).forEach(([fileName, parsedExecJSON]) => {
+    Object.entries(execJSONs).forEach(([, parsedExecJSON]) => {
       const summary: Record<string, Record<string, number>> = {}
       const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
       const profileName = parsedProfile.data.name
@@ -55,7 +55,7 @@ export default class Summary extends Command {
       // Total Counts
       for (const [type, counts] of Object.entries(summary)) {
         let total = 0
-        for (const [_severity, count] of Object.entries(counts)) {
+        for (const [, count] of Object.entries(counts)) {
           total += count
         }
 
@@ -85,9 +85,9 @@ export default class Summary extends Command {
       printableSummaries.push({
         profileName: profileName,
         // Extract filename from execJSONs
-        resultSets: Object.entries(execJSONs).filter(([fileName, execJSON]) => {
+        resultSets: Object.entries(execJSONs).filter(([, execJSON]) => {
           return execJSON.data.profiles[0].name === profileName
-        }).map(([filePath, execJSON]) => {
+        }).map(([filePath]) => {
           return convertFullPathToFilename(filePath)
         }),
         compliance: _.mean(complianceScores[profileName]),

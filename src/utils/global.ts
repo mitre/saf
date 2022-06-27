@@ -1,5 +1,5 @@
 import {getInstalledPathSync} from 'get-installed-path'
-import {ContextualizedEvaluation} from 'inspecjs'
+import {ContextualizedEvaluation, ExecJSON} from 'inspecjs'
 import {ExecJSONProfile} from 'inspecjs/lib/generated_parsers/v_1_0/exec-json'
 import _ from 'lodash'
 import path from 'path'
@@ -116,4 +116,19 @@ export function getProfileInfo(evaluation: ContextualizedEvaluation, fileName: s
   }
 
   return result.trim()
+}
+
+// Get description from Array of descriptions or Key/String pair
+export function getDescription(
+  descriptions:
+    | {
+        [key: string]: string;
+      }
+    | ExecJSON.ControlDescription[],
+  key: string,
+): string | undefined {
+  return Array.isArray(descriptions) ? descriptions.find(
+    (description: ExecJSON.ControlDescription) =>
+      description.label.toLowerCase() === key,
+  )?.data : _.get(descriptions, key)
 }

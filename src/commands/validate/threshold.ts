@@ -1,27 +1,27 @@
-import {Command, flags} from '@oclif/command'
+import {Command, Flags} from '@oclif/core'
 import flat from 'flat'
 import YAML from 'yaml'
 import fs from 'fs'
 import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import _ from 'lodash'
 import {ThresholdValues} from '../../types/threshold'
-import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject, statusSeverityPaths} from '../../utils/threshold'
+import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject, statusSeverityPaths, totalMax, totalMin} from '../../utils/threshold'
 import {expect} from 'chai'
 
 export default class Threshold extends Command {
-  static usage = 'validate:threshold -i, --input=JSON -T, --templateInline="JSON Data" -F --templateFile=YAML File'
+  static usage = 'validate threshold -i, --input=JSON -T, --templateInline="JSON Data" -F --templateFile=YAML File'
 
   static description = 'Validate the compliance and status counts of an HDF file'
 
   static flags = {
-    help: flags.help({char: 'h'}),
-    input: flags.string({char: 'i', required: true}),
-    templateInline: flags.string({char: 'T', required: false}),
-    templateFile: flags.string({char: 'F', required: false, description: 'Expected data template, generate one with "saf generate:threshold"'}),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true}),
+    templateInline: Flags.string({char: 'T', required: false, exclusive: ['templateFile']}),
+    templateFile: Flags.string({char: 'F', required: false, exclusive: ['templateInline'],  description: 'Expected data template, generate one with "saf generate threshold"'}),
   }
 
   async run() {
-    const {flags} = this.parse(Threshold)
+    const {flags} = await this.parse(Threshold)
     let thresholds: ThresholdValues = {}
     if (flags.templateInline) {
       // Need to do some processing to convert this into valid JSON
@@ -44,6 +44,7 @@ export default class Threshold extends Command {
 
     const parsedExecJSON = convertFileContextual(fs.readFileSync(flags.input, 'utf8'))
     const overallStatusCounts = extractStatusCounts(parsedExecJSON.contains[0] as ContextualizedProfile)
+
     if (thresholds.compliance) {
       const overallCompliance = calculateCompliance(overallStatusCounts)
       exitNonZeroIfTrue(Boolean(thresholds.compliance.min && overallCompliance < thresholds.compliance.min), 'Overall compliance minimum was not satisfied') // Compliance Minimum
@@ -51,24 +52,42 @@ export default class Threshold extends Command {
     }
 
     // Total Pass/Fail/Skipped/No Impact/Error
-    const targets = ['passed.total.min', 'passed.total.max', 'failed.total.min', 'failed.total.max', 'skipped.total.min', 'skipped.total.max', 'no_impact.total.min', 'no_impact.total.max', 'error.total.min', 'error.total.max']
+    const targets = ['passed.total', 'failed.total', 'skipped.total', 'no_impact.total', 'error.total']
     for (const statusThreshold of targets) {
-      const [statusName, _total, thresholdType] = statusThreshold.split('.')
-      if (thresholdType === 'min' && _.get(thresholds, statusThreshold) !== undefined) {
+      const [statusName, _total] = statusThreshold.split('.')
+      if (_.get(thresholds, statusThreshold) !== undefined && typeof _.get(thresholds, statusThreshold) !== 'object') {
+        exitNonZeroIfTrue(
+          Boolean(
+            _.get(overallStatusCounts, renameStatusName(statusName))              !==
+            _.get(thresholds, statusThreshold),
+          ),
+          `${statusThreshold}: Received ${_.get(overallStatusCounts, renameStatusName(statusName))} != Expected ${_.get(thresholds, statusThreshold)}`,
+        )
+      }
+    }
+
+    for (const totalMinimum of totalMin) {
+      const [statusName] = totalMinimum.split('.')
+      if (_.get(thresholds, totalMinimum) !== undefined) {
         exitNonZeroIfTrue(
           Boolean(
             _.get(overallStatusCounts, renameStatusName(statusName))              <
-            _.get(thresholds, statusThreshold),
+            _.get(thresholds, totalMinimum),
           ),
-          `${statusThreshold}: ${_.get(overallStatusCounts, renameStatusName(statusName))} < ${_.get(thresholds, statusThreshold)}`,
+          `${totalMinimum}: Received ${_.get(overallStatusCounts, renameStatusName(statusName))} < Expected ${_.get(thresholds, totalMinimum)}`,
         )
-      } else if (thresholdType === 'max' && _.get(thresholds, statusThreshold) !== undefined) {
+      }
+    }
+
+    for (const totalMaximum of totalMax) {
+      const [statusName] = totalMaximum.split('.')
+      if (_.get(thresholds, totalMaximum) !== undefined) {
         exitNonZeroIfTrue(
           Boolean(
             _.get(overallStatusCounts, renameStatusName(statusName))              >
-            _.get(thresholds, statusThreshold),
+            _.get(thresholds, totalMaximum),
           ),
-          `${statusThreshold}: ${_.get(overallStatusCounts, renameStatusName(statusName))} > ${_.get(thresholds, statusThreshold)}`,
+          `${totalMaximum}: Received ${_.get(overallStatusCounts, renameStatusName(statusName))} > Expected ${_.get(thresholds, totalMaximum)}`,
         )
       }
     }
@@ -83,14 +102,14 @@ export default class Threshold extends Command {
             Boolean(
               _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold),
             ),
-            `${statusCountThreshold}: ${_.get(criticalStatusCounts, renameStatusName(statusName))} < ${_.get(thresholds, statusCountThreshold)}`,
+            `${statusCountThreshold}: Received ${_.get(criticalStatusCounts, renameStatusName(statusName))} < Expected ${_.get(thresholds, statusCountThreshold)}`,
           )
         } else if (thresholdType === 'max' && _.get(thresholds, statusCountThreshold) !== undefined) {
           exitNonZeroIfTrue(
             Boolean(
               _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold),
             ),
-            `${statusCountThreshold}: ${_.get(criticalStatusCounts, renameStatusName(statusName))} > ${_.get(thresholds, statusCountThreshold)}`,
+            `${statusCountThreshold}: Received ${_.get(criticalStatusCounts, renameStatusName(statusName))} > Expected ${_.get(thresholds, statusCountThreshold)}`,
           )
         }
       }
@@ -119,5 +138,7 @@ export default class Threshold extends Command {
         }
       }
     }
+
+    console.log('All validation tests passed')
   }
 }

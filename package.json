@@ -1,21 +1,29 @@
 {
   "name": "@mitre/saf",
   "description": "The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) brings together applications, techniques, libraries, and tools developed by MITRE and the security community to streamline security automation for systems and DevOps pipelines",
-  "version": "1.0.7",
+  "version": "1.1.11",
   "author": "The MITRE Security Automation Framework",
   "bin": "./bin/run",
   "bugs": "https://github.com/mitre/saf/issues",
   "dependencies": {
     "@aws-sdk/client-config-service": "^3.53.0",
+<<<<<<< HEAD
     "@mitre/hdf-converters": "^2.6.14",
     "@mitre/heimdall-lite": "^2.6.14",
     "@oclif/command": "^1",
     "@oclif/config": "^1",
     "@oclif/dev-cli": "^1",
     "@oclif/parser": "^3.8.7",
+=======
+    "@mitre/hdf-converters": "^2.6.27",
+    "@mitre/heimdall-lite": "^2.6.27",
+    "@oclif/core": "^1.6.0",
+>>>>>>> main
     "@oclif/plugin-help": "^5",
+    "@oclif/plugin-plugins": "^2.0.1",
+    "@oclif/plugin-version": "^1",
     "@oclif/plugin-warn-if-update-available": "^2.0.3",
-    "@oclif/test": "^1",
+    "@oclif/test": "^2.1.0",
     "@types/chai": "^4",
     "@types/express": "^4.17.13",
     "@types/flat": "^5.0.2",
@@ -29,7 +37,11 @@
     "@types/tmp": "^0.2.2",
     "@types/uuid": "^8.3.4",
     "@types/xml2js": "^0.4.9",
+<<<<<<< HEAD
     "@types/winston": "^2.4.4",
+=======
+    "accurate-search": "^1.2.15",
+>>>>>>> main
     "aws-sdk": "^2.1074.0",
     "chai": "^4",
     "csv-parse": "^4.16.0",
@@ -39,13 +51,14 @@
     "get-installed-path": "^4.0.8",
     "htmlparser2": "^7.2.0",
     "https": "^1.0.0",
-    "inspecjs": "^2.6.10",
+    "inspecjs": "^2.6.26",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "mustache": "^4.2.0",
     "objects-to-csv": "^1.3.6",
     "open": "^8.4.0",
     "prompt-sync": "^4.1.6",
+    "table": "^6.8.0",
     "ts-node": "^10",
     "tslib": "^2",
     "typescript": "^4.5",
@@ -60,13 +73,14 @@
     "eslint": "^8.8.0",
     "eslint-config-oclif": "^4.0",
     "eslint-config-oclif-typescript": "^1.0.2",
-    "eslint-plugin-unicorn": "^40.1.0",
-    "mocha": "^9",
+    "eslint-plugin-unicorn": "^42.0.0",
+    "mocha": "^10",
+    "oclif": "^3",
     "tmp": "^0.2.1",
-    "ts-mocha": "^9.0.2"
+    "ts-mocha": "^10.0.0"
   },
   "engines": {
-    "node": ">=10.0.0"
+    "node": ">=12.0.0"
   },
   "files": [
     "/bin",
@@ -83,8 +97,16 @@
   "main": "lib/index.js",
   "oclif": {
     "commands": "./lib/commands",
+    "additionalHelpFlags": [
+      "-h"
+    ],
+    "additionalVersionFlags": [
+      "-v"
+    ],
     "bin": "saf",
     "plugins": [
+      "@oclif/plugin-version",
+      "@oclif/plugin-plugins",
       "@oclif/plugin-help",
       "@oclif/plugin-warn-if-update-available"
     ],
@@ -96,6 +118,7 @@
       "registry": "https://www.npmjs.com/package/@mitre/saf",
       "message": "<%= config.name %> update available from <%= chalk.greenBright(config.version) %> to <%= chalk.greenBright(latest) %>."
     },
+    "topicSeparator": " ",
     "topics": {
       "convert": {
         "description": "[Normalize]    Convert security results from all your security tools between common data formats"
@@ -121,10 +144,9 @@
   "scripts": {
     "lint": "eslint \"**/*.ts\" --fix",
     "lint:ci": "eslint \"**/*.ts\" --max-warnings 0",
-    "postpack": "rm -f oclif.manifest.json",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && oclif-dev readme",
-    "test": "ts-mocha --timeout 8000 --forbid-only \"test/**/*.test.ts\"",
-    "version": "oclif-dev readme && git add README.md"
+    "dev": "rm -rf lib && tsc -b && ./bin/run",
+    "prepack": "rm -rf lib && tsc -b",
+    "test": "ts-mocha --timeout 8000 --forbid-only \"test/**/*.test.ts\""
   },
   "types": "lib/index.d.ts"
 }
