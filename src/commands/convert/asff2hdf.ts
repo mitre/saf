@@ -1,7 +1,7 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {ASFFResults as Mapper} from '@mitre/hdf-converters'
-import {checkSuffix, checkInput} from '../../utils/global'
+import {checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
 import AWS from 'aws-sdk'
