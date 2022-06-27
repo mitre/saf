@@ -29,6 +29,10 @@ export default class Trivy2HDF extends Command {
     const converter = new Mapper(input)
     const results = converter.toHdf()
 
+    if (!fs.existsSync(flags.output)) {
+      fs.mkdirSync(flags.output)
+    }
+
     _.forOwn(results, (result, filename) => {
       fs.writeFileSync(
         path.join(flags.output, checkSuffix(filename)),
