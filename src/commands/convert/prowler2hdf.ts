@@ -20,26 +20,15 @@ export default class Prowler2HDF extends Command {
 
   async run() {
     const {flags} = await this.parse(Prowler2HDF)
-    // comes as an asff-json file (their naming scheme for a JSON Lines/jsonl format file) which needs to be converted into a normal json object
-    const input = `{"Findings": [${fs.readFileSync(flags.input, 'utf8').trim().split('\n').join(',')}]}`
-    const converter = new Mapper(input)
+    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'))
     const results = converter.toHdf()
 
-    if (Object.keys(results).length > 1) {
-      _.forOwn(results, (result, filename) => {
-        fs.writeFileSync(
-          path.join(flags.output, checkSuffix(filename)),
-          JSON.stringify(result),
-        )
-      })
-    } else {
-      _.forOwn(results, result => {
-        fs.writeFileSync(
-          path.join(flags.output),
-          JSON.stringify(result),
-        )
-      })
-    }
+    _.forOwn(results, (result, filename) => {
+      fs.writeFileSync(
+        path.join(flags.output, checkSuffix(filename)),
+        JSON.stringify(result),
+      )
+    })
   }
 }
 

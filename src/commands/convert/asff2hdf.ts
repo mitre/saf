@@ -9,6 +9,9 @@ import https from 'https'
 import {AwsSecurityFindingFilters} from 'aws-sdk/clients/securityhub'
 import {createWinstonLogger} from '../../utils/logging'
 
+// Should be no more than 100
+const API_MAX_RESULTS = 100;
+
 export default class ASFF2HDF extends Command {
   static description =
     'Translate a AWS Security Finding Format JSON into a Heimdall Data Format JSON file(s)';
@@ -48,11 +51,25 @@ export default class ASFF2HDF extends Command {
           findings.push(...convertedJson.map(finding => JSON.stringify(finding)))
         } else if ('Findings' in convertedJson) {
           findings.push(...convertedJson.Findings.map((finding: Record<string, unknown>) => JSON.stringify(finding)))
+        } else if ('Controls' in convertedJson) {
+          throw new Error("Invalid ASFF findings format - a standards standards was passed to --input instead of --securityhub")
         } else {
-          logger.error('Invalid ASFF findings format')
+          throw new Error("Invalid ASFF findings format - unknown input type")
         }
-      } catch {
-        findings.push(...data.split('\n'))
+      } catch (exception) {
+        const splitLines = data.split('\n')
+        
+        if (splitLines.length === 0) {
+          logger.error('Invalid ASFF findings format - no lines found')
+          throw exception
+        } 
+
+        try {
+          findings.push(...splitLines.map(finding => JSON.stringify(JSON.parse(finding))))
+        } catch (exception) {
+          logger.error('Invalid ASFF findings format - unable to parse JSON')
+          throw exception
+        }
       }
 
       // If we've been passed any Security Standards JSONs
@@ -91,7 +108,7 @@ export default class ASFF2HDF extends Command {
       }
 
       logger.info('Starting collection of Findings')
-      let queryParams: Record<string, unknown> = {Filters: filters, MaxResults: 100}
+      let queryParams: Record<string, unknown> = {Filters: filters, MaxResults: API_MAX_RESULTS}
       // Get findings
       while (nextToken !== undefined) {
         logger.debug(`Querying for NextToken: ${nextToken}`)
@@ -112,24 +129,16 @@ export default class ASFF2HDF extends Command {
       // Get active security standards subscriptions (enabled standards)
       while (nextToken !== undefined) {
         logger.debug(`Querying for NextToken: ${nextToken}`)
-
         const getEnabledStandardsResult: any = await client.getEnabledStandards({NextToken: nextToken}).promise()
+        
         logger.debug(`Received: ${getEnabledStandardsResult.StandardsSubscriptions?.length} standards`)
-        if (getEnabledStandardsResult.StandardsSubscriptions?.length === 100) {
-          enabledStandards.push(...getEnabledStandardsResult.StandardsSubscriptions)
-          nextToken = getEnabledStandardsResult.NextToken
-        } else {
-          if (getEnabledStandardsResult.StandardsSubscriptions) {
-            enabledStandards.push(...getEnabledStandardsResult.StandardsSubscriptions)
-          } else {
-            logger.debug('No more enabled standards found')
-          }
-
-          break
-        }
+        enabledStandards.push(...getEnabledStandardsResult.StandardsSubscriptions)
+        
+        nextToken = getEnabledStandardsResult.NextToken
       }
 
       securityhub = []
+
       // Describe the controls to give context to the mapper
       for (const standard of enabledStandards) {
         nextToken = null
@@ -139,13 +148,12 @@ export default class ASFF2HDF extends Command {
           logger.debug(`Querying for NextToken: ${nextToken}`)
           const getEnabledStandardsResult: AWS.SecurityHub.DescribeStandardsControlsResponse = await client.describeStandardsControls({StandardsSubscriptionArn: standard.StandardsSubscriptionArn, NextToken: nextToken || ''}).promise()
           logger.info(`Received: ${getEnabledStandardsResult.Controls?.length} Controls`)
+
           if (getEnabledStandardsResult.Controls) {
             standardsControls.push(...getEnabledStandardsResult.Controls)
-            nextToken = getEnabledStandardsResult.NextToken
-          } else {
-            logger.debug('No more enabled standards found')
-            break
           }
+
+          nextToken = getEnabledStandardsResult.NextToken
         }
 
         securityhub.push(JSON.stringify({Controls: standardsControls}))

@@ -296,13 +296,14 @@ AWS SecurityHub standard controls json|Get all the controls for a standard that 
 convert asff2hdf            Translate a AWS Security Finding Format JSON into a
                             Heimdall Data Format JSON file
   OPTIONS
+    -i, --input=input          Input ASFF JSON File
+    --securityhub=securityhub  Input AWS Security Standards File
     -C, --certificate=<value>  Trusted signing certificate file
     -I, --insecure             Disable SSL verification, this is insecure.
     -L, --logLevel=<option>    [default: info]
                               <options: info|warn|debug|verbose>
     -a, --aws                  Pull findings from AWS Security Hub
     -h, --help                 Show CLI help.
-    -i, --input=<value>        Input ASFF JSON file
     -o, --output=<value>       (required) Output HDF JSON folder
     -r, --region=<value>       Security Hub region to pull findings from
     -t, --target=<value>...    Target ID(s) to pull from Security Hub (maximum 10), leave blank for non-HDF findings Best Practices documents (in ASFF compliant JSON form)
