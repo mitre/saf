@@ -40,6 +40,11 @@ export default class ASFF2HDF extends Command {
     const logger = createWinstonLogger('asff2hdf', flags.logLevel)
     let securityhub
 
+    // Check if output folder already exists
+    if (fs.existsSync(flags.output)) {
+      throw new Error(`Output folder ${flags.output} already exists`)
+    }
+
     const findings: string[] = []
     // If we've been passed an input file
     if (flags.input) {
