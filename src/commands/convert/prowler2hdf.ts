@@ -23,6 +23,11 @@ export default class Prowler2HDF extends Command {
     const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'))
     const results = converter.toHdf()
 
+    // Create output folder if not exists
+    if (!fs.existsSync(flags.output)) {
+      fs.mkdirSync(flags.output)
+    }
+
     _.forOwn(results, (result, filename) => {
       fs.writeFileSync(
         path.join(flags.output, checkSuffix(filename)),
