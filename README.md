@@ -296,13 +296,22 @@ AWS SecurityHub standard controls json|Get all the controls for a standard that 
 convert asff2hdf            Translate a AWS Security Finding Format JSON into a
                             Heimdall Data Format JSON file
   OPTIONS
-    -i, --input=input          (required) Input ASFF JSON File
+    -i, --input=input          Input ASFF JSON File
     --securityhub=securityhub  Input AWS Security Standards File
-    -o, --output=output        (required) Output HDF JSON File
+    -C, --certificate=<value>  Trusted signing certificate file
+    -I, --insecure             Disable SSL verification, this is insecure.
+    -L, --logLevel=<option>    [default: info]
+                              <options: info|warn|debug|verbose>
+    -a, --aws                  Pull findings from AWS Security Hub
+    -h, --help                 Show CLI help.
+    -o, --output=<value>       (required) Output HDF JSON folder
+    -r, --region=<value>       Security Hub region to pull findings from
+    -t, --target=<value>...    Target ID(s) to pull from Security Hub (maximum 10), leave blank for non-HDF findings Best Practices documents (in ASFF compliant JSON form)
 
   EXAMPLES
     saf convert asff2hdf -i asff-findings.json -o output-file-name.json
     saf convert asff2hdf -i asff-findings.json --securityhub <standard-1-json> ... <standard-n-json> -o output-hdf-name.json
+    saf convert asff2hdf --aws -o rhel7-findings -r us-west-2 --target rhel7
 ```
 
 
@@ -493,7 +502,7 @@ convert prowler2hdf         Translate a Prowler-derived AWS Security Finding
                             Heimdall Data Format JSON file
   OPTIONS
     -i, --input=input          Input Prowler ASFF JSON File
-    -o, --output=output        Output HDF JSON File
+    -o, --output=output        Output HDF folder
 
   EXAMPLES
     saf convert prowler2hdf -i prowler-asff.json -o output-hdf-name.json
@@ -601,11 +610,10 @@ EXAMPLES
 
 ```
 convert trivy2hdf         Translate a Trivy-derived AWS Security Finding
-                          Format results JSON file into a Heimdall Data Format
-                          JSON file
+                          Format results JSON file into a Heimdall Data Format JSON file
   OPTIONS
     -i, --input=input          Input Trivy ASFF JSON File
-    -o, --output=output        Output HDF JSON File
+    -o, --output=output        Output HDF folder
 
   DESCRIPTION
     Note: Currently this mapper only supports the results of Trivy's `image`
