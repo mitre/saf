@@ -1,7 +1,7 @@
-import { ASFFResults, BurpSuiteMapper, DBProtectMapper, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockMapper, XCCDFResultsMapper, ZapMapper } from '@mitre/hdf-converters'
+import {ASFFResults, BurpSuiteMapper, DBProtectMapper, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockMapper, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
 import fs from 'fs'
 import _ from 'lodash'
-import { checkSuffix } from '../../utils/global'
+import {checkSuffix} from '../../utils/global'
 import path from 'path'
 import FingerprintingConvertCommand from '../../basecommands/fingerprintingConvertCommand'
 
@@ -25,140 +25,142 @@ export default class Convert extends FingerprintingConvertCommand {
   }
 
   async run() {
-    const { flags } = await this.parse(Convert)
+    const {flags} = await this.parse(Convert)
     let converter
     switch (FingerprintingConvertCommand.detectedType) {
-      case 'asff': {
-        let securityhub = _.get(flags, 'securityhub') as string[]
-        if (securityhub) {
-          securityhub = securityhub.map(file =>
-            fs.readFileSync(file, 'utf8'),
-          )
-        }
-
-        converter = new ASFFResults(
-          fs.readFileSync(flags.input, 'utf8'),
-          securityhub,
+    case 'asff': {
+      let securityhub = _.get(flags, 'securityhub') as string[]
+      if (securityhub) {
+        securityhub = securityhub.map(file =>
+          fs.readFileSync(file, 'utf8'),
         )
-        const results = converter.toHdf()
-
-        fs.mkdirSync(flags.output)
-        _.forOwn(results, (result, filename) => {
-          fs.writeFileSync(
-            path.join(flags.output, checkSuffix(filename)),
-            JSON.stringify(result),
-          )
-        })
-        break
       }
 
-      case 'burp': {
-        converter = new BurpSuiteMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
-        break
-      }
+      converter = new ASFFResults(
+        fs.readFileSync(flags.input, 'utf8'),
+        securityhub,
+      )
+      const results = converter.toHdf()
 
-      case 'dbProtect': {
-        converter = new DBProtectMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
-        break
-      }
-
-      case 'fortify': {
-        converter = new FortifyMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
-        break
-      }
-
-      case 'jfrog': {
-        converter = new JfrogXrayMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
-        break
-      }
-
-      case 'nessus': {
-        converter = new NessusResults(fs.readFileSync(flags.input, 'utf8'))
-        const result = converter.toHdf()
-        if (Array.isArray(result)) {
-          for (const element of result) {
-            fs.writeFileSync(`${flags.output.replace(/.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
-          }
-        } else {
-          fs.writeFileSync(`${checkSuffix(flags.output)}`, JSON.stringify(result))
-        }
-        break
-      }
-
-      case 'netsparker': {
-        converter = new NetsparkerMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
-        break
-      }
-
-      case 'nikto': {
-        converter = new NiktoMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
-        break
-      }
-
-      case 'prisma': {
-        converter = new PrismaMapper(
-          fs.readFileSync(flags.input, { encoding: 'utf8' }),
+      fs.mkdirSync(flags.output)
+      _.forOwn(results, (result, filename) => {
+        fs.writeFileSync(
+          path.join(flags.output, checkSuffix(filename)),
+          JSON.stringify(result),
         )
-        const results = converter.toHdf()
+      })
+      break
+    }
 
-        fs.mkdirSync(flags.output)
-        _.forOwn(results, result => {
-          fs.writeFileSync(
-            path.join(flags.output, `${_.get(result, 'platform.target_id')}.json`),
-            JSON.stringify(result),
-          )
-        })
-        break
-      }
+    case 'burp': {
+      converter = new BurpSuiteMapper(fs.readFileSync(flags.input, 'utf8'))
+      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      break
+    }
 
-      case 'sarif': {
-        converter = new SarifMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
-        break
-      }
+    case 'dbProtect': {
+      converter = new DBProtectMapper(fs.readFileSync(flags.input, 'utf8'))
+      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      break
+    }
 
-      case 'scoutsuite': {
-        converter = new ScoutsuiteMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
-        break
-      }
+    case 'fortify': {
+      converter = new FortifyMapper(fs.readFileSync(flags.input, 'utf8'))
+      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      break
+    }
 
-      case 'snyk': {
-        converter = new SnykResults(fs.readFileSync(flags.input, 'utf8'))
-        const result = converter.toHdf()
-        if (Array.isArray(result)) {
-          for (const element of result) {
-            fs.writeFileSync(`${flags.output.replace(/.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
-          }
-        } else {
-          fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(result))
+    case 'jfrog': {
+      converter = new JfrogXrayMapper(fs.readFileSync(flags.input, 'utf8'))
+      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      break
+    }
+
+    case 'nessus': {
+      converter = new NessusResults(fs.readFileSync(flags.input, 'utf8'))
+      const result = converter.toHdf()
+      if (Array.isArray(result)) {
+        for (const element of result) {
+          fs.writeFileSync(`${flags.output.replace(/.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
         }
-        break
+      } else {
+        fs.writeFileSync(`${checkSuffix(flags.output)}`, JSON.stringify(result))
       }
 
-      case 'twistlock': {
-        converter = new TwistlockMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
-        break
+      break
+    }
+
+    case 'netsparker': {
+      converter = new NetsparkerMapper(fs.readFileSync(flags.input, 'utf8'))
+      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      break
+    }
+
+    case 'nikto': {
+      converter = new NiktoMapper(fs.readFileSync(flags.input, 'utf8'))
+      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      break
+    }
+
+    case 'prisma': {
+      converter = new PrismaMapper(
+        fs.readFileSync(flags.input, {encoding: 'utf8'}),
+      )
+      const results = converter.toHdf()
+
+      fs.mkdirSync(flags.output)
+      _.forOwn(results, result => {
+        fs.writeFileSync(
+          path.join(flags.output, `${_.get(result, 'platform.target_id')}.json`),
+          JSON.stringify(result),
+        )
+      })
+      break
+    }
+
+    case 'sarif': {
+      converter = new SarifMapper(fs.readFileSync(flags.input, 'utf8'))
+      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      break
+    }
+
+    case 'scoutsuite': {
+      converter = new ScoutsuiteMapper(fs.readFileSync(flags.input, 'utf8'))
+      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      break
+    }
+
+    case 'snyk': {
+      converter = new SnykResults(fs.readFileSync(flags.input, 'utf8'))
+      const result = converter.toHdf()
+      if (Array.isArray(result)) {
+        for (const element of result) {
+          fs.writeFileSync(`${flags.output.replace(/.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
+        }
+      } else {
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(result))
       }
 
-      case 'xccdf': {
-        converter = new XCCDFResultsMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
-        break
-      }
+      break
+    }
 
-      case 'zap': {
-        converter = new ZapMapper(fs.readFileSync(flags.input, 'utf8'), _.get(flags, 'name') as string)
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
-        break
-      }
+    case 'twistlock': {
+      converter = new TwistlockMapper(fs.readFileSync(flags.input, 'utf8'))
+      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      break
+    }
+
+    case 'xccdf': {
+      converter = new XCCDFResultsMapper(fs.readFileSync(flags.input, 'utf8'))
+      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      break
+    }
+
+    case 'zap': {
+      converter = new ZapMapper(fs.readFileSync(flags.input, 'utf8'), _.get(flags, 'name') as string)
+      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      break
+    }
     }
   }
 }
