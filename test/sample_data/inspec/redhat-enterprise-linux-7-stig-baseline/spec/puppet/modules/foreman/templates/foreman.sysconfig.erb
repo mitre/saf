@@ -1,0 +1,22 @@
+<%= ERB.new(File.read(File.expand_path("_header.erb",File.dirname(file)))).result(binding) -%>
+# the location where foreman is installed
+FOREMAN_HOME=<%= scope.lookupvar('::foreman::app_root') %>
+
+# the port which foreman web server is running at
+# note that if the foreman user is not root, it has to be a > 1024
+#FOREMAN_PORT=3000
+
+# the user which runs the web interface
+FOREMAN_USER=<%= scope.lookupvar('::foreman::user') %>
+
+# the rails environment in which foreman runs
+FOREMAN_ENV=<%= scope.lookupvar('::foreman::rails_env') %>
+
+# if we're using passenger or not
+# if set to 1, init script will do a railsrestart on 'restart' and will refuse
+# 'start' and 'stop' completely and remind the operator that passenger is in
+# use.
+FOREMAN_USE_PASSENGER=<%= scope.lookupvar('::foreman::passenger') ? '1' : '0' %>
+
+# set to 1 if you're using thin as a server
+#FOREMAN_USE_THIN=0

@@ -1,0 +1,7 @@
+# This file is being maintained by Puppet.
+# DO NOT EDIT
+<% if @cron_deny_users -%>
+<% [@cron_deny_users].flatten.each do |user| -%>
+<%= user %>
+<% end -%>
+<% end -%>

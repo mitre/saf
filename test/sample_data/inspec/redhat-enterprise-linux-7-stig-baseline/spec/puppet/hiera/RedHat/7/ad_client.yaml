@@ -1,0 +1,48 @@
+---
+# Version: 0.2.0
+# Date: 07December17
+
+profiles::rhel7::base::sssd_config_nsswitch: True
+profiles::rhel7::base::merged::sssd_enable_domains:
+  - 'ent.usstratcom.smil.mil'
+profiles::rhel7::base::merged::sssd_exclude_list:
+  - '*satellite.conf'
+# Disable the following settings from the 'base' profile
+# so that they can be overridden here.
+profiles::rhel7::base::merged::sshd_options:
+  'ChallengeResponseAuthentication': ~
+  'GSSAPIAuthentication': ~
+  'GSSAPICleanupCredentials': ~
+
+profiles::rhel7::ad_client::krb5_realm: "ENT.USSTRATCOM.SMIL.MIL"
+profiles::rhel7::ad_client::smb_workgroup: "ENT"
+profiles::rhel7::ad_client::krb5_include_sssd: True
+profiles::rhel7::ad_client::sssd_priority: 50
+profiles::rhel7::ad_client::sssd_label: 'ad'
+profiles::rhel7::ad_client::ad_domain: 'ent.usstratcom.smil.mil'
+profiles::rhel7::ad_client::merged::sshd_settings:
+  'ChallengeResponseAuthentication': 'yes'
+  'GSSAPIAuthentication': 'yes'
+  'GSSAPICleanupCredentials': 'yes'
+profiles::rhel7::ad_client::merged::sssd_service_options:
+  'nss':
+    'default_shell': '/bin/bash'
+    'shell_fallback': '/bin/bash'
+    'fallback_homedir': '/home/%u'
+profiles::rhel7::ad_client::merged::sssd_domain_options:
+  'id_provider': 'ad'
+  'access_provider': 'ad'
+  'ad_domain': 'ent.usstratcom.smil.mil'
+  'ldap_id_mapping': 'False'
+  'use_fully_qualified_names': 'False'
+  'cache_credentials': 'True'
+  'ad_gpo_access_control': 'enforcing'
+  'enumerate': 'True'
+
+# User home directory file content
+profiles::rhel7::ad_client::user_files:
+  root:
+    '.k5users':
+      content: |
+        southalc@OMA.SPAWAR.NAVY.MIL
+        kimmell@OMA.SPAWAR.NAVY.MIL

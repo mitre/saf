@@ -1,0 +1,14 @@
+{
+  "name": "lkimmel-issue",
+  "version": "0.1.0",
+  "author": "lkimmel",
+  "summary": "Module to deploy a default or customized /etc/issue",
+  "license": "Apache 2.0",
+  "source": "",
+  "project_page": null,
+  "issues_url": null,
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+  ]
+}
+

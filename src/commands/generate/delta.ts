@@ -3,6 +3,7 @@ import fs from 'fs'
 import {diffProfile, processJSON, processXCCDF} from '@mitre/inspec-objects'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
+import fse from 'fs-extra'
 
 export default class GenerateDelta extends Command {
   static usage = 'generate:delta -i, --input=JSON -o, --output=OUTPUT'
@@ -37,7 +38,6 @@ export default class GenerateDelta extends Command {
         controls = {}
         // Read all control files into an array as strings
         controlFiles.forEach(control => {
-          logger.debug(`Loading ${control}`)
           const controlData = fs.readFileSync(path.join(inputPath, 'controls', control), 'utf8')
           controls![control.replace('.rb', '')] = controlData
         })
@@ -69,6 +69,24 @@ export default class GenerateDelta extends Command {
       }
     })
 
+    // If existingProfileFolderPath exists
+    if (existingProfileFolderPath) {
+      // Delete the output folder if it already exists
+      if (fs.existsSync(flags.output)) {
+        logger.debug(`Deleting existing profile folder ${flags.output}`)
+        fse.removeSync(flags.output)
+      }
+
+      // Copy the profile folder to the output folder
+      logger.debug(`Copying profile folder ${existingProfileFolderPath} to ${flags.output}`)
+      fse.copySync(existingProfileFolderPath, flags.output)
+      logger.debug(`Copied profile folder ${existingProfileFolderPath} to ${flags.output}`)
+      // Empty controls folder contents
+      logger.debug(`Emptying controls folder ${flags.output}/controls`)
+      fse.emptyDirSync(path.join(flags.output, 'controls'))
+      logger.debug(`Emptied controls folder ${flags.output}/controls`)
+    }
+
     // If all variables have been satisfied, we can generate the delta
     if (existingProfile && updatedXCCDF) {
       if (!controls) {
@@ -79,11 +97,9 @@ export default class GenerateDelta extends Command {
       // Find the difference between existingProfile and updatedXCCDF
       const diff = diffProfile(existingProfile, updatedXCCDF)
 
-      console.log(Object.keys(diff))
-
       // Add all new controls to the existingControlsRubyCode
       diff.addedControlIDs.forEach((controlId: string) => {
-        console.log(diff.changedControls[controlId].toRuby())
+        logger.debug(`Adding new control ${controlId} to profile`)
         controls![controlId] = diff.changedControls[controlId].toRuby()
       })
 

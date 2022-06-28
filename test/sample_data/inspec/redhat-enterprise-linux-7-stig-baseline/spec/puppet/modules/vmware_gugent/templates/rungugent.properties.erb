@@ -1,0 +1,6 @@
+host_port_property=<%= scope['vmware_gugent::vra_server'] %>
+ssl_option_property=<%= scope['vmware_gugent::ssl_setting'] == 'ssl' ? 'True' : 'False' %>
+ec2_instance_property=<%= scope['vmware_gugent::install_type'] == 'ec2' ? 'True' : 'False' %>
+vcd_customize_property=<%= scope['vmware_gugent::install_type'] == 'vcd' ? 'True' : 'False' %>
+vca_customize_property=<%= scope['vmware_gugent::install_type'] == 'vca' ? 'True' : 'False' %>
+extra_arguments_property=

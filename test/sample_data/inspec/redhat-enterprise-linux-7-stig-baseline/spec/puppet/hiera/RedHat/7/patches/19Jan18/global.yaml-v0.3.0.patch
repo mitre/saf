@@ -1,0 +1,30 @@
+diff --git a/hiera/RedHat/7/global.yaml b/hiera/RedHat/7/global.yaml
+index 37ad2a7..5e62817 100644
+--- a/hiera/RedHat/7/global.yaml
++++ b/hiera/RedHat/7/global.yaml
+@@ -1,6 +1,6 @@
+ ---
+-# Version: 0.2.0
+-# Date: 07December17
++# Version: 0.3.0
++# Date: 19January18
+ 
+ auditd::use_augenrules: True
+ profiles::set_comments: True
+@@ -58,3 +58,16 @@ profiles::rhel7::base::merged::ssh_options:
+       'GSSAPIAuthentication': 'yes'
+       'GSSAPIDelegateCredentials': 'yes'
+     'ins_before': '*'
++# Enter firewall ports in a list of the form '<port_num>/<protocol>'
++# E.g.: '- 443/tcp'
++#       '- 443/udp'
++# The entry can also be a hash which supports parameters:
++# - zone
++# - ensure (present/absent, default=present)
++# To create the hash the port/proto combo must be followed
++# by a colon (:) in typical YAML syntax
++# E.g:
++#      - 443/tcp:
++#          ensure: absent
++profiles::rhel7::base::merged::firewall_ports:
++  - '22/tcp'

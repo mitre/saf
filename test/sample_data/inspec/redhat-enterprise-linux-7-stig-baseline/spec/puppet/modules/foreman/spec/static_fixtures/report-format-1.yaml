@@ -1,0 +1,706 @@
+--- !ruby/object:Puppet::Transaction::Report
+  external_times: 
+    !ruby/sym config_retrieval: 0.141527891159058
+  host: p26.elysium.emeraldreverie.org
+  logs: 
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: Using cached certificate for ca
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.406015 +01:00
+      version: &id001 2.6.2
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: Using cached certificate for p26.elysium.emeraldreverie.org
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.406396 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: Using cached certificate_revocation_list for ca
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.406884 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "catalog supports formats: b64_zlib_yaml dot pson raw yaml; using pson"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.408062 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym info
+      message: Caching catalog for p26.elysium.emeraldreverie.org
+      source: Puppet
+      tags: 
+        - info
+      time: 2013-08-29 12:11:45.541248 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Service::ProviderRedhat: file /sbin/service does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.547033 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Service::ProviderRunit: file /usr/bin/sv does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.547232 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Service::ProviderGentoo: file /sbin/rc-update does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.547547 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Service::ProviderLaunchd: file /bin/launchctl does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.547694 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Service::ProviderDaemontools: file /usr/bin/svc does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.547880 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderAix: file /usr/bin/lslpp does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.550203 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderSunfreeware: file pkg-get does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.550427 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderRug: file /usr/bin/rug does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.550645 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderFreebsd: file /usr/sbin/pkg_delete does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.550832 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderOpenbsd: file pkg_delete does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.551009 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderPkg: file /usr/bin/pkg does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.551168 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderUp2date: file /usr/sbin/up2date-nox does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.551339 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderSun: file /usr/sbin/pkgrm does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.551486 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderPorts: file /usr/sbin/pkg_info does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.551635 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderZypper: file /usr/bin/zypper does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.551782 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderYum: file yum does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.551966 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderPortage: file /usr/bin/eix-update does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.552124 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderPortupgrade: file /usr/sbin/pkg_info does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.552266 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderNim: file /usr/sbin/nimclient does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.552411 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderRpm: file rpm does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.552582 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderFink: file /sw/bin/fink does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.552751 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderUrpmi: file rpm does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.552932 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderAptrpm: file rpm does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.553190 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderHpux: file /usr/sbin/swinstall does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.553413 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Puppet::Type::Package::ProviderGem: file gem does not exist"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.553595 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: Creating default schedules
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.556682 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: Loaded state in 0.00 seconds
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.561722 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: Prefetching apt resources for package
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.561988 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Executing '/usr/bin/dpkg-query -W --showformat '${Status} ${Package} ${Version}\\n''"
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.562165 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Executing '/usr/bin/dpkg-query -W --showformat '${Status} ${Package} ${Version}\\n''"
+      source: Puppet::Type::Package::ProviderApt
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.562302 +01:00
+    - !ruby/object:Puppet::Util::Log
+      file: &id002 /etc/puppet/manifests/site.pp
+      level: !ruby/sym debug
+      line: 9
+      message: "subscribes to File[/tmp/test]"
+      source: "/Stage[main]//Node[default]/Service[ssh]/subscribe"
+      tags: 
+        - debug
+        - service
+        - ssh
+        - node
+        - default
+        - class
+        - subscribe
+      time: 2013-08-29 12:11:45.578198 +01:00
+      version: 1377774705
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym info
+      message: Applying configuration version '1377774705'
+      source: Puppet
+      tags: 
+        - info
+      time: 2013-08-29 12:11:45.579428 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: "Executing '/usr/bin/dpkg-query -W --showformat ${Status} ${Package} ${Version}\\n failblog'"
+      source: Puppet::Type::Package::ProviderApt
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.580035 +01:00
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: Executing '/usr/bin/apt-get -q -y -o DPkg::Options::=--force-confold install failblog'
+      source: Puppet::Type::Package::ProviderApt
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.640837 +01:00
+    - !ruby/object:Puppet::Util::Log
+      file: *id002
+      level: !ruby/sym err
+      line: 12
+      message: &id005 "change from purged to present failed: Execution of '/usr/bin/apt-get -q -y -o DPkg::Options::=--force-confold install failblog' returned 100: Reading package lists...\nBuilding dependency tree...\nReading state information...\nE: Unable to locate package failblog\n"
+      source: &id006 "/Stage[main]//Node[default]/Package[failblog]/ensure"
+      tags: 
+        - err
+        - package
+        - failblog
+        - node
+        - default
+        - class
+      time: 2013-08-29 12:11:45.769459 +01:00
+      version: 1377774705
+    - !ruby/object:Puppet::Util::Log
+      file: *id002
+      level: !ruby/sym debug
+      line: 5
+      message: Executing 'diff -u /tmp/test /tmp/puppet-file20130829-5078-g93qwu-0'
+      source: "/Stage[main]//Node[default]/File[/tmp/test]/content"
+      tags: 
+        - debug
+        - file
+        - node
+        - default
+        - class
+        - content
+      time: 2013-08-29 12:11:45.772637 +01:00
+      version: 1377774705
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: Finishing transaction 69924282124080
+      source: Puppet
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.859739 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym info
+      message: "FileBucket adding /tmp/test as {md5}a196f9208c4cb04242aa4e3287ff5755"
+      source: Puppet
+      tags: 
+        - info
+      time: 2013-08-29 12:11:45.860611 +01:00
+      version: *id001
+    - !ruby/object:Puppet::Util::Log
+      file: *id002
+      level: !ruby/sym info
+      line: 5
+      message: Filebucketed /tmp/test to puppet with sum a196f9208c4cb04242aa4e3287ff5755
+      source: "/Stage[main]//Node[default]/File[/tmp/test]"
+      tags: 
+        - info
+        - file
+        - node
+        - default
+        - class
+      time: 2013-08-29 12:11:45.860927 +01:00
+      version: 1377774705
+    - !ruby/object:Puppet::Util::Log
+      file: *id002
+      level: !ruby/sym notice
+      line: 5
+      message: &id003 "content changed '{md5}a196f9208c4cb04242aa4e3287ff5755' to '{md5}d6d0c756fb8abfb33e652a20e85b70bc'"
+      source: &id004 "/Stage[main]//Node[default]/File[/tmp/test]/content"
+      tags: 
+        - notice
+        - file
+        - node
+        - default
+        - class
+      time: 2013-08-29 12:11:45.861618 +01:00
+      version: 1377774705
+    - !ruby/object:Puppet::Util::Log
+      file: *id002
+      level: !ruby/sym info
+      line: 5
+      message: "Scheduling refresh of Service[ssh]"
+      source: "/Stage[main]//Node[default]/File[/tmp/test]"
+      tags: 
+        - info
+        - file
+        - node
+        - default
+        - class
+      time: 2013-08-29 12:11:45.861910 +01:00
+      version: 1377774705
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: Executing 'ps -ef'
+      source: "Service[ssh](provider=debian)"
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.862513 +01:00
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: PID is 1342
+      source: "Service[ssh](provider=debian)"
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.866674 +01:00
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: Executing 'ps -ef'
+      source: "Service[ssh](provider=debian)"
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.867073 +01:00
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: PID is 1342
+      source: "Service[ssh](provider=debian)"
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.870662 +01:00
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: Executing '/etc/init.d/ssh stop'
+      source: "Service[ssh](provider=debian)"
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.870988 +01:00
+    - !ruby/object:Puppet::Util::Log
+      level: !ruby/sym debug
+      message: Executing '/etc/init.d/ssh start'
+      source: "Service[ssh](provider=debian)"
+      tags: 
+        - debug
+      time: 2013-08-29 12:11:45.887665 +01:00
+    - !ruby/object:Puppet::Util::Log
+      file: *id002
+      level: !ruby/sym notice
+      line: 9
+      message: Triggered 'refresh' from 1 events
+      source: "/Stage[main]//Node[default]/Service[ssh]"
+      tags: 
+        - notice
+        - service
+        - ssh
+        - node
+        - default
+        - class
+      time: 2013-08-29 12:11:45.906566 +01:00
+      version: 1377774705
+  metrics: 
+    time: !ruby/object:Puppet::Util::Metric
+      label: Time
+      name: time
+      values: 
+        - - config_retrieval
+          - Config retrieval
+          - 0.141527891159058
+        - - service
+          - Service
+          - 0.00463
+        - - schedule
+          - Schedule
+          - 0.000678
+        - - package
+          - Package
+          - 0.189955
+        - - file
+          - File
+          - 0.090157
+        - - filebucket
+          - Filebucket
+          - 7.9e-05
+    resources: !ruby/object:Puppet::Util::Metric
+      label: Resources
+      name: resources
+      values: 
+        - - !ruby/sym failed
+          - Failed
+          - 1
+        - - !ruby/sym out_of_sync
+          - Out of sync
+          - 2
+        - - !ruby/sym total
+          - Total
+          - 10
+        - - !ruby/sym restarted
+          - Restarted
+          - 1
+        - - !ruby/sym changed
+          - Changed
+          - 2
+    events: !ruby/object:Puppet::Util::Metric
+      label: Events
+      name: events
+      values: 
+        - - failure
+          - Failure
+          - 1
+        - - !ruby/sym total
+          - Total
+          - 2
+        - - success
+          - Success
+          - 1
+    changes: !ruby/object:Puppet::Util::Metric
+      label: Changes
+      name: changes
+      values: 
+        - - !ruby/sym total
+          - Total
+          - 2
+  resource_statuses: 
+    "Filebucket[puppet]": !ruby/object:Puppet::Resource::Status
+      evaluation_time: 7.9e-05
+      events: []
+      file: 
+      line: 
+      resource: "Filebucket[puppet]"
+      source_description: "/Filebucket[puppet]"
+      tags: 
+        - filebucket
+        - puppet
+      time: 2013-08-29 12:11:45.770925 +01:00
+      version: 1377774705
+    "Schedule[monthly]": !ruby/object:Puppet::Resource::Status
+      evaluation_time: 0.000221
+      events: []
+      file: 
+      line: 
+      resource: "Schedule[monthly]"
+      source_description: "/Schedule[monthly]"
+      tags: 
+        - schedule
+        - monthly
+      time: 2013-08-29 12:11:45.907575 +01:00
+      version: 1377774705
+    "Schedule[never]": !ruby/object:Puppet::Resource::Status
+      evaluation_time: 8.9e-05
+      events: []
+      file: 
+      line: 
+      resource: "Schedule[never]"
+      source_description: "/Schedule[never]"
+      tags: 
+        - schedule
+        - never
+      time: 2013-08-29 12:11:45.770659 +01:00
+      version: 1377774705
+    "Schedule[weekly]": !ruby/object:Puppet::Resource::Status
+      evaluation_time: 0.000114
+      events: []
+      file: 
+      line: 
+      resource: "Schedule[weekly]"
+      source_description: "/Schedule[weekly]"
+      tags: 
+        - schedule
+        - weekly
+      time: 2013-08-29 12:11:45.770089 +01:00
+      version: 1377774705
+    "File[/tmp/test]": !ruby/object:Puppet::Resource::Status
+      change_count: 1
+      changed: true
+      evaluation_time: 0.090157
+      events: 
+        - !ruby/object:Puppet::Transaction::Event
+          default_log_level: !ruby/sym notice
+          desired_value: "{md5}d6d0c756fb8abfb33e652a20e85b70bc"
+          file: *id002
+          line: 5
+          message: *id003
+          name: !ruby/sym content_changed
+          previous_value: "{md5}a196f9208c4cb04242aa4e3287ff5755"
+          property: content
+          resource: "File[/tmp/test]"
+          source_description: *id004
+          status: success
+          tags: 
+            - file
+            - node
+            - default
+            - class
+          time: 2013-08-29 12:11:45.861581 +01:00
+          version: 1377774705
+      file: *id002
+      line: 5
+      out_of_sync: true
+      resource: "File[/tmp/test]"
+      source_description: "/Stage[main]//Node[default]/File[/tmp/test]"
+      tags: 
+        - file
+        - node
+        - default
+        - class
+      time: 2013-08-29 12:11:45.771700 +01:00
+      version: 1377774705
+    "Schedule[puppet]": !ruby/object:Puppet::Resource::Status
+      evaluation_time: 0.000106
+      events: []
+      file: 
+      line: 
+      resource: "Schedule[puppet]"
+      source_description: "/Schedule[puppet]"
+      tags: 
+        - schedule
+        - puppet
+      time: 2013-08-29 12:11:45.770403 +01:00
+      version: 1377774705
+    "Service[ssh]": !ruby/object:Puppet::Resource::Status
+      evaluation_time: 0.00463
+      events: []
+      file: *id002
+      line: 9
+      resource: "Service[ssh]"
+      restarted: true
+      source_description: "/Stage[main]//Node[default]/Service[ssh]"
+      tags: 
+        - service
+        - ssh
+        - node
+        - default
+        - class
+      time: 2013-08-29 12:11:45.862351 +01:00
+      version: 1377774705
+    "Schedule[daily]": !ruby/object:Puppet::Resource::Status
+      evaluation_time: 7.5e-05
+      events: []
+      file: 
+      line: 
+      resource: "Schedule[daily]"
+      source_description: "/Schedule[daily]"
+      tags: 
+        - schedule
+        - daily
+      time: 2013-08-29 12:11:45.771172 +01:00
+      version: 1377774705
+    "Schedule[hourly]": !ruby/object:Puppet::Resource::Status
+      evaluation_time: 7.3e-05
+      events: []
+      file: 
+      line: 
+      resource: "Schedule[hourly]"
+      source_description: "/Schedule[hourly]"
+      tags: 
+        - schedule
+        - hourly
+      time: 2013-08-29 12:11:45.771409 +01:00
+      version: 1377774705
+    "Package[failblog]": !ruby/object:Puppet::Resource::Status
+      change_count: 1
+      changed: true
+      evaluation_time: 0.189955
+      events: 
+        - !ruby/object:Puppet::Transaction::Event
+          default_log_level: !ruby/sym notice
+          desired_value: !ruby/sym present
+          file: *id002
+          line: 12
+          message: *id005
+          name: !ruby/sym package_installed
+          previous_value: !ruby/sym purged
+          property: ensure
+          resource: "Package[failblog]"
+          source_description: *id006
+          status: failure
+          tags: 
+            - package
+            - failblog
+            - node
+            - default
+            - class
+          time: 2013-08-29 12:11:45.769394 +01:00
+          version: 1377774705
+      failed: true
+      file: *id002
+      line: 12
+      out_of_sync: true
+      resource: "Package[failblog]"
+      source_description: "/Stage[main]//Node[default]/Package[failblog]"
+      tags: 
+        - package
+        - failblog
+        - node
+        - default
+        - class
+      time: 2013-08-29 12:11:45.579853 +01:00
+      version: 1377774705
+  time: 2013-08-29 12:11:44.681312 +01:00

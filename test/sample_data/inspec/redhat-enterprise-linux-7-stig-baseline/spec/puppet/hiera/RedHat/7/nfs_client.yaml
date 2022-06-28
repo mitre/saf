@@ -1,0 +1,20 @@
+---
+profiles::rhel7::nfs_client::nfs_domain: 'oma.spawar.navy.mil'
+profiles::rhel7::nfs_client::krb_nfs_spn: 'nfs'
+
+# Use autofs to mount  home directories using NFSv4 w Kerberos security
+profiles::rhel7::nfs_client::autofs_mounts: 
+  home:
+    mount: '/home/nfs'
+    mapfile: '/etc/auto.home'
+    mapcontents:
+     - '* -fstype=nfs,sec=krb5i,rw,nosuid,nodevices,soft netapp4.oma.spawar.navy.mil:/nfs/home/&'
+    options: '--timeout=300'
+    order: 01
+  sysadmin:
+    mount: '/-'
+    mapfile: '/etc/auto.direct'
+    mapcontents:
+      - '/sysadmin -fstype=nfs,sec=krb5i,rw,nosuid,nodevices,soft netapp4.oma.spawar.navy.mil:/nfs/sysadmin'
+    order: 02
+

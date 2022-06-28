@@ -1,0 +1,37 @@
+---
+
+verifier:
+  name: inspec
+  sudo: true
+  reporter:
+    - cli
+    - json:spec/results/%{platform}_%{suite}.json
+  inspec_tests:
+    - name: RedHat Enterprise Linux 7 STIG
+      path: .
+  input_files:
+    - kitchen.inputs.yml
+  load_plugins: true
+
+provisioner:
+  name: puppet_apply
+  sudo: true
+  require_chef_for_busser: false
+  manifests_path: ./spec/puppet/manifests
+  modules_path: ./spec/puppet/modules
+  hiera_config_path: ./spec/puppet/hiera.yaml
+  hiera_data_path: ./spec/puppet/hiera
+  resolve_with_librarian_puppet: true
+  ignore_spec_fixtures: true
+
+platforms:
+  - name: rhel-7
+
+suites:
+  - name: vanilla
+    provisioner:
+      manifest: base.pp
+      
+  - name: hardened
+    provisioner:
+      manifest: stig.pp

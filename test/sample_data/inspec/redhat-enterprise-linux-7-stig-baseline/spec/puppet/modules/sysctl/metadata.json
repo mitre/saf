@@ -1,0 +1,14 @@
+{
+  "name": "lkimmel-sysctl",
+  "version": "0.2.2",
+  "author": "lkimmel",
+  "summary": "Manage sysctl.conf",
+  "license": "Apache-2.0",
+  "source": "",
+  "project_page": null,
+  "issues_url": null,
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+  ]
+}
+

@@ -1,0 +1,14 @@
+
+<% @client_settings.each_pair do |item,val| -%>
+<% if val == false -%>
+<% next -%>
+<% elsif val == true -%>
+<%= item %>
+<% elsif val.is_a?(Array) -%>
+<% val.each do |sub| -%>
+<%= item -%> <%= sub %>
+<% end -%>
+<% else -%>
+<%= item -%> <%= val %>
+<% end %>
+<% end -%>

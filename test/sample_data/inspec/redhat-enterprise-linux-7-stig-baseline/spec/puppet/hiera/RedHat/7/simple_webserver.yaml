@@ -1,0 +1,36 @@
+---
+# Version: 0.3.0
+# Date: 24January18
+
+profiles::rhel7::simple_webserver::site_name: 'spawar-demo'
+profiles::rhel7::simple_webserver::content_source: 'puppet://is-rhsat-lv03.oma.spawar.navy.mil/webcontent/spawar-demo'
+profiles::rhel7::simple_webserver::firewalld_ports:
+  - '443/tcp'
+
+apache::docroot: '/var/www/html'
+apache::server_tokens: 'Prod'
+apache::server_signature: 'Off'
+apache::trace_enable: 'Off'
+apache::log_level: 'info'
+apache::keepalive: 'On'
+apache::keepalive_timeout: 15
+apache::default_vhost: False
+apache::default_ssl_vhost: True
+# Add SSL cert/key for version 0.3.0 to utilize new signed
+# certificate functionality available at deploy time.
+apache::default_ssl_cert: "/etc/pki/tls/certs/%{fqdn}.cer"
+apache::default_ssl_key: "/etc/pki/tls/private/%{fqdn}.key"
+apache::ip: "%{ipaddress}"
+apache::default_mods:
+  # These modules are always included: unixd, systemd, authz_core, filter, log_config
+  # Included when SSL is enabled: socache_shmcb
+  - 'mime'
+  - 'dir'
+apache::mpm_module: 'prefork'
+
+apache::mod::prefork::startservers: 8
+apache::mod::prefork::maxspareservers: 10
+apache::mod::prefork::minspareservers: 5
+apache::mod::prefork::maxclients: 256
+
+apache::mod::ssl::ssl_cipher: 'FIPS:!aNULL:!3DES'

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+    <short><%= @short %></short>
+    <%- if @description -%>
+    <description><%= @description %></description>
+    <%- end -%>
+
+    <%- if @port -%>
+    <%- @port.each do |i| -%>
+      <%- range = sprintf('%s',i['port']).split(/:/).map { |p| p.to_i } -%>
+      <%- (range[0]..range[1] || range[0]).each do |p| -%>
+    <port<% if i['protocol'] -%> protocol="<%= i['protocol'] %>"<% end -%> port="<%= p %>" />
+      <%- end -%>
+    <%- end -%>
+
+    <%- end -%>
+    <%- if @module -%>
+    <%- @module.sort.each do |j| -%>
+    <module name="<%= j %>" />
+    <%- end -%>
+
+    <%- end -%>
+    <%- if @destination -%>
+    <destination<% if @destination['ipv4'] -%> ipv4="<%= @destination['ipv4'] %>"<% end -%><% if @destination['ipv6'] -%> ipv6="<%= @destination['ipv6'] %>"<% end -%> />
+    <%- end -%>
+</service>

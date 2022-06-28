@@ -1,0 +1,20 @@
+#!/bin/bash
+<% if @replace == true or @replace == 'yes' -%>
+###############################################################
+#                                                             #
+# THIS FILE IS MANAGED BY PUPPET. ANY CHANGES MADE TO THIS    #
+#   FILE WILL BE REVERTED BACK ON THE NEXT PUPPET RUN.        #
+#                                                             #
+###############################################################
+<% else -%>
+###############################################################
+#                                                             #
+# THIS FILE IS NOT MANAGED BY PUPPET. USE THIS FILE FOR       #
+#    CUSTOM / TEMPORARY MOUNT POINTS CONFIGURATIONS.          #
+#                                                             #
+###############################################################
+<% end -%>
+
+<% @mapcontents.each do |content| -%>
+<%= content %>
+<% end -%>

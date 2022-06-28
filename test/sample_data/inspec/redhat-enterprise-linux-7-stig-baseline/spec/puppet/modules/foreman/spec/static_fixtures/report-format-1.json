@@ -1,0 +1,127 @@
+{
+  "host": "p26.elysium.emeraldreverie.org",
+  "reported_at": "2013-08-29 11:11:44 UTC",
+  "status": {
+    "applied": 0,
+    "restarted": 1,
+    "failed": 1,
+    "failed_restarts": 0,
+    "skipped": 0,
+    "pending": 0
+  },
+  "metrics": {
+    "time": {
+      "config_retrieval": 0.141527891159058,
+      "file": 0.090157,
+      "filebucket": 7.9e-05,
+      "package": 0.189955,
+      "schedule": 0.000678,
+      "service": 0.00463
+    },
+    "resources": {
+      "changed": 2,
+      "failed": 1,
+      "out_of_sync": 2,
+      "restarted": 1,
+      "total": 10
+    },
+    "events": {
+      "failure": 1,
+      "success": 1,
+      "total": 2
+    },
+    "changes": {
+      "total": 2
+    }
+  },
+  "logs": [
+    {
+      "log": {
+        "sources": {
+          "source": "Puppet"
+        },
+        "messages": {
+          "message": "Caching catalog for p26.elysium.emeraldreverie.org"
+        },
+        "level": "info"
+      }
+    },
+    {
+      "log": {
+        "sources": {
+          "source": "Puppet"
+        },
+        "messages": {
+          "message": "Applying configuration version '1377774705'"
+        },
+        "level": "info"
+      }
+    },
+    {
+      "log": {
+        "sources": {
+          "source": "/Stage[main]//Node[default]/Package[failblog]/ensure"
+        },
+        "messages": {
+          "message": "change from purged to present failed: Execution of '/usr/bin/apt-get -q -y -o DPkg::Options::=--force-confold install failblog' returned 100: Reading package lists...\nBuilding dependency tree...\nReading state information...\nE: Unable to locate package failblog\n"
+        },
+        "level": "err"
+      }
+    },
+    {
+      "log": {
+        "sources": {
+          "source": "Puppet"
+        },
+        "messages": {
+          "message": "FileBucket adding /tmp/test as {md5}a196f9208c4cb04242aa4e3287ff5755"
+        },
+        "level": "info"
+      }
+    },
+    {
+      "log": {
+        "sources": {
+          "source": "/Stage[main]//Node[default]/File[/tmp/test]"
+        },
+        "messages": {
+          "message": "Filebucketed /tmp/test to puppet with sum a196f9208c4cb04242aa4e3287ff5755"
+        },
+        "level": "info"
+      }
+    },
+    {
+      "log": {
+        "sources": {
+          "source": "/Stage[main]//Node[default]/File[/tmp/test]/content"
+        },
+        "messages": {
+          "message": "content changed '{md5}a196f9208c4cb04242aa4e3287ff5755' to '{md5}d6d0c756fb8abfb33e652a20e85b70bc'"
+        },
+        "level": "notice"
+      }
+    },
+    {
+      "log": {
+        "sources": {
+          "source": "/Stage[main]//Node[default]/File[/tmp/test]"
+        },
+        "messages": {
+          "message": "Scheduling refresh of Service[ssh]"
+        },
+        "level": "info"
+      }
+    },
+    {
+      "log": {
+        "sources": {
+          "source": "/Stage[main]//Node[default]/Service[ssh]"
+        },
+        "messages": {
+          "message": "Triggered 'refresh' from 1 events"
+        },
+        "level": "notice"
+      }
+    }
+  ]
+}

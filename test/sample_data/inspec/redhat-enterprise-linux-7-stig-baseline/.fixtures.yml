@@ -1,0 +1,7 @@
+# This is required by Beaker
+---
+fixtures:
+  repositories:
+    disa_stig-el7:
+      repo: "file://#{source_dir}"
+      target: spec/fixtures/inspec_deps

@@ -1,0 +1,3 @@
+These links need to be of the form <OS>_<Release>_<profile_name>.
+
+<OS> and <Release> must be of the form returned by `facter`.

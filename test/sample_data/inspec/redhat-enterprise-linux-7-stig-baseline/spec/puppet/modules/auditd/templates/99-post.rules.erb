@@ -1,0 +1,13 @@
+<% if scope['auditd::use_augenrules'] -%>
+<% if scope["::servername"] -%>
+# THIS FILE IS MANAGED BY PUPPET - DO NOT MODIFY!!
+
+<% end -%>
+<% end -%>
+<%# Set immutability if requested -%>
+# Post processing options
+<% if scope['auditd::immutable'] -%>
+-e 2
+<% else -%>
+-e 1
+<% end -%>

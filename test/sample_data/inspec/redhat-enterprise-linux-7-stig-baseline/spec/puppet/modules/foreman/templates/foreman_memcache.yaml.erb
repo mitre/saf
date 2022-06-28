@@ -1,0 +1,11 @@
+# Foreman Memcache plugin configuration file
+
+:memcache:
+  :hosts:
+<% @hosts.each do |host| -%>
+    - <%= host %>
+<% end -%>
+  :options:
+    :namespace: <%= @namespace %>
+    :expires_in: <%= @expires_in %>
+    :compress: <%= @compress %>

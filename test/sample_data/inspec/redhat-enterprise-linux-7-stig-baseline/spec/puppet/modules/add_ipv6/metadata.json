@@ -1,0 +1,14 @@
+{
+  "name": "lkimmel-add_ipv6",
+  "version": "1.0.1",
+  "author": "lkimmel",
+  "summary": "Adds dynamically detrmined IPv6 information to existing ifcfg files",
+  "license": "Apache 2.0",
+  "source": "",
+  "project_page": null,
+  "issues_url": null,
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+  ]
+}
+

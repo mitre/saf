@@ -1,0 +1,5 @@
+# THIS FILE IS MANAGED BY PUPPET - DO NOT MODIFY
+
+session     [success=1 default=ignore] pam_succeed_if.so service !~ gdm* service !~ su* quiet
+session     [success=1 default=die]   pam_lastlog.so nowtmp showfailed
+session     required      pam_lastlog.so silent noupdate showfailed

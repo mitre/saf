@@ -1,0 +1,36 @@
+<% if scope["::servername"] -%>
+# THIS FILE IS MANAGED BY PUPPET - DO NOT MODIFY!!
+<% end -%>
+
+[General]
+Domain = <%= @nfs_domain %>
+<% if !@idmap_general.empty? -%>
+<% idmap_gereral.each do |key,value| -%>
+<%= key -%> = <%= value %>
+<% end -%>
+<% end -%>
+
+
+[Mapping]
+<% if !@idmap_mapping.empty? -%>
+<% idmap_mapping.each do |key,value| -%>
+<%= key -%> = <%= value %>
+<% end -%>
+<% end -%>
+
+
+[Translation]
+<% if !@idmap_translation.empty? -%>
+<% idmap_translation.each do |key,value| -%>
+<%= key -%> = <%= value %>
+<% end -%>
+<% end -%>
+
+
+[Static]
+<% if !@idmap_static.empty? -%>
+<% idmap_static.each do |key,value| -%>
+<%= key -%> = <%= value %>
+<% end -%>
+<% end -%>
+
