@@ -1,0 +1,2612 @@
+{
+  "addedControlIDs": [
+    "V-100023"
+  ],
+  "removedControlIDs": [],
+  "changedControls": {
+    "V-100023": {
+      "tags": {
+        "severity": "medium",
+        "gid": "V-100023",
+        "rid": "SV-109127r1_rule",
+        "stig_id": "RHEL-07-020111",
+        "gtitle": "SRG-OS-000114-GPOS-00059",
+        "fix_id": "F-105707r1_fix",
+        "rationale": null,
+        "satisfies": [
+          "SRG-OS-000114-GPOS-00059",
+          "SRG-OS-000378-GPOS-00163",
+          "SRG-OS-000480-GPOS-00227"
+        ],
+        "documentable": false,
+        "cci": [
+          "CCI-000366",
+          "CCI-000778",
+          "CCI-001958"
+        ],
+        "nist": [
+          "CM-6 b",
+          "IA-3",
+          "IA-3"
+        ]
+      },
+      "refs": [
+        "DPMS Target Red Hat 7"
+      ],
+      "id": "V-100023",
+      "title": "The Red Hat Enterprise Linux operating system must disable the graphical user interface automounter unless required.",
+      "desc": "Automatically mounting file systems permits easy introduction of unknown devices, thereby facilitating malicious activity. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system disables the ability to automount devices in a graphical user interface. Note: The example below is using the database \"local\" for the system, so the path is \"/etc/dconf/db/local.d\". This path must be modified if a database other than \"local\" is being used. Check to see if automounter service is disabled with the following commands: # cat /etc/dconf/db/local.d/00-No-Automount [org/gnome/desktop/media-handling] automount=false automount-open=false autorun-never=true If the output does not match the example above, this is a finding. # cat /etc/dconf/db/local.d/locks/00-No-Automount /org/gnome/desktop/media-handling/automount /org/gnome/desktop/media-handling/automount-open /org/gnome/desktop/media-handling/autorun-never If the output does not match the example, this is a finding.",
+        "fix": "Configure the graphical user interface to disable the ability to automount devices. Note: The example below is using the database \"local\" for the system, so the path is \"/etc/dconf/db/local.d\". This path must be modified if a database other than \"local\" is being used. Create or edit the /etc/dconf/db/local.d/00-No-Automount file and add the following: [org/gnome/desktop/media-handling] automount=false automount-open=false autorun-never=true Create or edit the /etc/dconf/db/local.d/locks/00-No-Automount file and add the following: /org/gnome/desktop/media-handling/automount /org/gnome/desktop/media-handling/automount-open /org/gnome/desktop/media-handling/autorun-never Run the following command to update the database: # dconf update"
+      }
+    },
+    "V-71849": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Discretionary access control is weakened if a user or group has access permissions to system files and directories greater than the default. ",
+      "descs": {
+        "check": "Verify the file permissions, ownership, and group membership of system files and commands match the vendor values. Check the default file permissions, ownership, and group membership of system files and commands with the following command: # for i in `rpm -Va | egrep -i '^\\.[M|U|G|.]{8}' | cut -d \" \" -f4,5`;do for j in `rpm -qf $i`;do rpm -ql $j --dump | cut -d \" \" -f1,5,6,7 | grep $i;done;done /var/log/gdm 040755 root root /etc/audisp/audisp-remote.conf 0100640 root root /usr/bin/passwd 0104755 root root For each file returned, verify the current permissions, ownership, and group membership: # ls -la &lt;filename&gt; -rw-------. 1 root root 133 Jan 11 13:25 /etc/audisp/audisp-remote.conf If the file is more permissive than the default permissions, this is a finding. If the file is not owned by the default owner and is not documented with the Information System Security Officer (ISSO), this is a finding. If the file is not a member of the default group and is not documented with the Information System Security Officer (ISSO), this is a finding.",
+        "fix": "Run the following command to determine which package owns the file: # rpm -qf &lt;filename&gt; Reset the user and group ownership of files within a package with the following command: #rpm --setugids &lt;packagename&gt; Reset the permissions of files within a package with the following command: #rpm --setperms &lt;packagename&gt;"
+      }
+    },
+    "V-71855": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "fix": "Run the following command to determine which package owns the file: # rpm -qf &lt;filename&gt; The package can be reinstalled from a yum repository using the command: # sudo yum reinstall &lt;packagename&gt; Alternatively, the package can be reinstalled from trusted media using the command: # sudo rpm -Uvh &lt;packagename&gt;"
+      }
+    },
+    "V-71859": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Display of a standardized and approved use notification before granting access to the operating system ensures privacy and security notification verbiage used is consistent with applicable federal laws, Executive Orders, directives, policies, regulations, standards, and guidance. System use notifications are required only for access via logon interfaces with human users and are not required when such human interfaces do not exist. The banner must be formatted in accordance with applicable DoD policy. Use the following verbiage for operating systems that can accommodate banners of 1300 characters: \"You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only. By using this IS (which includes any device attached to this IS), you consent to the following conditions: -The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations. -At any time, the USG may inspect and seize data stored on this IS. -Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose. -This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy. -Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details.\" ",
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-71861": {
+      "tags": {
+        "severity": "medium",
+        "rid": "SV-86485r5_rule",
+        "fix_id": "F-78213r6_fix"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Display of a standardized and approved use notification before granting access to the operating system ensures privacy and security notification verbiage used is consistent with applicable federal laws, Executive Orders, directives, policies, regulations, standards, and guidance. System use notifications are required only for access via logon interfaces with human users and are not required when such human interfaces do not exist. The banner must be formatted in accordance with applicable DoD policy. \"You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only. By using this IS (which includes any device attached to this IS), you consent to the following conditions: -The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations. -At any time, the USG may inspect and seize data stored on this IS. -Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose. -This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy. -Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details.\" ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system displays the approved Standard Mandatory DoD Notice and Consent Banner before granting access to the operating system via a graphical user logon. Note: If the system does not have a Graphical User Interface installed, this requirement is Not Applicable. Check that the operating system displays the exact approved Standard Mandatory DoD Notice and Consent Banner text with the command: # grep banner-message-text /etc/dconf/db/local.d/* banner-message-text= 'You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only. By using this IS (which includes any device attached to this IS), you consent to the following conditions: -The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations. -At any time, the USG may inspect and seize data stored on this IS. -Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose. -This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy. -Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details. ' Note: The \" \" characters are for formatting only. They will not be displayed on the Graphical User Interface. If the banner does not match the approved Standard Mandatory DoD Notice and Consent Banner, this is a finding.",
+        "fix": "Configure the operating system to display the approved Standard Mandatory DoD Notice and Consent Banner before granting access to the system. Note: If the system does not have a Graphical User Interface installed, this requirement is Not Applicable. Create a database to contain the system-wide graphical user logon settings (if it does not already exist) with the following command: # touch /etc/dconf/db/local.d/01-banner-message Add the following line to the [org/gnome/login-screen] section of the \"/etc/dconf/db/local.d/01-banner-message\": [org/gnome/login-screen] banner-message-enable=true banner-message-text='You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only. By using this IS (which includes any device attached to this IS), you consent to the following conditions: -The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations. -At any time, the USG may inspect and seize data stored on this IS. -Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose. -This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy. -Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details. ' Note: The \" \" characters are for formatting only. They will not be displayed on the Graphical User Interface. Run the following command to update the database: # dconf update"
+      }
+    },
+    "V-71863": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Display of a standardized and approved use notification before granting access to the operating system ensures privacy and security notification verbiage used is consistent with applicable federal laws, Executive Orders, directives, policies, regulations, standards, and guidance. System use notifications are required only for access via logon interfaces with human users and are not required when such human interfaces do not exist. The banner must be formatted in accordance with applicable DoD policy. Use the following verbiage for operating systems that can accommodate banners of 1300 characters: \"You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only. By using this IS (which includes any device attached to this IS), you consent to the following conditions: -The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations. -At any time, the USG may inspect and seize data stored on this IS. -Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose. -This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy. -Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details.\" ",
+      "descs": {}
+    },
+    "V-71891": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "A session lock is a temporary action taken when a user stops work and moves away from the immediate physical vicinity of the information system but does not want to log out because of the temporary nature of the absence. The session lock is implemented at the point where session activity can be determined. Regardless of where the session lock is determined and implemented, once invoked, the session lock must remain in place until the user reauthenticates. No other activity aside from reauthentication must unlock the system. ",
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-71893": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-71897": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71899": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-71901": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-71903": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71905": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71907": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71909": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71911": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71913": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71915": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71917": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71919": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71921": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71923": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71925": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71927": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "check": "Check whether the minimum time period between password changes for each user account is one day or greater. # awk -F: '$4 &lt; 1 {print $1 \" \" $4}' /etc/shadow If any results are returned that are not associated with a system account, this is a finding."
+      }
+    },
+    "V-71929": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71931": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "check": "Check whether the maximum time period for existing passwords is restricted to 60 days. # awk -F: '$5 &gt; 60 {print $1 \" \" $5}' /etc/shadow If any results are returned that are not associated with a system account, this is a finding."
+      }
+    },
+    "V-71933": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71935": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71937": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71939": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71941": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71943": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "By limiting the number of failed logon attempts, the risk of unauthorized system access via user password guessing, otherwise known as brute-forcing, is reduced. Limits are imposed by locking the account. ",
+      "descs": {}
+    },
+    "V-71945": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "By limiting the number of failed logon attempts, the risk of unauthorized system access via user password guessing, otherwise known as brute forcing, is reduced. Limits are imposed by locking the account. ",
+      "descs": {}
+    },
+    "V-71947": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without re-authentication, users may access resources or perform tasks for which they do not have authorization. When operating systems provide the capability to escalate a functional capability, it is critical the user re-authenticate. ",
+      "descs": {}
+    },
+    "V-71949": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without re-authentication, users may access resources or perform tasks for which they do not have authorization. When operating systems provide the capability to escalate a functional capability, it is critical the user reauthenticate. ",
+      "descs": {}
+    },
+    "V-71951": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71953": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.7,
+      "descs": {}
+    },
+    "V-71955": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.7,
+      "descs": {}
+    },
+    "V-71957": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71959": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71961": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.7,
+      "descs": {}
+    },
+    "V-71963": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.7,
+      "descs": {}
+    },
+    "V-71965": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "To assure accountability and prevent unauthenticated access, organizational users must be identified and authenticated to prevent potential misuse and compromise of the system. Organizational users include organizational employees or individuals the organization deems to have equivalent status of employees (e.g., contractors). Organizational users (and processes acting on behalf of users) must be uniquely identified and authenticated to all accesses, except for the following: 1) Accesses explicitly identified and documented by the organization. Organizations document specific user actions that can be performed on the information system without identification or authentication; and 2) Accesses that occur through authorized use of group authenticators without individual authentication. Organizations may require unique identification of individuals in group accounts (e.g., shared privilege accounts) or for detailed accountability of individual activity. ",
+      "descs": {}
+    },
+    "V-71967": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71969": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71971": {
+      "tags": {
+        "severity": "medium",
+        "rid": "SV-86595r3_rule",
+        "fix_id": "F-78323r2_fix"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "check": "If an HBSS or HIPS is active on the system, this is Not Applicable. Verify the operating system prevents non-privileged users from executing privileged functions to include disabling, circumventing, or altering implemented security safeguards/countermeasures. Get a list of authorized users (other than System Administrator and guest accounts) for the system. Check the list against the system by using the following command: # semanage login -l | more Login Name SELinux User MLS/MCS Range Service __default__ user_u s0-s0:c0.c1023 * root unconfined_u s0-s0:c0.c1023 * system_u system_u s0-s0:c0.c1023 * joe staff_u s0-s0:c0.c1023 * All administrators must be mapped to the \"sysadm_u\", \"staff_u\", or an appropriately tailored confined role as defined by the organization. All authorized non-administrative users must be mapped to the \"user_u\" role. If they are not mapped in this way, this is a finding.",
+        "fix": "Configure the operating system to prevent non-privileged users from executing privileged functions to include disabling, circumventing, or altering implemented security safeguards/countermeasures. Use the following command to map a new user to the \"sysadm_u\" role: #semanage login -a -s sysadm_u &lt;username&gt; Use the following command to map an existing user to the \"sysadm_u\" role: #semanage login -m -s sysadm_u &lt;username&gt; Use the following command to map a new user to the \"staff_u\" role: #semanage login -a -s staff_u &lt;username&gt; Use the following command to map an existing user to the \"staff_u\" role: #semanage login -m -s staff_u &lt;username&gt; Use the following command to map a new user to the \"user_u\" role: # semanage login -a -s user_u &lt;username&gt; Use the following command to map an existing user to the \"user_u\" role: # semanage login -m -s user_u &lt;username&gt;"
+      }
+    },
+    "V-71973": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71975": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71977": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71979": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71983": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "USB mass storage permits easy introduction of unknown devices, thereby facilitating malicious activity. ",
+      "descs": {}
+    },
+    "V-71985": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Automatically mounting file systems permits easy introduction of unknown devices, thereby facilitating malicious activity. ",
+      "descs": {}
+    },
+    "V-71987": {
+      "tags": {
+        "severity": "low"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71989": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71991": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71993": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71995": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71997": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-71999": {
+      "tags": {},
+      "refs": [
+        null
+      ],
+      "descs": {
+        "check": "Verify the operating system security patches and updates are installed and up to date. Updates are required to be applied with a frequency determined by the site or Program Management Office (PMO). Obtain the list of available package security updates from Red Hat. The URL for updates is https://rhn.redhat.com/errata/. It is important to note that updates provided by Red Hat may not be present on the system if the underlying packages are not installed. Check that the available package security updates have been installed on the system with the following command: # yum history list | more Loaded plugins: langpacks, product-id, subscription-manager ID | Command line | Date and time | Action(s) | Altered ------------------------------------------------------------------------------- 70 | install aide | 2016-05-05 10:58 | Install | 1 69 | update -y | 2016-05-04 14:34 | Update | 18 EE 68 | install vlc | 2016-04-21 17:12 | Install | 21 67 | update -y | 2016-04-21 17:04 | Update | 7 EE 66 | update -y | 2016-04-15 16:47 | E, I, U | 84 EE If package updates have not been performed on the system within the timeframe that the site/program documentation requires, this is a finding. Typical update frequency may be overridden by Information Assurance Vulnerability Alert (IAVA) notifications from CYBERCOM. If the operating system is in non-compliance with the Information Assurance Vulnerability Management (IAVM) process, this is a finding."
+      }
+    },
+    "V-72001": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72003": {
+      "tags": {
+        "severity": "low"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72005": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72007": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "fix": "Either remove all files and directories from the system that do not have a valid user, or assign a valid user to all unowned files and directories on the system with the \"chown\" command: # chown &lt;user&gt; &lt;file&gt;"
+      }
+    },
+    "V-72009": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "fix": "Either remove all files and directories from the system that do not have a valid group, or assign a valid group to all files and directories on the system with the \"chgrp\" command: # chgrp &lt;group&gt; &lt;file&gt;"
+      }
+    },
+    "V-72011": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72013": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72015": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72017": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72019": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72021": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72023": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "fix": "Change the owner of a local interactive user's files and directories to that owner. To change the owner of a local interactive user's files and directories, use the following command: Note: The example will be for the user smithj, who has a home directory of \"/home/smithj\". # chown smithj /home/smithj/&lt;file or directory&gt;"
+      }
+    },
+    "V-72025": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "check": "Verify all files and directories in a local interactive user home directory are group-owned by a group the user is a member of. Check the group owner of all files and directories in a local interactive user's home directory with the following command: Note: The example will be for the user \"smithj\", who has a home directory of \"/home/smithj\". # ls -lLR /&lt;home directory&gt;/&lt;users home directory&gt;/ -rw-r--r-- 1 smithj smithj 18 Mar 5 17:06 file1 -rw-r--r-- 1 smithj smithj 193 Mar 5 17:06 file2 -rw-r--r-- 1 smithj sa 231 Mar 5 17:06 file3 If any files are found with an owner different than the group home directory user, check to see if the user is a member of that group with the following command: # grep smithj /etc/group sa:x:100:juan,shelley,bob,smithj smithj:x:521:smithj If the user is not a member of a group that group owns file(s) in a local interactive user's home directory, this is a finding.",
+        "fix": "Change the group of a local interactive user's files and directories to a group that the interactive user is a member of. To change the group owner of a local interactive user's files and directories, use the following command: Note: The example will be for the user smithj, who has a home directory of \"/home/smithj\" and is a member of the users group. # chgrp users /home/smithj/&lt;file&gt;"
+      }
+    },
+    "V-72027": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "fix": "Set the mode on files and directories in the local interactive user home directory with the following command: Note: The example will be for the user smithj, who has a home directory of \"/home/smithj\" and is a member of the users group. # chmod 0750 /home/smithj/&lt;file&gt;"
+      }
+    },
+    "V-72029": {
+      "tags": {
+        "severity": "medium",
+        "rid": "SV-86653r4_rule"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "check": "Verify the local initialization files of all local interactive users are owned by that user. Check the home directory assignment for all non-privileged users on the system with the following command: Note: The example will be for the smithj user, who has a home directory of \"/home/smithj\". # cut -d: -f 1,3,6 /etc/passwd | egrep \":[1-4][0-9]{3}\" smithj:1000:/home/smithj Note: This may miss interactive users that have been assigned a privileged User Identifier (UID). Evidence of interactive use may be obtained from a number of log files containing system logon information. Check the owner of all local interactive user's initialization files with the following command: # ls -al /home/smithj/.[^.]* | more -rwxr-xr-x 1 smithj users 896 Mar 10 2011 .profile -rwxr-xr-x 1 smithj users 497 Jan 6 2007 .login -rwxr-xr-x 1 smithj users 886 Jan 6 2007 .something If all local interactive user's initialization files are not owned by that user or root, this is a finding."
+      }
+    },
+    "V-72031": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72033": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72035": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72037": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "check": "Verify that local initialization files do not execute world-writable programs. Check the system for world-writable files with the following command: # find / -xdev -perm -002 -type f -exec ls -ld {} \\; | more For all files listed, check for their presence in the local initialization files with the following commands: Note: The example will be for a system that is configured to create users' home directories in the \"/home\" directory. # grep &lt;file&gt; /home/*/.* If any local initialization files are found to reference world-writable files, this is a finding.",
+        "fix": "Set the mode on files being executed by the local initialization files with the following command: # chmod 0755 &lt;file&gt;"
+      }
+    },
+    "V-72039": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "fix": "Run the following command to determine which package owns the device file: # rpm -qf &lt;filename&gt; The package can be reinstalled from a yum repository using the command: # sudo yum reinstall &lt;packagename&gt; Alternatively, the package can be reinstalled from trusted media using the command: # sudo rpm -Uvh &lt;packagename&gt;"
+      }
+    },
+    "V-72041": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72043": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72045": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72047": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "fix": "Change the group of the world-writable directories to root with the following command: # chgrp root &lt;directory&gt;"
+      }
+    },
+    "V-72049": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72051": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72053": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72055": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72057": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72059": {
+      "tags": {
+        "severity": "low"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72061": {
+      "tags": {
+        "severity": "low"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72063": {
+      "tags": {
+        "severity": "low"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72065": {
+      "tags": {
+        "severity": "low"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72067": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Use of weak or untested encryption algorithms undermines the purposes of using encryption to protect data. The operating system must implement cryptographic modules adhering to the higher standards approved by the federal government since this provides assurance they have been tested and validated. ",
+      "descs": {
+        "fix": "Configure the operating system to implement DoD-approved encryption by installing the dracut-fips package. To enable strict FIPS compliance, the fips=1 kernel option needs to be added to the kernel command line during system installation so key generation is done with FIPS-approved algorithms and continuous monitoring tests in place. Configure the operating system to implement DoD-approved encryption by following the steps below: The fips=1 kernel option needs to be added to the kernel command line during system installation so that key generation is done with FIPS-approved algorithms and continuous monitoring tests in place. Users should also ensure that the system has plenty of entropy during the installation process by moving the mouse around, or if no mouse is available, ensuring that many keystrokes are typed. The recommended amount of keystrokes is 256 and more. Less than 256 keystrokes may generate a non-unique key. Install the dracut-fips package with the following command: # yum install dracut-fips Recreate the \"initramfs\" file with the following command: Note: This command will overwrite the existing \"initramfs\" file. # dracut -f Modify the kernel command line of the current kernel in the \"grub.cfg\" file by adding the following option to the GRUB_CMDLINE_LINUX key in the \"/etc/default/grub\" file and then rebuild the \"grub.cfg\" file: fips=1 Changes to \"/etc/default/grub\" require rebuilding the \"grub.cfg\" file as follows: On BIOS-based machines, use the following command: # grub2-mkconfig -o /boot/grub2/grub.cfg On UEFI-based machines, use the following command: # grub2-mkconfig -o /boot/efi/EFI/redhat/grub.cfg If /boot or /boot/efi reside on separate partitions, the kernel parameter boot=&lt;partition of /boot or /boot/efi&gt; must be added to the kernel command line. You can identify a partition by running the df /boot or df /boot/efi command: # df /boot Filesystem 1K-blocks Used Available Use% Mounted on /dev/sda1 495844 53780 416464 12% /boot To ensure the \"boot=\" configuration option will work even if device naming changes occur between boots, identify the universally unique identifier (UUID) of the partition with the following command: # blkid /dev/sda1 /dev/sda1: UUID=\"05c000f1-a213-759e-c7a2-f11b7424c797\" TYPE=\"ext4\" For the example above, append the following string to the kernel command line: boot=UUID=05c000f1-a213-759e-c7a2-f11b7424c797 Reboot the system for the changes to take effect."
+      }
+    },
+    "V-72069": {
+      "tags": {
+        "severity": "low"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72071": {
+      "tags": {
+        "severity": "low"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72073": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72075": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72077": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72079": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without establishing what type of events occurred, it would be difficult to establish, correlate, and investigate the events leading up to an outage or attack. Audit record content that may be necessary to satisfy this requirement includes, for example, time stamps, source and destination addresses, user/process identifiers, event descriptions, success/fail indications, filenames involved, and access control or flow control rules invoked. Associating event types with detected events in the operating system audit logs provides a means of investigating an attack; recognizing resource utilization or capacity thresholds; or identifying an improperly configured operating system. ",
+      "descs": {}
+    },
+    "V-72081": {
+      "tags": {
+        "severity": "medium",
+        "rid": "SV-86705r5_rule"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "It is critical for the appropriate personnel to be aware if a system is at risk of failing to process audit logs as required. Without this notification, the security personnel may be unaware of an impending failure of the audit capability, and system operation may be adversely affected. Audit processing failures include software/hardware errors, failures in the audit capturing mechanisms, and audit storage capacity being reached or exceeded. This requirement applies to each audit data storage repository (i.e., distinct information system component where audit records are stored), the centralized audit storage capacity of organizations (i.e., all audit data storage repositories combined), or both. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Confirm the audit configuration regarding how auditing processing failures are handled. Check to see what level \"auditctl\" is set to with following command: # auditctl -s | grep -i \"fail\" failure 2 Note: If the value of \"failure\" is set to \"2\", the system is configured to panic (shut down) in the event of an auditing failure. If the value of \"failure\" is set to \"1\", the system is configured to only send information to the kernel log regarding the failure. If the \"failure\" setting is set to any value other than \"1\" or \"2\", this is a finding. If the \"failure\" setting is not set, this should be upgraded to a CAT I finding. If the \"failure\" setting is set to \"1\" but the availability concern is not documented or there is no monitoring of the kernel log, this should be downgraded to a CAT III finding."
+      }
+    },
+    "V-72083": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Information stored in one location is vulnerable to accidental or incidental deletion or alteration. Off-loading is a common process in information systems with limited audit storage capacity. ",
+      "descs": {}
+    },
+    "V-72085": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Information stored in one location is vulnerable to accidental or incidental deletion or alteration. Off-loading is a common process in information systems with limited audit storage capacity. ",
+      "descs": {}
+    },
+    "V-72087": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72089": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "check": "Verify the operating system initiates an action to notify the SA and ISSO (at a minimum) when allocated audit record storage volume reaches 75 percent of the repository maximum audit record storage capacity. Check the system configuration to determine the partition the audit records are being written to with the following command: # grep -iw log_file /etc/audit/auditd.conf log_file = /var/log/audit/audit.log Check the size of the partition that audit records are written to (with the example being \"/var/log/audit/\"): # df -h /var/log/audit/ 0.9G /var/log/audit If the audit records are not being written to a partition specifically created for audit records (in this example \"/var/log/audit\" is a separate partition), determine the amount of space other files in the partition are currently occupying with the following command: # du -sh &lt;partition&gt; 1.8G /var Determine what the threshold is for the system to take action when 75 percent of the repository maximum audit record storage capacity is reached: # grep -iw space_left /etc/audit/auditd.conf space_left = 225 If the value of the \"space_left\" keyword is not set to 25 percent of the total partition size, this is a finding."
+      }
+    },
+    "V-72091": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72093": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72095": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72097": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"chown\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw chown /etc/audit/audit.rules -a always,exit -F arch=b32 -S chown -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S chown -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod If both the \"b32\" and \"b64\" audit rules are not defined for the \"chown\" syscall, this is a finding.",
+        "fix": "Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S chown -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S chown -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72099": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"fchown\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw fchown /etc/audit/audit.rules -a always,exit -F arch=b32 -S fchown -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S fchown -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod If both the \"b32\" and \"b64\" audit rules are not defined for the \"fchown\" syscall, this is a finding.",
+        "fix": "Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S fchown -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S fchown -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72101": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"lchown\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw lchown /etc/audit/audit.rules -a always,exit -F arch=b32 -S lchown -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S lchown -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod If both the \"b32\" and \"b64\" audit rules are not defined for the \"lchown\" syscall, this is a finding.",
+        "fix": "Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S lchown -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S lchown -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72103": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"fchownat\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw fchownat /etc/audit/audit.rules -a always,exit -F arch=b32 -S fchownat -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S fchownat -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod If both the \"b32\" and \"b64\" audit rules are not defined for the \"fchownat\" syscall, this is a finding.",
+        "fix": "Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S fchownat -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S fchownat -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72105": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"chmod\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following command: # grep -iw chmod /etc/audit/audit.rules -a always,exit -F arch=b32 -S chmod -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S chmod -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod If both the \"b32\" and \"b64\" audit rules are not defined for the \"chmod\" syscall, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"chmod\" syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S chmod -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S chmod -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72107": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"fchmod\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following command: # grep -iw fchmod /etc/audit/audit.rules -a always,exit -F arch=b32 -S fchmod -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S fchmod -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod If both the \"b32\" and \"b64\" audit rules are not defined for the \"fchmod\" syscall, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"fchmod\" syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S fchmod -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S fchmod -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72109": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"fchmodat\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following command: # grep -iw fchmodat /etc/audit/audit.rules -a always,exit -F arch=b32 -S fchmodat -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S fchmodat -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod If both the \"b32\" and \"b64\" audit rules are not defined for the \"fchmodat\" syscall, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"fchmodat\" syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S fchmodat -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S fchmodat -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72111": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"setxattr\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw setxattr /etc/audit/audit.rules -a always,exit -F arch=b32 -S setxattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S setxattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod If both the \"b32\" and \"b64\" audit rules are not defined for the \"setxattr\" syscall, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"setxattr\" syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S setxattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S setxattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72113": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"fsetxattr\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw fsetxattr /etc/audit/audit.rules -a always,exit -F arch=b32 -S fsetxattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S fsetxattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod If both the \"b32\" and \"b64\" audit rules are not defined for the \"fsetxattr\" syscall, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"fsetxattr\" syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S fsetxattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S fsetxattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72115": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"lsetxattr\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw lsetxattr /etc/audit/audit.rules -a always,exit -F arch=b32 -S lsetxattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S lsetxattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod If both the \"b32\" and \"b64\" audit rules are not defined for the \"lsetxattr\" syscall, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"lsetxattr\" syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S lsetxattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S lsetxattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72117": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"removexattr\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw removexattr /etc/audit/audit.rules -a always,exit -F arch=b32 -S removexattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S removexattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod If both the \"b32\" and \"b64\" audit rules are not defined for the \"removexattr\" syscall, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"removexattr\" syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S removexattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S removexattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72119": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"fremovexattr\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw fremovexattr /etc/audit/audit.rules -a always,exit -F arch=b32 -S fremovexattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S fremovexattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod If both the \"b32\" and \"b64\" audit rules are not defined for the \"fremovexattr\" syscall, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"fremovexattr\" syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S fremovexattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S fremovexattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72121": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"lremovexattr\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw lremovexattr /etc/audit/audit.rules -a always,exit -F arch=b32 -S lremovexattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S lremovexattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod If both the \"b32\" and \"b64\" audit rules are not defined for the \"lremovexattr\" syscall, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"lremovexattr\" syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S lremovexattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod -a always,exit -F arch=b64 -S lremovexattr -F auid&gt;=1000 -F auid!=4294967295 -k perm_mod The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72123": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"creat\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw creat /etc/audit/audit.rules -a always,exit -F arch=b32 -S creat F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b32 -S creat -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S creat -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S creat -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access If both the \"b32\" and \"b64\" audit rules are not defined for the \"creat\" syscall, this is a finding. If the output does not produce rules containing \"-F exit=-EPERM\", this is a finding. If the output does not produce rules containing \"-F exit=-EACCES\", this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"creat\" syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules: -a always,exit -F arch=b32 -S creat -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b32 -S creat -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S creat -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S creat -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72125": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"open\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw open /etc/audit/audit.rules -a always,exit -F arch=b32 -S open -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b32 -S open -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S open -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S open -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access If both the \"b32\" and \"b64\" audit rules are not defined for the \"open\" syscall, this is a finding. If the output does not produce rules containing \"-F exit=-EPERM\", this is a finding. If the output does not produce rules containing \"-F exit=-EACCES\", this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"open\" syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S open -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b32 -S open -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S open -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S open -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72127": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"openat\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw openat /etc/audit/audit.rules -a always,exit -F arch=b32 -S openat -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b32 -S openat -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S openat -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S openat -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access If both the \"b32\" and \"b64\" audit rules are not defined for the \"openat\" syscall, this is a finding. If the output does not produce rules containing \"-F exit=-EPERM\", this is a finding. If the output does not produce rules containing \"-F exit=-EACCES\", this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"openat\" syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S openat -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b32 -S openat -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S openat -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S openat -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72129": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"open_by_handle_at\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw open_by_handle_at /etc/audit/audit.rules -a always,exit -F arch=b32 -S open_by_handle_at -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b32 -S open_by_handle_at -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S open_by_handle_at -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S open_by_handle_at -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access If both the \"b32\" and \"b64\" audit rules are not defined for the \"open_by_handle_at\" syscall, this is a finding. If the output does not produce rules containing \"-F exit=-EPERM\", this is a finding. If the output does not produce rules containing \"-F exit=-EACCES\", this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"open_by_handle_at\" syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S open_by_handle_at -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b32 -S open_by_handle_at -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S open_by_handle_at -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S open_by_handle_at -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72131": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"truncate\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw truncate /etc/audit/audit.rules -a always,exit -F arch=b32 -S truncate -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b32 -S truncate -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S truncate -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S truncate -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access If both the \"b32\" and \"b64\" audit rules are not defined for the \"truncate\" syscall, this is a finding. If the output does not produce rules containing \"-F exit=-EPERM\", this is a finding. If the output does not produce rules containing \"-F exit=-EACCES\", this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"truncate\" syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S truncate -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b32 -S truncate -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S truncate -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S truncate -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72133": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"ftruncate\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw ftruncate /etc/audit/audit.rules -a always,exit -F arch=b32 -S ftruncate -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b32 -S ftruncate -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S ftruncate -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S ftruncate -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access If both the \"b32\" and \"b64\" audit rules are not defined for the \"ftruncate\" syscall, this is a finding. If the output does not produce rules containing \"-F exit=-EPERM\", this is a finding. If the output does not produce rules containing \"-F exit=-EACCES\", this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"ftruncate\" syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S ftruncate -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b32 -S ftruncate -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S ftruncate -F exit=-EPERM -F auid&gt;=1000 -F auid!=4294967295 -k access -a always,exit -F arch=b64 -S ftruncate -F exit=-EACCES -F auid&gt;=1000 -F auid!=4294967295 -k access The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72135": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"semanage\" command occur. Check the file system rule in \"/etc/audit/audit.rules\" with the following command: # grep -i /usr/sbin/semanage /etc/audit/audit.rules -a always,exit -F path=/usr/sbin/semanage -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"semanage\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/sbin/semanage -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72137": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"setsebool\" command occur. Check the file system rule in \"/etc/audit/audit.rules\" with the following command: # grep -i /usr/sbin/setsebool /etc/audit/audit.rules -a always,exit -F path=/usr/sbin/setsebool -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"setsebool\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/sbin/setsebool -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72139": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"chcon\" command occur. Check the file system rule in \"/etc/audit/audit.rules\" with the following command: # grep -i /usr/bin/chcon /etc/audit/audit.rules -a always,exit -F path=/usr/bin/chcon -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"chcon\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/bin/chcon -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72141": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"setfiles\" command occur. Check the file system rule in \"/etc/audit/audit.rules\" with the following command: # grep -iw /usr/sbin/setfiles /etc/audit/audit.rules -a always,exit -F path=/usr/sbin/setfiles -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"setfiles\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/sbin/setfiles -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72145": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-72147": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-72149": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged password commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"passwd\" command occur. Check the file system rule in \"/etc/audit/audit.rules\" with the following command: # grep -i /usr/bin/passwd /etc/audit/audit.rules -a always,exit -F path=/usr/bin/passwd -F auid&gt;=1000 -F auid!=4294967295 -k privileged-passwd If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"passwd\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/bin/passwd -F auid&gt;=1000 -F auid!=4294967295 -k privileged-passwd The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72151": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged password commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"unix_chkpwd\" command occur. Check the file system rule in \"/etc/audit/audit.rules\" with the following command: # grep -iw /usr/sbin/unix_chkpwd /etc/audit/audit.rules -a always,exit -F path=/usr/sbin/unix_chkpwd -F auid&gt;=1000 -F auid!=4294967295 -k privileged-passwd If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"unix_chkpwd\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/sbin/unix_chkpwd -F auid&gt;=1000 -F auid!=4294967295 -k privileged-passwd The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72153": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged password commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"gpasswd\" command occur. Check the file system rule in \"/etc/audit/audit.rules\" with the following command: # grep -i /usr/bin/gpasswd /etc/audit/audit.rules -a always,exit -F path=/usr/bin/gpasswd -F auid&gt;=1000 -F auid!=4294967295 -k privileged-passwd If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"gpasswd\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/bin/gpasswd -F auid&gt;=1000 -F auid!=4294967295 -k privileged-passwd The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72155": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged password commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"chage\" command occur. Check the file system rule in \"/etc/audit/audit.rules\" with the following command: # grep -i /usr/bin/chage /etc/audit/audit.rules -a always,exit -F path=/usr/bin/chage -F auid&gt;=1000 -F auid!=4294967295 -k privileged-passwd If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"chage\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/bin/chage -F auid&gt;=1000 -F auid!=4294967295 -k privileged-passwd The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72157": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged password commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"userhelper\" command occur. Check the file system rule in \"/etc/audit/audit.rules\" with the following command: # grep -i /usr/sbin/userhelper /etc/audit/audit.rules -a always,exit -F path=/usr/sbin/userhelper -F auid&gt;=1000 -F auid!=4294967295 -k privileged-passwd If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"userhelper\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/sbin/userhelper -F auid&gt;=1000 -F auid!=4294967295 -k privileged-passwd The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72159": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged access commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"su\" command occur. Check that the following system call is being audited by performing the following command to check the file system rules in \"/etc/audit/audit.rules\": # grep -iw /usr/bin/su /etc/audit/audit.rules -a always,exit -F path=/usr/bin/su -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"su\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/bin/su -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72161": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged access commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"sudo\" command occur. Check that the following system call is being audited by performing the following command to check the file system rules in \"/etc/audit/audit.rules\": # grep -iw /usr/bin/sudo /etc/audit/audit.rules -a always,exit -F path=/usr/bin/sudo -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"sudo\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/bin/sudo -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72163": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged access commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-72165": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged access commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"newgrp\" command occur. Check that the following system call is being audited by performing the following command to check the file system rules in \"/etc/audit/audit.rules\": # grep -i /usr/bin/newgrp /etc/audit/audit.rules -a always,exit -F path=/usr/bin/newgrp -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"newgrp\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/bin/newgrp -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72167": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged access commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"chsh\" command occur. Check that the following system call is being audited by performing the following command to check the file system rules in \"/etc/audit/audit.rules\": # grep -i /usr/bin/chsh /etc/audit/audit.rules -a always,exit -F path=/usr/bin/chsh -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"chsh\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/bin/chsh -F auid&gt;=1000 -F auid!=4294967295 -k privileged-priv_change The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72171": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged mount commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"mount\" command and syscall occur. Check that the following system call is being audited by performing the following series of commands to check the file system rules in \"/etc/audit/audit.rules\": # grep -iw \"mount\" /etc/audit/audit.rules -a always,exit -F arch=b32 -S mount -F auid&gt;=1000 -F auid!=4294967295 -k privileged-mount -a always,exit -F arch=b64 -S mount -F auid&gt;=1000 -F auid!=4294967295 -k privileged-mount -a always,exit -F path=/usr/bin/mount -F auid&gt;=1000 -F auid!=4294967295 -k privileged-mount If both the \"b32\" and \"b64\" audit rules are not defined for the \"mount\" syscall, this is a finding. If all uses of the \"mount\" command are not being audited, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"mount\" command and syscall occur. Add or update the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S mount -F auid&gt;=1000 -F auid!=4294967295 -k privileged-mount -a always,exit -F arch=b64 -S mount -F auid&gt;=1000 -F auid!=4294967295 -k privileged-mount -a always,exit -F path=/usr/bin/mount -F auid&gt;=1000 -F auid!=4294967295 -k privileged-mount The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72173": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged mount commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"umount\" command occur. Check that the following system call is being audited by performing the following series of commands to check the file system rules in \"/etc/audit/audit.rules\": # grep -iw \"/usr/bin/umount\" /etc/audit/audit.rules -a always,exit -F path=/usr/bin/umount -F auid&gt;=1000 -F auid!=4294967295 -k privileged-mount If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"umount\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/bin/umount -F auid&gt;=1000 -F auid!=4294967295 -k privileged-mount The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72175": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged postfix commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"postdrop\" command occur. Check that the following system call is being audited by performing the following command to check the file system rules in \"/etc/audit/audit.rules\": # grep -iw /usr/sbin/postdrop /etc/audit/audit.rules -a always,exit -F path=/usr/sbin/postdrop -F auid&gt;=1000 -F auid!=4294967295 -k privileged-postfix If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"postdrop\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/sbin/postdrop -F auid&gt;=1000 -F auid!=4294967295 -k privileged-postfix The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72177": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged postfix commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"postqueue\" command occur. Check that the following system call is being audited by performing the following command to check the file system rules in \"/etc/audit/audit.rules\": # grep -iw /usr/sbin/postqueue /etc/audit/audit.rules -a always,exit -F path=/usr/sbin/postqueue -F auid&gt;=1000 -F auid!=4294967295 -k privileged-postfix If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"postqueue\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/sbin/postqueue -F auid&gt;=1000 -F auid!=4294967295 -k privileged-postfix The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72179": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged ssh commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"ssh-keysign\" command occur. Check that the following system call is being audited by performing the following command to check the file system rules in \"/etc/audit/audit.rules\": # grep -iw /usr/libexec/openssh/ssh-keysign /etc/audit/audit.rules -a always,exit -F path=/usr/libexec/openssh/ssh-keysign -F auid&gt;=1000 -F auid!=4294967295 -k privileged-ssh If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"ssh-keysign\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/libexec/openssh/ssh-keysign -F auid&gt;=1000 -F auid!=4294967295 -k privileged-ssh The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72183": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Reconstruction of harmful events or forensic analysis is not possible if audit records do not contain enough information. At a minimum, the organization must audit the full-text recording of privileged commands. The organization must maintain audit trails in sufficient detail to reconstruct events to determine the cause and impact of compromise. ",
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"crontab\" command occur. Check that the following system call is being audited by performing the following command to check the file system rules in \"/etc/audit/audit.rules\": # grep -iw /usr/bin/crontab /etc/audit/audit.rules -a always,exit -F path=/usr/bin/crontab -F auid&gt;=1000 -F auid!=4294967295 -k privileged-cron If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"crontab\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/bin/crontab -F auid&gt;=1000 -F auid!=4294967295 -k privileged-cron The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72185": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"pam_timestamp_check\" command occur. Check the auditing rules in \"/etc/audit/audit.rules\" with the following command: # grep -iw \"/usr/sbin/pam_timestamp_check\" /etc/audit/audit.rules -a always,exit -F path=/usr/sbin/pam_timestamp_check -F auid&gt;=1000 -F auid!=4294967295 -k privileged-pam If the command does not return any output, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"pam_timestamp_check\" command occur. Add or update the following rule in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F path=/usr/sbin/pam_timestamp_check -F auid&gt;=1000 -F auid!=4294967295 -k privileged-pam The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72187": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {}
+    },
+    "V-72189": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {}
+    },
+    "V-72191": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-72197": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-72199": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "If the system is not configured to audit certain activities and write them to an audit log, it is more difficult to detect and track system compromises and damages incurred during a system compromise. ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"rename\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw rename /etc/audit/audit.rules -a always,exit -F arch=b32 -S rename -F auid&gt;=1000 -F auid!=4294967295 -k delete -a always,exit -F arch=b64 -S rename -F auid&gt;=1000 -F auid!=4294967295 -k delete If both the \"b32\" and \"b64\" audit rules are not defined for the \"rename\" syscall, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"rename\" syscall occur. Add the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S rename -F auid&gt;=1000 -F auid!=4294967295 -k delete -a always,exit -F arch=b64 -S rename -F auid&gt;=1000 -F auid!=4294967295 -k delete The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72201": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "If the system is not configured to audit certain activities and write them to an audit log, it is more difficult to detect and track system compromises and damages incurred during a system compromise. ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"renameat\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw renameat /etc/audit/audit.rules -a always,exit -F arch=b32 -S renameat -F auid&gt;=1000 -F auid!=4294967295 -k delete -a always,exit -F arch=b64 -S renameat -F auid&gt;=1000 -F auid!=4294967295 -k delete If both the \"b32\" and \"b64\" audit rules are not defined for the \"renameat\" syscall, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"renameat\" syscall occur. Add the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S renameat -F auid&gt;=1000 -F auid!=4294967295 -k delete -a always,exit -F arch=b64 -S renameat -F auid&gt;=1000 -F auid!=4294967295 -k delete The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72203": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "If the system is not configured to audit certain activities and write them to an audit log, it is more difficult to detect and track system compromises and damages incurred during a system compromise. ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"rmdir\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw rmdir /etc/audit/audit.rules -a always,exit -F arch=b32 -S rmdir -F auid&gt;=1000 -F auid!=4294967295 -k delete -a always,exit -F arch=b64 -S rmdir -F auid&gt;=1000 -F auid!=4294967295 -k delete If both the \"b32\" and \"b64\" audit rules are not defined for the \"rmdir\" syscall, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"rmdir\" syscall occur. Add the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S rmdir -F auid&gt;=1000 -F auid!=4294967295 -k delete -a always,exit -F arch=b64 -S rmdir -F auid&gt;=1000 -F auid!=4294967295 -k delete The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72205": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "If the system is not configured to audit certain activities and write them to an audit log, it is more difficult to detect and track system compromises and damages incurred during a system compromise. ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"unlink\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw unlink /etc/audit/audit.rules -a always,exit -F arch=b32 -S unlink -F auid&gt;=1000 -F auid!=4294967295 -k delete -a always,exit -F arch=b64 -S unlink -F auid&gt;=1000 -F auid!=4294967295 -k delete If both the \"b32\" and \"b64\" audit rules are not defined for the \"unlink\" syscall, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"unlink\" syscall occur. Add the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S unlink -F auid&gt;=1000 -F auid!=4294967295 -k delete -a always,exit -F arch=b64 -S unlink -F auid&gt;=1000 -F auid!=4294967295 -k delete The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72207": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "If the system is not configured to audit certain activities and write them to an audit log, it is more difficult to detect and track system compromises and damages incurred during a system compromise. ",
+      "descs": {
+        "check": "Verify the operating system generates audit records when successful/unsuccessful attempts to use the \"unlinkat\" syscall occur. Check the file system rules in \"/etc/audit/audit.rules\" with the following commands: # grep -iw unlinkat /etc/audit/audit.rules -a always,exit -F arch=b32 -S unlinkat -F auid&gt;=1000 -F auid!=4294967295 -k delete -a always,exit -F arch=b64 -S unlinkat -F auid&gt;=1000 -F auid!=4294967295 -k delete If both the \"b32\" and \"b64\" audit rules are not defined for the \"unlinkat\" syscall, this is a finding.",
+        "fix": "Configure the operating system to generate audit records when successful/unsuccessful attempts to use the \"unlinkat\" syscall occur. Add the following rules in \"/etc/audit/rules.d/audit.rules\": -a always,exit -F arch=b32 -S unlinkat -F auid&gt;=1000 -F auid!=4294967295 -k delete -a always,exit -F arch=b64 -S unlinkat -F auid&gt;=1000 -F auid!=4294967295 -k delete The audit daemon must be restarted for the changes to take effect."
+      }
+    },
+    "V-72209": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "fix": "Modify the \"/etc/rsyslog.conf\" or an \"/etc/rsyslog.d/*.conf\" file to contain a configuration line to send all \"rsyslog\" output to a log aggregation system: *.* @@&lt;log aggregation system name&gt;"
+      }
+    },
+    "V-72211": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72213": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72217": {
+      "tags": {
+        "severity": "low"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72219": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "In order to prevent unauthorized connection of devices, unauthorized transfer of information, or unauthorized tunneling (i.e., embedding of data types within data types), organizations must disable or restrict unused or unnecessary physical and logical ports/protocols on information systems. Operating systems are capable of providing a wide variety of functions and services. Some of the functions and services provided by default may not be necessary to support essential organizational operations. Additionally, it is sometimes convenient to provide multiple services from a single component (e.g., VPN and IPS); however, doing so increases risk over limiting the services provided by any one component. To support the requirements and principles of least functionality, the operating system must support the organizational requirements, providing only essential capabilities and limiting the use of ports, protocols, and/or services to only those required, authorized, and approved to conduct official business or to address authorized quality of life issues. ",
+      "descs": {}
+    },
+    "V-72221": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Unapproved mechanisms that are used for authentication to the cryptographic module are not verified and therefore cannot be relied upon to provide confidentiality or integrity, and DoD data may be compromised. Operating systems utilizing encryption are required to use FIPS-compliant mechanisms for authenticating to cryptographic modules. FIPS 140-2 is the current standard for validating that mechanisms used to access cryptographic modules utilize authentication that meets DoD requirements. This allows for Security Levels 1, 2, 3, or 4 for use on a general purpose computing system. ",
+      "descs": {}
+    },
+    "V-72223": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72225": {
+      "tags": {
+        "severity": "medium",
+        "rid": "SV-86849r5_rule",
+        "fix_id": "F-78579r5_fix"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Display of a standardized and approved use notification before granting access to the publicly accessible operating system ensures privacy and security notification verbiage used is consistent with applicable federal laws, Executive Orders, directives, policies, regulations, standards, and guidance. System use notifications are required only for access via logon interfaces with human users and are not required when such human interfaces do not exist. The banner must be formatted in accordance with applicable DoD policy. Use the following verbiage for operating systems that can accommodate banners of 1300 characters: \"You are accessing a U.S. Government (USG) Information System (IS) that is provided for USG-authorized use only. By using this IS (which includes any device attached to this IS), you consent to the following conditions: -The USG routinely intercepts and monitors communications on this IS for purposes including, but not limited to, penetration testing, COMSEC monitoring, network operations and defense, personnel misconduct (PM), law enforcement (LE), and counterintelligence (CI) investigations. -At any time, the USG may inspect and seize data stored on this IS. -Communications using, or data stored on, this IS are not private, are subject to routine monitoring, interception, and search, and may be disclosed or used for any USG-authorized purpose. -This IS includes security measures (e.g., authentication and access controls) to protect USG interests--not for your personal benefit or privacy. -Notwithstanding the above, using this IS does not constitute consent to PM, LE or CI investigative searching or monitoring of the content of privileged communications, or work product, related to personal representation or services by attorneys, psychotherapists, or clergy, and their assistants. Such communications and work product are private and confidential. See User Agreement for details.\" ",
+      "descs": {}
+    },
+    "V-72227": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-72229": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-72231": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-72233": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without protection of the transmitted information, confidentiality and integrity may be compromised because unprotected communications can be intercepted and either read or altered. This requirement applies to both internal and external networks and all types of information system components from which information can be transmitted (e.g., servers, mobile devices, notebook computers, printers, copiers, scanners, and facsimile machines). Communication paths outside the physical protection of a controlled boundary are exposed to the possibility of interception and modification. Protecting the confidentiality and integrity of organizational information can be accomplished by physical means (e.g., employing physical distribution systems) or by logical means (e.g., employing cryptographic techniques). If physical means of protection are employed, logical means (cryptography) do not have to be employed, and vice versa. ",
+      "descs": {}
+    },
+    "V-72235": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without protection of the transmitted information, confidentiality and integrity may be compromised because unprotected communications can be intercepted and either read or altered. This requirement applies to both internal and external networks and all types of information system components from which information can be transmitted (e.g., servers, mobile devices, notebook computers, printers, copiers, scanners, and facsimile machines). Communication paths outside the physical protection of a controlled boundary are exposed to the possibility of interception and modification. Protecting the confidentiality and integrity of organizational information can be accomplished by physical means (e.g., employing physical distribution systems) or by logical means (e.g., employing cryptographic techniques). If physical means of protection are employed, then logical means (cryptography) do not have to be employed, and vice versa. ",
+      "descs": {}
+    },
+    "V-72237": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Terminating an idle SSH session within a short time period reduces the window of opportunity for unauthorized personnel to take control of a management session enabled on the console or console port that has been left unattended. In addition, quickly terminating an idle SSH session will also free up resources committed by the managed network element. Terminating network connections associated with communications sessions includes, for example, de-allocating associated TCP/IP address/port pairs at the operating system level and de-allocating networking assignments at the application level if multiple application sessions are using a single operating system-level network connection. This does not mean that the operating system terminates all sessions or network access; it only ends the inactive session and releases the resources associated with that session. ",
+      "descs": {}
+    },
+    "V-72239": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72241": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Terminating an idle SSH session within a short time period reduces the window of opportunity for unauthorized personnel to take control of a management session enabled on the console or console port that has been left unattended. In addition, quickly terminating an idle SSH session will also free up resources committed by the managed network element. Terminating network connections associated with communications sessions includes, for example, de-allocating associated TCP/IP address/port pairs at the operating system level and de-allocating networking assignments at the application level if multiple application sessions are using a single operating system-level network connection. This does not mean that the operating system terminates all sessions or network access; it only ends the inactive session and releases the resources associated with that session. ",
+      "descs": {}
+    },
+    "V-72243": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72245": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72247": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72249": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72251": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "SSHv1 is an insecure implementation of the SSH protocol and has many well-known vulnerability exploits. Exploits of the SSH daemon could provide immediate root access to the system. ",
+      "descs": {}
+    },
+    "V-72253": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72255": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72257": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72259": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72261": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72263": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72265": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72267": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72269": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Inaccurate time stamps make it more difficult to correlate events and can lead to an inaccurate analysis. Determining the correct time a particular event occurred on a system is critical when conducting forensic analysis and investigating system events. Sources outside the configured acceptable allowance (drift) may be inaccurate. Synchronizing internal information system clocks provides uniformity of time stamps for information systems with multiple system clocks and systems connected over a network. Organizations should consider endpoints that may not have regular access to the authoritative time server (e.g., mobile, teleworking, and tactical endpoints). ",
+      "descs": {}
+    },
+    "V-72273": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Firewalls protect computers from network attacks by blocking or limiting access to open network ports. Application firewalls limit which applications are allowed to communicate over the network. ",
+      "descs": {}
+    },
+    "V-72275": {
+      "tags": {
+        "severity": "low"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72277": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72279": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72281": {
+      "tags": {
+        "severity": "low",
+        "rid": "SV-86905r3_rule"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "check": "Determine whether the system is using local or DNS name resolution with the following command: # grep hosts /etc/nsswitch.conf hosts: files dns If the DNS entry is missing from the host's line in the \"/etc/nsswitch.conf\" file, the \"/etc/resolv.conf\" file must be empty. Verify the \"/etc/resolv.conf\" file is empty with the following command: # ls -al /etc/resolv.conf -rw-r--r-- 1 root root 0 Aug 19 08:31 resolv.conf If local host authentication is being used and the \"/etc/resolv.conf\" file is not empty, this is a finding. If the DNS entry is found on the host's line of the \"/etc/nsswitch.conf\" file, verify the operating system is configured to use two or more name servers for DNS resolution. Determine the name servers used by the system with the following command: # grep nameserver /etc/resolv.conf nameserver 192.168.1.2 nameserver 192.168.1.3 If less than two lines are returned that are not commented out, this is a finding. Verify that the \"/etc/resolv.conf\" file is immutable with the following command: # sudo lsattr /etc/resolv.conf ----i----------- /etc/resolv.conf If the file is mutable and has not been documented with the Information System Security Officer (ISSO), this is a finding.",
+        "fix": "Configure the operating system to use two or more name servers for DNS resolution. Edit the \"/etc/resolv.conf\" file to uncomment or add the two or more \"nameserver\" option lines with the IP address of local authoritative name servers. If local host resolution is being performed, the \"/etc/resolv.conf\" file must be empty. An empty \"/etc/resolv.conf\" file can be created as follows: # echo -n &gt; /etc/resolv.conf And then make the file immutable with the following command: # chattr +i /etc/resolv.conf If the \"/etc/resolv.conf\" file must be mutable, the required configuration must be documented with the Information System Security Officer (ISSO) and the file must be verified by the system file integrity tool."
+      }
+    },
+    "V-72283": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72285": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72287": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72289": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72291": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72293": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72295": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "fix": "Configure network interfaces to turn off promiscuous mode unless approved by the ISSO and documented. Set the promiscuous mode of an interface to off with the following command: #ip link set dev &lt;devicename&gt; multicast off promisc off"
+      }
+    },
+    "V-72297": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72299": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72301": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72303": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72305": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-72307": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72309": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72311": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72313": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.7,
+      "descs": {}
+    },
+    "V-72315": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72317": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-72319": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-72417": {
+      "tags": {
+        "severity": "medium",
+        "rid": "SV-87041r5_rule",
+        "fix_id": "F-78769r5_fix"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Using an authentication device, such as a CAC or token that is separate from the information system, ensures that even if the information system is compromised, that compromise will not affect credentials stored on the authentication device. Multifactor solutions that require devices separate from information systems gaining access include, for example, hardware tokens providing time-based or challenge-response authenticators and smart cards such as the U.S. Government Personal Identity Verification card and the DoD Common Access Card. A privileged account is defined as an information system account with authorizations of a privileged user. Remote access is access to DoD nonpublic information systems by an authorized user (or an information system) communicating through an external, non-organization-controlled network. Remote access methods include, for example, dial-up, broadband, and wireless. This requirement only applies to components where this is specific to the function of the device or has the concept of an organizational user (e.g., VPN, proxy capability). This does not apply to authentication for the purpose of configuring the device itself (management). ",
+      "descs": {
+        "check": "Verify the operating system has the packages required for multifactor authentication installed. Check for the presence of the packages required to support multifactor authentication with the following commands: # yum list installed pam_pkcs11 pam_pkcs11-0.6.2-14.el7.noarch.rpm If the \"pam_pkcs11\" package is not installed, this is a finding.",
+        "fix": "Configure the operating system to implement multifactor authentication by installing the required packages. Install the pam_pkcs11 package with the following command: # yum install pam_pkcs11"
+      }
+    },
+    "V-72427": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Using an authentication device, such as a CAC or token that is separate from the information system, ensures that even if the information system is compromised, that compromise will not affect credentials stored on the authentication device. Multifactor solutions that require devices separate from information systems gaining access include, for example, hardware tokens providing time-based or challenge-response authenticators and smart cards such as the U.S. Government Personal Identity Verification card and the DoD Common Access Card. A privileged account is defined as an information system account with authorizations of a privileged user. Remote access is access to DoD nonpublic information systems by an authorized user (or an information system) communicating through an external, non-organization-controlled network. Remote access methods include, for example, dial-up, broadband, and wireless. This requirement only applies to components where this is specific to the function of the device or has the concept of an organizational user (e.g., VPN, proxy capability). This does not apply to authentication for the purpose of configuring the device itself (management). ",
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-72433": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Using an authentication device, such as a CAC or token that is separate from the information system, ensures that even if the information system is compromised, that compromise will not affect credentials stored on the authentication device. Multifactor solutions that require devices separate from information systems gaining access include, for example, hardware tokens providing time-based or challenge-response authenticators and smart cards such as the U.S. Government Personal Identity Verification card and the DoD Common Access Card. A privileged account is defined as an information system account with authorizations of a privileged user. Remote access is access to DoD nonpublic information systems by an authorized user (or an information system) communicating through an external, non-organization-controlled network. Remote access methods include, for example, dial-up, broadband, and wireless. This requirement only applies to components where this is specific to the function of the device or has the concept of an organizational user (e.g., VPN, proxy capability). This does not apply to authentication for the purpose of configuring the device itself (management). ",
+      "descs": {}
+    },
+    "V-73155": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-73157": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-73159": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-73161": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-73163": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-73165": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-73167": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-73171": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-73173": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-73175": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-73177": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-77819": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "To assure accountability and prevent unauthenticated access, users must be identified and authenticated to prevent potential misuse and compromise of the system. Multifactor solutions that require devices separate from information systems gaining access include, for example, hardware tokens providing time-based or challenge-response authenticators and smart cards such as the U.S. Government Personal Identity Verification card and the DoD Common Access Card. ",
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-77821": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-77823": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-77825": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-78995": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-78997": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.5,
+      "descs": {}
+    },
+    "V-78999": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {}
+    },
+    "V-79001": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it would be difficult to establish, correlate, and investigate the events relating to an incident or identify those responsible for one. Audit records can be generated from various components within the information system (e.g., module or policy filter). ",
+      "descs": {}
+    },
+    "V-81003": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-81005": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-81007": {
+      "tags": {
+        "severity": "high"
+      },
+      "refs": [
+        null
+      ],
+      "impact": 0.7,
+      "descs": {}
+    },
+    "V-81009": {
+      "tags": {
+        "severity": "low"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-81011": {
+      "tags": {
+        "severity": "low"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-81013": {
+      "tags": {
+        "severity": "low"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-81015": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Information stored in one location is vulnerable to accidental or incidental deletion or alteration. Off-loading is a common process in information systems with limited audit storage capacity. Without the configuration of the \"au-remote\" plugin, the audisp-remote daemon will not off-load the logs from the system being audited. ",
+      "descs": {}
+    },
+    "V-81017": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Information stored in one location is vulnerable to accidental or incidental deletion or alteration. Off-loading is a common process in information systems with limited audit storage capacity. Without the configuration of the \"au-remote\" plugin, the audisp-remote daemon will not off load the logs from the system being audited. ",
+      "descs": {}
+    },
+    "V-81019": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Information stored in one location is vulnerable to accidental or incidental deletion or alteration. Off-loading is a common process in information systems with limited audit storage capacity. When the remote buffer is full, audit logs will not be collected and sent to the central log server. ",
+      "descs": {}
+    },
+    "V-81021": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "desc": "Information stored in one location is vulnerable to accidental or incidental deletion or alteration. Off-loading is a common process in information systems with limited audit storage capacity. When audit logs are not labeled before they are sent to a central log server, the audit data will not be able to be analyzed and tied back to the correct system. ",
+      "descs": {}
+    },
+    "V-92251": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-92253": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {}
+    },
+    "V-92255": {
+      "tags": {
+        "severity": "medium"
+      },
+      "refs": [
+        null
+      ],
+      "descs": {
+        "check": "Ask the SA or ISSO if a host-based intrusion detection application is loaded on the system. Per OPORD 16-0080, the preferred intrusion detection system is McAfee HBSS available through the U.S. Cyber Command (USCYBERCOM). If another host-based intrusion detection application is in use, such as SELinux, this must be documented and approved by the local Authorizing Official. Procedure: Examine the system to determine if the Host Intrusion Prevention System (HIPS) is installed: # rpm -qa | grep MFEhiplsm Verify that the McAfee HIPS module is active on the system: # ps -ef | grep -i “hipclient” If the MFEhiplsm package is not installed, check for another intrusion detection system: # find / -name &lt;daemon name&gt; Where &lt;daemon name&gt; is the name of the primary application daemon to determine if the application is loaded on the system. Determine if the application is active on the system: # ps -ef | grep -i &lt;daemon name&gt; If the MFEhiplsm package is not installed and an alternate host-based intrusion detection application has not been documented for use, this is a finding. If no host-based intrusion detection system is installed and running on the system, this is a finding."
+      }
+    },
+    "V-94843": {
+      "tags": {
+        "severity": "high",
+        "rid": "SV-104673r2_rule",
+        "fix_id": "F-100967r2_fix"
+      },
+      "refs": [
+        null
+      ],
+      "title": "The Red Hat Enterprise Linux operating system must be configured so that the x86 Ctrl-Alt-Delete key sequence is disabled in the Graphical User Interface.",
+      "desc": "A locally logged-on user who presses Ctrl-Alt-Delete, when at the console, can reboot the system. If accidentally pressed, as could happen in the case of a mixed OS environment, this can create the risk of short-term loss of availability of systems due to unintentional reboot. In the graphical environment, risk of unintentional reboot from the Ctrl-Alt-Delete sequence is reduced because the user will be prompted before any action is taken.",
+      "impact": 0.7,
+      "descs": {
+        "check": "Note: If the operating system does not have a graphical user interface installed, this requirement is Not Applicable. Verify the operating system is not configured to reboot the system when Ctrl-Alt-Delete is pressed. Check that the ctrl-alt-del.target is masked and not active in the graphical user interface with the following command: # grep logout /etc/dconf/db/local.d/* logout='' If \"logout\" is not set to use two single quotations, or is missing, this is a finding.",
+        "fix": "Configure the system to disable the Ctrl-Alt-Delete sequence for the graphical user interface with the following command: # touch /etc/dconf/db/local.d/00-disable-CAD Add the setting to disable the Ctrl-Alt-Delete sequence for the graphical user interface: [org/gnome/settings-daemon/plugins/media-keys] logout=''"
+      }
+    }
+  }
+}

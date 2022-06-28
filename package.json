@@ -9,6 +9,7 @@
     "@aws-sdk/client-config-service": "^3.53.0",
     "@mitre/hdf-converters": "^2.6.27",
     "@mitre/heimdall-lite": "^2.6.27",
+    "@mitre/inspec-objects": "file:../ts-inspec-objects/mitre-inspec-objects-v0.0.1.tgz",
     "@oclif/core": "^1.6.0",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.0.1",
@@ -111,13 +112,13 @@
         "description": "[Normalize]    Convert security results from all your security tools between common data formats"
       },
       "generate": {
-        "description": "[Validate]     Set pipeline thresholds"
+        "description": "[Generate]     Generate pipeline thresholds, configuration files, and more"
       },
       "harden": {
         "description": "[Harden]       Implement security baselines using Ansible, Chef, and Terraform content: Visit https://saf.mitre.org/#/harden to explore and run hardening scripts"
       },
       "scan": {
-        "description": "[Validate]     Scan to get detailed security testing results: Visit https://saf.mitre.org/#/validate to explore and run inspec profiles"
+        "description": "[Scan]         Scan to get detailed security testing results: Visit https://saf.mitre.org/#/validate to explore and run inspec profiles"
       },
       "validate": {
         "description": "[Validate]     Verify pipeline thresholds"

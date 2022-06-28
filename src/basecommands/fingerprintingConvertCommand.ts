@@ -17,6 +17,11 @@ export default abstract class FingerprintingConvertCommand extends Command {
   protected parsedFlags?: OutputFlags<typeof FingerprintingConvertCommand.flags>;
 
   getFlagsForInputFile(path: string) {
+    // If we're passed a folder just return {}
+    if (fs.lstatSync(path).isDirectory()) {
+      return {}
+    }
+
     if (path) {
       FingerprintingConvertCommand.detectedType = fingerprint({data: fs.readFileSync(path, 'utf8'), filename: convertFullPathToFilename(path)})
       switch (FingerprintingConvertCommand.detectedType) {
