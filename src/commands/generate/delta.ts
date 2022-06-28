@@ -4,6 +4,8 @@ import {diffProfile, processJSON, processXCCDF} from '@mitre/inspec-objects'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
+import {knownInspecMetadataKeys} from '../../utils/global'
+import {wrapAndEscapeQuotes} from '../../utils/xccdf2inspec'
 
 export default class GenerateDelta extends Command {
   static usage = 'generate:delta -i, --input=JSON -o, --output=OUTPUT'
@@ -15,6 +17,26 @@ export default class GenerateDelta extends Command {
     input: Flags.string({char: 'i', required: true, multiple: true, description: 'Input execution/profile JSON file(s) OR InSpec Profile Folder, and the updated XCCDF XML files'}),
     output: Flags.string({char: 'o', required: true, description: 'Output updated profile folder'}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
+  }
+
+  removeQuotedStringsNewlines(input: string): string {
+    let controlText = input
+    const quotedNewlinesRegex = /"([^"\\])*(\\.[^"\\]*)*"/gm
+    let currentRegexMatch
+    while ((currentRegexMatch = quotedNewlinesRegex.exec(input)) !== null) {
+      // This is needed to avoid infinite loops with zero-width matches
+      if (currentRegexMatch.index === quotedNewlinesRegex.lastIndex) {
+        quotedNewlinesRegex.lastIndex++
+      }
+
+      currentRegexMatch.forEach(match => {
+        if (match?.includes('\n')) {
+          controlText = controlText.replace(match, match.replace(/\n/gm, '{{{{newlineHERE}}}}')).trim()
+        }
+      })
+    }
+
+    return controlText
   }
 
   async run() {
@@ -101,6 +123,44 @@ export default class GenerateDelta extends Command {
       diff.addedControlIDs.forEach((controlId: string) => {
         logger.debug(`Adding new control ${controlId} to profile`)
         controls![controlId] = diff.changedControls[controlId].toRuby()
+        // Delete so we don't try to update the new control
+        delete diff.changedControls[controlId]
+      })
+
+      // Update existing controls with new metadata
+      Object.entries(diff.changedControls).forEach(([controlId, updatedControl]: [string, any]) => {
+        // Remove newlines within blocks of strings to make replacement easier
+        const controlText = this.removeQuotedStringsNewlines(controls![controlId])
+        const controlLines = controlText.split('\n')
+
+        // Replace the old control metadata with the new control metadata
+        const newControlLines = controlLines.map(line => {
+          // Ignore comment lines
+          if (line.trim().startsWith('#')) {
+            return line
+          }
+
+          // Replace the old title with the new one
+          if (line.trim().startsWith('title') && updatedControl.title) {
+            return `  title "${updatedControl.title}"`
+          }
+
+          if (line.trim().startsWith('impact') && updatedControl.impact) {
+            return `  impact "${updatedControl.impact}"`
+          }
+
+          // if (line.trim().startsWith('desc ') && updatedControl.description) {
+          //   return `  desc "${updatedControl.description}"`
+          // }
+
+          return line
+        })
+
+        console.log(newControlLines.join('\n').replace(/\{\{\{\{newlineHERE\}\}\}\}/gm, '\n'))
+
+        // Write the new control to the controls folder
+        logger.debug(`Writing new control ${controlId} to profile`)
+        // fs.writeFileSync(path.join(flags.output, 'controls', `${controlId}.rb`), newControlLines.join('\n'))
       })
 
       logger.info(`Generating delta for ${existingProfile.title}`)

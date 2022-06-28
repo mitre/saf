@@ -6,6 +6,8 @@ import path from 'path'
 
 export type SpreadsheetTypes = 'cis' | 'disa' |'general'
 
+export const knownInspecMetadataKeys = ['control', 'title', 'desc', 'description', 'rationale', 'impact', 'references', 'tag']
+
 export function checkSuffix(input: string) {
   if (input.endsWith('.json')) {
     return input
