@@ -13,24 +13,37 @@ IF DEFINED npm_config_heimdall (
 )
 
 IF DEFINED npm_config_branch (
-  git switch %npm_config_branch%
+  CALL git switch %npm_config_branch%
 ) ELSE (
-  git switch master
+  CALL git switch master
 )
 
-git fetch
-git pull
-yarn install
-yarn pack
+ECHO Executing - git fetch ...
+CALL git fetch
+
+ECHO Executing - git pull ...
+CALL git pull
+
+ECHO Executing - yarn install ...
+CALL yarn install
+
+ECHO Executing - yarn pack ...
+CALL yarn pack
+
+ECHO Finished generating the tarball
 
 CD %original_dir%
 
-npm i
+ECHO Executing - npm install remote ...
+CALL npm i
 
+ECHO Executing - npm install local ...
 IF DEFINED npm_config_heimdall (
-  npm i %npm_config_heimdall%/libs/hdf-converters/mitre-hdf-converters-v*.tgz
+  SET PARAMETERS = "%npm_config_heimdall%"\libs\hdf-converters\mitre-hdf-converters-*.tgz
 ) ELSE (
-  npm i ../heimdall2/libs/hdf-converters/mitre-hdf-converters-v*.tgz
+  SET PARAMETERS = ..\heimdall2\libs\hdf-converters\mitre-hdf-converters-v*.tgz
 )
+CALL npm i %PARAMETERS%
 
-yarn prepack
+ECHO Executing - yarn prepack ...
+CALL yarn prepack

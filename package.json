@@ -136,7 +136,9 @@
     "pack-hdf-converters:win32": "pack-hdf-converters.bat",
     "pack-hdf-converters:darwin:linux": "./pack-hdf-converters.sh",
     "dev": "rm -rf lib && tsc -b && ./bin/run",
-    "prepack": "rm -rf lib && tsc -b",
+    "prepack": "run-script-os",
+    "prepack:darwin:linux": "rm -rf lib && tsc -b",
+    "prepack:win32": "rmdir /s /q lib && tsc -b",
     "test": "ts-mocha --timeout 8000 --forbid-only \"test/**/*.test.ts\""
   },
   "types": "lib/index.d.ts"
