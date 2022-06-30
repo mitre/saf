@@ -5,7 +5,7 @@ import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
 import {knownInspecMetadataKeys} from '../../utils/global'
-import {wrapAndEscapeQuotes} from '../../utils/xccdf2inspec'
+import {escapeDoubleQuotes, wrapAndEscapeQuotes} from '../../utils/xccdf2inspec'
 
 export default class GenerateDelta extends Command {
   static usage = 'generate:delta -i, --input=JSON -o, --output=OUTPUT'
@@ -37,6 +37,17 @@ export default class GenerateDelta extends Command {
     }
 
     return controlText
+  }
+
+  getLineIdentifier(line: string): string | null {
+    // Get the second word in the line
+    // Remove double spaces
+    const lineIdentifier = line.replace(/\s+/g, ' ').trim().split(' ')[1]
+    if (lineIdentifier.includes(',') || lineIdentifier.includes(':')) {
+      return lineIdentifier.replace(/"/g, '').replace(/,/g, '').replace(/:/g, '')
+    }
+
+    return null
   }
 
   async run() {
@@ -78,7 +89,7 @@ export default class GenerateDelta extends Command {
             // Attempt to read the file as an XCCDF XML file
             logger.debug(`Loading ${inputPath}`)
             const xccdfData = fs.readFileSync(inputPath, 'utf8')
-            updatedXCCDF = processXCCDF(xccdfData)
+            updatedXCCDF = processXCCDF(xccdfData, true)
             logger.debug(`Loaded ${inputPath} as XCCDF`)
           } catch (xccdfError) {
             logger.error(`Could not load ${inputPath} as an execution/profile JSON because:`)
@@ -127,6 +138,8 @@ export default class GenerateDelta extends Command {
         delete diff.changedControls[controlId]
       })
 
+      let updatedDesc = false
+
       // Update existing controls with new metadata
       Object.entries(diff.changedControls).forEach(([controlId, updatedControl]: [string, any]) => {
         // Remove newlines within blocks of strings to make replacement easier
@@ -140,7 +153,6 @@ export default class GenerateDelta extends Command {
             return line
           }
 
-          // Replace the old title with the new one
           if (line.trim().startsWith('title') && updatedControl.title) {
             return `  title "${updatedControl.title}"`
           }
@@ -149,18 +161,25 @@ export default class GenerateDelta extends Command {
             return `  impact "${updatedControl.impact}"`
           }
 
-          // if (line.trim().startsWith('desc ') && updatedControl.description) {
-          //   return `  desc "${updatedControl.description}"`
-          // }
+          if (line.trim().startsWith('desc ')) {
+            const descriptionType = this.getLineIdentifier(line)
+            if (descriptionType && descriptionType in updatedControl.descs) {
+              return `  desc "${descriptionType}", "${escapeDoubleQuotes(updatedControl.descs[descriptionType])}"`
+            }
+
+            if (updatedControl.desc && !updatedDesc) {
+              updatedDesc = true
+              return `  desc "${wrapAndEscapeQuotes(updatedControl.desc)}"`
+            }
+          }
 
           return line
         })
 
-        console.log(newControlLines.join('\n').replace(/\{\{\{\{newlineHERE\}\}\}\}/gm, '\n'))
-
         // Write the new control to the controls folder
         logger.debug(`Writing new control ${controlId} to profile`)
-        // fs.writeFileSync(path.join(flags.output, 'controls', `${controlId}.rb`), newControlLines.join('\n'))
+        const updatedControlText = newControlLines.join('\n').replace(/\{\{\{\{newlineHERE\}\}\}\}/g, '\n')
+        fs.writeFileSync(path.join(flags.output, 'controls', `${controlId}.rb`), updatedControlText)
       })
 
       logger.info(`Generating delta for ${existingProfile.title}`)
