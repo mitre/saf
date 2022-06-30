@@ -18,7 +18,7 @@ export function wrap(s: string, lineLength = 80): string {
     }
   })
 
-  return finalString.trim()
+  return finalString
 }
 
 export const escapeQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/'/g, "\\'") // Escape backslashes and quotes
