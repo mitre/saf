@@ -5,7 +5,7 @@ import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
 import {knownInspecMetadataKeys} from '../../utils/global'
-import {escapeDoubleQuotes, wrapAndEscapeQuotes} from '../../utils/xccdf2inspec'
+import {escapeDoubleQuotes, wrap, wrapAndEscapeQuotes} from '../../utils/xccdf2inspec'
 
 export default class GenerateDelta extends Command {
   static usage = 'generate:delta -i, --input=JSON -o, --output=OUTPUT'
@@ -154,7 +154,7 @@ export default class GenerateDelta extends Command {
           }
 
           if (line.trim().startsWith('title') && updatedControl.title) {
-            return `  title "${updatedControl.title}"`
+            return wrap(`  title "${escapeDoubleQuotes(updatedControl.title)}"`, 80)
           }
 
           if (line.trim().startsWith('impact') && updatedControl.impact) {
@@ -164,12 +164,23 @@ export default class GenerateDelta extends Command {
           if (line.trim().startsWith('desc ')) {
             const descriptionType = this.getLineIdentifier(line)
             if (descriptionType && descriptionType in updatedControl.descs) {
-              return `  desc "${descriptionType}", "${escapeDoubleQuotes(updatedControl.descs[descriptionType])}"`
+              return wrap(`  desc "${descriptionType}", "${escapeDoubleQuotes(updatedControl.descs[descriptionType])}"`)
             }
 
             if (updatedControl.desc && !updatedDesc) {
               updatedDesc = true
-              return `  desc "${wrapAndEscapeQuotes(updatedControl.desc)}"`
+              return `  desc "${wrapAndEscapeQuotes(updatedControl.desc, 80)}"`
+            }
+          }
+
+          if (line.trim().startsWith('tag ')) {
+            const tagType = this.getLineIdentifier(line)
+            if (tagType && tagType in updatedControl.tags) {
+              if (typeof updatedControl.tags[tagType] === 'string') {
+                return `  tag ${tagType}: "${wrapAndEscapeQuotes(updatedControl.tags[tagType], 80)}"`
+              }
+
+              return `  tag ${tagType}: ${JSON.stringify(updatedControl.tags[tagType])}`
             }
           }
 
