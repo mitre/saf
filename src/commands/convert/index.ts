@@ -139,10 +139,10 @@ export default class Convert extends FingerprintingConvertCommand {
     }
 
     default: {
-      throw new Error(`Unknown filetype provided: ${getInputFilename()}\
-        \nThe generic convert command should only be used for taking supported file-based security results and converting into Heimdall Data Format\
-        \nFor more information, run "saf convert --help"\
-        \nFor a list of supported formats, see https://github.com/mitre/heimdall2/tree/master/libs/hdf-converters#supported-formats`)
+      throw new Error(`Unknown filetype provided: ${getInputFilename()}
+        The generic convert command should only be used for taking supported file-based security results and converting into Heimdall Data Format
+        For more information, run "saf convert --help"
+        For a list of supported formats, see https://github.com/mitre/heimdall2/tree/master/libs/hdf-converters#supported-formats`)
     }
     }
   }
