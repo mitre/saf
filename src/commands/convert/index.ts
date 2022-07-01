@@ -15,7 +15,7 @@ function getInputFilename(): string {
 }
 
 export default class Convert extends FingerprintingConvertCommand {
-  static description = 'The generic convert command translates any supported file-based security results set into Heimdall Data Format'
+  static description = 'The generic convert command translates any supported file-based security results set into the Heimdall Data Format'
 
   static examples = ['saf convert -i input -o output']
 
