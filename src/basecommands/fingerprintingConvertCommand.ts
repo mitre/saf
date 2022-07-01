@@ -1,5 +1,5 @@
 import {Command, Flags} from '@oclif/core'
-import * as fs from 'fs'
+import fs from 'fs'
 import {fingerprint} from '@mitre/hdf-converters'
 import {OutputFlags, Input} from '@oclif/core/lib/interfaces/parser'
 import {convertFullPathToFilename} from '../utils/global'

@@ -1,5 +1,5 @@
 import {Command, Flags} from '@oclif/core'
-import * as fs from 'fs'
+import fs from 'fs'
 import {FortifyMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix, checkInput} from '../../utils/global'
 
