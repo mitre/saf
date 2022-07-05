@@ -12,8 +12,8 @@ export default class Sarif2HDF extends Command {
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true}),
-    output: Flags.string({char: 'o', required: true}),
+    input: Flags.string({char: 'i', required: true, description: 'Input SARIF file'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output HDF file'}),
     withRaw: Flags.boolean({char: 'w', required: false}),
   }
 

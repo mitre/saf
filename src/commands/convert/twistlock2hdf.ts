@@ -4,11 +4,11 @@ import {TwistlockMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 
 export default class Twistlock2HDF extends Command {
-  static usage = 'convert twistlock2hdf -i, --input=<twistlock-json> -o, output=<hdf-scan-results-json> -w, --withRaw'
+  static usage = 'convert twistlock2hdf -i, --input=JSON -o, output=OUTPUT -w, --withRaw'
 
   static description = 'Translate a Twistlock CLI output file into an HDF results set'
 
-  static examples = ['saf convert twistlock2hdf -i twistlock.json -o output-hdf-name.json -w']
+  static examples = ['saf convert twistlock2hdf -i twistlock-results.json -o output-hdf-name.json -w']
 
   static flags = {
     help: Flags.help({char: 'h'}),
