@@ -1,5 +1,5 @@
 import {Command, Flags} from '@oclif/core'
-import {getFlagsForEndpoint} from '../../emasscommands/flags'
+import {getFlags, getFlagsForEndpoint} from '../../emasscommands/flags'
 
 export default class EmassGetClient extends Command {
     static flags = {
@@ -7,16 +7,7 @@ export default class EmassGetClient extends Command {
       ...getFlagsForEndpoint(process.argv) as any,
     }
 
-    static args = [
-      {name: 'artifacts'},
-      {name: 'cac'},
-      {name: 'cmmc'},
-      {name: 'controls'},
-      {name: 'milestones'},
-      {name: 'pac'},
-      {name: 'poams'},
-      {name: 'roles'},
-    ]
+    static args = getFlags('get')
 
     async run() {
       const {flags} = await this.parse(EmassGetClient)
