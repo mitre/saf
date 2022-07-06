@@ -1,0 +1,37 @@
+// raw data from Foreman's old parsing of reports
+{
+  "host": "rhel6n01.corp.com",
+  "reported_at":"2010-11-19 02:39:04 UTC",
+  "metrics": {},
+  "logs": [
+    {
+      "log": {
+        "sources": {"source":"Puppet"},
+        "messages": {"message":"Could not retrieve catalog from remote server: Error 400 on SERVER: Could not find node 'rhel6n01.corp.com'; cannot compile"},
+        "level":"err"
+      }
+    },
+    {
+      "log": {
+        "sources": {"source":"Puppet"},
+        "messages": {"message":"Using cached catalog"},
+        "level":"notice"
+      }
+    },
+    {
+      "log": {
+        "sources": {"source":"Puppet"},
+        "messages": {"message":"Could not retrieve catalog; skipping run"},
+        "level":"err"
+      }
+    }
+  ],
+  "status": {
+    "applied": 0,
+    "failed": 2,
+    "failed_restarts": 0,
+    "pending": 0,
+    "restarted": 0,
+    "skipped": 0
+  }
+}

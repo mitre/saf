@@ -1,0 +1,12 @@
+diff --git a/hiera/RedHat/7/ad_client.yaml b/hiera/RedHat/7/ad_client.yaml
+index b0e88b8..f549214 100644
+--- a/hiera/RedHat/7/ad_client.yaml
++++ b/hiera/RedHat/7/ad_client.yaml
+@@ -1,4 +1,7 @@
+ ---
++# Version: 0.2.0
++# Date: 07December17
++
+ profiles::rhel7::base::sssd_config_nsswitch: True
+ profiles::rhel7::base::merged::sssd_enable_domains:
+   - 'ent.usstratcom.smil.mil'

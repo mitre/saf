@@ -1,0 +1,7 @@
+<% @host_entries.each do |k,v| -%>
+# <%= k %>
+<% v.each do |line| -%>
+<%= line %>
+<% end -%>
+
+<% end -%>

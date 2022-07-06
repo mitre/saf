@@ -1,0 +1,41 @@
+diff --git a/hiera/RedHat/7/stig.yaml b/hiera/RedHat/7/stig.yaml
+index bbce42b..6a95e08 100644
+--- a/hiera/RedHat/7/stig.yaml
++++ b/hiera/RedHat/7/stig.yaml
+@@ -1,6 +1,6 @@
+ ---
+-# Version: 0.3.1
+-# Date: 08December17
++# Version: 0.3.2
++# Date: 17January18
+ 
+ # RHEL-07-010480,010490
+ profiles::rhel7::base::grub2_password: 'grub.pbkdf2.sha512.10000.2E1D3556FAAD85C8F47C0CA777AA12E1180B1B8FDF6A675DA53397A750BF96AD354ADCF3C3405B88E7993B523F13F3CC5B124511F182518B4F5F650724A9DD4A.9C847AFF8C6049B7828FFCD0EAFEDD95754388B1B8B7EDE5A1F03A83F7D3D8819DC92E7468D255BA37E27F4687EAF074CA8FB04CC828822AE38D1E32B63D27B7'
+@@ -346,10 +346,11 @@ profiles::rhel7::base::pam_password_auth_lines:
+   # RHEL-07-010290 (nullok)
+   - 'auth        required      pam_env.so'
+   - 'auth        [default=1 ignore=ignore success=ok] pam_succeed_if.so uid >= 1000 quiet'
+-  - 'auth        [default=3 ignore=ignore success=ok] pam_localuser.so'
++  - 'auth        [default=4 ignore=ignore success=ok] pam_localuser.so'
+   # Added this line 08Dec17 to address an issue where a user could be locked out but
+   # /var/log/secure would report that the user was 'unknown' because authentication
+-  # falls through to SSSD for locked out local users.
++  # falls through to SSSD for locked out local users. NOTE: default=3 changed to default=4
++  # in the previous pam_localuser.so for this fix as well.
+   - 'auth        requisite     pam_faillock.so preauth deny=3 unlock_time=604800 fail_interval=900'
+   - 'auth        [success=1 default=bad]    pam_unix.so  try_first_pass'
+   # RHEL-07-010130,010320,010330
+@@ -383,10 +384,11 @@ profiles::rhel7::base::pam_system_auth_lines:
+   # RHEL-07-010290 (nullok)
+   - 'auth        required      pam_env.so'
+   - 'auth        [default=1 ignore=ignore success=ok] pam_succeed_if.so uid >= 1000 quiet'
+-  - 'auth        [default=3 ignore=ignore success=ok] pam_localuser.so'
++  - 'auth        [default=4 ignore=ignore success=ok] pam_localuser.so'
+   # Added this line 08Dec17 to address an issue where a user could be locked out but
+   # /var/log/secure would report that the user was 'unknown' because authentication
+-  # falls through to SSSD for locked out local users.
++  # falls through to SSSD for locked out local users. NOTE: default=3 changed to default=4
++  # in the previous pam_localuser.so for this fix as well.
+   - 'auth        requisite     pam_faillock.so preauth deny=3 unlock_time=604800 fail_interval=900'
+   - 'auth        [success=1 default=bad]    pam_unix.so  try_first_pass'
+   # RHEL-07-010130,010320,010330

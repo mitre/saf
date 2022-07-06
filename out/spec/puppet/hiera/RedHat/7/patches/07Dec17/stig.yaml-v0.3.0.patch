@@ -1,0 +1,30 @@
+diff --git a/hiera/RedHat/7/stig.yaml b/hiera/RedHat/7/stig.yaml
+index d84a42e..f553300 100644
+--- a/hiera/RedHat/7/stig.yaml
++++ b/hiera/RedHat/7/stig.yaml
+@@ -1,4 +1,7 @@
+ ---
++# Version: 0.3.0
++# Date: 07December17
++
+ # RHEL-07-010480,010490
+ profiles::rhel7::base::grub2_password: 'grub.pbkdf2.sha512.10000.2E1D3556FAAD85C8F47C0CA777AA12E1180B1B8FDF6A675DA53397A750BF96AD354ADCF3C3405B88E7993B523F13F3CC5B124511F182518B4F5F650724A9DD4A.9C847AFF8C6049B7828FFCD0EAFEDD95754388B1B8B7EDE5A1F03A83F7D3D8819DC92E7468D255BA37E27F4687EAF074CA8FB04CC828822AE38D1E32B63D27B7'
+ profiles::rhel7::base::merged::chronyd_server_opts: 
+@@ -188,6 +191,8 @@ profiles::rhel7::base::merged::audisp_custom_configs:
+   # RHEL-07-030321
+   'network_failure_action': 'single'
+ profiles::rhel7::base::merged::sysctl_custom_configs:
++  # RHEL-07-040201
++  'kernel.randomize_va_space': 2
+   # RHEL-07-040610
+   'net.ipv4.conf.all.accept_source_route': 0
+   # RHEL-07-040620
+@@ -304,6 +309,8 @@ profiles::rhel7::base::merged::auditd_extra_rule_sets:
+ profiles::rhel7::base::merged::install_mods:
+   # RHEL-07-020100
+   - 'usb-storage'
++  # RHEL-07-020101
++  - 'dccp'
+ # RHEL-07-020210
+ profiles::rhel7::base::selinux_mode: 'enforcing'
+ # RHEL-07-020220

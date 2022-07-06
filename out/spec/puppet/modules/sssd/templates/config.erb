@@ -1,0 +1,17 @@
+<% if scope["::servername"] -%>
+# THIS FILE IS MANAGED BY PUPPET - DO NOT MODIFY!!
+
+<% end -%>
+<% @service_opts.each do |sect,opts| -%>
+[<%= sect -%>]
+<% opts.each do |k,v| -%>
+<%= k -%> = <%= v %>
+<% end -%>
+
+<% end -%>
+<% if @domain -%>
+[domain/<%= @domain -%>]
+<% @domain_opts.each do |k,v| -%>
+<%= k -%> = <%= v %>
+<% end -%>
+<% end -%>

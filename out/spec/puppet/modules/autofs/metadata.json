@@ -1,0 +1,15 @@
+{
+  "name": "csouthall-autofs",
+  "version": "0.1.0",
+  "author": "Chris Southall",
+  "summary": "Manage autofs",
+  "license": "Apache 2.0",
+  "source": "",
+  "project_page": null,
+  "issues_url": null,
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 4.5.0"},
+    {"name":"puppetlabs-concat","version_requirement":">= 1.1.2"}
+  ]
+}
+

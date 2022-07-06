@@ -1,0 +1,17 @@
+
+<Location /users/extlogin>
+  SSLRequireSSL
+  AuthType Kerberos
+  AuthName "Kerberos Login"
+  KrbMethodNegotiate On
+  KrbMethodK5Passwd Off
+  KrbAuthRealms <%= @default_ipa_realm %>
+  Krb5KeyTab <%= scope.lookupvar('::foreman::http_keytab') %>
+  KrbLocalUserMapping On
+  # require valid-user
+  require pam-account <%= scope.lookupvar('::foreman::pam_service') %>
+  ErrorDocument 401 '<html><meta http-equiv="refresh" content="0; URL=/users/login"><body>Kerberos authentication did not pass.</body></html>'
+  # The following is needed as a workaround for https://bugzilla.redhat.com/show_bug.cgi?id=1020087
+  ErrorDocument 500 '<html><meta http-equiv="refresh" content="0; URL=/users/login"><body>Kerberos authentication did not pass.</body></html>'
+</Location>
+

@@ -1,0 +1,106 @@
+{
+  "host": "puppetmaster.vm1",
+  "reported_at": "2012-11-09 15:39:28 UTC",
+  "status": {
+    "applied": 1,
+    "restarted": 0,
+    "failed": 0,
+    "failed_restarts": 0,
+    "skipped": 6,
+    "pending": 0
+  },
+  "metrics": {
+    "time": {
+      "config_retrieval": 0.389333963394165,
+      "filebucket": 0.000216,
+      "notify": 0.0019,
+      "total": 0.391449963394165
+    },
+    "resources": {
+      "changed": 1,
+      "failed": 0,
+      "failed_to_restart": 0,
+      "out_of_sync": 1,
+      "restarted": 0,
+      "scheduled": 0,
+      "skipped": 6,
+      "total": 8
+    },
+    "events": {
+      "failure": 0,
+      "success": 1,
+      "total": 1
+    },
+    "changes": {
+      "total": 1
+    }
+  },
+  "logs": [
+    {
+      "log": {
+        "sources": {
+          "source": "Puppet"
+        },
+        "messages": {
+          "message": "Retrieving plugin"
+        },
+        "level": "info"
+      }
+    },
+    {
+      "log": {
+        "sources": {
+          "source": "Puppet"
+        },
+        "messages": {
+          "message": "Caching catalog for puppetmaster.vm1"
+        },
+        "level": "info"
+      }
+    },
+    {
+      "log": {
+        "sources": {
+          "source": "Puppet"
+        },
+        "messages": {
+          "message": "Applying configuration version '1352475569'"
+        },
+        "level": "info"
+      }
+    },
+    {
+      "log": {
+        "sources": {
+          "source": "Puppet"
+        },
+        "messages": {
+          "message": "yay"
+        },
+        "level": "notice"
+      }
+    },
+    {
+      "log": {
+        "sources": {
+          "source": "/Stage[main]//Node[default]/Notify[yay]/message"
+        },
+        "messages": {
+          "message": "defined 'message' as 'yay'"
+        },
+        "level": "notice"
+      }
+    },
+    {
+      "log": {
+        "sources": {
+          "source": "Puppet"
+        },
+        "messages": {
+          "message": "Creating state file /var/lib/puppet/state/state.yaml"
+        },
+        "level": "info"
+      }
+    }
+  ]
+}

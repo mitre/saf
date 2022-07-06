@@ -1,0 +1,205 @@
+--- !ruby/object:Puppet::Transaction::Report
+  time: 2014-05-01 07:46:01.647876 +00:00
+  transaction_uuid: "63397540-2d54-4fe0-a005-ad121b7c68fd"
+  logs:
+    - !ruby/object:Puppet::Util::Log
+      time: 2014-05-01 08:46:01.753042 +01:00
+      level: !ruby/sym warning
+      tags:
+        - warning
+      source: Puppet
+      message: "Unable to fetch my node definition, but the agent run will continue:"
+    - !ruby/object:Puppet::Util::Log
+      time: 2014-05-01 08:46:01.753358 +01:00
+      level: !ruby/sym warning
+      tags:
+        - warning
+      source: Puppet
+      message: "Error 400 on SERVER: Failed to find foreman-el6.example.com via exec: Execution of '/etc/puppet/node.rb foreman-el6.example.com' returned 1: "
+    - !ruby/object:Puppet::Util::Log
+      time: 2014-05-01 08:46:01.754805 +01:00
+      level: !ruby/sym info
+      tags:
+        - info
+      source: Puppet
+      message: "Retrieving pluginfacts"
+    - !ruby/object:Puppet::Util::Log
+      time: 2014-05-01 08:46:01.805000 +01:00
+      level: !ruby/sym info
+      tags:
+        - info
+      source: Puppet
+      message: "Retrieving plugin"
+    - !ruby/object:Puppet::Util::Log
+      time: 2014-05-01 08:46:02.326185 +01:00
+      level: !ruby/sym err
+      tags:
+        - err
+      source: Puppet
+      message: "Could not retrieve catalog from remote server: Error 400 on SERVER: Failed when searching for node foreman-el6.example.com: Failed to find foreman-el6.example.com via exec: Execution of '/etc/puppet/node.rb foreman-el6.example.com' returned 1: "
+    - !ruby/object:Puppet::Util::Log
+      time: 2014-05-01 08:46:02.332825 +01:00
+      level: !ruby/sym notice
+      tags:
+        - notice
+      source: Puppet
+      message: "Using cached catalog"
+    - !ruby/object:Puppet::Util::Log
+      time: 2014-05-01 08:46:02.357622 +01:00
+      level: !ruby/sym info
+      tags:
+        - info
+      source: Puppet
+      message: "Applying configuration version '1398929771'"
+    - !ruby/object:Puppet::Util::Log
+      time: 2014-05-01 08:46:02.369660 +01:00
+      level: !ruby/sym notice
+      tags:
+        - notice
+      source: Puppet
+      message: test
+    - !ruby/object:Puppet::Util::Log
+      time: 2014-05-01 08:46:02.370044 +01:00
+      file: /etc/puppet/manifests/site.pp
+      level: !ruby/sym notice
+      tags:
+        - notify
+        - test
+        - notice
+        - class
+      source: /Stage[main]/Main/Notify[test]/message
+      message: "defined 'message' as 'test'"
+      line: 2
+    - !ruby/object:Puppet::Util::Log
+      time: 2014-05-01 08:46:02.442178 +01:00
+      level: !ruby/sym notice
+      tags:
+        - notice
+      source: Puppet
+      message: "Finished catalog run in 0.10 seconds"
+  kind: apply
+  puppet_version: "3.5.1"
+  configuration_version: 1398929771
+  resource_statuses:
+    Notify[test]: !ruby/object:Puppet::Resource::Status
+      resource: Notify[test]
+      file: /etc/puppet/manifests/site.pp
+      line: 2
+      evaluation_time: 0.000905
+      change_count: 1
+      out_of_sync_count: 1
+      tags:
+        - notify
+        - test
+        - class
+      time: 2014-05-01 08:46:02.369282 +01:00
+      events:
+        - !ruby/object:Puppet::Transaction::Event
+          audited: false
+          property: message
+          previous_value: absent
+          desired_value: test
+          historical_value:
+          message: "defined 'message' as 'test'"
+          name: !ruby/sym message_changed
+          status: success
+          time: 2014-05-01 08:46:02.369569 +01:00
+      out_of_sync: true
+      changed: true
+      resource_type: Notify
+      title: test
+      skipped: false
+      failed: false
+      containment_path:
+        - Stage[main]
+        - Main
+        - Notify[test]
+    Filebucket[puppet]: !ruby/object:Puppet::Resource::Status
+      resource: Filebucket[puppet]
+      file:
+      line:
+      evaluation_time: 0.000562
+      change_count: 0
+      out_of_sync_count: 0
+      tags:
+        - filebucket
+        - puppet
+      time: 2014-05-01 08:46:02.370550 +01:00
+      events: []
+      out_of_sync: false
+      changed: false
+      resource_type: Filebucket
+      title: puppet
+      skipped: false
+      failed: false
+      containment_path:
+        - Filebucket[puppet]
+  environment: production
+  report_format: 4
+  host: foreman-el6.example.com
+  metrics:
+    time: !ruby/object:Puppet::Util::Metric
+      name: time
+      values:
+        - - filebucket
+          - Filebucket
+          - 0.000562
+        - - config_retrieval
+          - "Config retrieval"
+          - 0.00626802444458008
+        - - notify
+          - Notify
+          - 0.000905
+        - - total
+          - Total
+          - 0.00773502444458008
+      label: Time
+    resources: !ruby/object:Puppet::Util::Metric
+      name: resources
+      values:
+        - - failed_to_restart
+          - "Failed to restart"
+          - 0
+        - - skipped
+          - Skipped
+          - 0
+        - - failed
+          - Failed
+          - 0
+        - - restarted
+          - Restarted
+          - 0
+        - - scheduled
+          - Scheduled
+          - 0
+        - - changed
+          - Changed
+          - 1
+        - - out_of_sync
+          - "Out of sync"
+          - 1
+        - - total
+          - Total
+          - 2
+      label: Resources
+    changes: !ruby/object:Puppet::Util::Metric
+      name: changes
+      values:
+        - - total
+          - Total
+          - 1
+      label: Changes
+    events: !ruby/object:Puppet::Util::Metric
+      name: events
+      values:
+        - - failure
+          - Failure
+          - 0
+        - - success
+          - Success
+          - 1
+        - - total
+          - Total
+          - 1
+      label: Events
+  status: changed

@@ -1,0 +1,8 @@
+
+<LocationMatch ^/users/(ext)?login$>
+  LookupUserAttr email REMOTE_USER_EMAIL
+  LookupUserAttr firstname REMOTE_USER_FIRSTNAME
+  LookupUserAttr lastname REMOTE_USER_LASTNAME
+  LookupUserGroupsIter REMOTE_USER_GROUP
+</LocationMatch>
+

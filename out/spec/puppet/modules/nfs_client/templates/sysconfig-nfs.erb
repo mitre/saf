@@ -1,0 +1,8 @@
+<% if scope["::servername"] -%>
+# THIS FILE IS MANAGED BY PUPPET - DO NOT MODIFY!!
+<% end -%>
+
+<% @nfs_svcopts.each do |key,value| -%>
+<%= key -%>=<%= value %>
+<% end -%>
+
