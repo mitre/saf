@@ -1,6 +1,0 @@
-<IfVersion < 2.4>
-  Include <%= File.join(scope.lookupvar('apache::confd_dir'), "/#{scope.lookupvar('priority')}-foreman.d/*.conf") %>
-</IfVersion>
-<IfVersion >= 2.4>
-  IncludeOptional <%= File.join(scope.lookupvar('apache::confd_dir'), "/#{scope.lookupvar('priority')}-foreman.d/*.conf") %>
-</IfVersion>

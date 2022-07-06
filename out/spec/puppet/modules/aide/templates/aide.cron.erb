@@ -1,7 +1,0 @@
-<% if scope["::servername"] -%>
-# THIS FILE IS MANAGED BY PUPPET - DO NOT MODIFY!!
-
-<% end -%>
-#!/bin/bash
-
-/usr/sbin/aide --check | /bin/mail -s "AIDE integrity check run for <%= scope['::hostname'] -%>" root@<%= scope['::fqdn'] -%>

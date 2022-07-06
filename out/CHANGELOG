@@ -1,6 +1,0 @@
-* Tue Jan 28 2020 Trevor Vaughan <tvaughan@onyxpoint.com> - 0.1.2
-- Fixed the SELinux tests to ignore system_u by default in V-71971
-- Removed incorrect subsystem entries from V-72417 and V-72427
-
-* Mon May 07 2018 Jeanne Greulich <jeanne.greulich@onyxpoint.com> - 0.1.1
-- Added subsystem entries for ssh tests
