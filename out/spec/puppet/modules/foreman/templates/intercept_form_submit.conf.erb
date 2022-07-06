@@ -1,7 +1,0 @@
-
-<Location /users/login>
-  InterceptFormPAMService <%= scope.lookupvar('::foreman::pam_service') %>
-  InterceptFormLogin login[login]
-  InterceptFormPassword login[password]
-</Location>
-
