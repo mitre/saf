@@ -1,0 +1,49 @@
+yarn run v1.22.19
+$ rm -rf lib && tsc -b && ./bin/run emass get --help
+{
+  get: [
+    'getSystemArtifacts',
+    'getSystemArtifactsExport',
+    'getSystemCac',
+    'getCmmcAssessments',
+    'getSystemControls',
+    'getSystemMilestonesByPoamId',
+    'getSystemMilestonesByPoamIdAndMilestoneId',
+    'getSystemPac',
+    'getSystemPoams',
+    'getSystemPoamsByPoamId',
+    'getSystemRoles',
+    'getSystemRolesByCategoryId',
+    'getSystem',
+    'getSystems',
+    'getSystemTestResults',
+    'getWorkflowDefinitions',
+    'getSystemWorkflowInstances',
+    'getSystemWorkflowInstancesByWorkflowInstanceId'
+  ],
+  post: [
+    'addArtifactsBySystemId',
+    'addSystemCac',
+    'addCloudResourcesBySystemId',
+    'addContainerSansBySystemId',
+    'addMilestoneBySystemIdAndPoamId',
+    'addSystemPac',
+    'addPoamBySystemId',
+    'addStaticCodeScansBySystemId',
+    'addTestResultsBySystemId'
+  ],
+  delete: [ 'deleteArtifact', 'deleteMilestone', 'deletePoam' ],
+  put: [
+    'updateArtifactBySystemId',
+    'updateControlBySystemId',
+    'updateMilestoneBySystemIdAndPoamId',
+    'updatePoamBySystemId'
+  ]
+}
+USAGE
+  $ saf emass get [SYSTEM] [CMMC] [SYSTEMS] [WORKFLOW] [-u <value>]
+
+FLAGS
+  -u, --url=<value>  Your eMASS API url
+
+Done in 7.61s.
