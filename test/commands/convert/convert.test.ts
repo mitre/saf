@@ -1,5 +1,5 @@
 import {expect, test} from '@oclif/test'
-import * as tmp from 'tmp'
+import tmp from 'tmp'
 import path from 'path'
 import fs from 'fs'
 import {omitHDFChangingFields} from '../utils'
@@ -15,9 +15,8 @@ describe('Test (generic) convert', () => {
       `node bin/run convert -i ./test/sample_data/asff/sample_input_report/asff_sample.json -o ${tmpobj.name}/asfftest`,
     )
 
-    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/asfftest/AWS Foundational Security Best Practices v1.0.0.json`, 'utf8'))
-    fs.writeFileSync('./test/sample_data/asff/asff_hdf.json', JSON.stringify(test, null, 2))
-    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/asff/asff_hdf.json'), 'utf8'))
+    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/asfftest/CIS AWS Foundations Benchmark v1.2.0.json`, 'utf8'))
+    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/asff/asff-hdf.json'), 'utf8'))
     expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
   })
 
@@ -29,7 +28,7 @@ describe('Test (generic) convert', () => {
     )
 
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/burpsuitetest.json`, 'utf8'))
-    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/burpsuite/zero.webappsecurity.json'), 'utf8'))
+    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/burpsuite/burpsuite-hdf.json'), 'utf8'))
     expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
   })
 
