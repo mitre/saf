@@ -13,6 +13,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
 - [SAF CLI Installation](#installation)
   - [Via NPM](#installation-via-npm)
+  - [Via Brew](#installation-via-brew)
   - [Via Docker](#installation-via-docker)
   - [Via Windows Installer](#installation-via-windows-installer)
 
