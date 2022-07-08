@@ -1,4 +1,4 @@
-import {ASFFResults, BurpSuiteMapper, DBProtectMapper, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockMapper, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
+import {ASFFResults, BurpSuiteMapper, DBProtectMapper, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockMapper, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
 import fs from 'fs'
 import _ from 'lodash'
 import {checkSuffix} from '../../utils/global'
@@ -78,7 +78,15 @@ export default class Convert extends FingerprintingConvertCommand {
 
     case 'nessus': {
       converter = new NessusResults(fs.readFileSync(flags.input, 'utf8'))
-      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      const result = converter.toHdf()
+      if (Array.isArray(result)) {
+        for (const element of result) {
+          fs.writeFileSync(`${flags.output.replace(/.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
+        }
+      } else {
+        fs.writeFileSync(`${checkSuffix(flags.output)}`, JSON.stringify(result))
+      }
+
       break
     }
 
@@ -91,6 +99,22 @@ export default class Convert extends FingerprintingConvertCommand {
     case 'nikto': {
       converter = new NiktoMapper(fs.readFileSync(flags.input, 'utf8'))
       fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      break
+    }
+
+    case 'prisma': {
+      converter = new PrismaMapper(
+        fs.readFileSync(flags.input, {encoding: 'utf8'}),
+      )
+      const results = converter.toHdf()
+
+      fs.mkdirSync(flags.output)
+      _.forOwn(results, result => {
+        fs.writeFileSync(
+          path.join(flags.output, `${_.get(result, 'platform.target_id')}.json`),
+          JSON.stringify(result),
+        )
+      })
       break
     }
 

@@ -42,6 +42,7 @@ export default abstract class FingerprintingConvertCommand extends Command {
       case 'nessus':
       case 'netsparker':
       case 'nikto':
+      case 'prisma':
       case 'sarif':
       case 'scoutsuite':
       case 'snyk':

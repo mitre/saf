@@ -1,5 +1,5 @@
 import {expect, test} from '@oclif/test'
-import * as tmp from 'tmp'
+import tmp from 'tmp'
 import path from 'path'
 import fs from 'fs'
 import {omitHDFChangingFields} from '../utils'
