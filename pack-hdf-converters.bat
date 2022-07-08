@@ -39,14 +39,15 @@ CALL npm i
 
 ECHO Executing - npm install local ...
 IF DEFINED npm_config_heimdall (
-  FOR /f "tokens=*" %%a IN ('dir /b %npm_config_heimdall%\libs\hdf-converters\mitre-hdf-converters-v*.tgz') DO ( 
+  FOR /f "tokens=*" %%a IN ('dir /b %npm_config_heimdall%\libs\hdf-converters\mitre-hdf-converters-v*.tgz') DO (
     SET THIS_TAR_ZIP=%npm_config_heimdall%\libs\hdf-converters\%%a
-  ) 
+  )
 ) ELSE (
   SET THIS_TAR_ZIP=..\heimdall2\libs\hdf-converters\mitre-hdf-converters-v*.tgz
 )
-ECHO THIS_TAR_ZIP is %THIS_TAR_ZIP%
 CALL npm i %THIS_TAR_ZIP%
 
 ECHO Executing - yarn prepack ...
 CALL yarn prepack
+
+ECHO Install of local hdf-covnerters complete.
