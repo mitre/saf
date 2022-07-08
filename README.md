@@ -908,6 +908,7 @@ Where the keys (`title`) are InSpec control attributes and the values (`- Title`
 - Author:: Ryan Lin [Rlin232](https://github.com/rlin232)
 - Author:: Amndeep Singh Mann [Amndeep7](https://github.com/amndeep7)
 - Author:: Camden Moors [camdenmoors](https://github.com/camdenmoors)
+- Author:: George Dias [georgedias](https://github.com/georgedias)
 
 ### NOTICE
 
