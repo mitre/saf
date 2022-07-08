@@ -15,7 +15,7 @@ function getInputFilename(): string {
 }
 
 export default class Convert extends FingerprintingConvertCommand {
-  static description = 'Translate any supported file-based security results set into Heimdall Data Format'
+  static description = 'The generic convert command translates any supported file-based security results set into the Heimdall Data Format'
 
   static examples = ['saf convert -i input -o output']
 
@@ -160,6 +160,12 @@ export default class Convert extends FingerprintingConvertCommand {
       converter = new ZapMapper(fs.readFileSync(flags.input, 'utf8'), _.get(flags, 'name') as string)
       fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
       break
+    }
+
+    default: {
+      throw new Error(`Unknown filetype provided: ${getInputFilename()}
+        The generic convert command should only be used for taking supported file-based security results and converting into Heimdall Data Format
+        For more information, run "saf convert --help"`)
     }
     }
   }

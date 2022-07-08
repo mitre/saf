@@ -1,7 +1,7 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {DBProtectMapper as Mapper} from '@mitre/hdf-converters'
-import {checkSuffix} from '../../utils/global'
+import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class DBProtect2HDF extends Command {
   static usage = 'convert dbprotect2hdf -i, --input=XML -o, --output=OUTPUT'
@@ -19,7 +19,11 @@ export default class DBProtect2HDF extends Command {
   async run() {
     const {flags} = await this.parse(DBProtect2HDF)
 
-    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'))
+    // Check for correct input type
+    const data = fs.readFileSync(flags.input, 'utf8')
+    checkInput({data: data, filename: flags.input}, 'dbProtect', 'DBProtect report in "Check Results Details" XML format')
+
+    const converter = new Mapper(data)
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

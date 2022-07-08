@@ -1,7 +1,7 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {ASFFResults as Mapper} from '@mitre/hdf-converters'
-import {checkSuffix} from '../../utils/global'
+import {checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
 
@@ -20,7 +20,9 @@ export default class Prowler2HDF extends Command {
 
   async run() {
     const {flags} = await this.parse(Prowler2HDF)
-    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'))
+    const data = fs.readFileSync(flags.input, 'utf8')
+    checkInput({data: data, filename: flags.input}, 'asff', 'Prowler-derived AWS Security Finding Format results')
+    const converter = new Mapper(data)
     const results = converter.toHdf()
 
     // Create output folder if not exists
