@@ -16,3 +16,16 @@ describe('Test nikto', () => {
     expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
   })
 })
+
+describe('Test nikto withraw flag', () => {
+  const tmpobj = tmp.dirSync({unsafeCleanup: true})
+
+  test
+  .stdout()
+  .command(['convert nikto2hdf', '-i', path.resolve('./test/sample_data/nikto/sample_input_report/zero.webappsecurity.json'), '-o', `${tmpobj.name}/niktotest.json`, '-w'])
+  .it('hdf-converter withraw output test', () => {
+    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/niktotest.json`, 'utf8'))
+    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/nikto/nikto-hdf-withraw.json'), 'utf8'))
+    expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
+  })
+})
