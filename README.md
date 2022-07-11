@@ -13,6 +13,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
 - [SAF CLI Installation](#installation)
   - [Via NPM](#installation-via-npm)
+  - [Via Brew](#installation-via-brew)
   - [Via Docker](#installation-via-docker)
   - [Via Windows Installer](#installation-via-windows-installer)
 
@@ -64,13 +65,32 @@ npm install -g @mitre/saf
 ```
 
 
-
 #### Update via NPM
 
 To update the SAF CLI with `npm`:
 
 ```bash
 npm update -g @mitre/saf
+```
+
+---
+
+
+#### Installation via Brew
+
+The SAF CLI can be installed and kept up to date using `brew`.
+
+```
+brew install mitre/saf/saf-cli
+```
+
+
+#### Update via Brew
+
+To update the SAF CLI with `brew`:
+
+```
+brew upgrade saf-cli
 ```
 
 ---
