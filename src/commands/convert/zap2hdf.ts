@@ -4,7 +4,7 @@ import {ZapMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class Zap2HDF extends Command {
-  static usage = 'convert zap2hdf -i, --input=JSON -n, --name=NAME -o, --output=OUTPUT -w, --withRaw'
+  static usage = 'convert zap2hdf -i, --input=JSON -n, --name=NAME -o, --output=OUTPUT -w, --with-raw'
 
   static description = 'Translate a OWASP ZAP results JSON to HDF format Json be viewed on Heimdall'
 
@@ -15,7 +15,7 @@ export default class Zap2HDF extends Command {
     input: Flags.string({char: 'i', required: true, description: 'Input OWASP ZAP file'}),
     name: Flags.string({char: 'n', required: true, description: 'Target site name'}),
     output: Flags.string({char: 'o', required: true, description: 'Output HDF file'}),
-    withRaw: Flags.boolean({char: 'w', required: false}),
+    'with-raw': Flags.boolean({char: 'w', required: false}),
   }
 
   async run() {
@@ -25,7 +25,7 @@ export default class Zap2HDF extends Command {
     const data = fs.readFileSync(flags.input, 'utf8')
     checkInput({data: data, filename: flags.input}, 'zap', 'OWASP ZAP results JSON')
 
-    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'), flags.name, flags.withRaw)
+    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'), flags.name, flags['with-raw'])
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

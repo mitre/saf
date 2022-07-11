@@ -375,7 +375,7 @@ convert burpsuite2hdf       Translate a BurpSuite Pro XML file into a Heimdall
   OPTIONS
     -i, --input=xml            (required) Input BurpSuite Pro XML file
     -o, --output=output        (required) Output HDF JSON file
-    -w, --withRaw              Append raw input file to HDF output file
+    -w, --with-raw              Append raw input file to HDF output file
 
   EXAMPLES
     saf convert burpsuite2hdf -i burpsuite-results.xml -o output-hdf-name.json -w
@@ -439,7 +439,7 @@ convert twistlock2hdf        Translate a Twistlock CLI output file into an Heimd
     -h, --help            Show CLI help.
     -i, --input=<value>   (required) Input Twistlock file
     -o, --output=<value>  (required) Output HDF file
-    -w, --withRaw         Append raw input file to HDF output file
+    -w, --with-raw         Append raw input file to HDF output file
 
   EXAMPLES
     saf convert twistlock2hdf -i twistlock-results.json -o output-hdf-name.json -w
@@ -455,7 +455,7 @@ convert jfrog_xray2hdf      Translate a JFrog Xray results JSON file into a
   OPTIONS
     -i, --input=input          (required) Input JFrog JSON file
     -o, --output=output        (requied) Output HDF JSON file
-    -w, --withRaw              Append raw input file to HDF output file
+    -w, --with-raw              Append raw input file to HDF output file
 
   EXAMPLES
     saf convert jfrog_xray2hdf -i xray-results.json -o output-hdf-name.json -w
@@ -494,7 +494,7 @@ convert nessus2hdf          Translate a Nessus XML results file into a Heimdall
 OPTIONS
     -i, --input=input          Input Nessus XML file
     -o, --output=output        Output HDF JSON file
-    -w, --withRaw              Append raw input file to HDF output file
+    -w, --with-raw              Append raw input file to HDF output file
 
   EXAMPLES
     saf convert nessus2hdf -i nessus-results.xml -o output-hdf-name.json -w
@@ -523,7 +523,7 @@ convert nikto2hdf           Translate a Nikto results JSON file into a Heimdall
   OPTIONS
     -i, --input=input          Input Nikto Results JSON file
     -o, --output=output        Output HDF JSON file
-    -w, --withRaw              Append raw input file to HDF output file
+    -w, --with-raw              Append raw input file to HDF output file
 
   EXAMPLES
     saf convert nikto2hdf -i nikto-results.json -o output-hdf-name.json -w
@@ -568,7 +568,7 @@ convert sarif2hdf          Translate a SARIF JSON file into a Heimdall Data
   OPTIONS
     -i, --input=input          Input SARIF JSON file
     -o, --output=output        Output HDF JSON file
-    -w, --withRaw              Append raw input file to HDF output file
+    -w, --with-raw              Append raw input file to HDF output file
 
   DESCRIPTION
     SARIF level to HDF impact Mapping:
@@ -591,7 +591,7 @@ convert scoutsuite2hdf       Translate a ScoutSuite results from a Javascript
   OPTIONS
     -i, --input=input          Input ScoutSuite Results JS file
     -o, --output=output        Output HDF JSON file
-    -w, --withRaw              Append raw input file to HDF output file
+    -w, --with-raw              Append raw input file to HDF output file
 
   DESCRIPTION
     Note: Currently this mapper only supports AWS.
@@ -703,7 +703,7 @@ convert zap2hdf              Translate a OWASP ZAP results JSON to HDF format Js
     -i, --input=input          Input OWASP ZAP Results JSON file
     -n, --name=name            Target site name
     -o, --output=output        Output HDF JSON file
-    -w, --withRaw              Append raw input file to HDF output file
+    -w, --with-raw              Append raw input file to HDF output file
 
   EXAMPLES
     saf convert zap2hdf -i zap-results.json -n site-name -o output-hdf-name.json -w

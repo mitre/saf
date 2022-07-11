@@ -4,7 +4,7 @@ import {JfrogXrayMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class JfrogXray2HDF extends Command {
-  static usage = 'convert jfrog_xray2hdf -i, --input=JSON -o, --output=OUTPUT -w, --withRaw'
+  static usage = 'convert jfrog_xray2hdf -i, --input=JSON -o, --output=OUTPUT -w, --with-raw'
 
   static description = 'Translate a JFrog Xray results JSON file into a Heimdall Data Format JSON file'
 
@@ -14,7 +14,7 @@ export default class JfrogXray2HDF extends Command {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true, description: 'Input JFrog Xray file'}),
     output: Flags.string({char: 'o', required: true, description: 'Output HDF file'}),
-    withRaw: Flags.boolean({char: 'w', required: false}),
+    'with-raw': Flags.boolean({char: 'w', required: false}),
   }
 
   async run() {
@@ -24,7 +24,7 @@ export default class JfrogXray2HDF extends Command {
     const data = fs.readFileSync(flags.input, 'utf8')
     checkInput({data: data, filename: flags.input}, 'jfrog', 'JFrog Xray results JSON')
 
-    const converter = new Mapper(data, flags.withRaw)
+    const converter = new Mapper(data, flags['with-raw'])
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }
