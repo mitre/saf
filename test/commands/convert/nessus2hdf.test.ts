@@ -10,9 +10,9 @@ describe('Test nessus', () => {
 
   test
   .stdout()
-  .command(['convert nessus2hdf', '-i', path.resolve('./test/sample_data/nessus/sample_input_report/sample.nessus'), '-o', `/nessustest.json`])
+  .command(['convert nessus2hdf', '-i', path.resolve('./test/sample_data/nessus/sample_input_report/sample.nessus'), '-o', `${tmpobj.name}/nessustest.json`])
   .it('hdf-converter output test', () => {
-    const converted = JSON.parse(fs.readFileSync(`/nessustest.json`, 'utf8'))
+    const converted = JSON.parse(fs.readFileSync(`${tmpobj.name}/nessustest.json`, 'utf8'))
     const sample = [
       JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/nessus/nessus-hdf-10.0.0.3.json'), 'utf8')),
       JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/nessus/nessus-hdf-10.0.0.2.json'), 'utf8')),
