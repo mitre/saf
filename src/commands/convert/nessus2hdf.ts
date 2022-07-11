@@ -2,7 +2,7 @@ import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {NessusResults as Mapper} from '@mitre/hdf-converters'
 import _ from 'lodash'
-import {checkSuffix} from '../../utils/global'
+import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class Nessus2HDF extends Command {
   static usage = 'convert nessus2hdf -i, --input=XML -o, --output=OUTPUT -w, --withRaw'
@@ -21,7 +21,11 @@ export default class Nessus2HDF extends Command {
   async run() {
     const {flags} = await this.parse(Nessus2HDF)
 
-    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'), flags.withRaw)
+    // Check for correct input type
+    const data = fs.readFileSync(flags.input, 'utf8')
+    checkInput({data: data, filename: flags.input}, 'nessus', 'Nessus XML results file')
+
+    const converter = new Mapper(data, flags.withRaw)
     const result = converter.toHdf()
     if (Array.isArray(result)) {
       for (const element of result) {

@@ -1,4 +1,4 @@
-import {ASFFResults, BurpSuiteMapper, DBProtectMapper, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockMapper, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
+import {ASFFResults, BurpSuiteMapper, DBProtectMapper, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockMapper, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
 import fs from 'fs'
 import _ from 'lodash'
 import {checkSuffix} from '../../utils/global'
@@ -15,7 +15,7 @@ function getInputFilename(): string {
 }
 
 export default class Convert extends FingerprintingConvertCommand {
-  static description = 'Translate any supported file-based security results set into Heimdall Data Format'
+  static description = 'The generic convert command translates any supported file-based security results set into the Heimdall Data Format'
 
   static examples = ['saf convert -i input -o output']
 
@@ -78,7 +78,15 @@ export default class Convert extends FingerprintingConvertCommand {
 
     case 'nessus': {
       converter = new NessusResults(fs.readFileSync(flags.input, 'utf8'))
-      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      const result = converter.toHdf()
+      if (Array.isArray(result)) {
+        for (const element of result) {
+          fs.writeFileSync(`${flags.output.replace(/.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
+        }
+      } else {
+        fs.writeFileSync(`${checkSuffix(flags.output)}`, JSON.stringify(result))
+      }
+
       break
     }
 
@@ -91,6 +99,22 @@ export default class Convert extends FingerprintingConvertCommand {
     case 'nikto': {
       converter = new NiktoMapper(fs.readFileSync(flags.input, 'utf8'))
       fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      break
+    }
+
+    case 'prisma': {
+      converter = new PrismaMapper(
+        fs.readFileSync(flags.input, {encoding: 'utf8'}),
+      )
+      const results = converter.toHdf()
+
+      fs.mkdirSync(flags.output)
+      _.forOwn(results, result => {
+        fs.writeFileSync(
+          path.join(flags.output, `${_.get(result, 'platform.target_id')}.json`),
+          JSON.stringify(result),
+        )
+      })
       break
     }
 
@@ -136,6 +160,12 @@ export default class Convert extends FingerprintingConvertCommand {
       converter = new ZapMapper(fs.readFileSync(flags.input, 'utf8'), _.get(flags, 'name') as string)
       fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
       break
+    }
+
+    default: {
+      throw new Error(`Unknown filetype provided: ${getInputFilename()}
+        The generic convert command should only be used for taking supported file-based security results and converting into Heimdall Data Format
+        For more information, run "saf convert --help"`)
     }
     }
   }

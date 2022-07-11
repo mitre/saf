@@ -1,7 +1,7 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {TwistlockMapper as Mapper} from '@mitre/hdf-converters'
-import {checkSuffix} from '../../utils/global'
+import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class Twistlock2HDF extends Command {
   static usage = 'convert twistlock2hdf -i, --input=JSON -o, output=OUTPUT -w, --withRaw'
@@ -19,9 +19,12 @@ export default class Twistlock2HDF extends Command {
 
   async run() {
     const {flags} = await this.parse(Twistlock2HDF)
-    const input = fs.readFileSync(flags.input, 'utf8')
 
-    const converter = new Mapper(input, flags.withRaw)
+    // Check for correct input type
+    const data = fs.readFileSync(flags.input, 'utf8')
+    checkInput({data: data, filename: flags.input}, 'twistlock', 'Twistlock CLI output file')
+
+    const converter = new Mapper(data, flags.withRaw)
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

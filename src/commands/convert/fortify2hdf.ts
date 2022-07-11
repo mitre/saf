@@ -1,7 +1,7 @@
 import {Command, Flags} from '@oclif/core'
-import * as fs from 'fs'
+import fs from 'fs'
 import {FortifyMapper as Mapper} from '@mitre/hdf-converters'
-import {checkSuffix} from '../../utils/global'
+import {checkSuffix, checkInput} from '../../utils/global'
 
 export default class Fortify2HDF extends Command {
   static usage = 'convert fortify2hdf -i, --input=FVDL -o, --output=OUTPUT'
@@ -19,7 +19,11 @@ export default class Fortify2HDF extends Command {
   async run() {
     const {flags} = await this.parse(Fortify2HDF)
 
-    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'))
+    // Check for correct input type
+    const data = fs.readFileSync(flags.input, 'utf8')
+    checkInput({data: data, filename: flags.input}, 'fortify', 'Fortify results FVDL file')
+
+    const converter = new Mapper(data)
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }
