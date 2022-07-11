@@ -18,7 +18,7 @@ git fetch
 echo "Executing - git pull ..."
 git pull
 
-echo Executing - yarn install ...
+echo "Executing - yarn install ..."
 CYPRESS_INSTALL_BINARY=0 PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true yarn install
 
 echo "Executing - yarn pack ..."
