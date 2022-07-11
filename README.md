@@ -16,42 +16,71 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
   - [Via Docker](#installation-via-docker)
   - [Via Windows Installer](#installation-via-windows-installer)
 
-* [SAF CLI Usage](#usage)
-  * [Attest](#attest) - Create and Apply attestations in JSON, YAML, and XLSX format
-  * [Convert](#convert) - Convert security results from all your security tools into a common data format
-      * To HDF
-        *  [AWS Security Hub to HDF](#asff-to-hdf)
-        *  [Splunk to HDF](#splunk-to-hdf)
-        *  [AWS Config to HDF](#aws-config-to-hdf)
-        *  [Snyk to HDF](#snyk-to-hdf)
-        *  [Twistlock to HDF](#twistlock-to-hdf)
-        *  [Ion Channel to HDF](#ion-channel-2-hdf)
-        *  [Trivy to HDF](#trivy-to-hdf)
-        *  [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
-        *  [DBProtect to HDF](#dbprotect-to-hdf)
-        *  [Netsparker to HDF](#netsparker-to-hdf)
-        *  [Burp Suite to HDF](#burp-suite-to-hdf)
-        *  [SonarQube to HDF](#sonarqube-to-hdf)
-        *  [OWASP ZAP to HDF](#owasp-zap-to-hdf)
-        *  [Prisma to HDF](#prisma-to-hdf)
-        *  [Prowler to HDF](#prowler-to-hdf)
-        *  [Fortify to HDF](#fortify-to-hdf)
-        *  [JFrog Xray to HDF](#jfrog-xray-to-hdf)
-        *  [Nikto to HDF](#nikto-to-hdf)
-        *  [Sarif to HDF](#sarif-to-hdf)
-        *  [Scoutsuite to HDF](#scoutsuite-to-hdf)
-        *  [DISA XCCDF Results to HDF](#xccdf-results-to-hdf)
-      * From HDF
-        *  [HDF to AWS Security Hub](#hdf-to-asff)
-        *  [HDF to Splunk](#hdf-to-splunk)
-        *  [HDF to XCCDF](#hdf-to-xccdf)
-        *  [HDF to CSV](#hdf-to-csv)
-        *  [HDF to DISA Checklist](#hdf-to-checklist)
-  * [View](#view) - Identify overall security status and deep-dive to solve specific security defects
-  * [Validate](#validate) - Verify pipeline thresholds
-  * [Generate](#generate) - Generate InSpec validation code, set pipeline thresholds, and generate options to support other saf commands.
-  * Scan - Visit https://saf.mitre.org/#/validate to explore and run inspec profiles
-  * Harden - Visit https://saf.mitre.org/#/harden to explore and run hardening scripts
+- [Security Automation Framework CLI](#security-automation-framework-cli)
+  - [Terminology:](#terminology)
+  - [Contents:](#contents)
+  - [Installation](#installation)
+      - [Installation via NPM](#installation-via-npm)
+      - [Update via NPM](#update-via-npm)
+      - [Installation via Docker](#installation-via-docker)
+      - [Update via Docker](#update-via-docker)
+      - [Installation via Windows Installer](#installation-via-windows-installer)
+      - [Update via Windows Installer](#update-via-windows-installer)
+  - [## Usage](#-usage)
+    - [Attest](#attest)
+      - [Create Attestations](#create-attestations)
+      - [Apply Attestations](#apply-attestations)
+    - [Convert](#convert)
+    - [From HDF](#from-hdf)
+        - [HDF to ASFF](#hdf-to-asff)
+      - [HDF to Splunk](#hdf-to-splunk)
+      - [HDF to XCCDF](#hdf-to-xccdf)
+        - [Previewing HDF Data Within Splunk:](#previewing-hdf-data-within-splunk)
+        - [HDF to Checklist](#hdf-to-checklist)
+        - [HDF to CSV](#hdf-to-csv)
+        - [HDF to Condensed JSON](#hdf-to-condensed-json)
+    - [To HDF](#to-hdf)
+        - [ASFF to HDF](#asff-to-hdf)
+        - [AWS Config to HDF](#aws-config-to-hdf)
+        - [Burp Suite to HDF](#burp-suite-to-hdf)
+        - [CKL to POA&M](#ckl-to-poam)
+        - [DBProtect to HDF](#dbprotect-to-hdf)
+        - [Fortify to HDF](#fortify-to-hdf)
+        - [Twistlock to HDF](#twistlock-to-hdf)
+        - [JFrog Xray to HDF](#jfrog-xray-to-hdf)
+        - [Ion Channel 2 HDF](#ion-channel-2-hdf)
+        - [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
+        - [Netsparker to HDF](#netsparker-to-hdf)
+        - [Nikto to HDF](#nikto-to-hdf)
+        - [Prisma to HDF](#prisma-to-hdf)
+        - [Prowler to HDF](#prowler-to-hdf)
+        - [Sarif to HDF](#sarif-to-hdf)
+        - [Scoutsuite to HDF](#scoutsuite-to-hdf)
+        - [Snyk to HDF](#snyk-to-hdf)
+        - [SonarQube to HDF](#sonarqube-to-hdf)
+        - [Splunk to HDF](#splunk-to-hdf)
+        - [Trivy to HDF](#trivy-to-hdf)
+        - [XCCDF Results to HDF](#xccdf-results-to-hdf)
+        - [OWASP ZAP to HDF](#owasp-zap-to-hdf)
+    - [View](#view)
+      - [Heimdall](#heimdall)
+      - [Summary](#summary)
+    - [Validate](#validate)
+      - [Thresholds](#thresholds)
+    - [Generate](#generate)
+      - [CKL Templates](#ckl-templates)
+      - [InSpec Metadata](#inspec-metadata)
+      - [Thresholds](#thresholds-1)
+      - [Spreadsheet (csv/xlsx) to InSpec](#spreadsheet-csvxlsx-to-inspec)
+      - [XCCDF to InSpec Stub](#xccdf-to-inspec-stub)
+      - [Other](#other)
+        - [Notes](#notes)
+        - [Mapping Files](#mapping-files)
+- [License and Author](#license-and-author)
+    - [Authors](#authors)
+    - [NOTICE](#notice)
+    - [NOTICE](#notice-1)
+    - [NOTICE](#notice-2)
 
 ## Installation
 
@@ -344,12 +373,12 @@ convert aws_config2hdf      Pull Configuration findings from AWS Config and conv
 convert burpsuite2hdf       Translate a BurpSuite Pro XML file into a Heimdall
                             Data Format JSON file
   OPTIONS
-    -i, --input=xml            Input BurpSuite Pro XML File
-    -o, --output=output        Output HDF JSON File
-
+    -i, --input=xml            (required) Input BurpSuite Pro XML file
+    -o, --output=output        (required) Output HDF JSON file
+    -w, --withRaw              Append raw input file to HDF output file
 
   EXAMPLES
-    saf convert burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json
+    saf convert burpsuite2hdf -i burpsuite-results.xml -o output-hdf-name.json -w
 ```
 
 ##### CKL to POA&M
@@ -407,12 +436,13 @@ convert fortify2hdf         Translate a Fortify results FVDL file into a Heimdal
 convert twistlock2hdf        Translate a Twistlock CLI output file into an Heimdall
                              Data Format JSON file
   FLAGS
-  -h, --help            Show CLI help.
-  -i, --input=<value>   (required) Input Twistlock file
-  -o, --output=<value>  (required) Output HDF file
+    -h, --help            Show CLI help.
+    -i, --input=<value>   (required) Input Twistlock file
+    -o, --output=<value>  (required) Output HDF file
+    -w, --withRaw         Append raw input file to HDF output file
 
   EXAMPLES
-    saf convert twistlock2hdf -i twistlock.json -o output-hdf-name.json
+    saf convert twistlock2hdf -i twistlock-results.json -o output-hdf-name.json -w
 ```
 
 
@@ -423,11 +453,12 @@ convert jfrog_xray2hdf      Translate a JFrog Xray results JSON file into a
                             Heimdall Data Format JSON file
 
   OPTIONS
-    -i, --input=input          Input JFrog JSON File
-    -o, --output=output        Output HDF JSON File
+    -i, --input=input          (required) Input JFrog JSON file
+    -o, --output=output        (requied) Output HDF JSON file
+    -w, --withRaw              Append raw input file to HDF output file
 
   EXAMPLES
-    saf convert jfrog_xray2hdf -i xray_results.json -o output-hdf-name.json
+    saf convert jfrog_xray2hdf -i xray-results.json -o output-hdf-name.json -w
 ```
 
 ##### Ion Channel 2 HDF
@@ -461,11 +492,12 @@ convert nessus2hdf          Translate a Nessus XML results file into a Heimdall
     Supports compliance and vulnerability scans from Tenable.sc, Tenable.io, and ACAS.
 
 OPTIONS
-    -i, --input=input          Input Nessus XML File
-    -o, --output=output        Output HDF JSON File
+    -i, --input=input          Input Nessus XML file
+    -o, --output=output        Output HDF JSON file
+    -w, --withRaw              Append raw input file to HDF output file
 
   EXAMPLES
-    saf convert nessus2hdf -i nessus_results.nessus -o output-hdf-name.json
+    saf convert nessus2hdf -i nessus-results.xml -o output-hdf-name.json -w
 ```
 
 
@@ -489,11 +521,12 @@ convert netsparker2hdf      Translate a Netsparker XML results file into a
 convert nikto2hdf           Translate a Nikto results JSON file into a Heimdall
                             Data Format JSON file
   OPTIONS
-    -i, --input=input          Input Nikto Results JSON File
-    -o, --output=output        Output HDF JSON File
+    -i, --input=input          Input Nikto Results JSON file
+    -o, --output=output        Output HDF JSON file
+    -w, --withRaw              Append raw input file to HDF output file
 
   EXAMPLES
-    saf convert nikto2hdf -i nikto-results.json -o output-hdf-name.json
+    saf convert nikto2hdf -i nikto-results.json -o output-hdf-name.json -w
 ```
 
 ##### Prisma to HDF
@@ -533,8 +566,9 @@ convert prowler2hdf         Translate a Prowler-derived AWS Security Finding
 convert sarif2hdf          Translate a SARIF JSON file into a Heimdall Data
                             Format JSON file
   OPTIONS
-    -i, --input=input          Input SARIF JSON File
-    -o, --output=output        Output HDF JSON File
+    -i, --input=input          Input SARIF JSON file
+    -o, --output=output        Output HDF JSON file
+    -w, --withRaw              Append raw input file to HDF output file
 
   DESCRIPTION
     SARIF level to HDF impact Mapping:
@@ -545,7 +579,7 @@ convert sarif2hdf          Translate a SARIF JSON file into a Heimdall Data
       SARIF level not provided -> HDF impact 0.1 as default
 
   EXAMPLES
-    saf convert sarif2hdf -i sarif-results.json -o output-hdf-name.json
+    saf convert sarif2hdf -i sarif-results.json -o output-hdf-name.json -w
 ```
 
 
@@ -555,14 +589,15 @@ convert sarif2hdf          Translate a SARIF JSON file into a Heimdall Data
 convert scoutsuite2hdf       Translate a ScoutSuite results from a Javascript
                              object into a Heimdall Data Format JSON file
   OPTIONS
-    -i, --input=input          Input ScoutSuite Results JS File
-    -o, --output=output        Output HDF JSON File
+    -i, --input=input          Input ScoutSuite Results JS file
+    -o, --output=output        Output HDF JSON file
+    -w, --withRaw              Append raw input file to HDF output file
 
   DESCRIPTION
     Note: Currently this mapper only supports AWS.
 
   EXAMPLES
-    saf convert scoutsuite2hdf -i scoutsuite-results.js -o output-hdf-name.json
+    saf convert scoutsuite2hdf -i scoutsuite-results.js -o output-hdf-name.json -w
 ```
 
 
@@ -665,12 +700,13 @@ convert xccdf_results2hdf    Translate a SCAP client XCCDF-Results XML report to
 convert zap2hdf              Translate a OWASP ZAP results JSON to HDF format Json
                              be viewed on Heimdall
   OPTIONS
-    -i, --input=input          Input OWASP ZAP Results JSON File
-    -n, --name=name            Target Site Name
-    -o, --output=output        Output HDF JSON File
+    -i, --input=input          Input OWASP ZAP Results JSON file
+    -n, --name=name            Target site name
+    -o, --output=output        Output HDF JSON file
+    -w, --withRaw              Append raw input file to HDF output file
 
   EXAMPLES
-    saf convert zap2hdf -i zap_results.json -n mitre.org -o output-hdf-name.json
+    saf convert zap2hdf -i zap-results.json -n site-name -o output-hdf-name.json -w
 ```
 
 ---

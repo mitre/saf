@@ -8,7 +8,7 @@ export default class JfrogXray2HDF extends Command {
 
   static description = 'Translate a JFrog Xray results JSON file into a Heimdall Data Format JSON file'
 
-  static examples = ['saf convert jfrog_xray2hdf -i xray-results.json -o output-hdf-name.json, -w']
+  static examples = ['saf convert jfrog_xray2hdf -i xray-results.json -o output-hdf-name.json -w']
 
   static flags = {
     help: Flags.help({char: 'h'}),
