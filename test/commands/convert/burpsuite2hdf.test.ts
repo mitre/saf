@@ -22,7 +22,7 @@ describe('Test burpsuite withraw flag', () => {
 
   test
   .stdout()
-  .command(['convert burpsuite2hdf', '-i', path.resolve('./test/sample_data/burpsuite/sample_input_report/zero.webappsecurity.com.min'), '-o', `${tmpobj.name}/burpsuitetest.json`, '-w'])
+  .command(['convert burpsuite2hdf', '-i', path.resolve('./test/sample_data/burpsuite/sample_input_report/zero.webappsecurity.com.min'), '-o', `${tmpobj.name}/burpsuitetest.json`, '--with-raw'])
   .it('hdf-converter withraw output test', () => {
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/burpsuitetest.json`, 'utf8'))
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/burpsuite/burpsuite-hdf-withraw.json'), 'utf8'))
