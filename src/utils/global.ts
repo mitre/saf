@@ -1,10 +1,11 @@
+import {fingerprint} from '@mitre/hdf-converters'
 import {getInstalledPathSync} from 'get-installed-path'
 import {ContextualizedEvaluation, ExecJSON} from 'inspecjs'
 import {ExecJSONProfile} from 'inspecjs/lib/generated_parsers/v_1_0/exec-json'
 import _ from 'lodash'
 import path from 'path'
 
-export type SpreadsheetTypes = 'cis' | 'disa' |'general'
+export type SpreadsheetTypes = 'cis' | 'disa' | 'general'
 
 export function checkSuffix(input: string) {
   if (input.endsWith('.json')) {
@@ -122,8 +123,8 @@ export function getProfileInfo(evaluation: ContextualizedEvaluation, fileName: s
 export function getDescription(
   descriptions:
     | {
-        [key: string]: string;
-      }
+      [key: string]: string;
+    }
     | ExecJSON.ControlDescription[],
   key: string,
 ): string | undefined {
@@ -131,4 +132,13 @@ export function getDescription(
     (description: ExecJSON.ControlDescription) =>
       description.label.toLowerCase() === key,
   )?.data : _.get(descriptions, key)
+}
+
+// Check if file input is of given type - throw error if not
+export function checkInput(guessOptions: { data: string, filename: string }, desiredType: string, desiredFormat: string): void {
+  const detectedType = fingerprint({data: guessOptions.data, filename: convertFullPathToFilename(guessOptions.filename)})
+  if (!(detectedType === desiredType))
+    throw new Error(`Unable to process input file\
+      \nDetected input type: ${detectedType === '' ? 'unknown or none' : `${detectedType} - did you mean to run the ${detectedType} to HDF converter instead?`}\
+      \nPlease ensure the input is a valid ${desiredFormat}`)
 }

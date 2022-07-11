@@ -17,7 +17,7 @@ export default class Threshold extends Command {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true}),
     templateInline: Flags.string({char: 'T', required: false, exclusive: ['templateFile']}),
-    templateFile: Flags.string({char: 'F', required: false, exclusive: ['templateInline'],  description: 'Expected data template, generate one with "saf generate threshold"'}),
+    templateFile: Flags.string({char: 'F', required: false, exclusive: ['templateInline'], description: 'Expected data template, generate one with "saf generate threshold"'}),
   }
 
   async run() {
@@ -58,10 +58,10 @@ export default class Threshold extends Command {
       if (_.get(thresholds, statusThreshold) !== undefined && typeof _.get(thresholds, statusThreshold) !== 'object') {
         exitNonZeroIfTrue(
           Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName))              !==
+            _.get(overallStatusCounts, renameStatusName(statusName)) !==
             _.get(thresholds, statusThreshold),
           ),
-          `${statusThreshold}: Received ${_.get(overallStatusCounts, renameStatusName(statusName))} != Expected ${_.get(thresholds, statusThreshold)}`,
+          `${statusThreshold}: Threshold not met. Number of received total ${statusThreshold.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is not equal to your set threshold for the number of ${statusThreshold.split('.')[0]} controls (${_.get(thresholds, statusThreshold)})`,
         )
       }
     }
@@ -71,10 +71,10 @@ export default class Threshold extends Command {
       if (_.get(thresholds, totalMinimum) !== undefined) {
         exitNonZeroIfTrue(
           Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName))              <
+            _.get(overallStatusCounts, renameStatusName(statusName)) <
             _.get(thresholds, totalMinimum),
           ),
-          `${totalMinimum}: Received ${_.get(overallStatusCounts, renameStatusName(statusName))} < Expected ${_.get(thresholds, totalMinimum)}`,
+          `${totalMinimum}: Threshold not met. Number of received total ${totalMinimum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${totalMinimum.split('.')[0]} controls (${_.get(thresholds, totalMinimum)})`,
         )
       }
     }
@@ -84,10 +84,10 @@ export default class Threshold extends Command {
       if (_.get(thresholds, totalMaximum) !== undefined) {
         exitNonZeroIfTrue(
           Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName))              >
+            _.get(overallStatusCounts, renameStatusName(statusName)) >
             _.get(thresholds, totalMaximum),
           ),
-          `${totalMaximum}: Received ${_.get(overallStatusCounts, renameStatusName(statusName))} > Expected ${_.get(thresholds, totalMaximum)}`,
+          `${totalMaximum}: Threshold not met. Number of received total ${totalMaximum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${totalMaximum.split('.')[0]} controls (${_.get(thresholds, totalMaximum)})`,
         )
       }
     }
@@ -102,14 +102,14 @@ export default class Threshold extends Command {
             Boolean(
               _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold),
             ),
-            `${statusCountThreshold}: Received ${_.get(criticalStatusCounts, renameStatusName(statusName))} < Expected ${_.get(thresholds, statusCountThreshold)}`,
+            `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
           )
         } else if (thresholdType === 'max' && _.get(thresholds, statusCountThreshold) !== undefined) {
           exitNonZeroIfTrue(
             Boolean(
               _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold),
             ),
-            `${statusCountThreshold}: Received ${_.get(criticalStatusCounts, renameStatusName(statusName))} > Expected ${_.get(thresholds, statusCountThreshold)}`,
+            `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
           )
         }
       }
