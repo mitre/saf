@@ -137,7 +137,7 @@ export default class GenerateDelta extends Command {
         // Delete so we don't try to update the new control
         delete diff.changedControls[controlId]
 
-        fs.writeFileSync(path.join(flags.output, 'controls', `${controlId}.rb`), controls![controlId])
+        fs.writeFileSync(path.join(flags.output, 'controls', `${controlId}.rb`), controls![controlId].replace(/\{\{\{\{newlineHERE\}\}\}\}/g, '\n'))
       })
 
       let updatedDesc = false
