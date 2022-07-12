@@ -38,12 +38,16 @@ ECHO Executing - npm install remote ...
 CALL npm i || EXIT /B %ERRORLEVEL%
 
 ECHO Executing - npm install local ...
-FOR /f "tokens=*" %%a IN ('dir /b %npm_config_heimdall%\libs\hdf-converters\mitre-hdf-converters-v*.tgz') DO (
-    SET ZIP_FILE=%%a
-)
+
 IF DEFINED npm_config_heimdall (
+  FOR /f "tokens=*" %%a IN ('dir /b %npm_config_heimdall%\libs\hdf-converters\mitre-hdf-converters-v*.tgz') DO (
+    SET ZIP_FILE=%%a
+  )
   SET THIS_TAR_ZIP=%npm_config_heimdall%\libs\hdf-converters\%ZIP_FILE%
 ) ELSE (
+  FOR /f "tokens=*" %%a IN ('dir /b ..\heimdall2\libs\hdf-converters\mitre-hdf-converters-v*.tgz') DO (
+    SET ZIP_FILE=%%a
+  )
   SET THIS_TAR_ZIP=..\heimdall2\libs\hdf-converters\%ZIP_FILE%
 )
 CALL npm i %THIS_TAR_ZIP% || EXIT /B %ERRORLEVEL%
