@@ -31,37 +31,37 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       - [Create Attestations](#create-attestations)
       - [Apply Attestations](#apply-attestations)
     - [Convert](#convert)
-    - [From HDF](#from-hdf)
-        - [HDF to ASFF](#hdf-to-asff)
-      - [HDF to Splunk](#hdf-to-splunk)
-      - [HDF to XCCDF](#hdf-to-xccdf)
-        - [Previewing HDF Data Within Splunk:](#previewing-hdf-data-within-splunk)
-        - [HDF to Checklist](#hdf-to-checklist)
-        - [HDF to CSV](#hdf-to-csv)
-        - [HDF to Condensed JSON](#hdf-to-condensed-json)
-    - [To HDF](#to-hdf)
-        - [ASFF to HDF](#asff-to-hdf)
-        - [AWS Config to HDF](#aws-config-to-hdf)
-        - [Burp Suite to HDF](#burp-suite-to-hdf)
-        - [CKL to POA&M](#ckl-to-poam)
-        - [DBProtect to HDF](#dbprotect-to-hdf)
-        - [Fortify to HDF](#fortify-to-hdf)
-        - [Twistlock to HDF](#twistlock-to-hdf)
-        - [JFrog Xray to HDF](#jfrog-xray-to-hdf)
-        - [Ion Channel 2 HDF](#ion-channel-2-hdf)
-        - [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
-        - [Netsparker to HDF](#netsparker-to-hdf)
-        - [Nikto to HDF](#nikto-to-hdf)
-        - [Prisma to HDF](#prisma-to-hdf)
-        - [Prowler to HDF](#prowler-to-hdf)
-        - [Sarif to HDF](#sarif-to-hdf)
-        - [Scoutsuite to HDF](#scoutsuite-to-hdf)
-        - [Snyk to HDF](#snyk-to-hdf)
-        - [SonarQube to HDF](#sonarqube-to-hdf)
-        - [Splunk to HDF](#splunk-to-hdf)
-        - [Trivy to HDF](#trivy-to-hdf)
-        - [XCCDF Results to HDF](#xccdf-results-to-hdf)
-        - [OWASP ZAP to HDF](#owasp-zap-to-hdf)
+      - [From HDF](#from-hdf)
+          - [HDF to ASFF](#hdf-to-asff)
+          - [HDF to Splunk](#hdf-to-splunk)
+            - [Previewing HDF Data Within Splunk](#previewing-hdf-data-within-splunk)
+          - [HDF to XCCDF](#hdf-to-xccdf)
+          - [HDF to Checklist](#hdf-to-checklist)
+          - [HDF to CSV](#hdf-to-csv)
+          - [HDF to Condensed JSON](#hdf-to-condensed-json)
+      - [To HDF](#to-hdf)
+          - [ASFF to HDF](#asff-to-hdf)
+          - [AWS Config to HDF](#aws-config-to-hdf)
+          - [Burp Suite to HDF](#burp-suite-to-hdf)
+          - [CKL to POA&M](#ckl-to-poam)
+          - [DBProtect to HDF](#dbprotect-to-hdf)
+          - [Fortify to HDF](#fortify-to-hdf)
+          - [Twistlock to HDF](#twistlock-to-hdf)
+          - [JFrog Xray to HDF](#jfrog-xray-to-hdf)
+          - [Ion Channel 2 HDF](#ion-channel-2-hdf)
+          - [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
+          - [Netsparker to HDF](#netsparker-to-hdf)
+          - [Nikto to HDF](#nikto-to-hdf)
+          - [Prisma to HDF](#prisma-to-hdf)
+          - [Prowler to HDF](#prowler-to-hdf)
+          - [Sarif to HDF](#sarif-to-hdf)
+          - [Scoutsuite to HDF](#scoutsuite-to-hdf)
+          - [Snyk to HDF](#snyk-to-hdf)
+          - [SonarQube to HDF](#sonarqube-to-hdf)
+          - [Splunk to HDF](#splunk-to-hdf)
+          - [Trivy to HDF](#trivy-to-hdf)
+          - [XCCDF Results to HDF](#xccdf-results-to-hdf)
+          - [OWASP ZAP to HDF](#owasp-zap-to-hdf)
     - [View](#view)
       - [Heimdall](#heimdall)
       - [Summary](#summary)
@@ -219,19 +219,6 @@ convert hdf2splunk           Translate and upload a Heimdall Data Format JSON fi
     saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf
 ```
 
-#### HDF to XCCDF
-```
-Translate an HDF file into an XCCDF XML
-
-FLAGS
-  -h, --help            Show CLI help.
-  -i, --input=<value>   (required) Input HDF file
-  -o, --output=<value>  (required) Output XCCDF file
-
-EXAMPLES
-  $ saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml
-```
-
 HDF Splunk Schema documentation: https://github.com/mitre/heimdall2/blob/master/libs/hdf-converters/src/converters-from-hdf/splunk/Schemas.md#schemas
 ##### Previewing HDF Data Within Splunk:
 A full raw search query:
@@ -254,6 +241,18 @@ index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) value
 | table meta.guid "Results Set" "Scan Type" "Scan (Profile) Name" ID "NIST SP 800-53 Controls" Title "Control Status" "Test(s) Status" "Results Description" "Results Skip Message (if applicable)"  Description Impact Severity  Check Fix "CCI IDs" Code "Scan Duration" "Scan (Profile) Summary" "Scan (Profile) Version"
 ```
 
+#### HDF to XCCDF
+```
+Translate an HDF file into an XCCDF XML
+
+FLAGS
+  -h, --help            Show CLI help.
+  -i, --input=<value>   (required) Input HDF file
+  -o, --output=<value>  (required) Output XCCDF file
+
+EXAMPLES
+  $ saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml
+```
 
 ##### HDF to Checklist
 ```
