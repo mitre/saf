@@ -2,10 +2,10 @@ queue_rules:
   - name: default
     conditions:
       - "#approved-reviews-by>=1"
-      - base=master
+      - base=main
 
 pull_request_rules:
-  - name: automatic merge for master when reviewed and CI passes
+  - name: automatic merge for main when reviewed and CI passes
     conditions:
       - label=ready-to-merge
     actions:
