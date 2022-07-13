@@ -1,25 +1,27 @@
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import flat from 'flat'
 import YAML from 'yaml'
 import fs from 'fs'
-import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
+import { ContextualizedProfile, convertFileContextual } from 'inspecjs'
 import _ from 'lodash'
-import {ThresholdValues} from '../../types/threshold'
-import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject, statusSeverityPaths, totalMax, totalMin} from '../../utils/threshold'
-import {expect} from 'chai'
+import { ThresholdValues } from '../../types/threshold'
+import { calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject, statusSeverityPaths, totalMax, totalMin } from '../../utils/threshold'
+import { expect } from 'chai'
 
 export default class Threshold extends Command {
+  static usage = 'validate threshold -i <hdf-json> [-h] [-T <flattened-threshold-json> | -F <template-file>]'
+
   static description = 'Validate the compliance and status counts of an HDF file'
 
   static flags = {
-    help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true}),
-    templateInline: Flags.string({char: 'T', required: false, exclusive: ['templateFile']}),
-    templateFile: Flags.string({char: 'F', required: false, exclusive: ['templateInline'], description: 'Expected data template, generate one with "saf generate threshold"'}),
+    help: Flags.help({ char: 'h' }),
+    input: Flags.string({ char: 'i', required: true }),
+    templateInline: Flags.string({ char: 'T', required: false, exclusive: ['templateFile'] }),
+    templateFile: Flags.string({ char: 'F', required: false, exclusive: ['templateInline'], description: 'Expected data template, generate one with "saf generate threshold"' }),
   }
 
   async run() {
-    const {flags} = await this.parse(Threshold)
+    const { flags } = await this.parse(Threshold)
     let thresholds: ThresholdValues = {}
     if (flags.templateInline) {
       // Need to do some processing to convert this into valid JSON

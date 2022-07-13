@@ -1,19 +1,19 @@
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
-import {createLogger, format, transports} from 'winston'
+import { createLogger, format, transports } from 'winston'
 import xml2js from 'xml2js'
-import {STIG, Vulnerability, STIGHolder} from '../../types/STIG'
+import { STIG, Vulnerability, STIGHolder } from '../../types/STIG'
 import promptSync from 'prompt-sync'
 import XlsxPopulate from 'xlsx-populate'
 import moment from 'moment'
-import {cci2nist, cklSeverityToImpact, cklSeverityToLikelihood, cklSeverityToPOAMSeverity, cklSeverityToRelevanceOfThreat, cklSeverityToResidualRiskLevel, cleanStatus, combineComments, convertToRawSeverity, createCVD, extractSolution, extractSTIGUrl, replaceSpecialCharacters} from '../../utils/ckl2poam'
-import {default as files} from '../../resources/files.json'
-import {convertFullPathToFilename, dataURLtoU8Array} from '../../utils/global'
+import { cci2nist, cklSeverityToImpact, cklSeverityToLikelihood, cklSeverityToPOAMSeverity, cklSeverityToRelevanceOfThreat, cklSeverityToResidualRiskLevel, cleanStatus, combineComments, convertToRawSeverity, createCVD, extractSolution, extractSTIGUrl, replaceSpecialCharacters } from '../../utils/ckl2poam'
+import { default as files } from '../../resources/files.json'
+import { convertFullPathToFilename, dataURLtoU8Array } from '../../utils/global'
 
 const prompt = promptSync()
-const {printf} = format
+const { printf } = format
 
 const fmt = printf(({
   level,
@@ -33,21 +33,23 @@ const logger = createLogger({
 const STARTING_ROW = 8 // The row we start inserting controls into
 
 export default class CKL2POAM extends Command {
+  static usage = 'convert ckl2POAM -i <disa-checklist> -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]'
+
   static description = 'Translate DISA Checklist CKL file(s) to POA&M files'
 
   static aliases = ['convert ckl2poam']
 
   static flags = {
-    help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, multiple: true, description: 'Path to the DISA Checklist File(s)'}),
-    officeOrg: Flags.string({char: 'O', required: false, default: '', description: 'Default value for Office/org (prompts for each file if not set)'}),
-    deviceName: Flags.string({char: 'd', required: false, default: '', description: 'Name of target device (prompts for each file if not set)'}),
-    rowsToSkip: Flags.integer({char: 's', required: false, default: 4, description: 'Rows to leave between POA&M Items for milestones'}),
-    output: Flags.string({char: 'o', required: true, description: 'Path to output PO&M File(s)'}),
+    help: Flags.help({ char: 'h' }),
+    input: Flags.string({ char: 'i', required: true, multiple: true, description: 'Path to the DISA Checklist File(s)' }),
+    officeOrg: Flags.string({ char: 'O', required: false, default: '', description: 'Default value for Office/org (prompts for each file if not set)' }),
+    deviceName: Flags.string({ char: 'd', required: false, default: '', description: 'Name of target device (prompts for each file if not set)' }),
+    rowsToSkip: Flags.integer({ char: 's', required: false, default: 4, description: 'Rows to leave between POA&M Items for milestones' }),
+    output: Flags.string({ char: 'o', required: true, description: 'Path to output PO&M File(s)' }),
   }
 
   async run() {
-    const {flags} = await this.parse(CKL2POAM)
+    const { flags } = await this.parse(CKL2POAM)
     // Create output folder if it doesn't exist already
     if (!fs.existsSync(flags.output)) {
       fs.mkdirSync(flags.output)

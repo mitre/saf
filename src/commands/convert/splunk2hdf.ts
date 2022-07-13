@@ -1,26 +1,28 @@
-import {Command, Flags} from '@oclif/core'
-import {SplunkMapper} from '@mitre/hdf-converters/lib/src/splunk-mapper'
-import {table} from 'table'
-import {createWinstonLogger} from '../../utils/logging'
+import { Command, Flags } from '@oclif/core'
+import { SplunkMapper } from '@mitre/hdf-converters/lib/src/splunk-mapper'
+import { table } from 'table'
+import { createWinstonLogger } from '../../utils/logging'
 import _ from 'lodash'
 import fs from 'fs'
 import path from 'path'
 
 export default class Splunk2HDF extends Command {
+  static usage = 'splunk2hdf -H <host> -I <index> [-h] [-P <port>] [-s http|https] (-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID> -o <hdf-output-folder>]'
+
   static description = 'Pull HDF data from your Splunk instance back into an HDF file'
 
   static flags = {
-    help: Flags.help({char: 'h'}),
-    host: Flags.string({char: 'H', required: true, description: 'Splunk Hostname or IP'}),
-    port: Flags.integer({char: 'P', required: false, description: 'Splunk management port (also known as the Universal Forwarder port)', default: 8089}),
-    scheme: Flags.string({char: 's', required: false, description: 'HTTP Scheme used for communication with splunk', default: 'https', options: ['http', 'https']}),
-    username: Flags.string({char: 'u', required: false, description: 'Your Splunk username', exclusive: ['token']}),
-    password: Flags.string({char: 'p', required: false, description: 'Your Splunk password', exclusive: ['token']}),
-    token: Flags.string({char: 't', required: false, description: 'Your Splunk API Token', exclusive: ['username', 'password']}),
-    index: Flags.string({char: 'I', required: true, description: 'Splunk index to query HDF data from'}),
-    logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
-    input: Flags.string({char: 'i', multiple: true, required: false, description: 'GUID(s) or Filename(s) of files to convert'}),
-    output: Flags.string({char: 'o', required: false, description: 'Output HDF JSON Folder'}),
+    help: Flags.help({ char: 'h' }),
+    host: Flags.string({ char: 'H', required: true, description: 'Splunk Hostname or IP' }),
+    port: Flags.integer({ char: 'P', required: false, description: 'Splunk management port (also known as the Universal Forwarder port)', default: 8089 }),
+    scheme: Flags.string({ char: 's', required: false, description: 'HTTP Scheme used for communication with splunk', default: 'https', options: ['http', 'https'] }),
+    username: Flags.string({ char: 'u', required: false, description: 'Your Splunk username', exclusive: ['token'] }),
+    password: Flags.string({ char: 'p', required: false, description: 'Your Splunk password', exclusive: ['token'] }),
+    token: Flags.string({ char: 't', required: false, description: 'Your Splunk API Token', exclusive: ['username', 'password'] }),
+    index: Flags.string({ char: 'I', required: true, description: 'Splunk index to query HDF data from' }),
+    logLevel: Flags.string({ char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose'] }),
+    input: Flags.string({ char: 'i', multiple: true, required: false, description: 'GUID(s) or Filename(s) of files to convert' }),
+    output: Flags.string({ char: 'o', required: false, description: 'Output HDF JSON Folder' }),
   }
 
   static examples = ['saf convert splunk2hdf -H 127.0.0.1 -u admin -p Valid_password! -I hdf -i some-file-in-your-splunk-instance.json yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder']
@@ -30,7 +32,7 @@ export default class Splunk2HDF extends Command {
   }
 
   async run() {
-    const {flags} = await this.parse(Splunk2HDF)
+    const { flags } = await this.parse(Splunk2HDF)
     const logger = createWinstonLogger('splunk2hdf', flags.logLevel)
 
     if (!(flags.username && flags.password) && !flags.token) {

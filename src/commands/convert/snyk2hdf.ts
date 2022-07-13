@@ -1,26 +1,28 @@
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import fs from 'fs'
-import {SnykResults as Mapper} from '@mitre/hdf-converters'
+import { SnykResults as Mapper } from '@mitre/hdf-converters'
 import _ from 'lodash'
-import {checkInput, checkSuffix} from '../../utils/global'
+import { checkInput, checkSuffix } from '../../utils/global'
 
 export default class Snyk2HDF extends Command {
+  static usage = 'convert snyk2hdf -i <snyk-json> -o <hdf-scan-results-json> [-h]'
+
   static description = 'Translate a Snyk results JSON file into a Heimdall Data Format JSON file\nA separate HDF JSON is generated for each project reported in the Snyk Report.'
 
   static examples = ['saf convert snyk2hdf -i snyk_results.json -o output-file-prefix']
 
   static flags = {
-    help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true}),
-    output: Flags.string({char: 'o', required: true}),
+    help: Flags.help({ char: 'h' }),
+    input: Flags.string({ char: 'i', required: true }),
+    output: Flags.string({ char: 'o', required: true }),
   }
 
   async run() {
-    const {flags} = await this.parse(Snyk2HDF)
+    const { flags } = await this.parse(Snyk2HDF)
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8')
-    checkInput({data: data, filename: flags.input}, 'snyk', 'Snyk results JSON')
+    checkInput({ data: data, filename: flags.input }, 'snyk', 'Snyk results JSON')
 
     const converter = new Mapper(data)
     const result = converter.toHdf()
