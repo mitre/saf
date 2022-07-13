@@ -20,7 +20,6 @@ export default class GenerateDelta extends Command {
     useGroupID: Flags.boolean({char: 'g', description: "Use Group ID instead of STIG ID (Also known as legacy IDs) instead of Vulnerbility IDs (ex. 'SV-XXXXX')"}),
     useVulnerabilityId: Flags.boolean({char: 'r', required: false, default: true, description: "Use Vulnerability IDs (ex. 'SV-XXXXX')", exclusive: ['useStigID']}),
     useStigID: Flags.boolean({char: 'S', required: false, default: false, description: "Use STIG IDs (ex. RHEL-07-010020, also known as Version) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs", exclusive: ['useVulnerabilityId']}),
-    existingSemiQuotes: Flags.boolean({char: 's', required: false, default: false, description: "Enable this flag if the existing profile uses ' to surround strings instead of \""}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
