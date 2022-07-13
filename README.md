@@ -77,10 +77,6 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
         - [Notes](#notes)
         - [Mapping Files](#mapping-files)
 - [License and Author](#license-and-author)
-    - [Authors](#authors)
-    - [NOTICE](#notice)
-    - [NOTICE](#notice-1)
-    - [NOTICE](#notice-2)
 
 ## Installation
 
