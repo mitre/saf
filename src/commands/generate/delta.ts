@@ -5,6 +5,8 @@ import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
 import {escapeDoubleQuotes, wrap, wrapAndEscapeQuotes} from '../../utils/xccdf2inspec'
+import {knownInspecMetadataKeys} from '../../utils/global'
+import _ from 'lodash'
 
 export default class GenerateDelta extends Command {
   static usage = 'generate:delta -i, --input=JSON -o, --output=OUTPUT'
@@ -18,6 +20,7 @@ export default class GenerateDelta extends Command {
     useGroupID: Flags.boolean({char: 'g', description: "Use Group ID instead of STIG ID (Also known as legacy IDs) instead of Vulnerbility IDs (ex. 'SV-XXXXX')"}),
     useVulnerabilityId: Flags.boolean({char: 'r', required: false, default: true, description: "Use Vulnerability IDs (ex. 'SV-XXXXX')", exclusive: ['useStigID']}),
     useStigID: Flags.boolean({char: 'S', required: false, default: false, description: "Use STIG IDs (ex. RHEL-07-010020, also known as Version) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs", exclusive: ['useVulnerabilityId']}),
+    existingSemiQuotes: Flags.boolean({char: 's', required: false, default: false, description: "Enable this flag if the existing profile uses ' to surround strings instead of \""}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
@@ -41,12 +44,32 @@ export default class GenerateDelta extends Command {
     return controlText
   }
 
+  removeSemiQuotedStringsNewlines(input: string): string {
+    let controlText = input
+    const quotedNewlinesRegex = /'([^'\\])*(\\.[^'\\]*)*'/gm
+    let currentRegexMatch
+    while ((currentRegexMatch = quotedNewlinesRegex.exec(input)) !== null) {
+      // This is needed to avoid infinite loops with zero-width matches
+      if (currentRegexMatch.index === quotedNewlinesRegex.lastIndex) {
+        quotedNewlinesRegex.lastIndex++
+      }
+
+      currentRegexMatch.forEach(match => {
+        if (match?.includes('\n')) {
+          controlText = controlText.replace(match, match.replace(/\n/gm, '{{{{newlineHERE}}}}')).trim()
+        }
+      })
+    }
+
+    return controlText
+  }
+
   getLineIdentifier(line: string): string | null {
     // Get the second word in the line
     // Remove double spaces
     const lineIdentifier = line.replace(/\s+/g, ' ').trim().split(' ')[1]
     if (lineIdentifier.includes(',') || lineIdentifier.includes(':')) {
-      return lineIdentifier.replace(/"/g, '').replace(/,/g, '').replace(/:/g, '')
+      return lineIdentifier.replace(/"/g, '').replace(/'/g, '').replace(/,/g, '').replace(/:/g, '')
     }
 
     return null
@@ -132,7 +155,7 @@ export default class GenerateDelta extends Command {
     // If all variables have been satisfied, we can generate the delta
     if (existingProfile && updatedXCCDF) {
       if (!controls) {
-        logger.warn('No existing control found in profile folder, delta will only be printedd to the console')
+        logger.warn('No existing control found in profile folder, delta will only be printed to the console')
         controls = {}
       }
 
@@ -146,52 +169,94 @@ export default class GenerateDelta extends Command {
         // Delete so we don't try to update the new control
         delete diff.changedControls[controlId]
 
-        fs.writeFileSync(path.join(flags.output, 'controls', `${controlId}.rb`), controls![controlId].replace(/\{\{\{\{newlineHERE\}\}\}\}/g, '\n'))
+        fs.writeFileSync(path.join(flags.output, 'controls', `${controlId}.rb`), controls![controlId].replace(/\{\{\{\{newlineHERE\}\}\}\}/g, '\n').trimEnd() + '\n') // Ensure we always have a newline at EOF
       })
-
-      let updatedDesc = false
 
       // Update existing controls with new metadata
       Object.entries(diff.changedControls).forEach(([controlId, updatedControl]: [string, any]) => {
+        let updatedDesc = false
+        let reachedTestCode = false
+        let addedTagLines = false
         // Remove newlines within blocks of strings to make replacement easier
-        const controlText = this.removeQuotedStringsNewlines(controls![controlId])
+        const controlText = this.removeSemiQuotedStringsNewlines(this.removeQuotedStringsNewlines(controls![controlId]))
         const controlLines = controlText.split('\n')
 
+        const newTags = Object.keys(updatedControl.tags).filter(tag => tag.endsWith('__added')).map(tag => tag.replace('__added', ''))
+
         // Replace the old control metadata with the new control metadata
-        const newControlLines = controlLines.map(line => {
+        const newControlLines = controlLines.map((line, idx) => {
           // Ignore comment lines
-          if (line.trim().startsWith('#')) {
-            return line
-          }
-
-          if (line.trim().startsWith('title') && updatedControl.title) {
-            return wrap(`  title "${escapeDoubleQuotes(updatedControl.title)}"`, 80)
-          }
-
-          if (line.trim().startsWith('impact') && updatedControl.impact) {
-            return `  impact "${updatedControl.impact}"`
-          }
-
-          if (line.trim().startsWith('desc ')) {
-            const descriptionType = this.getLineIdentifier(line)
-            if (descriptionType && descriptionType in updatedControl.descs) {
-              return wrap(`  desc "${descriptionType}", "${escapeDoubleQuotes(updatedControl.descs[descriptionType])}"`)
+          if (!reachedTestCode) {
+            if (line.trim().startsWith('#')) {
+              return line
             }
 
-            if (updatedControl.desc && !updatedDesc) {
-              updatedDesc = true
-              return `  desc "${wrapAndEscapeQuotes(updatedControl.desc, 80)}"`
+            if (line.trim().startsWith('title') && updatedControl.title) {
+              return wrap(`  title "${escapeDoubleQuotes(updatedControl.title).trim()}"`, 80)
             }
-          }
 
-          if (line.trim().startsWith('tag ')) {
-            const tagType = this.getLineIdentifier(line)
-            if (tagType && tagType in updatedControl.tags) {
-              if (typeof updatedControl.tags[tagType] === 'string') {
-                return `  tag ${tagType}: "${wrapAndEscapeQuotes(updatedControl.tags[tagType], 80)}"`
+            if (line.trim().startsWith('impact') && updatedControl.impact) {
+              return `  impact ${updatedControl.impact}`
+            }
+
+            if (line.trim().startsWith('desc ')) {
+              const descriptionType = this.getLineIdentifier(line)
+              if (descriptionType && descriptionType in updatedControl.descs) {
+                return wrap(`  desc "${descriptionType}", "${escapeDoubleQuotes(updatedControl.descs[descriptionType]).trim()}"`)
               }
 
-              return `  tag ${tagType}: ${JSON.stringify(updatedControl.tags[tagType])}`
+              if (updatedControl.desc && !updatedDesc) {
+                updatedDesc = true
+                return `  desc "${wrapAndEscapeQuotes(updatedControl.desc, 80).trim()}"`
+              }
+            }
+
+            if (line.trim().startsWith('tag ') && !controlLines[idx + 1].startsWith('tag ') && !addedTagLines) {
+              const tagType = this.getLineIdentifier(line)
+              let newTagsLines = ''
+              if (tagType && tagType in updatedControl.tags) {
+                if (typeof updatedControl.tags[tagType] === 'string') {
+                  newTagsLines += `  tag ${tagType}: "${wrapAndEscapeQuotes(updatedControl.tags[tagType], 80).trim()}"\n`
+                } else if (typeof updatedControl.tags[tagType] === 'object') {
+                  newTagsLines += `  tag ${tagType}: ${JSON.stringify(updatedControl.tags[tagType]).trim()}\n`
+                }
+              } else {
+                newTagsLines += line + '\n'
+              }
+
+              newTags.forEach(newTag => {
+                logger.debug(`Adding new tag for control ${controlId}: ${newTag} - ${updatedControl.tags[newTag + '__added']}`)
+                if (typeof updatedControl.tags[newTag + '__added'] === 'string') {
+                  newTagsLines += `  tag ${newTag}: "${wrapAndEscapeQuotes(updatedControl.tags[newTag + '__added'], 80).trim()}"\n`
+                } else if (typeof updatedControl.tags[newTag + '__added'] === 'boolean') {
+                  newTagsLines += `  tag ${newTag}: "${wrapAndEscapeQuotes(updatedControl.tags[newTag + '__added'].toString(), 80).trim()}"\n`
+                } else if (typeof updatedControl.tags[newTag + '__added'] === 'object') {
+                  newTagsLines += `  tag ${newTag}: ${JSON.stringify(updatedControl.tags[newTag + '__added']).trim()}\n`
+                } else {
+                  console.log(newTag)
+                }
+              })
+              addedTagLines = true
+              return newTagsLines.trimEnd()
+            }
+
+            if (line.trim().startsWith('tag ')) {
+              const tagType = this.getLineIdentifier(line)
+              if (tagType && tagType in updatedControl.tags) {
+                if (typeof updatedControl.tags[tagType] === 'string') {
+                  return `  tag ${tagType}: "${wrapAndEscapeQuotes(updatedControl.tags[tagType], 80).trim()}"`
+                }
+
+                if (typeof updatedControl.tags[tagType] === 'object') {
+                  return `  tag ${tagType}: ${JSON.stringify(updatedControl.tags[tagType]).trim()}`
+                }
+              }
+            }
+
+            if (line.trim() && !(knownInspecMetadataKeys.some(inspecMetadataKnownKey => (line.trimStart().startsWith(inspecMetadataKnownKey)))) && // Is it the same for the next line?
+              controlLines[idx + 1].trim() && !(_.remove(knownInspecMetadataKeys, 'impact').some(inspecMetadataKnownKey => (controlLines[idx + 1].trimStart().startsWith(inspecMetadataKnownKey))))) {
+              logger.debug(`Reached test code at line:\n${line}`)
+              reachedTestCode = true
             }
           }
 
@@ -201,7 +266,7 @@ export default class GenerateDelta extends Command {
         // Write the new control to the controls folder
         logger.debug(`Writing new control ${controlId} to profile`)
         const updatedControlText = newControlLines.join('\n').replace(/\{\{\{\{newlineHERE\}\}\}\}/g, '\n')
-        fs.writeFileSync(path.join(flags.output, 'controls', `${controlId}.rb`), updatedControlText)
+        fs.writeFileSync(path.join(flags.output, 'controls', `${controlId}.rb`), updatedControlText.trimEnd() + '\n') // Ensure we always have a newline at EOF
       })
 
       logger.info(`Writing delta file for ${existingProfile.title}`)
