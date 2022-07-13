@@ -7,8 +7,6 @@ import fs from 'fs'
 import path from 'path'
 
 export default class Splunk2HDF extends Command {
-  static usage = 'splunk2hdf -i, --input=<filename/GUID> -H, --host -P, --port -p, --protocol -t, --token -i, --index -o, --output=<output-folder>'
-
   static description = 'Pull HDF data from your Splunk instance back into an HDF file'
 
   static flags = {

@@ -4,8 +4,6 @@ import {FromHDFToXCCDFMapper as Mapper} from '@mitre/hdf-converters'
 import {default as files} from '../../resources/files.json'
 
 export default class HDF2XCCDF extends Command {
-  static usage = 'convet hdf2xccdf -i, --input=JSON -o, --output=OUTPUT'
-
   static description = 'Translate an HDF file into an XCCDF XML'
 
   static examples = ['saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml']

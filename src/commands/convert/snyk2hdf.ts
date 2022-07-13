@@ -5,8 +5,6 @@ import _ from 'lodash'
 import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class Snyk2HDF extends Command {
-  static usage = 'convert snyk2hdf -i, --input=JSON -o, --output=OUTPUT'
-
   static description = 'Translate a Snyk results JSON file into a Heimdall Data Format JSON file\nA separate HDF JSON is generated for each project reported in the Snyk Report.'
 
   static examples = ['saf convert snyk2hdf -i snyk_results.json -o output-file-prefix']

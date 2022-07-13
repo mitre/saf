@@ -6,8 +6,6 @@ import _ from 'lodash'
 import {checkSuffix} from '../../utils/global'
 
 export default class HDF2Condensed extends Command {
-  static usage = 'hdf2condensed -i, --input=FILE -j, --json'
-
   static description = 'Condensed format used by some community members to pre-process data for elasticsearch and custom dashboards'
 
   static flags = {

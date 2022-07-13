@@ -10,8 +10,6 @@ import {convertFullPathToFilename} from '../../utils/global'
 export default class Summary extends Command {
   static aliases = ['summary']
 
-  static usage = 'view -i, --input=FILE -j, --json'
-
   static description = 'Get a quick compliance overview of an HDF file '
 
   static flags = {

@@ -8,8 +8,6 @@ import {getInstalledPath} from '../../utils/global'
 export default class Heimdall extends Command {
   static aliases = ['heimdall']
 
-  static usage = 'view:heimdall -p, --port=PORT <filename>'
-
   static description = 'Run an instance of Heimdall Lite to visualize your Data'
 
   static flags = {

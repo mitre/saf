@@ -5,8 +5,6 @@ import path from 'path'
 import _ from 'lodash'
 
 export default class Prisma2HDF extends Command {
-  static usage = 'convert prisma2hdf -i, --input=CSV -o, --output=OUTPUT'
-
   static description = 'Translate a Prisma Cloud Scan Report CSV file into Heimdall Data Format JSON files'
 
   static examples = ['saf convert prisma2hdf -i prismacloud-report.csv -o output-hdf-name.json']

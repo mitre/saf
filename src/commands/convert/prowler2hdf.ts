@@ -6,8 +6,6 @@ import _ from 'lodash'
 import path from 'path'
 
 export default class Prowler2HDF extends Command {
-  static usage = 'convert prowler2hdf -i <prowler-finding-json> -o <hdf-output-folder>'
-
   static description = 'Translate a Prowler-derived AWS Security Finding Format results from concatenated JSON blobs into a Heimdall Data Format JSON file'
 
   static examples = ['saf convert prowler2hdf -i prowler-asff.json -o output-folder']

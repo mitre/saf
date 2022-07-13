@@ -8,8 +8,6 @@ import {convertRow, csvExportFields} from '../../utils/csv'
 import {convertFullPathToFilename} from '../../utils/global'
 
 export default class HDF2CSV extends Command {
-  static usage = 'hdf2csv -i, --input <INPUT-JSON> -o, --output <OUTPUT-CSV> -f, --fields <CSV Fields>'
-
   static description = 'Translate a Heimdall Data Format JSON file into a Comma Separated Values (CSV) file'
 
   static flags = {

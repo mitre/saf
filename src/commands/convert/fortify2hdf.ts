@@ -4,8 +4,6 @@ import {FortifyMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix, checkInput} from '../../utils/global'
 
 export default class Fortify2HDF extends Command {
-  static usage = 'convert fortify2hdf -i, --input=FVDL -o, --output=OUTPUT'
-
   static description = 'Translate a Fortify results FVDL file into a Heimdall Data Format JSON file'
 
   static examples = ['saf convert fortify2hdf -i audit.fvdl -o output-hdf-name.json']

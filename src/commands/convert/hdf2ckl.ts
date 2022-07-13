@@ -10,8 +10,6 @@ import {convertFullPathToFilename, getProfileInfo} from '../../utils/global'
 import {getDetails} from '../../utils/checklist'
 
 export default class HDF2CKL extends Command {
-  static usage = 'hdf2ckl -i, --input=<INPUT-JSON> -o, --output=<OUTPUT-CKL>'
-
   static description = 'Translate a Heimdall Data Format JSON file into a DISA checklist file'
 
   static flags = {
@@ -44,9 +42,9 @@ export default class HDF2CKL extends Command {
       role: null,
       type: null,
       hostname: flags.hostname || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.hostname') || null,
-      ip: flags.ip || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.ip') ||  null,
+      ip: flags.ip || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.ip') || null,
       mac: flags.mac || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.mac') || null,
-      fqdn: flags.fqdn || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.fqdn') ||  null,
+      fqdn: flags.fqdn || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.fqdn') || null,
       tech_area: null,
       target_key: null,
       web_or_database: null,

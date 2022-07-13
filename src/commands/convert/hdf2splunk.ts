@@ -5,8 +5,6 @@ import fs from 'fs'
 import {createWinstonLogger, getHDFSummary} from '../../utils/logging'
 
 export default class HDF2Splunk extends Command {
-  static usage = 'hdf2splunk -i, --input=FILE -H, --host -P, --port -p, --protocol -t, --token -i, --index'
-
   static description = 'Translate and upload a Heimdall Data Format JSON file into a Splunk server'
 
   static flags = {
