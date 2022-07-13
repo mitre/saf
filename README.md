@@ -26,7 +26,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       - [Update via Docker](#update-via-docker)
       - [Installation via Windows Installer](#installation-via-windows-installer)
       - [Update via Windows Installer](#update-via-windows-installer)
-  - [## Usage](#-usage)
+  - [Usage](#usage)
     - [Attest](#attest)
       - [Create Attestations](#create-attestations)
       - [Apply Attestations](#apply-attestations)
@@ -77,6 +77,10 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
         - [Notes](#notes)
         - [Mapping Files](#mapping-files)
 - [License and Author](#license-and-author)
+    - [Authors](#authors)
+    - [NOTICE](#notice)
+    - [NOTICE](#notice-1)
+    - [NOTICE](#notice-2)
 
 ## Installation
 
@@ -136,6 +140,7 @@ To install the latest release of the SAF CLI on Windows, download and run the mo
 To update the SAF CLI on Windows, uninstall any existing version from your system and then download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases) page.
 
 ## Usage
+
 ---
 
 ### Attest
