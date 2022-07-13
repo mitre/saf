@@ -159,7 +159,9 @@ export default class GenerateDelta extends Command {
       }
 
       // Find the difference between existingProfile and updatedXCCDF
-      const diff = diffProfile(existingProfile, updatedXCCDF)
+      const outputDiff = diffProfile(existingProfile, updatedXCCDF)
+
+      const diff = outputDiff.simplified
 
       // Add all new controls to the existingControlsRubyCode
       diff.addedControlIDs.forEach((controlId: string) => {
@@ -270,7 +272,7 @@ export default class GenerateDelta extends Command {
 
       logger.info(`Writing delta file for ${existingProfile.title}`)
       // Write the delta to a file
-      fs.writeFileSync(path.join(flags.output, 'delta.json'), JSON.stringify(diff, null, 2))
+      fs.writeFileSync(path.join(flags.output, 'delta.json'), JSON.stringify(outputDiff, null, 2))
     } else {
       logger.error('Could not generate delta because one or more of the following variables were not satisfied:')
 
