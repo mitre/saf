@@ -4,7 +4,6 @@ import {diffProfile, processJSON, processXCCDF} from '@mitre/inspec-objects'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
-import {knownInspecMetadataKeys} from '../../utils/global'
 import {escapeDoubleQuotes, wrap, wrapAndEscapeQuotes} from '../../utils/xccdf2inspec'
 
 export default class GenerateDelta extends Command {
@@ -16,6 +15,9 @@ export default class GenerateDelta extends Command {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true, multiple: true, description: 'Input execution/profile JSON file(s) OR InSpec Profile Folder, and the updated XCCDF XML files'}),
     output: Flags.string({char: 'o', required: true, description: 'Output updated profile folder'}),
+    useGroupID: Flags.boolean({char: 'g', description: "Use Group ID instead of STIG ID (Also known as legacy IDs) instead of Vulnerbility IDs (ex. 'SV-XXXXX')"}),
+    useVulnerabilityId: Flags.boolean({char: 'r', required: false, default: true, description: "Use Vulnerability IDs (ex. 'SV-XXXXX')", exclusive: ['useStigID']}),
+    useStigID: Flags.boolean({char: 'S', required: false, default: false, description: "Use STIG IDs (ex. RHEL-07-010020, also known as Version) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs", exclusive: ['useVulnerabilityId']}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
@@ -89,7 +91,14 @@ export default class GenerateDelta extends Command {
             // Attempt to read the file as an XCCDF XML file
             logger.debug(`Loading ${inputPath}`)
             const xccdfData = fs.readFileSync(inputPath, 'utf8')
-            updatedXCCDF = processXCCDF(xccdfData, true)
+            if (flags.useGroupID) {
+              updatedXCCDF = processXCCDF(xccdfData, false, 'group')
+            } else if (flags.useVulnerabilityId) {
+              updatedXCCDF = processXCCDF(xccdfData, false, 'rule')
+            } else if (flags.useStigID) {
+              updatedXCCDF = processXCCDF(xccdfData, false, 'version')
+            }
+
             logger.debug(`Loaded ${inputPath} as XCCDF`)
           } catch (xccdfError) {
             logger.error(`Could not load ${inputPath} as an execution/profile JSON because:`)
@@ -195,7 +204,7 @@ export default class GenerateDelta extends Command {
         fs.writeFileSync(path.join(flags.output, 'controls', `${controlId}.rb`), updatedControlText)
       })
 
-      logger.info(`Generating delta for ${existingProfile.title}`)
+      logger.info(`Writing delta file for ${existingProfile.title}`)
       // Write the delta to a file
       fs.writeFileSync(path.join(flags.output, 'delta.json'), JSON.stringify(diff, null, 2))
     } else {
