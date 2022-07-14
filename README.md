@@ -673,11 +673,12 @@ NOTE: `xccdf_results2hdf` only supports native OpenSCAP output and SCC output.
 convert xccdf_results2hdf    Translate a SCAP client XCCDF-Results XML report to
                              HDF format Json be viewed on Heimdall
   OPTIONS
-    -i, --input=input          Input XCCDF Results XML File
-    -o, --output=output        Output HDF JSON File
+    -i, --input=input          (required) Input XCCDF Results XML file
+    -o, --output=output        (required) Output HDF JSON file
+    -w, --with-raw             Append raw input file to HDF output file 
 
   EXAMPLES
-    saf convert xccdf_results2hdf -i results-xccdf.xml -o output-hdf-name.json
+    saf convert xccdf_results2hdf -i results-xccdf.xml -o output-hdf-name.json -w
 
 ```
 
