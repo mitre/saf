@@ -183,8 +183,9 @@ convert hdf2asff              Translate a Heimdall Data Format JSON file into
   FLAGS
     -C, --certificate=<value>     Trusted signing certificate file
     -I, --insecure                Disable SSL verification, this is insecure.
-    -R, --specifyRegionAttribute  Manually specify the top-level `Region` attribute - SecurityHub populates this attribute automatically and prohibits one from updating it using
-                                  `BatchImportFindings` or `BatchUpdateFindings`
+    -R, --specifyRegionAttribute  Manually specify the top-level `Region` attribute - SecurityHub
+                                  populates this attribute automatically and prohibits one from
+                                  updating it using `BatchImportFindings` or `BatchUpdateFindings`
     -a, --accountId=<value>       (required) AWS Account ID
     -h, --help                    Show CLI help.
     -i, --input=<value>           (required) Input HDF JSON File
@@ -297,8 +298,7 @@ convert hdf2csv               Translate a Heimdall Data Format JSON file into a
     $ saf convert hdf2csv -i <hdf-scan-results-json> -o <output-csv> [-h] [-f <csv-fields>] [-t]
 
   FLAGS
-    -f, --fields=<value>  [default: Results Set,Status,ID,Title,Description,Descriptions,Impact,Severity,Code,Check,Fix,800-53 Controls,CCI IDs,Results,Waived,Waiver Data] Fields to include in
-                          output CSV, separated by commas
+    -f, --fields=<value>  [default: All Fields] Fields to include in output CSV, separated by commas
     -h, --help            Show CLI help.
     -i, --input=<value>   (required) Input HDF file
     -o, --output=<value>  (required) Output CSV file
@@ -360,8 +360,9 @@ convert asff2hdf              Translate a AWS Security Finding Format JSON into 
     -o, --output=<value>       (required) Output HDF JSON folder
     -r, --region=<value>       Security Hub region to pull findings from
     -t, --target=<value>...    Target ID(s) to pull from Security Hub (maximum 10), leave blank for non-HDF findings
-    --securityhub=<value>...   Additional input files to provide context that an ASFF file needs such as the CIS AWS Foundations or AWS Foundational Security Best Practices documents (in ASFF
-                              compliant JSON form)
+    --securityhub=<value>...   Additional input files to provide context that an ASFF file needs
+                               such as the CIS AWS Foundations or AWS Foundational Security Best
+                               Practices documents (in ASFF compliant JSON form)
 
   EXAMPLES
     $ saf convert asff2hdf -i asff-findings.json -o output-folder-name
