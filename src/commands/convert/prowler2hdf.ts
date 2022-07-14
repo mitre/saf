@@ -1,7 +1,7 @@
-import { Command, Flags } from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import { ASFFResults as Mapper } from '@mitre/hdf-converters'
-import { checkInput, checkSuffix } from '../../utils/global'
+import {ASFFResults as Mapper} from '@mitre/hdf-converters'
+import {checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
 
@@ -13,15 +13,15 @@ export default class Prowler2HDF extends Command {
   static examples = ['saf convert prowler2hdf -i prowler-asff.json -o output-folder']
 
   static flags = {
-    help: Flags.help({ char: 'h' }),
-    input: Flags.string({ char: 'i', required: true, description: 'Input Prowler ASFF JSON File' }),
-    output: Flags.string({ char: 'o', required: true, description: 'Output HDF JSON Folder' }),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true, description: 'Input Prowler ASFF JSON File'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON Folder'}),
   }
 
   async run() {
-    const { flags } = await this.parse(Prowler2HDF)
+    const {flags} = await this.parse(Prowler2HDF)
     const data = fs.readFileSync(flags.input, 'utf8')
-    checkInput({ data: data, filename: flags.input }, 'asff', 'Prowler-derived AWS Security Finding Format results')
+    checkInput({data: data, filename: flags.input}, 'asff', 'Prowler-derived AWS Security Finding Format results')
     const converter = new Mapper(data)
     const results = converter.toHdf()
 

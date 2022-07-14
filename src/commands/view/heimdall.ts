@@ -1,9 +1,9 @@
-import { Command, Flags } from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 import express from 'express'
 import fs from 'fs'
 import path from 'path'
 import open from 'open'
-import { getInstalledPath } from '../../utils/global'
+import {getInstalledPath} from '../../utils/global'
 
 export default class Heimdall extends Command {
   static aliases = ['heimdall']
@@ -15,14 +15,14 @@ export default class Heimdall extends Command {
   static examples = ['saf view heimdall -p 8080']
 
   static flags = {
-    help: Flags.help({ char: 'h' }),
-    port: Flags.integer({ char: 'p', required: false, default: 3000, description: 'Port To Expose Heimdall On (Default 3000)' }),
-    files: Flags.string({ char: 'f', required: false, multiple: true, description: 'File(s) to display in Heimdall' }),
-    noOpenBrowser: Flags.boolean({ char: 'n', required: false, default: false, description: "Don't open the default browser automatically" }),
+    help: Flags.help({char: 'h'}),
+    port: Flags.integer({char: 'p', required: false, default: 3000, description: 'Port To Expose Heimdall On (Default 3000)'}),
+    files: Flags.string({char: 'f', required: false, multiple: true, description: 'File(s) to display in Heimdall'}),
+    noOpenBrowser: Flags.boolean({char: 'n', required: false, default: false, description: "Don't open the default browser automatically"}),
   }
 
   async run() {
-    const { flags, args } = await this.parse(Heimdall)
+    const {flags, args} = await this.parse(Heimdall)
     let parsedJSONs: Record<string, any>[] = []
 
     // Is the defined port valid?
@@ -39,7 +39,7 @@ export default class Heimdall extends Command {
       }
 
       parsedJSONs = flags.files.map(file => {
-        return { filename: path.parse(file).base, data: fs.readFileSync(file, 'utf8') }
+        return {filename: path.parse(file).base, data: fs.readFileSync(file, 'utf8')}
       })
     }
 
@@ -60,8 +60,8 @@ export default class Heimdall extends Command {
     const installedPath = getInstalledPath()
 
     express()
-      .use(predefinedLoadJSON)
-      .use(express.static(path.join(installedPath, 'node_modules/@mitre/heimdall-lite/dist')))
-      .listen(flags.port)
+    .use(predefinedLoadJSON)
+    .use(express.static(path.join(installedPath, 'node_modules/@mitre/heimdall-lite/dist')))
+    .listen(flags.port)
   }
 }

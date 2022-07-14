@@ -1,7 +1,7 @@
-import { Command, Flags } from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import { SarifMapper as Mapper } from '@mitre/hdf-converters'
-import { checkInput, checkSuffix } from '../../utils/global'
+import {SarifMapper as Mapper} from '@mitre/hdf-converters'
+import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class Sarif2HDF extends Command {
   static usage = 'convert sarif2hdf -i <sarif-json> -o <hdf-scan-results-json> [-h]'
@@ -11,17 +11,17 @@ export default class Sarif2HDF extends Command {
   static examples = ['saf convert sarif2hdf -i sarif-results.json -o output-hdf-name.json']
 
   static flags = {
-    help: Flags.help({ char: 'h' }),
-    input: Flags.string({ char: 'i', required: true, description: 'Input SARIF JSON File' }),
-    output: Flags.string({ char: 'o', required: true, description: 'Output HDF JSON File' }),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true, description: 'Input SARIF JSON File'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
   }
 
   async run() {
-    const { flags } = await this.parse(Sarif2HDF)
+    const {flags} = await this.parse(Sarif2HDF)
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8')
-    checkInput({ data: data, filename: flags.input }, 'sarif', 'SARIF JSON')
+    checkInput({data: data, filename: flags.input}, 'sarif', 'SARIF JSON')
 
     const converter = new Mapper(data)
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
