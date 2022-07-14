@@ -1,11 +1,11 @@
-import { Command, Flags } from '@oclif/core'
-import { ContextualizedEvaluation, ContextualizedProfile, convertFileContextual } from 'inspecjs'
+import {Command, Flags} from '@oclif/core'
+import {ContextualizedEvaluation, ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import fs from 'fs'
 import YAML from 'yaml'
-import { calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject } from '../../utils/threshold'
+import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 import _ from 'lodash'
 import flat from 'flat'
-import { convertFullPathToFilename } from '../../utils/global'
+import {convertFullPathToFilename} from '../../utils/global'
 
 export default class Summary extends Command {
   static aliases = ['summary']
@@ -15,16 +15,16 @@ export default class Summary extends Command {
   static description = 'Get a quick compliance overview of an HDF file '
 
   static flags = {
-    help: Flags.help({ char: 'h' }),
-    input: Flags.string({ char: 'i', required: true, multiple: true, description: 'Input HDF files' }),
-    json: Flags.boolean({ char: 'j', required: false, description: 'Output results as JSON' }),
-    output: Flags.string({ char: 'o', required: false }),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true, multiple: true, description: 'Input HDF files'}),
+    json: Flags.boolean({char: 'j', required: false, description: 'Output results as JSON'}),
+    output: Flags.string({char: 'o', required: false}),
   }
 
   static examples = ['saf view summary -i rhel7-results.json']
 
   async run() {
-    const { flags } = await this.parse(Summary)
+    const {flags} = await this.parse(Summary)
     const summaries: Record<string, Record<string, Record<string, number>>[]> = {}
     const complianceScores: Record<string, number[]> = {}
 

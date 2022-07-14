@@ -1,11 +1,11 @@
-import { Command, Flags } from '@oclif/core'
-import { ContextualizedEvaluation, contextualizeEvaluation } from 'inspecjs'
+import {Command, Flags} from '@oclif/core'
+import {ContextualizedEvaluation, contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
 import fs from 'fs'
 import ObjectsToCsv from 'objects-to-csv'
-import { ControlSetRows } from '../../types/csv'
-import { convertRow, csvExportFields } from '../../utils/csv'
-import { convertFullPathToFilename } from '../../utils/global'
+import {ControlSetRows} from '../../types/csv'
+import {convertRow, csvExportFields} from '../../utils/csv'
+import {convertFullPathToFilename} from '../../utils/global'
 
 export default class HDF2CSV extends Command {
   static usage = 'convert hdf2csv -i <hdf-scan-results-json> -o <output-csv> [-h] [-f <csv-fields>] [-t]'
@@ -13,11 +13,11 @@ export default class HDF2CSV extends Command {
   static description = 'Translate a Heimdall Data Format JSON file into a Comma Separated Values (CSV) file'
 
   static flags = {
-    help: Flags.help({ char: 'h' }),
-    input: Flags.string({ char: 'i', required: true, description: 'Input HDF file' }),
-    output: Flags.string({ char: 'o', required: true, description: 'Output CSV file' }),
-    fields: Flags.string({ char: 'f', required: false, default: csvExportFields.join(','), description: 'Fields to include in output CSV, separated by commas' }),
-    noTruncate: Flags.boolean({ char: 't', required: false, default: false, description: "Don't truncate fields longer than 32,767 characters (the cell limit in Excel)" }),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true, description: 'Input HDF file'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output CSV file'}),
+    fields: Flags.string({char: 'f', required: false, default: csvExportFields.join(','), description: 'Fields to include in output CSV, separated by commas'}),
+    noTruncate: Flags.boolean({char: 't', required: false, default: false, description: "Don't truncate fields longer than 32,767 characters (the cell limit in Excel)"}),
   }
 
   static examples = ['saf convert hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"']
@@ -28,7 +28,7 @@ export default class HDF2CSV extends Command {
   }
 
   async run() {
-    const { flags } = await this.parse(HDF2CSV)
+    const {flags} = await this.parse(HDF2CSV)
     const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf8')))
 
     // Convert all controls from a file to ControlSetRows
@@ -43,7 +43,7 @@ export default class HDF2CSV extends Command {
             console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`)
           }
 
-          cleanedRow[key] = _.truncate(row[key], { length: 32757, omission: 'TRUNCATED' })
+          cleanedRow[key] = _.truncate(row[key], {length: 32757, omission: 'TRUNCATED'})
         } else {
           cleanedRow[key] = row[key]
         }

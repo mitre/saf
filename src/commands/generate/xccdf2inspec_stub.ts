@@ -1,13 +1,13 @@
 /* eslint-disable no-negated-condition */
-import { Command, Flags } from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import { DecodedDescription, DisaStig } from '../../types/xccdf'
-import { InSpecControl, InSpecMetaData } from '../../types/inspec'
-import { convertEncodedHTMLIntoJson, convertEncodedXmlIntoJson, impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact } from '../../utils/xccdf2inspec'
+import {DecodedDescription, DisaStig} from '../../types/xccdf'
+import {InSpecControl, InSpecMetaData} from '../../types/inspec'
+import {convertEncodedHTMLIntoJson, convertEncodedXmlIntoJson, impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact} from '../../utils/xccdf2inspec'
 import path from 'path'
 import _ from 'lodash'
 import YAML from 'yaml'
-import { CciNistMappingData } from '@mitre/hdf-converters'
+import {CciNistMappingData} from '@mitre/hdf-converters'
 
 export default class XCCDF2InSpec extends Command {
   static usage = 'generate xccdf2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-s] [-r | -S] [-l <line-length>] [-e]'
@@ -15,19 +15,19 @@ export default class XCCDF2InSpec extends Command {
   static description = 'Translate a DISA STIG XCCDF XML file to a skeleton for an InSpec profile'
 
   static flags = {
-    help: Flags.help({ char: 'h' }),
-    input: Flags.string({ char: 'i', required: true, description: 'Path to the DISA STIG XCCDF file' }),
-    metadata: Flags.string({ char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file' }),
-    singleFile: Flags.boolean({ char: 's', required: false, default: false, description: 'Output the resulting controls as a single file' }),
-    useVulnerabilityId: Flags.boolean({ char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')", exclusive: ['useStigID'] }),
-    useStigID: Flags.boolean({ char: 'S', required: false, default: false, description: "Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs", exclusive: ['useVulnerabilityId'] }),
-    lineLength: Flags.integer({ char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls' }),
-    encodingHeader: Flags.boolean({ char: 'e', required: false, default: false, description: 'Add the "# encoding: UTF-8" comment at the top of each control' }),
-    output: Flags.string({ char: 'o', required: true, default: 'profile' }),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true, description: 'Path to the DISA STIG XCCDF file'}),
+    metadata: Flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
+    singleFile: Flags.boolean({char: 's', required: false, default: false, description: 'Output the resulting controls as a single file'}),
+    useVulnerabilityId: Flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')", exclusive: ['useStigID']}),
+    useStigID: Flags.boolean({char: 'S', required: false, default: false, description: "Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs", exclusive: ['useVulnerabilityId']}),
+    lineLength: Flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
+    encodingHeader: Flags.boolean({char: 'e', required: false, default: false, description: 'Add the "# encoding: UTF-8" comment at the top of each control'}),
+    output: Flags.string({char: 'o', required: true, default: 'profile'}),
   }
 
   async run() {
-    const { flags } = await this.parse(XCCDF2InSpec)
+    const {flags} = await this.parse(XCCDF2InSpec)
 
     // Check if the output folder already exists
     if (!fs.existsSync(flags.output)) {
@@ -178,7 +178,7 @@ export default class XCCDF2InSpec extends Command {
         fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader))
       })
     } else {
-      const controlOutfile = fs.createWriteStream(path.join(flags.output, 'controls', 'controls.rb'), { flags: 'w' })
+      const controlOutfile = fs.createWriteStream(path.join(flags.output, 'controls', 'controls.rb'), {flags: 'w'})
       inspecControls.forEach(control => {
         controlOutfile.write(inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader) + '\n\n')
       })

@@ -1,10 +1,10 @@
-import { Command, Flags } from '@oclif/core'
-import { ContextualizedProfile, convertFileContextual } from 'inspecjs'
+import {Command, Flags} from '@oclif/core'
+import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import _ from 'lodash'
 import fs from 'fs'
 import YAML from 'yaml'
-import { ThresholdValues } from '../../types/threshold'
-import { calculateCompliance, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject } from '../../utils/threshold'
+import {ThresholdValues} from '../../types/threshold'
+import {calculateCompliance, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 
 export default class GenerateThreshold extends Command {
   static usage = 'generate threshold -i <hdf-json> -o <threshold-yaml> [-h] [-e] [-c]'
@@ -14,15 +14,15 @@ export default class GenerateThreshold extends Command {
   static examples = ['saf generate threshold -i rhel7-results.json -e -c -o output.yaml']
 
   static flags = {
-    help: Flags.help({ char: 'h' }),
-    input: Flags.string({ char: 'i', required: true }),
-    output: Flags.string({ char: 'o', required: true }),
-    exact: Flags.boolean({ char: 'e', description: 'All counts should be exactly the same when validating, not just less than or greater than' }),
-    generateControlIds: Flags.boolean({ char: 'c', required: false }),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', required: true}),
+    output: Flags.string({char: 'o', required: true}),
+    exact: Flags.boolean({char: 'e', description: 'All counts should be exactly the same when validating, not just less than or greater than'}),
+    generateControlIds: Flags.boolean({char: 'c', required: false}),
   }
 
   async run() {
-    const { flags } = await this.parse(GenerateThreshold)
+    const {flags} = await this.parse(GenerateThreshold)
     const thresholds: ThresholdValues = {}
     const parsedExecJSON = convertFileContextual(fs.readFileSync(flags.input, 'utf8'))
     const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
