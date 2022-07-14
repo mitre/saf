@@ -25,6 +25,8 @@ RUN npm install -g /build/saf.tgz
 # Useful for CI pipelines
 RUN apk add bash jq curl ca-certificates
 
+USER ${USER:-node}
+
 ENTRYPOINT ["saf"]
 VOLUME ["/share"]
 WORKDIR /share
