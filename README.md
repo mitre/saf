@@ -4,12 +4,12 @@ The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) bring
 
 The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimdall_tools) and [InSpec Tools](https://github.com/mitre/inspec_tools).
 
-## Terminology:
+## Terminology
 
 - "[Heimdall](https://github.com/mitre/heimdall2)" - Our visualizer for all security result data
 - "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - Our common data format to preserve and transform security data
 
-## Contents:
+## Contents
 
 - [SAF CLI Installation](#installation)
   - [Via NPM](#installation-via-npm)
@@ -17,8 +17,8 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
   - [Via Windows Installer](#installation-via-windows-installer)
 
 - [Security Automation Framework CLI](#security-automation-framework-cli)
-  - [Terminology:](#terminology)
-  - [Contents:](#contents)
+  - [Terminology](#terminology)
+  - [Contents](#contents)
   - [Installation](#installation)
       - [Installation via NPM](#installation-via-npm)
       - [Update via NPM](#update-via-npm)
@@ -371,7 +371,7 @@ convert burpsuite2hdf       Translate a BurpSuite Pro XML file into a Heimdall
   OPTIONS
     -i, --input=xml            Input BurpSuite Pro XML File
     -o, --output=output        Output HDF JSON File
-    -w, --with-raw             Append raw input file to HDF output file
+    -w, --with-raw             Include raw input file in HDF JSON file
 
   EXAMPLES
     saf convert burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json -w
@@ -435,7 +435,7 @@ convert twistlock2hdf        Translate a Twistlock CLI output file into an Heimd
     -h, --help            Show CLI help.
     -i, --input=<value>   (required) Input Twistlock file
     -o, --output=<value>  (required) Output HDF file
-    -w, --with-raw        Append raw input file to HDF output file
+    -w, --with-raw        Include raw input file in HDF JSON file
 
   EXAMPLES
     saf convert twistlock2hdf -i twistlock.json -o output-hdf-name.json -w
@@ -451,7 +451,7 @@ convert jfrog_xray2hdf      Translate a JFrog Xray results JSON file into a
   OPTIONS
     -i, --input=input          Input JFrog JSON File
     -o, --output=output        Output HDF JSON File
-    -w, --with-raw             Append raw input file to HDF output file
+    -w, --with-raw             Include raw input file in HDF JSON file
 
   EXAMPLES
     saf convert jfrog_xray2hdf -i xray_results.json -o output-hdf-name.json -w
@@ -490,7 +490,7 @@ convert nessus2hdf          Translate a Nessus XML results file into a Heimdall
 OPTIONS
     -i, --input=input          Input Nessus XML File
     -o, --output=output        Output HDF JSON File
-    -w, --with-raw             Append raw input file to HDF output file
+    -w, --with-raw             Include raw input file in HDF JSON file
 
   EXAMPLES
     saf convert nessus2hdf -i nessus_results.xml -o output-hdf-name.json -w
@@ -519,7 +519,7 @@ convert nikto2hdf           Translate a Nikto results JSON file into a Heimdall
   OPTIONS
     -i, --input=input          Input Nikto Results JSON File
     -o, --output=output        Output HDF JSON File
-    -w, --with-raw             Append raw input file to HDF output file
+    -w, --with-raw             Include raw input file in HDF JSON file
 
   EXAMPLES
     saf convert nikto2hdf -i nikto-results.json -o output-hdf-name.json -w
@@ -564,7 +564,7 @@ convert sarif2hdf          Translate a SARIF JSON file into a Heimdall Data
   OPTIONS
     -i, --input=input          Input SARIF JSON File
     -o, --output=output        Output HDF JSON File
-    -w, --with-raw             Append raw input file to HDF output file
+    -w, --with-raw             Include raw input file in HDF JSON file
 
   DESCRIPTION
     SARIF level to HDF impact Mapping:
@@ -587,7 +587,7 @@ convert scoutsuite2hdf       Translate a ScoutSuite results from a Javascript
   OPTIONS
     -i, --input=input          Input ScoutSuite Results JS File
     -o, --output=output        Output HDF JSON File
-    -w, --with-raw             Append raw input file to HDF output file
+    -w, --with-raw             Include raw input file in HDF JSON file
 
   DESCRIPTION
     Note: Currently this mapper only supports AWS.
@@ -699,7 +699,7 @@ convert zap2hdf              Translate a OWASP ZAP results JSON to HDF format Js
     -i, --input=input          Input OWASP ZAP Results JSON File
     -n, --name=name            Target Site Name
     -o, --output=output        Output HDF JSON File
-    -w, --with-raw             Append raw input file to HDF output file
+    -w, --with-raw             Include raw input file in HDF JSON file
 
   EXAMPLES
     saf convert zap2hdf -i zap_results.json -n mitre.org -o output-hdf-name.json -w

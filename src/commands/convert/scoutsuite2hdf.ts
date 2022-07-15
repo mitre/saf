@@ -4,11 +4,11 @@ import {ScoutsuiteMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class Scoutsuite2HDF extends Command {
-  static usage = 'convert scoutsuite2hdf -i, --input=SCOUTSUITE-RESULTS-JS -o, --output=OUTPUT -w, --with-raw'
+  static usage = 'convert scoutsuite2hdf -i, --input=SCOUTSUITE-RESULTS-JS -o, --output=OUTPUT'
 
   static description = 'Translate a ScoutSuite results from a Javascript object into a Heimdall Data Format JSON file\nNote: Currently this mapper only supports AWS.'
 
-  static examples = ['saf convert scoutsuite2hdf -i scoutsuite-results.js -o output-hdf-name.json -w']
+  static examples = ['saf convert scoutsuite2hdf -i scoutsuite-results.js -o output-hdf-name.json']
 
   static flags = {
     help: Flags.help({char: 'h'}),
