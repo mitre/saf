@@ -8,13 +8,13 @@ export default class Zap2HDF extends Command {
 
   static description = 'Translate a OWASP ZAP results JSON to HDF format Json be viewed on Heimdall'
 
-  static examples = ['saf convert zap2hdf -i zap-results.json -n site-name -o output-hdf-name.json -w']
+  static examples = ['saf convert zap2hdf -i zap_results.json -n site_name -o scan_results.json -w']
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Input OWASP ZAP file'}),
-    name: Flags.string({char: 'n', required: true, description: 'Target site name'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output HDF file'}),
+    input: Flags.string({char: 'i', required: true}),
+    name: Flags.string({char: 'n', required: true}),
+    output: Flags.string({char: 'o', required: true}),
     'with-raw': Flags.boolean({char: 'w', required: false}),
   }
 

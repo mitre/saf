@@ -12,8 +12,8 @@ export default class Nikto2HDF extends Command {
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Input Nikto file'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output HDF file'}),
+    input: Flags.string({char: 'i', required: true}),
+    output: Flags.string({char: 'o', required: true}),
     'with-raw': Flags.boolean({char: 'w', required: false}),
   }
 
