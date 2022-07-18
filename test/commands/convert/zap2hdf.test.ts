@@ -20,13 +20,13 @@ describe('Test zap', () => {
   ])
   .it('hdf-converter output test - webgoat', () => {
     const test = JSON.parse(
-      fs.readFileSync(`${tmpobj.name}/zaptest-webgoat.json`, 'utf8')
+      fs.readFileSync(`${tmpobj.name}/zaptest-webgoat.json`, 'utf8'),
     )
     const sample = JSON.parse(
       fs.readFileSync(
         path.resolve('./test/sample_data/zap/zap-webgoat-hdf.json'),
-        'utf8'
-      )
+        'utf8',
+      ),
     )
     expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
   })
@@ -36,7 +36,7 @@ describe('Test zap', () => {
     'convert zap2hdf',
     '-i',
     path.resolve(
-      './test/sample_data/zap/sample_input_report/zero.webappsecurity.json'
+      './test/sample_data/zap/sample_input_report/zero.webappsecurity.json',
     ),
     '-n',
     'http://zero.webappsecurity.com',
@@ -45,13 +45,13 @@ describe('Test zap', () => {
   ])
   .it('hdf-converter output test - zero.webappsecurity', () => {
     const test = JSON.parse(
-      fs.readFileSync(`${tmpobj.name}/zaptest-webappsecurity.json`, 'utf8')
+      fs.readFileSync(`${tmpobj.name}/zaptest-webappsecurity.json`, 'utf8'),
     )
     const sample = JSON.parse(
       fs.readFileSync(
         path.resolve('./test/sample_data/zap/zap-webappsecurity-hdf.json'),
-        'utf8'
-      )
+        'utf8',
+      ),
     )
     expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
   })
@@ -74,13 +74,13 @@ describe('Test zap withraw flag', () => {
   ])
   .it('hdf-converter withraw output test - webgoat', () => {
     const test = JSON.parse(
-      fs.readFileSync(`${tmpobj.name}/zaptest-webgoat.json`, 'utf8')
+      fs.readFileSync(`${tmpobj.name}/zaptest-webgoat.json`, 'utf8'),
     )
     const sample = JSON.parse(
       fs.readFileSync(
         path.resolve('./test/sample_data/zap/zap-webgoat-hdf-withraw.json'),
-        'utf8'
-      )
+        'utf8',
+      ),
     )
     expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
   })
@@ -90,7 +90,7 @@ describe('Test zap withraw flag', () => {
     'convert zap2hdf',
     '-i',
     path.resolve(
-      './test/sample_data/zap/sample_input_report/zero.webappsecurity.json'
+      './test/sample_data/zap/sample_input_report/zero.webappsecurity.json',
     ),
     '-n',
     'http://zero.webappsecurity.com',
@@ -100,15 +100,15 @@ describe('Test zap withraw flag', () => {
   ])
   .it('hdf-converter withraw output test - zero.webappsecurity', () => {
     const test = JSON.parse(
-      fs.readFileSync(`${tmpobj.name}/zaptest-webappsecurity.json`, 'utf8')
+      fs.readFileSync(`${tmpobj.name}/zaptest-webappsecurity.json`, 'utf8'),
     )
     const sample = JSON.parse(
       fs.readFileSync(
         path.resolve(
-          './test/sample_data/zap/zap-webappsecurity-hdf-withraw.json'
+          './test/sample_data/zap/zap-webappsecurity-hdf-withraw.json',
         ),
-        'utf8'
-      )
+        'utf8',
+      ),
     )
     expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
   })

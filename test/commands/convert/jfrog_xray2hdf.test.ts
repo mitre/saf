@@ -13,23 +13,23 @@ describe('Test jfrog_xray', () => {
     'convert jfrog_xray2hdf',
     '-i',
     path.resolve(
-      './test/sample_data/jfrog_xray/sample_input_report/jfrog_xray_sample.json'
+      './test/sample_data/jfrog_xray/sample_input_report/jfrog_xray_sample.json',
     ),
     '-o',
     `${tmpobj.name}/jfrogtest.json`,
   ])
   .it('hdf-converter output test', () => {
     const converted = JSON.parse(
-      fs.readFileSync(`${tmpobj.name}/jfrogtest.json`, 'utf8')
+      fs.readFileSync(`${tmpobj.name}/jfrogtest.json`, 'utf8'),
     )
     const sample = JSON.parse(
       fs.readFileSync(
         path.resolve('./test/sample_data/jfrog_xray/jfrog-hdf.json'),
-        'utf8'
-      )
+        'utf8',
+      ),
     )
     expect(omitHDFChangingFields(converted)).to.eql(
-      omitHDFChangingFields(sample)
+      omitHDFChangingFields(sample),
     )
   })
 })
@@ -43,7 +43,7 @@ describe('Test jfrog_xray withraw flag', () => {
     'convert jfrog_xray2hdf',
     '-i',
     path.resolve(
-      './test/sample_data/jfrog_xray/sample_input_report/jfrog_xray_sample.json'
+      './test/sample_data/jfrog_xray/sample_input_report/jfrog_xray_sample.json',
     ),
     '-o',
     `${tmpobj.name}/jfrogtest.json`,
@@ -51,16 +51,16 @@ describe('Test jfrog_xray withraw flag', () => {
   ])
   .it('hdf-converter withraw output test', () => {
     const converted = JSON.parse(
-      fs.readFileSync(`${tmpobj.name}/jfrogtest.json`, 'utf8')
+      fs.readFileSync(`${tmpobj.name}/jfrogtest.json`, 'utf8'),
     )
     const sample = JSON.parse(
       fs.readFileSync(
         path.resolve('./test/sample_data/jfrog_xray/jfrog-hdf-withraw.json'),
-        'utf8'
-      )
+        'utf8',
+      ),
     )
     expect(omitHDFChangingFields(converted)).to.eql(
-      omitHDFChangingFields(sample)
+      omitHDFChangingFields(sample),
     )
   })
 })
