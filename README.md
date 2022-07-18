@@ -181,17 +181,17 @@ convert hdf2asff              Translate a Heimdall Data Format JSON file into
     $ saf convert hdf2asff -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] (-u [-I -C <certificate>] | [-o <asff-output-folder>])
 
   FLAGS
-    -C, --certificate=<value>     Trusted signing certificate file
-    -I, --insecure                Disable SSL verification, this is insecure.
-    -R, --specifyRegionAttribute  Manually specify the top-level `Region` attribute - SecurityHub
-                                  populates this attribute automatically and prohibits one from
-                                  updating it using `BatchImportFindings` or `BatchUpdateFindings`
-    -a, --accountId=<value>       (required) AWS Account ID
-    -h, --help                    Show CLI help.
-    -i, --input=<value>           (required) Input HDF JSON File
-    -o, --output=<value>          Output ASFF JSON Folder
-    -r, --region=<value>          (required) SecurityHub Region
-    -t, --target=<value>          (required) Unique name for target to track findings across time
+    -C, --certificate=<certificate>           Trusted signing certificate file
+    -I, --insecure                            Disable SSL verification, this is insecure.
+    -R, --specifyRegionAttribute              Manually specify the top-level `Region` attribute - SecurityHub
+                                              populates this attribute automatically and prohibits one from
+                                              updating it using `BatchImportFindings` or `BatchUpdateFindings`
+    -a, --accountId=<account-id>              (required) AWS Account ID
+    -h, --help                                Show CLI help.
+    -i, --input=<hdf-scan-results-json>       (required) Input HDF JSON File
+    -o, --output=<asff-output-folder>         Output ASFF JSON Folder
+    -r, --region=<region>          (required) SecurityHub Region
+    -t, --target=<target>          (required) Unique name for target to track findings across time
     -u, --upload                  Upload findings to AWS Security Hub
   EXAMPLES
     $ saf convert hdf2asff -i rhel7-scan_02032022A.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7.asff
@@ -210,18 +210,18 @@ convert hdf2splunk            Translate and upload a Heimdall Data Format JSON f
     $ saf convert hdf2splunk -i <hdf-scan-results-json> -H <host> -I <index> [-h] [-P <port>] [-s http|https] [-u <username> | -t <token>] [-p <password>] [-L info|warn|debug|verbose]
 
   FLAGS
-    -H, --host=<value>       (required) Splunk Hostname or IP
-    -I, --index=<value>      (required) Splunk index to import HDF data into
-    -L, --logLevel=<option>  [default: info]
-                            <options: info|warn|debug|verbose>
-    -P, --port=<value>       [default: 8089] Splunk management port (also known as the Universal Forwarder port)
-    -h, --help               Show CLI help.
-    -i, --input=<value>      (required) Input HDF file
-    -p, --password=<value>   Your Splunk password
-    -s, --scheme=<option>    [default: https] HTTP Scheme used for communication with splunk
-                            <options: http|https>
-    -t, --token=<value>      Your Splunk API Token
-    -u, --username=<value>   Your Splunk username
+    -H, --host=<host>                       (required) Splunk Hostname or IP
+    -I, --index=<index>                     (required) Splunk index to import HDF data into
+    -L, --logLevel=<option>                 [default: info]
+                                            <options: info|warn|debug|verbose>
+    -P, --port=<port>                       [default: 8089] Splunk management port (also known as the Universal Forwarder port)
+    -h, --help                              Show CLI help.
+    -i, --input=<hdf-scan-results-json>     (required) Input HDF file
+    -p, --password=<password>               Your Splunk password
+    -s, --scheme=<option>                   [default: https] HTTP Scheme used for communication with splunk
+                                            <options: http|https>
+    -t, --token=<token>                     Your Splunk API Token
+    -u, --username=<username>               Your Splunk username
 
   EXAMPLES
     $ saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf
@@ -258,9 +258,9 @@ convert hdf2xccdf             Translate an HDF file into an XCCDF XML
     $ saf convert hdf2xccdf -i <hdf-scan-results-json> -o <output-xccdf-xml> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input HDF file
-    -o, --output=<value>  (required) Output XCCDF XML File
+    -h, --help                              Show CLI help.
+    -i, --input=<hdf-scan-results-json>     (required) Input HDF file
+    -o, --output=<output-xccdf-xml>         (required) Output XCCDF XML File
 
   EXAMPLES
     $ saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml
@@ -275,14 +275,14 @@ convert hdf2ckl               Translate a Heimdall Data Format JSON file into a
     $ saf convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [-H <hostname>] [-F <fqdn>] [-M <mac-address>] [-I <ip-address>]
 
   FLAGS
-    -F, --fqdn=<value>      FQDN for CKL metadata
-    -H, --hostname=<value>  Hostname for CKL metadata
-    -I, --ip=<value>        IP address for CKL metadata
-    -M, --mac=<value>       MAC address for CKL metadata
-    -h, --help              Show CLI help.
-    -i, --input=<value>     (required) Input HDF file
-    -m, --metadata=<value>  Metadata JSON file, generate one with "saf generate ckl_metadata"
-    -o, --output=<value>    (required) Output CKL file
+    -F, --fqdn=<fqdn>                       FQDN for CKL metadata
+    -H, --hostname=<hostname>               Hostname for CKL metadata
+    -I, --ip=<ip-address>                   IP address for CKL metadata
+    -M, --mac=<mac-address>                 MAC address for CKL metadata
+    -h, --help                              Show CLI help.
+    -i, --input=<hdf-scan-results-json>     (required) Input HDF file
+    -m, --metadata=<metadata>               Metadata JSON file, generate one with "saf generate ckl_metadata"
+    -o, --output=<output-ckl>               (required) Output CKL file
 
   EXAMPLES
     $ saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90
@@ -297,11 +297,11 @@ convert hdf2csv               Translate a Heimdall Data Format JSON file into a
     $ saf convert hdf2csv -i <hdf-scan-results-json> -o <output-csv> [-h] [-f <csv-fields>] [-t]
 
   FLAGS
-    -f, --fields=<value>  [default: All Fields] Fields to include in output CSV, separated by commas
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input HDF file
-    -o, --output=<value>  (required) Output CSV file
-    -t, --noTruncate      Don't truncate fields longer than 32,767 characters (the cell limit in Excel)
+    -f, --fields=<csv-fields>               [default: All Fields] Fields to include in output CSV, separated by commas
+    -h, --help                              Show CLI help.
+    -i, --input=<hdf-scan-results-json>     (required) Input HDF file
+    -o, --output=<output-csv>               (required) Output CSV file
+    -t, --noTruncate                        Don't truncate fields longer than 32,767 characters (the cell limit in Excel)
 
   EXAMPLES
     $ saf convert hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"
@@ -317,8 +317,8 @@ convert hdf2condensed         Condensed format used by some community members
 
   FLAGS
     -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input HDF file
-    -o, --output=<value>  (required) Output condensed JSON file
+    -i, --input=<hdf-scan-results-json>     (required) Input HDF file
+    -o, --output=<condensed-json>           (required) Output condensed JSON file
 
   EXAMPLES
     $ saf convert hdf2condensed -i rhel7-results.json -o rhel7-condensed.json
@@ -349,19 +349,19 @@ convert asff2hdf              Translate a AWS Security Finding Format JSON into 
     $ saf convert asff2hdf -o <hdf-output-folder> [-h] (-i <asff-json> [--securityhub <standard-json>]... | -a -r <region> [-I | -C <certificate>] [-t <target>]) [-L info|warn|debug|verbose]
 
   FLAGS
-    -C, --certificate=<value>  Trusted signing certificate file
-    -I, --insecure             Disable SSL verification, this is insecure.
-    -L, --logLevel=<option>    [default: info]
-                              <options: info|warn|debug|verbose>
-    -a, --aws                  Pull findings from AWS Security Hub
-    -h, --help                 Show CLI help.
-    -i, --input=<value>        Input ASFF JSON file
-    -o, --output=<value>       (required) Output HDF JSON folder
-    -r, --region=<value>       Security Hub region to pull findings from
-    -t, --target=<value>...    Target ID(s) to pull from Security Hub (maximum 10), leave blank for non-HDF findings
-    --securityhub=<value>...   Additional input files to provide context that an ASFF file needs
-                               such as the CIS AWS Foundations or AWS Foundational Security Best
-                               Practices documents (in ASFF compliant JSON form)
+    -C, --certificate=<certificate>       Trusted signing certificate file
+    -I, --insecure                        Disable SSL verification, this is insecure.
+    -L, --logLevel=<option>               [default: info]
+                                          <options: info|warn|debug|verbose>
+    -a, --aws                             Pull findings from AWS Security Hub
+    -h, --help                            Show CLI help.
+    -i, --input=<asff-json>               Input ASFF JSON file
+    -o, --output=<hdf-output-folder>      (required) Output HDF JSON folder
+    -r, --region=<region>                 Security Hub region to pull findings from
+    -t, --target=<target>...              Target ID(s) to pull from Security Hub (maximum 10), leave blank for non-HDF findings
+    --securityhub=<standard-json>...      Additional input files to provide context that an ASFF file needs
+                                          such as the CIS AWS Foundations or AWS Foundational Security Best
+                                          Practices documents (in ASFF compliant JSON form)
 
   EXAMPLES
     $ saf convert asff2hdf -i asff-findings.json -o output-folder-name
@@ -381,13 +381,13 @@ convert aws_config2hdf        Pull Configuration findings from AWS Config and co
     $ saf convert aws_config2hdf -r <region> -o <hdf-scan-results-json> [-h] [-a <access-key-id>] [-s <secret-access-key>] [-t <session-token>] [-i]
 
   FLAGS
-    -a, --accessKeyId=<value>      Access key ID
-    -h, --help                     Show CLI help.
-    -i, --insecure                 Disable SSL verification, this is insecure.
-    -o, --output=<value>           (required) Output HDF JSON File
-    -r, --region=<value>           (required) Region to pull findings from
-    -s, --secretAccessKey=<value>  Secret access key
-    -t, --sessionToken=<value>     Session token
+    -a, --accessKeyId=<access-key-id>           Access key ID
+    -h, --help                                  Show CLI help.
+    -i, --insecure                              Disable SSL verification, this is insecure.
+    -o, --output=<hdf-scan-results-json>        (required) Output HDF JSON File
+    -r, --region=<region>                       (required) Region to pull findings from
+    -s, --secretAccessKey=<secret-access-key>   Secret access key
+    -t, --sessionToken=<session-token>          Session token
 
   EXAMPLES
     $ saf convert aws_config2hdf -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json
@@ -402,9 +402,9 @@ convert burpsuite2hdf         Translate a BurpSuite Pro XML file into a Heimdall
     $ saf convert burpsuite2hdf -i <burpsuite-xml> -o <hdf-scan-results-json> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input Burpsuite Pro XML File
-    -o, --output=<value>  (required) Output HDF JSON File
+    -h, --help                              Show CLI help.
+    -i, --input=<burpsuite-xml>             (required) Input Burpsuite Pro XML File
+    -o, --output=<hdf-scan-results-json>    (required) Output HDF JSON File
 
   EXAMPLES
     $ saf convert burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json
@@ -421,12 +421,12 @@ convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M file
     $ saf convert ckl2POAM -i <disa-checklist> -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]
 
   FLAGS
-    -O, --officeOrg=<value>   Default value for Office/org (prompts for each file if not set)
-    -d, --deviceName=<value>  Name of target device (prompts for each file if not set)
-    -h, --help                Show CLI help.
-    -i, --input=<value>...    (required) Path to the DISA Checklist File(s)
-    -o, --output=<value>      (required) Path to output PO&M File(s)
-    -s, --rowsToSkip=<value>  [default: 4] Rows to leave between POA&M Items for milestones
+    -O, --officeOrg=<office/org>          Default value for Office/org (prompts for each file if not set)
+    -d, --deviceName=<device-name>        Name of target device (prompts for each file if not set)
+    -h, --help                            Show CLI help.
+    -i, --input=<disa-checklist>...       (required) Path to the DISA Checklist File(s)
+    -o, --output=<poam-output-folder>     (required) Path to output PO&M File(s)
+    -s, --rowsToSkip=<num-rows>           [default: 4] Rows to leave between POA&M Items for milestones
 
   ALIASES
     $ saf convert ckl2poam
@@ -443,9 +443,9 @@ convert dbprotect2hdf         Translate a DBProtect report in "Check Results
     $ saf convert dbprotect2hdf -i <dbprotect-xml> -o <hdf-scan-results-json> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) 'Check Results Details' XML File
-    -o, --output=<value>  (required) Output HDF JSON File
+    -h, --help                            Show CLI help.
+    -i, --input=<dbprotect-xml>           (required) 'Check Results Details' XML File
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   EXAMPLES
     $ saf convert dbprotect2hdf -i check_results_details_report.xml -o output-hdf-name.json
@@ -461,9 +461,9 @@ convert fortify2hdf           Translate a Fortify results FVDL file into a Heimd
     $ saf convert fortify2hdf -i <fortify-fvdl> -o <hdf-scan-results-json> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input FVDL File
-    -o, --output=<value>  (required) Output HDF JSON File
+    -h, --help                            Show CLI help.
+    -i, --input=<fortify-fvdl>            (required) Input FVDL File
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   EXAMPLES
     $ saf convert fortify2hdf -i audit.fvdl -o output-hdf-name.json
@@ -477,16 +477,16 @@ convert ionchannel2hdf        Pull and translate SBOM data from Ion Channel
     $ saf convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json> | -a <api-key> -t <team-name> [--raw ] [-p <project>] [-A ]) [-L info|warn|debug|verbose]
 
   FLAGS
-    -A, --allProjects         Pull all projects available within your team
-    -L, --logLevel=<option>   [default: info]
-                              <options: info|warn|debug|verbose>
-    -a, --apiKey=<value>      API Key from Ion Channel user settings
-    -h, --help                Show CLI help.
-    -i, --input=<value>...    Input IonChannel JSON file
-    -o, --output=<value>      (required) Output JSON folder
-    -p, --project=<value>...  The name of the project(s) you would like to pull
-    -t, --teamName=<value>    Your team name that contains the project(s) you would like to pull data from
-    --raw                     Output Ion Channel raw data
+    -A, --allProjects                   Pull all projects available within your team
+    -L, --logLevel=<option>             [default: info]
+                                        <options: info|warn|debug|verbose>
+    -a, --apiKey=<api-key>              API Key from Ion Channel user settings
+    -h, --help                          Show CLI help.
+    -i, --input=<ionchannel-json>...    Input IonChannel JSON file
+    -o, --output=<hdf-output-folder>    (required) Output JSON folder
+    -p, --project=<project>...          The name of the project(s) you would like to pull
+    -t, --teamName=<team-name>          Your team name that contains the project(s) you would like to pull data from
+    --raw                               Output Ion Channel raw data
 ```
 
 ##### JFrog Xray to HDF
@@ -497,9 +497,9 @@ convert jfrog_xray2hdf        Translate a JFrog Xray results JSON file into a
     $ saf convert jfrog_xray2hdf -i <jfrog-xray-json> -o <hdf-scan-results-json> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input JFrog JSON File
-    -o, --output=<value>  (required) Output HDF JSON File
+    -h, --help                            Show CLI help.
+    -i, --input=<jfrog-xray-json>         (required) Input JFrog JSON File
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   EXAMPLES
     $ saf convert jfrog_xray2hdf -i xray_results.json -o output-hdf-name.json
@@ -515,9 +515,9 @@ convert nessus2hdf            Translate a Nessus XML results file into a Heimdal
     $ saf convert nessus2hdf -i <nessus-xml> -o <hdf-scan-results-json> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input Nessus XML File
-    -o, --output=<value>  (required) Output HDF JSON File
+    -h, --help                            Show CLI help.
+    -i, --input=<nessus-xml>              (required) Input Nessus XML File
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   EXAMPLES
     $ saf convert nessus2hdf -i nessus_results.xml -o output-hdf-name.json
@@ -533,9 +533,9 @@ convert netsparker2hdf        Translate a Netsparker XML results file into a
     $ saf convert netsparker2hdf -i <netsparker-xml> -o <hdf-scan-results-json> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input Netsparker XML File
-    -o, --output=<value>  (required) Output HDF JSON File
+    -h, --help                            Show CLI help.
+    -i, --input=<netsparker-xml>          (required) Input Netsparker XML File
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   EXAMPLES
     $ saf convert netsparker2hdf -i netsparker_results.xml -o output-hdf-name.json
@@ -551,9 +551,9 @@ convert nikto2hdf             Translate a Nikto results JSON file into a Heimdal
     $ saf convert nikto2hdf -i <nikto-json> -o <hdf-scan-results-json> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input Niktop Results JSON File
-    -o, --output=<value>  (required) Output HDF JSON File
+    -h, --help                            Show CLI help.
+    -i, --input=<nikto-json>              (required) Input Niktop Results JSON File
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   EXAMPLES
     $ saf convert nikto2hdf -i nikto-results.json -o output-hdf-name.json
@@ -567,9 +567,9 @@ convert prisma2hdf            Translate a Prisma Cloud Scan Report CSV file into
     $ saf convert prisma2hdf -i <prisma-cloud-csv> -o <hdf-output-folder> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Prisma Cloud Scan Report CSV
-    -o, --output=<value>  (required) Output HDF JSON file
+    -h, --help                        Show CLI help.
+    -i, --input=<prisma-cloud-csv>    (required) Prisma Cloud Scan Report CSV
+    -o, --output=<hdf-output-folder>  (required) Output HDF JSON file
 
   EXAMPLES
     $ saf convert prisma2hdf -i prismacloud-report.csv -o output-hdf-name.json
@@ -584,9 +584,9 @@ convert prowler2hdf           Translate a Prowler-derived AWS Security Finding
     $ saf convert prowler2hdf -i <prowler-finding-json> -o <hdf-output-folder> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input Prowler ASFF JSON File
-    -o, --output=<value>  (required) Output HDF JSON Folder
+    -h, --help                            Show CLI help.
+    -i, --input=<prowler-finding-json>    (required) Input Prowler ASFF JSON File
+    -o, --output=<hdf-output-folder>      (required) Output HDF JSON Folder
 
   EXAMPLES
     $ saf convert prowler2hdf -i prowler-asff.json -o output-folder
@@ -600,9 +600,9 @@ convert sarif2hdf             Translate a SARIF JSON file into a Heimdall Data
     $ saf convert sarif2hdf -i <sarif-json> -o <hdf-scan-results-json> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input SARIF JSON File
-    -o, --output=<value>  (required) Output HDF JSON File
+    -h, --help                            Show CLI help.
+    -i, --input=<sarif-json>              (required) Input SARIF JSON File
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   DESCRIPTION
     SARIF level to HDF impact Mapping:
@@ -626,9 +626,9 @@ convert scoutsuite2hdf        Translate a ScoutSuite results from a Javascript
     $ saf convert scoutsuite2hdf -i <scoutsuite-results-js> -o <hdf-scan-results-json> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input ScoutSuite Results JS File
-    -o, --output=<value>  (required) Output HDF JSON File
+    -h, --help                            Show CLI help.
+    -i, --input=<scoutsuite-results-js>   (required) Input ScoutSuite Results JS File
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   EXAMPLES
     $ saf convert scoutsuite2hdf -i scoutsuite-results.js -o output-hdf-name.json
@@ -644,9 +644,9 @@ convert snyk2hdf              Translate a Snyk results JSON file into a Heimdall
     $ saf convert snyk2hdf -i <snyk-json> -o <hdf-scan-results-json> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input Snyk Results JSON File
-    -o, --output=<value>  (required) Output HDF JSON File
+    -h, --help                            Show CLI help.
+    -i, --input=<snyk-json>               (required) Input Snyk Results JSON File
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   EXAMPLES
     $ saf convert snyk2hdf -i snyk_results.json -o output-file-prefix
@@ -662,13 +662,13 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
     $ saf convert sonarqube2hdf -n <sonar-project-key> -u <http://your.sonar.instance:9000> -a <your-sonar-api-key> [ -b <target-branch> | -p <pull-request-id> ] -o <hdf-scan-results-json>
 
   FLAGS
-    -a, --auth=<value>           (required) SonarQube API Key
-    -b, --branch=<value>         Requires Sonarqube Developer Edition or above
-    -h, --help                   Show CLI help.
-    -n, --projectKey=<value>     (required) SonarQube Project Key
-    -o, --output=<value>         (required) Output HDF JSON File
-    -p, --pullRequestID=<value>  Requires Sonarqube Developer Edition or above
-    -u, --url=<value>            (required) SonarQube Base URL (excluding '/api')
+    -a, --auth=<your-sonar-api-key>               (required) SonarQube API Key
+    -b, --branch=<target-branch>                  Requires Sonarqube Developer Edition or above
+    -h, --help                                    Show CLI help.
+    -n, --projectKey=<sonar-project-key>          (required) SonarQube Project Key
+    -o, --output=<hdf-scan-results-json>          (required) Output HDF JSON File
+    -p, --pullRequestID=<pull-request-id>         Requires Sonarqube Developer Edition or above
+    -u, --url=<http://your.sonar.instance:9000>   (required) SonarQube Base URL (excluding '/api')
 
   EXAMPLES
     $ saf convert sonarqube2hdf -n sonar_project_key -u http://sonar:9000 --auth abcdefg -p 123 -o scan_results.json
@@ -682,19 +682,19 @@ convert splunk2hdf            Pull HDF data from your Splunk instance back into 
     $ saf splunk2hdf -H <host> -I <index> [-h] [-P <port>] [-s http|https] (-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID> -o <hdf-output-folder>]
 
   FLAGS
-    -H, --host=<value>       (required) Splunk Hostname or IP
-    -I, --index=<value>      (required) Splunk index to query HDF data from
-    -L, --logLevel=<option>  [default: info]
-                            <options: info|warn|debug|verbose>
-    -P, --port=<value>       [default: 8089] Splunk management port (also known as the Universal Forwarder port)
-    -h, --help               Show CLI help.
-    -i, --input=<value>...   GUID(s) or Filename(s) from Splunk of files to convert
-    -o, --output=<value>     Output HDF JSON Folder
-    -p, --password=<value>   Your Splunk password
-    -s, --scheme=<option>    [default: https] HTTP Scheme used for communication with splunk
-                            <options: http|https>
-    -t, --token=<value>      Your Splunk API Token
-    -u, --username=<value>   Your Splunk username
+    -H, --host=<host>                   (required) Splunk Hostname or IP
+    -I, --index=<index>                 (required) Splunk index to query HDF data from
+    -L, --logLevel=<option>             [default: info]
+                                        <options: info|warn|debug|verbose>
+    -P, --port=<port>                   [default: 8089] Splunk management port (also known as the Universal Forwarder port)
+    -h, --help                          Show CLI help.
+    -i, --input=<filename/GUID>...      GUID(s) or Filename(s) from Splunk of files to convert
+    -o, --output=<hdf-output-folder>    Output HDF JSON Folder
+    -p, --password=<password>           Your Splunk password
+    -s, --scheme=<option>               [default: https] HTTP Scheme used for communication with splunk
+                                        <options: http|https>
+    -t, --token=<token>                 Your Splunk API Token
+    -u, --username=<username>           Your Splunk username
 
   EXAMPLES
     $ saf convert splunk2hdf -H 127.0.0.1 -u admin -p Valid_password! -I hdf -i some-file-in-your-splunk-instance.json -i yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder
@@ -709,9 +709,9 @@ convert trivy2hdf             Translate a Trivy-derived AWS Security Finding
     $ saf convert trivy2hdf -i <trivy-finding-json> -o <hdf-output-folder>
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input Trivy ASFF JSON File
-    -o, --output=<value>  (required) Output HDF JSON Folder
+    -h, --help                        Show CLI help.
+    -i, --input=<trivy-finding-json>  (required) Input Trivy ASFF JSON File
+    -o, --output=<hdf-output-folder>  (required) Output HDF JSON Folder
 
   DESCRIPTION
     Note: Currently this mapper only supports the results of Trivy's `image`
@@ -732,9 +732,9 @@ convert twistlock2hdf         Translate a Twistlock CLI output file into an HDF 
     $ saf convert twistlock2hdf -i <twistlock-json> -o <hdf-scan-results-json>
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input Twistlock file
-    -o, --output=<value>  (required) Output HDF JSON File
+    -h, --help                            Show CLI help.
+    -i, --input=<twistlock-json>          (required) Input Twistlock file
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   EXAMPLES
     $ saf convert twistlock2hdf -i twistlock.json -o output-hdf-name.json
@@ -750,8 +750,8 @@ convert xccdf_results2hdf     Translate a SCAP client XCCDF-Results XML report
 
   FLAGS
     -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input XCCDF Results XML File
-    -o, --output=<value>  (required) Output HDF JSON File
+    -i, --input=<xccdf-results-xml>       (required) Input XCCDF Results XML File
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   EXAMPLES
     $ saf convert xccdf_results2hdf -i results-xccdf.xml -o output-hdf-name.json
@@ -765,10 +765,10 @@ convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall D
     $ saf convert zap2hdf -i <zap-json> -n <target-site-name> -o <hdf-scan-results-json> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input OWASP Zap Results JSON File
-    -n, --name=<value>    (required) Target Site Name
-    -o, --output=<value>  (required) Output HDF JSON File
+    -h, --help                            Show CLI help.
+    -i, --input=<zap-json>                (required) Input OWASP Zap Results JSON File
+    -n, --name=<target-site-name>         (required) Target Site Name
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   EXAMPLES
     $ saf convert zap2hdf -i zap_results.json -n mitre.org -o scan_results.json
@@ -789,10 +789,10 @@ view heimdall                 Run an instance of Heimdall Lite to
     $ saf view heimdall [-h] [-p <port>] [-f <file>] [-n]
 
   FLAGS
-    -f, --files=<value>...  File(s) to display in Heimdall
+    -f, --files=<file>...   File(s) to display in Heimdall
     -h, --help              Show CLI help.
     -n, --noOpenBrowser     Don't open the default browser automatically
-    -p, --port=<value>      [default: 3000] Port To Expose Heimdall On (Default 3000)
+    -p, --port=<port>       [default: 3000] Port To Expose Heimdall On (Default 3000)
 
   ALIASES
     $ saf heimdall
@@ -812,10 +812,10 @@ view summary                  Get a quick compliance overview of an HDF file
     $ saf view summary -i <hdf-file> [-h] [-j] [-o <output>]
 
   FLAGS
-    -h, --help              Show CLI help.
-    -i, --input=<value>...  (required) Input HDF files
-    -j, --json              Output results as JSON
-    -o, --output=<value>
+    -h, --help                  Show CLI help.
+    -i, --input=<hdf-file>...   (required) Input HDF files
+    -j, --json                  Output results as JSON
+    -o, --output=<output>
 
   ALIASES
     $ saf summary
@@ -840,11 +840,11 @@ validate threshold            Validate the compliance and status counts of an HD
     $ saf validate threshold -i <hdf-json> [-h] [-T <flattened-threshold-json> | -F <template-file>]
 
   FLAGS
-    -F, --templateFile=<value>    Expected data template, generate one with "saf generate threshold"
-    -T, --templateInline=<value>  Flattened JSON containing your validation thresholds
-                                  (Intended for backwards compatibility with InSpec Tools)
-    -h, --help                    Show CLI help.
-    -i, --input=<value>           (required) Input HDF JSON File
+    -F, --templateFile=<template-file>                Expected data template, generate one with "saf generate threshold"
+    -T, --templateInline=<flattened-threshold-json>   Flattened JSON containing your validation thresholds
+                                                      (Intended for backwards compatibility with InSpec Tools)
+    -h, --help                                        Show CLI help.
+    -i, --input=<hdf-json>                            (required) Input HDF JSON File
 
   EXAMPLES
     $ saf validate threshold -i rhel7-results.json -F output.yaml
@@ -866,8 +866,8 @@ generate ckl_metadata         Generate a checklist metadata template for "saf co
     $ saf generate ckl_metadata -o <json-file> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
-    -o, --output=<value>  (required) Output JSON File
+    -h, --help                Show CLI help.
+    -o, --output=<json-file>  (required) Output JSON File
 
   EXAMPLES
     $ saf generate ckl_metadata -o rhel_metadata.json
@@ -884,8 +884,8 @@ generate inspec_metadata      Generate an InSpec metadata template for "saf conv
     $ saf generate inspec_metadata -o <json-file>
 
   FLAGS
-    -h, --help            Show CLI help.
-    -o, --output=<value>  (required) Output JSON File
+    -h, --help                Show CLI help.
+    -o, --output=<json-file>  (required) Output JSON File
 
   EXAMPLES
     $ saf generate inspec_metadata -o ms_sql_baseline_metadata.json
@@ -906,13 +906,13 @@ generate threshold            Generate a compliance template for "saf validate t
     $ saf generate threshold -i <hdf-json> -o <threshold-yaml> [-h] [-e] [-c]
 
   FLAGS
-    -c, --generateControlIds  Validate control IDs have the correct severity
-                              and status
-    -e, --exact               All counts should be exactly the same when
-                              validating, not just less than or greater than
-    -h, --help                Show CLI help.
-    -i, --input=<value>       (required) Input HDF JSON File
-    -o, --output=<value>      (required) Output Threshold YAML File
+    -c, --generateControlIds        Validate control IDs have the correct severity
+                                    and status
+    -e, --exact                     All counts should be exactly the same when
+                                    validating, not just less than or greater than
+    -h, --help                      Show CLI help.
+    -i, --input=<hdf-json>          (required) Input HDF JSON File
+    -o, --output=<threshold-yaml>   (required) Output Threshold YAML File
 
   EXAMPLES
     $ saf generate threshold -i rhel7-results.json -e -c -o output.yaml
@@ -952,15 +952,15 @@ generate xccdf2inspec_stub              Translate a DISA STIG XCCDF XML file int
     $ saf generate xccdf2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-s] [-r | -S] [-l <line-length>] [-e]
 
   FLAGS
-    -S, --useStigID           Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs
-    -e, --encodingHeader      Add the "# encoding: UTF-8" comment at the top of each control
-    -h, --help                Show CLI help.
-    -i, --input=<value>       (required) Path to the DISA STIG XCCDF file
-    -l, --lineLength=<value>  [default: 80] Characters between lines within InSpec controls
-    -m, --metadata=<value>    Path to a JSON file with additional metadata for the inspec.yml file
-    -o, --output=<value>      (required) [default: profile]
-    -r, --useVulnerabilityId  Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')
-    -s, --singleFile          Output the resulting controls as a single file
+    -S, --useStigID                 Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs
+    -e, --encodingHeader            Add the "# encoding: UTF-8" comment at the top of each control
+    -h, --help                      Show CLI help.
+    -i, --input=<stig-xccdf-xml>    (required) Path to the DISA STIG XCCDF file
+    -l, --lineLength=<line-length>  [default: 80] Characters between lines within InSpec controls
+    -m, --metadata=<metadata-json>  Path to a JSON file with additional metadata for the inspec.yml file
+    -o, --output=<output-folder>    (required) [default: profile]
+    -r, --useVulnerabilityId        Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')
+    -s, --singleFile                Output the resulting controls as a single file
 ```
 
 
