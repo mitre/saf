@@ -13,20 +13,20 @@ describe('Test burpsuite', () => {
     'convert burpsuite2hdf',
     '-i',
     path.resolve(
-      './test/sample_data/burpsuite/sample_input_report/zero.webappsecurity.com.min'
+      './test/sample_data/burpsuite/sample_input_report/zero.webappsecurity.com.min',
     ),
     '-o',
     `${tmpobj.name}/burpsuitetest.json`,
   ])
   .it('hdf-converter output test', () => {
     const test = JSON.parse(
-      fs.readFileSync(`${tmpobj.name}/burpsuitetest.json`, 'utf8')
+      fs.readFileSync(`${tmpobj.name}/burpsuitetest.json`, 'utf8'),
     )
     const sample = JSON.parse(
       fs.readFileSync(
         path.resolve('./test/sample_data/burpsuite/burpsuite-hdf.json'),
-        'utf8'
-      )
+        'utf8',
+      ),
     )
     expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
   })
@@ -41,7 +41,7 @@ describe('Test burpsuite withraw flag', () => {
     'convert burpsuite2hdf',
     '-i',
     path.resolve(
-      './test/sample_data/burpsuite/sample_input_report/zero.webappsecurity.com.min'
+      './test/sample_data/burpsuite/sample_input_report/zero.webappsecurity.com.min',
     ),
     '-o',
     `${tmpobj.name}/burpsuitetest.json`,
@@ -49,15 +49,15 @@ describe('Test burpsuite withraw flag', () => {
   ])
   .it('hdf-converter withraw output test', () => {
     const test = JSON.parse(
-      fs.readFileSync(`${tmpobj.name}/burpsuitetest.json`, 'utf8')
+      fs.readFileSync(`${tmpobj.name}/burpsuitetest.json`, 'utf8'),
     )
     const sample = JSON.parse(
       fs.readFileSync(
         path.resolve(
-          './test/sample_data/burpsuite/burpsuite-hdf-withraw.json'
+          './test/sample_data/burpsuite/burpsuite-hdf-withraw.json',
         ),
-        'utf8'
-      )
+        'utf8',
+      ),
     )
     expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
   })
@@ -72,20 +72,20 @@ describe('Test using space topic separator using burpsuite case', () => {
     'convert burpsuite2hdf',
     '-i',
     path.resolve(
-      './test/sample_data/burpsuite/sample_input_report/zero.webappsecurity.com.min'
+      './test/sample_data/burpsuite/sample_input_report/zero.webappsecurity.com.min',
     ),
     '-o',
     `${tmpobj.name}/burpsuitetest.json`,
   ])
   .it('hdf-converter output test', () => {
     const test = JSON.parse(
-      fs.readFileSync(`${tmpobj.name}/burpsuitetest.json`, 'utf8')
+      fs.readFileSync(`${tmpobj.name}/burpsuitetest.json`, 'utf8'),
     )
     const sample = JSON.parse(
       fs.readFileSync(
         path.resolve('./test/sample_data/burpsuite/burpsuite-hdf.json'),
-        'utf8'
-      )
+        'utf8',
+      ),
     )
     expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
   })
