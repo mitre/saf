@@ -39,6 +39,8 @@ export default class CKL2POAM extends Command {
 
   static aliases = ['convert ckl2poam']
 
+  static examples = ['saf convert ckl2POAM -i checklist_file.ckl -o output-folder -d abcdefg -s 2']
+
   static flags = {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true, multiple: true, description: 'Path to the DISA Checklist File(s)'}),

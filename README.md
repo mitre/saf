@@ -207,7 +207,7 @@ convert hdf2asff              Translate a Heimdall Data Format JSON file into
 convert hdf2splunk            Translate and upload a Heimdall Data Format JSON file into a Splunk server
 
   USAGE
-    $ saf convert hdf2splunk -i <hdf-scan-results-json> -H <host> -I <index> [-h] [-P <port>] [-s http|https] [-u <username> | -t <token>] [-p <password> | ] [-L info|warn|debug|verbose]
+    $ saf convert hdf2splunk -i <hdf-scan-results-json> -H <host> -I <index> [-h] [-P <port>] [-s http|https] [-u <username> | -t <token>] [-p <password>] [-L info|warn|debug|verbose]
 
   FLAGS
     -H, --host=<value>       (required) Splunk Hostname or IP
@@ -412,7 +412,7 @@ convert burpsuite2hdf         Translate a BurpSuite Pro XML file into a Heimdall
 
 ##### CKL to POA&M
 
-Note: The included CCI to NIST Mappings are the extracted from NIST.gov, for mappings specific to eMASS use [this](https://github.com/mitre/ckl2POAM/blob/main/resources/cci2nist.json) file instead. If you need access to this file please contact [saf@groups.mitre.org](mailto:saf@groups.mitre.org).
+Note: The included CCI to NIST Mappings are the extracted from NIST.gov, for mappings specific to eMASS use [this](https://github.com/mitre/ckl2POAM/blob/main/resources/cci2nist.json) file instead).
 
 ```
 convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M files
@@ -430,6 +430,9 @@ convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M file
 
   ALIASES
     $ saf convert ckl2poam
+
+  EXAMPLES
+    $ saf convert ckl2POAM -i checklist_file.ckl -o output-folder -d abcdefg -s 2
 ```
 
 ##### DBProtect to HDF
@@ -451,7 +454,7 @@ convert dbprotect2hdf         Translate a DBProtect report in "Check Results
 ##### Fortify to HDF
 ```
 convert fortify2hdf           Translate a Fortify results FVDL file into a Heimdall
-                              Data Format JSON file. The FVDL file is an XML that can be
+                              Data Format JSON file; The FVDL file is an XML that can be
                               extracted from the Fortify FPR project file using standard
                               file compression tools
   USAGE
@@ -575,7 +578,7 @@ convert prisma2hdf            Translate a Prisma Cloud Scan Report CSV file into
 ##### Prowler to HDF
 ```
 convert prowler2hdf           Translate a Prowler-derived AWS Security Finding
-                              Format results from concatenated JSON blobs
+                              Format results from JSONL
                               into a Heimdall Data Format JSON file
   USAGE
     $ saf convert prowler2hdf -i <prowler-finding-json> -o <hdf-output-folder> [-h]
@@ -656,7 +659,7 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
                               request ID name from an API and convert into a
                               Heimdall Data Format JSON file
   USAGE
-    $ saf convert sonarqube2hdf -n <sonar-project-key> -u <http://your.sonar.instance:9000> -a <your-sonar-api-key> [ -b <target-branch> || -p <pull-request-id> ] -o <hdf-scan-results-json>
+    $ saf convert sonarqube2hdf -n <sonar-project-key> -u <http://your.sonar.instance:9000> -a <your-sonar-api-key> [ -b <target-branch> | -p <pull-request-id> ] -o <hdf-scan-results-json>
 
   FLAGS
     -a, --auth=<value>           (required) SonarQube API Key
@@ -668,7 +671,7 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
     -u, --url=<value>            (required) SonarQube Base URL (excluding '/api')
 
   EXAMPLES
-    $ saf convert sonarqube2hdf -n sonar_project_key -u http://sonar:9000 --auth YOUR_API_KEY [ -b my_branch || -p 123 ]-o scan_results.json
+    $ saf convert sonarqube2hdf -n sonar_project_key -u http://sonar:9000 --auth abcdefg -p 123 -o scan_results.json
 ```
 
 ##### Splunk to HDF
@@ -685,7 +688,7 @@ convert splunk2hdf            Pull HDF data from your Splunk instance back into 
                             <options: info|warn|debug|verbose>
     -P, --port=<value>       [default: 8089] Splunk management port (also known as the Universal Forwarder port)
     -h, --help               Show CLI help.
-    -i, --input=<value>...   GUID(s) or Filename(s) of files to convert
+    -i, --input=<value>...   GUID(s) or Filename(s) from Splunk of files to convert
     -o, --output=<value>     Output HDF JSON Folder
     -p, --password=<value>   Your Splunk password
     -s, --scheme=<option>    [default: https] HTTP Scheme used for communication with splunk
@@ -694,13 +697,13 @@ convert splunk2hdf            Pull HDF data from your Splunk instance back into 
     -u, --username=<value>   Your Splunk username
 
   EXAMPLES
-    $ saf convert splunk2hdf -H 127.0.0.1 -u admin -p Valid_password! -I hdf -i some-file-in-your-splunk-instance.json yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder
+    $ saf convert splunk2hdf -H 127.0.0.1 -u admin -p Valid_password! -I hdf -i some-file-in-your-splunk-instance.json -i yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder
 ```
 
 ##### Trivy to HDF
 ```
 convert trivy2hdf             Translate a Trivy-derived AWS Security Finding
-                              Format results from concatenated JSON blobs
+                              Format results from JSONL
                               into a Heimdall Data Format JSON file
   USAGE
     $ saf convert trivy2hdf -i <trivy-finding-json> -o <hdf-output-folder>
@@ -741,7 +744,7 @@ convert twistlock2hdf         Translate a Twistlock CLI output file into an HDF 
 NOTE: `xccdf_results2hdf` only supports native OpenSCAP output and SCC output.
 ```
 convert xccdf_results2hdf     Translate a SCAP client XCCDF-Results XML report
-                              to HDF format Json be viewed on Heimdall
+                              to a Heimdall Data Format JSON file
   USAGE
     $ saf convert xccdf_results2hdf -i <xccdf-results-xml> -o <hdf-scan-results-json> [-h]
 
@@ -756,8 +759,8 @@ convert xccdf_results2hdf     Translate a SCAP client XCCDF-Results XML report
 
 ##### OWASP ZAP to HDF
 ```
-convert zap2hdf               Translate a OWASP ZAP results JSON to HDF format Json
-                              to be viewed on Heimdall
+convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall Data Format JSON file
+
   USAGE
     $ saf convert zap2hdf -i <zap-json> -n <target-site-name> -o <hdf-scan-results-json> [-h]
 
@@ -768,7 +771,7 @@ convert zap2hdf               Translate a OWASP ZAP results JSON to HDF format J
     -o, --output=<value>  (required) Output HDF JSON File
 
   EXAMPLES
-    $ saf convert zap2hdf -i zap_results.json -n site_name -o scan_results.json
+    $ saf convert zap2hdf -i zap_results.json -n mitre.org -o scan_results.json
 ```
 
 ---
@@ -943,7 +946,7 @@ EXAMPLES
 
 #### XCCDF to InSpec Stub
 ```
-generate xccdf2inspec_stub              Translate a DISA STIG XCCDF XML file to a skeleton for an InSpec profile
+generate xccdf2inspec_stub              Translate a DISA STIG XCCDF XML file into a skeleton for an InSpec profile
 
   USAGE
     $ saf generate xccdf2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-s] [-r | -S] [-l <line-length>] [-e]

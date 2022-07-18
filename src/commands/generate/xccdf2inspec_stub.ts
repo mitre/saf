@@ -12,7 +12,7 @@ import {CciNistMappingData} from '@mitre/hdf-converters'
 export default class XCCDF2InSpec extends Command {
   static usage = 'generate xccdf2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-s] [-r | -S] [-l <line-length>] [-e]'
 
-  static description = 'Translate a DISA STIG XCCDF XML file to a skeleton for an InSpec profile'
+  static description = 'Translate a DISA STIG XCCDF XML file into a skeleton for an InSpec profile'
 
   static flags = {
     help: Flags.help({char: 'h'}),

@@ -6,9 +6,9 @@ import {checkInput, checkSuffix} from '../../utils/global'
 export default class Zap2HDF extends Command {
   static usage = 'convert zap2hdf -i <zap-json> -n <target-site-name> -o <hdf-scan-results-json> [-h]'
 
-  static description = 'Translate a OWASP ZAP results JSON to HDF format Json to be viewed on Heimdall'
+  static description = 'Translate a OWASP ZAP results JSON to a Heimdall Data Format JSON file'
 
-  static examples = ['saf convert zap2hdf -i zap_results.json -n site_name -o scan_results.json']
+  static examples = ['saf convert zap2hdf -i zap_results.json -n mitre.org -o scan_results.json']
 
   static flags = {
     help: Flags.help({char: 'h'}),

@@ -5,7 +5,7 @@ import fs from 'fs'
 import {createWinstonLogger, getHDFSummary} from '../../utils/logging'
 
 export default class HDF2Splunk extends Command {
-  static usage = 'convert hdf2splunk -i <hdf-scan-results-json> -H <host> -I <index> [-h] [-P <port>] [-s http|https] [-u <username> | -t <token>] [-p <password> | ] [-L info|warn|debug|verbose]'
+  static usage = 'convert hdf2splunk -i <hdf-scan-results-json> -H <host> -I <index> [-h] [-P <port>] [-s http|https] [-u <username> | -t <token>] [-p <password>] [-L info|warn|debug|verbose]'
 
   static description = 'Translate and upload a Heimdall Data Format JSON file into a Splunk server'
 

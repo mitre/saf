@@ -8,7 +8,7 @@ import path from 'path'
 export default class Trivy2HDF extends Command {
   static usage = 'convert trivy2hdf -i <trivy-finding-json> -o <hdf-output-folder>'
 
-  static description = 'Translate a Trivy-derived AWS Security Finding Format results from concatenated JSON blobs into a Heimdall Data Format JSON file'
+  static description = 'Translate a Trivy-derived AWS Security Finding Format results from JSONL into a Heimdall Data Format JSON file'
 
   static examples = ['saf convert trivy2hdf -i trivy-asff.json -o output-folder']
 

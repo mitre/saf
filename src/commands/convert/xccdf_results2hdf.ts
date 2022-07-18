@@ -6,7 +6,7 @@ import {checkInput, checkSuffix} from '../../utils/global'
 export default class XCCDFResults2HDF extends Command {
   static usage = 'convert xccdf_results2hdf -i <xccdf-results-xml> -o <hdf-scan-results-json> [-h]'
 
-  static description = 'Translate a SCAP client XCCDF-Results XML report to HDF format Json be viewed on Heimdall'
+  static description = 'Translate a SCAP client XCCDF-Results XML report to a Heimdall Data Format JSON file'
 
   static examples = ['saf convert xccdf_results2hdf -i results-xccdf.xml -o output-hdf-name.json']
 
