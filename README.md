@@ -101,15 +101,16 @@ brew upgrade saf-cli
 **On Linux and Mac:**
 
 ```
-docker run -it -v$(pwd):/share mitre/saf
+docker run --rm -it --entrypoint bash -v$(pwd):/share mitre/saf
 ```
+
+You can change the entrypoint you wish to use. For example, run with `--entrypoint sh` to open in a shell terminal. If the specified entrypoint is not found, try using the path such as `--entrypoint /bin/bash`.
 
 **On Windows:**
 
 ```
-docker run -it -v%cd%:/share mitre/saf
+docker run --rm -it --entrypoint sh -v%cd%:/share mitre/saf
 ```
-
 
 
 #### Update via Docker
