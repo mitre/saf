@@ -37,7 +37,7 @@ export default class CKL2POAM extends Command {
 
   static description = 'Translate DISA Checklist CKL file(s) to POA&M files'
 
-  static aliases = ['convert ckl2poam']
+  static aliases = ['convert:ckl2poam']
 
   static examples = ['saf convert ckl2POAM -i checklist_file.ckl -o output-folder -d abcdefg -s 2']
 
