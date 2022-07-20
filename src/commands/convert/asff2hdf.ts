@@ -1,7 +1,7 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {ASFFResults as Mapper} from '@mitre/hdf-converters'
-import {checkSuffix} from '../../utils/global'
+import {checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
 import AWS from 'aws-sdk'
@@ -59,7 +59,7 @@ export default class ASFF2HDF extends Command {
         } else if ('Controls' in convertedJson) {
           throw new Error('Invalid ASFF findings format - a standards standards was passed to --input instead of --securityhub')
         } else {
-          throw new Error('Invalid ASFF findings format - unknown input type')
+          checkInput({data: data, filename: flags.input}, 'asff', 'AWS Security Finding Format JSON')
         }
       } catch (error) {
         const splitLines = data.split('\n')
