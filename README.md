@@ -11,22 +11,13 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
 ## Contents
 - [SAF CLI Installation](#installation)
-  - [Installation via NPM](#installation-via-npm)
-  - [Update via NPM](#update-via-npm)
-  - [Installation via Docker](#installation-via-docker)
-  - [Update via Docker](#update-via-docker)
-  - [Installation via Windows Installer](#installation-via-windows-installer)
-  - [Update via Windows Installer](#update-via-windows-installer)
+  - [Via NPM](#installation-via-npm)
+  - [Via Brew](#installation-via-brew)
+  - [Via Docker](#installation-via-docker)
+  - [Via Windows Installer](#installation-via-windows-installer)
 - [SAF CLI Usage](#usage)
   - [Attest](#attest) - Create and Apply attestations in JSON, YAML, and XLSX format
   - [Convert](#convert) - Convert security results from all your security tools into a common data format
-    - [From HDF](#from-hdf)
-      - [HDF to ASFF](#hdf-to-asff)
-      - [HDF to Splunk](#hdf-to-splunk)
-      - [HDF to XCCDF](#hdf-to-xccdf)
-      - [HDF to Checklist](#hdf-to-checklist)
-      - [HDF to CSV](#hdf-to-csv)
-      - [HDF to Condensed JSON](#hdf-to-condensed-json)
     - [To HDF](#to-hdf)
       - [ASFF to HDF](#asff-to-hdf)
       - [AWS Config to HDF](#aws-config-to-hdf)
@@ -50,6 +41,13 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       - [Trivy to HDF](#trivy-to-hdf)
       - [XCCDF Results to HDF](#xccdf-results-to-hdf)
       - [OWASP ZAP to HDF](#owasp-zap-to-hdf)
+    - [From HDF](#from-hdf)
+      - [HDF to ASFF](#hdf-to-asff)
+      - [HDF to Splunk](#hdf-to-splunk)
+      - [HDF to XCCDF](#hdf-to-xccdf)
+      - [HDF to Checklist](#hdf-to-checklist)
+      - [HDF to CSV](#hdf-to-csv)
+      - [HDF to Condensed JSON](#hdf-to-condensed-json)
   - [View](#view) - Identify overall security status and deep-dive to solve specific security defects
     - [Heimdall](#heimdall)
     - [Summary](#summary)
@@ -78,13 +76,32 @@ npm install -g @mitre/saf
 ```
 
 
-
 #### Update via NPM
 
 To update the SAF CLI with `npm`:
 
 ```bash
 npm update -g @mitre/saf
+```
+
+---
+
+
+#### Installation via Brew
+
+The SAF CLI can be installed and kept up to date using `brew`.
+
+```
+brew install mitre/saf/saf-cli
+```
+
+
+#### Update via Brew
+
+To update the SAF CLI with `brew`:
+
+```
+brew upgrade saf-cli
 ```
 
 ---
