@@ -11,7 +11,7 @@ import _ from 'lodash'
 export default class GenerateDelta extends Command {
   static usage = 'generate:delta -i, --input=JSON -o, --output=OUTPUT'
 
-  static description: string = 'Update existing InSpec profiles with new STIG metadata'
+  static description: string = 'Update existing InSpec profiles with new XCCDF metadata'
 
   static flags = {
     help: Flags.help({char: 'h'}),
