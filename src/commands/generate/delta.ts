@@ -166,9 +166,7 @@ export default class GenerateDelta extends Command {
       // Add all new controls to the existingControlsRubyCode
       diff.addedControlIDs.forEach((controlId: string) => {
         logger.debug(`Adding new control ${controlId} to profile`)
-        controls![controlId] = diff.changedControls[controlId].toRuby()
-        // Delete so we don't try to update the new control
-        delete diff.changedControls[controlId]
+        controls![controlId] = diff.addedControls[controlId].toRuby()
 
         fs.writeFileSync(path.join(flags.output, 'controls', `${controlId}.rb`), controls![controlId].replace(/\{\{\{\{newlineHERE\}\}\}\}/g, '\n').trimEnd() + '\n') // Ensure we always have a newline at EOF
       })
@@ -265,7 +263,7 @@ export default class GenerateDelta extends Command {
         })
 
         // Write the new control to the controls folder
-        logger.debug(`Writing new control ${controlId} to profile`)
+        logger.debug(`Writing updated control ${controlId} to profile`)
         const updatedControlText = newControlLines.join('\n').replace(/\{\{\{\{newlineHERE\}\}\}\}/g, '\n')
         fs.writeFileSync(path.join(flags.output, 'controls', `${controlId}.rb`), updatedControlText.trimEnd() + '\n') // Ensure we always have a newline at EOF
       })
