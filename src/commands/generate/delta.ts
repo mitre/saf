@@ -1,11 +1,9 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import {updateProfile, processJSON, processXCCDF, updateProfileUsingXCCDF} from '@mitre/inspec-objects'
+import {processJSON, updateProfileUsingXCCDF} from '@mitre/inspec-objects'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
-import {escapeDoubleQuotes, wrap, wrapAndEscapeQuotes} from '../../utils/xccdf2inspec'
-import {knownInspecMetadataKeys} from '../../utils/global'
 import _ from 'lodash'
 
 export default class GenerateDelta extends Command {
