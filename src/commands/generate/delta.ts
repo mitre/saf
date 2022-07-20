@@ -1,6 +1,6 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import {diffProfile, processJSON, processXCCDF} from '@mitre/inspec-objects'
+import {updateProfile, processJSON, processXCCDF, updateProfileUsingXCCDF} from '@mitre/inspec-objects'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
@@ -111,16 +111,7 @@ export default class GenerateDelta extends Command {
         } catch (error) {
           try {
             // Attempt to read the file as an XCCDF XML file
-            logger.debug(`Loading ${inputPath}`)
-            const xccdfData = fs.readFileSync(inputPath, 'utf8')
-            if (flags.useGroupID) {
-              updatedXCCDF = processXCCDF(xccdfData, false, 'group')
-            } else if (flags.useVulnerabilityId) {
-              updatedXCCDF = processXCCDF(xccdfData, false, 'rule')
-            } else if (flags.useStigID) {
-              updatedXCCDF = processXCCDF(xccdfData, false, 'version')
-            }
-
+            updatedXCCDF = fs.readFileSync(inputPath, 'utf8')
             logger.debug(`Loaded ${inputPath} as XCCDF`)
           } catch (xccdfError) {
             logger.error(`Could not load ${inputPath} as an execution/profile JSON because:`)
@@ -159,118 +150,27 @@ export default class GenerateDelta extends Command {
       }
 
       // Find the difference between existingProfile and updatedXCCDF
-      const outputDiff = diffProfile(existingProfile, updatedXCCDF)
+      let updatedResult
+      if (flags.useGroupID) {
+        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'group', logger)
+      } else if (flags.useVulnerabilityId) {
+        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'rule', logger)
+      } else if (flags.useStigID) {
+        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'version', logger)
+      } else {
+        throw new Error('No ID type specified')
+      }
 
-      const diff = outputDiff.simplified
-
-      // Add all new controls to the existingControlsRubyCode
-      diff.addedControlIDs.forEach((controlId: string) => {
-        logger.debug(`Adding new control ${controlId} to profile`)
-        controls![controlId] = diff.addedControls[controlId].toRuby()
-
-        fs.writeFileSync(path.join(flags.output, 'controls', `${controlId}.rb`), controls![controlId].replace(/\{\{\{\{newlineHERE\}\}\}\}/g, '\n').trimEnd() + '\n') // Ensure we always have a newline at EOF
-      })
-
-      // Update existing controls with new metadata
-      Object.entries(diff.changedControls).forEach(([controlId, updatedControl]: [string, any]) => {
-        let updatedDesc = false
-        let reachedTestCode = false
-        let addedTagLines = false
-        // Remove newlines within blocks of strings to make replacement easier
-        const controlText = this.removeSemiQuotedStringsNewlines(this.removeQuotedStringsNewlines(controls![controlId]))
-        const controlLines = controlText.split('\n')
-
-        const newTags = Object.keys(updatedControl.tags).filter(tag => tag.endsWith('__added')).map(tag => tag.replace('__added', ''))
-
-        // Replace the old control metadata with the new control metadata
-        const newControlLines = controlLines.map((line, idx) => {
-          // Ignore comment lines
-          if (!reachedTestCode) {
-            if (line.trim().startsWith('#')) {
-              return line
-            }
-
-            if (line.trim().startsWith('title') && updatedControl.title) {
-              return wrap(`  title "${escapeDoubleQuotes(updatedControl.title).trim()}"`, 80)
-            }
-
-            if (line.trim().startsWith('impact') && updatedControl.impact) {
-              return `  impact ${updatedControl.impact}`
-            }
-
-            if (line.trim().startsWith('desc ')) {
-              const descriptionType = this.getLineIdentifier(line)
-              if (descriptionType && descriptionType in updatedControl.descs) {
-                return wrap(`  desc "${descriptionType}", "${escapeDoubleQuotes(updatedControl.descs[descriptionType]).trim()}"`)
-              }
-
-              if (updatedControl.desc && !updatedDesc) {
-                updatedDesc = true
-                return `  desc "${wrapAndEscapeQuotes(updatedControl.desc, 80).trim()}"`
-              }
-            }
-
-            if (line.trim().startsWith('tag ') && !controlLines[idx + 1].startsWith('tag ') && !addedTagLines) {
-              const tagType = this.getLineIdentifier(line)
-              let newTagsLines = ''
-              if (tagType && tagType in updatedControl.tags) {
-                if (typeof updatedControl.tags[tagType] === 'string') {
-                  newTagsLines += `  tag ${tagType}: "${wrapAndEscapeQuotes(updatedControl.tags[tagType], 80).trim()}"\n`
-                } else if (typeof updatedControl.tags[tagType] === 'object') {
-                  newTagsLines += `  tag ${tagType}: ${JSON.stringify(updatedControl.tags[tagType]).trim()}\n`
-                }
-              } else {
-                newTagsLines += line + '\n'
-              }
-
-              newTags.forEach(newTag => {
-                logger.debug(`Adding new tag for control ${controlId}: ${newTag} - ${updatedControl.tags[newTag + '__added']}`)
-                if (typeof updatedControl.tags[newTag + '__added'] === 'string') {
-                  newTagsLines += `  tag ${newTag}: "${wrapAndEscapeQuotes(updatedControl.tags[newTag + '__added'], 80).trim()}"\n`
-                } else if (typeof updatedControl.tags[newTag + '__added'] === 'boolean') {
-                  newTagsLines += `  tag ${newTag}: "${wrapAndEscapeQuotes(updatedControl.tags[newTag + '__added'].toString(), 80).trim()}"\n`
-                } else if (typeof updatedControl.tags[newTag + '__added'] === 'object') {
-                  newTagsLines += `  tag ${newTag}: ${JSON.stringify(updatedControl.tags[newTag + '__added']).trim()}\n`
-                } else {
-                  console.log(newTag)
-                }
-              })
-              addedTagLines = true
-              return newTagsLines.trimEnd()
-            }
-
-            if (line.trim().startsWith('tag ')) {
-              const tagType = this.getLineIdentifier(line)
-              if (tagType && tagType in updatedControl.tags) {
-                if (typeof updatedControl.tags[tagType] === 'string') {
-                  return `  tag ${tagType}: "${wrapAndEscapeQuotes(updatedControl.tags[tagType], 80).trim()}"`
-                }
-
-                if (typeof updatedControl.tags[tagType] === 'object') {
-                  return `  tag ${tagType}: ${JSON.stringify(updatedControl.tags[tagType]).trim()}`
-                }
-              }
-            }
-
-            if (line.trim() && !(knownInspecMetadataKeys.some(inspecMetadataKnownKey => (line.trimStart().startsWith(inspecMetadataKnownKey)))) && // Is it the same for the next line?
-              controlLines[idx + 1].trim() && !(_.remove(knownInspecMetadataKeys, 'impact').some(inspecMetadataKnownKey => (controlLines[idx + 1].trimStart().startsWith(inspecMetadataKnownKey))))) {
-              logger.debug(`Reached test code at line:\n${line}`)
-              reachedTestCode = true
-            }
-          }
-
-          return line
-        })
-
+      logger.debug('Recieved updated profile from inspec-objects')
+      updatedResult.profile.controls.forEach(control => {
         // Write the new control to the controls folder
-        logger.debug(`Writing updated control ${controlId} to profile`)
-        const updatedControlText = newControlLines.join('\n').replace(/\{\{\{\{newlineHERE\}\}\}\}/g, '\n')
-        fs.writeFileSync(path.join(flags.output, 'controls', `${controlId}.rb`), updatedControlText.trimEnd() + '\n') // Ensure we always have a newline at EOF
+        logger.debug(`Writing updated control ${control.id} to profile`)
+        fs.writeFileSync(path.join(flags.output, 'controls', `${control.id}.rb`), control.toRuby()) // Ensure we always have a newline at EOF
       })
 
       logger.info(`Writing delta file for ${existingProfile.title}`)
       // Write the delta to a file
-      fs.writeFileSync(path.join(flags.output, 'delta.json'), JSON.stringify(outputDiff, null, 2))
+      fs.writeFileSync(path.join(flags.output, 'delta.json'), JSON.stringify(updatedResult.diff, null, 2))
     } else {
       logger.error('Could not generate delta because one or more of the following variables were not satisfied:')
 
