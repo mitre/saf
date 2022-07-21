@@ -16,34 +16,6 @@ function getInputFilename(): string {
   return process.argv[inputFileIndex + 1]
 }
 
-function getFlagsForInputFile(path: string) {
-  if (path) {
-    Convert.detectedType = fingerprint({data: fs.readFileSync(path, 'utf8'), filename: convertFullPathToFilename(path)})
-    switch (Convert.detectedType) {
-    case 'asff':
-      return ASFF2HDF.flags
-    case 'zap':
-      return Zap2HDF.flags
-    case 'burp':
-    case 'dbProtect':
-    case 'fortify':
-    case 'jfrog':
-    case 'nessus':
-    case 'netsparker':
-    case 'nikto':
-    case 'prisma':
-    case 'sarif':
-    case 'scoutsuite':
-    case 'snyk':
-    case 'twistlock':
-    case 'xccdf':
-      return {}
-    }
-  }
-
-  return {}
-}
-
 export default class Convert extends Command {
   static description = 'The generic convert command translates any supported file-based security results set into the Heimdall Data Format'
 
@@ -52,7 +24,35 @@ export default class Convert extends Command {
   static flags = {
     input: Flags.string({char: 'i', required: true, description: 'Input results set file'}),
     output: Flags.string({char: 'o', required: true, description: 'Output results sets'}),
-    ...getFlagsForInputFile(getInputFilename()),
+    ...Convert.getFlagsForInputFile(getInputFilename()),
+  }
+
+  static getFlagsForInputFile(path: string) {
+    if (path) {
+      Convert.detectedType = fingerprint({data: fs.readFileSync(path, 'utf8'), filename: convertFullPathToFilename(path)})
+      switch (Convert.detectedType) {
+      case 'asff':
+        return ASFF2HDF.flags
+      case 'zap':
+        return Zap2HDF.flags
+      case 'burp':
+      case 'dbProtect':
+      case 'fortify':
+      case 'jfrog':
+      case 'nessus':
+      case 'netsparker':
+      case 'nikto':
+      case 'prisma':
+      case 'sarif':
+      case 'scoutsuite':
+      case 'snyk':
+      case 'twistlock':
+      case 'xccdf':
+        return {}
+      }
+    }
+
+    return {}
   }
 
   static detectedType: string;
