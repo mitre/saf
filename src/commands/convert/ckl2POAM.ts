@@ -55,7 +55,7 @@ export default class CKL2POAM extends Command {
       fs.mkdirSync(flags.output)
     }
 
-    flags.input.forEach(fileName => {
+    flags.input.forEach((fileName: string) => {
       // Ignore files that start with . (e.g .gitignore)
       if (fileName.startsWith('.')) {
         return
