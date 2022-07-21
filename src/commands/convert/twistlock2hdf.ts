@@ -13,7 +13,7 @@ export default class Twistlock2HDF extends Command {
   static flags = {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true, description: 'Input Twistlock file'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output HDF file'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
   }
 
   async run() {

@@ -4,7 +4,7 @@ import {DBProtectMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class DBProtect2HDF extends Command {
-  static usage = 'convert dbprotect2hdf -i, --input=XML -o, --output=OUTPUT'
+  static usage = 'convert dbprotect2hdf -i <dbprotect-xml> -o <hdf-scan-results-json> [-h]'
 
   static description = 'Translate a DBProtect report in "Check Results Details" XML format into a Heimdall Data Format JSON file'
 
@@ -12,8 +12,8 @@ export default class DBProtect2HDF extends Command {
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true}),
-    output: Flags.string({char: 'o', required: true}),
+    input: Flags.string({char: 'i', required: true, description: '\'Check Results Details\' XML File'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
   }
 
   async run() {

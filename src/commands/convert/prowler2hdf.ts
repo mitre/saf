@@ -6,16 +6,16 @@ import _ from 'lodash'
 import path from 'path'
 
 export default class Prowler2HDF extends Command {
-  static usage = 'convert prowler2hdf -i <prowler-finding-json> -o <hdf-output-folder>'
+  static usage = 'convert prowler2hdf -i <prowler-finding-json> -o <hdf-output-folder> [-h]'
 
-  static description = 'Translate a Prowler-derived AWS Security Finding Format results from concatenated JSON blobs into a Heimdall Data Format JSON file'
+  static description = 'Translate a Prowler-derived AWS Security Finding Format results from JSONL into a Heimdall Data Format JSON file'
 
   static examples = ['saf convert prowler2hdf -i prowler-asff.json -o output-folder']
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Input Prowler ASFF JSON file'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output folder'}),
+    input: Flags.string({char: 'i', required: true, description: 'Input Prowler ASFF JSON File'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON Folder'}),
   }
 
   async run() {

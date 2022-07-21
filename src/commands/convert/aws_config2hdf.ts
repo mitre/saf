@@ -5,7 +5,7 @@ import {ExecJSON} from 'inspecjs'
 import {checkSuffix} from '../../utils/global'
 
 export default class AWSConfig2HDF extends Command {
-  static usage = 'convert aws_config2hdf -a, --accessKeyId=accessKeyId -r, --region=region -s, --secretAccessKey=secretAccessKey -t, --sessionToken=sessionToken -o, --output=OUTPUT'
+  static usage = 'convert aws_config2hdf -r <region> -o <hdf-scan-results-json> [-h] [-a <access-key-id>] [-s <secret-access-key>] [-t <session-token>] [-i]'
 
   static description = 'Pull Configuration findings from AWS Config and convert into a Heimdall Data Format JSON file'
 
@@ -13,12 +13,12 @@ export default class AWSConfig2HDF extends Command {
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    accessKeyId: Flags.string({char: 'a', required: false}),
-    secretAccessKey: Flags.string({char: 's', required: false}),
-    sessionToken: Flags.string({char: 't', required: false}),
-    region: Flags.string({char: 'r', required: true}),
+    accessKeyId: Flags.string({char: 'a', required: false, description: 'Access key ID'}),
+    secretAccessKey: Flags.string({char: 's', required: false, description: 'Secret access key'}),
+    sessionToken: Flags.string({char: 't', required: false, description: 'Session token'}),
+    region: Flags.string({char: 'r', required: true, description: 'Region to pull findings from'}),
     insecure: Flags.boolean({char: 'i', required: false, default: false, description: 'Disable SSL verification, this is insecure.'}),
-    output: Flags.string({char: 'o', required: true}),
+    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
   }
 
   // Refs may not be defined if no resources were found
@@ -26,7 +26,8 @@ export default class AWSConfig2HDF extends Command {
     return {
       ...output,
       profiles: output.profiles.map(profile => {
-        return {...profile,
+        return {
+          ...profile,
           controls: profile.controls.map(control => {
             if (!control.refs || !control.results) {
               return {

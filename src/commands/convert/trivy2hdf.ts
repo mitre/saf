@@ -8,14 +8,14 @@ import path from 'path'
 export default class Trivy2HDF extends Command {
   static usage = 'convert trivy2hdf -i <trivy-finding-json> -o <hdf-output-folder>'
 
-  static description = 'Translate a Trivy-derived AWS Security Finding Format results from concatenated JSON blobs into a Heimdall Data Format JSON file'
+  static description = 'Translate a Trivy-derived AWS Security Finding Format results from JSONL into a Heimdall Data Format JSON file'
 
   static examples = ['saf convert trivy2hdf -i trivy-asff.json -o output-folder']
 
   static flags = {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true, description: 'Input Trivy ASFF JSON File'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output folder'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON Folder'}),
   }
 
   async run() {

@@ -6,13 +6,15 @@ import _ from 'lodash'
 const prompt = promptSync()
 
 export default class GenerateCKLMetadata extends Command {
-  static usage = 'generate ckl_metadata --output=<JSON-FILE>'
+  static usage = 'generate ckl_metadata -o <json-file> [-h]'
 
   static description = 'Generate a checklist metadata template for "saf convert hdf2ckl"'
 
+  static examples = ['saf generate ckl_metadata -o rhel_metadata.json']
+
   static flags = {
     help: Flags.help({char: 'h'}),
-    output: Flags.string({char: 'o', required: true}),
+    output: Flags.string({char: 'o', required: true, description: 'Output JSON File'}),
   }
 
   async run() {

@@ -5,9 +5,11 @@ import promptSync from 'prompt-sync'
 const prompt = promptSync()
 
 export default class GenerateInSpecMetadata extends Command {
-  static usage = 'generate inspec_metadata --output=<JSON-FILE>'
+  static usage = 'generate inspec_metadata -o <json-file>'
 
-  static description = 'Generate an InSpec metadata template for "saf convert _stub"'
+  static description = 'Generate an InSpec metadata template for "saf convert *2inspec_stub"'
+
+  static examples = ['saf generate inspec_metadata -o ms_sql_baseline_metadata.json']
 
   static flags = {
     help: Flags.help({char: 'h'}),
