@@ -58,8 +58,6 @@ export default class Convert extends Command {
   static detectedType: string;
 
   async run() {
-    console.log('Hello')
-    console.log(Convert.flags)
     const {flags} = await this.parse(Convert)
     let converter
     switch (Convert.detectedType) {
