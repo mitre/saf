@@ -4,7 +4,7 @@ import { ApiConnection } from "../../../emasscommands/apiConnection"
 import { SystemsApi } from '@mitre/emass_client';
 import { outputFormat } from '../../../emasscommands/outputFormatter';
 import { outputError } from '../../../emasscommands/outputError';
-import { getFlagsForEndpoint } from '../../../emasscommands/utilities';
+import { getFlagsForEndpoint } from '../../../emasscommands/utilities' ;
 
 export default class EmasserGetSystems extends Command {
 
