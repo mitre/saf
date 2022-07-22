@@ -134,7 +134,8 @@
   "scripts": {
     "lint": "eslint \"**/*.ts\" --fix",
     "lint:ci": "eslint \"**/*.ts\" --max-warnings 0",
-    "dev": "(IF EXIST lib rmdir /s /q lib) && tsc -b && node ./bin/run",
+    "build": "(IF EXIST lib rmdir /s /q lib) && tsc -b && node ./bin/run",
+    "dev": "node ./bin/run",
     "prepack": "rm -rf lib && tsc -b",
     "test": "ts-mocha --timeout 8000 --forbid-only \"test/**/*.test.ts\""
   },

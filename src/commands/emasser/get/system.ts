@@ -3,30 +3,31 @@ import {Command, Flags} from "@oclif/core"
 import { ApiConnection } from "../../../emasscommands/apiConnection"
 import { SystemsApi } from '@mitre/emass_client';
 import { outputFormat } from '../../../emasscommands/outputFormatter';
+import { outputError } from '../../../emasscommands/outputError';
+import { getFlagsForEndpoint } from '../../../emasscommands/utilities';
 
-export default class EmassGetSystem extends Command {
+export default class EmasserGetSystem extends Command {
 
-  static usage = 'get system --systemId <value>'
+  static usage = 'get system [options]'
 
-  static description = 'Get system information for a specific system defined by ID'
+  static description = 'Get system information for a specific system defined by ID (systeId)'
 
-  static examples = ['emasser get system --systemId 34']
-
+  static examples = ['emasser get system --systemId <value>']
 
   static flags = {
-    help: Flags.help({char: 'h'}),
-    systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get system endpoint'}),
+    ...getFlagsForEndpoint(process.argv) as any,
   }
-
-  static args = [{name: "systemId - System ID - required: true"}]
 
   async run(): Promise<void> {
-    const {args, flags} = await this.parse(EmassGetSystem)
+    const {flags} = await this.parse(EmasserGetSystem)
     const apiCxn = new ApiConnection();
     const getSystems = new SystemsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
-  
-    getSystems.getSystem(flags.systemId).then((data:any) => {
+    
+    // Order is important here
+    getSystems.getSystem(flags.systemId,flags.includePackage,flags.policy).then((data:any) => {
       console.log(colorize(outputFormat(data.data)));
-    }).catch((error:any) => console.error(error));
+    }).catch((error:any) => console.error(colorize(outputError(error))));
   }
 }
+

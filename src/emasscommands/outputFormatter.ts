@@ -2,42 +2,57 @@ import { ApiConfig } from "./apiConfig";
 import _ from 'lodash';
 
 
-  export function outputFormat(data: Object): string {
-    
+export function outputFormat(data: Object): string {
+  
+  const conf = new ApiConfig();
+  //console.log('conf.displayNulls is: ' + conf.displayNulls);
+  let hideNulls: boolean = (conf.displayNulls === 'true') ? false : true;
+  let showEpoch: boolean = (conf.displayDateTime === 'true') ? false : true;
 
-    const conf = new ApiConfig();
-    //console.log('conf.displayNulls is: ' + conf.displayNulls);
-    let hideNulls: boolean = (conf.displayNulls === 'true' ? false : true);
-    let showEpoch: boolean = (conf.displayDateTime === 'true' ? false : true);
-
-    //let hideNulls = !conf.displayNulls;
-    
-    console.log('hideNulls: ', hideNulls);
-    console.log('showEpoch: ', showEpoch);
-
+  //let hideNulls = !conf.displayNulls;
+  //console.log('hideNulls: ', hideNulls);
+  //console.log('showEpoch: ', showEpoch);
+  // console.log('data: ', data);
+  try {
     if (hideNulls) {
-    //if (conf.displayNulls === false) {
-      //console.log('HERE');
-      //Object.keys(data).forEach( (key: number|string) => {
+      let newData: {[key: string]: any} = {};
+
       (Object.keys(data) as (keyof typeof data)[]).forEach((key, index) => {
-        //console.log('key data[key] ' + key + data[key]);
-        if (key.toString() === 'data') {
-          //console.log('HERE');
-          const obj = data[key];
-          (Object.keys(obj) as (keyof typeof obj)[]).forEach((key, index) => {
-            if (obj[key] === null) {
-              delete obj[key];
-            }
-          });
+        if (key.toString() === 'meta') {
+          var jsonData: {[key: string]: any} = {};
+          jsonData[key] =  data[key];
+          _.merge(newData, jsonData);
+        } else if (key.toString() === 'data') {
+          if (Array.isArray(data[key])) {
+            let data_array = data[key]
+            let hash_array: never[] = [];
+            (Object.keys(data_array) as (keyof typeof data_array)[]).forEach((key, index) => {
+              if (data_array[key] !== null) {
+                hash_array.push(data_array[key])
+              }
+            });
+            newData.push({data: hash_array});
+            data = newData;
+          } else {
+            var jsonData: {[key: string]: any} = {};
+            const obj = data[key];
+            (Object.keys(obj) as (keyof typeof obj)[]).forEach((key, index) => {
+              if (obj[key] !== null) {
+                jsonData[key] = obj[key];
+              }
+            });
+            var dataObj: {[key: string]: any} = {};
+            dataObj.data = jsonData;
+            _.merge(newData, dataObj);
+            data = newData;
+          }
         }
       });
     }
 
-
     if (!showEpoch) {
       var newData: {[key: string]: any} = {};
       var dataObj: {[key: string]: any} = {};
-
       (Object.keys(data) as (keyof typeof data)[]).forEach((key, index, keyArray) => {
         if (key.toString() === 'meta') {
           var jsonData: {[key: string]: any} = {};
@@ -49,8 +64,6 @@ import _ from 'lodash';
           (Object.keys(obj) as (keyof typeof obj)[]).forEach((key, index, keyArray) => {
             let value: string = key;
             if (value.search('date') > 0 || value.search('Date') > 0) {
-              console.log('obj[key] is ', key, obj[key]);
-              console.log('new date is ', new Date(obj[key] * 1000).toLocaleDateString());
               jsonData[key] = new Date(obj[key] * 1000);
             } else {
               jsonData[key] = obj[key];
@@ -62,8 +75,12 @@ import _ from 'lodash';
       });
       data = newData;
     }
+    
+    return JSON.stringify(data, null,2);
+  } catch {
     return JSON.stringify(data, null,2);
   }
+}
 
 
 
