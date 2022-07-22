@@ -135,7 +135,7 @@
     "pack-hdf-converters": "run-script-os",
     "pack-hdf-converters:win32": "pack-hdf-converters.bat",
     "pack-hdf-converters:darwin:linux": "./pack-hdf-converters.sh",
-    "dev": "run-script-os",
+    "dev": "run-script-os --",
     "dev:win32": "(IF EXIST lib rmdir /s /q lib) && node_modules\\.bin\\tsc -b && bin\\run",
     "dev:darwin:linux": "rm -rf lib && node_modules/.bin/tsc -b && ./bin/run",
     "prepack": "run-script-os",
