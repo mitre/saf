@@ -15,6 +15,7 @@ export default class Nessus2HDF extends Command {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true}),
     output: Flags.string({char: 'o', required: true}),
+    'with-raw': Flags.boolean({char: 'w', required: false}),
   }
 
   async run() {
@@ -24,7 +25,7 @@ export default class Nessus2HDF extends Command {
     const data = fs.readFileSync(flags.input, 'utf8')
     checkInput({data: data, filename: flags.input}, 'nessus', 'Nessus XML results file')
 
-    const converter = new Mapper(data)
+    const converter = new Mapper(data, flags['with-raw'])
     const result = converter.toHdf()
     if (Array.isArray(result)) {
       for (const element of result) {

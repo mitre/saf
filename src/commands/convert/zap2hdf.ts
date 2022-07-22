@@ -15,6 +15,7 @@ export default class Zap2HDF extends Command {
     input: Flags.string({char: 'i', required: true}),
     name: Flags.string({char: 'n', required: true}),
     output: Flags.string({char: 'o', required: true}),
+    'with-raw': Flags.boolean({char: 'w', required: false}),
   }
 
   async run() {
@@ -24,7 +25,7 @@ export default class Zap2HDF extends Command {
     const data = fs.readFileSync(flags.input, 'utf8')
     checkInput({data: data, filename: flags.input}, 'zap', 'OWASP ZAP results JSON')
 
-    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'), flags.name)
+    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'), flags.name, flags['with-raw'])
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }
