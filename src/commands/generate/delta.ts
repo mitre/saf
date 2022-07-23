@@ -115,7 +115,7 @@ export default class GenerateDelta extends Command {
 
       // If existingProfileFolderPath exists
       if (existingProfileFolderPath && fs.existsSync(path.join(existingProfileFolderPath, 'controls'))) {
-        logger.debug(`Deleting existing profile folder ${existingProfileFolderPath}/controls/`)
+        logger.debug(`Deleting existing profile folder ${path.join(existingProfileFolderPath, 'controls')}`)
         fse.emptyDirSync(path.join(existingProfileFolderPath, 'controls'))
       }
 
