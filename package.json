@@ -33,7 +33,7 @@
     "accurate-search": "^1.2.15",
     "aws-sdk": "^2.1074.0",
     "chai": "^4",
-    "csv-parse": "^4.16.0",
+    "csv-parse": "^5.3.0",
     "express": "^4.17.1",
     "fast-xml-parser": "^3.19.0",
     "flat": "^5.0.2",
