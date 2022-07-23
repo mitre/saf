@@ -4,12 +4,11 @@ import {processJSON, updateProfileUsingXCCDF} from '@mitre/inspec-objects'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
-import _ from 'lodash'
 
 export default class GenerateDelta extends Command {
   static usage = 'generate:delta -i, --input=JSON -o'
 
-  static description: string = 'Update an existing InSpec profile in-place with new XCCDF metadata'
+  static description = 'Update an existing InSpec profile in-place with new XCCDF metadata'
 
   static flags = {
     help: Flags.help({char: 'h'}),
@@ -21,23 +20,12 @@ export default class GenerateDelta extends Command {
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
-  getLineIdentifier(line: string): string | null {
-    // Get the second word in the line
-    // Remove double spaces
-    const lineIdentifier = line.replace(/\s+/g, ' ').trim().split(' ')[1]
-    if (lineIdentifier.includes(',') || lineIdentifier.includes(':')) {
-      return lineIdentifier.replace(/"/g, '').replace(/'/g, '').replace(/,/g, '').replace(/:/g, '')
-    }
-
-    return null
-  }
-
   async run() {
     const {flags} = await this.parse(GenerateDelta)
 
     const logger = createWinstonLogger('generate:delta', flags.logLevel)
 
-    let controls: Record<string, string> | null = null
+    let controls: Record<string, string> = {}
     let existingProfile: any | null = null
     let updatedXCCDF: any = {}
 
@@ -54,7 +42,7 @@ export default class GenerateDelta extends Command {
         // Read all control files into an array as strings
         controlFiles.forEach(control => {
           const controlData = fs.readFileSync(path.join(inputPath, 'controls', control), 'utf8')
-          controls![control.replace('.rb', '')] = controlData
+          controls[control.replace('.rb', '')] = controlData
         })
 
         logger.debug(`Loaded ${inputPath} as profile folder`)

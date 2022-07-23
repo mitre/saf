@@ -83,23 +83,23 @@ export function convertEncodedHTMLIntoJson(encodedHTML?: string): DecodedDescrip
 }
 
 export function severityStringToImpact(string: string): number {
-  if (string.match(/none|na|n\/a|not[\s()*_|]?applicable/i)?.length) {
+  if (/none|na|n\/a|not[\s()*_|]?applicable/i.test(string)) {
     return 0.0
   }
 
-  if (string.match(/low|cat(egory)?\s*(iii|3)/i)?.length) {
+  if (/low|cat(egory)?\s*(iii|3)/i.test(string)) {
     return 0.3
   }
 
-  if (string.match(/med(ium)?|cat(egory)?\s*(ii|2)/i)?.length) {
+  if (/med(ium)?|cat(egory)?\s*(ii|2)/i.test(string)) {
     return 0.5
   }
 
-  if (string.match(/high|cat(egory)?\s*(i|1)/i)?.length) {
+  if (/high|cat(egory)?\s*(i|1)/i.test(string)) {
     return 0.7
   }
 
-  if (string.match(/crit(ical)?|severe/i)?.length) {
+  if (/crit(ical)?|severe/i.test(string)) {
     return 1.0
   }
 
