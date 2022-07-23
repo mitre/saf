@@ -25,7 +25,7 @@ export default class Threshold extends Command {
     let thresholds: ThresholdValues = {}
     if (flags.templateInline) {
       // Need to do some processing to convert this into valid JSON
-      const flattenedObjects = flags.templateInline.split(',').map(value => value.trim().replace('{', '').replace('}', ''))
+      const flattenedObjects = flags.templateInline.split(',').map((value: string) => value.trim().replace('{', '').replace('}', ''))
       const toUnpack: Record<string, number> = {}
       for (const flattenedObject of flattenedObjects) {
         const [key, value] = flattenedObject.split(':')
