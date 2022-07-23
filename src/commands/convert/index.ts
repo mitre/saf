@@ -1,9 +1,11 @@
-import {ASFFResults, BurpSuiteMapper, DBProtectMapper, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockMapper, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
+import {ASFFResults, BurpSuiteMapper, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockMapper, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
 import fs from 'fs'
 import _ from 'lodash'
-import {checkSuffix} from '../../utils/global'
+import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import path from 'path'
-import FingerprintingConvertCommand from '../../basecommands/fingerprintingConvertCommand'
+import ASFF2HDF from './asff2hdf'
+import {Command, Flags} from '@oclif/core'
+import Zap2HDF from './zap2hdf'
 
 function getInputFilename(): string {
   const inputFileIndex = process.argv.findIndex(param => param.toLowerCase() === '-i' || param.toLowerCase() === '--input')
@@ -14,20 +16,51 @@ function getInputFilename(): string {
   return process.argv[inputFileIndex + 1]
 }
 
-export default class Convert extends FingerprintingConvertCommand {
+export default class Convert extends Command {
   static description = 'The generic convert command translates any supported file-based security results set into the Heimdall Data Format'
 
   static examples = ['saf convert -i input -o output']
 
   static flags = {
-    ...FingerprintingConvertCommand.flags,
-    ...FingerprintingConvertCommand.prototype.getFlagsForInputFile(getInputFilename()),
+    input: Flags.string({char: 'i', required: true, description: 'Input results set file'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output results sets'}),
+    ...Convert.getFlagsForInputFile(getInputFilename()),
   }
+
+  static getFlagsForInputFile(path: string) {
+    if (path) {
+      Convert.detectedType = fingerprint({data: fs.readFileSync(path, 'utf8'), filename: convertFullPathToFilename(path)})
+      switch (Convert.detectedType) {
+      case 'asff':
+        return ASFF2HDF.flags
+      case 'zap':
+        return Zap2HDF.flags
+      case 'burp':
+      case 'dbProtect':
+      case 'fortify':
+      case 'jfrog':
+      case 'nessus':
+      case 'netsparker':
+      case 'nikto':
+      case 'prisma':
+      case 'sarif':
+      case 'scoutsuite':
+      case 'snyk':
+      case 'twistlock':
+      case 'xccdf':
+        return {}
+      }
+    }
+
+    return {}
+  }
+
+  static detectedType: string;
 
   async run() {
     const {flags} = await this.parse(Convert)
     let converter
-    switch (FingerprintingConvertCommand.detectedType) {
+    switch (Convert.detectedType) {
     case 'asff': {
       let securityhub = _.get(flags, 'securityhub') as string[]
       if (securityhub) {
