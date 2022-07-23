@@ -68,11 +68,6 @@ export function getFlagsForEndpoint(argv: string[]) {
   const endpoint = argv[requestTypeIndex + 1]
   const argument = argv[requestTypeIndex + 2]
 
-  // console.log('requestTypeIndex: ', requestTypeIndex)
-  // console.log('requestType: ', requestType)
-  // console.log('endpoint: ', endpoint)
-  // console.log('argument: ', argument)
-
   const commands: Record<string, string[]> = {
     get: [],
     post: [],
@@ -84,13 +79,10 @@ export function getFlagsForEndpoint(argv: string[]) {
 
     if (typeof emasser[key] === 'function' && key.includes('Creator')) {
       const result = emasser[key]()
-    // console.log('key: ', key)
-    // console.log('emasser[key]: ', emasser[key])
+
       if (result) {
         Object.keys(result).forEach((subKey: string) => {
-          //console.log('subKey: ', subKey)
           const splitKeys = new Set(subKey.split(/(?=[A-Z])/).map(key => key.toLowerCase()))
-          //console.log('splitKeys: ', splitKeys)
           if (!splitKeys.has('enum')) {
             if (splitKeys.has('get')) {
               commands.get.push(subKey)
@@ -110,16 +102,16 @@ export function getFlagsForEndpoint(argv: string[]) {
   //console.log('commands are: ', commands[requestType]);
   
   //return commands[requestType]; //commands[requestType].toString
-  if (requestType === 'get' && endpoint === 'roles'&& argument === 'byCategory') {
-    return {
-      roleCategory: Flags.string({char: "c", description: "Filter on role category", options: ['CAC','PAC','Other'], required: true}),
-      role: Flags.string({char: "r", description: "Filter on role type", 
-       options: ['AO','Auditor','Artifact Manager','C&A Team', 'IAO','ISSO', 'PM/IAM', 'SCA', 'User Rep', 'Validator'], required: true}),
-      policy: Flags.string({char: "p", description: "Filter on policy", required: false, options: ['diacap','rmf','reporting']}),
-      includeDecommissioned: Flags.boolean({char: "d", description: "Boolean - include decommissioned systems", required: false}),
+  // if (requestType === 'get' && endpoint === 'roles'&& argument === 'byCategory') {
+  //   return {
+  //     roleCategory: Flags.string({char: "c", description: "Filter on role category", options: ['CAC','PAC','Other'], required: true}),
+  //     role: Flags.string({char: "r", description: "Filter on role type", 
+  //      options: ['AO','Auditor','Artifact Manager','C&A Team', 'IAO','ISSO', 'PM/IAM', 'SCA', 'User Rep', 'Validator'], required: true}),
+  //     policy: Flags.string({char: "p", description: "Filter on policy", required: false, options: ['diacap','rmf','reporting']}),
+  //     includeDecommissioned: Flags.boolean({char: "d", description: "Boolean - include decommissioned systems", required: false}),
 
-    }
-  }
+  //   }
+  // }
 
   return {}
 }

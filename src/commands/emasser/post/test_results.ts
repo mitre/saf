@@ -1,12 +1,11 @@
 import colorize from 'json-colorizer';
 import {Command, Flags} from "@oclif/core"
-import { ApiConnection } from "../../../emasscommands/apiConnection"
 import { TestResultsApi } from '@mitre/emass_client';
+import { ApiConnection } from "../../../emasscommands/apiConnection"
 import { outputFormat } from '../../../emasscommands/outputFormatter';
 import { getFlagsForEndpoint } from '../../../emasscommands/utilities';
-import { TestResultsPost } from '@mitre/emass_client';
 import { outputError } from '../../../emasscommands/outputError';
-//import * as emasser from '@mitre/emass_client'
+
 
 export default class EmasserPostTestResults extends Command {
 
@@ -26,14 +25,14 @@ export default class EmasserPostTestResults extends Command {
     const apiCxn = new ApiConnection();
     const addTestResults = new TestResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
     
-    var requestBodyArray = TestResultsPost;
-    this.log('HERRRRRRRRRRE, cci is ', flags.cci)
-this.log('requestBodyArray is ', requestBodyArray)
-    requestBodyArray.cci = flags.cci;
-    requestBodyArray.testedBy = flags.testedBy;
-    requestBodyArray.testDate = flags.testDate;
-    requestBodyArray.description = flags.description;
-    requestBodyArray.complianceStatus = flags.complianceStatus;
+    let requestBodyArray: object[] = [];
+    requestBodyArray.push({
+      cci: flags.cci,
+      testedBy: flags.testedBy,
+      testDate: parseFloat(flags.testDate),
+      description: flags.description,
+      complianceStatus: flags.complianceStatus
+    });
 
 
     addTestResults.addTestResultsBySystemId(flags.systemId, requestBodyArray).then((data:any) => {

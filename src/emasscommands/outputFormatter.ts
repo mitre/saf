@@ -76,9 +76,17 @@ export function outputFormat(data: Object): string {
       data = newData;
     }
     
-    return JSON.stringify(data, null,2);
+    if (typeof data === 'string') {
+      return data;
+    } else {
+      return JSON.stringify(data, null,2);
+    }
   } catch {
-    return JSON.stringify(data, null,2);
+    if (typeof data === 'string') {
+      return data;
+    } else {
+      return JSON.stringify(data, null,2);
+    }
   }
 }
 
