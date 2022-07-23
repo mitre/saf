@@ -773,9 +773,6 @@ FLAGS
   -r, --report=<value>      Output markdown report file
   -r, --useVulnerabilityId  Use Vulnerability IDs for control IDs (ex. 'SV-XXXXX')
 
-DESCRIPTION
-  Update an existing InSpec profile in-place with new XCCDF metadata
-
 EXAMPLES
   $ saf generate delta -i ./redhat-enterprise-linux-6-stig-baseline/ ./redhat-enterprise-linux-6-stig-baseline/profile.json ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml --logLevel debug -r rhel-6-update-report.md
 
