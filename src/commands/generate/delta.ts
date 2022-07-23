@@ -6,8 +6,6 @@ import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
 
 export default class GenerateDelta extends Command {
-  static usage = 'generate:delta -i, --input=JSON -o'
-
   static description = 'Update an existing InSpec profile in-place with new XCCDF metadata'
 
   static flags = {
