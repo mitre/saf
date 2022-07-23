@@ -43,7 +43,7 @@ export default class GenerateDelta extends Command {
 
     let existingProfileFolderPath = ''
 
-    flags.input.forEach(inputPath => {
+    flags.input.forEach((inputPath: string) => {
       // Check if input is a folder
       if (fs.lstatSync(inputPath).isDirectory()) {
         logger.debug(`Loading profile folder ${inputPath}`)
