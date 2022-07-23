@@ -60,7 +60,6 @@ export default class GenerateDelta extends Command {
           // This should fail if we aren't passed an execution/profile JSON
           logger.debug(`Loading ${inputPath} as Profile JSON/Execution JSON`)
           existingProfile = processJSON(fs.readFileSync(inputPath, 'utf8'))
-          console.log(existingProfile)
           logger.debug(`Loaded ${inputPath} as Profile JSON/Execution JSON`)
         } catch (error) {
           try {
