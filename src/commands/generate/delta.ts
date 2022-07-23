@@ -7,58 +7,18 @@ import fse from 'fs-extra'
 import _ from 'lodash'
 
 export default class GenerateDelta extends Command {
-  static usage = 'generate:delta -i, --input=JSON -o, --output=OUTPUT'
+  static usage = 'generate:delta -i, --input=JSON -o'
 
-  static description: string = 'Update existing InSpec profiles with new XCCDF metadata'
+  static description: string = 'Update an existing InSpec profile in-place with new XCCDF metadata'
 
   static flags = {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true, multiple: true, description: 'Input execution/profile JSON file(s) OR InSpec Profile Folder, and the updated XCCDF XML files'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output updated profile folder'}),
+    report: Flags.string({char: 'r', required: false, description: 'Output markdown report file'}),
     useGroupID: Flags.boolean({char: 'g', description: "Use Group ID for control IDs (ex. 'V-XXXXX')"}),
     useVulnerabilityId: Flags.boolean({char: 'r', required: false, default: true, description: "Use Vulnerability IDs for control IDs (ex. 'SV-XXXXX')", exclusive: ['useStigID']}),
     useStigID: Flags.boolean({char: 'S', required: false, default: false, description: 'Use STIG IDs for control IDs (ex. RHEL-07-010020, also known as Version)', exclusive: ['useVulnerabilityId']}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
-  }
-
-  removeQuotedStringsNewlines(input: string): string {
-    let controlText = input
-    const quotedNewlinesRegex = /"([^"\\])*(\\.[^"\\]*)*"/gm
-    let currentRegexMatch
-    while ((currentRegexMatch = quotedNewlinesRegex.exec(input)) !== null) {
-      // This is needed to avoid infinite loops with zero-width matches
-      if (currentRegexMatch.index === quotedNewlinesRegex.lastIndex) {
-        quotedNewlinesRegex.lastIndex++
-      }
-
-      currentRegexMatch.forEach(match => {
-        if (match?.includes('\n')) {
-          controlText = controlText.replace(match, match.replace(/\n/gm, '{{{{newlineHERE}}}}')).trim()
-        }
-      })
-    }
-
-    return controlText
-  }
-
-  removeSemiQuotedStringsNewlines(input: string): string {
-    let controlText = input
-    const quotedNewlinesRegex = /'([^'\\])*(\\.[^'\\]*)*'/gm
-    let currentRegexMatch
-    while ((currentRegexMatch = quotedNewlinesRegex.exec(input)) !== null) {
-      // This is needed to avoid infinite loops with zero-width matches
-      if (currentRegexMatch.index === quotedNewlinesRegex.lastIndex) {
-        quotedNewlinesRegex.lastIndex++
-      }
-
-      currentRegexMatch.forEach(match => {
-        if (match?.includes('\n')) {
-          controlText = controlText.replace(match, match.replace(/\n/gm, '{{{{newlineHERE}}}}')).trim()
-        }
-      })
-    }
-
-    return controlText
   }
 
   getLineIdentifier(line: string): string | null {
@@ -123,21 +83,9 @@ export default class GenerateDelta extends Command {
     })
 
     // If existingProfileFolderPath exists
-    if (existingProfileFolderPath) {
-      // Delete the output folder if it already exists
-      if (fs.existsSync(flags.output)) {
-        logger.debug(`Deleting existing profile folder ${flags.output}`)
-        fse.removeSync(flags.output)
-      }
-
-      // Copy the profile folder to the output folder
-      logger.debug(`Copying profile folder ${existingProfileFolderPath} to ${flags.output}`)
-      fse.copySync(existingProfileFolderPath, flags.output)
-      logger.debug(`Copied profile folder ${existingProfileFolderPath} to ${flags.output}`)
-      // Empty controls folder contents
-      logger.debug(`Emptying controls folder ${flags.output}/controls`)
-      fse.emptyDirSync(path.join(flags.output, 'controls'))
-      logger.debug(`Emptied controls folder ${flags.output}/controls`)
+    if (existingProfileFolderPath && fs.existsSync(path.join(existingProfileFolderPath, 'controls'))) {
+      logger.debug(`Deleting existing profile folder ${existingProfileFolderPath}/controls/`)
+      fse.emptyDirSync(path.join(existingProfileFolderPath, 'controls'))
     }
 
     // If all variables have been satisfied, we can generate the delta
@@ -151,10 +99,10 @@ export default class GenerateDelta extends Command {
       let updatedResult
       if (flags.useGroupID) {
         updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'group', logger)
-      } else if (flags.useVulnerabilityId) {
-        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'rule', logger)
       } else if (flags.useStigID) {
         updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'version', logger)
+      } else if (flags.useVulnerabilityId) {
+        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'rule', logger)
       } else {
         throw new Error('No ID type specified')
       }
@@ -163,12 +111,16 @@ export default class GenerateDelta extends Command {
       updatedResult.profile.controls.forEach(control => {
         // Write the new control to the controls folder
         logger.debug(`Writing updated control ${control.id} to profile`)
-        fs.writeFileSync(path.join(flags.output, 'controls', `${control.id}.rb`), control.toRuby()) // Ensure we always have a newline at EOF
+        fs.writeFileSync(path.join(existingProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby()) // Ensure we always have a newline at EOF
       })
 
       logger.info(`Writing delta file for ${existingProfile.title}`)
       // Write the delta to a file
-      fs.writeFileSync(path.join(flags.output, 'delta.json'), JSON.stringify(updatedResult.diff, null, 2))
+      fs.writeFileSync(path.join(existingProfileFolderPath, 'delta.json'), JSON.stringify(updatedResult.diff, null, 2))
+      if (flags.report) {
+        logger.debug('Writing report markdown file')
+        fs.writeFileSync(path.join(flags.report), updatedResult.markdown)
+      }
     } else {
       logger.error('Could not generate delta because one or more of the following variables were not satisfied:')
 
