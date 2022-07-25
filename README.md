@@ -417,6 +417,7 @@ convert fortify2hdf         Translate a Fortify results FVDL file into a Heimdal
   OPTIONS
     -i, --input=input          Input FVDL File
     -o, --output=output        Output HDF JSON File
+    -w, --with-raw             Include raw input file in HDF JSON file
 
   EXAMPLES
     saf convert fortify2hdf -i audit.fvdl -o output-hdf-name.json
