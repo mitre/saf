@@ -90,7 +90,7 @@ brew install mitre/saf/saf-cli
 To update the SAF CLI with `brew`:
 
 ```
-brew upgrade saf-cli
+brew upgrade mitre/saf/saf-cli
 ```
 
 ---
