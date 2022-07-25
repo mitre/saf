@@ -4,16 +4,14 @@ import {XCCDFResultsMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class XCCDFResults2HDF extends Command {
-  static usage = 'convert xccdf_results2hdf -i, --input=XML -o, --output=OUTPUT -w, --with-raw'
+  static usage = 'convert xccdf_results2hdf -i, --input=XML -o, --output=OUTPUT'
 
-  static description = 'Translate a SCAP client XCCDF-Results XML report to HDF format JSON file'
-
-  static examples = ['saf convert xccdf_results2hdf -i results-xccdf.xml -o output-hdf-name.json -w']
+  static description = 'Translate a SCAP client XCCDF-Results XML report to HDF format Json be viewed on Heimdall'
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Input XCCDF Results file'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output HDF file'}),
+    input: Flags.string({char: 'i', required: true}),
+    output: Flags.string({char: 'o', required: true}),
     'with-raw': Flags.boolean({char: 'w', required: false}),
   }
 

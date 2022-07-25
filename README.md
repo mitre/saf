@@ -395,12 +395,12 @@ convert ckl2POAM            Translate DISA Checklist CKL file(s) to POA&M files
 convert dbprotect2hdf       Translate a DBProtect report in "Check Results
                             Details" XML format into a Heimdall Data Format JSON file
   OPTIONS
-    -i, --input=input          (required) Input 'Check Results Details' XML file
-    -o, --output=output        (required) Output HDF JSON file
-    -w, --with-raw             Append raw input file to HDF output file
+    -i, --input=input          'Check Results Details' XML File
+    -o, --output=output        Output HDF JSON File
+    -w, --with-raw             Include raw input file in HDF JSON file
 
   EXAMPLES
-    saf convert dbprotect2hdf -i check-results-details-report.xml -o output-hdf-name.json -w
+    saf convert dbprotect2hdf -i check_results_details_report.xml -o output-hdf-name.json
 ```
 
 
@@ -496,12 +496,12 @@ OPTIONS
 convert netsparker2hdf      Translate a Netsparker XML results file into a
                             Heimdall Data Format JSON file
   OPTIONS
-    -i, --input=input          (required) Input Netsparker XML file
-    -o, --output=output        (required) Output HDF JSON file
-    -w, --with-raw             Append raw input file to HDF output file
+    -i, --input=input          Input Netsparker XML File
+    -o, --output=output        Output HDF JSON File
+    -w, --with-raw             Include raw input file in HDF JSON file
 
   EXAMPLES
-    saf convert netsparker2hdf -i netsparker-results.xml -o output-hdf-name.json -w
+    saf convert netsparker2hdf -i netsparker_results.xml -o output-hdf-name.json
 ```
 
 
@@ -673,12 +673,12 @@ NOTE: `xccdf_results2hdf` only supports native OpenSCAP output and SCC output.
 convert xccdf_results2hdf    Translate a SCAP client XCCDF-Results XML report to
                              HDF format Json be viewed on Heimdall
   OPTIONS
-    -i, --input=input          (required) Input XCCDF Results XML file
-    -o, --output=output        (required) Output HDF JSON file
-    -w, --with-raw             Append raw input file to HDF output file 
+    -i, --input=input          Input XCCDF Results XML File
+    -o, --output=output        Output HDF JSON File
+    -w, --with-raw             Include raw input file in HDF JSON file
 
   EXAMPLES
-    saf convert xccdf_results2hdf -i results-xccdf.xml -o output-hdf-name.json -w
+    saf convert xccdf_results2hdf -i results-xccdf.xml -o output-hdf-name.json
 
 ```
 
