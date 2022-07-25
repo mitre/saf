@@ -380,7 +380,7 @@ convert burpsuite2hdf       Translate a BurpSuite Pro XML file into a Heimdall
     -w, --with-raw             Include raw input file in HDF JSON file
 
   EXAMPLES
-    saf convert burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json -w
+    saf convert burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json
 ```
 
 ##### CKL to POA&M
@@ -444,7 +444,7 @@ convert twistlock2hdf        Translate a Twistlock CLI output file into an Heimd
     -w, --with-raw        Include raw input file in HDF JSON file
 
   EXAMPLES
-    saf convert twistlock2hdf -i twistlock.json -o output-hdf-name.json -w
+    saf convert twistlock2hdf -i twistlock.json -o output-hdf-name.json
 ```
 
 
@@ -460,7 +460,7 @@ convert jfrog_xray2hdf      Translate a JFrog Xray results JSON file into a
     -w, --with-raw             Include raw input file in HDF JSON file
 
   EXAMPLES
-    saf convert jfrog_xray2hdf -i xray_results.json -o output-hdf-name.json -w
+    saf convert jfrog_xray2hdf -i xray_results.json -o output-hdf-name.json
 ```
 
 ##### Ion Channel 2 HDF
@@ -499,7 +499,7 @@ OPTIONS
     -w, --with-raw             Include raw input file in HDF JSON file
 
   EXAMPLES
-    saf convert nessus2hdf -i nessus_results.xml -o output-hdf-name.json -w
+    saf convert nessus2hdf -i nessus_results.nessus -o output-hdf-name.json
 ```
 
 
@@ -528,7 +528,7 @@ convert nikto2hdf           Translate a Nikto results JSON file into a Heimdall
     -w, --with-raw             Include raw input file in HDF JSON file
 
   EXAMPLES
-    saf convert nikto2hdf -i nikto-results.json -o output-hdf-name.json -w
+    saf convert nikto2hdf -i nikto-results.json -o output-hdf-name.json
 ```
 
 ##### Prisma to HDF
@@ -581,7 +581,7 @@ convert sarif2hdf          Translate a SARIF JSON file into a Heimdall Data
       SARIF level not provided -> HDF impact 0.1 as default
 
   EXAMPLES
-    saf convert sarif2hdf -i sarif-results.json -o output-hdf-name.json -w
+    saf convert sarif2hdf -i sarif-results.json -o output-hdf-name.json
 ```
 
 
@@ -599,7 +599,7 @@ convert scoutsuite2hdf       Translate a ScoutSuite results from a Javascript
     Note: Currently this mapper only supports AWS.
 
   EXAMPLES
-    saf convert scoutsuite2hdf -i scoutsuite-results.js -o output-hdf-name.json -w
+    saf convert scoutsuite2hdf -i scoutsuite-results.js -o output-hdf-name.json
 ```
 
 
@@ -708,7 +708,7 @@ convert zap2hdf              Translate a OWASP ZAP results JSON to HDF format Js
     -w, --with-raw             Include raw input file in HDF JSON file
 
   EXAMPLES
-    saf convert zap2hdf -i zap_results.json -n mitre.org -o output-hdf-name.json -w
+    saf convert zap2hdf -i zap_results.json -n mitre.org -o output-hdf-name.json
 ```
 
 ---
