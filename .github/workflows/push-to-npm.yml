@@ -28,3 +28,26 @@ jobs:
         run: npm publish --access public mitre-saf-v*.tgz
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  homebrew:
+      name: Bump Homebrew formula
+      runs-on: ubuntu-latest
+      steps:
+        - name: Extract version
+          id: extract-version
+          run: |
+            printf "::set-output name=%s::%s\n" tag-name "${GITHUB_REF#refs/tags/}"
+        - uses: mislav/bump-homebrew-formula-action@v2.1
+          if: "!contains(github.ref, '-')" # skip prereleases
+          with:
+            formula-name: saf-cli
+            formula-path: Formula/saf-cli.rb
+            homebrew-tap: mitre/homebrew-saf
+            base-branch: main
+            download-url: https://registry.npmjs.org/@mitre/saf/-/saf-${{ steps.extract-version.outputs.tag-name }}.tgz
+            commit-message: |
+              {{formulaName}} {{version}}
+
+              Created by https://github.com/mislav/bump-homebrew-formula-action
+          env:
+            COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
