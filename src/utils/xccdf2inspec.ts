@@ -1,8 +1,5 @@
 import parser from 'fast-xml-parser'
-import * as htmlparser from 'htmlparser2'
-import _ from 'lodash'
 import {InSpecControl} from '../types/inspec'
-import {DecodedDescription} from '../types/xccdf'
 
 // Breaks lines down to lineLength number of characters
 export function wrap(s: string, lineLength = 80): string {
@@ -32,54 +29,6 @@ export function convertEncodedXmlIntoJson(
     ignoreAttributes: false,
     attributeNamePrefix: '@_',
   })
-}
-
-export function convertEncodedHTMLIntoJson(encodedHTML?: string): DecodedDescription {
-  if (encodedHTML) {
-    // Some STIGs regarding XSS put the < character inside of the description which breaks parsing
-    const patchedHTML = encodedHTML.replace(/"&lt;"/g, '[[[REPLACE_LESS_THAN]]]')
-
-    const xmlChunks: string[] = []
-    const htmlParser = new htmlparser.Parser({
-      ontext(text: string) {
-        xmlChunks.push(text)
-      },
-    })
-    htmlParser.write(patchedHTML)
-    htmlParser.end()
-    const converted = convertEncodedXmlIntoJson(xmlChunks.join(''))
-    let cleaned: Record<string, string | boolean | undefined> = {}
-
-    if (typeof converted.VulnDiscussion === 'object') { // Some STIGs have xml tags inside of the actual text which breaks processing, e.g U_ASD_STIG_V5R1_Manual-xccdf.xml and all Oracle Database STIGs
-      let extractedVulnDescription = ''
-      const remainingFields = _.omit(converted.VulnDiscussion, ['FalsePositives', 'FalseNegatives', 'Documentable', 'Mitigations', 'SeverityOverrideGuidance', 'PotentialImpacts', 'ThirdPartyTools', 'MitigationControl', 'Responsibility', 'IAControls'])
-      Object.entries(remainingFields).forEach(([field, value]) => {
-        extractedVulnDescription += `<${field}> ${value}`
-      })
-      cleaned = {
-        VulnDiscussion: extractedVulnDescription.replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"'),
-      }
-      Object.entries(converted.VulnDiscussion).forEach(([key, value]) => {
-        if (typeof value === 'string') {
-          cleaned[key] = (value as string).replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"')
-        } else {
-          cleaned[key] = (value as boolean)
-        }
-      })
-    } else {
-      Object.entries(converted).forEach(([key, value]) => {
-        if (typeof value === 'string') {
-          cleaned[key] = (value as string).replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"')
-        } else {
-          cleaned[key] = (value as boolean)
-        }
-      })
-    }
-
-    return cleaned
-  }
-
-  return {}
 }
 
 export function severityStringToImpact(string: string): number {

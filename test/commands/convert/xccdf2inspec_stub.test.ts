@@ -3,7 +3,6 @@ import tmp from 'tmp'
 import path from 'path'
 import fs from 'fs'
 import {convertEncodedXmlIntoJson} from '../../../src/utils/xccdf2inspec'
-import {DisaStig} from '../../../src/types/xccdf'
 
 describe('Test xccdf2inspec', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
@@ -13,7 +12,7 @@ describe('Test xccdf2inspec', () => {
     .stdout()
     .command(['generate xccdf2inspec_stub', '-i', path.resolve('./test/sample_data/xccdf/stigs', file), '-o', `${tmpobj.name}/${file}`])
     .it(`Has the same number of controls in the stig as generated - ${file}`, () => {
-      const parsedXML: DisaStig = convertEncodedXmlIntoJson(fs.readFileSync(path.resolve('./test/sample_data/xccdf/stigs', file), 'utf8'))
+      const parsedXML = convertEncodedXmlIntoJson(fs.readFileSync(path.resolve('./test/sample_data/xccdf/stigs', file), 'utf8'))
       const fileCount = fs.readdirSync(`${tmpobj.name}/${file}/controls/`).length
       expect(fileCount).to.eql(parsedXML.Benchmark.Group.length)
     })
