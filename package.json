@@ -9,7 +9,7 @@
     "@aws-sdk/client-config-service": "^3.53.0",
     "@mitre/hdf-converters": "^2.6.29",
     "@mitre/heimdall-lite": "^2.6.29",
-    "@mitre/inspec-objects": "^0.0.26",
+    "@mitre/inspec-objects": "^0.0.28",
     "@oclif/core": "^1.6.0",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.0.1",
