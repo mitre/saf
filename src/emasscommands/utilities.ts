@@ -44,6 +44,31 @@ export function getFlagsForEndpoint(argv: string[]) {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
         acronyms: Flags.boolean({char: "a", description: "The system acronym(s) e.g \"AC-1, AC-2\" - if not provided all controls for systemId are returned", required: false}),
       }
+    } else if (args.endpoint === 'cac') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        controlAcronyms: Flags.integer({char: "c", description: "The system acronym(s) e.g \"AC-1, AC-2\"", required: false})
+      }
+    } else if (args.endpoint === 'pac') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+      }
+    } else if (args.endpoint === 'cmmc') {
+      return {
+        sinceDate: Flags.integer({char: "s", description: "The CMMC date. Unix date format", required: true}),
+      }
+    } else if (args.endpoint === 'test_results') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        controlAcronyms: Flags.string({char: "a", description: "The system acronym(s) e.g \"AC-1, AC-2\"", required: false}),
+        ccis: Flags.string({char: "c", description: "The system CCIS string numerical value", required: false}),
+        latestOnly: Flags.boolean({char: "l", description: "true or false", required: false}),
+      }
+    } else if (args.endpoint === 'workflow_defintions') {
+      return {
+        includeInactive: Flags.integer({char: "i", description: "true or false", required: false}),
+        registrationType: Flags.string({char: "r", description: "Possible values: assessAndAuthorize, assessOnly, guest, regular, functional, cloudServiceProvider, commonControlProvider", required: false}),
+      }
     } else if (args.endpoint === 'poams' && args.argument === 'forSystem') {
       return {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
@@ -58,7 +83,7 @@ export function getFlagsForEndpoint(argv: string[]) {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
         poamId: Flags.integer({char: "p", description: "The poam identification number", required: true}),
       }
-    }
+    } 
   } else if (args.requestType === 'post') {
     if (args.endpoint === 'test_results') {
       return {
