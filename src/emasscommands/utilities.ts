@@ -177,7 +177,7 @@ export function getDescriptionForEndpoint(argv: string[]): string {
       if (args.argument === 'all') {
         return 'Retrieves all workflow instances';
       } else if (args.argument === 'byWorkflowInstanceId') {
-        return 'Retrieves workflow instances by workflow Instance ID';
+        return 'Retrieves workflow instance by workflow Instance ID';
       } else {
         return 'Retrieve all workflow instances or workflow instance by workflowInstanceID';
       }
