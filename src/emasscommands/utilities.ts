@@ -74,9 +74,11 @@ export function getFlagsForEndpoint(argv: string[]) {
   return {}
 }
 
-export function getDescriptionForEndpoint(argv: string[]): string {
-  let args: CliArgs = getArgs(argv);
+export function getDescriptionForEndpoint(argv: string[], endpoint?: string ): string {
+  let args: CliArgs = getArgs(argv, endpoint);
 
+console.log('WHAT WHAT')
+console.log('argv[4]', argv[4])
   if (args.requestType === 'get') {
     if (args.endpoint === 'roles') {
       if (args.argument === 'all') {
@@ -87,6 +89,7 @@ export function getDescriptionForEndpoint(argv: string[]): string {
         return 'Retrieve all available system roles, or filter by options';
       }
     } else if (args.endpoint === 'poams') {
+
       if (args.argument === 'forSystem') {
         return 'Retrieves Poams for specified system ID';
       } else if (args.argument === 'byPoamId') {
@@ -117,17 +120,17 @@ export function getExamplesForEndpoint(argv: string[]): string[] {
       return ['emasser get poams byPoamId --systemId <value> --poamId <value>'];
     } else {
       return ['emasser get poams forSystem --systemId <value> [options]', 'emasser get poams byPoamId --systemId <value> --poamId <value>'];
-    }    
+    }
   }
   return [''];
 }
 
 // Supporting Functions
-function getArgs(argv: string[]): CliArgs {
+function getArgs(argv: string[], endpointValue?: string ): CliArgs {
   const requestTypeIndex = argv.findIndex(arg => (arg === 'get' || arg === 'post'))
   return {
     requestType: argv[requestTypeIndex],
-    endpoint: argv[requestTypeIndex + 1],
-    argument: argv[requestTypeIndex + 2],
-  }
+    endpoint: (endpointValue) ? endpointValue : argv[requestTypeIndex + 1],
+    argument: (endpointValue) ? '' : argv[requestTypeIndex + 2],
+  }    
 }

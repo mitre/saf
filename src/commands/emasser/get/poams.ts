@@ -10,9 +10,8 @@ import { getDescriptionForEndpoint, getExamplesForEndpoint, getFlagsForEndpoint 
 export default class EmasserGetPoams extends Command {
 
   static usage = 'get poams [ARGUMENT]'
-  //static process.argv.findIndex(arg => (arg === '--help));
 
-  static description = (process.argv[4] === '--help' || process.argv[4] === undefined)? "Retrieve Poams for a system or system/poam Id combination" : getDescriptionForEndpoint(process.argv);
+  static description = getDescriptionForEndpoint(process.argv, 'poams');
 
   static examples = getExamplesForEndpoint(process.argv); 
 

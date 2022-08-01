@@ -10,7 +10,7 @@ export default class EmasserGetRoles extends Command {
 
   static usage = 'get roles [ARGUMENT]'
 
-  static description = getDescriptionForEndpoint(process.argv);
+  static description = getDescriptionForEndpoint(process.argv, 'roles');
 
   static examples = getExamplesForEndpoint(process.argv); 
 
