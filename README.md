@@ -213,19 +213,6 @@ convert hdf2splunk           Translate and upload a Heimdall Data Format JSON fi
     saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf
 ```
 
-#### HDF to XCCDF
-```
-Translate an HDF file into an XCCDF XML
-
-FLAGS
-  -h, --help            Show CLI help.
-  -i, --input=<value>   (required) Input HDF file
-  -o, --output=<value>  (required) Output XCCDF file
-
-EXAMPLES
-  $ saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml
-```
-
 HDF Splunk Schema documentation: https://github.com/mitre/heimdall2/blob/master/libs/hdf-converters/src/converters-from-hdf/splunk/Schemas.md#schemas
 ##### Previewing HDF Data Within Splunk:
 A full raw search query:
@@ -248,6 +235,19 @@ index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) value
 | table meta.guid "Results Set" "Scan Type" "Scan (Profile) Name" ID "NIST SP 800-53 Controls" Title "Control Status" "Test(s) Status" "Results Description" "Results Skip Message (if applicable)"  Description Impact Severity  Check Fix "CCI IDs" Code "Scan Duration" "Scan (Profile) Summary" "Scan (Profile) Version"
 ```
 
+
+#### HDF to XCCDF
+```
+Translate an HDF file into an XCCDF XML
+
+FLAGS
+  -h, --help            Show CLI help.
+  -i, --input=<value>   (required) Input HDF file
+  -o, --output=<value>  (required) Output XCCDF file
+
+EXAMPLES
+  $ saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml
+```
 
 ##### HDF to Checklist
 ```
