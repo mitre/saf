@@ -129,11 +129,17 @@
         "description": "[Visualize]    Identify overall security status and deep-dive to solve specific security defects"
       },
       "emasser:get": {
-          "description": "The eMass API GET endpoint commands"
+          "description": "eMass REST API GET endpoint commands"
       },
       "emasser:post": {
-        "description": "The eMass API POST endpoint commands"
-    }
+        "description": "eMass REST API POST endpoint commands"
+      },
+      "emasser:put": {
+        "description": "eMass REST API PUT endpoint commands"
+      },
+      "emasser:delete": {
+        "description": "eMass REST API DELETE endpoint commands"
+      }
     }
   },
   "repository": "mitre/saf",

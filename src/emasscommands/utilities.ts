@@ -44,6 +44,32 @@ export function getFlagsForEndpoint(argv: string[]) {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
         acronyms: Flags.boolean({char: "a", description: "The system acronym(s) e.g \"AC-1, AC-2\" - if not provided all controls for systemId are returned", required: false}),
       }
+    } else if (args.endpoint === 'cac') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        controlAcronyms: Flags.integer({char: "c", description: "The system acronym(s) e.g \"AC-1, AC-2\"", required: false})
+      }
+    } else if (args.endpoint === 'pac') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+      }
+    } else if (args.endpoint === 'cmmc') {
+      return {
+        sinceDate: Flags.integer({char: "s", description: "The CMMC date. Unix date format", required: true}),
+      }
+    } else if (args.endpoint === 'test_results') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        controlAcronyms: Flags.string({char: "a", description: "The system acronym(s) e.g \"AC-1, AC-2\"", required: false}),
+        ccis: Flags.string({char: "c", description: "The system CCIS string numerical value", required: false}),
+        latestOnly: Flags.boolean({char: "l", description: "Filter on latest only", required: false}),
+      }
+    } else if (args.endpoint === 'workflow_defintions') {
+      return {
+        includeInactive: Flags.integer({char: "i", description: "true or false", required: false}),
+        registrationType: Flags.string({char: "r", description: "The registration type - must be a valid type", 
+            options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false}),
+      }
     } else if (args.endpoint === 'poams' && args.argument === 'forSystem') {
       return {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
@@ -58,7 +84,45 @@ export function getFlagsForEndpoint(argv: string[]) {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
         poamId: Flags.integer({char: "p", description: "The poam identification number", required: true}),
       }
-    }
+    } else if (args.endpoint === 'artifacts' && args.argument === 'forSystem') {
+      return {
+        systemId: Flags.integer({char: "s", description: "Unique system identifier", required: true}),
+        filename: Flags.string({char: "f", description: "The artifact file name", required: false}),
+        controlAcronyms: Flags.string({char: "a", description: "The system acronym(s) e.g \"AC-1, AC-2\"", required: false}),
+        ccis: Flags.string({char: "c", description: "The system CCIS string numerical value", required: false}),
+        systemOnly: Flags.boolean({char: "y", description: "Return only systems", required: false}),
+      }
+    } else if (args.endpoint === 'artifacts' && args.argument === 'export') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        filename: Flags.string({char: "f", description: "The artifact file name", required: true}),
+        compress: Flags.boolean({char: "c", description: "Compress true or false", required: false}),
+      }
+    } else if (args.endpoint === 'milestones' && args.argument === 'byPoamId') {
+      return {
+        systemId: Flags.integer({char: "s", description: "Unique system identifier", required: true}),
+        poamId: Flags.string({char: "p", description: "Unique poam identifier", required: true}),
+        scheduledCompletionDateStart: Flags.string({char: "t", description: "Unix time format (e.g. 1499644800)", required: false}),
+        scheduledCompletionDateEnd: Flags.string({char: "e", description: "Unix time format (e.g. 1499990400)", required: false}),
+      }
+    } else if (args.endpoint === 'milestones' && args.argument === 'byMilestoneId') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        poamId: Flags.integer({char: "p", description: "The poam identification number", required: true}),
+        milestoneId: Flags.integer({char: "m", description: "Unique milestone identifier", required: true}),
+      }
+    } else if (args.endpoint === 'workflow_instances') {
+      return {
+        includeComments: Flags.integer({char: "i", description: "true or false", required: false}),
+        pageIndex: Flags.integer({char: "p", description: "The page number to query", required: false}),
+        sinceDate: Flags.string({char: "d", description: "The Workflow Instance date. Unix date format", required: false}),
+        status: Flags.string({char: "s", description: "The Workflow status - must be a valid status", options: ['active', 'inactive', 'all'], required: false}),
+      }
+    } else if (args.endpoint === 'workflow_instances' && args.argument === 'byWorkflowInstanceId') {
+      return {
+        workflowInstanceId: Flags.integer({char: "w", description: "Unique workflow instance identifier", required: true}),
+      }
+    } 
   } else if (args.requestType === 'post') {
     if (args.endpoint === 'test_results') {
       return {
@@ -77,8 +141,6 @@ export function getFlagsForEndpoint(argv: string[]) {
 export function getDescriptionForEndpoint(argv: string[], endpoint?: string ): string {
   let args: CliArgs = getArgs(argv, endpoint);
 
-console.log('WHAT WHAT')
-console.log('argv[4]', argv[4])
   if (args.requestType === 'get') {
     if (args.endpoint === 'roles') {
       if (args.argument === 'all') {
@@ -89,7 +151,6 @@ console.log('argv[4]', argv[4])
         return 'Retrieve all available system roles, or filter by options';
       }
     } else if (args.endpoint === 'poams') {
-
       if (args.argument === 'forSystem') {
         return 'Retrieves Poams for specified system ID';
       } else if (args.argument === 'byPoamId') {
@@ -97,8 +158,33 @@ console.log('argv[4]', argv[4])
       } else {
         return 'Retrieve Poams for a system or system/poam Id combination';
       }
+    } else if (args.endpoint === 'artifacts') {
+      if (args.argument === 'forSystem') {
+        return 'Retrieves one or many artifacts for a system specified system ID';
+      } else if (args.argument === 'export') {
+        return 'Retrieves the file artifacts (if compress is true the file binary contents are returned, otherwise the file textual contents are returned.)';
+      } else {
+        return 'Retrieve artifacts for a system or system/filename combination';
+      }
+    } else if (args.endpoint === 'milestones') {
+      if (args.argument === 'byPoamId') {
+        return 'Retrieves milestone(s) for specified system and poam ID';
+      } else if (args.argument === 'byMilestoneId') {
+        return 'Retrieve milestone(s) for specified system, poam, and milestone ID';
+      } else {
+        return 'Retrieve milestones by system by systemID/poamID or systemID/poamID/milestoneID combination';
+      }
+    } else if (args.endpoint === 'workflow_instances') {
+      if (args.argument === 'all') {
+        return 'Retrieves all workflow instances';
+      } else if (args.argument === 'byWorkflowInstanceId') {
+        return 'Retrieves workflow instance by workflow Instance ID';
+      } else {
+        return 'Retrieve all workflow instances or workflow instance by workflowInstanceID';
+      }
     }
   }
+
   return '';
 }
 
@@ -120,7 +206,31 @@ export function getExamplesForEndpoint(argv: string[]): string[] {
       return ['emasser get poams byPoamId --systemId <value> --poamId <value>'];
     } else {
       return ['emasser get poams forSystem --systemId <value> [options]', 'emasser get poams byPoamId --systemId <value> --poamId <value>'];
-    }
+    }    
+  } else if (args.requestType === 'get' && args.endpoint === 'artifacts') {
+    if (args.argument === 'forSystem') {
+      return ['emasser get artifacts forSystem --systemId <value> [options]'];
+    } else if (args.argument === 'export') {
+      return ['emasser get artifacts export --systemId <value> --filename <value> [options]'];
+    } else {
+      return ['emasser get artifacts forSystem --systemId <value> [options]', 'emasser get artifacts export --systemId <value> --filename <value> [options]'];
+    }    
+  } else if (args.requestType === 'get' && args.endpoint === 'milestones') {
+    if (args.argument === 'byPoamId') {
+      return ['emasser get milestones byPoamId --systemId <value> --poamId <value> [options]'];
+    } else if (args.argument === 'byMilestoneId') {
+      return ['emasser get milestones byMilestoneId --systemId <value> --poamId <value> --milestoneId <value>'];
+    } else {
+      return ['emasser get milestones byPoamId --systemId <value> --poamId <value> [options]', 'emasser get milestones byMilestoneId --systemId <value> --poamId <value> --milestoneId <value>'];
+    }    
+  } else if (args.requestType === 'get' && args.endpoint === 'workflow_instances') {
+    if (args.argument === 'all') {
+      return ['emasser get workflow_instances all [options]'];
+    } else if (args.argument === 'byWorkflowInstanceId') {
+      return ['emasser get workflow_instances byWorkflowInstanceId --workflowInstanceId <value>'];
+    } else {
+      return ['emasser get workflow_instances all [options]', 'emasser get workflow_instances byWorkflowInstanceId --workflowInstanceId <value>'];
+    }    
   }
   return [''];
 }

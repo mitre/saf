@@ -6,5 +6,27 @@ import { outputFormat } from '../../../emasscommands/outputFormatter';
 import { outputError } from '../../../emasscommands/outputError';
 import { getFlagsForEndpoint } from '../../../emasscommands/utilities';
 
+export default class EmasserGetTestResults extends Command {
 
-//getSystemTestResults(systemId: number, controlAcronyms?: string, ccis?: string, latestOnly
+  static usage = 'get test_results [ARGUMENTS]'
+
+  static description = 'Get test results for a specific system defined by ID (systemId)'
+
+  static examples = ['emasser get test_results --systemId <value> [options]']
+
+  static flags = {
+    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get Test Results endpoint'}),
+    ...getFlagsForEndpoint(process.argv) as any,
+  }
+
+  async run(): Promise<void> {
+    const {flags} = await this.parse(EmasserGetTestResults)
+    const apiCxn = new ApiConnection();
+    const getTestResults = new TestResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
+    
+    // Order is important here
+    getTestResults.getSystemTestResults(flags.systemId,flags.controlAcronyms,flags.ccis,flags.latestOnly).then((data:any) => {
+      console.log(colorize(outputFormat(data.data)));
+    }).catch((error:any) => console.error(colorize(outputError(error))));
+  }
+}

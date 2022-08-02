@@ -14,7 +14,7 @@ export default class EmasserGetTestConnection extends Command {
   static examples = ['emasser get test_connection']
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Test it pointing to a valid eMASS URL'}),
+    help: Flags.help({char: 'h', description: 'Test connection to configured eMASS URL'}),
   }
 
   async run(): Promise<void> {

@@ -8,14 +8,14 @@ import { getDescriptionForEndpoint, getExamplesForEndpoint, getFlagsForEndpoint 
 
 export default class EmasserGetRoles extends Command {
 
-  static usage = 'get roles [ARGUMENT]'
+  static usage = 'get roles [ARGUMENTS]'
 
   static description = getDescriptionForEndpoint(process.argv, 'roles');
 
   static examples = getExamplesForEndpoint(process.argv); 
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get roles endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get Roles endpoint'}),
     ...getFlagsForEndpoint(process.argv) as any,
   }
 

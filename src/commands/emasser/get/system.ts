@@ -8,14 +8,14 @@ import { getFlagsForEndpoint } from '../../../emasscommands/utilities';
 
 export default class EmasserGetSystem extends Command {
 
-  static usage = 'get system [options]'
+  static usage = 'get system [ARGUMENTS]'
 
   static description = 'Get system information for a specific system defined by ID (systeId)'
 
   static examples = ['emasser get system --systemId <value>']
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get system endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get System endpoint'}),
     ...getFlagsForEndpoint(process.argv) as any,
   }
 
