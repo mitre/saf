@@ -16,7 +16,7 @@ export default class EmasserGetPoams extends Command {
   static examples = getExamplesForEndpoint(process.argv); 
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get POA&Ms endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET POA&Ms endpoint'}),
     ...getFlagsForEndpoint(process.argv) as any,
   }
 

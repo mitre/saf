@@ -12,10 +12,10 @@ export default class EmasserGetArtifacts extends Command {
 
   static description = getDescriptionForEndpoint(process.argv, 'artifacts');
 
-  static examples = getExamplesForEndpoint(process.argv); 
+  static examples = getExamplesForEndpoint(process.argv);
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get Artifacts endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Artifacts endpoint'}),
     ...getFlagsForEndpoint(process.argv) as any,
   }
 

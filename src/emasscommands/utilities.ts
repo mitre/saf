@@ -134,6 +134,16 @@ export function getFlagsForEndpoint(argv: string[]) {
         complianceStatus: Flags.string({char: "c", description: "The system CCI string numerical value", required: true}),
       }
     }
+  } else if (args.requestType === 'put') {
+    if (args.endpoint === 'milestones') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        poamId: Flags.integer({char: "p", description: "The poam identification number", required: true}),
+        milestoneId: Flags.integer({char: "m", description: "Unique milestone identifier", required: true}),
+        description: Flags.string({char: "d", description: "The milestone description", required: false}),
+        scheduledCompletionDate: Flags.string({char: "t", description: "The scheduled completion date - Unix time format", required: false}),
+      }      
+    }
   }
   return {}
 }
@@ -236,7 +246,7 @@ export function getExamplesForEndpoint(argv: string[]): string[] {
 
 // Supporting Functions
 function getArgs(argv: string[], endpointValue?: string ): CliArgs {
-  const requestTypeIndex = argv.findIndex(arg => (arg === 'get' || arg === 'post'))
+  const requestTypeIndex = argv.findIndex(arg => (arg === 'get' || arg === 'post' || arg === 'put'))
   return {
     requestType: argv[requestTypeIndex],
     endpoint: (endpointValue) ? endpointValue : argv[requestTypeIndex + 1],

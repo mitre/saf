@@ -15,7 +15,7 @@ export default class EmasserGetMilestones extends Command {
   static examples = getExamplesForEndpoint(process.argv); 
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get Milestones endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Milestones endpoint'}),
     ...getFlagsForEndpoint(process.argv) as any,
   }
 
@@ -49,7 +49,7 @@ export default class EmasserGetMilestones extends Command {
     if (error.message) {
       this.error(error)
     } else {
-      let suggestions = 'get milestones [-h or --help]\n\tget milestones all\n\tget milestones byCategory';
+      let suggestions = 'get milestones [-h or --help]\n\tget milestones byPoamId\n\tget milestones byMilestoneId';
       this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
     }
   }

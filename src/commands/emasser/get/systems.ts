@@ -15,7 +15,7 @@ export default class EmasserGetSystems extends Command {
   static examples = ['emasser get systems --includePackage --registrationType --ditprId --coamsId --policy --includeDitprMetrics --includeDecommissioned --reportsForScorecard']
   
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get Systems endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Systems endpoint'}),
     ...getFlagsForEndpoint(process.argv) as any,
   }
 

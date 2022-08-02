@@ -15,7 +15,7 @@ export default class EmasserGetCmmc extends Command {
   static examples = ['emasser get cmmc --sinceDate <value>']
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get CMMC endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET CMMC endpoint'}),
     ...getFlagsForEndpoint(process.argv) as any,
   }
 

@@ -15,7 +15,7 @@ export default class EmasserGetTestResults extends Command {
   static examples = ['emasser get test_results --systemId <value> [options]']
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get Test Results endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Test Results endpoint'}),
     ...getFlagsForEndpoint(process.argv) as any,
   }
 

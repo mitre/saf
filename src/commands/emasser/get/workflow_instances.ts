@@ -15,7 +15,7 @@ export default class EmasserGetWorkflowInstances extends Command {
   static examples = getExamplesForEndpoint(process.argv); 
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get Workflow Instances endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Workflow Instances endpoint'}),
     ...getFlagsForEndpoint(process.argv) as any,
   }
 

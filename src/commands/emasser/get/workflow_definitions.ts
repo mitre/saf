@@ -15,7 +15,7 @@ export default class EmasserGetWorkflowDefinitions extends Command {
   static examples = ['emasser get workflow_definitions [options]']
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get Workflow Definitions endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Workflow Definitions endpoint'}),
     ...getFlagsForEndpoint(process.argv) as any,
   }
 

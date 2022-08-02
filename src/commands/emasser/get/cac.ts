@@ -15,7 +15,7 @@ export default class EmasserGetCac extends Command {
   static examples = ['emasser get cac --systemId <value>']
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get CAC endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET CAC endpoint'}),
     ...getFlagsForEndpoint(process.argv) as any,
   }
 

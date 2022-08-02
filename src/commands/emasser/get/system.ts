@@ -15,7 +15,7 @@ export default class EmasserGetSystem extends Command {
   static examples = ['emasser get system --systemId <value>']
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the get System endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET System endpoint'}),
     ...getFlagsForEndpoint(process.argv) as any,
   }
 
