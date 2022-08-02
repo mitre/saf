@@ -184,7 +184,6 @@ export function getDescriptionForEndpoint(argv: string[], endpoint?: string ): s
       }
     }
   }
-
   return '';
 }
 

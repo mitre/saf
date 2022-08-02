@@ -31,7 +31,8 @@ export default class EmasserGetMilestones extends Command {
     const getMilestones = new MilestonesApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
     if (args.byPoamId === 'byPoamId') {
-        getMilestones.getSystemMilestonesByPoamId(flags.systemId,flags.poamId,flags.scheduledCompletionDateStart,flags.scheduledCompletionDateEnd).then((data:any) => {
+      // Order is important here
+      getMilestones.getSystemMilestonesByPoamId(flags.systemId,flags.poamId,flags.scheduledCompletionDateStart,flags.scheduledCompletionDateEnd).then((data:any) => {
         console.log(colorize(outputFormat(data.data)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.byPoamId === 'byMilestoneId') {
@@ -43,8 +44,13 @@ export default class EmasserGetMilestones extends Command {
       throw this.error;
     }
   }
+  
   async catch(error: any) {
-    let suggestions = 'get milestones [-h or --help]\n\tget milestones all\n\tget milestones byCategory';
-    this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
+    if (error.message) {
+      this.error(error)
+    } else {
+      let suggestions = 'get milestones [-h or --help]\n\tget milestones all\n\tget milestones byCategory';
+      this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
+    }
   }
 }

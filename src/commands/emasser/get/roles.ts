@@ -31,6 +31,7 @@ export default class EmasserGetRoles extends Command {
     const getSystemRoles = new SystemRolesApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
     if (args.all === 'all') {
+      // Order is important here
       getSystemRoles.getSystemRoles().then((data:any) => {
         console.log(colorize(outputFormat(data.data)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
@@ -43,8 +44,13 @@ export default class EmasserGetRoles extends Command {
       throw this.error;
     }
   }
+
   async catch(error: any) {
-    let suggestions = 'get roles [-h or --help]\n\tget roles all\n\tget roles byCategory';
-    this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
+    if (error.message) {
+      this.error(error)
+    } else {  
+      let suggestions = 'get roles [-h or --help]\n\tget roles all\n\tget roles byCategory';
+      this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
+    }
   }
 }

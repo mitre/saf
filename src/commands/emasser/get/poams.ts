@@ -32,7 +32,7 @@ export default class EmasserGetPoams extends Command {
     const getPoams = new POAMApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
     if (args.forSystem === 'forSystem') {
-      //getSystemPoams(systemId: number, scheduledCompletionDateStart?: string, scheduledCompletionDateEnd?: string, controlAcronyms?: string, ccis?: string, systemOnly?: boolean
+      // Order is important here
       getPoams.getSystemPoams(flags.systemId,flags.scheduledCompletionDateStart,flags.scheduledCompletionDateEnd,flags.controlAcronyms,flags.ccis,flags.systemOnly).then((data:any) => {
         console.log(colorize(outputFormat(data.data)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
@@ -45,8 +45,13 @@ export default class EmasserGetPoams extends Command {
       throw this.error;
     }
   }
+
   async catch(error: any) {
-    let suggestions = 'get poams [-h or --help]\n\tget poams forSystem\n\tget poams byPoamId';
-    this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
+    if (error.message) {
+      this.error(error)
+    } else {    
+      let suggestions = 'get poams [-h or --help]\n\tget poams forSystem\n\tget poams byPoamId';
+      this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
+    }
   }
 }

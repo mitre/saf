@@ -1,7 +1,7 @@
 import colorize from 'json-colorizer';
 import {Command, Flags} from "@oclif/core"
 import { ApiConnection } from "../../../emasscommands/apiConnection"
-import { ArtifactsApi } from '@mitre/emass_client';
+import { ArtifactsApi, ArtifactsExportApi } from '@mitre/emass_client';
 import { outputFormat } from '../../../emasscommands/outputFormatter';
 import { outputError } from '../../../emasscommands/outputError';
 import { getDescriptionForEndpoint, getExamplesForEndpoint, getFlagsForEndpoint } from '../../../emasscommands/utilities';
@@ -28,23 +28,35 @@ export default class EmasserGetArtifacts extends Command {
 
     const {args, flags} = await this.parse(EmasserGetArtifacts)
     const apiCxn = new ApiConnection();
-    const getArtifacts = new ArtifactsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    if (args.all === 'forSystem') {
-        getArtifacts.getSystemArtifacts(flags.systemId,flags.filename,flags.controlAcronyms,flags.ccis,flags.systemOnly).then((data:any) => {
+    if (args.forSystem === 'forSystem') {
+      const getArtifacts = new ArtifactsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
+      // Order is important here
+      getArtifacts.getSystemArtifacts(flags.systemId,flags.filename,flags.controlAcronyms,flags.ccis,flags.systemOnly).then((data:any) => {
         console.log(colorize(outputFormat(data.data)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
-    } else if (args.all === 'export') {
+    } else if (args.forSystem === 'export') {
+      const getArtifactsExport = new ArtifactsExportApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
       // Order is important here
-      getArtifacts.getSystemArtifactsExport(flags.systemId,flags.filename,flags.compress).then((data:any) => {
-        console.log(colorize(outputFormat(data.data)));
+      getArtifactsExport.getSystemArtifactsExport(flags.systemId,flags.filename,flags.compress).then((data:any) => {
+        console.log('typeof data.data is: ', typeof data.data)
+        if (typeof data.data === 'string') {
+          console.log(data.data);
+        } else {
+          console.log(JSON.stringify(data.data, null,2));
+        }
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else {
       throw this.error;
     }
   }
+  
   async catch(error: any) {
-    let suggestions = 'get artifacts [-h or --help]\n\tget artifacts forSystem\n\tget artifacts export';
-    this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
+    if (error.message) {
+      this.error(error)
+    } else {
+      let suggestions = 'get artifacts [-h or --help]\n\tget artifacts forSystem\n\tget artifacts export';
+      this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
+    }
   }
 }

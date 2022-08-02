@@ -31,20 +31,26 @@ export default class EmasserGetWorkflowInstances extends Command {
     const getWorkflowInstances = new WorkflowInstancesApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
     if (args.all === 'all') {
-        getWorkflowInstances.getSystemWorkflowInstances(flags.includeComments,flags.pageIndex,flags.sinceDate,flags.status).then((data:any) => {
+      // Order is important here
+      getWorkflowInstances.getSystemWorkflowInstances(flags.includeComments,flags.pageIndex,flags.sinceDate,flags.status).then((data:any) => {
         console.log(colorize(outputFormat(data.data)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.all === 'byInstanceId') {
       // Order is important here
-    getWorkflowInstances.getSystemWorkflowInstancesByWorkflowInstanceId(flags.workflowInstanceId).then((data:any) => {
+      getWorkflowInstances.getSystemWorkflowInstancesByWorkflowInstanceId(flags.workflowInstanceId).then((data:any) => {
         console.log(colorize(outputFormat(data.data)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else {
       throw this.error;
     }
   }
+
   async catch(error: any) {
-    let suggestions = 'get workflow_instances [-h or --help]\n\tget workflow_instances all\n\tget workflow_instances byInstanceId';
-    this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
+    if (error.message) {
+      this.error(error)
+    } else {
+      let suggestions = 'get workflow_instances [-h or --help]\n\tget workflow_instances all\n\tget workflow_instances byInstanceId';
+      this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
+    }
   }
 }

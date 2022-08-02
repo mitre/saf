@@ -1,19 +1,14 @@
 import { ApiConfig } from "./apiConfig";
 import _ from 'lodash';
 
-
 export function outputFormat(data: Object): string {
   
   const conf = new ApiConfig();
-  //console.log('conf.displayNulls is: ' + conf.displayNulls);
   let hideNulls: boolean = (conf.displayNulls === 'true') ? false : true;
   let showEpoch: boolean = (conf.displayDateTime === 'true') ? false : true;
 
-  //let hideNulls = !conf.displayNulls;
-  //console.log('hideNulls: ', hideNulls);
-  //console.log('showEpoch: ', showEpoch);
-  // console.log('data: ', data);
   try {
+
     if (hideNulls) {
       let newData: {[key: string]: any} = {};
 
@@ -62,9 +57,13 @@ export function outputFormat(data: Object): string {
           const obj = data[key];
           var jsonData: {[key: string]: any} = {};
           (Object.keys(obj) as (keyof typeof obj)[]).forEach((key, index, keyArray) => {
-            let value: string = key;
-            if (value.search('date') > 0 || value.search('Date') > 0) {
-              jsonData[key] = new Date(obj[key] * 1000);
+            if (obj[key] !== null) {
+              let value: string = key;
+              if (value.search('date') > 0 || value.search('Date') > 0) {
+                jsonData[key] = new Date(obj[key] * 1000);
+              } else {
+                jsonData[key] = obj[key];
+              }
             } else {
               jsonData[key] = obj[key];
             }
@@ -75,7 +74,8 @@ export function outputFormat(data: Object): string {
       });
       data = newData;
     }
-    
+  
+
     if (typeof data === 'string') {
       return data;
     } else {
