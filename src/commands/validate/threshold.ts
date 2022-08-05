@@ -119,7 +119,7 @@ export default class Threshold extends Command {
 
     // Expect Control IDs to match placed severities
     const controlIdMap = getControlIdMap(parsedExecJSON.contains[0] as ContextualizedProfile)
-    for (const [severity, targetPaths] of Object.entries(statusSeverityPaths)) {
+    for (const [_severity, targetPaths] of Object.entries(statusSeverityPaths)) {
       for (const targetPath of targetPaths) {
         const expectedControlIds: string[] | undefined = _.get(thresholds, targetPath)
         const actualControlIds: string[] | undefined = _.get(controlIdMap, targetPath)

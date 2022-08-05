@@ -22,7 +22,7 @@ export default class Heimdall extends Command {
   }
 
   async run() {
-    const {flags, args} = await this.parse(Heimdall)
+    const {flags} = await this.parse(Heimdall)
     let parsedJSONs: Record<string, any>[] = []
 
     // Is the defined port valid?
