@@ -4,17 +4,17 @@ import {ZapMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class Zap2HDF extends Command {
-  static usage = 'convert zap2hdf -i, --input=JSON -n, --name=NAME -o, --output=OUTPUT'
+  static usage = 'convert zap2hdf -i <zap-json> -n <target-site-name> -o <hdf-scan-results-json> [-h]'
 
-  static description = 'Translate a OWASP ZAP results JSON to HDF format Json be viewed on Heimdall'
+  static description = 'Translate a OWASP ZAP results JSON to a Heimdall Data Format JSON file'
 
-  static examples = ['saf convert zap2hdf -i zap_results.json -n site_name -o scan_results.json']
+  static examples = ['saf convert zap2hdf -i zap_results.json -n mitre.org -o scan_results.json']
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true}),
-    name: Flags.string({char: 'n', required: true}),
-    output: Flags.string({char: 'o', required: true}),
+    input: Flags.string({char: 'i', required: true, description: 'Input OWASP Zap Results JSON File'}),
+    name: Flags.string({char: 'n', required: true, description: 'Target Site Name'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
     'with-raw': Flags.boolean({char: 'w', required: false}),
   }
 

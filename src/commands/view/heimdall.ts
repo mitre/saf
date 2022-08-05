@@ -8,9 +8,11 @@ import {getInstalledPath} from '../../utils/global'
 export default class Heimdall extends Command {
   static aliases = ['heimdall']
 
-  static usage = 'view:heimdall -p, --port=PORT <filename>'
+  static usage = 'view heimdall [-h] [-p <port>] [-f <file>] [-n]'
 
-  static description = 'Run an instance of Heimdall Lite to visualize your Data'
+  static description = 'Run an instance of Heimdall Lite to visualize your data'
+
+  static examples = ['saf view heimdall -p 8080']
 
   static flags = {
     help: Flags.help({char: 'h'}),
@@ -20,7 +22,7 @@ export default class Heimdall extends Command {
   }
 
   async run() {
-    const {flags, args} = await this.parse(Heimdall)
+    const {flags} = await this.parse(Heimdall)
     let parsedJSONs: Record<string, any>[] = []
 
     // Is the defined port valid?

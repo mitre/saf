@@ -4,7 +4,7 @@ import {JfrogXrayMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class JfrogXray2HDF extends Command {
-  static usage = 'convet:jfrog_xray2hdf -i, --input=JSON -o, --output=OUTPUT'
+  static usage = 'convert jfrog_xray2hdf -i <jfrog-xray-json> -o <hdf-scan-results-json> [-h]'
 
   static description = 'Translate a JFrog Xray results JSON file into a Heimdall Data Format JSON file'
 
