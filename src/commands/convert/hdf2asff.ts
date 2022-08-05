@@ -9,7 +9,7 @@ import _ from 'lodash'
 import {BatchImportFindingsRequestFindingList} from 'aws-sdk/clients/securityhub'
 
 export default class HDF2ASFF extends Command {
-  static usage = 'convert hdf2asff -i, --input=HDF-JSON -o, --output=ASFF-JSON-Folder -a, --accountId=accountId -r, --region=region -t, --target=target -u, --upload'
+  static usage = 'convert hdf2asff -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] (-u [-I -C <certificate>] | [-o <asff-output-folder>])'
 
   static description = 'Translate a Heimdall Data Format JSON file into AWS Security Findings Format JSON file(s) and/or upload to AWS Security Hub'
 
@@ -75,26 +75,36 @@ export default class HDF2ASFF extends Command {
       })
       const client = new AWS.SecurityHub(clientOptions)
 
-      Promise.all(
-        convertedSlices.map(async chunk => {
-          try {
-            const result = await client.batchImportFindings({Findings: chunk}).promise()
-            console.log(
-              `Uploaded ${chunk.length} controls. Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
-            )
-            if (result.FailedFindings?.length) {
-              console.error(`Failed to upload ${result.FailedCount} Findings`)
-              console.log(result.FailedFindings)
+      try {
+        await Promise.all(
+          convertedSlices.map(async chunk => {
+            try {
+              const result = await client.batchImportFindings({Findings: chunk}).promise()
+              console.log(
+                `Uploaded ${chunk.length} controls. Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
+              )
+              if (result.FailedFindings?.length) {
+                console.error(`Failed to upload ${result.FailedCount} Findings`)
+                console.log(result.FailedFindings)
+              }
+            } catch (error) {
+              if (typeof error === 'object' && _.get(error, 'code', false) === 'NetworkingError') {
+                console.error(`Failed to upload controls: ${error}; Using --certificate to provide your own SSL intermediary certificate (in .crt format) or use the flag --insecure to ignore SSL might resolve this issue`)
+              } else {
+                console.error(`Failed to upload controls: ${error}`)
+              }
             }
-          } catch (error) {
-            if (typeof error === 'object' && _.get(error, 'code', false) === 'NetworkingError') {
-              console.error(`Failed to upload controls: ${error}; Using --certificate to provide your own SSL intermediary certificate (in .crt format) or use the flag --insecure to ignore SSL might resolve this issue`)
-            } else {
-              console.error(`Failed to upload controls: ${error}`)
-            }
-          }
-        }),
-      ).then(async () => {
+          }),
+        )
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        } else {
+          console.error('Unexpected error', error)
+        }
+      }
+
+      try {
         if (profileInfoFinding) {
           profileInfoFinding.UpdatedAt = new Date().toISOString()
           const result = await client.batchImportFindings({Findings: [profileInfoFinding as unknown] as BatchImportFindingsRequestFindingList}).promise()
@@ -107,7 +117,13 @@ export default class HDF2ASFF extends Command {
             console.log(result.FailedFindings)
           }
         }
-      })
+      } catch (error) {
+        if (error instanceof Error) {
+          console.error(error.message)
+        } else {
+          console.error('Unexpected error', error)
+        }
+      }
     }
   }
 }

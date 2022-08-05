@@ -7,7 +7,7 @@ import fs from 'fs'
 import path from 'path'
 
 export default class Splunk2HDF extends Command {
-  static usage = 'splunk2hdf -i, --input=<filename/GUID> -H, --host -P, --port -p, --protocol -t, --token -i, --index -o, --output=<output-folder>'
+  static usage = 'splunk2hdf -H <host> -I <index> [-h] [-P <port>] [-s http|https] (-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID> -o <hdf-output-folder>]'
 
   static description = 'Pull HDF data from your Splunk instance back into an HDF file'
 
@@ -21,11 +21,11 @@ export default class Splunk2HDF extends Command {
     token: Flags.string({char: 't', required: false, description: 'Your Splunk API Token', exclusive: ['username', 'password']}),
     index: Flags.string({char: 'I', required: true, description: 'Splunk index to query HDF data from'}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
-    input: Flags.string({char: 'i', multiple: true, required: false, description: 'GUID(s) or Filename(s) of files to convert'}),
+    input: Flags.string({char: 'i', multiple: true, required: false, description: 'GUID(s) or Filename(s) of files from Splunk to convert'}),
     output: Flags.string({char: 'o', required: false, description: 'Output HDF JSON Folder'}),
   }
 
-  static examples = ['saf convert splunk2hdf -H 127.0.0.1 -u admin -p Valid_password! -I hdf -i some-file-in-your-splunk-instance.json yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder']
+  static examples = ['saf convert splunk2hdf -H 127.0.0.1 -u admin -p Valid_password! -I hdf -i some-file-in-your-splunk-instance.json -i yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder']
 
   async searchExecutions(mapper: SplunkMapper, filename: string, index?: string) {
     return mapper.queryData(`search index="${index ? index : '*'}" meta.filename="${filename ? filename : '*'}" meta.subtype="header" | head 100`)
