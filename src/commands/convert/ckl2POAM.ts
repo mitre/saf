@@ -51,7 +51,7 @@ export default class CKL2POAM extends Command {
   }
 
   async run() {
-    const {flags} = await this.parse(CKL2POAM)
+    const {flags} = await this.parse(CKL2POAM) || {}
     // Create output folder if it doesn't exist already
     if (!fs.existsSync(flags.output)) {
       fs.mkdirSync(flags.output)
@@ -200,7 +200,7 @@ export default class CKL2POAM extends Command {
                   // Recommendations
                   sheet.cell(`V${currentRow}`).value(replaceSpecialCharacters(vulnerability.Fix_Text || extractSolution(vulnerability.FINDING_DETAILS || '') || ''))
                   // Go to the next row
-                  currentRow += flags?.rowsToSkip + 1
+                  currentRow += flags.rowsToSkip + 1
                 }
               })
               return workBook.toFileAsync(path.join(flags.output, `${convertFullPathToFilename(fileName)}-${moment(new Date()).format('YYYY-MM-DD-HHmm')}.xlsm`))
