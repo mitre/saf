@@ -21,7 +21,7 @@ export default class Splunk2HDF extends Command {
     token: Flags.string({char: 't', required: false, description: 'Your Splunk API Token', exclusive: ['username', 'password']}),
     index: Flags.string({char: 'I', required: true, description: 'Splunk index to query HDF data from'}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
-    input: Flags.string({char: 'i', multiple: true, required: false, description: 'GUID(s) or Filename(s) from Splunk of files to convert'}),
+    input: Flags.string({char: 'i', multiple: true, required: false, description: 'GUID(s) or Filename(s) of files from Splunk to convert'}),
     output: Flags.string({char: 'o', required: false, description: 'Output HDF JSON Folder'}),
   }
 

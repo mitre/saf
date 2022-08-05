@@ -689,7 +689,7 @@ convert splunk2hdf            Pull HDF data from your Splunk instance back into 
                                         <options: info|warn|debug|verbose>
     -P, --port=<port>                   [default: 8089] Splunk management port (also known as the Universal Forwarder port)
     -h, --help                          Show CLI help.
-    -i, --input=<filename/GUID>...      GUID(s) or Filename(s) from Splunk of files to convert
+    -i, --input=<filename/GUID>...      GUID(s) or Filename(s) of files from Splunk to convert
     -o, --output=<hdf-output-folder>    Output HDF JSON Folder
     -p, --password=<password>           Your Splunk password
     -s, --scheme=<option>               [default: https] HTTP Scheme used for communication with splunk
