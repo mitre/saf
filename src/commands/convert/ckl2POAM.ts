@@ -49,7 +49,7 @@ export default class CKL2POAM extends Command {
     rowsToSkip: Flags.integer({char: 's', required: false, default: 4, description: 'Rows to leave between POA&M Items for milestones'}),
     output: Flags.string({char: 'o', required: true, description: 'Path to output PO&M File(s)'}),
   }
-
+//
   async run() {
     const {flags} = await this.parse(CKL2POAM)
     // Create output folder if it doesn't exist already
