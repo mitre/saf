@@ -455,7 +455,7 @@ convert dbprotect2hdf         Translate a DBProtect report in "Check Results
 ##### Fortify to HDF
 ```
 convert fortify2hdf           Translate a Fortify results FVDL file into a Heimdall
-                              Data Format JSON file; The FVDL file is an XML that can be
+                              Data Format JSON file; the FVDL file is an XML that can be
                               extracted from the Fortify FPR project file using standard
                               file compression tools
   USAGE
