@@ -39,8 +39,20 @@ describe('Test (generic) convert', () => {
       `node bin/run convert -i ./test/sample_data/jfrog_xray/sample_input_report/jfrog_xray_sample.json -o ${tmpobj.name}/jfrogtest.json`,
     )
 
-    const converted = JSON.parse(fs.readFileSync(`${tmpobj.name}/jfrogtest.json`, 'utf8'))
+    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/jfrogtest.json`, 'utf8'))
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/jfrog_xray/jfrog-hdf.json'), 'utf8'))
-    expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
+    expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
+  })
+
+  test
+  .stdout()
+  .it('hdf-converter output test (zap) - zero.webappsecurity', () => {
+    execSync(
+      `node bin/run convert -i ./test/sample_data/zap/sample_input_report/zero.webappsecurity.json -n http://zero.webappsecurity.com -o ${tmpobj.name}/zaptest-webappsecurity.json`,
+    )
+
+    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/zaptest-webappsecurity.json`, 'utf8'))
+    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/zap/zap-webappsecurity-hdf.json'), 'utf8'))
+    expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
   })
 })

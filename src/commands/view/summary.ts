@@ -29,7 +29,7 @@ export default class Summary extends Command {
     const complianceScores: Record<string, number[]> = {}
 
     const execJSONs: Record<string, ContextualizedEvaluation> = {}
-    flags.input.forEach(file => {
+    flags.input.forEach((file: string) => {
       execJSONs[file] = convertFileContextual(fs.readFileSync(file, 'utf8')) as ContextualizedEvaluation
     })
     Object.entries(execJSONs).forEach(([, parsedExecJSON]) => {

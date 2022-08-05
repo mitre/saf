@@ -81,7 +81,7 @@ export default class ASFF2HDF extends Command {
 
       // If we've been passed any Security Standards JSONs
       if (flags.securityhub) {
-        securityhub = flags.securityhub.map(file =>
+        securityhub = flags.securityhub.map((file: string) =>
           fs.readFileSync(file, 'utf8'),
         )
       }
@@ -108,7 +108,7 @@ export default class ASFF2HDF extends Command {
       // Filter by target name
       if (flags.target) {
         filters = {
-          Id: flags.target.map(target => {
+          Id: flags.target.map((target: string) => {
             return {Value: target, Comparison: 'PREFIX'}
           }),
         }

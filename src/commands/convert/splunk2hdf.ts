@@ -53,7 +53,7 @@ export default class Splunk2HDF extends Command {
     if (flags.input && flags.output) {
       const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
       fs.mkdirSync(outputFolder)
-      flags.input.forEach(async input => {
+      flags.input.forEach(async (input: string) => {
         // If we have a GUID
         if (/^(\w){30}$/.test(input)) {
           const hdf = await mapper.toHdf(input)
