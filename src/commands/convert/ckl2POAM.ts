@@ -51,7 +51,8 @@ export default class CKL2POAM extends Command {
   }
 
   async run() {
-    const {flags} = await this.parse(CKL2POAM) || {}
+    const {flags} = await this.parse(CKL2POAM)
+    if (flags) {
     // Create output folder if it doesn't exist already
     if (!fs.existsSync(flags.output)) {
       fs.mkdirSync(flags.output)
@@ -209,5 +210,6 @@ export default class CKL2POAM extends Command {
         })
       })
     })
+    }
   }
 }
