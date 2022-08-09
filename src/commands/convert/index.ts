@@ -1,4 +1,4 @@
-import {ASFFResults, BurpSuiteMapper, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockMapper, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
+import {ASFFResults, BurpSuiteMapper, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockResults, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
 import fs from 'fs'
 import _ from 'lodash'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
@@ -178,7 +178,7 @@ export default class Convert extends Command {
     }
 
     case 'twistlock': {
-      converter = new TwistlockMapper(fs.readFileSync(flags.input, 'utf8'))
+      converter = new TwistlockResults(fs.readFileSync(flags.input, 'utf8'))
       fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
       break
     }
