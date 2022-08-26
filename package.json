@@ -111,6 +111,9 @@
     },
     "topicSeparator": " ",
     "topics": {
+      "attest": {
+        "description": "[Attest]       Attest to 'Not Reviewed' controls in order to account for all of your controls"
+      },
       "convert": {
         "description": "[Normalize]    Convert security results from all your security tools between common data formats"
       },

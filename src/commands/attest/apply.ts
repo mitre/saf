@@ -8,6 +8,12 @@ import path from 'path'
 import {convertFullPathToFilename} from '../../utils/global'
 
 export default class ApplyAttestation extends Command {
+    static usage = 'attest apply -i <input-hdf-json>... <attestation>... -o <output-hdf-path>'
+
+    static description = 'Apply one or more attestation files to one or more HDF results sets'
+
+    static examples = ['saf attest apply -i hdf1.json hdf2.json attestation.json -o outputDir']
+
     static flags = {
       help: Flags.help({char: 'h'}),
       input: Flags.string({char: 'i', required: true, multiple: true, description: 'Your input HDF and Attestation file(s)'}),
