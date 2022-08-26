@@ -11,10 +11,10 @@ export default class WritePassthrough extends Command {
 
     static flags = {
       help: Flags.help({char: 'h'}),
-      input: Flags.string({char: 'i', required: true, description: 'An input HDF file'}),
+      input: Flags.string({char: 'i', required: true, description: 'An input Heimdall Data Format file'}),
       passthroughFile: Flags.string({char: 'f', exclusive: ['passthroughData'], description: 'An input passthrough-data file (can contain any valid JSON); this flag or `passthroughData` must be provided'}),
       passthroughData: Flags.string({char: 'd', exclusive: ['passthroughFile'], description: 'Input passthrough-data (can be any valid JSON); this flag or `passthroughFile` must be provided'}),
-      output: Flags.string({char: 'o', description: 'An output JSON file (otherwise the input file is overwritten)'}),
+      output: Flags.string({char: 'o', description: 'An output Heimdall Data Format JSON file (otherwise the input file is overwritten)'}),
     }
 
     async run() {
