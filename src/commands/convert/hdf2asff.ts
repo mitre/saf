@@ -4,7 +4,7 @@ import https from 'https'
 import {FromHdfToAsffMapper as Mapper} from '@mitre/hdf-converters'
 import path from 'path'
 import AWS from 'aws-sdk'
-import {checkSuffix, sliceIntoChunks} from '../../utils/global'
+import {checkSuffix, convertFullPathToFilename, sliceIntoChunks} from '../../utils/global'
 import _ from 'lodash'
 import {BatchImportFindingsRequestFindingList} from 'aws-sdk/clients/securityhub'
 
@@ -44,11 +44,11 @@ export default class HDF2ASFF extends Command {
       const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
       fs.mkdirSync(outputFolder)
       if (convertedSlices.length === 1) {
-        const outfilePath = path.join(outputFolder, checkSuffix(flags.output))
+        const outfilePath = path.join(outputFolder, convertFullPathToFilename(checkSuffix(flags.output)))
         fs.writeFileSync(outfilePath, JSON.stringify(convertedSlices[0]))
       } else {
         convertedSlices.forEach((slice, index) => {
-          const outfilePath = path.join(outputFolder, `${checkSuffix(flags.output || '').replace('.json', '')}.p${index}.json`)
+          const outfilePath = path.join(outputFolder, `${convertFullPathToFilename(checkSuffix(flags.output || '')).replace('.json', '')}.p${index}.json`)
           fs.writeFileSync(outfilePath, JSON.stringify(slice))
         })
       }
