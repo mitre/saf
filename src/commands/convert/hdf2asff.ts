@@ -4,7 +4,7 @@ import https from 'https'
 import {FromHdfToAsffMapper as Mapper} from '@mitre/hdf-converters'
 import path from 'path'
 import AWS from 'aws-sdk'
-import {checkSuffix, convertFullPathToFilename, sliceIntoChunks} from '../../utils/global'
+import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import _ from 'lodash'
 import {BatchImportFindingsRequestFindingList} from 'aws-sdk/clients/securityhub'
 
@@ -40,7 +40,7 @@ export default class HDF2ASFF extends Command {
     }).toAsff()
 
     if (flags.output) {
-      const convertedSlices = sliceIntoChunks(converted, 100)
+      const convertedSlices = _.chunk(converted, 100) // AWS doesn't allow uploading more than 100 findings at a time so we need to split them into chunks
       const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
       fs.mkdirSync(outputFolder)
       if (convertedSlices.length === 1) {
@@ -56,7 +56,7 @@ export default class HDF2ASFF extends Command {
 
     if (flags.upload) {
       const profileInfoFinding = converted.pop()
-      const convertedSlices = sliceIntoChunks(converted, 100)
+      const convertedSlices = _.chunk(converted, 100) as BatchImportFindingsRequestFindingList[]
 
       if (flags.insecure) {
         console.warn('WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate')
