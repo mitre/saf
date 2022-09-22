@@ -4272,7 +4272,7 @@
             {
               "code_desc": "Manually verified status provided through attestation",
               "status": "passed",
-              "message": "Expired Attestation:\nExpired Status: passed\nExpired Explanation: The routine review through interview/examination attests to this control passing\n\nUpdated: Sun Apr 06 2059 00:00:00 GMT-0400 (Eastern Daylight Time)\nUpdated By: John Doe, ISSO\nFrequency: quarterly",
+              "message": "Attestation:\nStatus: passed\nExplanation: The routine review through interview/examination attests to this control passing\n\nUpdated: Sun Apr 06 2059 00:00:00 GMT-0400 (Eastern Daylight Time)\nUpdated By: John Doe, ISSO\nFrequency: quarterly",
               "start_time": "2022-06-17T00:39:04.299Z"
             }
           ],
@@ -4404,7 +4404,7 @@
             {
               "code_desc": "Manually verified status provided through attestation",
               "status": "passed",
-              "message": "Expired Attestation:\nExpired Status: passed\nExpired Explanation: The routine review through interview/examination attests to this control passing\n\nUpdated: Sun Apr 06 2059 00:00:00 GMT-0400 (Eastern Daylight Time)\nUpdated By: John Doe, ISSO\nFrequency: weekly",
+              "message": "Attestation:\nStatus: passed\nExplanation: The routine review through interview/examination attests to this control passing\n\nUpdated: Sun Apr 06 2059 00:00:00 GMT-0400 (Eastern Daylight Time)\nUpdated By: John Doe, ISSO\nFrequency: weekly",
               "start_time": "2022-06-17T00:39:04.299Z"
             }
           ],
@@ -9301,7 +9301,7 @@
             {
               "code_desc": "Manually verified status provided through attestation",
               "status": "passed",
-              "message": "Expired Attestation:\nExpired Status: passed\nExpired Explanation: The routine review through interview/examination attests to this control passing\n\nUpdated: Sun Apr 06 2059 00:00:00 GMT-0400 (Eastern Daylight Time)\nUpdated By: John Doe, ISSO\nFrequency: annually",
+              "message": "Attestation:\nStatus: passed\nExplanation: The routine review through interview/examination attests to this control passing\n\nUpdated: Sun Apr 06 2059 00:00:00 GMT-0400 (Eastern Daylight Time)\nUpdated By: John Doe, ISSO\nFrequency: annually",
               "start_time": "2022-06-17T00:39:04.299Z"
             }
           ],
@@ -12601,7 +12601,7 @@
             {
               "code_desc": "Manually verified status provided through attestation",
               "status": "passed",
-              "message": "Expired Attestation:\nExpired Status: passed\nExpired Explanation: The routine review through interview/examination attests to this control passing\n\nUpdated: Sun Apr 06 2059 00:00:00 GMT-0400 (Eastern Daylight Time)\nUpdated By: John Doe, ISSO\nFrequency: semiannually",
+              "message": "Attestation:\nStatus: passed\nExplanation: The routine review through interview/examination attests to this control passing\n\nUpdated: Sun Apr 06 2059 00:00:00 GMT-0400 (Eastern Daylight Time)\nUpdated By: John Doe, ISSO\nFrequency: semiannually",
               "start_time": "2022-06-17T00:39:04.299Z"
             }
           ],
@@ -14533,7 +14533,7 @@
             {
               "code_desc": "Manually verified status provided through attestation",
               "status": "passed",
-              "message": "Expired Attestation:\nExpired Status: passed\nExpired Explanation: The routine review through interview/examination attests to this control passing\n\nUpdated: Sun Apr 06 2059 00:00:00 GMT-0400 (Eastern Daylight Time)\nUpdated By: John Doe, ISSO\nFrequency: every2weeks",
+              "message": "Attestation:\nStatus: passed\nExplanation: The routine review through interview/examination attests to this control passing\n\nUpdated: Sun Apr 06 2059 00:00:00 GMT-0400 (Eastern Daylight Time)\nUpdated By: John Doe, ISSO\nFrequency: every2weeks",
               "start_time": "2022-06-17T00:39:04.301Z"
             }
           ],
