@@ -17,6 +17,9 @@ describe('Test (generic) convert', () => {
       `node bin/run convert -i ./test/sample_data/asff/sample_input_report/asff_sample.json -o ${tmpobj.name}/asfftest`,
     )
 
+    const mkdirresults = execSync(`mkdir ${tmpobj.name}/mkdirtest`) // debugging
+    console.log('mkdirresults', mkdirresults.toString())
+
     const lsresults = execSync(`ls -lah ${tmpobj.name}`) // debugging
     console.log('lsresults', lsresults.toString())
 
