@@ -21,7 +21,7 @@ describe('Test (generic) convert', () => {
     console.log('mkdirresults', mkdirresults.toString())
 
     const fsresults = fs.mkdirSync(`${tmpobj.name}/fstest`) // debugging
-    console.log('fsresults', fsresults.toString())
+    console.log('fsresults', fsresults)
 
     const lsresults = execSync(`ls -lah ${tmpobj.name}`) // debugging
     console.log('lsresults', lsresults.toString())
