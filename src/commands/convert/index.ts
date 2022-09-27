@@ -6,6 +6,7 @@ import path from 'path'
 import ASFF2HDF from './asff2hdf'
 import {Command, Flags} from '@oclif/core'
 import Zap2HDF from './zap2hdf'
+import {execSync} from 'child_process'
 
 function getInputFilename(): string {
   const inputFileIndex = process.argv.findIndex(param => param.toLowerCase() === '-i' || param.toLowerCase() === '--input')
@@ -85,6 +86,8 @@ export default class Convert extends Command {
           )
         })
         console.log('fsreaddir', JSON.stringify(fs.readdirSync(flags.output)))
+        const lsresults = execSync(`ls -lah ${flags.output}`) // debugging
+        console.log('test_lsresults', lsresults.toString())
       } catch (error) {
         console.log('Error when creating output directory or files', error)
       }
