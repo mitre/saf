@@ -7,6 +7,9 @@ import {execSync} from 'child_process'
 
 describe('Test (generic) convert', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
+  console.log('tmpobj', JSON.stringify(tmpobj))
+  const desclsresults = execSync(`ls -lah ${tmpobj.name}`) // debugging
+  console.log('desclsresults', desclsresults.toString())
 
   test
   .it('hdf-converter output test (asff)', () => {
