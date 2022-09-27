@@ -10,11 +10,14 @@ describe('Test (generic) convert', () => {
 
   test
   .it('hdf-converter output test (asff)', () => {
-    execSync(
+    const runresults = execSync(
       `node bin/run convert -i ./test/sample_data/asff/sample_input_report/asff_sample.json -o ${tmpobj.name}/asfftest`,
     )
 
-    execSync(`ls ${tmpobj.name}`) // debugging
+    console.log('runresults', runresults)
+
+    const lsresults = execSync(`ls ${tmpobj.name}`) // debugging
+    console.log('lsresults', lsresults)
 
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/asfftest/CIS AWS Foundations Benchmark v1.2.0.json`, 'utf8'))
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/asff/asff-cis_aws-foundations_benchmark_v1.2.0-hdf.json'), 'utf8'))
