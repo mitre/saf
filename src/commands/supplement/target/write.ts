@@ -3,11 +3,11 @@ import {ExecJSON} from 'inspecjs'
 import fs from 'fs'
 
 export default class WriteTarget extends Command {
-    static usage = 'target write -i <input-hdf-json> (-f <input-target-json> | -d <target-json>) [-o <output-hdf-json>]'
+    static usage = 'supplement target write -i <input-hdf-json> (-f <input-target-json> | -d <target-json>) [-o <output-hdf-json>]'
 
     static description = 'Overwrite the `target` attribute in a given Heimdall Data Format JSON file with the provided `target` JSON data'
 
-    static examples = ['saf target write -i hdf.json -d \'{"a": 5}\'']
+    static examples = ['saf supplement target write -i hdf.json -d \'{"a": 5}\'']
 
     static flags = {
       help: Flags.help({char: 'h'}),

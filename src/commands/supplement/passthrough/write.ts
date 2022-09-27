@@ -3,11 +3,11 @@ import {ExecJSON} from 'inspecjs'
 import fs from 'fs'
 
 export default class WritePassthrough extends Command {
-    static usage = 'passthrough write -i <input-hdf-json> (-f <input-passthrough-json> | -d <passthrough-json>) [-o <output-hdf-json>]'
+    static usage = 'supplement passthrough write -i <input-hdf-json> (-f <input-passthrough-json> | -d <passthrough-json>) [-o <output-hdf-json>]'
 
     static description = 'Overwrite the `passthrough` attribute in a given Heimdall Data Format JSON file with the provided `passthrough` JSON data'
 
-    static examples = ['saf passthrough write -i hdf.json -d \'{"a": 5}\'']
+    static examples = ['saf supplement passthrough write -i hdf.json -d \'{"a": 5}\'']
 
     static flags = {
       help: Flags.help({char: 'h'}),

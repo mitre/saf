@@ -126,14 +126,14 @@
       "scan": {
         "description": "[Scan]         Scan to get detailed security testing results: Visit https://saf.mitre.org/#/validate to explore and run inspec profiles"
       },
-      "utils": {
-        "description": "[Utilize]      Utilities to ease certain tasks like modifying top level Heimdall Data Format attributes such as `passthrough`"
+      "supplement": {
+        "description": "[Supplement]   Supplement (ex. read or modify) elements that provide contextual information in the Heimdall Data Format results JSON file such as `passthrough` or `target`"
       },
-      "utils:passthrough": {
-        "description": "Utilities to ease certain tasks involving the top level Heimdall Data Format attribute `passthrough`"
+      "supplement:passthrough": {
+        "description": "Supplement (ex. read or modify) the `passthrough` element, which provides contextual information in the Heimdall Data Format results JSON file"
       },
-      "utils:target": {
-        "description": "Utilities to ease certain tasks involving the top level Heimdall Data Format attribute `target`"
+      "supplement:target": {
+        "description": "Supplement (ex. read or modify) the `target` element, which provides contextual information in the Heimdall Data Format results JSON file"
       },
       "validate": {
         "description": "[Validate]     Verify pipeline thresholds"

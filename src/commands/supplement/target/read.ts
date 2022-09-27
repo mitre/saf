@@ -3,11 +3,11 @@ import {ExecJSON} from 'inspecjs'
 import fs from 'fs'
 
 export default class ReadTarget extends Command {
-    static usage = 'target read -i <hdf-json> [-o <target-json>]'
+    static usage = 'supplement target read -i <hdf-json> [-o <target-json>]'
 
     static description = 'Read the `target` attribute in a given Heimdall Data Format JSON file and send it to stdout or write it to a file'
 
-    static examples = ['saf target read -i hdf.json -o target.json']
+    static examples = ['saf supplement target read -i hdf.json -o target.json']
 
     static flags = {
       help: Flags.help({char: 'h'}),
