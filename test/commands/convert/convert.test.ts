@@ -14,13 +14,11 @@ describe('Test (generic) convert', () => {
       `node bin/run convert -i ./test/sample_data/asff/sample_input_report/asff_sample.json -o ${tmpobj.name}/asfftest`,
     )
 
-    console.log('runresults', runresults.toString())
-
-    const lsresults = execSync(`ls ${tmpobj.name}`) // debugging
+    const lsresults = execSync(`ls -lah ${tmpobj.name}`) // debugging
     console.log('lsresults', lsresults.toString())
 
-    const lsresults2 = execSync(`ls ${tmpobj.name}/asfftest`) // debugging
-    console.log('lsresults2', lsresults2.toString())
+    // const lsresults2 = execSync(`ls -lah ${tmpobj.name}/asfftest`) // debugging
+    // console.log('lsresults2', lsresults2.toString())
 
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/asfftest/CIS AWS Foundations Benchmark v1.2.0.json`, 'utf8'))
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/asff/asff-cis_aws-foundations_benchmark_v1.2.0-hdf.json'), 'utf8'))
