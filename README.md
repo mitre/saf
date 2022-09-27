@@ -100,16 +100,30 @@ brew upgrade mitre/saf/saf-cli
 
 **On Linux and Mac:**
 
+The docker command below can be used to run the SAF CLI one time, where `arguments` contains the command and flags you want to run. For ex: `--version` or `view summary -i hdf-results.json`.
 ```
-docker run -it -v$(pwd):/share mitre/saf
+docker run -it -v$(pwd):/share mitre/saf <arguments>
+```
+
+To run the SAF CLI with a persistent shell for one or more commands, use the following, then run each full command. For ex: `saf --version` or `saf view summary -i hdf-results.json`. You can change the entrypoint you wish to use. For example, run with `--entrypoint sh` to open in a shell terminal. If the specified entrypoint is not found, try using the path such as `--entrypoint /bin/bash`.
+
+```
+docker run --rm -it --entrypoint bash -v$(pwd):/share mitre/saf
 ```
 
 **On Windows:**
 
+The docker command below can be used to run the SAF CLI one time, where `arguments` contains the command and flags you want to run. For ex: `--version` or `view summary -i hdf-results.json`.
+
 ```
-docker run -it -v%cd%:/share mitre/saf
+docker run -it -v%cd%:/share mitre/saf <arguments>
 ```
 
+To run the SAF CLI with a persistent shell for one or more commands, use the following, then run each full command. For ex: `saf --version` or `saf view summary -i hdf-results.json`. You can change the entrypoint you wish to use. For example, run with `--entrypoint sh` to open in a shell terminal. If the specified entrypoint is not found, try using the path such as `--entrypoint /bin/bash`.
+
+```
+docker run --rm -it --entrypoint sh -v%cd%:/share mitre/saf
+```
 
 
 #### Update via Docker
