@@ -176,18 +176,12 @@ export default class ASFF2HDF extends Command {
 
     const results = converter.toHdf()
 
-    try {
-      fs.mkdirSync(flags.output)
-      console.log('exists', fs.existsSync(flags.output))
-      console.log('fsreaddir', JSON.stringify(fs.readdirSync(flags.output)))
-      _.forOwn(results, (result, filename) => {
-        fs.writeFileSync(
-          path.join(flags.output, checkSuffix(filename)),
-          JSON.stringify(result),
-        )
-      })
-    } catch (error) {
-      console.log('Error when creating output directory or files', error)
-    }
+    fs.mkdirSync(flags.output)
+    _.forOwn(results, (result, filename) => {
+      fs.writeFileSync(
+        path.join(flags.output, checkSuffix(filename)),
+        JSON.stringify(result),
+      )
+    })
   }
 }

@@ -75,13 +75,20 @@ export default class Convert extends Command {
       )
       const results = converter.toHdf()
 
-      fs.mkdirSync(flags.output)
-      _.forOwn(results, (result, filename) => {
-        fs.writeFileSync(
-          path.join(flags.output, checkSuffix(filename)),
-          JSON.stringify(result),
-        )
-      })
+      try {
+        fs.mkdirSync(flags.output)
+        console.log('exists', fs.existsSync(flags.output))
+        _.forOwn(results, (result, filename) => {
+          fs.writeFileSync(
+            path.join(flags.output, checkSuffix(filename)),
+            JSON.stringify(result),
+          )
+        })
+        console.log('fsreaddir', JSON.stringify(fs.readdirSync(flags.output)))
+      } catch (error) {
+        console.log('Error when creating output directory or files', error)
+      }
+
       break
     }
 
