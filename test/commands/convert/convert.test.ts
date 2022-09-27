@@ -16,9 +16,6 @@ describe('Test (generic) convert', () => {
 
     console.log('runresults', runresults.toString())
 
-    const treeresults = execSync(`tree`) // debugging
-    console.log('tree', treeresults.toString())
-
     const lsresults = execSync(`ls ${tmpobj.name}`) // debugging
     console.log('lsresults', lsresults.toString())
 
