@@ -1055,6 +1055,11 @@ Supplement (ex. read or modify) elements that provide contextual information in 
 
 Supplement (ex. read or modify) the `passthrough` element, which provides contextual information in the Heimdall Data Format results JSON file
 
+```
+EXAMPLE (combined read, modfication, and overwrite of the original file)
+  $ saf supplement passthrough read -i hdf_with_passthrough.json | jq -rc '.key = "new value"' | xargs -0 -I{} saf supplement passthrough write -i hdf_with_passthrough.json -d {}
+```
+
 ##### Read
 
 ```
@@ -1094,6 +1099,11 @@ EXAMPLES
 #### Target
 
 Supplement (ex. read or modify) the `target` element, which provides contextual information in the Heimdall Data Format results JSON file
+
+```
+EXAMPLE (combined read, modfication, and overwrite of the original file)
+  $ saf supplement target read -i hdf_with_target.json | jq -rc '.key = "new value"' | xargs -0 -I{} saf supplement target write -i hdf_with_target.json -d {}
+```
 
 ##### Read
 
