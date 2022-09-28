@@ -58,13 +58,10 @@ export default class Convert extends Command {
   static detectedType: string;
 
   async run() {
-    console.log('entered generic convert command')
     const {flags} = await this.parse(Convert)
-    console.log(`detected convert type: ${Convert.detectedType}`)
     let converter
     switch (Convert.detectedType) {
     case 'asff': {
-      console.log('entered asff case')
       let securityhub = _.get(flags, 'securityhub') as string[]
       if (securityhub) {
         securityhub = securityhub.map(file =>
@@ -85,7 +82,6 @@ export default class Convert extends Command {
           JSON.stringify(result),
         )
       })
-
       break
     }
 
