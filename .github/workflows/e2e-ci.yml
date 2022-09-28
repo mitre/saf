@@ -33,7 +33,7 @@ jobs:
 
      - name: Install dependencies
        run: yarn install
-     
+
      - name: Prepack
        run: yarn prepack
 

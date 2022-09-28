@@ -18,6 +18,11 @@ describe('Test (generic) convert', () => {
     )
     console.log('runresults', runresults.toString())
 
+    const run2results = execSync(
+      'node --trace-warnings bin/run convert --help',
+    )
+    console.log('run2results', run2results.toString())
+
     const mkdirresults = execSync(`mkdir ${tmpobj.name}/mkdirtest`) // debugging
     console.log('mkdirresults', mkdirresults.toString())
 
