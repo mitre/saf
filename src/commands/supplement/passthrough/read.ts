@@ -25,7 +25,7 @@ export default class ReadPassthrough extends Command {
       if (flags.output) {
         fs.writeFileSync(flags.output, JSON.stringify(passthrough, null, 2))
       } else {
-        console.log(JSON.stringify(passthrough, null, 2))
+        process.stdout.write(JSON.stringify(passthrough, null, 2))
       }
     }
 }

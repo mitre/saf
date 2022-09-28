@@ -25,7 +25,7 @@ export default class ReadTarget extends Command {
       if (flags.output) {
         fs.writeFileSync(flags.output, JSON.stringify(target, null, 2))
       } else {
-        console.log(JSON.stringify(target, null, 2))
+        process.stdout.write(JSON.stringify(target, null, 2))
       }
     }
 }
