@@ -112,7 +112,7 @@
     "topicSeparator": " ",
     "topics": {
       "attest": {
-        "description": "[Attest]       Attest to 'Not Reviewed' controls in order to account for all of your controls"
+        "description": "[Attest]       Attesting to 'Not Reviewed' control requirements (that can’t be tested automatically by security tools and hence require manual review), helping to account for all requirements"
       },
       "convert": {
         "description": "[Normalize]    Convert security results from all your security tools between common data formats"
