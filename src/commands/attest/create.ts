@@ -17,7 +17,10 @@ export default class CreateAttestations extends Command {
 
     static description = 'Create attestation files for use with `saf attest apply`'
 
-    static examples = ['saf attest create -o attestation.json -i hdf.json']
+    static examples = [
+      'saf attest create -o attestation.json -i hdf.json',
+      'saf attest create -o attestation.xlsx -t xlsx',
+    ]
 
     static flags = {
       help: Flags.help({char: 'h'}),

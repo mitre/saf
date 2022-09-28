@@ -156,22 +156,38 @@ Attesting to 'Not Reviewed' controls can be done with the `saf attest` commands.
 ```
 attest create              Create attestation files for use with `saf attest apply`
 
-  FLAGS
-    -h, --help             Show CLI help.
-    -i, --input=<value>    (optional) An input HDF file used to search for controls
-    -o, --output=<value>   (required) The output filename
-    -t, --format=<option>  [default: json] (optional) The output file type
-                           <options: json|xlsx|yml|yaml>
+USAGE
+  $ saf attest create -o <attestation-file> [-i <hdf-json> -t <json | xlsx | yml | yaml>]
+
+FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    (optional) An input HDF file to search for controls
+  -o, --output=<value>   (required) The output filename
+  -t, --format=<option>  [default: json] (optional) The output file type
+                         <options: json|xlsx|yml|yaml>
+
+EXAMPLES
+  $ saf attest create -o attestation.json -i hdf.json
+
+  $ saf attest create -o attestation.xlsx -t xlsx
 ```
 
 #### Apply Attestations
 ```
 attest apply              Apply one or more attestation files to one or more HDF results sets
 
-  FLAGS
-    -h, --help              Show CLI help.
-    -i, --input=<value>...  (required) Your input HDF and Attestation file(s)
-    -o, --output=<value>    (required) Output file or folder (for multiple executions)
+USAGE
+  $ saf attest apply -i <input-hdf-json>... <attestation>... -o <output-hdf-path>
+
+FLAGS
+  -h, --help              Show CLI help.
+  -i, --input=<value>...  (required) Your input HDF and Attestation file(s)
+  -o, --output=<value>    (required) Output file or folder (for multiple executions)
+
+EXAMPLES
+  $ saf attest apply -i hdf.json attestation.json -o new-hdf.json
+
+  $ saf attest apply -i hdf1.json hdf2.json attestation.xlsx -o outputDir
 ```
 
 ### Convert

@@ -12,7 +12,10 @@ export default class ApplyAttestation extends Command {
 
     static description = 'Apply one or more attestation files to one or more HDF results sets'
 
-    static examples = ['saf attest apply -i hdf1.json hdf2.json attestation.json -o outputDir']
+    static examples = [
+      'saf attest apply -i hdf.json attestation.json -o new-hdf.json',
+      'saf attest apply -i hdf1.json hdf2.json attestation.xlsx -o outputDir',
+    ]
 
     static flags = {
       help: Flags.help({char: 'h'}),
