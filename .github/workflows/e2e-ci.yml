@@ -35,7 +35,7 @@ jobs:
        run: npm install
 
      - name: Prepack
-       run: npm prepack
+       run: npm run prepack
 
      - name: Run e2e tests
-       run: npm test
+       run: npm run test
