@@ -1002,6 +1002,49 @@ generate xccdf2inspec_stub              Translate a DISA STIG XCCDF XML file int
     -s, --singleFile                Output the resulting controls as a single file
 ```
 
+#### Other
+
+##### Notes
+
+- Specifying the `--format` flag as either `cis` or `disa` will parse the input spreadsheet according to the standard formats for CIS Benchmark exports and DISA STIG exports, respectively.
+- You can also use the `general` setting (the default) to parse an arbitrary spreadsheet, but if you do so, you must provide a mapping file with the `--mapping` flag so that `saf` can parse the input.
+- If you provide a non-standard spreadsheet, the first row of values are assumed to be column headers.
+
+##### Mapping Files
+
+Mapping files are YAML files that tell `saf` which columns in the input spreadsheet should be parsed. Mapping files are structured as following:
+
+``` yaml
+id:                           # Required
+  - ID
+  - "recommendation #"
+title:                        # Required
+  - Title                     # You can give more than one column header as a value for an
+  - title                     # attribute if you are not sure how it will be spelled in the input.
+desc:
+  - Description
+  - Discussion
+  - description
+impact: 0.5                  # If impact is set, its value will be used for every control
+desc.rationale:
+  - Rationale
+  - rationale statement
+desc.check:                   # Required
+  - Audit
+  - audit procedure
+desc.fix:
+  - Remediation
+  - remediation procedure
+desc.additional_information:  # You can define arbitrary values under desc and tag
+  - Additional Information    # if you have extra fields to record
+desc.default_value:
+  - Default Value
+ref:                          # InSpec keyword - saf will check this column for URLs (links to documentation)
+  - References                # and record each address as a ref attribute
+```
+
+Where the keys (`title`) are InSpec control attributes and the values (`- Title`) are the column headers in the input spreadsheet that correspond to that attribute.
+
 ---
 
 ### Supplement
@@ -1087,52 +1130,6 @@ FLAGS
 EXAMPLES
   $ saf supplement target write -i hdf.json -d '{"a": 5}'
 ```
-
-#### Other
-
-##### Notes
-
-- Specifying the `--format` flag as either `cis` or `disa` will parse the input spreadsheet according to the standard formats for CIS Benchmark exports and DISA STIG exports, respectively.
-- You can also use the `general` setting (the default) to parse an arbitrary spreadsheet, but if you do so, you must provide a mapping file with the `--mapping` flag so that `saf` can parse the input.
-- If you provide a non-standard spreadsheet, the first row of values are assumed to be column headers.
-
-##### Mapping Files
-
-Mapping files are YAML files that tell `saf` which columns in the input spreadsheet should be parsed. Mapping files are structured as following:
-
-``` yaml
-id:                           # Required
-  - ID
-  - "recommendation #"
-title:                        # Required
-  - Title                     # You can give more than one column header as a value for an
-  - title                     # attribute if you are not sure how it will be spelled in the input.
-desc:
-  - Description
-  - Discussion
-  - description
-impact: 0.5                  # If impact is set, its value will be used for every control
-desc.rationale:
-  - Rationale
-  - rationale statement
-desc.check:                   # Required
-  - Audit
-  - audit procedure
-desc.fix:
-  - Remediation
-  - remediation procedure
-desc.additional_information:  # You can define arbitrary values under desc and tag
-  - Additional Information    # if you have extra fields to record
-desc.default_value:
-  - Default Value
-ref:                          # InSpec keyword - saf will check this column for URLs (links to documentation)
-  - References                # and record each address as a ref attribute
-```
-
-Where the keys (`title`) are InSpec control attributes and the values (`- Title`) are the column headers in the input spreadsheet that correspond to that attribute.
-
-&nbsp;
-
 
 # License and Author
 
