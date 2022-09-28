@@ -7,33 +7,12 @@ import {execSync} from 'child_process'
 
 describe('Test (generic) convert', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
-  console.log('tmpobj', JSON.stringify(tmpobj))
-  const desclsresults = execSync(`ls -lah ${tmpobj.name}`) // debugging
-  console.log('desclsresults', desclsresults.toString())
 
   test
   .it('hdf-converter output test (asff)', () => {
     const runresults = execSync(
-      `node --trace-warnings bin/run convert -i ./test/sample_data/asff/sample_input_report/asff_sample.json -o ${tmpobj.name}/asfftest`,
+      `node bin/run convert -i ./test/sample_data/asff/sample_input_report/asff_sample.json -o ${tmpobj.name}/asfftest`,
     )
-    console.log('runresults', runresults.toString())
-
-    const run2results = execSync(
-      'node --trace-warnings bin/run convert --help',
-    )
-    console.log('run2results', run2results.toString())
-
-    const mkdirresults = execSync(`mkdir ${tmpobj.name}/mkdirtest`) // debugging
-    console.log('mkdirresults', mkdirresults.toString())
-
-    const fsresults = fs.mkdirSync(`${tmpobj.name}/fstest`) // debugging
-    console.log('fsresults', fsresults)
-
-    const lsresults = execSync(`ls -lah ${tmpobj.name}`) // debugging
-    console.log('lsresults', lsresults.toString())
-
-    // const lsresults2 = execSync(`ls -lah ${tmpobj.name}/asfftest`) // debugging
-    // console.log('lsresults2', lsresults2.toString())
 
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/asfftest/CIS AWS Foundations Benchmark v1.2.0.json`, 'utf8'))
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/asff/asff-cis_aws-foundations_benchmark_v1.2.0-hdf.json'), 'utf8'))
