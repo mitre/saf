@@ -51,6 +51,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
   * [View](#view) - Identify overall security status and deep-dive to solve specific security defects
   * [Validate](#validate) - Verify pipeline thresholds
   * [Generate](#generate) - Generate InSpec validation code, set pipeline thresholds, and generate options to support other saf commands.
+  * [Supplement](#supplement) - Supplement elements that provide contextual information in an HDF file
   * Scan - Visit https://saf.mitre.org/#/validate to explore and run inspec profiles
   * Harden - Visit https://saf.mitre.org/#/harden to explore and run hardening scripts
 
@@ -1001,13 +1002,93 @@ generate xccdf2inspec_stub              Translate a DISA STIG XCCDF XML file int
     -s, --singleFile                Output the resulting controls as a single file
 ```
 
+---
 
+### Supplement
 
+Supplement (ex. read or modify) elements that provide contextual information in the Heimdall Data Format results JSON file such as `passthrough` or `target`
 
+#### Passthrough
+
+Supplement (ex. read or modify) the `passthrough` element, which provides contextual information in the Heimdall Data Format results JSON file
+
+##### Read
+
+```
+supplement passthrough read              Read the `passthrough` attribute in a given Heimdall Data Format JSON file and send it to stdout or write it to a file
+
+USAGE
+  $ saf supplement passthrough read -i <hdf-json> [-o <passthrough-json>]
+
+FLAGS
+  -h, --help            Show CLI help.
+  -i, --input=<value>   (required) An input HDF file
+  -o, --output=<value>  An output `passthrough` JSON file (otherwise the data is sent to stdout)
+
+EXAMPLES
+  $ saf supplement passthrough read -i hdf.json -o passthrough.json
+```
+
+##### Write
+
+```
+supplement passthrough write              Overwrite the `passthrough` attribute in a given Heimdall Data Format JSON file with the provided `passthrough` JSON data
+
+USAGE
+  $ saf supplement passthrough write -i <input-hdf-json> (-f <input-passthrough-json> | -d <passthrough-json>) [-o <output-hdf-json>]
+
+FLAGS
+  -d, --passthroughData=<value>  Input passthrough-data (can be any valid JSON); this flag or `passthroughFile` must be provided
+  -f, --passthroughFile=<value>  An input passthrough-data file (can contain any valid JSON); this flag or `passthroughData` must be provided
+  -h, --help                     Show CLI help.
+  -i, --input=<value>            (required) An input Heimdall Data Format file
+  -o, --output=<value>           An output Heimdall Data Format JSON file (otherwise the input file is overwritten)
+
+EXAMPLES
+  $ saf supplement passthrough write -i hdf.json -d '{"a": 5}'
+```
+
+#### Target
+
+Supplement (ex. read or modify) the `target` element, which provides contextual information in the Heimdall Data Format results JSON file
+
+##### Read
+
+```
+supplement target read              Read the `target` attribute in a given Heimdall Data Format JSON file and send it to stdout or write it to a file
+
+USAGE
+  $ saf supplement target read -i <hdf-json> [-o <target-json>]
+
+FLAGS
+  -h, --help            Show CLI help.
+  -i, --input=<value>   (required) An input HDF file
+  -o, --output=<value>  An output `target` JSON file (otherwise the data is sent to stdout)
+
+EXAMPLES
+  $ saf supplement target read -i hdf.json -o target.json
+```
+
+##### Write
+
+```
+supplement target write              Overwrite the `target` attribute in a given Heimdall Data Format JSON file with the provided `target` JSON data
+
+USAGE
+  $ saf supplement target write -i <input-hdf-json> (-f <input-target-json> | -d <target-json>) [-o <output-hdf-json>]
+
+FLAGS
+  -d, --targetData=<value>  Input target-data (can be any valid JSON); this flag or `targetFile` must be provided
+  -f, --targetFile=<value>  An input target-data file (can contain any valid JSON); this flag or `targetData` must be provided
+  -h, --help                Show CLI help.
+  -i, --input=<value>       (required) An input Heimdall Data Format file
+  -o, --output=<value>      An output Heimdall Data Format JSON file (otherwise the input file is overwritten)
+
+EXAMPLES
+  $ saf supplement target write -i hdf.json -d '{"a": 5}'
+```
 
 #### Other
-
-
 
 ##### Notes
 
