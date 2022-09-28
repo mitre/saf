@@ -150,7 +150,7 @@ To update the SAF CLI on Windows, uninstall any existing version from your syste
 
 ### Attest
 
-Attesting to 'Not Reviewed' controls can be done with the `saf attest` commands. `saf attest create` lets you create attestation files and `saf attest apply` lets you apply attestation files
+Attesting to 'Not Reviewed' controls can be done with the saf attest commands. Sometimes requirements can’t be tested automatically by security tools and hence require manual review, whereby someone interviews people and/or examines a system to confirm (i.e., attest as to) whether the control requirements have been satisfied. 
 
 #### Create Attestations
 ```
