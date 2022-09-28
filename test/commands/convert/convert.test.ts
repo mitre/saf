@@ -10,7 +10,7 @@ describe('Test (generic) convert', () => {
 
   test
   .it('hdf-converter output test (asff)', () => {
-    const runresults = execSync(
+    execSync(
       `node bin/run convert -i ./test/sample_data/asff/sample_input_report/asff_sample.json -o ${tmpobj.name}/asfftest`,
     )
 
