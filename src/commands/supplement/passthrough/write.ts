@@ -7,7 +7,10 @@ export default class WritePassthrough extends Command {
 
     static description = 'Overwrite the `passthrough` attribute in a given Heimdall Data Format JSON file with the provided `passthrough` JSON data'
 
-    static examples = ['saf supplement passthrough write -i hdf.json -d \'{"a": 5}\'']
+    static examples = [
+      'saf supplement passthrough write -i hdf.json -d \'{"a": 5}\'',
+      'saf supplement passthrough write -i hdf.json -f passthrough.json -o new-hdf.json',
+    ]
 
     static flags = {
       help: Flags.help({char: 'h'}),

@@ -1094,6 +1094,8 @@ FLAGS
 
 EXAMPLES
   $ saf supplement passthrough write -i hdf.json -d '{"a": 5}'
+
+  $ saf supplement passthrough write -i hdf.json -f passthrough.json -o new-hdf.json
 ```
 
 #### Target
@@ -1139,6 +1141,8 @@ FLAGS
 
 EXAMPLES
   $ saf supplement target write -i hdf.json -d '{"a": 5}'
+
+  $ saf supplement target write -i hdf.json -f target.json -o new-hdf.json
 ```
 
 # License and Author

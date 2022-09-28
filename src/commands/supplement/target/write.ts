@@ -7,7 +7,10 @@ export default class WriteTarget extends Command {
 
     static description = 'Overwrite the `target` attribute in a given Heimdall Data Format JSON file with the provided `target` JSON data'
 
-    static examples = ['saf supplement target write -i hdf.json -d \'{"a": 5}\'']
+    static examples = [
+      'saf supplement target write -i hdf.json -d \'{"a": 5}\'',
+      'saf supplement target write -i hdf.json -f target.json -o new-hdf.json',
+    ]
 
     static flags = {
       help: Flags.help({char: 'h'}),
