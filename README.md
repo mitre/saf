@@ -1105,7 +1105,9 @@ FLAGS
   -d, --passthroughData=<value>  Input passthrough-data (can be any valid JSON); this flag or `passthroughFile` must be provided
   -f, --passthroughFile=<value>  An input passthrough-data file (can contain any valid JSON); this flag or `passthroughData` must be provided
   
-      Sample passthrough json:
+      Passthrough data can be any context/structure. See sample ideas on https://github.com/mitre/saf/wiki.
+      
+      A sample passthrough json used to provide CDM context could be something like this:
         {"CDM":
                 {
                 "HWAM": {
@@ -1174,8 +1176,10 @@ FLAGS
   -d, --targetData=<value>  Input target-data (can be any valid JSON); this flag or `targetFile` must be provided
   -f, --targetFile=<value>  An input target-data file (can contain any valid JSON); this flag or `targetData` must be provided
 
-       Sample target json:
-        {"AWS":
+      Target data can be any context/structure. See sample ideas on https://github.com/mitre/saf/wiki.
+      
+      A sample target json used to provide AWS Resource context could be something like this:
+      {"AWS":
                 {
                 "Resources":[
                         {
