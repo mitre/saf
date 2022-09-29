@@ -51,7 +51,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
   * [View](#view) - Identify overall security status and deep-dive to solve specific security defects
   * [Validate](#validate) - Verify pipeline thresholds
   * [Generate](#generate) - Generate InSpec validation code, set pipeline thresholds, and generate options to support other saf commands.
-  * [Supplement](#supplement) - Supplement elements that provide contextual information in an HDF file
+  * [Supplement](#supplement) - Supplement elements that provide contextual information in the Heimdall Data Format results JSON file such as `passthrough` or `target`
   * Scan - Visit https://saf.mitre.org/#/validate to explore and run inspec profiles
   * Harden - Visit https://saf.mitre.org/#/harden to explore and run hardening scripts
 
@@ -1104,6 +1104,28 @@ USAGE
 FLAGS
   -d, --passthroughData=<value>  Input passthrough-data (can be any valid JSON); this flag or `passthroughFile` must be provided
   -f, --passthroughFile=<value>  An input passthrough-data file (can contain any valid JSON); this flag or `passthroughData` must be provided
+  
+      Sample passthrough json:
+        {"CDM":
+                {
+                "HWAM": {
+                        "Asset_ID_Tattoo": "arn:aws:ec2:us-east-1:123456789012:instance/i-12345acbd5678efgh90",
+                        "Data_Center_ID": "1234-5678-ABCD-1BB1-CC12DD34EE56FF78",
+                        "FQDN": "i-12345acbd5678efgh90.ec2.internal",
+                        "Hostname": "i-12345acbd5678efgh90",
+                        "ipv4": "10.0.1.25",
+                        "ipv6": "none defined",
+                        "mac": "02:32:fd:e3:68:a1",
+                        "os": "Linux",
+                        "FISMA_ID": "ABCD2C21-7781-92AA-F126-FF987CZZZZ"
+                        },
+                "CSM": {
+                        "Server_Type": "member server",
+                        "source_tool": "InSpec"
+                        }
+                }
+        }
+        
   -h, --help                     Show CLI help.
   -i, --input=<value>            (required) An input Heimdall Data Format file
   -o, --output=<value>           An output Heimdall Data Format JSON file (otherwise the input file is overwritten)
@@ -1151,6 +1173,33 @@ USAGE
 FLAGS
   -d, --targetData=<value>  Input target-data (can be any valid JSON); this flag or `targetFile` must be provided
   -f, --targetFile=<value>  An input target-data file (can contain any valid JSON); this flag or `targetData` must be provided
+
+       Sample target json:
+        {"AWS":
+                {
+                "Resources":[
+                        {
+                        "Type": "AwsEc2Instance",
+                        "Id": "arn:aws:ec2:us-east-1:123456789012:instance/i-06036f0ccaa012345",
+                        "Partition": "aws",
+                        "Region": "us-east-1",
+                        "Details": {
+                                "AwsEc2Instance": {
+                                        "Type": "t2.medium",
+                                        "ImageId": "ami-0d716eddcc7b7abcd",
+                                        "IpV4Addresses": [
+                                                "10.0.0.27"
+                                                ],
+                                        "KeyName": "rhel7_1_10152021",
+                                        "VpcId": "vpc-0b53ff8f37a06abcd",
+                                        "SubnetId": "subnet-0ea14519a4ddaabcd"
+                                        }
+                                }
+                        }
+                    ]
+                }
+        }
+
   -h, --help                Show CLI help.
   -i, --input=<value>       (required) An input Heimdall Data Format file
   -o, --output=<value>      An output Heimdall Data Format JSON file (otherwise the input file is overwritten)
