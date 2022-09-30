@@ -5,7 +5,9 @@ import fs from 'fs'
 export default class WriteTarget extends Command {
     static usage = 'supplement target write -i <input-hdf-json> (-f <input-target-json> | -d <target-json>) [-o <output-hdf-json>]'
 
-    static description = 'Overwrite the `target` attribute in a given Heimdall Data Format JSON file with the provided `target` JSON data'
+    static summary = 'Overwrite the `target` attribute in a given HDF file with the provided `target` JSON data'
+
+    static description = 'Target data can be any context/structure. See sample ideas at https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60)'
 
     static examples = [
       'saf supplement target write -i hdf.json -d \'{"a": 5}\'',
@@ -15,7 +17,7 @@ export default class WriteTarget extends Command {
     static flags = {
       help: Flags.help({char: 'h'}),
       input: Flags.string({char: 'i', required: true, description: 'An input Heimdall Data Format file'}),
-      targetFile: Flags.string({char: 'f', exclusive: ['targetData'], description: 'An input target-data file (can contain any valid JSON); this flag or `targetData` must be provided\n\nTarget data can be any context/structure. See sample ideas on https://github.com/mitre/saf/wiki.\n\nA sample target json used to provide AWS Resource context could be something like this:\n	{"AWS":\n		{\n		"Resources":[\n			{\n			"Type": "AwsEc2Instance",\n			"Id": "arn:aws:ec2:us-east-1:123456789012:instance/i-06036f0ccaa012345",\n			"Partition": "aws",\n			"Region": "us-east-1",\n			"Details": {\n				"AwsEc2Instance": {\n					"Type": "t2.medium",\n					"ImageId": "ami-0d716eddcc7b7abcd",\n					"IpV4Addresses": [\n						"10.0.0.27"\n						],\n					"KeyName": "rhel7_1_10152021",\n					"VpcId": "vpc-0b53ff8f37a06abcd",\n					"SubnetId": "subnet-0ea14519a4ddaabcd"\n					}\n				}\n			}\n			 ]\n		}\n	}'}),
+      targetFile: Flags.string({char: 'f', exclusive: ['targetData'], description: 'An input target-data file (can contain any valid JSON); this flag or `targetData` must be provided'}),
       targetData: Flags.string({char: 'd', exclusive: ['targetFile'], description: 'Input target-data (can be any valid JSON); this flag or `targetFile` must be provided'}),
       output: Flags.string({char: 'o', description: 'An output Heimdall Data Format JSON file (otherwise the input file is overwritten)'}),
     }

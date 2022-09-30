@@ -51,7 +51,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
   * [View](#view) - Identify overall security status and deep-dive to solve specific security defects
   * [Validate](#validate) - Verify pipeline thresholds
   * [Generate](#generate) - Generate InSpec validation code, set pipeline thresholds, and generate options to support other saf commands.
-  * [Supplement](#supplement) - Supplement elements that provide contextual information in the Heimdall Data Format results JSON file such as `passthrough` or `target`
+  * [Supplement](#supplement) - Supplement elements that provide contextual information in an HDF file such as `passthrough` or `target`
   * Scan - Visit https://saf.mitre.org/#/validate to explore and run inspec profiles
   * Harden - Visit https://saf.mitre.org/#/harden to explore and run hardening scripts
 
@@ -150,7 +150,7 @@ To update the SAF CLI on Windows, uninstall any existing version from your syste
 
 ### Attest
 
-Attesting to 'Not Reviewed' controls can be done with the saf attest commands. Sometimes requirements can’t be tested automatically by security tools and hence require manual review, whereby someone interviews people and/or examines a system to confirm (i.e., attest as to) whether the control requirements have been satisfied. 
+Attest to 'Not Reviewed' controls: sometimes requirements can’t be tested automatically by security tools and hence require manual review, whereby someone interviews people and/or examines a system to confirm (i.e., attest as to) whether the control requirements have been satisfied.
 
 #### Create Attestations
 ```
@@ -1065,7 +1065,7 @@ Where the keys (`title`) are InSpec control attributes and the values (`- Title`
 
 ### Supplement
 
-Supplement (ex. read or modify) elements that provide contextual information in the Heimdall Data Format results JSON file such as `passthrough` or `target`
+Supplement (ex. read or modify) elements that provide contextual information in an HDF file such as `passthrough` or `target`
 
 #### Passthrough
 
@@ -1096,7 +1096,7 @@ EXAMPLES
 ##### Write
 
 ```
-supplement passthrough write              Overwrite the `passthrough` attribute in a given Heimdall Data Format JSON file with the provided `passthrough` JSON data
+supplement passthrough write              Overwrite the `passthrough` attribute in a given HDF file with the provided `passthrough` JSON data
 
 USAGE
   $ saf supplement passthrough write -i <input-hdf-json> (-f <input-passthrough-json> | -d <passthrough-json>) [-o <output-hdf-json>]
@@ -1104,33 +1104,12 @@ USAGE
 FLAGS
   -d, --passthroughData=<value>  Input passthrough-data (can be any valid JSON); this flag or `passthroughFile` must be provided
   -f, --passthroughFile=<value>  An input passthrough-data file (can contain any valid JSON); this flag or `passthroughData` must be provided
-  
-      Passthrough data can be any context/structure. See sample ideas on https://github.com/mitre/saf/wiki.
-      
-      A sample passthrough json used to provide CDM context could be something like this:
-        {"CDM":
-                {
-                "HWAM": {
-                        "Asset_ID_Tattoo": "arn:aws:ec2:us-east-1:123456789012:instance/i-12345acbd5678efgh90",
-                        "Data_Center_ID": "1234-5678-ABCD-1BB1-CC12DD34EE56FF78",
-                        "FQDN": "i-12345acbd5678efgh90.ec2.internal",
-                        "Hostname": "i-12345acbd5678efgh90",
-                        "ipv4": "10.0.1.25",
-                        "ipv6": "none defined",
-                        "mac": "02:32:fd:e3:68:a1",
-                        "os": "Linux",
-                        "FISMA_ID": "ABCD2C21-7781-92AA-F126-FF987CZZZZ"
-                        },
-                "CSM": {
-                        "Server_Type": "member server",
-                        "source_tool": "InSpec"
-                        }
-                }
-        }
-        
   -h, --help                     Show CLI help.
   -i, --input=<value>            (required) An input Heimdall Data Format file
   -o, --output=<value>           An output Heimdall Data Format JSON file (otherwise the input file is overwritten)
+
+DESCRIPTION
+  Passthrough data can be any context/structure. See sample ideas at https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60)
 
 EXAMPLES
   $ saf supplement passthrough write -i hdf.json -d '{"a": 5}'
@@ -1167,7 +1146,7 @@ EXAMPLES
 ##### Write
 
 ```
-supplement target write              Overwrite the `target` attribute in a given Heimdall Data Format JSON file with the provided `target` JSON data
+supplement target write              Overwrite the `target` attribute in a given HDF file with the provided `target` JSON data
 
 USAGE
   $ saf supplement target write -i <input-hdf-json> (-f <input-target-json> | -d <target-json>) [-o <output-hdf-json>]
@@ -1175,38 +1154,12 @@ USAGE
 FLAGS
   -d, --targetData=<value>  Input target-data (can be any valid JSON); this flag or `targetFile` must be provided
   -f, --targetFile=<value>  An input target-data file (can contain any valid JSON); this flag or `targetData` must be provided
-
-      Target data can be any context/structure. See sample ideas on https://github.com/mitre/saf/wiki.
-      
-      A sample target json used to provide AWS Resource context could be something like this:
-      {"AWS":
-                {
-                "Resources":[
-                        {
-                        "Type": "AwsEc2Instance",
-                        "Id": "arn:aws:ec2:us-east-1:123456789012:instance/i-06036f0ccaa012345",
-                        "Partition": "aws",
-                        "Region": "us-east-1",
-                        "Details": {
-                                "AwsEc2Instance": {
-                                        "Type": "t2.medium",
-                                        "ImageId": "ami-0d716eddcc7b7abcd",
-                                        "IpV4Addresses": [
-                                                "10.0.0.27"
-                                                ],
-                                        "KeyName": "rhel7_1_10152021",
-                                        "VpcId": "vpc-0b53ff8f37a06abcd",
-                                        "SubnetId": "subnet-0ea14519a4ddaabcd"
-                                        }
-                                }
-                        }
-                    ]
-                }
-        }
-
   -h, --help                Show CLI help.
   -i, --input=<value>       (required) An input Heimdall Data Format file
   -o, --output=<value>      An output Heimdall Data Format JSON file (otherwise the input file is overwritten)
+
+DESCRIPTION
+  Target data can be any context/structure. See sample ideas at https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60)
 
 EXAMPLES
   $ saf supplement target write -i hdf.json -d '{"a": 5}'
