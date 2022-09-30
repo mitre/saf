@@ -10,7 +10,7 @@ jobs:
       - name: Extract version
         id: extract-version
         run: |
-          printf "::set-output name=%s::%s\n" tag-name "${GITHUB_REF#refs/tags/}"
+          printf "::set-output name=tag-name::%s" "${GITHUB_REF#refs/tags/}"
       - uses: mislav/bump-homebrew-formula-action@v2.1
         if: "!contains(github.ref, '-')" # skip prereleases
         with:
