@@ -1076,6 +1076,30 @@ EXAMPLE (combined read, modfication, and overwrite of the original file)
   $ saf supplement passthrough read -i hdf_with_passthrough.json | jq -rc '.key = "new value"' | xargs -0 -I{} saf supplement passthrough write -i hdf_with_passthrough.json -d {}
 ```
 
+Passthrough data can be any context/structure. See the sample below and more at https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60)
+```json
+SAMPLE
+{
+  "CDM": {
+    "HWAM": {
+      "Asset_ID_Tattoo": "arn:aws:ec2:us-east-1:123456789012:instance/i-12345acbd5678efgh90",
+      "Data_Center_ID": "1234-5678-ABCD-1BB1-CC12DD34EE56FF78",
+      "FQDN": "i-12345acbd5678efgh90.ec2.internal",
+      "Hostname": "i-12345acbd5678efgh90",
+      "ipv4": "10.0.1.25",
+      "ipv6": "none defined",
+      "mac": "02:32:fd:e3:68:a1",
+      "os": "Linux",
+      "FISMA_ID": "ABCD2C21-7781-92AA-F126-FF987CZZZZ"
+    },
+    "CSM": {
+      "Server_Type": "member server",
+      "source_tool": "InSpec"
+    }
+  }
+}
+```
+
 ##### Read
 
 ```
@@ -1124,6 +1148,35 @@ Supplement (ex. read or modify) the `target` element, which provides contextual 
 ```
 EXAMPLE (combined read, modfication, and overwrite of the original file)
   $ saf supplement target read -i hdf_with_target.json | jq -rc '.key = "new value"' | xargs -0 -I{} saf supplement target write -i hdf_with_target.json -d {}
+```
+
+Passthrough data can be any context/structure. See the sample below and more at https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60)
+```json
+SAMPLE
+{
+  "AWS":{
+    "Resources":[
+      {
+        "Type":"AwsEc2Instance",
+        "Id":"arn:aws:ec2:us-east-1:123456789012:instance/i-06036f0ccaa012345",
+        "Partition":"aws",
+        "Region":"us-east-1",
+        "Details":{
+          "AwsEc2Instance":{
+            "Type":"t2.medium",
+            "ImageId":"ami-0d716eddcc7b7abcd",
+            "IpV4Addresses":[
+              "10.0.0.27"
+            ],
+            "KeyName":"rhel7_1_10152021",
+            "VpcId":"vpc-0b53ff8f37a06abcd",
+            "SubnetId":"subnet-0ea14519a4ddaabcd"
+          }
+        }
+      }
+    ]
+  }
+}
 ```
 
 ##### Read
