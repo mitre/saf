@@ -11,7 +11,7 @@ jobs:
         id: extract-version
         run: |
           printf "::set-output name=tag-name::%s" "${GITHUB_REF#refs/tags/}"
-      - uses: mislav/bump-homebrew-formula-action@v2.1
+      - uses: mislav/bump-homebrew-formula-action@v2
         if: "!contains(github.ref, '-')" # skip prereleases
         with:
           formula-name: saf-cli
@@ -24,4 +24,4 @@ jobs:
 
             Created by https://github.com/mislav/bump-homebrew-formula-action
         env:
-          COMMITTER_TOKEN: ${{ secrets.COMMITTER_TOKEN }}
+          COMMITTER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
