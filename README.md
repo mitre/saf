@@ -1078,7 +1078,6 @@ EXAMPLE (combined read, modfication, and overwrite of the original file)
 
 Passthrough data can be any context/structure. See the sample below and more at https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60)
 ```json
-SAMPLE
 {
   "CDM": {
     "HWAM": {
@@ -1152,7 +1151,6 @@ EXAMPLE (combined read, modfication, and overwrite of the original file)
 
 Passthrough data can be any context/structure. See the sample below and more at https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60)
 ```json
-SAMPLE
 {
   "AWS":{
     "Resources":[
