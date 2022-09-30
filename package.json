@@ -111,6 +111,9 @@
     },
     "topicSeparator": " ",
     "topics": {
+      "attest": {
+        "description": "[Attest]       Attest to 'Not Reviewed' control requirements (that can’t be tested automatically by security tools and hence require manual review), helping to account for all requirements"
+      },
       "convert": {
         "description": "[Normalize]    Convert security results from all your security tools between common data formats"
       },
@@ -122,6 +125,15 @@
       },
       "scan": {
         "description": "[Scan]         Scan to get detailed security testing results: Visit https://saf.mitre.org/#/validate to explore and run inspec profiles"
+      },
+      "supplement": {
+        "description": "[Supplement]   Supplement (ex. read or modify) elements that provide contextual information in the Heimdall Data Format results JSON file such as `passthrough` or `target`"
+      },
+      "supplement:passthrough": {
+        "description": "Supplement (ex. read or modify) the `passthrough` element, which provides contextual information in the Heimdall Data Format results JSON file"
+      },
+      "supplement:target": {
+        "description": "Supplement (ex. read or modify) the `target` element, which provides contextual information in the Heimdall Data Format results JSON file"
       },
       "validate": {
         "description": "[Validate]     Verify pipeline thresholds"

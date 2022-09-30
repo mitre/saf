@@ -51,6 +51,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
   * [View](#view) - Identify overall security status and deep-dive to solve specific security defects
   * [Validate](#validate) - Verify pipeline thresholds
   * [Generate](#generate) - Generate InSpec validation code, set pipeline thresholds, and generate options to support other saf commands.
+  * [Supplement](#supplement) - Supplement elements that provide contextual information in an HDF file such as `passthrough` or `target`
   * Scan - Visit https://saf.mitre.org/#/validate to explore and run inspec profiles
   * Harden - Visit https://saf.mitre.org/#/harden to explore and run hardening scripts
 
@@ -149,28 +150,44 @@ To update the SAF CLI on Windows, uninstall any existing version from your syste
 
 ### Attest
 
-Attesting to 'Not Reviewed' controls can be done with the `saf attest` commands. `saf attest create` lets you create attestation files and `saf attest apply` lets you apply attestation files
+Attest to 'Not Reviewed' controls: sometimes requirements can’t be tested automatically by security tools and hence require manual review, whereby someone interviews people and/or examines a system to confirm (i.e., attest as to) whether the control requirements have been satisfied.
 
 #### Create Attestations
 ```
 attest create              Create attestation files for use with `saf attest apply`
 
-  FLAGS
-    -h, --help             Show CLI help.
-    -i, --input=<value>    (optional) An input HDF file used to search for controls
-    -o, --output=<value>   (required) The output filename
-    -t, --format=<option>  [default: json] (optional) The output file type
-                           <options: json|xlsx|yml|yaml>
+USAGE
+  $ saf attest create -o <attestation-file> [-i <hdf-json> -t <json | xlsx | yml | yaml>]
+
+FLAGS
+  -h, --help             Show CLI help.
+  -i, --input=<value>    (optional) An input HDF file to search for controls
+  -o, --output=<value>   (required) The output filename
+  -t, --format=<option>  [default: json] (optional) The output file type
+                         <options: json|xlsx|yml|yaml>
+
+EXAMPLES
+  $ saf attest create -o attestation.json -i hdf.json
+
+  $ saf attest create -o attestation.xlsx -t xlsx
 ```
 
 #### Apply Attestations
 ```
 attest apply              Apply one or more attestation files to one or more HDF results sets
 
-  FLAGS
-    -h, --help              Show CLI help.
-    -i, --input=<value>...  (required) Your input HDF and Attestation file(s)
-    -o, --output=<value>    (required) Output file or folder (for multiple executions)
+USAGE
+  $ saf attest apply -i <input-hdf-json>... <attestation>... -o <output-hdf-path>
+
+FLAGS
+  -h, --help              Show CLI help.
+  -i, --input=<value>...  (required) Your input HDF and Attestation file(s)
+  -o, --output=<value>    (required) Output file or folder (for multiple executions)
+
+EXAMPLES
+  $ saf attest apply -i hdf.json attestation.json -o new-hdf.json
+
+  $ saf attest apply -i hdf1.json hdf2.json attestation.xlsx -o outputDir
 ```
 
 ### Convert
@@ -1001,13 +1018,7 @@ generate xccdf2inspec_stub              Translate a DISA STIG XCCDF XML file int
     -s, --singleFile                Output the resulting controls as a single file
 ```
 
-
-
-
-
 #### Other
-
-
 
 ##### Notes
 
@@ -1050,8 +1061,162 @@ ref:                          # InSpec keyword - saf will check this column for 
 
 Where the keys (`title`) are InSpec control attributes and the values (`- Title`) are the column headers in the input spreadsheet that correspond to that attribute.
 
-&nbsp;
+---
 
+### Supplement
+
+Supplement (ex. read or modify) elements that provide contextual information in an HDF file such as `passthrough` or `target`
+
+#### Passthrough
+
+Supplement (ex. read or modify) the `passthrough` element, which provides contextual information in the Heimdall Data Format results JSON file
+
+```
+EXAMPLE (combined read, modfication, and overwrite of the original file)
+  $ saf supplement passthrough read -i hdf_with_passthrough.json | jq -rc '.key = "new value"' | xargs -0 -I{} saf supplement passthrough write -i hdf_with_passthrough.json -d {}
+```
+
+Passthrough data can be any context/structure. See the sample below and more at https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60)
+```json
+{
+  "CDM": {
+    "HWAM": {
+      "Asset_ID_Tattoo": "arn:aws:ec2:us-east-1:123456789012:instance/i-12345acbd5678efgh90",
+      "Data_Center_ID": "1234-5678-ABCD-1BB1-CC12DD34EE56FF78",
+      "FQDN": "i-12345acbd5678efgh90.ec2.internal",
+      "Hostname": "i-12345acbd5678efgh90",
+      "ipv4": "10.0.1.25",
+      "ipv6": "none defined",
+      "mac": "02:32:fd:e3:68:a1",
+      "os": "Linux",
+      "FISMA_ID": "ABCD2C21-7781-92AA-F126-FF987CZZZZ"
+    },
+    "CSM": {
+      "Server_Type": "member server",
+      "source_tool": "InSpec"
+    }
+  }
+}
+```
+
+##### Read
+
+```
+supplement passthrough read              Read the `passthrough` attribute in a given Heimdall Data Format JSON file and send it to stdout or write it to a file
+
+USAGE
+  $ saf supplement passthrough read -i <hdf-json> [-o <passthrough-json>]
+
+FLAGS
+  -h, --help            Show CLI help.
+  -i, --input=<value>   (required) An input HDF file
+  -o, --output=<value>  An output `passthrough` JSON file (otherwise the data is sent to stdout)
+
+EXAMPLES
+  $ saf supplement passthrough read -i hdf.json -o passthrough.json
+```
+
+##### Write
+
+```
+supplement passthrough write              Overwrite the `passthrough` attribute in a given HDF file with the provided `passthrough` JSON data
+
+USAGE
+  $ saf supplement passthrough write -i <input-hdf-json> (-f <input-passthrough-json> | -d <passthrough-json>) [-o <output-hdf-json>]
+
+FLAGS
+  -d, --passthroughData=<value>  Input passthrough-data (can be any valid JSON); this flag or `passthroughFile` must be provided
+  -f, --passthroughFile=<value>  An input passthrough-data file (can contain any valid JSON); this flag or `passthroughData` must be provided
+  -h, --help                     Show CLI help.
+  -i, --input=<value>            (required) An input Heimdall Data Format file
+  -o, --output=<value>           An output Heimdall Data Format JSON file (otherwise the input file is overwritten)
+
+DESCRIPTION
+  Passthrough data can be any context/structure. See sample ideas at https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60)
+
+EXAMPLES
+  $ saf supplement passthrough write -i hdf.json -d '{"a": 5}'
+
+  $ saf supplement passthrough write -i hdf.json -f passthrough.json -o new-hdf.json
+```
+
+#### Target
+
+Supplement (ex. read or modify) the `target` element, which provides contextual information in the Heimdall Data Format results JSON file
+
+```
+EXAMPLE (combined read, modfication, and overwrite of the original file)
+  $ saf supplement target read -i hdf_with_target.json | jq -rc '.key = "new value"' | xargs -0 -I{} saf supplement target write -i hdf_with_target.json -d {}
+```
+
+Passthrough data can be any context/structure. See the sample below and more at https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60)
+```json
+{
+  "AWS":{
+    "Resources":[
+      {
+        "Type":"AwsEc2Instance",
+        "Id":"arn:aws:ec2:us-east-1:123456789012:instance/i-06036f0ccaa012345",
+        "Partition":"aws",
+        "Region":"us-east-1",
+        "Details":{
+          "AwsEc2Instance":{
+            "Type":"t2.medium",
+            "ImageId":"ami-0d716eddcc7b7abcd",
+            "IpV4Addresses":[
+              "10.0.0.27"
+            ],
+            "KeyName":"rhel7_1_10152021",
+            "VpcId":"vpc-0b53ff8f37a06abcd",
+            "SubnetId":"subnet-0ea14519a4ddaabcd"
+          }
+        }
+      }
+    ]
+  }
+}
+```
+
+##### Read
+
+```
+supplement target read              Read the `target` attribute in a given Heimdall Data Format JSON file and send it to stdout or write it to a file
+
+USAGE
+  $ saf supplement target read -i <hdf-json> [-o <target-json>]
+
+FLAGS
+  -h, --help            Show CLI help.
+  -i, --input=<value>   (required) An input HDF file
+  -o, --output=<value>  An output `target` JSON file (otherwise the data is sent to stdout)
+
+EXAMPLES
+  $ saf supplement target read -i hdf.json -o target.json
+```
+
+##### Write
+
+```
+supplement target write              Overwrite the `target` attribute in a given HDF file with the provided `target` JSON data
+
+USAGE
+  $ saf supplement target write -i <input-hdf-json> (-f <input-target-json> | -d <target-json>) [-o <output-hdf-json>]
+
+FLAGS
+  -d, --targetData=<value>  Input target-data (can be any valid JSON); this flag or `targetFile` must be provided
+  -f, --targetFile=<value>  An input target-data file (can contain any valid JSON); this flag or `targetData` must be provided
+  -h, --help                Show CLI help.
+  -i, --input=<value>       (required) An input Heimdall Data Format file
+  -o, --output=<value>      An output Heimdall Data Format JSON file (otherwise the input file is overwritten)
+
+DESCRIPTION
+  Target data can be any context/structure. See sample ideas at https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60)
+
+EXAMPLES
+  $ saf supplement target write -i hdf.json -d '{"a": 5}'
+
+  $ saf supplement target write -i hdf.json -f target.json -o new-hdf.json
+```
 
 # License and Author
 

@@ -9,7 +9,6 @@ describe('Test (generic) convert', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   test
-  .stdout()
   .it('hdf-converter output test (asff)', () => {
     execSync(
       `node bin/run convert -i ./test/sample_data/asff/sample_input_report/asff_sample.json -o ${tmpobj.name}/asfftest`,
@@ -21,7 +20,6 @@ describe('Test (generic) convert', () => {
   })
 
   test
-  .stdout()
   .it('hdf-converter output test (burpsuite)', () => {
     execSync(
       `node bin/run convert -i ./test/sample_data/burpsuite/sample_input_report/zero.webappsecurity.com.min -o ${tmpobj.name}/burpsuitetest.json`,
@@ -33,7 +31,6 @@ describe('Test (generic) convert', () => {
   })
 
   test
-  .stdout()
   .it('hdf-converter output test (jfrog)', () => {
     execSync(
       `node bin/run convert -i ./test/sample_data/jfrog_xray/sample_input_report/jfrog_xray_sample.json -o ${tmpobj.name}/jfrogtest.json`,
@@ -45,7 +42,6 @@ describe('Test (generic) convert', () => {
   })
 
   test
-  .stdout()
   .it('hdf-converter output test (zap) - zero.webappsecurity', () => {
     execSync(
       `node bin/run convert -i ./test/sample_data/zap/sample_input_report/zero.webappsecurity.json -n http://zero.webappsecurity.com -o ${tmpobj.name}/zaptest-webappsecurity.json`,
