@@ -8,9 +8,11 @@ import {getInstalledPath} from '../../utils/global'
 export default class Heimdall extends Command {
   static aliases = ['heimdall']
 
-  static usage = 'view:heimdall -p, --port=PORT <filename>'
+  static usage = 'view heimdall [-h] [-p <port>] [-f <file>] [-n]'
 
-  static description = 'Run an instance of Heimdall Lite to visualize your Data'
+  static description = 'Run an instance of Heimdall Lite to visualize your data'
+
+  static examples = ['saf view heimdall -p 8080']
 
   static flags = {
     help: Flags.help({char: 'h'}),
@@ -20,7 +22,7 @@ export default class Heimdall extends Command {
   }
 
   async run() {
-    const {flags, args} = await this.parse(Heimdall)
+    const {flags} = await this.parse(Heimdall)
     let parsedJSONs: Record<string, any>[] = []
 
     // Is the defined port valid?
@@ -31,12 +33,12 @@ export default class Heimdall extends Command {
 
     // If we were passed a file, does it exist? Can it convert to JSON correctly?
     if (flags.files && flags.files.length > 0) {
-      if (!flags.files.every(file => fs.statSync(file).isFile())) {
+      if (!flags.files.every((file: string) => fs.statSync(file).isFile())) {
         console.log('An option passed as a file was not a file')
         return
       }
 
-      parsedJSONs = flags.files.map(file => {
+      parsedJSONs = flags.files.map((file: string) => {
         return {filename: path.parse(file).base, data: fs.readFileSync(file, 'utf8')}
       })
     }

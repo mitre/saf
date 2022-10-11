@@ -1,10 +1,10 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {NetsparkerMapper as Mapper} from '@mitre/hdf-converters'
-import {checkSuffix} from '../../utils/global'
+import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class Netsparker2HDF extends Command {
-  static usage = 'convert netsparker2hdf -i, --input=XML -o, --output=OUTPUT'
+  static usage = 'convert netsparker2hdf -i <netsparker-xml> -o <hdf-scan-results-json> [-h]'
 
   static description = 'Translate a Netsparker XML results file into a Heimdall Data Format JSON file\nThe current iteration only works with Netsparker Enterprise Vulnerabilities Scan.'
 
@@ -12,14 +12,18 @@ export default class Netsparker2HDF extends Command {
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true}),
-    output: Flags.string({char: 'o', required: true}),
+    input: Flags.string({char: 'i', required: true, description: 'Input Netsparker XML File'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
   }
 
   async run() {
     const {flags} = await this.parse(Netsparker2HDF)
 
-    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'))
+    // Check for correct input type
+    const data = fs.readFileSync(flags.input, 'utf8')
+    checkInput({data: data, filename: flags.input}, 'netsparker', 'Netsparker XML results file')
+
+    const converter = new Mapper(data)
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

@@ -9,15 +9,17 @@ import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlI
 import {expect} from 'chai'
 
 export default class Threshold extends Command {
-  static usage = 'validate threshold -i, --input=JSON -T, --templateInline="JSON Data" -F --templateFile=YAML File'
+  static usage = 'validate threshold -i <hdf-json> [-h] [-T <flattened-threshold-json> | -F <template-file>]'
 
   static description = 'Validate the compliance and status counts of an HDF file'
 
+  static examples = ['saf validate threshold -i rhel7-results.json -F output.yaml']
+
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true}),
-    templateInline: Flags.string({char: 'T', required: false, exclusive: ['templateFile']}),
-    templateFile: Flags.string({char: 'F', required: false, exclusive: ['templateInline'],  description: 'Expected data template, generate one with "saf generate threshold"'}),
+    input: Flags.string({char: 'i', required: true, description: 'Input HDF JSON File'}),
+    templateInline: Flags.string({char: 'T', required: false, exclusive: ['templateFile'], description: 'Flattened JSON containing your validation thresholds (Intended for backwards compatibility with InSpec Tools)'}),
+    templateFile: Flags.string({char: 'F', required: false, exclusive: ['templateInline'], description: 'Expected data template, generate one with "saf generate threshold"'}),
   }
 
   async run() {
@@ -25,7 +27,7 @@ export default class Threshold extends Command {
     let thresholds: ThresholdValues = {}
     if (flags.templateInline) {
       // Need to do some processing to convert this into valid JSON
-      const flattenedObjects = flags.templateInline.split(',').map(value => value.trim().replace('{', '').replace('}', ''))
+      const flattenedObjects = flags.templateInline.split(',').map((value: string) => value.trim().replace('{', '').replace('}', ''))
       const toUnpack: Record<string, number> = {}
       for (const flattenedObject of flattenedObjects) {
         const [key, value] = flattenedObject.split(':')
@@ -58,10 +60,10 @@ export default class Threshold extends Command {
       if (_.get(thresholds, statusThreshold) !== undefined && typeof _.get(thresholds, statusThreshold) !== 'object') {
         exitNonZeroIfTrue(
           Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName))              !==
+            _.get(overallStatusCounts, renameStatusName(statusName)) !==
             _.get(thresholds, statusThreshold),
           ),
-          `${statusThreshold}: Received ${_.get(overallStatusCounts, renameStatusName(statusName))} != Expected ${_.get(thresholds, statusThreshold)}`,
+          `${statusThreshold}: Threshold not met. Number of received total ${statusThreshold.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is not equal to your set threshold for the number of ${statusThreshold.split('.')[0]} controls (${_.get(thresholds, statusThreshold)})`,
         )
       }
     }
@@ -71,10 +73,10 @@ export default class Threshold extends Command {
       if (_.get(thresholds, totalMinimum) !== undefined) {
         exitNonZeroIfTrue(
           Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName))              <
+            _.get(overallStatusCounts, renameStatusName(statusName)) <
             _.get(thresholds, totalMinimum),
           ),
-          `${totalMinimum}: Received ${_.get(overallStatusCounts, renameStatusName(statusName))} < Expected ${_.get(thresholds, totalMinimum)}`,
+          `${totalMinimum}: Threshold not met. Number of received total ${totalMinimum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${totalMinimum.split('.')[0]} controls (${_.get(thresholds, totalMinimum)})`,
         )
       }
     }
@@ -84,10 +86,10 @@ export default class Threshold extends Command {
       if (_.get(thresholds, totalMaximum) !== undefined) {
         exitNonZeroIfTrue(
           Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName))              >
+            _.get(overallStatusCounts, renameStatusName(statusName)) >
             _.get(thresholds, totalMaximum),
           ),
-          `${totalMaximum}: Received ${_.get(overallStatusCounts, renameStatusName(statusName))} > Expected ${_.get(thresholds, totalMaximum)}`,
+          `${totalMaximum}: Threshold not met. Number of received total ${totalMaximum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${totalMaximum.split('.')[0]} controls (${_.get(thresholds, totalMaximum)})`,
         )
       }
     }
@@ -102,14 +104,14 @@ export default class Threshold extends Command {
             Boolean(
               _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold),
             ),
-            `${statusCountThreshold}: Received ${_.get(criticalStatusCounts, renameStatusName(statusName))} < Expected ${_.get(thresholds, statusCountThreshold)}`,
+            `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
           )
         } else if (thresholdType === 'max' && _.get(thresholds, statusCountThreshold) !== undefined) {
           exitNonZeroIfTrue(
             Boolean(
               _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold),
             ),
-            `${statusCountThreshold}: Received ${_.get(criticalStatusCounts, renameStatusName(statusName))} > Expected ${_.get(thresholds, statusCountThreshold)}`,
+            `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
           )
         }
       }
@@ -117,7 +119,7 @@ export default class Threshold extends Command {
 
     // Expect Control IDs to match placed severities
     const controlIdMap = getControlIdMap(parsedExecJSON.contains[0] as ContextualizedProfile)
-    for (const [severity, targetPaths] of Object.entries(statusSeverityPaths)) {
+    for (const [_severity, targetPaths] of Object.entries(statusSeverityPaths)) {
       for (const targetPath of targetPaths) {
         const expectedControlIds: string[] | undefined = _.get(thresholds, targetPath)
         const actualControlIds: string[] | undefined = _.get(controlIdMap, targetPath)

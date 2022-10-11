@@ -13,6 +13,15 @@ const MAX_SEARCH_RESULTS = 5
 const prompt = promptSync()
 
 export default class CreateAttestations extends Command {
+    static usage = 'attest create -o <attestation-file> [-i <hdf-json> -t <json | xlsx | yml | yaml>]'
+
+    static description = 'Create attestation files for use with `saf attest apply`'
+
+    static examples = [
+      'saf attest create -o attestation.json -i hdf.json',
+      'saf attest create -o attestation.xlsx -t xlsx',
+    ]
+
     static flags = {
       help: Flags.help({char: 'h'}),
       input: Flags.string({char: 'i', description: '(optional) An input HDF file to search for controls'}),

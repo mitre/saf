@@ -1,7 +1,7 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {ASFFResults as Mapper} from '@mitre/hdf-converters'
-import {checkSuffix} from '../../utils/global'
+import {checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
 import AWS from 'aws-sdk'
@@ -13,6 +13,8 @@ import {createWinstonLogger} from '../../utils/logging'
 const API_MAX_RESULTS = 100
 
 export default class ASFF2HDF extends Command {
+  static usage = 'convert asff2hdf -o <hdf-output-folder> [-h] (-i <asff-json> [--securityhub <standard-json>]... | -a -r <region> [-I | -C <certificate>] [-t <target>]) [-L info|warn|debug|verbose]'
+
   static description =
     'Translate a AWS Security Finding Format JSON into a Heimdall Data Format JSON file(s)';
 
@@ -59,7 +61,7 @@ export default class ASFF2HDF extends Command {
         } else if ('Controls' in convertedJson) {
           throw new Error('Invalid ASFF findings format - a standards standards was passed to --input instead of --securityhub')
         } else {
-          throw new Error('Invalid ASFF findings format - unknown input type')
+          checkInput({data: data, filename: flags.input}, 'asff', 'AWS Security Finding Format JSON')
         }
       } catch (error) {
         const splitLines = data.split('\n')
@@ -79,7 +81,7 @@ export default class ASFF2HDF extends Command {
 
       // If we've been passed any Security Standards JSONs
       if (flags.securityhub) {
-        securityhub = flags.securityhub.map(file =>
+        securityhub = flags.securityhub.map((file: string) =>
           fs.readFileSync(file, 'utf8'),
         )
       }
@@ -106,7 +108,7 @@ export default class ASFF2HDF extends Command {
       // Filter by target name
       if (flags.target) {
         filters = {
-          Id: flags.target.map(target => {
+          Id: flags.target.map((target: string) => {
             return {Value: target, Comparison: 'PREFIX'}
           }),
         }

@@ -1,12 +1,12 @@
 import {IonChannelAPIMapper, IonChannelMapper} from '@mitre/hdf-converters'
 import {Command, Flags} from '@oclif/core'
-import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
+import {checkInput, checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import {createWinstonLogger} from '../../utils/logging'
 import fs from 'fs'
 import path from 'path'
 
 export default class IonChannel2HDF extends Command {
-  static usage = 'convert ionchannel2hdf -i, --input <ionchannel-results-json> -a, --apiKey -t, --team <team-name> -o, --output <output-folder> --raw -p, --project <project-name> -A, --allProjects (true/false)';
+  static usage = 'convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json> | -a <api-key> -t <team-name> [--raw ] [-p <project>] [-A ]) [-L info|warn|debug|verbose]'
 
   static description =
     'Pull and translate SBOM data from Ion Channel into Heimdall Data Format';
@@ -118,6 +118,10 @@ export default class IonChannel2HDF extends Command {
       logger.debug('Processing input files')
       fs.mkdirSync(flags.output)
       for (const filename of flags.input) {
+        // Check for correct input type
+        const data = fs.readFileSync(filename, 'utf8')
+        checkInput({data: data, filename: filename}, 'ionchannel', 'IonChannel JSON')
+
         logger.debug(`Processing...${filename}`)
         fs.writeFileSync(
           path.join(
@@ -125,7 +129,7 @@ export default class IonChannel2HDF extends Command {
             checkSuffix(convertFullPathToFilename(filename)),
           ),
           JSON.stringify(
-            (new IonChannelMapper(fs.readFileSync(filename, 'utf8'))).toHdf(),
+            (new IonChannelMapper(data)).toHdf(),
           ),
         )
       }

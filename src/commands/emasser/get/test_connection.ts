@@ -1,9 +1,9 @@
 import colorize from 'json-colorizer';
 import {Command, Flags} from "@oclif/core"
-import { ApiConnection } from '../../../emasscommands/apiConnection';
+import { ApiConnection } from '../../../utils/emasser/apiConnection';
 import { TestApi } from '@mitre/emass_client';
-import { outputFormat } from '../../../emasscommands/outputFormatter';
-import { outputError } from '../../../emasscommands/outputError';
+import { outputFormat } from '../../../utils/emasser/outputFormatter';
+import { outputError } from '../../../utils/emasser/outputError';
 
 export default class EmasserGetTestConnection extends Command {
 

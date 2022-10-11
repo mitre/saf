@@ -1,10 +1,10 @@
 import colorize from 'json-colorizer';
 import {Command, Flags} from "@oclif/core"
-import { ApiConnection } from "../../../emasscommands/apiConnection"
+import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { SystemsApi } from '@mitre/emass_client';
-import { outputFormat } from '../../../emasscommands/outputFormatter';
-import { outputError } from '../../../emasscommands/outputError';
-import { getFlagsForEndpoint } from '../../../emasscommands/utilities';
+import { outputFormat } from '../../../utils/emasser/outputFormatter';
+import { outputError } from '../../../utils/emasser/outputError';
+import { getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetSystem extends Command {
 
