@@ -4,6 +4,7 @@ import fs from 'fs'
 import {calculateCompliance, extractControlSummariesBySeverity, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 import _ from 'lodash'
 import {checkSuffix} from '../../utils/global'
+import { readFileURI } from '../../utils/io'
 
 export default class HDF2Condensed extends Command {
   static usage = 'convert hdf2condensed -i <hdf-scan-results-json> -o <condensed-json> [-h]'
@@ -21,7 +22,7 @@ export default class HDF2Condensed extends Command {
   async run() {
     const {flags} = await this.parse(HDF2Condensed)
     const thresholds: Record<string, Record<string, number>> = {}
-    const parsedExecJSON = convertFileContextual(fs.readFileSync(flags.input, 'utf8'))
+    const parsedExecJSON = convertFileContextual(await readFileURI(flags.input, 'utf8'))
     const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
     const overallStatusCounts = extractStatusCounts(parsedProfile)
     const overallCompliance = calculateCompliance(overallStatusCounts)

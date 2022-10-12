@@ -8,6 +8,7 @@ import Mustache from 'mustache'
 import {CKLMetadata} from '../../types/checklist'
 import {convertFullPathToFilename, getProfileInfo} from '../../utils/global'
 import {getDetails} from '../../utils/checklist'
+import { readFileURI } from '../../utils/io'
 
 export default class HDF2CKL extends Command {
   static usage = 'convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [-H <hostname>] [-F <fqdn>] [-M <mac-address>] [-I <ip-address>]'
@@ -29,7 +30,7 @@ export default class HDF2CKL extends Command {
 
   async run() {
     const {flags} = await this.parse(HDF2CKL)
-    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf8')))
+    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(await readFileURI(flags.input, 'utf8')))
     const profileName = contextualizedEvaluation.data.profiles[0].name
     const controls = contextualizedEvaluation.contains.flatMap(profile => profile.contains) || []
     let cklData = {}
@@ -55,7 +56,7 @@ export default class HDF2CKL extends Command {
     }
 
     if (flags.metadata) {
-      const cklMetadataInput: CKLMetadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf8'))
+      const cklMetadataInput: CKLMetadata = JSON.parse(await readFileURI(flags.metadata, 'utf8'))
       for (const field in cklMetadataInput) {
         if (typeof cklMetadata[field] === 'string' || typeof cklMetadata[field] === 'object') {
           cklMetadata[field] = cklMetadataInput[field]

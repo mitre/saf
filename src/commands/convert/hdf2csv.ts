@@ -6,6 +6,7 @@ import ObjectsToCsv from 'objects-to-csv'
 import {ControlSetRows} from '../../types/csv'
 import {convertRow, csvExportFields} from '../../utils/csv'
 import {convertFullPathToFilename} from '../../utils/global'
+import { readFileURI } from '../../utils/io'
 
 export default class HDF2CSV extends Command {
   static usage = 'convert hdf2csv -i <hdf-scan-results-json> -o <output-csv> [-h] [-f <csv-fields>] [-t]'
@@ -29,7 +30,9 @@ export default class HDF2CSV extends Command {
 
   async run() {
     const {flags} = await this.parse(HDF2CSV)
-    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf8')))
+    const inputFile = await readFileURI(flags.input)
+
+    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(inputFile))
 
     // Convert all controls from a file to ControlSetRows
     let rows: ControlSetRows = this.convertRows(contextualizedEvaluation, convertFullPathToFilename(flags.input), flags.fields.split(','))

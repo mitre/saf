@@ -1,6 +1,7 @@
 import {Command, Flags} from '@oclif/core'
 import {ExecJSON} from 'inspecjs'
 import fs from 'fs'
+import { readFileURI } from '../../../utils/io'
 
 export default class WriteTarget extends Command {
     static usage = 'supplement target write -i <input-hdf-json> (-f <input-target-json> | -d <target-json>) [-o <output-hdf-json>]'
@@ -25,13 +26,13 @@ export default class WriteTarget extends Command {
     async run() {
       const {flags} = await this.parse(WriteTarget)
 
-      const input: ExecJSON.Execution & {target?: unknown} = JSON.parse(fs.readFileSync(flags.input, 'utf8'))
+      const input: ExecJSON.Execution & {target?: unknown} = JSON.parse(await readFileURI(flags.input, 'utf8'))
       const output: string = flags.output || flags.input
 
       let target: unknown
       if (flags.targetFile) {
         try {
-          target = JSON.parse(fs.readFileSync(flags.targetFile, 'utf8'))
+          target = JSON.parse(await readFileURI(flags.targetFile, 'utf8'))
         } catch (error: unknown) {
           throw new Error(`Couldn't parse target data: ${error}`)
         }

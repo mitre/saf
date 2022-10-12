@@ -4,6 +4,7 @@ import {ASFFResults as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
+import { readFileURI } from '../../utils/io'
 
 export default class Prowler2HDF extends Command {
   static usage = 'convert prowler2hdf -i <prowler-finding-json> -o <hdf-output-folder> [-h]'
@@ -20,7 +21,7 @@ export default class Prowler2HDF extends Command {
 
   async run() {
     const {flags} = await this.parse(Prowler2HDF)
-    const data = fs.readFileSync(flags.input, 'utf8')
+    const data = await readFileURI(flags.input, 'utf8')
     checkInput({data: data, filename: flags.input}, 'asff', 'Prowler-derived AWS Security Finding Format results')
     const converter = new Mapper(data)
     const results = converter.toHdf()

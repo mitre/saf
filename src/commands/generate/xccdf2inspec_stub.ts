@@ -8,6 +8,7 @@ import path from 'path'
 import _ from 'lodash'
 import YAML from 'yaml'
 import {CciNistMappingData} from '@mitre/hdf-converters'
+import { readFileURI } from '../../utils/io'
 
 export default class XCCDF2InSpec extends Command {
   static usage = 'generate xccdf2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-s] [-r | -S] [-l <line-length>] [-e]'
@@ -44,14 +45,14 @@ export default class XCCDF2InSpec extends Command {
     // Read metadata file if passed
     if (flags.metadata) {
       if (fs.existsSync(flags.metadata)) {
-        metadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf8'))
+        metadata = JSON.parse(await readFileURI(flags.metadata, 'utf8'))
       } else {
         throw new Error('Passed metadata file does not exist')
       }
     }
 
     // Read XCCDF file
-    const parsedXML: DisaStig = convertEncodedXmlIntoJson(fs.readFileSync(flags.input, 'utf8'))
+    const parsedXML: DisaStig = convertEncodedXmlIntoJson(await readFileURI(flags.input, 'utf8'))
     // Extract groups (these contain controls)
     const groups = parsedXML.Benchmark.Group
     // All of our extracted controls to be converted into Ruby/InSpec code

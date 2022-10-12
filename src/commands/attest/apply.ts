@@ -6,6 +6,7 @@ import yaml from 'yaml'
 import fs from 'fs'
 import path from 'path'
 import {convertFullPathToFilename} from '../../utils/global'
+import { readFileURI } from '../../utils/io'
 
 export default class ApplyAttestation extends Command {
     static usage = 'attest apply -i <input-hdf-json>... <attestation>... -o <output-hdf-path>'
@@ -32,7 +33,7 @@ export default class ApplyAttestation extends Command {
       for (const inputFile of flags.input) {
         let inputData
         try {
-          inputData = JSON.parse(fs.readFileSync(inputFile, 'utf8'))
+          inputData = JSON.parse(await readFileURI(inputFile, 'utf8') as s)
           if (Array.isArray(inputData) && inputData.length > 0 && _.get(inputData, '[0].control_id')) {
             // We have an attestations JSON
             attestations.push(...inputData)
@@ -48,10 +49,10 @@ export default class ApplyAttestation extends Command {
             process.exit(1)
           }
         } catch {
-          inputData = fs.readFileSync(inputFile, 'utf8')
+          inputData = await readFileURI(inputFile, 'utf8')
           if (inputFile.toLowerCase().endsWith('xlsx')) {
             // We have a spreadsheet
-            attestations.push(...(await parseXLSXAttestations(fs.readFileSync(inputFile, null))))
+            attestations.push(...(await parseXLSXAttestations(await readFileURI(inputFile, 'binary') as unknown as Uint8Array)))
           } else if (inputFile.toLowerCase().endsWith('yml') || inputFile.toLowerCase().endsWith('yaml')) {
             // We have a YAML
             attestations.push(...yaml.parse(inputData))

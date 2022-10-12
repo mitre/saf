@@ -1,6 +1,7 @@
 import {Command, Flags} from '@oclif/core'
 import {ExecJSON} from 'inspecjs'
 import fs from 'fs'
+import { readFileURI } from '../../../utils/io'
 
 export default class WritePassthrough extends Command {
     static usage = 'supplement passthrough write -i <input-hdf-json> (-f <input-passthrough-json> | -d <passthrough-json>) [-o <output-hdf-json>]'
@@ -25,13 +26,13 @@ export default class WritePassthrough extends Command {
     async run() {
       const {flags} = await this.parse(WritePassthrough)
 
-      const input: ExecJSON.Execution & {passthrough?: unknown} = JSON.parse(fs.readFileSync(flags.input, 'utf8'))
+      const input: ExecJSON.Execution & {passthrough?: unknown} = JSON.parse(await readFileURI(flags.input, 'utf8'))
       const output: string = flags.output || flags.input
 
       let passthrough: unknown
       if (flags.passthroughFile) {
         try {
-          passthrough = JSON.parse(fs.readFileSync(flags.passthroughFile, 'utf8'))
+          passthrough = JSON.parse(await readFileURI(flags.passthroughFile, 'utf8'))
         } catch (error: unknown) {
           throw new Error(`Couldn't parse passthrough data: ${error}`)
         }

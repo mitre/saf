@@ -3,6 +3,7 @@ import fs from 'fs'
 import {SnykResults as Mapper} from '@mitre/hdf-converters'
 import _ from 'lodash'
 import {checkInput, checkSuffix} from '../../utils/global'
+import { readFileURI } from '../../utils/io'
 
 export default class Snyk2HDF extends Command {
   static usage = 'convert snyk2hdf -i <snyk-json> -o <hdf-scan-results-json> [-h]'
@@ -21,7 +22,7 @@ export default class Snyk2HDF extends Command {
     const {flags} = await this.parse(Snyk2HDF)
 
     // Check for correct input type
-    const data = fs.readFileSync(flags.input, 'utf8')
+    const data = await readFileURI(flags.input, 'utf8')
     checkInput({data: data, filename: flags.input}, 'snyk', 'Snyk results JSON')
 
     const converter = new Mapper(data)

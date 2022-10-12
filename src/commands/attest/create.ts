@@ -8,6 +8,7 @@ import promptSync from 'prompt-sync'
 import {default as files} from '../../resources/files.json'
 import {dataURLtoU8Array} from '../../utils/global'
 import yaml from 'yaml'
+import { readFileURI } from '../../utils/io'
 
 const MAX_SEARCH_RESULTS = 5
 const prompt = promptSync()
@@ -70,7 +71,7 @@ export default class CreateAttestations extends Command {
       const attestations: Attestation[] = []
 
       if (flags.input) {
-        const evaluation = JSON.parse(fs.readFileSync(flags.input, 'utf8')) as ExecJSON.Execution
+        const evaluation = JSON.parse(await readFileURI(flags.input, 'utf8')) as ExecJSON.Execution
         const search = new AccurateSearch()
         const controls: Record<string, ExecJSON.Control> = {}
         for (const profile of evaluation.profiles) {

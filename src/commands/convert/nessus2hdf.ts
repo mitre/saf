@@ -3,6 +3,7 @@ import fs from 'fs'
 import {NessusResults as Mapper} from '@mitre/hdf-converters'
 import _ from 'lodash'
 import {checkInput, checkSuffix} from '../../utils/global'
+import { readFileURI } from '../../utils/io'
 
 export default class Nessus2HDF extends Command {
   static usage = 'convert nessus2hdf -i <nessus-xml> -o <hdf-scan-results-json> [-h]'
@@ -21,7 +22,7 @@ export default class Nessus2HDF extends Command {
     const {flags} = await this.parse(Nessus2HDF)
 
     // Check for correct input type
-    const data = fs.readFileSync(flags.input, 'utf8')
+    const data = await readFileURI(flags.input, 'utf8')
     checkInput({data: data, filename: flags.input}, 'nessus', 'Nessus XML results file')
 
     const converter = new Mapper(data)

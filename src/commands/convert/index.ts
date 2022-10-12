@@ -28,7 +28,7 @@ export default class Convert extends Command {
   }
 
   static getFlagsForInputFile(path: string) {
-    if (path) {
+    if (path && !path.includes('://')) {
       Convert.detectedType = fingerprint({data: fs.readFileSync(path, 'utf8'), filename: convertFullPathToFilename(path)})
       switch (Convert.detectedType) {
       case 'asff':

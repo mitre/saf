@@ -7,6 +7,7 @@ import _ from 'lodash'
 import {ThresholdValues} from '../../types/threshold'
 import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject, statusSeverityPaths, totalMax, totalMin} from '../../utils/threshold'
 import {expect} from 'chai'
+import { readFileURI } from '../../utils/io'
 
 export default class Threshold extends Command {
   static usage = 'validate threshold -i <hdf-json> [-h] [-T <flattened-threshold-json> | -F <template-file>]'
@@ -36,7 +37,7 @@ export default class Threshold extends Command {
 
       thresholds = flat.unflatten(toUnpack)
     } else if (flags.templateFile) {
-      const parsed = YAML.parse(fs.readFileSync(flags.templateFile, 'utf8'))
+      const parsed = YAML.parse(await readFileURI(flags.templateFile, 'utf8'))
       thresholds = Object.values(parsed).every(key => typeof key === 'number') ? flat.unflatten(parsed) : parsed
     } else {
       console.log('Please provide an inline compliance template or a compliance file.')
@@ -44,7 +45,7 @@ export default class Threshold extends Command {
       return
     }
 
-    const parsedExecJSON = convertFileContextual(fs.readFileSync(flags.input, 'utf8'))
+    const parsedExecJSON = convertFileContextual(await readFileURI(flags.input, 'utf8'))
     const overallStatusCounts = extractStatusCounts(parsedExecJSON.contains[0] as ContextualizedProfile)
 
     if (thresholds.compliance) {

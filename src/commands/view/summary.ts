@@ -6,6 +6,7 @@ import {calculateCompliance, extractStatusCounts, renameStatusName, severityTarg
 import _ from 'lodash'
 import flat from 'flat'
 import {convertFullPathToFilename} from '../../utils/global'
+import { readFileURI } from '../../utils/io'
 
 export default class Summary extends Command {
   static aliases = ['summary']
@@ -29,9 +30,15 @@ export default class Summary extends Command {
     const complianceScores: Record<string, number[]> = {}
 
     const execJSONs: Record<string, ContextualizedEvaluation> = {}
-    flags.input.forEach((file: string) => {
-      execJSONs[file] = convertFileContextual(fs.readFileSync(file, 'utf8')) as ContextualizedEvaluation
+    
+    const parsedFiles = await Promise.all(flags.input.map(async (file) => {
+      return readFileURI(file, 'utf8')
+    }))
+
+    parsedFiles.forEach((file: string, index) => {
+      execJSONs[file] = convertFileContextual(parsedFiles[index]) as ContextualizedEvaluation
     })
+
     Object.entries(execJSONs).forEach(([, parsedExecJSON]) => {
       const summary: Record<string, Record<string, number>> = {}
       const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile

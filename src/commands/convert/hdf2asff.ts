@@ -7,6 +7,7 @@ import AWS from 'aws-sdk'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import _ from 'lodash'
 import {BatchImportFindingsRequestFindingList} from 'aws-sdk/clients/securityhub'
+import { readFileURI } from '../../utils/io'
 
 export default class HDF2ASFF extends Command {
   static usage = 'convert hdf2asff -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] (-u [-I -C <certificate>] | [-o <asff-output-folder>])'
@@ -31,7 +32,7 @@ export default class HDF2ASFF extends Command {
   async run() {
     const {flags} = await this.parse(HDF2ASFF)
 
-    const converted = new Mapper(JSON.parse(fs.readFileSync(flags.input, 'utf8')), {
+    const converted = new Mapper(JSON.parse(await readFileURI(flags.input, 'utf8')), {
       awsAccountId: flags.accountId,
       region: flags.region,
       regionAttribute: flags.specifyRegionAttribute,
@@ -69,7 +70,7 @@ export default class HDF2ASFF extends Command {
         httpOptions: {
           agent: new https.Agent({
             rejectUnauthorized: !flags.insecure,
-            ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf8') : undefined,
+            ca: flags.certificate ? await readFileURI(flags.certificate, 'utf8') : undefined,
           }),
         },
       })

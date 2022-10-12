@@ -4,6 +4,7 @@ import {checkInput, checkSuffix, convertFullPathToFilename} from '../../utils/gl
 import {createWinstonLogger} from '../../utils/logging'
 import fs from 'fs'
 import path from 'path'
+import { readFileURI } from '../../utils/io'
 
 export default class IonChannel2HDF extends Command {
   static usage = 'convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json> | -a <api-key> -t <team-name> [--raw ] [-p <project>] [-A ]) [-L info|warn|debug|verbose]'
@@ -119,7 +120,7 @@ export default class IonChannel2HDF extends Command {
       fs.mkdirSync(flags.output)
       for (const filename of flags.input) {
         // Check for correct input type
-        const data = fs.readFileSync(filename, 'utf8')
+        const data = await readFileURI(filename, 'utf8')
         checkInput({data: data, filename: filename}, 'ionchannel', 'IonChannel JSON')
 
         logger.debug(`Processing...${filename}`)

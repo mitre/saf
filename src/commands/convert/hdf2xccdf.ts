@@ -19,7 +19,7 @@ export default class HDF2XCCDF extends Command {
   async run() {
     const {flags} = await this.parse(HDF2XCCDF)
 
-    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'), files['xccdfTemplate.xml'].data)
+    const converter = new Mapper(await readFileURI(flags.input, 'utf8'), files['xccdfTemplate.xml'].data)
     fs.writeFileSync(flags.output, converter.toXCCDF())
   }
 }

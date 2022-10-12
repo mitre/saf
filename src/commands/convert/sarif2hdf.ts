@@ -2,6 +2,7 @@ import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {SarifMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
+import { readFileURI } from '../../utils/io'
 
 export default class Sarif2HDF extends Command {
   static usage = 'convert sarif2hdf -i <sarif-json> -o <hdf-scan-results-json> [-h]'
@@ -20,7 +21,7 @@ export default class Sarif2HDF extends Command {
     const {flags} = await this.parse(Sarif2HDF)
 
     // Check for correct input type
-    const data = fs.readFileSync(flags.input, 'utf8')
+    const data = await readFileURI(flags.input, 'utf8')
     checkInput({data: data, filename: flags.input}, 'sarif', 'SARIF JSON')
 
     const converter = new Mapper(data)
