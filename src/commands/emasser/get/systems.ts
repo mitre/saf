@@ -4,7 +4,8 @@ import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { SystemsApi } from '@mitre/emass_client';
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { outputError } from '../../../utils/emasser/outputError';
-import { getFlagsForEndpoint } from '../../../utils/emasser/utilities' ;
+import { getFlagsForEndpoint, FlagOptions } from '../../../utils/emasser/utilities' ;
+
 
 export default class EmasserGetSystems extends Command {
 
@@ -16,20 +17,24 @@ export default class EmasserGetSystems extends Command {
   
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Systems endpoint'}),
-    ...getFlagsForEndpoint(process.argv) as any,
+    ...getFlagsForEndpoint(process.argv) as FlagOptions,
   }
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserGetSystems)
-    const apiCxn = new ApiConnection();
-    const getSystems = new SystemsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
-  console.log('FLAGS: ', flags.includePackage,flags.registrationType,flags.ditprId,flags.coamsId,
-    flags.policy,flags.includeDitprMetrics,flags.includeDecommissioned,flags.reportsForScorecard);
+    try {
+      const {flags} = await this.parse(EmasserGetSystems)
+      const apiCxn = new ApiConnection();
+      const getSystems = new SystemsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
+    // console.log('FLAGS: ', flags.includePackage,flags.registrationType,flags.ditprId,flags.coamsId,
+    //   flags.policy,flags.includeDitprMetrics,flags.includeDecommissioned,flags.reportsForScorecard);
 
-    // Order is important here
-    getSystems.getSystems(flags.includePackage,flags.registrationType,flags.ditprId,flags.coamsId,
-      flags.policy,flags.includeDitprMetrics,flags.includeDecommissioned,flags.reportsForScorecard).then((data:any) => {
-      console.log(colorize(outputFormat(data.data)));
-    }).catch((error:any) => console.error(colorize(outputError(error))));
+      // Order is important here
+      getSystems.getSystems(flags.includePackage,flags.registrationType,flags.ditprId,flags.coamsId,
+        flags.policy,flags.includeDitprMetrics,flags.includeDecommissioned,flags.reportsForScorecard).then((data:any) => {
+        console.log(colorize(outputFormat(data.data)));
+      }).catch((error:any) => console.error(colorize(outputError(error))));
+    } catch (error: any) {
+      console.error(error.name+": "+error.message);
+    }
   }
 }

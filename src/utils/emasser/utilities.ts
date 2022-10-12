@@ -1,6 +1,8 @@
 import _ from 'lodash'
 import {Flags} from "@oclif/core"
 import * as emasser from '@mitre/emass_client'
+import { integer } from 'aws-sdk/clients/cloudfront';
+import { BooleanFlag, OptionFlag } from '@oclif/core/lib/interfaces';
 
 interface CliArgs {
   requestType: string;
@@ -8,7 +10,44 @@ interface CliArgs {
   argument: string;
 }
 
-export function getFlagsForEndpoint(argv: string[]) {
+export interface FlagOptions {
+  systemId?: OptionFlag<number>;
+  poamId?: OptionFlag<number>;
+  milestoneId?: OptionFlag<number>;
+  workflowInstanceId?: OptionFlag<number>;
+  includeInactive?: OptionFlag<number|undefined>;
+  includeComments?: OptionFlag<number|undefined>;
+  pageIndex?: OptionFlag<number|undefined>;
+  includePackage?: BooleanFlag<boolean|undefined>;
+  includeDitprMetrics?: BooleanFlag<boolean|undefined>;
+  includeDecommissioned?: BooleanFlag<boolean|undefined>;
+  reportsForScorecard?: BooleanFlag<boolean|undefined>;
+  acronyms?: BooleanFlag<boolean|undefined>;
+  latestOnly?: BooleanFlag<boolean|undefined>;
+  systemOnly?: BooleanFlag<boolean|undefined>;
+  compress?: BooleanFlag<boolean|undefined>;
+  policy?: OptionFlag<string|undefined>;
+  registrationType?: OptionFlag<string|undefined>;
+  ditprId?: OptionFlag<string|undefined>;
+  coamsId?: OptionFlag<string|undefined>;
+  roleCategory?: OptionFlag<string>;
+  role?: OptionFlag<string>;
+  controlAcronyms?: OptionFlag<string|undefined>;
+  ccis?: OptionFlag<string|undefined>;
+  sinceDate?: OptionFlag<string|any>;
+  scheduledCompletionDateStart?: OptionFlag<string|undefined>;
+  scheduledCompletionDateEnd?: OptionFlag<string|undefined>;
+  filename?: OptionFlag<string|any>;
+  status?: OptionFlag<string|undefined>;
+  cci?: OptionFlag<string>;
+  testedBy?: OptionFlag<string>;
+  testDate?: OptionFlag<string>;
+  description?: OptionFlag<string|any>;
+  complianceStatus?: OptionFlag<string>;
+  scheduledCompletionDate?: OptionFlag<string|undefined>;
+}
+
+export function getFlagsForEndpoint(argv: string[]): FlagOptions {
   let args: CliArgs = getArgs(argv);
 
   if (args.requestType === 'get') {
@@ -47,7 +86,7 @@ export function getFlagsForEndpoint(argv: string[]) {
     } else if (args.endpoint === 'cac') {
       return {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
-        controlAcronyms: Flags.integer({char: "c", description: "The system acronym(s) e.g \"AC-1, AC-2\"", required: false})
+        controlAcronyms: Flags.string({char: "a", description: "The system acronym(s) e.g \"AC-1, AC-2\"", required: false})
       }
     } else if (args.endpoint === 'pac') {
       return {
@@ -55,7 +94,7 @@ export function getFlagsForEndpoint(argv: string[]) {
       }
     } else if (args.endpoint === 'cmmc') {
       return {
-        sinceDate: Flags.integer({char: "s", description: "The CMMC date. Unix date format", required: true}),
+        sinceDate: Flags.string({char: "d", description: "The CMMC date. Unix date format", required: true}),
       }
     } else if (args.endpoint === 'test_results') {
       return {
@@ -101,7 +140,7 @@ export function getFlagsForEndpoint(argv: string[]) {
     } else if (args.endpoint === 'milestones' && args.argument === 'byPoamId') {
       return {
         systemId: Flags.integer({char: "s", description: "Unique system identifier", required: true}),
-        poamId: Flags.string({char: "p", description: "Unique poam identifier", required: true}),
+        poamId: Flags.integer({char: "p", description: "Unique poam identifier", required: true}),
         scheduledCompletionDateStart: Flags.string({char: "t", description: "Unix time format (e.g. 1499644800)", required: false}),
         scheduledCompletionDateEnd: Flags.string({char: "e", description: "Unix time format (e.g. 1499990400)", required: false}),
       }
@@ -244,7 +283,7 @@ export function getExamplesForEndpoint(argv: string[]): string[] {
   return [''];
 }
 
-// Supporting Functions
+// Supporting Function
 function getArgs(argv: string[], endpointValue?: string ): CliArgs {
   const requestTypeIndex = argv.findIndex(arg => (arg === 'get' || arg === 'post' || arg === 'put'))
   return {

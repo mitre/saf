@@ -1,6 +1,5 @@
 import * as emasser from '@mitre/emass_client'
 import _ from 'lodash'
-import {Flags} from "@oclif/core"
 
 export function getFlags(requestType: string): {name: string}[] {
   const flags: string[] = []
@@ -61,7 +60,6 @@ export function getFlags(requestType: string): {name: string}[] {
   //return [{name: 'system'}]
 }
 
-
 export function getFlagsForEndpoint(argv: string[]) {
   const requestTypeIndex = argv.findIndex(arg => (arg === 'get' || arg === 'post'))
   const requestType = argv[requestTypeIndex]
@@ -115,7 +113,6 @@ export function getFlagsForEndpoint(argv: string[]) {
 
   return {}
 }
-
 
 // My supporting methods
 export function getEndpointCommand(argv: string[]) {

@@ -24,8 +24,8 @@ export class ApiConfig {
       if (error.code === 'ENOENT') {
         this.envConfig = {};
         // File probably does not exist
-        console.error('Unable to read configuration file `.env`!');
-        //console.log('Falling back to environment or undefined values!');
+        // console.error('Unable to read configuration file `.env`!');
+        throw new Error("A configuration file (.env) is required containing the expected environmental variable.");
       } else {
         throw error;
       }
