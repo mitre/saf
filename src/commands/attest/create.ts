@@ -1,5 +1,6 @@
 import {Command, Flags} from '@oclif/core'
 import {Attestation} from '@mitre/hdf-converters'
+import fs from 'fs'
 import AccurateSearch from 'accurate-search'
 import XlsxPopulate from 'xlsx-populate'
 import {ExecJSON} from 'inspecjs'
@@ -7,7 +8,6 @@ import promptSync from 'prompt-sync'
 import {default as files} from '../../resources/files.json'
 import {dataURLtoU8Array} from '../../utils/global'
 import yaml from 'yaml'
-import {readFileURI, writeFileURI} from '../../utils/io'
 
 const MAX_SEARCH_RESULTS = 5
 const prompt = promptSync()
@@ -70,7 +70,7 @@ export default class CreateAttestations extends Command {
       const attestations: Attestation[] = []
 
       if (flags.input) {
-        const evaluation = JSON.parse(await readFileURI(flags.input, 'utf8')) as ExecJSON.Execution
+        const evaluation = JSON.parse(fs.readFileSync(flags.input, 'utf8')) as ExecJSON.Execution
         const search = new AccurateSearch()
         const controls: Record<string, ExecJSON.Control> = {}
         for (const profile of evaluation.profiles) {
@@ -107,7 +107,7 @@ export default class CreateAttestations extends Command {
 
       switch (flags.format) {
       case 'json': {
-        await writeFileURI(flags.output, JSON.stringify(attestations, null, 2))
+        fs.writeFileSync(flags.output, JSON.stringify(attestations, null, 2))
         break
       }
 
@@ -132,7 +132,7 @@ export default class CreateAttestations extends Command {
 
       case 'yaml':
       case 'yml': {
-        await writeFileURI(flags.output, yaml.stringify(attestations))
+        fs.writeFileSync(flags.output, yaml.stringify(attestations))
         break
       }
 
