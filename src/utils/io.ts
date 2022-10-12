@@ -3,11 +3,10 @@ import axios from 'axios'
 import AWS from 'aws-sdk'
 import {createWinstonLogger} from './logging'
 import winston from 'winston'
-import {Error} from 'aws-sdk/clients/s3'
 
 export async function readFileURI(uri: string, encoding: BufferEncoding, logger?: winston.Logger): Promise<string> {
   if (!logger) {
-    logger = createWinstonLogger('File IO', 'debug')
+    logger = createWinstonLogger('File IO', 'warn')
   }
 
   let parsedURI
@@ -16,7 +15,6 @@ export async function readFileURI(uri: string, encoding: BufferEncoding, logger?
     parsedURI = new URL(uri)
     logger.debug(`Parsed URI: ${uri} - Protocol is ${parsedURI.protocol}`)
   } catch {
-    logger.debug(`Failed to parse URI: ${uri}, treating as a file path`)
     return fs.readFileSync(uri, encoding)
   }
 
@@ -51,7 +49,7 @@ export async function readFileURI(uri: string, encoding: BufferEncoding, logger?
 
 export async function fileExistsURI(uri: string, logger?: winston.Logger): Promise<boolean> {
   if (!logger) {
-    logger = createWinstonLogger('io', 'info')
+    logger = createWinstonLogger('io', 'warn')
   }
 
   let parsedURI
@@ -60,7 +58,6 @@ export async function fileExistsURI(uri: string, logger?: winston.Logger): Promi
     parsedURI = new URL(uri)
     logger.debug(`Parsed URI: ${uri} - Protocol is ${parsedURI.protocol}`)
   } catch {
-    logger.debug(`Failed to parse URI: ${uri}, treating as a file path`)
     return fs.existsSync(uri)
   }
 
@@ -96,7 +93,7 @@ export async function fileExistsURI(uri: string, logger?: winston.Logger): Promi
 
 export async function folderExistsURI(uri: string, logger?: winston.Logger): Promise<boolean> {
   if (!logger) {
-    logger = createWinstonLogger('io', 'info')
+    logger = createWinstonLogger('io', 'warn')
   }
 
   let parsedURI
@@ -105,7 +102,6 @@ export async function folderExistsURI(uri: string, logger?: winston.Logger): Pro
     parsedURI = new URL(uri)
     logger.debug(`Parsed URI: ${uri} - Protocol is ${parsedURI.protocol}`)
   } catch {
-    logger.debug(`Failed to parse URI: ${uri}, treating as a file path`)
     return fs.existsSync(uri)
   }
 
@@ -120,7 +116,6 @@ export async function folderExistsURI(uri: string, logger?: winston.Logger): Pro
 
     try {
       await s3.listObjectsV2(s3Params).promise()
-      logger.debug('Finished check if folder exists in S3')
       return true
     } catch (error: any) {
       if (error.code === 'NotFound') {
@@ -137,7 +132,7 @@ export async function folderExistsURI(uri: string, logger?: winston.Logger): Pro
 
 export async function createFolderIfNotExists(path: string, logger?: winston.Logger): Promise<void> {
   if (!logger) {
-    logger = createWinstonLogger('File IO', 'debug')
+    logger = createWinstonLogger('File IO', 'warn')
   }
 
   let parsedURI
@@ -146,7 +141,6 @@ export async function createFolderIfNotExists(path: string, logger?: winston.Log
     parsedURI = new URL(path)
     logger.debug(`Parsed URI: ${path} - Protocol is ${parsedURI.protocol}`)
   } catch {
-    logger.debug(`Failed to parse URI: ${path}, treating as a local folder path`)
     if (!fs.existsSync(path)) {
       fs.mkdirSync(path)
     }
@@ -169,7 +163,7 @@ export async function createFolderIfNotExists(path: string, logger?: winston.Log
 
 export async function writeFileURI(uri: string, data: string, logger?: winston.Logger): Promise<void> {
   if (!logger) {
-    logger = createWinstonLogger('File IO', 'debug')
+    logger = createWinstonLogger('File IO', 'warn')
   }
 
   let parsedURI
@@ -178,7 +172,6 @@ export async function writeFileURI(uri: string, data: string, logger?: winston.L
     parsedURI = new URL(uri)
     logger.debug(`Parsed URI: ${uri} - Protocol is ${parsedURI.protocol}`)
   } catch {
-    logger.debug(`Failed to parse URI: ${uri}, treating as a file path`)
     return fs.writeFileSync(uri, data)
   }
 
