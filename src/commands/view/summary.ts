@@ -6,7 +6,7 @@ import {calculateCompliance, extractStatusCounts, renameStatusName, severityTarg
 import _ from 'lodash'
 import flat from 'flat'
 import {convertFullPathToFilename} from '../../utils/global'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class Summary extends Command {
   static aliases = ['summary']
@@ -30,8 +30,8 @@ export default class Summary extends Command {
     const complianceScores: Record<string, number[]> = {}
 
     const execJSONs: Record<string, ContextualizedEvaluation> = {}
-    
-    const parsedFiles = await Promise.all(flags.input.map(async (file) => {
+
+    const parsedFiles = await Promise.all(flags.input.map(async file => {
       return readFileURI(file, 'utf8')
     }))
 

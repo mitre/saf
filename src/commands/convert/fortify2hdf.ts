@@ -2,7 +2,7 @@ import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {FortifyMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix, checkInput} from '../../utils/global'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class Fortify2HDF extends Command {
   static usage = 'convert fortify2hdf -i <fortify-fvdl> -o <hdf-scan-results-json> [-h]'

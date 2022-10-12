@@ -1,7 +1,7 @@
 import {Command, Flags} from '@oclif/core'
 import {ExecJSON} from 'inspecjs'
 import fs from 'fs'
-import { readFileURI } from '../../../utils/io'
+import {readFileURI} from '../../../utils/io'
 
 export default class WriteTarget extends Command {
     static usage = 'supplement target write -i <input-hdf-json> (-f <input-target-json> | -d <target-json>) [-o <output-hdf-json>]'

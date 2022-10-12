@@ -3,7 +3,7 @@ import fs from 'fs'
 import {PrismaMapper as Mapper} from '@mitre/hdf-converters'
 import path from 'path'
 import _ from 'lodash'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class Prisma2HDF extends Command {
   static usage = 'convert prisma2hdf -i <prisma-cloud-csv> -o <hdf-output-folder> [-h]'

@@ -2,7 +2,7 @@ import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {FromHDFToXCCDFMapper as Mapper} from '@mitre/hdf-converters'
 import {default as files} from '../../resources/files.json'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class HDF2XCCDF extends Command {
   static usage = 'convert hdf2xccdf -i <hdf-scan-results-json> -o <output-xccdf-xml> [-h]'

@@ -6,7 +6,7 @@ import yaml from 'yaml'
 import fs from 'fs'
 import path from 'path'
 import {convertFullPathToFilename} from '../../utils/global'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class ApplyAttestation extends Command {
     static usage = 'attest apply -i <input-hdf-json>... <attestation>... -o <output-hdf-path>'

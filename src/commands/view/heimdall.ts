@@ -4,7 +4,7 @@ import fs from 'fs'
 import path from 'path'
 import open from 'open'
 import {getInstalledPath} from '../../utils/global'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class Heimdall extends Command {
   static aliases = ['heimdall']
@@ -39,7 +39,7 @@ export default class Heimdall extends Command {
         return
       }
 
-      const parsedFiles = await Promise.all(flags.files.map((file) => {
+      const parsedFiles = await Promise.all(flags.files.map(file => {
         return readFileURI(file, 'utf8')
       }))
 

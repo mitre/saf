@@ -8,7 +8,7 @@ import path from 'path'
 import _ from 'lodash'
 import YAML from 'yaml'
 import {CciNistMappingData} from '@mitre/hdf-converters'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class XCCDF2InSpec extends Command {
   static usage = 'generate xccdf2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-s] [-r | -S] [-l <line-length>] [-e]'

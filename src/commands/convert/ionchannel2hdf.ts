@@ -4,7 +4,7 @@ import {checkInput, checkSuffix, convertFullPathToFilename} from '../../utils/gl
 import {createWinstonLogger} from '../../utils/logging'
 import fs from 'fs'
 import path from 'path'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class IonChannel2HDF extends Command {
   static usage = 'convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json> | -a <api-key> -t <team-name> [--raw ] [-p <project>] [-A ]) [-L info|warn|debug|verbose]'

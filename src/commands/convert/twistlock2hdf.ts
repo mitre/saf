@@ -2,7 +2,7 @@ import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {TwistlockResults as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class Twistlock2HDF extends Command {
   static usage = 'convert twistlock2hdf -i <twistlock-json> -o <hdf-scan-results-json>'

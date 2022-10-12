@@ -2,7 +2,7 @@ import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {JfrogXrayMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class JfrogXray2HDF extends Command {
   static usage = 'convert jfrog_xray2hdf -i <jfrog-xray-json> -o <hdf-scan-results-json> [-h]'

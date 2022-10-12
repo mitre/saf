@@ -2,7 +2,7 @@ import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {ZapMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class Zap2HDF extends Command {
   static usage = 'convert zap2hdf -i <zap-json> -n <target-site-name> -o <hdf-scan-results-json> [-h]'

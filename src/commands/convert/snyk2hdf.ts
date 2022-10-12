@@ -3,7 +3,7 @@ import fs from 'fs'
 import {SnykResults as Mapper} from '@mitre/hdf-converters'
 import _ from 'lodash'
 import {checkInput, checkSuffix} from '../../utils/global'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class Snyk2HDF extends Command {
   static usage = 'convert snyk2hdf -i <snyk-json> -o <hdf-scan-results-json> [-h]'

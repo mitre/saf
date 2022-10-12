@@ -4,7 +4,7 @@ import {ASFFResults as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class Prowler2HDF extends Command {
   static usage = 'convert prowler2hdf -i <prowler-finding-json> -o <hdf-output-folder> [-h]'

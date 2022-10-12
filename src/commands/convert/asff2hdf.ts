@@ -8,7 +8,7 @@ import AWS from 'aws-sdk'
 import https from 'https'
 import {AwsSecurityFindingFilters} from 'aws-sdk/clients/securityhub'
 import {createWinstonLogger} from '../../utils/logging'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 // Should be no more than 100
 const API_MAX_RESULTS = 100
@@ -41,7 +41,7 @@ export default class ASFF2HDF extends Command {
   async run() {
     const {flags} = await this.parse(ASFF2HDF)
     const logger = createWinstonLogger('asff2hdf', flags.logLevel)
-    let securityhub: string[] | undefined;
+    let securityhub: string[] | undefined
 
     // Check if output folder already exists
     if (fs.existsSync(flags.output)) {

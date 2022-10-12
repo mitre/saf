@@ -1,7 +1,7 @@
 import {Command, Flags} from '@oclif/core'
 import {ExecJSON} from 'inspecjs'
 import fs from 'fs'
-import { readFileURI } from '../../../utils/io'
+import {readFileURI} from '../../../utils/io'
 
 export default class ReadPassthrough extends Command {
     static usage = 'supplement passthrough read -i <hdf-json> [-o <passthrough-json>]'

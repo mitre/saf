@@ -6,7 +6,7 @@ import ObjectsToCsv from 'objects-to-csv'
 import {ControlSetRows} from '../../types/csv'
 import {convertRow, csvExportFields} from '../../utils/csv'
 import {convertFullPathToFilename} from '../../utils/global'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class HDF2CSV extends Command {
   static usage = 'convert hdf2csv -i <hdf-scan-results-json> -o <output-csv> [-h] [-f <csv-fields>] [-t]'

@@ -2,7 +2,7 @@ import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {NetsparkerMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class Netsparker2HDF extends Command {
   static usage = 'convert netsparker2hdf -i <netsparker-xml> -o <hdf-scan-results-json> [-h]'

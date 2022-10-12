@@ -3,7 +3,7 @@ import fs from 'fs'
 import {NessusResults as Mapper} from '@mitre/hdf-converters'
 import _ from 'lodash'
 import {checkInput, checkSuffix} from '../../utils/global'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class Nessus2HDF extends Command {
   static usage = 'convert nessus2hdf -i <nessus-xml> -o <hdf-scan-results-json> [-h]'

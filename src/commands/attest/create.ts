@@ -8,7 +8,7 @@ import promptSync from 'prompt-sync'
 import {default as files} from '../../resources/files.json'
 import {dataURLtoU8Array} from '../../utils/global'
 import yaml from 'yaml'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 const MAX_SEARCH_RESULTS = 5
 const prompt = promptSync()

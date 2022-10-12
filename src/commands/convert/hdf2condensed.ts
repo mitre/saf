@@ -4,7 +4,7 @@ import fs from 'fs'
 import {calculateCompliance, extractControlSummariesBySeverity, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 import _ from 'lodash'
 import {checkSuffix} from '../../utils/global'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class HDF2Condensed extends Command {
   static usage = 'convert hdf2condensed -i <hdf-scan-results-json> -o <condensed-json> [-h]'

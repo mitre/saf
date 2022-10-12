@@ -5,7 +5,7 @@ import fs from 'fs'
 import YAML from 'yaml'
 import {ThresholdValues} from '../../types/threshold'
 import {calculateCompliance, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject} from '../../utils/threshold'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class GenerateThreshold extends Command {
   static usage = 'generate threshold -i <hdf-json> -o <threshold-yaml> [-h] [-e] [-c]'

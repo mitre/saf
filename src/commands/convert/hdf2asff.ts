@@ -7,7 +7,7 @@ import AWS from 'aws-sdk'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import _ from 'lodash'
 import {BatchImportFindingsRequestFindingList} from 'aws-sdk/clients/securityhub'
-import { readFileURI } from '../../utils/io'
+import {readFileURI} from '../../utils/io'
 
 export default class HDF2ASFF extends Command {
   static usage = 'convert hdf2asff -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] (-u [-I -C <certificate>] | [-o <asff-output-folder>])'
