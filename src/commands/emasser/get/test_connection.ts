@@ -4,6 +4,8 @@ import { ApiConnection } from '../../../utils/emasser/apiConnection';
 import { TestApi } from '@mitre/emass_client';
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { outputError } from '../../../utils/emasser/outputError';
+import { Test } from '@mitre/emass_client/dist/api';
+
 
 export default class EmasserGetTestConnection extends Command {
 
@@ -18,12 +20,11 @@ export default class EmasserGetTestConnection extends Command {
   }
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserGetTestConnection)
     const apiCxn = new ApiConnection();
     const getTestApi = new TestApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
     
-    getTestApi.testConnection().then((data:any) => {
-      console.log(colorize(outputFormat(data.data)));
+    getTestApi.testConnection().then((response: Test) => {
+      console.log(colorize(outputFormat(response)));
     }).catch((error:any) => console.error(colorize(outputError(error))));
   }
 }

@@ -5,6 +5,9 @@ import { SystemsApi } from '@mitre/emass_client';
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { outputError } from '../../../utils/emasser/outputError';
 import { getFlagsForEndpoint, FlagOptions } from '../../../utils/emasser/utilities' ;
+import { SystemsResponse } from '@mitre/emass_client/dist/api';
+
+
 
 
 export default class EmasserGetSystems extends Command {
@@ -28,8 +31,8 @@ export default class EmasserGetSystems extends Command {
 
       // Order is important here
       getSystems.getSystems(flags.includePackage,flags.registrationType,flags.ditprId,flags.coamsId,
-        flags.policy,flags.includeDitprMetrics,flags.includeDecommissioned,flags.reportsForScorecard).then((data:any) => {
-        console.log(colorize(outputFormat(data.data)));
+        flags.policy,flags.includeDitprMetrics,flags.includeDecommissioned,flags.reportsForScorecard).then((response: SystemsResponse) => {
+        console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } catch (error: any) {
       console.error(error.name+": "+error.message);

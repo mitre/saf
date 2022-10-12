@@ -1,7 +1,7 @@
 import colorize from 'json-colorizer';
 import {Command, Flags} from "@oclif/core"
 import { ApiConnection } from "../../../utils/emasser/apiConnection"
-import { TestResultsApi } from '@mitre/emass_client';
+import { TestResultsApi, Test } from '@mitre/emass_client';
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { outputError } from '../../../utils/emasser/outputError';
 import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
