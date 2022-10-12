@@ -44,7 +44,7 @@ export interface FlagOptions {
   testDate?: OptionFlag<string>;
   description?: OptionFlag<string|any>;
   complianceStatus?: OptionFlag<string>;
-  scheduledCompletionDate?: OptionFlag<string|undefined>;
+  scheduledCompletionDate?: OptionFlag<string|any>;
 }
 
 export function getFlagsForEndpoint(argv: string[]): FlagOptions {

@@ -4,7 +4,7 @@ import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { CMMCAssessmentsApi } from '@mitre/emass_client';
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { outputError } from '../../../utils/emasser/outputError';
-import { getFlagsForEndpoint } from '../../../utils/emasser/utilities';
+import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetCmmc extends Command {
 
@@ -16,7 +16,7 @@ export default class EmasserGetCmmc extends Command {
 
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET CMMC endpoint'}),
-    ...getFlagsForEndpoint(process.argv) as any,
+    ...getFlagsForEndpoint(process.argv) as FlagOptions,
   }
 
   async run(): Promise<void> {

@@ -25,8 +25,6 @@ export default class EmasserGetSystems extends Command {
       const {flags} = await this.parse(EmasserGetSystems)
       const apiCxn = new ApiConnection();
       const getSystems = new SystemsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
-    // console.log('FLAGS: ', flags.includePackage,flags.registrationType,flags.ditprId,flags.coamsId,
-    //   flags.policy,flags.includeDitprMetrics,flags.includeDecommissioned,flags.reportsForScorecard);
 
       // Order is important here
       getSystems.getSystems(flags.includePackage,flags.registrationType,flags.ditprId,flags.coamsId,

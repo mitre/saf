@@ -4,7 +4,10 @@ import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { POAMApi } from '@mitre/emass_client';
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { outputError } from '../../../utils/emasser/outputError';
-import { getDescriptionForEndpoint, getExamplesForEndpoint, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
+import { FlagOptions, 
+  getDescriptionForEndpoint,
+  getExamplesForEndpoint,
+  getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 
 export default class EmasserGetPoams extends Command {
@@ -17,7 +20,7 @@ export default class EmasserGetPoams extends Command {
 
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET POA&Ms endpoint'}),
-    ...getFlagsForEndpoint(process.argv) as any,
+    ...getFlagsForEndpoint(process.argv) as FlagOptions,
   }
 
   static args = [

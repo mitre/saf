@@ -3,7 +3,7 @@ import {Command, Flags} from "@oclif/core"
 import { TestResultsApi } from '@mitre/emass_client';
 import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
-import { getFlagsForEndpoint } from '../../../utils/emasser/utilities';
+import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 import { outputError } from '../../../utils/emasser/outputError';
 
 
@@ -17,7 +17,7 @@ export default class EmasserPostTestResults extends Command {
 
   static flags = {
     help: Flags.help({char: 'h', description: 'Post (add) test results to a system\'s Assessment Procedures (CCIs)'}),
-    ...getFlagsForEndpoint(process.argv) as any,
+    ...getFlagsForEndpoint(process.argv) as FlagOptions,
   }
   
   async run(): Promise<void> {
