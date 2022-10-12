@@ -1,8 +1,7 @@
 import {Command, Flags} from '@oclif/core'
-import fs from 'fs'
 import {NetsparkerMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
-import {readFileURI} from '../../utils/io'
+import {readFileURI, writeFileURI} from '../../utils/io'
 
 export default class Netsparker2HDF extends Command {
   static usage = 'convert netsparker2hdf -i <netsparker-xml> -o <hdf-scan-results-json> [-h]'
@@ -25,6 +24,6 @@ export default class Netsparker2HDF extends Command {
     checkInput({data: data, filename: flags.input}, 'netsparker', 'Netsparker XML results file')
 
     const converter = new Mapper(data)
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+    await writeFileURI(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

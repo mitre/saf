@@ -1,10 +1,9 @@
 import {Command, Flags} from '@oclif/core'
-import fs from 'fs'
 import {ASFFResults as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
-import {readFileURI} from '../../utils/io'
+import {createFolderIfNotExists, readFileURI, writeFileURI} from '../../utils/io'
 
 export default class Prowler2HDF extends Command {
   static usage = 'convert prowler2hdf -i <prowler-finding-json> -o <hdf-output-folder> [-h]'
@@ -27,12 +26,10 @@ export default class Prowler2HDF extends Command {
     const results = converter.toHdf()
 
     // Create output folder if not exists
-    if (!fs.existsSync(flags.output)) {
-      fs.mkdirSync(flags.output)
-    }
+    await createFolderIfNotExists(flags.output);
 
-    _.forOwn(results, (result, filename) => {
-      fs.writeFileSync(
+    _.forOwn(results, async (result, filename) => {
+      await writeFileURI(
         path.join(flags.output, checkSuffix(filename)),
         JSON.stringify(result),
       )

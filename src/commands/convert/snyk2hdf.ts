@@ -1,9 +1,8 @@
 import {Command, Flags} from '@oclif/core'
-import fs from 'fs'
 import {SnykResults as Mapper} from '@mitre/hdf-converters'
 import _ from 'lodash'
 import {checkInput, checkSuffix} from '../../utils/global'
-import {readFileURI} from '../../utils/io'
+import {readFileURI, writeFileURI} from '../../utils/io'
 
 export default class Snyk2HDF extends Command {
   static usage = 'convert snyk2hdf -i <snyk-json> -o <hdf-scan-results-json> [-h]'
@@ -29,10 +28,10 @@ export default class Snyk2HDF extends Command {
     const result = converter.toHdf()
     if (Array.isArray(result)) {
       for (const element of result) {
-        fs.writeFileSync(`${flags.output.replace(/.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
+        await writeFileURI(`${flags.output.replace(/.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
       }
     } else {
-      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(result))
+      await writeFileURI(checkSuffix(flags.output), JSON.stringify(result))
     }
   }
 }

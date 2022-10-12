@@ -4,6 +4,7 @@ import {processJSON, processOVAL, updateProfileUsingXCCDF} from '@mitre/inspec-o
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
+import {writeFileURI} from '../../utils/io'
 
 export default class GenerateDelta extends Command {
   static description = 'Update an existing InSpec profile in-place with new XCCDF metadata'
@@ -130,7 +131,7 @@ export default class GenerateDelta extends Command {
       fs.writeFileSync(path.join(existingProfileFolderPath, 'delta.json'), JSON.stringify(updatedResult.diff, null, 2))
       if (flags.report) {
         logger.debug('Writing report markdown file')
-        fs.writeFileSync(path.join(flags.report), updatedResult.markdown)
+        await writeFileURI(path.join(flags.report), updatedResult.markdown)
       }
     } else {
       logger.error('Could not generate delta because one or more of the following variables were not satisfied:')

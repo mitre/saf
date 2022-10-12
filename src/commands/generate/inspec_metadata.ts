@@ -1,6 +1,6 @@
 import {Command, Flags} from '@oclif/core'
-import fs from 'fs'
 import promptSync from 'prompt-sync'
+import {writeFileURI} from '../../utils/io'
 
 const prompt = promptSync()
 
@@ -26,6 +26,6 @@ export default class GenerateInSpecMetadata extends Command {
       license: prompt({ask: 'What is the license of the profile? '}),
       version: prompt({ask: 'What is the version of the profile? '}),
     }
-    fs.writeFileSync(flags.output, JSON.stringify(inspecMetadata))
+    await writeFileURI(flags.output, JSON.stringify(inspecMetadata))
   }
 }

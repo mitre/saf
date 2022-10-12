@@ -2,9 +2,8 @@ import {IonChannelAPIMapper, IonChannelMapper} from '@mitre/hdf-converters'
 import {Command, Flags} from '@oclif/core'
 import {checkInput, checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import {createWinstonLogger} from '../../utils/logging'
-import fs from 'fs'
 import path from 'path'
-import {readFileURI} from '../../utils/io'
+import {createFolderIfNotExists, readFileURI, writeFileURI} from '../../utils/io'
 
 export default class IonChannel2HDF extends Command {
   static usage = 'convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json> | -a <api-key> -t <team-name> [--raw ] [-p <project>] [-A ]) [-L info|warn|debug|verbose]'
@@ -73,7 +72,7 @@ export default class IonChannel2HDF extends Command {
       await apiClient.setTeam(flags.teamName)
       logger.debug(`Set team to ID ${apiClient.teamId}`)
 
-      fs.mkdirSync(flags.output)
+      await createFolderIfNotExists(flags.output);
       const availableProjects = await apiClient.getProjects()
       for (const project of availableProjects) {
         logger.info(`Pulling findings from ${project.name}`)
@@ -89,7 +88,7 @@ export default class IonChannel2HDF extends Command {
           json = await apiClient.toHdf()
         }
 
-        fs.writeFileSync(path.join(flags.output, filename), JSON.stringify(json))
+        await writeFileURI(path.join(flags.output, filename), JSON.stringify(json))
       }
     } else if (flags.apiKey && flags.teamName && Array.isArray(flags.project)) {
       logger.debug('Creating Ion Channel API Client')
@@ -98,7 +97,7 @@ export default class IonChannel2HDF extends Command {
       await apiClient.setTeam(flags.teamName)
       logger.debug(`Set team to ID ${apiClient.teamId}`)
 
-      fs.mkdirSync(flags.output)
+      await createFolderIfNotExists(flags.output);
       for (const projectName of flags.project) {
         logger.info(`Pulling findings from ${projectName}`)
         await apiClient.setProject(projectName)
@@ -113,18 +112,18 @@ export default class IonChannel2HDF extends Command {
           json = await apiClient.toHdf()
         }
 
-        fs.writeFileSync(path.join(flags.output, filename), JSON.stringify(json))
+        await writeFileURI(path.join(flags.output, filename), JSON.stringify(json))
       }
     } else if (Array.isArray(flags.input)) {
       logger.debug('Processing input files')
-      fs.mkdirSync(flags.output)
+      await createFolderIfNotExists(flags.output);
       for (const filename of flags.input) {
         // Check for correct input type
         const data = await readFileURI(filename, 'utf8')
         checkInput({data: data, filename: filename}, 'ionchannel', 'IonChannel JSON')
 
         logger.debug(`Processing...${filename}`)
-        fs.writeFileSync(
+        await writeFileURI(
           path.join(
             flags.output,
             checkSuffix(convertFullPathToFilename(filename)),

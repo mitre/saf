@@ -3,8 +3,8 @@ import {SplunkMapper} from '@mitre/hdf-converters/lib/src/splunk-mapper'
 import {table} from 'table'
 import {createWinstonLogger} from '../../utils/logging'
 import _ from 'lodash'
-import fs from 'fs'
 import path from 'path'
+import {createFolderIfNotExists, writeFileURI} from '../../utils/io'
 
 export default class Splunk2HDF extends Command {
   static usage = 'splunk2hdf -H <host> -I <index> [-h] [-P <port>] [-s http|https] (-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID> -o <hdf-output-folder>]'
@@ -52,13 +52,13 @@ export default class Splunk2HDF extends Command {
 
     if (flags.input && flags.output) {
       const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
-      fs.mkdirSync(outputFolder)
+      await createFolderIfNotExists(outputFolder)
       flags.input.forEach(async (input: string) => {
         // If we have a GUID
         if (/^(\w){30}$/.test(input)) {
           const hdf = await mapper.toHdf(input)
           // Rename example.json -> example-p9dwG2kdSoHsYdyF2dMytUmljgOHD5.json and put into the outputFolder
-          fs.writeFileSync(
+          await writeFileURI(
             path.join(
               outputFolder,
               _.get(hdf, 'meta.filename').replace(/\.json$/, '') + _.get(hdf, 'meta.guid') + '.json',
@@ -70,7 +70,7 @@ export default class Splunk2HDF extends Command {
           const executions = await this.searchExecutions(mapper, input)
           executions.forEach(async execution => {
             const hdf = await mapper.toHdf(_.get(execution, 'meta.guid'))
-            fs.writeFileSync(
+            await writeFileURI(
               path.join(
                 outputFolder,
                 _.get(hdf, 'meta.filename').replace(/\.json$/, '') + _.get(hdf, 'meta.guid') + '.json',

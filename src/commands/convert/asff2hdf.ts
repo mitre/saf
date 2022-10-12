@@ -1,5 +1,4 @@
 import {Command, Flags} from '@oclif/core'
-import fs from 'fs'
 import {ASFFResults as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
@@ -8,7 +7,7 @@ import AWS from 'aws-sdk'
 import https from 'https'
 import {AwsSecurityFindingFilters} from 'aws-sdk/clients/securityhub'
 import {createWinstonLogger} from '../../utils/logging'
-import {readFileURI} from '../../utils/io'
+import {createFolderIfNotExists, folderExistsURI, readFileURI, writeFileURI} from '../../utils/io'
 
 // Should be no more than 100
 const API_MAX_RESULTS = 100
@@ -44,7 +43,7 @@ export default class ASFF2HDF extends Command {
     let securityhub: string[] | undefined
 
     // Check if output folder already exists
-    if (fs.existsSync(flags.output)) {
+    if (await folderExistsURI(flags.output)) {
       throw new Error(`Output folder ${flags.output} already exists`)
     }
 
@@ -177,9 +176,9 @@ export default class ASFF2HDF extends Command {
 
     const results = converter.toHdf()
 
-    fs.mkdirSync(flags.output)
-    _.forOwn(results, (result, filename) => {
-      fs.writeFileSync(
+    createFolderIfNotExists(flags.output)
+    _.forOwn(results, async (result, filename) => {
+      await writeFileURI(
         path.join(flags.output, checkSuffix(filename)),
         JSON.stringify(result),
       )

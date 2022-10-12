@@ -1,14 +1,13 @@
 import {Command, Flags} from '@oclif/core'
 import {contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
-import fs from 'fs'
 import {v4} from 'uuid'
 import {default as files} from '../../resources/files.json'
 import Mustache from 'mustache'
 import {CKLMetadata} from '../../types/checklist'
 import {convertFullPathToFilename, getProfileInfo} from '../../utils/global'
 import {getDetails} from '../../utils/checklist'
-import {readFileURI} from '../../utils/io'
+import {readFileURI, writeFileURI} from '../../utils/io'
 
 export default class HDF2CKL extends Command {
   static usage = 'convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [-H <hostname>] [-F <fqdn>] [-M <mac-address>] [-I <ip-address>]'
@@ -71,6 +70,6 @@ export default class HDF2CKL extends Command {
       uuid: v4(),
       controls: controls.map(control => getDetails(control, profileName)),
     }
-    fs.writeFileSync(flags.output, Mustache.render(files['cklExport.ckl'].data, cklData).replace(/[^\x00-\x7F]/g, ''))
+    await writeFileURI(flags.output, Mustache.render(files['cklExport.ckl'].data, cklData).replace(/[^\x00-\x7F]/g, ''))
   }
 }

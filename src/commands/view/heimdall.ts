@@ -1,10 +1,9 @@
 import {Command, Flags} from '@oclif/core'
 import express from 'express'
-import fs from 'fs'
 import path from 'path'
 import open from 'open'
 import {getInstalledPath} from '../../utils/global'
-import {readFileURI} from '../../utils/io'
+import {fileExistsURI, readFileURI} from '../../utils/io'
 
 export default class Heimdall extends Command {
   static aliases = ['heimdall']
@@ -34,7 +33,8 @@ export default class Heimdall extends Command {
 
     // If we were passed a file, does it exist? Can it convert to JSON correctly?
     if (flags.files && flags.files.length > 0) {
-      if (!flags.files.every((file: string) => fs.statSync(file).isFile())) {
+      const allFilesExist = await Promise.all(flags.files.map(file => fileExistsURI(file)))
+      if (!allFilesExist.every(Boolean)) {
         console.log('An option passed as a file was not a file')
         return
       }

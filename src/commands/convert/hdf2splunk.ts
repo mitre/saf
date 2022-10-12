@@ -1,7 +1,6 @@
 import {Command, Flags} from '@oclif/core'
 import {FromHDFToSplunkMapper} from '@mitre/hdf-converters'
 import {convertFullPathToFilename} from '../../utils/global'
-import fs from 'fs'
 import {createWinstonLogger, getHDFSummary} from '../../utils/logging'
 import {readFileURI} from '../../utils/io'
 

@@ -1,7 +1,6 @@
 import {Command, Flags} from '@oclif/core'
 import flat from 'flat'
 import YAML from 'yaml'
-import fs from 'fs'
 import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import _ from 'lodash'
 import {ThresholdValues} from '../../types/threshold'

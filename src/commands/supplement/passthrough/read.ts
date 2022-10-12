@@ -1,7 +1,6 @@
 import {Command, Flags} from '@oclif/core'
 import {ExecJSON} from 'inspecjs'
-import fs from 'fs'
-import {readFileURI} from '../../../utils/io'
+import {readFileURI, writeFileURI} from '../../../utils/io'
 
 export default class ReadPassthrough extends Command {
     static usage = 'supplement passthrough read -i <hdf-json> [-o <passthrough-json>]'
@@ -24,7 +23,7 @@ export default class ReadPassthrough extends Command {
       const passthrough = input.passthrough || {}
 
       if (flags.output) {
-        fs.writeFileSync(flags.output, JSON.stringify(passthrough, null, 2))
+        await writeFileURI(flags.output, JSON.stringify(passthrough, null, 2))
       } else {
         process.stdout.write(JSON.stringify(passthrough, null, 2))
       }

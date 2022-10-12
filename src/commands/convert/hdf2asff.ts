@@ -1,5 +1,4 @@
 import {Command, Flags} from '@oclif/core'
-import fs from 'fs'
 import https from 'https'
 import {FromHdfToAsffMapper as Mapper} from '@mitre/hdf-converters'
 import path from 'path'
@@ -7,7 +6,7 @@ import AWS from 'aws-sdk'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import _ from 'lodash'
 import {BatchImportFindingsRequestFindingList} from 'aws-sdk/clients/securityhub'
-import {readFileURI} from '../../utils/io'
+import {createFolderIfNotExists, readFileURI, writeFileURI} from '../../utils/io'
 
 export default class HDF2ASFF extends Command {
   static usage = 'convert hdf2asff -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] (-u [-I -C <certificate>] | [-o <asff-output-folder>])'
@@ -43,14 +42,14 @@ export default class HDF2ASFF extends Command {
     if (flags.output) {
       const convertedSlices = _.chunk(converted, 100) // AWS doesn't allow uploading more than 100 findings at a time so we need to split them into chunks
       const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
-      fs.mkdirSync(outputFolder)
+      await createFolderIfNotExists(outputFolder)
       if (convertedSlices.length === 1) {
         const outfilePath = path.join(outputFolder, convertFullPathToFilename(checkSuffix(flags.output)))
-        fs.writeFileSync(outfilePath, JSON.stringify(convertedSlices[0]))
+        await writeFileURI(outfilePath, JSON.stringify(convertedSlices[0]))
       } else {
-        convertedSlices.forEach((slice, index) => {
+        convertedSlices.forEach(async (slice, index) => {
           const outfilePath = path.join(outputFolder, `${convertFullPathToFilename(checkSuffix(flags.output || '')).replace('.json', '')}.p${index}.json`)
-          fs.writeFileSync(outfilePath, JSON.stringify(slice))
+          await writeFileURI(outfilePath, JSON.stringify(slice))
         })
       }
     }

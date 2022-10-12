@@ -1,7 +1,7 @@
 import {Command, Flags} from '@oclif/core'
-import fs from 'fs'
 import promptSync from 'prompt-sync'
 import _ from 'lodash'
+import {writeFileURI} from '../../utils/io'
 
 const prompt = promptSync()
 
@@ -38,6 +38,6 @@ export default class GenerateCKLMetadata extends Command {
       web_db_site: prompt({ask: 'What is the Web or DB site? '}) || null,
       web_db_instance: prompt({ask: 'What is the Web or DB instance? '}) || null,
     }
-    fs.writeFileSync(flags.output, JSON.stringify(cklMetadata))
+    await writeFileURI(flags.output, JSON.stringify(cklMetadata))
   }
 }

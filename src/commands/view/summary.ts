@@ -1,12 +1,11 @@
 import {Command, Flags} from '@oclif/core'
 import {ContextualizedEvaluation, ContextualizedProfile, convertFileContextual} from 'inspecjs'
-import fs from 'fs'
 import YAML from 'yaml'
 import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 import _ from 'lodash'
 import flat from 'flat'
 import {convertFullPathToFilename} from '../../utils/global'
-import {readFileURI} from '../../utils/io'
+import {readFileURI, writeFileURI} from '../../utils/io'
 
 export default class Summary extends Command {
   static aliases = ['summary']
@@ -103,7 +102,7 @@ export default class Summary extends Command {
     })
     console.log(flags.json ? JSON.stringify(printableSummaries) : YAML.stringify(printableSummaries))
     if (flags.output) {
-      fs.writeFileSync(flags.output, flags.json ? JSON.stringify(printableSummaries) : YAML.stringify(printableSummaries))
+      await writeFileURI(flags.output, flags.json ? JSON.stringify(printableSummaries) : YAML.stringify(printableSummaries))
     }
   }
 }
