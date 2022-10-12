@@ -44,7 +44,6 @@ export async function readFileURI(uri: string, encoding: BufferEncoding, logger?
   }
 
   throw new Error(`Unsupported protocol to read file: ${parsedURI.protocol}`)
-  return ''
 }
 
 export async function fileExistsURI(uri: string, logger?: winston.Logger): Promise<boolean> {

@@ -1,5 +1,4 @@
 import {Command, Flags} from '@oclif/core'
-import fs, {readFile} from 'fs'
 import {DBProtectMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 import {readFileURI, writeFileURI} from '../../utils/io'

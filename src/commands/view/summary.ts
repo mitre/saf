@@ -30,7 +30,7 @@ export default class Summary extends Command {
 
     const execJSONs: Record<string, ContextualizedEvaluation> = {}
 
-    const parsedFiles = await Promise.all(flags.input.map(async file => {
+    const parsedFiles = await Promise.all(flags.input.map(file => {
       return readFileURI(file, 'utf8')
     }))
 

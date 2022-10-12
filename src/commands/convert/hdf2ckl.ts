@@ -70,6 +70,6 @@ export default class HDF2CKL extends Command {
       uuid: v4(),
       controls: controls.map(control => getDetails(control, profileName)),
     }
-    await writeFileURI(flags.output, Mustache.render(files['cklExport.ckl'].data, cklData).replace(/[^\x00-\x7F]/g, ''))
+    await writeFileURI(flags.output, Mustache.render(files['cklExport.ckl'].data, cklData).replace(/[^\x00-\x7F]/gu, ''))
   }
 }
