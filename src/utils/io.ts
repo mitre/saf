@@ -94,7 +94,7 @@ export async function fileExistsURI(uri: string, logger?: winston.Logger): Promi
   return false
 }
 
-export async function folderExistsURI(uri: string, logger?: winston.Logger): Promise<Boolean> {
+export async function folderExistsURI(uri: string, logger?: winston.Logger): Promise<boolean> {
   if (!logger) {
     logger = createWinstonLogger('io', 'info')
   }

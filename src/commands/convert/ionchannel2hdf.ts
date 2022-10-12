@@ -72,7 +72,7 @@ export default class IonChannel2HDF extends Command {
       await apiClient.setTeam(flags.teamName)
       logger.debug(`Set team to ID ${apiClient.teamId}`)
 
-      await createFolderIfNotExists(flags.output);
+      await createFolderIfNotExists(flags.output)
       const availableProjects = await apiClient.getProjects()
       for (const project of availableProjects) {
         logger.info(`Pulling findings from ${project.name}`)
@@ -97,7 +97,7 @@ export default class IonChannel2HDF extends Command {
       await apiClient.setTeam(flags.teamName)
       logger.debug(`Set team to ID ${apiClient.teamId}`)
 
-      await createFolderIfNotExists(flags.output);
+      await createFolderIfNotExists(flags.output)
       for (const projectName of flags.project) {
         logger.info(`Pulling findings from ${projectName}`)
         await apiClient.setProject(projectName)
@@ -116,7 +116,7 @@ export default class IonChannel2HDF extends Command {
       }
     } else if (Array.isArray(flags.input)) {
       logger.debug('Processing input files')
-      await createFolderIfNotExists(flags.output);
+      await createFolderIfNotExists(flags.output)
       for (const filename of flags.input) {
         // Check for correct input type
         const data = await readFileURI(filename, 'utf8')

@@ -10,7 +10,7 @@ import moment from 'moment'
 import {cci2nist, cklSeverityToImpact, cklSeverityToLikelihood, cklSeverityToPOAMSeverity, cklSeverityToRelevanceOfThreat, cklSeverityToResidualRiskLevel, cleanStatus, combineComments, convertToRawSeverity, createCVD, extractSolution, extractSTIGUrl, replaceSpecialCharacters} from '../../utils/ckl2poam'
 import {default as files} from '../../resources/files.json'
 import {convertFullPathToFilename, dataURLtoU8Array} from '../../utils/global'
-import { createFolderIfNotExists, readFileURI } from '../../utils/io'
+import {createFolderIfNotExists, readFileURI} from '../../utils/io'
 
 const prompt = promptSync()
 const {printf} = format

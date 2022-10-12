@@ -26,7 +26,7 @@ export default class Prowler2HDF extends Command {
     const results = converter.toHdf()
 
     // Create output folder if not exists
-    await createFolderIfNotExists(flags.output);
+    await createFolderIfNotExists(flags.output)
 
     _.forOwn(results, async (result, filename) => {
       await writeFileURI(
