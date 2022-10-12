@@ -12,7 +12,6 @@ import {extractValueViaPathOrNumber} from '../../utils/global'
 import {CciNistMappingData} from '@mitre/hdf-converters'
 import {default as CISNistMappings} from '../../resources/cis2nist.json'
 import {default as files} from '../../resources/files.json'
-import { readFileURI } from '../../utils/io'
 
 export default class Spreadsheet2HDF extends Command {
   static usage = 'generate spreadsheet2inspec_stub -i, --input=<XLSX or CSV> -o, --output=FOLDER'
@@ -150,7 +149,7 @@ export default class Spreadsheet2HDF extends Command {
     // Read metadata file if passed
     if (flags.metadata) {
       if (fs.existsSync(flags.metadata)) {
-        metadata = JSON.parse(await readFileURI(flags.metadata, 'utf8'))
+        metadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf8'))
       } else {
         throw new Error('Passed metadata file does not exist')
       }
@@ -159,7 +158,7 @@ export default class Spreadsheet2HDF extends Command {
     // Read mapping file
     if (flags.mapping) {
       if (fs.existsSync(flags.mapping)) {
-        mappings = YAML.parse(await readFileURI(flags.mapping, 'utf8'))
+        mappings = YAML.parse(fs.readFileSync(flags.mapping, 'utf8'))
       } else {
         throw new Error('Passed metadata file does not exist')
       }
@@ -264,7 +263,7 @@ export default class Spreadsheet2HDF extends Command {
     }).catch(() => {
       // Assume we have a CSV file
       // Read the input file into lines
-      const inputDataLines = await readFileURI(flags.input, 'utf8').split('\n')
+      const inputDataLines = fs.readFileSync(flags.input, 'utf8').split('\n')
       // Replace BOM if it exists
       inputDataLines[0] = inputDataLines[0].replace(/\uFEFF/g, '')
       // STIG Viewer embeds the classification level in the first and last line for CSV export, breaking parsing

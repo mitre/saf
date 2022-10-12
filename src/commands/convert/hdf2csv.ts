@@ -30,7 +30,7 @@ export default class HDF2CSV extends Command {
 
   async run() {
     const {flags} = await this.parse(HDF2CSV)
-    const inputFile = await readFileURI(flags.input)
+    const inputFile = await readFileURI(flags.input, 'utf8')
 
     const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(inputFile))
 

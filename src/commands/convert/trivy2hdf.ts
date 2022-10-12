@@ -22,7 +22,7 @@ export default class Trivy2HDF extends Command {
   async run() {
     const {flags} = await this.parse(Trivy2HDF)
     // comes as an _asff.json file which is basically the array of findings but without the surrounding object; however, could also be properly formed asff since it depends on the template used
-    const input = await readFileURI(flags.input, 'utf8').trim()
+    const input = (await readFileURI(flags.input, 'utf8')).trim()
 
 
     checkInput({data: input, filename: flags.input}, 'asff', 'Trivy-derived AWS Security Finding Format results')
