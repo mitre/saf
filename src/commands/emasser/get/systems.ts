@@ -24,18 +24,14 @@ export default class EmasserGetSystems extends Command {
   }
 
   async run(): Promise<void> {
-    try {
-      const {flags} = await this.parse(EmasserGetSystems)
-      const apiCxn = new ApiConnection();
-      const getSystems = new SystemsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
+    const {flags} = await this.parse(EmasserGetSystems)
+    const apiCxn = new ApiConnection();
+    const getSystems = new SystemsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-      // Order is important here
-      getSystems.getSystems(flags.includePackage,flags.registrationType,flags.ditprId,flags.coamsId,
-        flags.policy,flags.includeDitprMetrics,flags.includeDecommissioned,flags.reportsForScorecard).then((response: SystemsResponse) => {
-        console.log(colorize(outputFormat(response)));
-      }).catch((error:any) => console.error(colorize(outputError(error))));
-    } catch (error: any) {
-      console.error(error.name+": "+error.message);
-    }
-  }
+    // Order is important here
+    getSystems.getSystems(flags.includePackage,flags.registrationType,flags.ditprId,flags.coamsId,
+      flags.policy,flags.includeDitprMetrics,flags.includeDecommissioned,flags.reportsForScorecard).then((response: SystemsResponse) => {
+      console.log(colorize(outputFormat(response)));
+    }).catch((error:any) => console.error(colorize(outputError(error))));
+}
 }

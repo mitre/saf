@@ -27,6 +27,6 @@ export default class EmasserGetTestResults extends Command {
     // Order is important here
     getTestResults.getSystemTestResults(flags.systemId,flags.controlAcronyms,flags.ccis,flags.latestOnly).then((data:any) => {
       console.log(colorize(outputFormat(data.data)));
-    }).catch((error:any) => console.error(colorize(outputError(error))));
+    }).catch((error:any) => console.error(colorize(outputError(error))));    
   }
 }

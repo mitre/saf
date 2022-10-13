@@ -28,10 +28,9 @@ export default class EmasserGetRoles extends Command {
   ]
 
   async run(): Promise<void> {
-
     const {args, flags} = await this.parse(EmasserGetRoles)
-    const apiCxn = new ApiConnection();
-    const getSystemRoles = new SystemRolesApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
+    const apiCxn = new ApiConnection();   
+    const getSystemRoles = new SystemRolesApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances); 
 
     if (args.all === 'all') {
       // Order is important here

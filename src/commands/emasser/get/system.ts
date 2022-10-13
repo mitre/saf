@@ -7,8 +7,6 @@ import { outputError } from '../../../utils/emasser/outputError';
 import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 import { SystemResponse } from '@mitre/emass_client/dist/api';
 
-
-
 export default class EmasserGetSystem extends Command {
 
   static usage = 'get system [ARGUMENTS]'
@@ -23,18 +21,14 @@ export default class EmasserGetSystem extends Command {
   }
 
   async run(): Promise<void> {
-    try {
-      const {flags} = await this.parse(EmasserGetSystem)
-      const apiCxn = new ApiConnection();
-      const getSystems = new SystemsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
+    const {flags} = await this.parse(EmasserGetSystem)
+    const apiCxn = new ApiConnection();
+    const getSystems = new SystemsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-      // Order is important here
-      getSystems.getSystem(flags.systemId,flags.includePackage,flags.policy).then((response: SystemResponse) => {
-        console.log(colorize(outputFormat(response)));
-      }).catch((error:any) => console.error(colorize(outputError(error))));
-    } catch (error: any) {
-      console.error(error.name+": "+error.message);
-    }
+    // Order is important here
+    getSystems.getSystem(flags.systemId,flags.includePackage,flags.policy).then((response: SystemResponse) => {
+      console.log(colorize(outputFormat(response)));
+    }).catch((error:any) => console.error(colorize(outputError(error))));
   }
 }
 

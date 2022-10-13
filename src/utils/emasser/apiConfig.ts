@@ -1,3 +1,4 @@
+import colorize from 'json-colorizer';
 import dotenv from 'dotenv'
 import fs from 'fs'
 
@@ -24,8 +25,9 @@ export class ApiConfig {
       if (error.code === 'ENOENT') {
         this.envConfig = {};
         // File probably does not exist
-        // console.error('Unable to read configuration file `.env`!');
-        throw new Error("A configuration file (.env) is required containing the expected environmental variable.");
+        console.error(colorize(JSON.stringify({error: 'A configuration file (.env) containing the expected environmental variable is required.'})));
+        process.exit(0);
+        //throw new Error("A configuration file (.env) containing the expected environmental variable is required.");
       } else {
         throw error;
       }

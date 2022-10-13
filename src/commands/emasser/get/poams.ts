@@ -29,7 +29,6 @@ export default class EmasserGetPoams extends Command {
   ]
 
   async run(): Promise<void> {
-
     const {args, flags} = await this.parse(EmasserGetPoams)
     const apiCxn = new ApiConnection();
     const getPoams = new POAMApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);

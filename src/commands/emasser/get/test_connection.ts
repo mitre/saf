@@ -25,6 +25,6 @@ export default class EmasserGetTestConnection extends Command {
     
     getTestApi.testConnection().then((response: Test) => {
       console.log(colorize(outputFormat(response)));
-    }).catch((error:any) => console.error(colorize(outputError(error))));
+    }).catch((error:any) => console.error(colorize(outputError(error))));      
   }
 }
