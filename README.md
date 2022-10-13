@@ -148,6 +148,23 @@ To update the SAF CLI on Windows, uninstall any existing version from your syste
 ## Usage
 ---
 
+### File Input/Output
+The SAF CLI can take local files, an HTTP(s) URL, or a file within an S3 bucket as input.
+
+For example, to view an HDF file from an S3 bucket: 
+
+``saf view heimdall -f s3://HDF/rhel7-scan_02032022A.json``
+
+Or to take a URL as input:
+
+``saf convert hdf2csv -i https://raw.githubusercontent.com/mitre/saf/main/test/sample_data/HDF/input/red_hat_good.json -o red_hat_good.csv``
+
+The SAF CLI supports writing its output to the local filesystem or to an S3 bucket.
+
+For example, to convert an HDF file into ASFF using remote buckets:
+
+``saf convert hdf2asff -i s3://HDF/rhel7-scan_02032022A.json -a 123456789 -r us-east-1 -t rhel7_example_host -o s3://ASFF/rhel7.asff``
+
 ### Attest
 
 Attest to 'Not Reviewed' controls: sometimes requirements can’t be tested automatically by security tools and hence require manual review, whereby someone interviews people and/or examines a system to confirm (i.e., attest as to) whether the control requirements have been satisfied.
@@ -225,7 +242,7 @@ convert hdf2asff              Translate a Heimdall Data Format JSON file into
     -t, --target=<target>          (required) Unique name for target to track findings across time
     -u, --upload                  Upload findings to AWS Security Hub
   EXAMPLES
-    $ saf convert hdf2asff -i rhel7-scan_02032022A.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7.asff
+    $ saf convert hdf2asff -i s3://HDF/rhel7-scan_02032022A.json -a 123456789 -r us-east-1 -t rhel7_example_host -o s3://ASFF/rhel7.asff
     $ saf convert hdf2asff -i rds_mysql_i123456789scan_03042022A.json -a 987654321 -r us-west-1 -t Instance_i123456789 -u
     $ saf convert hdf2asff -i snyk_acme_project5_hdf_04052022A.json -a 2143658798 -r us-east-1 -t acme_project5 -o snyk_acme_project5 -u
 ```
@@ -257,6 +274,7 @@ convert hdf2splunk            Translate and upload a Heimdall Data Format JSON f
   EXAMPLES
     $ saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf
     $ saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf
+    $ saf convert hdf2splunk -i s3://HDF/rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf
 ```
 
 HDF Splunk Schema documentation: https://github.com/mitre/heimdall2/blob/master/libs/hdf-converters/src/converters-from-hdf/splunk/Schemas.md#schemas
@@ -296,6 +314,7 @@ convert hdf2xccdf             Translate an HDF file into an XCCDF XML
 
   EXAMPLES
     $ saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml
+    $ saf convert hdf2xccdf -i s3://hdf/hdf_input.json -o xccdf-results.xml
 ```
 
 ##### HDF to Checklist
