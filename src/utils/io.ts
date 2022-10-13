@@ -36,8 +36,6 @@ export async function readFileURI(uri: string, encoding: BufferEncoding, logger?
 
     throw new Error('S3 Object Body is empty')
   } else if (parsedURI.protocol === 'http:' || parsedURI.protocol === 'https:') {
-    // Read file from URL
-    console.log('Reading from URL')
     return axios.get(uri, {
       responseType: 'text',
     }).then(({data}) => data)
@@ -83,7 +81,11 @@ export async function fileExistsURI(uri: string, logger?: winston.Logger): Promi
   } else if (parsedURI.protocol === 'http:' || parsedURI.protocol === 'https:') {
     // Check if file exists at URL
     logger.debug('Starting check if file exists at URL')
-    return axios.head(uri).then(() => true).catch(() => false)
+    return axios.get(uri, {
+      responseType: 'text',
+    }).then(() => true).catch(() => {
+      return false
+    })
   }
 
   console.error(`Unsupported protocol: ${parsedURI.protocol}`)
