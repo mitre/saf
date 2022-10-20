@@ -161,6 +161,102 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
       return {
         workflowInstanceId: Flags.integer({char: "w", description: "Unique workflow instance identifier", required: true}),
       }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'status_details') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'control_compliance_summary') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'security_control_details') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'assessment_procedures_details') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'poam_summary') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'poam_details') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'hardware_summary') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'hardware_details') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'associations_details') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'assignments_details') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'privacy_summary') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'fisma_saop_summary') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'va_aa_summary') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'va_a2_summary') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'va_pl_109_summary') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
+    } else if (args.endpoint === 'dashboards' && args.argument === 'fisma_inventory_summary') {
+      return {
+        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+      }
     } 
   } else if (args.requestType === 'post') {
     if (args.endpoint === 'test_results') {
@@ -231,7 +327,43 @@ export function getDescriptionForEndpoint(argv: string[], endpoint?: string ): s
       } else {
         return 'Retrieve all workflow instances or workflow instance by workflowInstanceID';
       }
-    }
+    } else if (args.endpoint === 'dashboards') {
+      if (args.argument === 'status_details') {
+        return 'Get systems status detail dashboard information';
+      } else if (args.argument === 'control_compliance_summary') {
+        return 'Get systems control compliance summary dashboard information';
+      } else if (args.argument === 'security_control_details') {
+        return 'Get systems security control details dashboard information';
+      } else if (args.argument === 'assessment_procedures_details') {
+        return 'Get systems assessment procedures details dashboard information';
+      } else if (args.argument === 'poam_summary') {
+        return 'Get systems POA&Ms summary dashboard information';
+      } else if (args.argument === 'poam_details') {
+        return 'Get system POA&Ms details dashboard information';
+      } else if (args.argument === 'hardware_summary') {
+        return 'Get system hardware summary dashboard information';
+      } else if (args.argument === 'hardware_details') {
+        return 'Get system hardware details dashboard information';
+      } else if (args.argument === 'associations_details') {
+        return 'Get system associations details dashboard information';
+      } else if (args.argument === 'assignments_details') {
+        return 'Get user system assignments details dashboard information';
+      } else if (args.argument === 'privacy_summary') {
+        return 'Get user system privacy summary dashboard information';
+      } else if (args.argument === 'fisma_saop_summary') {
+        return 'Get VA OMB-FISMA SAOP summary dashboard information';
+      } else if (args.argument === 'va_aa_summary') {
+        return 'Get VA system A&A summary dashboard information';
+      } else if (args.argument === 'va_a2_summary') {
+        return 'Get VA system A2.0 summary dashboard information';
+      } else if (args.argument === 'va_pl_109_summary') {
+        return 'Get VA System P.L. 109 reporting summary dashboard information';
+      } else if (args.argument === 'fisma_inventory_summary') {
+        return 'Get VA system FISMA inventory summary dashboard information';
+      } else {
+        return 'Retrieve dashboards by orgId';
+      }
+    } 
   }
   return '';
 }
