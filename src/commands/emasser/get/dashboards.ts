@@ -1,7 +1,7 @@
 import colorize from 'json-colorizer';
 import {Command, Flags} from "@oclif/core"
 import { ApiConnection } from "../../../utils/emasser/apiConnection"
-import { POAMApi } from '@mitre/emass_client';
+import { DashboardsApi } from '@mitre/emass_client';
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { outputError } from '../../../utils/emasser/outputError';
 import { FlagOptions, 
@@ -16,10 +16,10 @@ export default class EmassergetDashboards extends Command {
 
   static description = getDescriptionForEndpoint(process.argv, 'dashboards');
 
-  static examples = getExamplesForEndpoint(process.argv); 
+  static examples = getExamplesForEndpoint(process.argv);
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET POA&Ms endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Dashboards endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions,
   }
 

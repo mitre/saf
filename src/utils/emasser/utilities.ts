@@ -45,6 +45,8 @@ export interface FlagOptions {
   description?: OptionFlag<string|any>;
   complianceStatus?: OptionFlag<string>;
   scheduledCompletionDate?: OptionFlag<string|any>;
+  orgId?:OptionFlag<number>;
+  pageSize?: OptionFlag<number|undefined>;
 }
 
 export function getFlagsForEndpoint(argv: string[]): FlagOptions {
@@ -410,7 +412,45 @@ export function getExamplesForEndpoint(argv: string[]): string[] {
       return ['emasser get workflow_instances byWorkflowInstanceId --workflowInstanceId <value>'];
     } else {
       return ['emasser get workflow_instances all [options]', 'emasser get workflow_instances byWorkflowInstanceId --workflowInstanceId <value>'];
-    }    
+    }  
+  } else if (args.requestType === 'get' && args.endpoint === 'dashboards') {
+    if (args.argument === 'all') {
+      return ['emasser get dashboards all [options]'];
+    } else if (args.argument === 'status_details') {
+      return ['emasser get dashboards status_details --orgId=ORGID <value>'];
+    } else if (args.argument === 'control_compliance_summary') {
+      return ['emasser get dashboards control_compliance_summary --orgId=ORGID <value>'];
+    } else if (args.argument === 'security_control_details') {
+      return ['emasser get dashboards security_control_details --orgId=ORGID <value>'];
+    } else if (args.argument === 'assessment_procedures_details') {
+      return ['emasser get dashboards assessment_procedures_details --orgId=ORGID <value>'];
+    } else if (args.argument === 'poam_summary') {
+      return ['emasser get dashboards poam_summary --orgId=ORGID <value>'];
+    } else if (args.argument === 'poam_details') {
+      return ['emasser get dashboards poam_details --orgId=ORGID <value>'];
+    } else if (args.argument === 'hardware_summary') {
+      return ['emasser get dashboards hardware_summary --orgId=ORGID <value>'];
+    } else if (args.argument === 'hardware_details') {
+      return ['emasser get dashboards hardware_details --orgId=ORGID <value>'];
+    } else if (args.argument === 'associations_details') {
+      return ['emasser get dashboards associations_details --orgId=ORGID <value>'];
+    } else if (args.argument === 'assignments_details') {
+      return ['emasser get dashboards assignments_details --orgId=ORGID <value>'];
+    } else if (args.argument === 'privacy_summary') {
+      return ['emasser get dashboards privacy_summary --orgId=ORGID <value>'];
+    } else if (args.argument === 'fisma_saop_summary') {
+      return ['emasser get dashboards fisma_saop_summary --orgId=ORGID <value>'];
+    } else if (args.argument === 'va_aa_summary') {
+      return ['emasser get dashboards va_aa_summary --orgId=ORGID <value>'];
+    } else if (args.argument === 'va_a2_summary') {
+      return ['emasser get dashboards va_a2_summary --orgId=ORGID <value>'];
+    } else if (args.argument === 'va_pl_109_summary') {
+      return ['emasser get dashboards va_pl_109_summary --orgId=ORGID <value>'];
+    } else if (args.argument === 'fisma_inventory_summary') {
+      return ['emasser get dashboards fisma_inventory_summary --orgId=ORGID <value>'];
+    } else {
+      return ['emasser get dashboards all [options]'];
+    }  
   }
   return [''];
 }
