@@ -9,22 +9,22 @@ import { FlagOptions,
   getExamplesForEndpoint, 
   getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
+const endpoint = 'workflow_instances';
+
 export default class EmasserGetWorkflowInstances extends Command {
 
-  static usage = 'get workflow_instances [ARGUMENT]'
-
-  static description = getDescriptionForEndpoint(process.argv, 'workflow_instances');
-
+  static usage = 'get workflow_instances [ARGUMENT]';
+  static description = getDescriptionForEndpoint(process.argv, endpoint);
   static examples = getExamplesForEndpoint(process.argv); 
-
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Workflow Instances endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions,
   }
 
   static args = [
+    {name: "name", required: false, hidden: true},
     {name: "all", description: 'Retrieves all workflow instances in a site', required: false},
-    {name: "'byInstanceId", description: 'Retrieves workflow(s) instance by ID', required: false},
+    {name: "byInstanceId", description: 'Retrieves workflow(s) instance by ID', required: false},
   ]
 
   async run(): Promise<void> {
@@ -33,12 +33,12 @@ export default class EmasserGetWorkflowInstances extends Command {
     const apiCxn = new ApiConnection();
     const getWorkflowInstances = new WorkflowInstancesApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    if (args.all === 'all') {
+    if (args.name === 'all') {
       // Order is important here
       getWorkflowInstances.getSystemWorkflowInstances(flags.includeComments,flags.pageIndex,flags.sinceDate,flags.status).then((data:any) => {
         console.log(colorize(outputFormat(data.data)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
-    } else if (args.all === 'byInstanceId') {
+    } else if (args.name === 'byInstanceId') {
       // Order is important here
       getWorkflowInstances.getSystemWorkflowInstancesByWorkflowInstanceId(flags.workflowInstanceId).then((data:any) => {
         console.log(colorize(outputFormat(data.data)));

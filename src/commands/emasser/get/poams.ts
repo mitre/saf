@@ -9,20 +9,18 @@ import { FlagOptions,
   getExamplesForEndpoint,
   getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
+const endpoint = 'poams';
 
 export default class EmasserGetPoams extends Command {
 
   static usage = 'get poams [ARGUMENTS]'
-
-  static description = getDescriptionForEndpoint(process.argv, 'poams');
-
-  static examples = getExamplesForEndpoint(process.argv); 
-
+  static description = getDescriptionForEndpoint(process.argv, endpoint);
+  //static description = getDescriptionForEndpoint(process.argv);
+  static examples = getExamplesForEndpoint(process.argv, endpoint); 
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET POA&Ms endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions,
   }
-
   static args = [
     {name: "forSystem", description: 'Retrieves Poams for specified system ID', required: false},
     {name: "byPoamId", description: 'Retrieves Poams for specified system and poam ID', required: false},

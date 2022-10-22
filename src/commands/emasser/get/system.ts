@@ -2,19 +2,16 @@ import colorize from 'json-colorizer';
 import {Command, Flags} from "@oclif/core"
 import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { SystemsApi } from '@mitre/emass_client';
+import { SystemResponse } from '@mitre/emass_client/dist/api';
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { outputError } from '../../../utils/emasser/outputError';
 import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
-import { SystemResponse } from '@mitre/emass_client/dist/api';
 
 export default class EmasserGetSystem extends Command {
 
   static usage = 'get system [ARGUMENTS]'
-
-  static description = 'Get system information for a specific system defined by ID (systeId)'
-
-  static examples = ['emasser get system --systemId <value>']
-
+  static description = 'Get system information for a specific system defined by ID (systemId)'
+  static examples = ['<%= config.bin %> <%= command.id %> [-s, --systemId] <value> [options]']
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET System endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions,

@@ -9,19 +9,18 @@ import { FlagOptions,
   getExamplesForEndpoint,
   getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
+const endpoint = 'roles';
+
 export default class EmasserGetRoles extends Command {
 
   static usage = 'get roles [ARGUMENTS]'
-
-  static description = getDescriptionForEndpoint(process.argv, 'roles');
-
-  static examples = getExamplesForEndpoint(process.argv); 
-
+  static description = getDescriptionForEndpoint(process.argv, endpoint);
+  //static description = getDescriptionForEndpoint(process.argv);
+  static examples = getExamplesForEndpoint(process.argv, endpoint); 
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Roles endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions,
   }
-
   static args = [
     {name: "all", description: 'Retrieves all available system roles', required: false},
     {name: "byCategory", description: 'Retrieves role(s) - filtered by [options] params', required: false},

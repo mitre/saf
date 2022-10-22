@@ -152,114 +152,121 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         poamId: Flags.integer({char: "p", description: "The poam identification number", required: true}),
         milestoneId: Flags.integer({char: "m", description: "Unique milestone identifier", required: true}),
       }
-    } else if (args.endpoint === 'workflow_instances') {
+    } else if (args.endpoint === 'workflow_instances' && args.argument === 'all') {
       return {
         includeComments: Flags.integer({char: "i", description: "true or false", required: false}),
         pageIndex: Flags.integer({char: "p", description: "The page number to query", required: false}),
         sinceDate: Flags.string({char: "d", description: "The Workflow Instance date. Unix date format", required: false}),
         status: Flags.string({char: "s", description: "The Workflow status - must be a valid status", options: ['active', 'inactive', 'all'], required: false}),
       }
-    } else if (args.endpoint === 'workflow_instances' && args.argument === 'byWorkflowInstanceId') {
+    } else if (args.endpoint === 'workflow_instances' && args.argument === 'byInstanceId') {
       return {
         workflowInstanceId: Flags.integer({char: "w", description: "Unique workflow instance identifier", required: true}),
       }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'status_details') {
+    } else if (args.endpoint === 'dashboard') {
       return {
         orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
         pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
         pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
       }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'control_compliance_summary') {
-      return {
-        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-      }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'security_control_details') {
-      return {
-        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-      }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'assessment_procedures_details') {
-      return {
-        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-      }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'poam_summary') {
-      return {
-        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-      }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'poam_details') {
-      return {
-        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-      }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'hardware_summary') {
-      return {
-        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-      }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'hardware_details') {
-      return {
-        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-      }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'associations_details') {
-      return {
-        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-      }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'assignments_details') {
-      return {
-        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-      }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'privacy_summary') {
-      return {
-        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-      }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'fisma_saop_summary') {
-      return {
-        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-      }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'va_aa_summary') {
-      return {
-        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-      }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'va_a2_summary') {
-      return {
-        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-      }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'va_pl_109_summary') {
-      return {
-        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-      }
-    } else if (args.endpoint === 'dashboards' && args.argument === 'fisma_inventory_summary') {
-      return {
-        orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-        pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-        pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-      }
-    } 
+    }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'status_details') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'control_compliance_summary') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'security_control_details') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'assessment_procedures_details') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'poam_summary') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'poam_details') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'hardware_summary') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'hardware_details') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'associations_details') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'assignments_details') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'privacy_summary') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'fisma_saop_summary') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'va_aa_summary') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'va_a2_summary') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'va_pl_109_summary') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } else if (args.endpoint === 'dashboard' && args.argument === 'fisma_inventory_summary') {
+    //   return {
+    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
+    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
+    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
+    //   }
+    // } 
   } else if (args.requestType === 'post') {
     if (args.endpoint === 'test_results') {
       return {
@@ -285,7 +292,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
   return {}
 }
 
-export function getDescriptionForEndpoint(argv: string[], endpoint?: string ): string {
+export function getDescriptionForEndpoint(argv: string[], endpoint: string): string {
   let args: CliArgs = getArgs(argv, endpoint);
 
   if (args.requestType === 'get') {
@@ -324,12 +331,12 @@ export function getDescriptionForEndpoint(argv: string[], endpoint?: string ): s
     } else if (args.endpoint === 'workflow_instances') {
       if (args.argument === 'all') {
         return 'Retrieves all workflow instances';
-      } else if (args.argument === 'byWorkflowInstanceId') {
+      } else if (args.argument === 'byInstanceId') {
         return 'Retrieves workflow instance by workflow Instance ID';
       } else {
-        return 'Retrieve all workflow instances or workflow instance by workflowInstanceID';
+        return 'Retrieve all workflow instances or workflow instances noted by workflowInstanceID';
       }
-    } else if (args.endpoint === 'dashboards') {
+    } else if (args.endpoint === 'dashboard') {
       if (args.argument === 'status_details') {
         return 'Get systems status detail dashboard information';
       } else if (args.argument === 'control_compliance_summary') {
@@ -363,93 +370,94 @@ export function getDescriptionForEndpoint(argv: string[], endpoint?: string ): s
       } else if (args.argument === 'fisma_inventory_summary') {
         return 'Get VA system FISMA inventory summary dashboard information';
       } else {
-        return 'Retrieve dashboards by orgId';
+        return 'Retrieve dashboard by orgId';
       }
     } 
   }
   return '';
 }
 
-export function getExamplesForEndpoint(argv: string[]): string[] {
-  let args: CliArgs = getArgs(argv);
+export function getExamplesForEndpoint(argv: string[], endpoint?: string): string[] {
+  let args: CliArgs = getArgs(argv, endpoint);
+  // <%= config.bin %> resolves to the executable name
+  // <%= command.id %> resolves to the command name  
+  let baseCmd: string = '<%= config.bin %> <%= command.id %>'; 
 
   if (args.requestType === 'get' && args.endpoint === 'roles') {
     if (args.argument === 'all') {
-      return ['emasser get roles all'];
+      return [`${baseCmd} roles all`];
     } else if (args.argument === 'byCategory') {
-      return ['emasser get roles byCategory --roleCategory=<value> --role=<value> [options]'];
+      return [`${baseCmd} byCategory [-c, --roleCategory] <value> [-r, --role] <value> [options]`];
     } else {
-      return ['emasser get roles all', 'emasser get roles byCategory --roleCategory=<value> --role=<value> [options]'];
+      return [`${baseCmd} all`, `${baseCmd} byCategory [-c, --roleCategory] <value> [-r, --role] <value> [options]`];
     }
   } else if (args.requestType === 'get' && args.endpoint === 'poams') {
     if (args.argument === 'forSystem') {
-      return ['emasser get poams forSystem --systemId <value> [options]'];
+      return [`${baseCmd} forSystem [-s, --systemId] <value> [options]`];
     } else if (args.argument === 'byPoamId') {
-      return ['emasser get poams byPoamId --systemId <value> --poamId <value>'];
+      return [`${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value>`];
     } else {
-      return ['emasser get poams forSystem --systemId <value> [options]', 'emasser get poams byPoamId --systemId <value> --poamId <value>'];
+      return [`${baseCmd} forSystem [-s, --systemId] <value> [options]`, `${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value>`];
     }    
   } else if (args.requestType === 'get' && args.endpoint === 'artifacts') {
     if (args.argument === 'forSystem') {
-      return ['emasser get artifacts forSystem --systemId <value> [options]'];
+      return [`${baseCmd} forSystem [-s, --systemId] <value> [options]`];
     } else if (args.argument === 'export') {
-      return ['emasser get artifacts export --systemId <value> --filename <value> [options]'];
+      return [`${baseCmd} export [-s, --systemId] <value> [-f, --filename] <value> [options]`];
     } else {
-      return ['emasser get artifacts forSystem --systemId <value> [options]', 'emasser get artifacts export --systemId <value> --filename <value> [options]'];
+      return [`${baseCmd} forSystem [-s, --systemId] <value> [options]`, `${baseCmd} export [-s, --systemId] <value> [-f, --filename] <value> [options]`];
     }    
   } else if (args.requestType === 'get' && args.endpoint === 'milestones') {
     if (args.argument === 'byPoamId') {
-      return ['emasser get milestones byPoamId --systemId <value> --poamId <value> [options]'];
+      return [`${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value> [options]`];
     } else if (args.argument === 'byMilestoneId') {
-      return ['emasser get milestones byMilestoneId --systemId <value> --poamId <value> --milestoneId <value>'];
+      return [`${baseCmd} byMilestoneId [-s, --systemId] <value> [-p, --poamId] <value> [-m, --milestoneId] <value>`];
     } else {
-      return ['emasser get milestones byPoamId --systemId <value> --poamId <value> [options]', 'emasser get milestones byMilestoneId --systemId <value> --poamId <value> --milestoneId <value>'];
+      return [`${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value> [options]`, `${baseCmd} byMilestoneId [-s, --systemId] <value> [-p, --poamId] <value> [-m, --milestoneId] <value>`];
     }    
   } else if (args.requestType === 'get' && args.endpoint === 'workflow_instances') {
     if (args.argument === 'all') {
-      return ['emasser get workflow_instances all [options]'];
-    } else if (args.argument === 'byWorkflowInstanceId') {
-      return ['emasser get workflow_instances byWorkflowInstanceId --workflowInstanceId <value>'];
+      return [`${baseCmd} all [options]`];
+    } else if (args.argument === 'byInstanceId') {
+      return [`${baseCmd} byInstanceId [-w, --workflowInstanceId] <value>`];
     } else {
-      return ['emasser get workflow_instances all [options]', 'emasser get workflow_instances byWorkflowInstanceId --workflowInstanceId <value>'];
+      return [`${baseCmd} all [options]`, `${baseCmd} byInstanceId [-w, --workflowInstanceId] <value>`];
     }  
-  } else if (args.requestType === 'get' && args.endpoint === 'dashboards') {
-    if (args.argument === 'all') {
-      return ['emasser get dashboards all [options]'];
-    } else if (args.argument === 'status_details') {
-      return ['emasser get dashboards status_details --orgId=ORGID <value>'];
+  } else if (args.requestType === 'get' && args.endpoint === 'dashboard') {
+    if (args.argument === 'status_details') {
+      return [`${baseCmd} status_details [-o, --orgId] <value> [options]`];
     } else if (args.argument === 'control_compliance_summary') {
-      return ['emasser get dashboards control_compliance_summary --orgId=ORGID <value>'];
+      return [`${baseCmd} control_compliance_summary [-o, --orgId] <value> [options]`];
     } else if (args.argument === 'security_control_details') {
-      return ['emasser get dashboards security_control_details --orgId=ORGID <value>'];
+      return [`${baseCmd} security_control_details [-o, --orgId] <value> [options]`];
     } else if (args.argument === 'assessment_procedures_details') {
-      return ['emasser get dashboards assessment_procedures_details --orgId=ORGID <value>'];
+      return [`${baseCmd} assessment_procedures_details [-o, --orgId] <value> [options]`];
     } else if (args.argument === 'poam_summary') {
-      return ['emasser get dashboards poam_summary --orgId=ORGID <value>'];
+      return [`${baseCmd} poam_summary [-o, --orgId] <value> [options]`];
     } else if (args.argument === 'poam_details') {
-      return ['emasser get dashboards poam_details --orgId=ORGID <value>'];
+      return [`${baseCmd} poam_details [-o, --orgId] <value> [options]`];
     } else if (args.argument === 'hardware_summary') {
-      return ['emasser get dashboards hardware_summary --orgId=ORGID <value>'];
+      return [`${baseCmd} hardware_summary [-o, --orgId] <value> [options]`];
     } else if (args.argument === 'hardware_details') {
-      return ['emasser get dashboards hardware_details --orgId=ORGID <value>'];
+      return [`${baseCmd} hardware_details [-o, --orgId] <value> [options]`];
     } else if (args.argument === 'associations_details') {
-      return ['emasser get dashboards associations_details --orgId=ORGID <value>'];
+      return [`${baseCmd} associations_details [-o, --orgId] <value> [options]`];
     } else if (args.argument === 'assignments_details') {
-      return ['emasser get dashboards assignments_details --orgId=ORGID <value>'];
+      return [`${baseCmd} assignments_details [-o, --orgId] <value> [options]`];
     } else if (args.argument === 'privacy_summary') {
-      return ['emasser get dashboards privacy_summary --orgId=ORGID <value>'];
+      return [`${baseCmd} privacy_summary [-o, --orgId] <value> [options]`];
     } else if (args.argument === 'fisma_saop_summary') {
-      return ['emasser get dashboards fisma_saop_summary --orgId=ORGID <value>'];
+      return [`${baseCmd} fisma_saop_summary [-o, --orgId] <value> [options]`];
     } else if (args.argument === 'va_aa_summary') {
-      return ['emasser get dashboards va_aa_summary --orgId=ORGID <value>'];
+      return [`${baseCmd} va_aa_summary [-o, --orgId] <value> [options]`];
     } else if (args.argument === 'va_a2_summary') {
-      return ['emasser get dashboards va_a2_summary --orgId=ORGID <value>'];
+      return [`${baseCmd} va_a2_summary [-o, --orgId] <value> [options]`];
     } else if (args.argument === 'va_pl_109_summary') {
-      return ['emasser get dashboards va_pl_109_summary --orgId=ORGID <value>'];
+      return [`${baseCmd} va_pl_109_summary [-o, --orgId] <value> [options]`];
     } else if (args.argument === 'fisma_inventory_summary') {
-      return ['emasser get dashboards fisma_inventory_summary --orgId=ORGID <value>'];
+      return [`${baseCmd} fisma_inventory_summary [-o, --orgId] <value> [options]`];
     } else {
-      return ['emasser get dashboards all [options]'];
+      return [`${baseCmd} [dashboard name] [options]`];
     }  
   }
   return [''];
@@ -461,6 +469,6 @@ function getArgs(argv: string[], endpointValue?: string ): CliArgs {
   return {
     requestType: argv[requestTypeIndex],
     endpoint: (endpointValue) ? endpointValue : argv[requestTypeIndex + 1],
-    argument: (endpointValue) ? '' : argv[requestTypeIndex + 2],
+    argument: argv[requestTypeIndex + 2]
   }    
 }

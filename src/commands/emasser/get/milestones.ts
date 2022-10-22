@@ -9,19 +9,18 @@ import { FlagOptions,
   getExamplesForEndpoint,
   getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
+const endpoint = 'milestones';
+
 export default class EmasserGetMilestones extends Command {
 
   static usage = 'get milestones [ARGUMENTS]'
-
-  static description = getDescriptionForEndpoint(process.argv, 'milestones');
-
-  static examples = getExamplesForEndpoint(process.argv); 
-
+  static description = getDescriptionForEndpoint(process.argv, endpoint);
+  //static description = getDescriptionForEndpoint(process.argv);
+  static examples = getExamplesForEndpoint(process.argv, endpoint); 
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Milestones endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions,
   }
-
   static args = [
     {name: "byPoamId", description: 'Retrieves milestone(s) for specified system and poam Id', required: false},
     {name: "byMilestoneId", description: 'Retrieves milestone(s) for specified system, poam, and milestone Id', required: false},
