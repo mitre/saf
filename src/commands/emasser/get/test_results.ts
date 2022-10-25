@@ -2,12 +2,12 @@ import colorize from 'json-colorizer';
 import {Command, Flags} from "@oclif/core"
 import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { TestResultsApi, Test } from '@mitre/emass_client';
+import { TestResultsResponseGet } from '@mitre/emass_client/dist/api';
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { outputError } from '../../../utils/emasser/outputError';
 import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetTestResults extends Command {
-
   static usage = 'get test_results [ARGUMENTS]'
 
   static description = 'Get test results for a specific system defined by ID (systemId)'
@@ -25,8 +25,8 @@ export default class EmasserGetTestResults extends Command {
     const getTestResults = new TestResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
     
     // Order is important here
-    getTestResults.getSystemTestResults(flags.systemId,flags.controlAcronyms,flags.ccis,flags.latestOnly).then((data:any) => {
-      console.log(colorize(outputFormat(data.data)));
+    getTestResults.getSystemTestResults(flags.systemId,flags.controlAcronyms,flags.ccis,flags.latestOnly).then((response: TestResultsResponseGet) => {
+      console.log(colorize(outputFormat(response)));
     }).catch((error:any) => console.error(colorize(outputError(error))));    
   }
 }

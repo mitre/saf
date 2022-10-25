@@ -2,12 +2,12 @@ import colorize from 'json-colorizer';
 import {Command, Flags} from "@oclif/core"
 import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { WorkflowDefinitionsApi } from '@mitre/emass_client';
+import { WorkflowDefinitionResponseGet } from '@mitre/emass_client/dist/api';
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { outputError } from '../../../utils/emasser/outputError';
 import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetWorkflowDefinitions extends Command {
-
   static usage = 'get workflow_definitions [options]'
 
   static description = 'View all workflow schemas available on the eMASS instance'
@@ -25,8 +25,8 @@ export default class EmasserGetWorkflowDefinitions extends Command {
     const getWorkflow = new WorkflowDefinitionsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
     
     // Order is important here
-    getWorkflow.getWorkflowDefinitions(flags.includeInactive,flags.registrationType).then((data:any) => {
-      console.log(colorize(outputFormat(data.data)));
+    getWorkflow.getWorkflowDefinitions(flags.includeInactive,flags.registrationType).then((response: WorkflowDefinitionResponseGet) => {
+      console.log(colorize(outputFormat(response)));
     }).catch((error:any) => console.error(colorize(outputError(error))));
   }
 }

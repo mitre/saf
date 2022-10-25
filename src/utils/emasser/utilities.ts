@@ -457,7 +457,7 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
     } else if (args.argument === 'fisma_inventory_summary') {
       return [`${baseCmd} fisma_inventory_summary [-o, --orgId] <value> [options]`];
     } else {
-      return [`${baseCmd} [dashboard name] [options]`];
+      return [`${baseCmd} [dashboard name] [flag] [options]`];
     }  
   }
   return [''];

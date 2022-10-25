@@ -2,6 +2,7 @@ import colorize from 'json-colorizer';
 import {Command, Flags} from "@oclif/core"
 import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { MilestonesApi } from '@mitre/emass_client';
+import { MilestoneResponseGet, MilestoneResponseGetMilestone } from '@mitre/emass_client/dist/api';
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { outputError } from '../../../utils/emasser/outputError';
 import { FlagOptions,
@@ -12,15 +13,17 @@ import { FlagOptions,
 const endpoint = 'milestones';
 
 export default class EmasserGetMilestones extends Command {
-
   static usage = 'get milestones [ARGUMENTS]'
+
   static description = getDescriptionForEndpoint(process.argv, endpoint);
-  //static description = getDescriptionForEndpoint(process.argv);
+
   static examples = getExamplesForEndpoint(process.argv, endpoint); 
+
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Milestones endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions,
   }
+
   static args = [
     {name: "byPoamId", description: 'Retrieves milestone(s) for specified system and poam Id', required: false},
     {name: "byMilestoneId", description: 'Retrieves milestone(s) for specified system, poam, and milestone Id', required: false},
@@ -34,13 +37,13 @@ export default class EmasserGetMilestones extends Command {
 
     if (args.byPoamId === 'byPoamId') {
       // Order is important here
-      getMilestones.getSystemMilestonesByPoamId(flags.systemId,flags.poamId,flags.scheduledCompletionDateStart,flags.scheduledCompletionDateEnd).then((data:any) => {
-        console.log(colorize(outputFormat(data.data)));
+      getMilestones.getSystemMilestonesByPoamId(flags.systemId,flags.poamId,flags.scheduledCompletionDateStart,flags.scheduledCompletionDateEnd).then((response: MilestoneResponseGet) => {
+        console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.byPoamId === 'byMilestoneId') {
       // Order is important here
-      getMilestones.getSystemMilestonesByPoamIdAndMilestoneId(flags.systemId,flags.poamId,flags.milestoneId).then((data:any) => {
-        console.log(colorize(outputFormat(data.data)));
+      getMilestones.getSystemMilestonesByPoamIdAndMilestoneId(flags.systemId,flags.poamId,flags.milestoneId).then((response: MilestoneResponseGetMilestone) => {
+        console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else {
       throw this.error;

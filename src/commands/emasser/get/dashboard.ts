@@ -12,16 +12,17 @@ import { FlagOptions,
 const endpoint = 'dashboard';
 
 export default class EmassergetDashboards extends Command {
+  static usage = 'get dashboard [ARGUMENTS]';
 
-  static usage = 'get dashboards [ARGUMENTS]';
   static description = getDescriptionForEndpoint(process.argv, endpoint);
-  //static description = getDescriptionForEndpoint(process.argv);
+
   static examples = getExamplesForEndpoint(process.argv, endpoint);
+
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Dashboards endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions,
   };
-  static strict = false;
+
   static args = [
     {name: "name", required: false, hidden: true},
     {name: "status_details", description: 'Get systems status detail dashboard information', required: false},
@@ -46,88 +47,86 @@ export default class EmassergetDashboards extends Command {
     const {args, flags} = await this.parse(EmassergetDashboards)
     const apiCxn = new ApiConnection();
     const getDashboards = new DashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
-console.log('run args is: ', args.name)
-console.log('run args is: ', args.va_aa_summary)
-process.exit(0)
+
     if (args.name === 'status_details') {
       // Order is important here
-      getDashboards.getSystemStatusDetails(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-        console.log(colorize(outputFormat(data.data)));
+      getDashboards.getSystemStatusDetails(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+        console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.name === 'control_compliance_summary') {
       // Order is important here
-      getDashboards.getSystemControlComplianceSummary(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-        console.log(colorize(outputFormat(data.data)));
+      getDashboards.getSystemControlComplianceSummary(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+        console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.name === 'security_control_details') {
       // Order is important here
-      getDashboards.getSystemSecurityControlDetails(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-          console.log(colorize(outputFormat(data.data)));
+      getDashboards.getSystemSecurityControlDetails(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.name === 'assessment_procedures_details') {
       // Order is important here
-      getDashboards.getSystemAssessmentProceduresDetails(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-          console.log(colorize(outputFormat(data.data)));
+      getDashboards.getSystemAssessmentProceduresDetails(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.name === 'poam_summary') {
       // Order is important here
-      getDashboards.getSystemPoamSummary(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-          console.log(colorize(outputFormat(data.data)));
+      getDashboards.getSystemPoamSummary(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.name === 'poam_details') {
         // Order is important here
-        getDashboards.getSystemPoamDetails(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-            console.log(colorize(outputFormat(data.data)));
+        getDashboards.getSystemPoamDetails(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+            console.log(colorize(outputFormat(response)));
         }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.name === 'hardware_summary') {
       // Order is important here
-      getDashboards.getSystemHardwareSummary(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-          console.log(colorize(outputFormat(data.data)));
+      getDashboards.getSystemHardwareSummary(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.name === 'hardware_details') {
       // Order is important here
-      getDashboards.getSystemHardwareDetails(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-          console.log(colorize(outputFormat(data.data)));
+      getDashboards.getSystemHardwareDetails(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.name === 'associations_details') {
       // Order is important here
-      getDashboards.getSystemAssociationsDetails(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-          console.log(colorize(outputFormat(data.data)));
+      getDashboards.getSystemAssociationsDetails(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.name === 'assignments_details') {
       // Order is important here
-      getDashboards.getUserSystemAssignmentsDetails(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-          console.log(colorize(outputFormat(data.data)));
+      getDashboards.getUserSystemAssignmentsDetails(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.name === 'privacy_summary') {
       // Order is important here
-      getDashboards.getSystemPrivacySummary(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-          console.log(colorize(outputFormat(data.data)));
+      getDashboards.getSystemPrivacySummary(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.name === 'fisma_saop_summary') {
     // Order is important here
-    getDashboards.getVaOmbFsmaSaopSummary(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-        console.log(colorize(outputFormat(data.data)));
+    getDashboards.getVaOmbFsmaSaopSummary(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+        console.log(colorize(outputFormat(response)));
     }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.name === 'va_aa_summary') {
       // Order is important here
-      getDashboards.getVaSystemAaSummary(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-          console.log(colorize(outputFormat(data.data)));
+      getDashboards.getVaSystemAaSummary(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.name === 'va_a2_summary') {
       // Order is important here
-      getDashboards.getVaSystemA2Summary(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-          console.log(colorize(outputFormat(data.data)));
+      getDashboards.getVaSystemA2Summary(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.name === 'va_pl_109_summary') {
       // Order is important here
-      getDashboards.getVaSystemPl109ReportingSummary(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-          console.log(colorize(outputFormat(data.data)));
+      getDashboards.getVaSystemPl109ReportingSummary(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else if (args.name === 'fisma_inventory_summary') {
       // Order is important here
-      getDashboards.getVaSystemFismaInvetorySummary(flags.orgId,flags.pageIndex,flags.pageSize).then((data:any) => {
-          console.log(colorize(outputFormat(data.data)));
+      getDashboards.getVaSystemFismaInvetorySummary(flags.orgId,flags.pageIndex,flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
     } else {
     throw this.error;

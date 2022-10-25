@@ -13,16 +13,17 @@ import { FlagOptions,
 const endpoint = 'artifacts';
 
 export default class EmasserGetArtifacts extends Command {
-
   static usage = 'get artifacts [ARGUMENTS]';
+
   static description = getDescriptionForEndpoint(process.argv, endpoint);
-  //static description = getDescriptionForEndpoint(process.argv);
+
   static examples = getExamplesForEndpoint(process.argv);
+
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Artifacts endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions,
   };
-  static strict = true;
+
   static args = [
     {name: "name", required: false, hidden: true},
     {name: "forSystem", description: 'Retrieves available milestones for provided system (Id)', required: false},

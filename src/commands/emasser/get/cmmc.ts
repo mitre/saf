@@ -2,12 +2,12 @@ import colorize from 'json-colorizer';
 import {Command, Flags} from "@oclif/core"
 import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { CMMCAssessmentsApi } from '@mitre/emass_client';
+import { CmmcResponseGet } from '@mitre/emass_client/dist/api';
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { outputError } from '../../../utils/emasser/outputError';
 import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetCmmc extends Command {
-
   static usage = 'get cmmc [ARGUMENTS]'
 
   static description = 'View Cybersecurity Maturity Model Certification (CMMC) Assessments'
@@ -25,8 +25,8 @@ export default class EmasserGetCmmc extends Command {
     const getCmmc = new CMMCAssessmentsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
     
     // Order is important here
-    getCmmc.getCmmcAssessments(flags.sinceDate).then((data:any) => {
-      console.log(colorize(outputFormat(data.data)));
+    getCmmc.getCmmcAssessments(flags.sinceDate).then((response: CmmcResponseGet) => {
+      console.log(colorize(outputFormat(response)));
     }).catch((error:any) => console.error(colorize(outputError(error))));
   }
 }

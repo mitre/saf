@@ -8,10 +8,12 @@ import { getFlagsForEndpoint, FlagOptions } from '../../../utils/emasser/utiliti
 import { SystemsResponse } from '@mitre/emass_client/dist/api';
 
 export default class EmasserGetSystems extends Command {
-
   static usage = 'get systems [ARGUMENTS]'
+
   static description = 'Get available systems filter on provided options'
+
   static examples = ['<%= config.bin %> <%= command.id %> [options]']
+
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Systems endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions,
