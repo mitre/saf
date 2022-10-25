@@ -2,12 +2,12 @@ import colorize from 'json-colorizer';
 import {Command, Flags} from "@oclif/core"
 import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { ControlsApi } from '@mitre/emass_client';
+import { CacResponseGet } from '@mitre/emass_client/dist/api';
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { outputError } from '../../../utils/emasser/outputError';
 import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetControls extends Command {
-
   static usage = 'get controls [options]'
 
   static description = 'Get system Security Control information for both the Implementation Plan and Risk Assessment'
@@ -25,8 +25,8 @@ export default class EmasserGetControls extends Command {
     const getControls = new ControlsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
     
     // Order is important here
-    getControls.getSystemControls(flags.systemId,flags.acronyms).then((data:any) => {
-      console.log(colorize(outputFormat(data.data)));
+    getControls.getSystemControls(flags.systemId,flags.acronyms).then((response: CacResponseGet) => {
+      console.log(colorize(outputFormat(response)));
     }).catch((error:any) => console.error(colorize(outputError(error))));
   }
 }

@@ -27,7 +27,6 @@ export class ApiConfig {
         // File probably does not exist
         console.error(colorize(JSON.stringify({error: 'A configuration file (.env) containing the expected environmental variable is required.'})));
         process.exit(0);
-        //throw new Error("A configuration file (.env) containing the expected environmental variable is required.");
       } else {
         throw error;
       }

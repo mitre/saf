@@ -7,17 +7,13 @@ import { outputError } from '../../../utils/emasser/outputError';
 import { getFlagsForEndpoint, FlagOptions } from '../../../utils/emasser/utilities' ;
 import { SystemsResponse } from '@mitre/emass_client/dist/api';
 
-
-
-
 export default class EmasserGetSystems extends Command {
-
   static usage = 'get systems [ARGUMENTS]'
 
   static description = 'Get available systems filter on provided options'
 
-  static examples = ['emasser get systems --includePackage --registrationType --ditprId --coamsId --policy --includeDitprMetrics --includeDecommissioned --reportsForScorecard']
-  
+  static examples = ['<%= config.bin %> <%= command.id %> [options]']
+
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Systems endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions,
@@ -33,5 +29,5 @@ export default class EmasserGetSystems extends Command {
       flags.policy,flags.includeDitprMetrics,flags.includeDecommissioned,flags.reportsForScorecard).then((response: SystemsResponse) => {
       console.log(colorize(outputFormat(response)));
     }).catch((error:any) => console.error(colorize(outputError(error))));
-}
+  }
 }

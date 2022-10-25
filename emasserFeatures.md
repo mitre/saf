@@ -25,7 +25,7 @@ The following environment variables are *optional:
 * EMASSER_VERIFY_SSL_HOST=`<verify host SSL - true or false (default true)>`
 * EMASSER_DEBUGGING=`<set debugging - true or false (default false)>`
 * EMASSER_CLI_DISPLAY_NULL=`<display null value fields - true or false (default true)>`
-* EMASSER_POCH_TO_DATETIME=`<convert epoch to data/time value - true or false (default false)>`
+* EMASSER_EPOCH_TO_DATETIME=`<convert epoch to data/time value - true or false (default false)>`
   
 \* If not provided defaults are used
 
@@ -34,16 +34,14 @@ The proper format to set these variables in the `.env` files is as follows:
 export [VARIABLE_NAME]='value'
 ```
 ***NOTE***
+
 `emasser` requires authentication to an eMASS instance as well as authorization to use the eMASS API. This authentication and authorization is **not** a function of `emasser` and needs to be accomplished with the eMASS instances owner organization. Further information about eMASS credential requirements refer to [Defense Counterintelligence and Security Agency](https://www.dcsa.mil/is/emass/) about eMASS access.
+
+Reference these instructions for [eMASS Account Process Request and API Registration](https://github.com/mitre/emasser/wiki/eMASS-Account-Process-Request-and-API-Registration)
 
 ---
 ## Common emasser Endpoint Requests Information
-  - To invoke any boolean parameters use --parameterName for TRUE and --no-parameterName for FALSE
   - The eMASS API provides the capability of updating multiple entries within several endpoints, however the `emasser` CLI, in some cases only supports updating one entry at the time.
-
-## Invoking emasser CLI Commands
-
-The CLI invoke commands listed in this document shows them when executing from the source code (after a pull from GitHub). Please reference the [`emasser` README](https://mitre.github.io/emasser/) on how to invoke the CLI using other available executables (gem or docker).
 
 ## API Endpoints Provided
 
@@ -65,9 +63,25 @@ The CLI invoke commands listed in this document shows them when executing from t
 * [/api/systems/{systemId}/approval/cac](#get-cac)
 * [/api/systems/{systemId}/approval/pac](#get-pac)
 * [/api/cmmc-assessments](#get-cmmc)
-* [/api/workflow-definitions](#get-workflowdefinitions)
-* [/api/systems/{systemId}/workflow-instances](#get-workflowinstances)
-
+* [/api/workflow-definitions](#get-workflow_definitions)
+* [/api/systems/{systemId}/workflow-instances](#get-workflow_instances)
+* [/api/dashboards/system-status-details](#get-dashboards)
+* [/api/dashboards/system-control-compliance-summary](#get-dashboards)
+* [/api/dashboards/system-security-controls-details](#get-dashboards)
+* [/api/dashboards/system-assessment-procedures-details](#get-dashboards)
+* [/api/dashboards/system-poam-summary](#get-dashboards)
+* [/api/dashboards/system-poam-details](#get-dashboards)
+* [/api/dashboards/system-hardware-summary](#get-dashboards)
+* [/api/dashboards/system-hardware-details](#get-dashboards)
+* [/api/dashboards/system-associations-details](#get-dashboards)
+* [/api/dashboards/user-system-assignments-details](#get-dashboards)
+* [/api/dashboards/system-privacy-summary](#get-dashboards)
+* [/api/dashboards/va-omb-fisma-saop-summary](#get-dashboards)
+* [/api/dashboards/va-system-aa-summary](#get-dashboards)
+* [/api/dashboards/va-system-a2-summary](#get-dashboards)
+* [/api/dashboards/va-system-pl-109-reporting-summary](#get-dashboards)
+* [/api/dashboards/va-system-fisma-inventory-summary](#get-dashboards)
+  
 ### POST
 * [/api/systems/{systemId}/test-results](#post-test_results)
 * [/api/systems/{systemId}/poam](#post-poams)
@@ -78,7 +92,7 @@ The CLI invoke commands listed in this document shows them when executing from t
 * [/api/systems/{systemId}/static-code-scans](#post-static_code_scan)
 * [/api/systems/{systemId}/cloud-resource-results](#post-cloudresource)
 * [/api/systems/{systemId}/container-scan-results](#post-container)
-  
+
 ### PUT
 * [/api/systems/{systemId}/controls](#put-controls)
 * [/api/systems/{systemId}/poams](#put-poams)
@@ -96,12 +110,13 @@ Each CLI endpoint command has several layers of help.
 - Using `help` after a `get, put, post, or delete` command lists all available endpoint calls. The following command would list all available `GET` endpoints commands.
 
     ```bash
-    $ bundle exec exe/emasser get help
+    $ emasser get help
     Commands:
       emasser get artifacts             # Get system Artifacts
       emasser get cac                   # Get location of one or many controls in...
       emasser get cmmc                  # Get CMMC assessment information
       emasser get controls              # Get system Controls
+      emasser get dashboards            # Get dashboard information
       emasser get help [COMMAND]        # Describe subcommands or one specific su...
       emasser get milestones            # Get system Milestones
       emasser get pac                   # Get status of active workflows in a system
@@ -116,7 +131,7 @@ Each CLI endpoint command has several layers of help.
     ```
 - Preceding any command with `help` provides help for the command. The following command would list all available sub-commands and options for the `get artifacts` endpoint command.
     ```bash
-    $ bundle exec exe/emasser get help artifacts
+    $ emasser get help artifacts
     commands:
       emasser get artifacts export --filename=FILENAME --systemId=N  # Get artifa...
       emasser get artifacts forSystem --systemId=N                   # Get all sy...
@@ -124,7 +139,7 @@ Each CLI endpoint command has several layers of help.
     ```
 - Using `help` after any command lists all available options. The following command would list all available options for the `get artifacts export` endpoint command. 
     ```bash
-    $ bundle exec exe/emasser get artifacts help export
+    $ emasser get artifacts help export
     Usage:
       emasser get artifacts export --filename=FILENAME --systemId=N
 
@@ -142,7 +157,7 @@ Each CLI endpoint command has several layers of help.
 ---
 The Test Connection endpoint provides the ability to verify connection to the web service.
 
-    $ bundle exec exe/emasser get test connection
+    $ emasser get test connection
 
 A return of success from the call indicates that the CLI can reach the configure server URL.
 References [Required Environment Variables](#required-environment-variables) for the necessary environment variables.
@@ -164,17 +179,17 @@ Retrieves a system identification based on the SYSTEM_NAME (name) or SYSTEM_OWNE
 
 To invoke the `get system id` use the following command:
 
-    $ bundle exec exe/emasser get system id --system_name "system name" --system_owner "system owner"
+    $ emasser get system id --system_name "system name" --system_owner "system owner"
 
 If using a platform that has `awk` installed the following command can be used to return only the system Id:
 
-    $ bundle exec exe/emasser get system --system_name "system name" --system_owner "system owner" | awk "{ print $1 }" 
+    $ emasser get system --system_name "system name" --system_owner "system owner" | awk "{ print $1 }" 
 
 
 ### get system byId
 Retrieves the system content for provided identification (ID) number. To invoke the endpoint use  the following command:
 
-    $ bundle exec exe/emasser get system byId
+    $ emasser get system byId
 
   - required parameter is:
   
@@ -197,7 +212,7 @@ Retrieves the system content for provided identification (ID) number. To invoke 
 To retrieve controls use the following command:
 - all - Retrieves all available systems
     ```
-    $ bundle exec exe/emasser get systems all
+    $ emasser get systems all
     ```
 
   - Optional parameters are:
@@ -221,11 +236,11 @@ To retrieve controls use the following command:
 There are two get endpoints for system roles:
 - all - Retrieves all available roles
     ```
-    $ bundle exec exe/emasser get roles all
+    $ emasser get roles all
     ```
 - byCategory - Retrieves roles based on the following required parameter:
     ````
-    $ bundle exec exe/emasser get roles byCategory --roleCategory=ROLECATEGORY --role=ROLE
+    $ emasser get roles byCategory --roleCategory=ROLECATEGORY --role=ROLE
     ````
   - required parameters are:
   
@@ -247,7 +262,7 @@ There are two get endpoints for system roles:
 ----
 To retrieve controls use the following command:
 
-    $ bundle exec exe/emasser get controls forSystem --systemId=SYSTEMID
+    $ emasser get controls forSystem --systemId=SYSTEMID
 
   - required parameter is:
 
@@ -267,7 +282,7 @@ To retrieve controls use the following command:
 ----
 To retrieve test results use the following command:
 
-    $ bundle exec exe/emasser get test_results forSystem --systemId=SYSTEMID
+    $ emasser get test_results forSystem --systemId=SYSTEMID
 
   - required parameter is:
 
@@ -290,7 +305,7 @@ To retrieve test results use the following command:
 There are two get endpoints for system poams:
 - forSystem - Retrieves all poams for specified system ID
     ````
-    $ bundle exec exe/emasser get poams forSystem --systemId=SYSTEMID
+    $ emasser get poams forSystem --systemId=SYSTEMID
     ````
   - required parameter is:
 
@@ -311,7 +326,7 @@ There are two get endpoints for system poams:
 
 - byPoamId - Retrieves all poams for specified system and poam ID 
     ````
-    $ bundle exec exe/emasser get poams byPoamId --systemId=SYSTEMID --poamId=POAMID
+    $ emasser get poams byPoamId --systemId=SYSTEMID --poamId=POAMID
     ````
   - required parameters are:
 
@@ -327,7 +342,7 @@ There are two get endpoints for system poams:
 There are two get endpoints for system milestones:
 - byPoamId - Retrieves milestone(s) for specified system and poam ID
     ````
-    $ bundle exec exe/emasser get milestones byPoamId --systemId=SYSTEMID --poamId=POAMID
+    $ emasser get milestones byPoamId --systemId=SYSTEMID --poamId=POAMID
     ````
   - required parameters are:
 
@@ -346,7 +361,7 @@ There are two get endpoints for system milestones:
 
 - byMilestoneId, Retrieve milestone(s) for specified system, poam, and milestone ID"
     ````
-    $ bundle exec exe/emasser get poams byMilestoneId --systemId=SYSTEMID --poamId=POAMID --milestoneId=MILESTONEID
+    $ emasser get poams byMilestoneId --systemId=SYSTEMID --poamId=POAMID --milestoneId=MILESTONEID
     ````
   - required parameters are:
 
@@ -364,7 +379,7 @@ There are two get endpoints that provides the ability to view existing `Artifact
 
 - forSystem - Retrieves one or many artifacts in a system specified system ID
     ````
-    $ bundle exec exe/emasser get artifacts forSystem --systemId=SYSTEMID
+    $ emasser get artifacts forSystem --systemId=SYSTEMID
     ````
   - required parameter is:
 
@@ -381,10 +396,11 @@ There are two get endpoints that provides the ability to view existing `Artifact
     |--ccis                         |String - The system CCIS string numerical value|
     |--systemOnly                   |BOOLEAN - true or false|
 
+
 - export - Retrieves the file artifacts (if compress is true the file binary contents are returned, otherwise the file textual contents are returned.)
-    ````
-    $ bundle exec exe/emasser get artifacts export --systemId=SYSTEMID
-    ````
+  ````
+  $ emasser get artifacts export --systemId=SYSTEMID
+  ````
   - required parameters are:
 
     |parameter    | type or values                    |
@@ -393,6 +409,7 @@ There are two get endpoints that provides the ability to view existing `Artifact
     |--filename   |The artifact file name             |
   
   - optional parameter is:
+  
     |parameter    | type or values                    |
     |-------------|:----------------------------------|
     |--compress   |BOOLEAN - true or false.           |
@@ -403,7 +420,7 @@ There are two get endpoints that provides the ability to view existing `Artifact
 ----
 To view one or many Control Approval Chain (CAC) in a system specified system ID use the following command:
   ```
-  $ bundle exec exe/emasser get cac controls --systemId=SYSTEMID
+  $ emasser get cac controls --systemId=SYSTEMID
   ```
   - required parameter is:
 
@@ -424,7 +441,7 @@ To view one or many Control Approval Chain (CAC) in a system specified system ID
 To view one or many Package Approval Chain (PAC) in a system specified system ID use the following command:
 
   ````
-  $ bundle exec exe/emasser get pac package --systemId=SYSTEMID
+  $ emasser get pac package --systemId=SYSTEMID
   ````
   - required parameter is:
 
@@ -438,9 +455,9 @@ To view one or many Package Approval Chain (PAC) in a system specified system ID
 ----
 To view Cybersecurity Maturity Model Certification (CMMC) Assessments use the following command:
 
-    $ bundle exec exe/emasser get workflow_definitions forSite --sinceDate=SINCEDATE 
+    $ emasser get workflow_definitions forSite --sinceDate=SINCEDATE 
 
-  - Required parameters are:
+  - Required parameter is:
 
     |parameter       | type or values                        |
     |----------------|:--------------------------------------|
@@ -452,7 +469,7 @@ To view Cybersecurity Maturity Model Certification (CMMC) Assessments use the fo
 ----
 To view Workflow Definitions use the following command:
 
-    $ bundle exec exe/emasser get workflow_definitions forSite
+    $ emasser get workflow_definitions forSite
 
   - Optional parameters are:
 
@@ -463,13 +480,14 @@ To view Workflow Definitions use the following command:
     |                     |                 cloudServiceProvider, commonControlProvider                 |
 
 [top](#api-endpoints-provided)
-
 ### ```get workflow_instances```
+
 ----
 There are two get endpoints to view workflow instances:
   - all
-    $ bundle exec exe/emasser get workflow_instances all
-
+    ```
+    $ emasser get workflow_instances all
+    ```
     - Optional parameters are:
 
       |parameter          | type or values                                     |
@@ -480,8 +498,9 @@ There are two get endpoints to view workflow instances:
       |--status           |Possible values: active, inactive, all              | 
 
   - byWorkflowInstanceId
-    $ bundle exec exe/emasser get workflow_instances byWorkflowInstanceId --workflowInstanceId=--WORKFLOWID
-
+    ```
+    $ emasser get workflow_instances byWorkflowInstanceId --workflowInstanceId=WORKFLOWID
+    ```
     - required parameter is:
 
       |parameter            | type or values                               |
@@ -489,7 +508,92 @@ There are two get endpoints to view workflow instances:
       |--workflowInstanceId |Integer - Unique workflow instance identifier |
 
 [top](#api-endpoints-provided)
+### ```get dashboards```
 
+----
+The Dashboards endpoints provide the ability to view data contained in dashboard exports. In the eMASS front end, these dashboard exports are generated as Excel exports.
+
+All endpoint calls utilize the same parameter values, they are:
+  - Required parameter is:
+
+    |parameter     | type or values                                  |
+    |--------------|:------------------------------------------------|
+    |--orgId       |Integer - The organization identification number |
+
+  - Optional parameters are:
+
+    |parameter    | type or values                                                |
+    |-------------|:--------------------------------------------------------------|
+    |--pageIndex  |Integer - The index of the starting page (default first page 0)|
+    |--pageSize   |Integer - The number of entries per page (default 20000)       |
+
+Available commands are:
+  - Get systems status detail dashboard information
+    ```
+    $ emasser get status_details --orgId=ORGID
+    ```
+  - Get systems control compliance summary dashboard information    
+    ```
+    $ emasser get control_compliance_summary --orgId=ORGID
+    ```
+  - Get systems security control details dashboard information
+    ```
+    $ emasser get security_control_details --orgId=ORGID
+    ```
+  - Get systems assessment procedures details dashboard information
+    ```
+    $ emasser get assessment_procedures_details --orgId=ORGID
+    ```
+  - Get systems POA&Ms summary dashboard information
+    ```
+    $ emasser get poam_summary --orgId=ORGID
+    ```
+  - Get system POA&Ms details dashboard information
+    ```
+    $ emasser get poam_details --orgId=ORGID
+    ```
+  - Get system hardware summary dashboard information
+    ```
+    $ emasser get hardware_summary --orgId=ORGID
+    ```
+  - Get system hardware details dashboard information
+    ```
+    $ emasser get hardware_details --orgId=ORGID
+    ```
+  - Get system associations details dashboard information
+    ```
+    $ emasser get associations_details --orgId=ORGID
+    ```
+  - Get user system assignments details dashboard information
+    ```
+    $ emasser get assignments_details --orgId=ORGID
+    ```
+  - Get user system privacy summary dashboard information
+    ```
+    $ emasser get privacy_summary --orgId=ORGID
+    ```
+  - Get VA OMB-FISMA SAOP summary dashboard information
+    ```
+    $ emasser get fisma_saop_summary --orgId=ORGID
+    ```
+  - Get VA system A&A summary dashboard information
+    ```
+    $ emasser get va_aa_summary --orgId=ORGID
+    ```
+  - Get VA system A2.0 summary dashboard information
+    ```
+    $ emasser get va_a2_summary --orgId=ORGID
+    ```
+  - Get VA System P.L. 109 reporting summary dashboard information
+    ```
+    $ emasser get va_pl_109_summary --orgId=ORGID
+    ```
+  - Get VA system FISMA inventory summary dashboard information
+    ```
+    $ emasser get fisma_inventory_summary --orgId=ORGID
+    ```
+
+[top](#api-endpoints-provided)
 
 ## Usage - POST
 
@@ -513,7 +617,7 @@ Test Result add (POST) endpoint API business rules.
 To add (POST) test results use the following command:
 
   ````
-  $ bundle exec exe/emasser post test_results add --systemId [value] --cci [value] --testedBy [value] --testDate [value] --description [value] --complianceStatus [value]
+  $ emasser post test_results add --systemId [value] --cci [value] --testedBy [value] --testDate [value] --description [value] --complianceStatus [value]
   ````
 Note: If no POA&Ms or AP exist for the control (system), you will get this response:
 "You have entered a Non-Compliant Test Result. You must create a POA&M Item for this Control and/or AP if one does not already exist."
@@ -532,7 +636,7 @@ Note: If no POA&Ms or AP exist for the control (system), you will get this respo
 **Note**
 For information at the command line use: 
 ```
-$ bundle exec exe/emasser post test_results help add
+$ emasser post test_results help add
 ```
 [top](#post)
 
@@ -594,7 +698,7 @@ The following POA&M parameters/fields have the following character limitations:
 
 To add (POST) POA&Ms use the following command:
 ```
-$ bundle exec exe/emasser post poams add --systemId [value] --status [value] --vulnerabilityDescription [value] --sourceIdentVuln [value] --pocOrganization [value] --resources [value]
+$ emasser post poams add --systemId [value] --status [value] --vulnerabilityDescription [value] --sourceIdentVuln [value] --pocOrganization [value] --resources [value]
 ```
 **Notes:** 
   - The above listed parameters/fields are the minimal required.
@@ -661,7 +765,7 @@ Client API parameters/fields (required, conditional, and optional).
 **Note**
 For information at the command line use: 
 ```
-$ bundle exec exe/emasser post poams help add
+$ emasser post poams help add
 ```
 [top](#post)
 
@@ -670,7 +774,7 @@ $ bundle exec exe/emasser post poams help add
 To add (POST) milestones in a system for one or more POA&M items use the following command:
 
 ````
-  $ bundle exec exe/emasser post milestones add --systemId [value] --poamId [value] --description [value] --scheduledCompletionDate [value]
+  $ emasser post milestones add --systemId [value] --poamId [value] --description [value] --scheduledCompletionDate [value]
 ````
   - required parameter are:
 
@@ -685,7 +789,7 @@ To add (POST) milestones in a system for one or more POA&M items use the followi
 **Note**
 For information at the command line use: 
 ```
-$ bundle exec exe/emasser post milestones help add
+$ emasser post milestones help add
 ```
 [top](#post)
 
@@ -716,7 +820,7 @@ Business Rules:
 To add (POST) artifacts use the following command:
 
 ```
-$ bundle exec exe/emasser post artifacts upload --systemId [value] [--isTemplate or --no-isTemplate] --type [value] --category [value] --files [value...value]
+$ emasser post artifacts upload --systemId [value] [--isTemplate or --no-isTemplate] --type [value] --category [value] --files [value...value]
 ```
 
   - required parameter are:
@@ -744,7 +848,7 @@ $ bundle exec exe/emasser post artifacts upload --systemId [value] [--isTemplate
 **Note**
 For information at the command line use: 
 ```
-$ bundle exec exe/emasser post artifacts help upload
+$ emasser post artifacts help upload
 ```
 [top](#post)
 
@@ -758,7 +862,7 @@ Business Rule
 To add (POST) test CAC use the following command:
 
   ````
-  $ bundle exec exe/emasser post pac add --systemId [value] --controlAcronym [value] --comments [value]
+  $ emasser post pac add --systemId [value] --controlAcronym [value] --comments [value]
   ````
   - required parameter are:
 
@@ -776,7 +880,7 @@ To add (POST) test CAC use the following command:
 **Note**
 For information at the command line use: 
 ```
-$ bundle exec exe/emasser post cac help add
+$ emasser post cac help add
 ```
 [top](#post)
 
@@ -787,7 +891,7 @@ Submit control to second role of CAC
 To add (POST) test PAC use the following command:
 
   ````
-  $ bundle exec exe/emasser post pac add --systemId [value] --workflow [value] --name [value] --comments [value]
+  $ emasser post pac add --systemId [value] --workflow [value] --name [value] --comments [value]
   ````
   - required parameter are:
 
@@ -801,7 +905,7 @@ To add (POST) test PAC use the following command:
 **Note**
 For information at the command line use: 
 ```
-$ bundle exec exe/emasser post pac help add
+$ emasser post pac help add
 ```
 [top](#post)
 
@@ -810,7 +914,7 @@ $ bundle exec exe/emasser post pac help add
 To add (POST) static code scans use the following command:
 
   ````
-  $ bundle exec exe/emasser post scan_findings add --systemId [value] --applicationName [value] --version [value] --codeCheckName [value] --scanDate [value] --cweId [value]
+  $ emasser post scan_findings add --systemId [value] --applicationName [value] --version [value] --codeCheckName [value] --scanDate [value] --cweId [value]
   ````
   - required parameter are:
 
@@ -835,7 +939,7 @@ To add (POST) static code scans use the following command:
 To clear (POST) static code scans use the following command:
 
   ````
-  $ bundle exec exe/emasser post scan_findings clear --systemId [value] --applicationName [value] --version [value] --clearFindings
+  $ emasser post scan_findings clear --systemId [value] --applicationName [value] --version [value] --clearFindings
   ````
   - required parameter are:
 
@@ -850,7 +954,7 @@ To clear (POST) static code scans use the following command:
 **Note**
 For information at the command line use: 
 ```
-$ bundle exec exe/emasser post scan_findings help add
+$ emasser post scan_findings help add
 ```
 [top](#post)
 
@@ -880,7 +984,7 @@ The following Cloud Resource parameters/fields have the following character limi
 
 To add a cloud resource and their scan results in the assets module for a system use the following command:
 ````
-  $ bundle exec exe/emasser post cloud_resource add --systemId [value] --provider [value] --resourceId [value] --resourceName [value] --resourceType [value] --cspPolicyDefinitionId [value] --isCompliant or --is-not-Compliant --policyDefinitionTitle [value] --test [value]
+  $ emasser post cloud_resource add --systemId [value] --provider [value] --resourceId [value] --resourceName [value] --resourceType [value] --cspPolicyDefinitionId [value] --isCompliant or --is-not-Compliant --policyDefinitionTitle [value] --test [value]
 ````
   - required parameter are:
 
@@ -918,7 +1022,7 @@ To add a cloud resource and their scan results in the assets module for a system
 **Note**
 For information at the command line use: 
 ```
-$ bundle exec exe/emasser post cloud_resource help add
+$ emasser post cloud_resource help add
 ```    
 
 [top](#post)
@@ -978,7 +1082,7 @@ To add containers and their scan results in the assets module for a system use t
 **Note**
 For information at the command line use: 
 ```
-$ bundle exec exe/emasser post container help add
+$ emasser post container help add
 ```
 [top](#post)
 
@@ -1019,7 +1123,7 @@ Implementation Plan information cannot be updated if Security Control does not e
 ---
 Updating (PUT) a Control can be accomplished by invoking the following command:
   ````
-  $ bundle exec exe/emasser put controls update [PARAMETERS]
+  $ emasser put controls update [PARAMETERS]
   ````
   - required parameter are:
 
@@ -1062,7 +1166,7 @@ Updating (PUT) a Control can be accomplished by invoking the following command:
 **Note**
 For information at the command line use: 
 ```
-$ bundle exec exe/emasser put controls help update
+$ emasser put controls help update
 ```
 [top](#put)
 
@@ -1139,7 +1243,7 @@ The following POA&M parameters/fields have the following character limitations:
 ---
 Updating (PUT) a POA&M can be accomplished by invoking the following command:
   ````
-  $ bundle exec exe/emasser put poams update [PARAMETERS]
+  $ emasser put poams update [PARAMETERS]
   ````
   - required parameter are:
 
@@ -1197,7 +1301,7 @@ Updating (PUT) a POA&M can be accomplished by invoking the following command:
 **Note**
 For information at the command line use: 
 ```
-$ bundle exec exe/emasser put poams help update
+$ emasser put poams help update
 ```
 [top](#put)
 
@@ -1208,7 +1312,7 @@ $ bundle exec exe/emasser put poams help update
 To add (POST) milestones in a system for one or more POA&M items use the following command:
 
 ````
-  $ bundle exec exe/emasser put milestones update [PARAMETERS]
+  $ emasser put milestones update [PARAMETERS]
 ````
   - required parameter are:
 
@@ -1224,7 +1328,7 @@ To add (POST) milestones in a system for one or more POA&M items use the followi
 **Note**
 For information at the command line use: 
 ```
-$ bundle exec exe/emasser put milestones help update
+$ emasser put milestones help update
 ```
 [top](#put)
 
@@ -1249,7 +1353,7 @@ Business Rules
 To add (POST) milestones in a system for one or more POA&M items use the following command:
 
 ````
-  $ bundle exec exe/emasser put artifacts update [PARAMETERS]
+  $ emasser put artifacts update [PARAMETERS]
 ````
   - required parameter are:
 
@@ -1279,7 +1383,7 @@ To add (POST) milestones in a system for one or more POA&M items use the followi
 **Note**
 For information at the command line use: 
 ```
-$ bundle exec exe/emasser put artifacts help update
+$ emasser put artifacts help update
 ```
 [top](#put)
 
@@ -1292,7 +1396,7 @@ Remove one or many poa&m items in a system
 
 To remove (DELETE) one or more POA&M items use the following command:
 ```
-bundle exec exe/emasser delete poams remove --systemId [value] --poamId [value]
+emasser delete poams remove --systemId [value] --poamId [value]
 ```
 [top](#delete)
 
@@ -1309,7 +1413,7 @@ The last milestone can not be deleted, at-least on must exist.
 
 To remove (DELETE) one or more Milestones in a system use the following command:
 ```
-bundle exec exe/emasser delete milestones remove--systemId [value] --poamId [value] --milestoneId [value]
+emasser delete milestones remove--systemId [value] --poamId [value] --milestoneId [value]
 ```
 [top](#delete)
 
@@ -1322,10 +1426,10 @@ Provide single file or a space/comma delimited list of file names to be removed 
 
 To remove (DELETE) one or more Artifacts from a system use the following command:
 ```
-bundle exec exe/emasser delete artifacts remove --systemId [value] --files [value]
+emasser delete artifacts remove --systemId [value] --files [value]
 or
-bundle exec exe/emasser delete artifacts remove --systemId [value] --files [value value...] 
+emasser delete artifacts remove --systemId [value] --files [value value...] 
 or
-bundle exec exe/emasser delete artifacts remove --systemId [value] --files [value, value...] 
+emasser delete artifacts remove --systemId [value] --files [value, value...] 
 ```
 [top](#delete)
