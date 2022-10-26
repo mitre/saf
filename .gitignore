@@ -8,3 +8,7 @@ node_modules
 **/.DS_Store
 *.*.un~
 out
+.env
+package.json
+package-lock.json
+zipper*
