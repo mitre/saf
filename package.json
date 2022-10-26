@@ -51,6 +51,7 @@
     "objects-to-csv": "^1.3.6",
     "open": "^8.4.0",
     "prompt-sync": "^4.1.6",
+    "read-last-lines": "^1.8.0",
     "run-script-os": "^1.1.6",
     "table": "^6.8.0",
     "ts-node": "^10",
@@ -144,8 +145,11 @@
       "view": {
         "description": "[Visualize]    Identify overall security status and deep-dive to solve specific security defects"
       },
+      "emasser": {
+        "description": "[eMASS]        The eMASS REST API implementation"
+      },
       "emasser:get": {
-          "description": "eMass REST API GET endpoint commands"
+        "description": "eMass REST API GET endpoint commands"
       },
       "emasser:post": {
         "description": "eMass REST API POST endpoint commands"

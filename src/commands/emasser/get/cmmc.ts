@@ -8,11 +8,11 @@ import { outputError } from '../../../utils/emasser/outputError';
 import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetCmmc extends Command {
-  static usage = 'get cmmc [ARGUMENTS]'
+  static usage = '<%= command.id %> [ARGUMENTS]'
 
   static description = 'View Cybersecurity Maturity Model Certification (CMMC) Assessments'
 
-  static examples = ['emasser get cmmc --sinceDate <value>']
+  static examples = ['<%= config.bin %> <%= command.id %> --sinceDate <value>']
 
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET CMMC endpoint'}),

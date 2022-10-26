@@ -13,7 +13,7 @@ import { FlagOptions,
 const endpoint = 'artifacts';
 
 export default class EmasserGetArtifacts extends Command {
-  static usage = 'get artifacts [ARGUMENTS]';
+  static usage = '<%= command.id %> [ARGUMENTS]';
 
   static description = getDescriptionForEndpoint(process.argv, endpoint);
 

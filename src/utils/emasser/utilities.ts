@@ -18,6 +18,7 @@ export interface FlagOptions {
   includeInactive?: OptionFlag<number|undefined>;
   includeComments?: OptionFlag<number|undefined>;
   pageIndex?: OptionFlag<number|undefined>;
+  isTemplate?: BooleanFlag<boolean>;
   includePackage?: BooleanFlag<boolean|undefined>;
   includeDitprMetrics?: BooleanFlag<boolean|undefined>;
   includeDecommissioned?: BooleanFlag<boolean|undefined>;
@@ -47,6 +48,13 @@ export interface FlagOptions {
   scheduledCompletionDate?: OptionFlag<string|any>;
   orgId?:OptionFlag<number>;
   pageSize?: OptionFlag<number|undefined>;
+  input?: OptionFlag<string[]>;
+  type?: OptionFlag<string>;
+  category?: OptionFlag<string>;
+  refPageNumber?: OptionFlag<string|undefined>;
+  controls?: OptionFlag<string|undefined>;
+  artifactExpirationDate?: OptionFlag<string|undefined>;
+  lastReviewDate?: OptionFlag<string|undefined>;
 }
 
 export function getFlagsForEndpoint(argv: string[]): FlagOptions {
@@ -56,7 +64,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
     if (args.endpoint === 'system') {
       return {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
-        includePackage: Flags.boolean({char: "i", description: "Boolean - include system packages", required: false}),
+        includePackage: Flags.boolean({char: "I", description: "Boolean - include system packages", required: false}),
         policy: Flags.string({char: "p", description: "Filter on policy", required: false, options: ['diacap','rmf','reporting']}),
       }
     } else if (args.endpoint === 'systems') {
@@ -65,12 +73,11 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         options: ['assessAndAuthorize','assessOnly','guest','regular','functional','cloudServiceProvider','commonControlProvider'], required: false}),
         ditprId: Flags.string({char: "t", description: "DoD Information Technology (IT) Portfolio Repository (DITPR) string Id", required: false}),
         coamsId: Flags.string({char: "c", description: "Cyber Operational Attributes Management System (COAMS) string Id", required: false}),
-        policy: Flags.string({char: "p", description: "Filter on policy", required: false, options: ['diacap','rmf','reporting']}),
-    
-        includePackage: Flags.boolean({char: "i", description: "Boolean - include system packages", required: false}),
-        includeDitprMetrics: Flags.boolean({char: "m", description: "Boolean - include DoD Information Technology metrics", required: false}),
-        includeDecommissioned: Flags.boolean({char: "d", description: "Boolean - include decommissioned systems", required: false}),
-        reportsForScorecard: Flags.boolean({char: "s", description: "Boolean - include score card", required: false}),
+        policy: Flags.string({char: "p", description: "Filter on policy", options: ['diacap','rmf','reporting'], required: false}),
+        includePackage: Flags.boolean({char: "I", description: "Boolean - include system packages", required: false}),
+        includeDitprMetrics: Flags.boolean({char: "M", description: "Boolean - include DoD Information Technology metrics", required: false}),
+        includeDecommissioned: Flags.boolean({char: "D", description: "Boolean - include decommissioned systems", required: false}),
+        reportsForScorecard: Flags.boolean({char: "S", description: "Boolean - include score card", required: false}),
       }
     } else if (args.endpoint === 'roles' && args.argument === 'byCategory') {
       return {
@@ -78,12 +85,12 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         role: Flags.string({char: "r", description: "Filter on role type", 
         options: ['AO','Auditor','Artifact Manager','C&A Team', 'IAO','ISSO', 'PM/IAM', 'SCA', 'User Rep', 'Validator'], required: true}),
         policy: Flags.string({char: "p", description: "Filter on policy", options: ['diacap','rmf','reporting'], required: false}),
-        includeDecommissioned: Flags.boolean({char: "d", description: "Boolean - include decommissioned systems", required: false}),
+        includeDecommissioned: Flags.boolean({char: "D", description: "Boolean - include decommissioned systems", required: false}),
       }
     } else if (args.endpoint === 'controls') {
       return {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
-        acronyms: Flags.boolean({char: "a", description: "The system acronym(s) e.g \"AC-1, AC-2\" - if not provided all controls for systemId are returned", required: false}),
+        acronyms: Flags.boolean({char: "A", description: "The system acronym(s) e.g \"AC-1, AC-2\" - if not provided all controls for systemId are returned", required: false}),
       }
     } else if (args.endpoint === 'cac') {
       return {
@@ -103,7 +110,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
         controlAcronyms: Flags.string({char: "a", description: "The system acronym(s) e.g \"AC-1, AC-2\"", required: false}),
         ccis: Flags.string({char: "c", description: "The system CCIS string numerical value", required: false}),
-        latestOnly: Flags.boolean({char: "l", description: "Filter on latest only", required: false}),
+        latestOnly: Flags.boolean({char: "L", description: "Boolean - Filter on latest only", required: false}),
       }
     } else if (args.endpoint === 'workflow_defintions') {
       return {
@@ -118,7 +125,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         scheduledCompletionDateEnd: Flags.string({description: "The completion end date", required: false}),
         controlAcronyms: Flags.string({char: "a", description: "The system acronym(s) e.g \"AC-1, AC-2\"", required: false}),
         ccis: Flags.string({char: "c", description: "The system CCIS string numerical value", required: false}),
-        systemOnly: Flags.boolean({char: "y", description: "Return only systems", required: false}),
+        systemOnly: Flags.boolean({char: "Y", description: "Boolean - Return only systems", required: false}),
       }
     } else if (args.endpoint === 'poams' && args.argument === 'byPoamId') {
       return {
@@ -131,20 +138,20 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         filename: Flags.string({char: "f", description: "The artifact file name", required: false}),
         controlAcronyms: Flags.string({char: "a", description: "The system acronym(s) e.g \"AC-1, AC-2\"", required: false}),
         ccis: Flags.string({char: "c", description: "The system CCIS string numerical value", required: false}),
-        systemOnly: Flags.boolean({char: "y", description: "Return only systems", required: false}),
+        systemOnly: Flags.boolean({char: "y", description: "Boolean - Return only systems", required: false}),
       }
     } else if (args.endpoint === 'artifacts' && args.argument === 'export') {
       return {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
         filename: Flags.string({char: "f", description: "The artifact file name", required: true}),
-        compress: Flags.boolean({char: "c", description: "Compress true or false", required: false}),
+        compress: Flags.boolean({char: "C", description: "Boolean - Compress true or false", required: false}),
       }
     } else if (args.endpoint === 'milestones' && args.argument === 'byPoamId') {
       return {
         systemId: Flags.integer({char: "s", description: "Unique system identifier", required: true}),
         poamId: Flags.integer({char: "p", description: "Unique poam identifier", required: true}),
         scheduledCompletionDateStart: Flags.string({char: "t", description: "Unix time format (e.g. 1499644800)", required: false}),
-        scheduledCompletionDateEnd: Flags.string({char: "e", description: "Unix time format (e.g. 1499990400)", required: false}),
+        scheduledCompletionDateEnd: Flags.string({char: "c", description: "Unix time format (e.g. 1499990400)", required: false}),
       }
     } else if (args.endpoint === 'milestones' && args.argument === 'byMilestoneId') {
       return {
@@ -163,119 +170,44 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
       return {
         workflowInstanceId: Flags.integer({char: "w", description: "Unique workflow instance identifier", required: true}),
       }
-    } else if (args.endpoint === 'dashboard') {
+    } else if (args.endpoint === 'dashboards') {
       return {
         orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
         pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
         pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
       }
     }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'status_details') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'control_compliance_summary') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'security_control_details') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'assessment_procedures_details') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'poam_summary') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'poam_details') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'hardware_summary') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'hardware_details') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'associations_details') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'assignments_details') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'privacy_summary') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'fisma_saop_summary') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'va_aa_summary') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'va_a2_summary') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'va_pl_109_summary') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } else if (args.endpoint === 'dashboard' && args.argument === 'fisma_inventory_summary') {
-    //   return {
-    //     orgId: Flags.integer({char: "o", description: "The organization identification number", required: true}),
-    //     pageIndex: Flags.integer({char: "i", description: "The index of the starting page (default first page 0)", required: false}),
-    //     pageSize: Flags.integer({char: "s", description: "The number of entries per page (default 20000)", required: false}),
-    //   }
-    // } 
   } else if (args.requestType === 'post') {
     if (args.endpoint === 'test_results') {
       return {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
         cci: Flags.string({char: "c", description: "The system CCI string numerical value", required: true}),
-        testedBy: Flags.string({char: "t", description: "The person that conducted the test (Last Name, First)", required: true}),
-        testDate: Flags.string({char: "d", description: "The date test was conducted, Unix time format", required: true}),
+        testedBy: Flags.string({char: "b", description: "The person that conducted the test (Last Name, First)", required: true}),
+        testDate: Flags.string({char: "t", description: "The date test was conducted, Unix time format", required: true}),
         description: Flags.string({char: "d", description: "The description of test result. 4000 Characters", required: true}),
         complianceStatus: Flags.string({char: "c", description: "The system CCI string numerical value", required: true}),
+      }
+    } else if (args.endpoint === 'milestones') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        poamId: Flags.integer({char: "p", description: "The poam identification number", required: true}),
+        description: Flags.string({char: "d", description: "The milestone description", required: true}),
+        scheduledCompletionDate: Flags.string({char: "c", description: "The scheduled completion date - Unix time format", required: true}),
+      }
+    }  else if (args.endpoint === 'artifacts') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        input: Flags.string({char: 'i', description: "Artifact file(s) to post to the given system, can have multiple (space separated)", required: true, multiple: true}),
+        isTemplate: Flags.boolean({char: 'T', description: "Boolean - Indicates whether an artifact is a template.", required: true}),
+        type: Flags.string({char: 't', description: "Artifact file type",
+          options: ['Procedure','Diagram','Policy','Labor','Document','Image','Other','Scan Result','Auditor Report'], required: true}), 
+        category: Flags.string({char: 'c', description: "Artifact category", options: ['Implementation Guidance','Evidence'], required: true}), 
+        description: Flags.string({char: "d", description: "The artifact(s) description", required: false}),
+        refPageNumber: Flags.string({char: "p", description: "Artifact reference page number", required: false}),
+        ccis: Flags.string({char: "c", description: "CCIs associated with artifact", required: false}),    
+        controls: Flags.string({char: "C", description: "Control acronym associated with the artifact. NIST SP 800-53 Revision 4 defined.", required: false}),
+        artifactExpirationDate: Flags.string({char: "D", description: "Date artifact expires and requires review", required: false}),
+        lastReviewDate: Flags.string({char: "R", description: "Date artifact was last reviewed", required: false}),
       }
     }
   } else if (args.requestType === 'put') {
@@ -285,7 +217,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         poamId: Flags.integer({char: "p", description: "The poam identification number", required: true}),
         milestoneId: Flags.integer({char: "m", description: "Unique milestone identifier", required: true}),
         description: Flags.string({char: "d", description: "The milestone description", required: false}),
-        scheduledCompletionDate: Flags.string({char: "t", description: "The scheduled completion date - Unix time format", required: false}),
+        scheduledCompletionDate: Flags.string({char: "c", description: "The scheduled completion date - Unix time format", required: false}),
       }      
     }
   }
@@ -336,7 +268,7 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
       } else {
         return 'Retrieve all workflow instances or workflow instances noted by workflowInstanceID';
       }
-    } else if (args.endpoint === 'dashboard') {
+    } else if (args.endpoint === 'dashboards') {
       if (args.argument === 'status_details') {
         return 'Get systems status detail dashboard information';
       } else if (args.argument === 'control_compliance_summary') {
@@ -370,7 +302,7 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
       } else if (args.argument === 'fisma_inventory_summary') {
         return 'Get VA system FISMA inventory summary dashboard information';
       } else {
-        return 'Retrieve dashboard by orgId';
+        return 'Retrieves a pre-defined dashboard by orgId';
       }
     } 
   }
@@ -383,82 +315,84 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
   // <%= command.id %> resolves to the command name  
   let baseCmd: string = '<%= config.bin %> <%= command.id %>'; 
 
-  if (args.requestType === 'get' && args.endpoint === 'roles') {
-    if (args.argument === 'all') {
-      return [`${baseCmd} roles all`];
-    } else if (args.argument === 'byCategory') {
-      return [`${baseCmd} byCategory [-c, --roleCategory] <value> [-r, --role] <value> [options]`];
-    } else {
-      return [`${baseCmd} all`, `${baseCmd} byCategory [-c, --roleCategory] <value> [-r, --role] <value> [options]`];
-    }
-  } else if (args.requestType === 'get' && args.endpoint === 'poams') {
-    if (args.argument === 'forSystem') {
-      return [`${baseCmd} forSystem [-s, --systemId] <value> [options]`];
-    } else if (args.argument === 'byPoamId') {
-      return [`${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value>`];
-    } else {
-      return [`${baseCmd} forSystem [-s, --systemId] <value> [options]`, `${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value>`];
-    }    
-  } else if (args.requestType === 'get' && args.endpoint === 'artifacts') {
-    if (args.argument === 'forSystem') {
-      return [`${baseCmd} forSystem [-s, --systemId] <value> [options]`];
-    } else if (args.argument === 'export') {
-      return [`${baseCmd} export [-s, --systemId] <value> [-f, --filename] <value> [options]`];
-    } else {
-      return [`${baseCmd} forSystem [-s, --systemId] <value> [options]`, `${baseCmd} export [-s, --systemId] <value> [-f, --filename] <value> [options]`];
-    }    
-  } else if (args.requestType === 'get' && args.endpoint === 'milestones') {
-    if (args.argument === 'byPoamId') {
-      return [`${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value> [options]`];
-    } else if (args.argument === 'byMilestoneId') {
-      return [`${baseCmd} byMilestoneId [-s, --systemId] <value> [-p, --poamId] <value> [-m, --milestoneId] <value>`];
-    } else {
-      return [`${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value> [options]`, `${baseCmd} byMilestoneId [-s, --systemId] <value> [-p, --poamId] <value> [-m, --milestoneId] <value>`];
-    }    
-  } else if (args.requestType === 'get' && args.endpoint === 'workflow_instances') {
-    if (args.argument === 'all') {
-      return [`${baseCmd} all [options]`];
-    } else if (args.argument === 'byInstanceId') {
-      return [`${baseCmd} byInstanceId [-w, --workflowInstanceId] <value>`];
-    } else {
-      return [`${baseCmd} all [options]`, `${baseCmd} byInstanceId [-w, --workflowInstanceId] <value>`];
-    }  
-  } else if (args.requestType === 'get' && args.endpoint === 'dashboard') {
-    if (args.argument === 'status_details') {
-      return [`${baseCmd} status_details [-o, --orgId] <value> [options]`];
-    } else if (args.argument === 'control_compliance_summary') {
-      return [`${baseCmd} control_compliance_summary [-o, --orgId] <value> [options]`];
-    } else if (args.argument === 'security_control_details') {
-      return [`${baseCmd} security_control_details [-o, --orgId] <value> [options]`];
-    } else if (args.argument === 'assessment_procedures_details') {
-      return [`${baseCmd} assessment_procedures_details [-o, --orgId] <value> [options]`];
-    } else if (args.argument === 'poam_summary') {
-      return [`${baseCmd} poam_summary [-o, --orgId] <value> [options]`];
-    } else if (args.argument === 'poam_details') {
-      return [`${baseCmd} poam_details [-o, --orgId] <value> [options]`];
-    } else if (args.argument === 'hardware_summary') {
-      return [`${baseCmd} hardware_summary [-o, --orgId] <value> [options]`];
-    } else if (args.argument === 'hardware_details') {
-      return [`${baseCmd} hardware_details [-o, --orgId] <value> [options]`];
-    } else if (args.argument === 'associations_details') {
-      return [`${baseCmd} associations_details [-o, --orgId] <value> [options]`];
-    } else if (args.argument === 'assignments_details') {
-      return [`${baseCmd} assignments_details [-o, --orgId] <value> [options]`];
-    } else if (args.argument === 'privacy_summary') {
-      return [`${baseCmd} privacy_summary [-o, --orgId] <value> [options]`];
-    } else if (args.argument === 'fisma_saop_summary') {
-      return [`${baseCmd} fisma_saop_summary [-o, --orgId] <value> [options]`];
-    } else if (args.argument === 'va_aa_summary') {
-      return [`${baseCmd} va_aa_summary [-o, --orgId] <value> [options]`];
-    } else if (args.argument === 'va_a2_summary') {
-      return [`${baseCmd} va_a2_summary [-o, --orgId] <value> [options]`];
-    } else if (args.argument === 'va_pl_109_summary') {
-      return [`${baseCmd} va_pl_109_summary [-o, --orgId] <value> [options]`];
-    } else if (args.argument === 'fisma_inventory_summary') {
-      return [`${baseCmd} fisma_inventory_summary [-o, --orgId] <value> [options]`];
-    } else {
-      return [`${baseCmd} [dashboard name] [flag] [options]`];
-    }  
+  if (args.requestType === 'get') {
+    if (args.endpoint === 'roles') {
+      if (args.argument === 'all') {
+        return [`${baseCmd} roles all`];
+      } else if (args.argument === 'byCategory') {
+        return [`${baseCmd} byCategory [-c, --roleCategory] <value> [-r, --role] <value> [options]`];
+      } else {
+        return [`${baseCmd} all`, `${baseCmd} byCategory [-c, --roleCategory] <value> [-r, --role] <value> [options]`];
+      }
+    } else if (args.endpoint === 'poams') {
+      if (args.argument === 'forSystem') {
+        return [`${baseCmd} forSystem [-s, --systemId] <value> [options]`];
+      } else if (args.argument === 'byPoamId') {
+        return [`${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value>`];
+      } else {
+        return [`${baseCmd} forSystem [-s, --systemId] <value> [options]`, `${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value>`];
+      }    
+    } else if (args.endpoint === 'artifacts') {
+      if (args.argument === 'forSystem') {
+        return [`${baseCmd} forSystem [-s, --systemId] <value> [options]`];
+      } else if (args.argument === 'export') {
+        return [`${baseCmd} export [-s, --systemId] <value> [-f, --filename] <value> [options]`];
+      } else {
+        return [`${baseCmd} forSystem [-s, --systemId] <value> [options]`, `${baseCmd} export [-s, --systemId] <value> [-f, --filename] <value> [options]`];
+      }    
+    } else if (args.endpoint === 'milestones') {
+      if (args.argument === 'byPoamId') {
+        return [`${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value> [options]`];
+      } else if (args.argument === 'byMilestoneId') {
+        return [`${baseCmd} byMilestoneId [-s, --systemId] <value> [-p, --poamId] <value> [-m, --milestoneId] <value>`];
+      } else {
+        return [`${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value> [options]`, `${baseCmd} byMilestoneId [-s, --systemId] <value> [-p, --poamId] <value> [-m, --milestoneId] <value>`];
+      }    
+    } else if (args.endpoint === 'workflow_instances') {
+      if (args.argument === 'all') {
+        return [`${baseCmd} all [options]`];
+      } else if (args.argument === 'byInstanceId') {
+        return [`${baseCmd} byInstanceId [-w, --workflowInstanceId] <value>`];
+      } else {
+        return [`${baseCmd} all [options]`, `${baseCmd} byInstanceId [-w, --workflowInstanceId] <value>`];
+      }  
+    } else if (args.endpoint === 'dashboards') {
+      if (args.argument === 'status_details') {
+        return [`${baseCmd} status_details [-o, --orgId] <value> [options]`];
+      } else if (args.argument === 'control_compliance_summary') {
+        return [`${baseCmd} control_compliance_summary [-o, --orgId] <value> [options]`];
+      } else if (args.argument === 'security_control_details') {
+        return [`${baseCmd} security_control_details [-o, --orgId] <value> [options]`];
+      } else if (args.argument === 'assessment_procedures_details') {
+        return [`${baseCmd} assessment_procedures_details [-o, --orgId] <value> [options]`];
+      } else if (args.argument === 'poam_summary') {
+        return [`${baseCmd} poam_summary [-o, --orgId] <value> [options]`];
+      } else if (args.argument === 'poam_details') {
+        return [`${baseCmd} poam_details [-o, --orgId] <value> [options]`];
+      } else if (args.argument === 'hardware_summary') {
+        return [`${baseCmd} hardware_summary [-o, --orgId] <value> [options]`];
+      } else if (args.argument === 'hardware_details') {
+        return [`${baseCmd} hardware_details [-o, --orgId] <value> [options]`];
+      } else if (args.argument === 'associations_details') {
+        return [`${baseCmd} associations_details [-o, --orgId] <value> [options]`];
+      } else if (args.argument === 'assignments_details') {
+        return [`${baseCmd} assignments_details [-o, --orgId] <value> [options]`];
+      } else if (args.argument === 'privacy_summary') {
+        return [`${baseCmd} privacy_summary [-o, --orgId] <value> [options]`];
+      } else if (args.argument === 'fisma_saop_summary') {
+        return [`${baseCmd} fisma_saop_summary [-o, --orgId] <value> [options]`];
+      } else if (args.argument === 'va_aa_summary') {
+        return [`${baseCmd} va_aa_summary [-o, --orgId] <value> [options]`];
+      } else if (args.argument === 'va_a2_summary') {
+        return [`${baseCmd} va_a2_summary [-o, --orgId] <value> [options]`];
+      } else if (args.argument === 'va_pl_109_summary') {
+        return [`${baseCmd} va_pl_109_summary [-o, --orgId] <value> [options]`];
+      } else if (args.argument === 'fisma_inventory_summary') {
+        return [`${baseCmd} fisma_inventory_summary [-o, --orgId] <value> [options]`];
+      } else {
+        return [`${baseCmd} [dashboard name] [flag] [options]`];
+      }  
+    }     
   }
   return [''];
 }

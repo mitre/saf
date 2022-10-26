@@ -8,11 +8,11 @@ import { outputError } from '../../../utils/emasser/outputError';
 import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetTestResults extends Command {
-  static usage = 'get test_results [ARGUMENTS]'
+  static usage = '<%= command.id %> [ARGUMENTS]'
 
   static description = 'Get test results for a specific system defined by ID (systemId)'
 
-  static examples = ['emasser get test_results --systemId <value> [options]']
+  static examples = ['<%= config.bin %> <%= command.id %> --systemId <value> [options]']
 
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Test Results endpoint'}),

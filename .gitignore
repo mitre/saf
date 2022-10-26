@@ -8,6 +8,3 @@ node_modules
 **/.DS_Store
 *.*.un~
 out
-.env
-key.pem
-client.pem

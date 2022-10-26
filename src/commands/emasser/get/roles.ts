@@ -13,7 +13,7 @@ import { FlagOptions,
 const endpoint = 'roles';
 
 export default class EmasserGetRoles extends Command {
-  static usage = 'get roles [ARGUMENTS]'
+  static usage = '<%= command.id %> [ARGUMENTS]'
 
   static description = getDescriptionForEndpoint(process.argv, endpoint);
 
