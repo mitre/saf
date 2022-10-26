@@ -8,11 +8,11 @@ import { outputError } from '../../../utils/emasser/outputError';
 import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetWorkflowDefinitions extends Command {
-  static usage = 'get workflow_definitions [options]'
+  static usage = '<%= command.id %> [options]'
 
   static description = 'View all workflow schemas available on the eMASS instance'
 
-  static examples = ['emasser get workflow_definitions [options]']
+  static examples = ['<%= config.bin %> <%= command.id %> [options]']
 
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Workflow Definitions endpoint'}),

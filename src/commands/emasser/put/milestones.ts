@@ -8,11 +8,11 @@ import {  FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilit
 
 export default class EmasserPutMilestones extends Command {
 
-  static usage = 'put milestones [ARGUMENTS]';
+  static usage = '<%= command.id %> [ARGUMENTS]';
 
   static description = 'Update milestone(s) for specified system and poam Id';
 
-  static examples = ['emasser put milestones --systemId <value> --poamId <value> --milestoneId <value> --description <value> [options]']; 
+  static examples = ['<%= config.bin %> <%= command.id %> --systemId <value> --poamId <value> --milestoneId <value> --description <value> [options]']; 
 
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the PUT Milestones endpoint'}),

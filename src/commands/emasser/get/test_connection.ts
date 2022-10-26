@@ -7,11 +7,11 @@ import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { outputError } from '../../../utils/emasser/outputError';
 
 export default class EmasserGetTestConnection extends Command {
-  static usage = 'get test_connection'
+  static usage = '<%= command.id %>'
 
   static description = 'Test if eMASS url is set to a correct host'
 
-  static examples = ['emasser get test_connection']
+  static examples = ['<%= config.bin %> <%= command.id %>']
 
   static flags = {
     help: Flags.help({char: 'h', description: 'Test connection to configured eMASS URL'}),

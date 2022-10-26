@@ -9,7 +9,7 @@ import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utiliti
 
 
 export default class EmasserGetSystem extends Command {
-  static usage = 'get system [ARGUMENTS]'
+  static usage = '<%= command.id %> [ARGUMENTS]'
 
   static description = 'Get system information for a specific system defined by ID (systemId)'
 

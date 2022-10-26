@@ -13,7 +13,7 @@ import { FlagOptions,
 const endpoint = 'milestones';
 
 export default class EmasserGetMilestones extends Command {
-  static usage = 'get milestones [ARGUMENTS]'
+  static usage = '<%= command.id %> [ARGUMENTS]'
 
   static description = getDescriptionForEndpoint(process.argv, endpoint);
 

@@ -9,10 +9,10 @@ import { FlagOptions,
   getExamplesForEndpoint,
   getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
-const endpoint = 'dashboard';
+const endpoint = 'dashboards';
 
 export default class EmassergetDashboards extends Command {
-  static usage = 'get dashboard [ARGUMENTS]';
+  static usage = '<%= command.id %> [ARGUMENTS]';
 
   static description = getDescriptionForEndpoint(process.argv, endpoint);
 

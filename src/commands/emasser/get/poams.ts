@@ -13,7 +13,7 @@ import { FlagOptions,
 const endpoint = 'poams';
 
 export default class EmasserGetPoams extends Command {
-  static usage = 'get poams [ARGUMENTS]'
+  static usage = '<%= command.id %> [ARGUMENTS]'
 
   static description = getDescriptionForEndpoint(process.argv, endpoint);
 
