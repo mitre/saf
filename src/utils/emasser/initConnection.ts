@@ -2,7 +2,7 @@ import * as fs from 'fs';
 import * as https from 'https';
 import { Configuration } from "@mitre/emass_client/dist/configuration"
 import globalAxios, { AxiosInstance, AxiosRequestConfig } from 'axios';
-
+import FormData from 'form-data';
 
 export class InitConnections {
 
@@ -15,6 +15,8 @@ export class InitConnections {
 
     this.configuration = new Configuration({
       basePath: url,
+      formDataCtor: FormData,
+      baseOptions: {},
     });
 
     // keepAlive <boolean> Keep sockets around even when there are no outstanding requests, 
