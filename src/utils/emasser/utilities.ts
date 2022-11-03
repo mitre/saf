@@ -55,6 +55,10 @@ export interface FlagOptions {
   controls?: OptionFlag<string|undefined>;
   artifactExpirationDate?: OptionFlag<string|any>;
   lastReviewDate?: OptionFlag<string|any>;
+  controlAcronym?: OptionFlag<string|any>;
+  comments?: OptionFlag<string|any>;
+  worfklow?: OptionFlag<string|any>;
+  name?: OptionFlag<string|any>;
 }
 
 export function getFlagsForEndpoint(argv: string[]): FlagOptions {
@@ -194,7 +198,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         description: Flags.string({char: "d", description: "The milestone description", required: true}),
         scheduledCompletionDate: Flags.string({char: "c", description: "The scheduled completion date - Unix time format", required: true}),
       }
-    }  else if (args.endpoint === 'artifacts') {
+    } else if (args.endpoint === 'artifacts') {
       return {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
         input: Flags.string({char: 'i', description: "Artifact file(s) to post to the given system, can have multiple (space separated)", required: true, multiple: true}),
@@ -202,6 +206,20 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         type: Flags.string({char: 't', description: "Artifact file type",
           options: ['Procedure','Diagram','Policy','Labor','Document','Image','Other','Scan Result','Auditor Report'], required: false}), 
         category: Flags.string({char: 'c', description: "Artifact category", options: ['Implementation Guidance','Evidence'], required: false}), 
+      }
+    } else if (args.endpoint === 'cac') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        controlAcronym: Flags.string({char: 'a', description: "The system acronym \"AC-1, AC-2\"", required: true}),
+        comments: Flags.string({char: 'c', description: "The control approval chain comments", required: false}),
+      }
+    } else if (args.endpoint === 'pac') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        worfklow: Flags.string({char: 'w', description: "The appropriate workflow", 
+          options: ['Assess and Authorize', 'Assess Only', 'Security Plan Approval'], required: true}), 
+        name: Flags.string({char: 'n', description: "The control package name", required: true}),
+        comments: Flags.string({char: 'c', description: "The control approval chain comments", required: true}),
       }
     }
   } else if (args.requestType === 'put') {
