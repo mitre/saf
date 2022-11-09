@@ -1,9 +1,10 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import {processJSON, processOVAL, updateProfileUsingXCCDF} from '@mitre/inspec-objects'
+import {processInSpecProfile, processOVAL, updateProfileUsingXCCDF} from '@mitre/inspec-objects'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
+import Control from '@mitre/inspec-objects/lib/objects/control'
 
 export default class GenerateDelta extends Command {
   static description = 'Update an existing InSpec profile in-place with new XCCDF metadata'
@@ -17,6 +18,7 @@ export default class GenerateDelta extends Command {
     useStigID: Flags.boolean({char: 'S', required: false, default: false, description: 'Use STIG IDs for control IDs (ex. RHEL-07-010020, also known as Version)', exclusive: ['useVulnerabilityId']}),
     useCISId: Flags.boolean({char: 'C', required: false, default: false, description: 'Use CIS Rule IDs for control IDs (ex. C-1.1.1.1)'}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
+    format: Flags.boolean({char: 'f', required: false, default: false, description: 'Use the format option to format the controls in the way delta will write them out after looking at the diff. This is for ease of use with git change tracking.'}),
   }
 
   static examples = [
@@ -59,7 +61,7 @@ export default class GenerateDelta extends Command {
         try {
           // This should fail if we aren't passed an execution/profile JSON
           logger.debug(`Loading ${inputPath} as Profile JSON/Execution JSON`)
-          existingProfile = processJSON(fs.readFileSync(inputPath, 'utf8'))
+          existingProfile = processInSpecProfile(fs.readFileSync(inputPath, 'utf8'))
           logger.debug(`Loaded ${inputPath} as Profile JSON/Execution JSON`)
         } catch (error) {
           try {
@@ -98,49 +100,64 @@ export default class GenerateDelta extends Command {
         controls = {}
       }
 
-      // Find the difference between existingProfile and updatedXCCDF
-      let updatedResult
-      if (flags.useGroupID) {
-        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'group', logger, ovalDefinitions)
-      } else if (flags.useStigID) {
-        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'version', logger, ovalDefinitions)
-      } else if (flags.useCISId) {
-        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'cis', logger, ovalDefinitions)
-      } else if (flags.useVulnerabilityId) {
-        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'rule', logger, ovalDefinitions)
+      if (flags.format) {
+        // If existingProfileFolderPath exists
+        if (existingProfileFolderPath && fs.existsSync(path.join(existingProfileFolderPath, 'controls'))) {
+          logger.debug(`Deleting existing profile folder ${path.join(existingProfileFolderPath, 'controls')}`)
+          fse.emptyDirSync(path.join(existingProfileFolderPath, 'controls'))
+        }
+
+        logger.debug('Formatting the original controls with no diff.')
+        existingProfile.controls.forEach((control: Control) => {
+          // Write the new control to the controls folder
+          logger.debug(`Writing updated control ${control.id} to profile`)
+          fs.writeFileSync(path.join(existingProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby()) // Ensure we always have a newline at EOF
+        })
       } else {
-        throw new Error('No ID type specified')
-      }
+        // Find the difference between existingProfile and updatedXCCDF
+        let updatedResult
+        if (flags.useGroupID) {
+          updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'group', logger, ovalDefinitions)
+        } else if (flags.useStigID) {
+          updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'version', logger, ovalDefinitions)
+        } else if (flags.useCISId) {
+          updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'cis', logger, ovalDefinitions)
+        } else if (flags.useVulnerabilityId) {
+          updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'rule', logger, ovalDefinitions)
+        } else {
+          throw new Error('No ID type specified')
+        }
 
-      // If existingProfileFolderPath exists
-      if (existingProfileFolderPath && fs.existsSync(path.join(existingProfileFolderPath, 'controls'))) {
-        logger.debug(`Deleting existing profile folder ${path.join(existingProfileFolderPath, 'controls')}`)
-        fse.emptyDirSync(path.join(existingProfileFolderPath, 'controls'))
-      }
+        // If existingProfileFolderPath exists
+        if (existingProfileFolderPath && fs.existsSync(path.join(existingProfileFolderPath, 'controls'))) {
+          logger.debug(`Deleting existing profile folder ${path.join(existingProfileFolderPath, 'controls')}`)
+          fse.emptyDirSync(path.join(existingProfileFolderPath, 'controls'))
+        }
 
-      logger.debug('Recieved updated profile from inspec-objects')
-      updatedResult.profile.controls.forEach(control => {
-        // Write the new control to the controls folder
-        logger.debug(`Writing updated control ${control.id} to profile`)
-        fs.writeFileSync(path.join(existingProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby()) // Ensure we always have a newline at EOF
-      })
+        logger.debug('Recieved updated profile from inspec-objects')
+        updatedResult.profile.controls.forEach(control => {
+          // Write the new control to the controls folder
+          logger.debug(`Writing updated control ${control.id} to profile`)
+          fs.writeFileSync(path.join(existingProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby()) // Ensure we always have a newline at EOF
+        })
 
-      logger.info(`Writing delta file for ${existingProfile.title}`)
-      // Write the delta to a file
-      fs.writeFileSync(path.join(existingProfileFolderPath, 'delta.json'), JSON.stringify(updatedResult.diff, null, 2))
-      if (flags.report) {
-        logger.debug('Writing report markdown file')
-        fs.writeFileSync(path.join(flags.report), updatedResult.markdown)
-      }
-    } else {
-      logger.error('Could not generate delta because one or more of the following variables were not satisfied:')
+        logger.info(`Writing delta file for ${existingProfile.title}`)
+        // Write the delta to a file
+        fs.writeFileSync(path.join(existingProfileFolderPath, 'delta.json'), JSON.stringify(updatedResult.diff, null, 2))
+        if (flags.report) {
+          logger.debug('Writing report markdown file')
+          fs.writeFileSync(path.join(flags.report), updatedResult.markdown)
+        } else {
+          logger.error('Could not generate delta because one or more of the following variables were not satisfied:')
 
-      if (!existingProfile) {
-        logger.error('existingProfile')
-      }
+          if (!existingProfile) {
+            logger.error('existingProfile')
+          }
 
-      if (!updatedXCCDF) {
-        logger.error('updatedXCCDF')
+          if (!updatedXCCDF) {
+            logger.error('updatedXCCDF')
+          }
+        }
       }
     }
   }
