@@ -39,7 +39,7 @@ export default class EmasserPutArtifacts extends Command {
       artifactExpirationDate: parseFloat(flags.artifactExpirationDate),
       lastReviewDate: parseFloat(flags.lastReviewDate),
     });    
-console.log('requestBodyArray is: ', requestBodyArray)
+
     artifactApi.updateArtifactBySystemId(flags.systemId, requestBodyArray).then((response: ArtifactsResponsePutPost) => {
       console.log(colorize(outputFormat(response)));
     }).catch((error:any) => console.error(colorize(outputError(error))));

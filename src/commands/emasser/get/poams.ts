@@ -25,6 +25,7 @@ export default class EmasserGetPoams extends Command {
   }
 
   static args = [
+    {name: "name", required: false, hidden: true},
     {name: "forSystem", description: 'Retrieves Poams for specified system ID', required: false},
     {name: "byPoamId", description: 'Retrieves Poams for specified system and poam ID', required: false},
   ]
@@ -34,13 +35,13 @@ export default class EmasserGetPoams extends Command {
     const apiCxn = new ApiConnection();
     const getPoams = new POAMApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    if (args.forSystem === 'forSystem') {
+    if (args.name === 'forSystem') {
       // Order is important here
       getPoams.getSystemPoams(flags.systemId,flags.scheduledCompletionDateStart,
         flags.scheduledCompletionDateEnd,flags.controlAcronyms,flags.ccis,flags.systemOnly).then((response: PoamResponseGetSystems) => {
         console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
-    } else if (args.forSystem === 'byPoamId') {
+    } else if (args.name === 'byPoamId') {
       // Order is important here
       getPoams.getSystemPoamsByPoamId(flags.systemId,flags.poamId).then((response: PoamResponseGetPoams) => {
         console.log(colorize(outputFormat(response)));

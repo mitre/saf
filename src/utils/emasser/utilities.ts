@@ -49,6 +49,7 @@ export interface FlagOptions {
   orgId?:OptionFlag<number>;
   pageSize?: OptionFlag<number|undefined>;
   input?: OptionFlag<string[]>;
+  poamFile?: OptionFlag<string>;
   type?: OptionFlag<string|any>;
   category?: OptionFlag<string|any>;
   refPageNumber?: OptionFlag<string|undefined>;
@@ -221,7 +222,12 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         name: Flags.string({char: 'n', description: "The control package name", required: true}),
         comments: Flags.string({char: 'c', description: "The control approval chain comments", required: true}),
       }
-    }
+    } else if (args.endpoint === 'poams') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        poamFile: Flags.string({char: 'f', description: "A well formed JSON file with the POA&M(s) to be added to the specified system. It can ba a single object or an array of objects.", required: true}), 
+      }
+    } 
   } else if (args.requestType === 'put') {
     if (args.endpoint === 'artifacts') {
       return {
@@ -246,6 +252,11 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         description: Flags.string({char: "d", description: "The milestone description", required: false}),
         scheduledCompletionDate: Flags.string({char: "c", description: "The scheduled completion date - Unix time format", required: false}),
       }      
+    } else if (args.endpoint === 'poams') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        poamFile: Flags.string({char: 'f', description: "A well formed JSON file with the POA&M(s) to be updated to the specified system. It can ba a single object or an array of objects.", required: true}), 
+      }
     }
   }
   return {}
@@ -420,8 +431,93 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
         return [`${baseCmd} [dashboard name] [flag] [options]`];
       }  
     }     
-  }
+  } 
   return [''];
+}
+
+export function getJsonExamples(endpoint?: string): string[] {
+  if (endpoint === 'poams-post-required') {
+    let data = '{ ' +
+      '"status":  "One of the following: [Ongoing, Risk Accepted, Completed, Not Applicable]",' +
+      '"vulnerabilityDescription": "POA&M vulnerability description",' +
+      '"sourceIdentVuln": "Source that identifies the vulnerability",' +
+      '"pocOrganization": "Organization/Office represented",' +
+      '"resources": "List of resources used"' +
+      '}';
+    return JSON.parse(data);
+  } else if (endpoint === 'poams-put-required') {
+    let data = '{ ' +
+      '"poamId": "Unique identifier representing the nth POAM item entered into the site database.",' +
+      '"displayPoamId": "Globally unique identifier for individual POA&M Items, seen on the front-end as ID",' +
+      '"status":  "One of the following: [Ongoing, Risk Accepted, Completed, Not Applicable]",' +
+      '"vulnerabilityDescription": "POA&M vulnerability description",' +
+      '"sourceIdentVuln": "Source that identifies the vulnerability",' +
+      '"pocOrganization": "Organization/Office represented",' +
+      '"resources": "List of resources used"' +
+      '}';
+    return JSON.parse(data);
+  } else if (endpoint === 'poams-post-conditional') {
+    let data = '{ '+
+      '"milestones": [{' +
+      '"description": "The milestone description",' +
+      '"scheduledCompletionDate": "Milestone scheduled completion date (Unix format)"}],' +
+      '"pocFirstName": "The system acronym(s) e.g AC-1, AC-2",' +
+      '"pocLastName": "The system CCIS string numerical value",' +
+      '"pocEmail": "Security Checks that are associated with the POA&M",' +
+      '"pocPhoneNumber": "One of the following [I, II, III]",' +
+      '"severity": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"scheduledCompletionDate": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"completionDate": "Description of Security Control impact",' +
+      '"comments": "Description of the security control impact"' +
+      '}';
+      return JSON.parse(data);
+    } else if (endpoint === 'poams-put-conditional') {
+      let data = '{ '+
+        '"milestones": [{' +
+        '"milestoneId": "Unique milestone identifier",' +
+        '"description": "The milestone description",' +
+        '"scheduledCompletionDate": "Milestone scheduled completion date (Unix format)",' +
+        '"isActive": "To prevent uploading duplicate/undesired milestones through the POA&M PUT you must include an isActive field for the milestone and set it to equal to false"}],' +
+        '"pocFirstName": "The system acronym(s) e.g AC-1, AC-2",' +
+        '"pocLastName": "The system CCIS string numerical value",' +
+        '"pocEmail": "Security Checks that are associated with the POA&M",' +
+        '"pocPhoneNumber": "One of the following [I, II, III]",' +
+        '"severity": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+        '"scheduledCompletionDate": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+        '"completionDate": "Description of Security Control impact",' +
+        '"comments": "Description of the security control impact"' +
+        '}';
+        return JSON.parse(data);      
+  } else if (endpoint === 'poams-optional') {
+    let data = '{ '+
+      '"externalUid": "External ID associated with the POA&M",' +
+      '"controlAcronym": "The system acronym(s) e.g AC-1, AC-2",' +
+      '"cci": "The system CCIS string numerical value",' +
+      '"securityChecks": "Security Checks that are associated with the POA&M",' +
+      '"rawSeverity": "One of the following [I, II, III]",' +
+      '"relevanceOfThreat": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"likelihood": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"impact": "Description of Security Control impact",' +
+      '"impactDescription": "Description of the security control impact",' +
+      '"residualRiskLevel": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"recommendations": "Any recommendations content",' +
+      '"mitigation": "Mitigation explanation"' +
+      '}';
+      return JSON.parse(data);
+  } else if (endpoint === 'control-conditional') {
+    let data = '{ '+
+      '"commonControlProvider": "One of the following [DoD, Component, Enclave]",' +
+      '"naJustification": "Provide justification for Security Controls deemed Not Applicable to the system",' +
+      '"slcmCriticality": "Criticality of Security Control regarding SLCM",' +
+      '"slcmFrequency": "One of the following [Constantly,Daily,Weekly,Monthly,Quarterly,Semi-Annually,Annually,Every Two Years,Every Three Years,Undetermined]",' +
+      '"slcmMethod": "One of the following [Automated, Semi-Automated, Manual, Undetermined]",' +
+      '"slcmReporting": "Organization/Office represented",' +
+      '"slcmTracking": "The System-Level Continuous Monitoring tracking",' +
+      '"slcmComments":" Additional comments for Security Control regarding SLCM"' +
+      '}';
+      return JSON.parse(data);
+  }
+  return [];
 }
 
 // Supporting Function

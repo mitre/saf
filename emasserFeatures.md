@@ -688,7 +688,7 @@ The following POA&M parameters/fields have the following character limitations:
   - External Unique ID    (`externalUid`)
 - Fields that can not exceed 250 characters:
   - Resource              (`resource`)
-- Fields have can not exceed 2000 character: 
+- Fields that can not exceed 2000 character: 
   - Vulnerability Description        (`vulnerabilityDescription`)
   - Source Identifying Vulnerability (`sourceIdentVuln`)
   - Recommendations                  (`recommendations`)

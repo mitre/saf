@@ -25,6 +25,7 @@ export default class EmasserGetMilestones extends Command {
   }
 
   static args = [
+    {name: "name", required: false, hidden: true},
     {name: "byPoamId", description: 'Retrieves milestone(s) for specified system and poam Id', required: false},
     {name: "byMilestoneId", description: 'Retrieves milestone(s) for specified system, poam, and milestone Id', required: false},
   ]
@@ -35,12 +36,12 @@ export default class EmasserGetMilestones extends Command {
     const apiCxn = new ApiConnection();
     const getMilestones = new MilestonesApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    if (args.byPoamId === 'byPoamId') {
+    if (args.name === 'byPoamId') {
       // Order is important here
       getMilestones.getSystemMilestonesByPoamId(flags.systemId,flags.poamId,flags.scheduledCompletionDateStart,flags.scheduledCompletionDateEnd).then((response: MilestoneResponseGet) => {
         console.log(colorize(outputFormat(response)));
       }).catch((error:any) => console.error(colorize(outputError(error))));
-    } else if (args.byPoamId === 'byMilestoneId') {
+    } else if (args.name === 'byMilestoneId') {
       // Order is important here
       getMilestones.getSystemMilestonesByPoamIdAndMilestoneId(flags.systemId,flags.poamId,flags.milestoneId).then((response: MilestoneResponseGetMilestone) => {
         console.log(colorize(outputFormat(response)));
