@@ -7,9 +7,7 @@ import { outputFormat } from '../../../emasscommands/outputFormatter';
 import { getFlagsForEndpoint } from '../../../emasscommands/utilities';
 import { outputError } from '../../../emasscommands/outputError';
 
-
 export default class EmasserPostCloudResource extends Command {
-
   static usage = '<%= command.id %> [ARGUMENTS]'
 
   static description = "Add a cloud resource and their scan results in the assets module for a system"
@@ -18,7 +16,7 @@ export default class EmasserPostCloudResource extends Command {
 
   static flags = {
     help: Flags.help({char: 'h', description: 'Post (add) test CloudResources '}),
-    ...getFlagsForEndpoint(process.argv) as any,
+    ...getFlagsForEndpoint(process.argv) as FlagOptions,
   }
   
   async run(): Promise<void> {

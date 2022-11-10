@@ -15,8 +15,8 @@ export default class EmasserPostStaticCodeScan extends Command {
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-a, --applicationName] [-v, --version] [-c, --codeCheckName] [-s, --scanDate] [-i, --cweId] [options]']
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) static code scans '}),
-    ...getFlagsForEndpoint(process.argv) as any,
+    help: Flags.help({char: 'h', description: 'Post (add) static code scans'}),
+    ...getFlagsForEndpoint(process.argv) as FlagOptions,
   }
   
   async run(): Promise<void> {
