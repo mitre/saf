@@ -228,7 +228,41 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
         poamFile: Flags.string({char: 'f', description: "A well formed JSON file with the POA&M(s) to be added to the specified system. It can ba a single object or an array of objects.", required: true}), 
       }
-    } 
+    }  else if (args.endpoint === 'cloud_resource') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        provider: Flags.string({char: 'p', description: "Cloud service provider name", required: true}),
+        resourceId: Flags.string({char: 'ri', description: "Unique identifier/resource namespace for policy compliance result", required: true}),
+        resourceName: Flags.string({char: 'rn', description: "Friendly name of Cloud resource", required: true}),
+        resourceType: Flags.string({char: 'rt', description: "Type of Cloud resource", required: true}),
+        cspPolicyDefinitionId: Flags.string({char: 'cpd', description: "Unique identifier/compliance namespace for CSP/Resource's policy definition/compliance check", required: true}),
+        isCompliant: Flags.string({char: 'ic', description: "Compliance status of the policy for the identified cloud resource", required: true}),
+        policyDefinitionTitle: Flags.string({char: 'pdt', description: "Friendly policy/compliance check title. Recommend short title", required: true}),
+        initiatedBy: Flags.string({char: 'i', description: "Person initiating the process email address", required: false}),
+        cspAccountId: Flags.string({char: 'ca', description: "System/owner's CSP account ID/number", required: false}),
+        cspRegion: Flags.string({char: 'cr', description: "CSP region of system", required: false}),
+        isBaseline: Flags.string({char: 'b', description: "Flag that indicates in results is a baseline", required: false}),
+        text: Flags.string({char: 't', description: "Text that specifies the tag type", required: false}),
+        assessmentProcedure: Flags.string({char: 'a', description: "Comma separated correlation to Assessment Procedure (i.e. CCI number for DoD Control Set)", required: false}),
+        complianceCheckTimestamp: Flags.string({char: 'cct', description: "The compliance check date - Unix time format", required: false}),
+        complianceReason: Flags.string({char: 'cr', description: "Reason/comments for compliance result", required: false}),
+        control: Flags.string({char: 'c', description: "Comma separated correlation to Security Control (e.g. exact NIST Control acronym)", required: false}),
+        policyDeploymentName: Flags.string({char: 'pdn', description: "Name of policy deployment", required: false}),
+        policyDeploymentVersion: Flags.string({char: 'pdv', description: "Version of policy deployment", required: false}),
+        severity: Flags.string({char: 'sv', description: "Possible Values: Low, Medium, High, Critical", options: ['Low', 'Medium', 'Moderate', 'High', 'Critical'], required: false}),
+      }
+    } else if (args.endpoint === 'static_code_scan') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        applicationName: Flags.string({char: 'a', description: "Name of the software application that was assessed", required: true}),
+        version: Flags.string({char: 'v', description: "The version of the application", required: true}),
+        codeCheckName: Flags.string({char: 'c', description: "Name of the software vulnerability or weakness", required: true}),
+        scanDate: Flags.string({char: 'd', description: "The findings scan date - Unix time format", required: true}),
+        cweId: Flags.string({char: 'i', description: "The Common Weakness Enumerator (CWE) identifier", required: true}),
+        rawSeverity: Flags.string({char: 'r', description: "Possible Values: Low, Medium, Moderate, High, Critical", options: ['Low', 'Medium', 'Moderate', 'High', 'Critical'], required: false}),
+        count: Flags.string({char: 't', description: "Number of instances observed for a specified", required: false}),
+      }
+    }
   } else if (args.requestType === 'put') {
     if (args.endpoint === 'artifacts') {
       return {
