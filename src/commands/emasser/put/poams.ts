@@ -14,7 +14,7 @@ import fs from 'fs'
 export default class EmasserPutPoams extends Command {
   static usage = '<%= command.id %> [ARGUMENTS]'
 
-  static description = "Update a Plan of Action and Milestones (POA&M) into a systems. Please references emasser Features (emasserFeatures.md) for additional information."
+  static description = "Update a Plan of Action and Milestones (POA&M) into a systems."
   
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--poamFile]',
       'The input file should be a well formed JSON containing the POA&M information based on defined business rules.',
@@ -27,7 +27,7 @@ export default class EmasserPutPoams extends Command {
     ]
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Put (update) a Plan of Action and Milestones (POA&M) item(s) in a system'}),
+    help: Flags.help({char: 'h', description: 'Put (update) a Plan of Action and Milestones (POA&M) item(s) in a system. See emasser Features (emasserFeatures.md) for additional information.'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions,
   }
   
@@ -107,7 +107,7 @@ function addRequiredFieldsToRequestBody(dataObj: Poams): Poams {
     assertParamExists('mitigation', dataObj.mitigation);
   } catch (error) {
     console.log('Required JSON fields are:');
-    console.log(colorize(JSON.stringify(getJsonExamples('poams-required'), null,2)));
+    console.log(colorize(JSON.stringify(getJsonExamples('poams-put-required'), null,2)));
     throw error;
   }
   bodyObj.poamId = dataObj.poamId;
@@ -153,8 +153,7 @@ function assertParamExists(object: string, value: string|number|undefined|null):
 }
 
 function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void {
-  // console.log(dataObj.hasOwnProperty('scheduledCompletionDate'));
-  // console.log(dataObj.hasOwnProperty('milestone'));
+
   //-----------------------------------------------------------------------------
   // Conditional fields that are required based on the "status" field value
   // "Risk Accepted"   comments, resources

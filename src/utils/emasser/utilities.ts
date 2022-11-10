@@ -50,6 +50,7 @@ export interface FlagOptions {
   pageSize?: OptionFlag<number|undefined>;
   input?: OptionFlag<string[]>;
   poamFile?: OptionFlag<string>;
+  controlFile?: OptionFlag<string>;
   type?: OptionFlag<string|any>;
   category?: OptionFlag<string|any>;
   refPageNumber?: OptionFlag<string|undefined>;
@@ -257,6 +258,11 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
         poamFile: Flags.string({char: 'f', description: "A well formed JSON file with the POA&M(s) to be updated to the specified system. It can ba a single object or an array of objects.", required: true}), 
       }
+    } else if (args.endpoint === 'controls') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        controlFile: Flags.string({char: 'f', description: "A well formed JSON file with the Security Control information to be updated to the specified system. It can ba a single object or an array of objects.", required: true}), 
+      }      
     }
   }
   return {}
@@ -471,7 +477,7 @@ export function getJsonExamples(endpoint?: string): string[] {
       '"comments": "Description of the security control impact"' +
       '}';
       return JSON.parse(data);
-    } else if (endpoint === 'poams-put-conditional') {
+  } else if (endpoint === 'poams-put-conditional') {
       let data = '{ '+
         '"milestones": [{' +
         '"milestoneId": "Unique milestone identifier",' +
@@ -487,7 +493,7 @@ export function getJsonExamples(endpoint?: string): string[] {
         '"completionDate": "Description of Security Control impact",' +
         '"comments": "Description of the security control impact"' +
         '}';
-        return JSON.parse(data);      
+      return JSON.parse(data);      
   } else if (endpoint === 'poams-optional') {
     let data = '{ '+
       '"externalUid": "External ID associated with the POA&M",' +
@@ -504,7 +510,16 @@ export function getJsonExamples(endpoint?: string): string[] {
       '"mitigation": "Mitigation explanation"' +
       '}';
       return JSON.parse(data);
-  } else if (endpoint === 'control-conditional') {
+  } else if (endpoint === 'controls-required') {
+    let data = '{ ' +
+      '"acronym": "System acronym, required to match the NIST SP 800-53 Revision 4.",' +
+      '"responsibleEntities": "Include written description of Responsible Entities that are responsible for the Security Control.",' +
+      '"controlDesignation":  "One of the following: [Common, System-Specific, Hybrid]",' +
+      '"estimatedCompletionDate": "Field is required for Implementation Plan",' +
+      '"implementationNarrative": "Includes Security Control comments"' +
+      '}';
+    return JSON.parse(data);  
+  } else if (endpoint === 'controls-conditional') {
     let data = '{ '+
       '"commonControlProvider": "One of the following [DoD, Component, Enclave]",' +
       '"naJustification": "Provide justification for Security Controls deemed Not Applicable to the system",' +
@@ -515,7 +530,21 @@ export function getJsonExamples(endpoint?: string): string[] {
       '"slcmTracking": "The System-Level Continuous Monitoring tracking",' +
       '"slcmComments":" Additional comments for Security Control regarding SLCM"' +
       '}';
-      return JSON.parse(data);
+    return JSON.parse(data);
+  } else if (endpoint === 'controls-optional') {
+    let data = '{ '+
+      '"implementationStatus": "One of the following [Planned,Implemented,Inherited,Not Applicable,Manually Inherited]",' +
+      '"severity": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"vulnerabilitySummary": "Include vulnerability summary",' +
+      '"recommendations": "The include recommendations",' +
+      '"relevanceOfThreat": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"likelihood": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"impact": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"impactDescription": "Include description of Security Controls impact",' +
+      '"residualRiskLevel": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"testMethod": "One of the following [Test, Interview, Examine, Test,Interview, Test,Examine, Interview,Examine, Test,Interview,Examine]"' +
+      '}';
+    return JSON.parse(data);
   }
   return [];
 }
