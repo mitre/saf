@@ -61,7 +61,7 @@ export default class Splunk2HDF extends Command {
           fs.writeFileSync(
             path.join(
               outputFolder,
-              _.get(hdf, 'meta.filename').replace(/\.json$/, '') + _.get(hdf, 'meta.guid') + '.json',
+              _.get(hdf, 'meta.filename', '').replace(/\.json$/, '') + _.get(hdf, 'meta.guid') + '.json',
             ),
             JSON.stringify(hdf, null, 2),
           )
@@ -73,7 +73,7 @@ export default class Splunk2HDF extends Command {
             fs.writeFileSync(
               path.join(
                 outputFolder,
-                _.get(hdf, 'meta.filename').replace(/\.json$/, '') + _.get(hdf, 'meta.guid') + '.json',
+                _.get(hdf, 'meta.filename', '').replace(/\.json$/, '') + _.get(hdf, 'meta.guid') + '.json',
               ),
               JSON.stringify(hdf, null, 2),
             )

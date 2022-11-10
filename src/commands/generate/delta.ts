@@ -1,6 +1,6 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import {processJSON, processOVAL, updateProfileUsingXCCDF} from '@mitre/inspec-objects'
+import {processInSpecProfile, processOVAL, updateProfileUsingXCCDF} from '@mitre/inspec-objects'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
@@ -59,7 +59,7 @@ export default class GenerateDelta extends Command {
         try {
           // This should fail if we aren't passed an execution/profile JSON
           logger.debug(`Loading ${inputPath} as Profile JSON/Execution JSON`)
-          existingProfile = processJSON(fs.readFileSync(inputPath, 'utf8'))
+          existingProfile = processInSpecProfile(fs.readFileSync(inputPath, 'utf8'))
           logger.debug(`Loaded ${inputPath} as Profile JSON/Execution JSON`)
         } catch (error) {
           try {
