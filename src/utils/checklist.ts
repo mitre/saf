@@ -62,7 +62,7 @@ export function getDetails(control: ContextualizedControl, profileName: string):
     description: control.data.desc || '',
     checkText: control.hdf.descriptions.check || control.data.tags.check,
     fixText: control.hdf.descriptions.fix || control.data.tags.fix,
-    profileName: profileName,
+    profileName,
     startTime: _.get(control, 'hdf.segments![0].start_time', ''),
     targetKey: 0,
     uuidV4: v4(),
