@@ -1,5 +1,5 @@
 import colorize from 'json-colorizer';
-import {Command, Flags} from "@oclif/core"
+import { Command, Flags } from "@oclif/core"
 import { RegistrationApi } from '@mitre/emass_client';
 import { Register } from '@mitre/emass_client/dist/api';
 import { ApiConnection } from "../../../utils/emasser/apiConnection"
@@ -23,7 +23,7 @@ export default class EmasserPostRegister extends Command {
     const registerAPI = new RegistrationApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
     
     registerAPI.registerUser().then((response: Register) => {
-      console.log(colorize(outputFormat(response)));
+      console.log(colorize(outputFormat(response, false)));
     }).catch((error:any) => console.error(colorize(outputError(error))));
   }
 }

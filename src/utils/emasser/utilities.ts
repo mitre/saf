@@ -1,7 +1,5 @@
 import _ from 'lodash'
 import {Flags} from "@oclif/core"
-import * as emasser from '@mitre/emass_client'
-import { integer } from 'aws-sdk/clients/cloudfront';
 import { BooleanFlag, OptionFlag } from '@oclif/core/lib/interfaces';
 
 interface CliArgs {
@@ -14,6 +12,7 @@ export interface FlagOptions {
   systemId?: OptionFlag<number>;
   poamId?: OptionFlag<number>;
   milestoneId?: OptionFlag<number>;
+  milestonesId?: OptionFlag<number[]>;
   workflowInstanceId?: OptionFlag<number>;
   includeInactive?: OptionFlag<number|undefined>;
   includeComments?: OptionFlag<number|undefined>;
@@ -44,13 +43,14 @@ export interface FlagOptions {
   testedBy?: OptionFlag<string>;
   testDate?: OptionFlag<string>;
   description?: OptionFlag<string|any>;
-  complianceStatus?: OptionFlag<string>;
+  complianceStatus?: OptionFlag<string|any>;
   scheduledCompletionDate?: OptionFlag<string|any>;
   orgId?:OptionFlag<number>;
   pageSize?: OptionFlag<number|undefined>;
   input?: OptionFlag<string[]>;
   poamFile?: OptionFlag<string>;
   controlFile?: OptionFlag<string>;
+  cloudResourceFile?: OptionFlag<string>;
   type?: OptionFlag<string|any>;
   category?: OptionFlag<string|any>;
   refPageNumber?: OptionFlag<string|undefined>;
@@ -59,7 +59,7 @@ export interface FlagOptions {
   lastReviewDate?: OptionFlag<string|any>;
   controlAcronym?: OptionFlag<string|any>;
   comments?: OptionFlag<string|any>;
-  worfklow?: OptionFlag<string|any>;
+  workflow?: OptionFlag<string|any>;
   name?: OptionFlag<string|any>;
 }
 
@@ -191,7 +191,8 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         testedBy: Flags.string({char: "b", description: "The person that conducted the test (Last Name, First)", required: true}),
         testDate: Flags.string({char: "t", description: "The date test was conducted, Unix time format", required: true}),
         description: Flags.string({char: "d", description: "The description of test result. 4000 Characters", required: true}),
-        complianceStatus: Flags.string({char: "c", description: "The system CCI string numerical value", required: true}),
+        complianceStatus: Flags.string({char: "S", description: "The system CCI string numerical value", 
+          options: ['Compliant', 'Non-Compliant', 'Not Applicable'], required: true}),
       }
     } else if (args.endpoint === 'milestones') {
       return {
@@ -218,7 +219,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
     } else if (args.endpoint === 'pac') {
       return {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
-        worfklow: Flags.string({char: 'w', description: "The appropriate workflow", 
+        workflow: Flags.string({char: 'w', description: "The appropriate workflow", 
           options: ['Assess and Authorize', 'Assess Only', 'Security Plan Approval'], required: true}), 
         name: Flags.string({char: 'n', description: "The control package name", required: true}),
         comments: Flags.string({char: 'c', description: "The control approval chain comments", required: true}),
@@ -228,39 +229,21 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
         poamFile: Flags.string({char: 'f', description: "A well formed JSON file with the POA&M(s) to be added to the specified system. It can ba a single object or an array of objects.", required: true}), 
       }
-    }  else if (args.endpoint === 'cloud_resource') {
+    } else if (args.endpoint === 'cloud_resource') {
       return {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
-        provider: Flags.string({char: 'p', description: "Cloud service provider name", required: true}),
-        resourceId: Flags.string({char: 'ri', description: "Unique identifier/resource namespace for policy compliance result", required: true}),
-        resourceName: Flags.string({char: 'rn', description: "Friendly name of Cloud resource", required: true}),
-        resourceType: Flags.string({char: 'rt', description: "Type of Cloud resource", required: true}),
-        cspPolicyDefinitionId: Flags.string({char: 'cpd', description: "Unique identifier/compliance namespace for CSP/Resource's policy definition/compliance check", required: true}),
-        isCompliant: Flags.string({char: 'ic', description: "Compliance status of the policy for the identified cloud resource", required: true}),
-        policyDefinitionTitle: Flags.string({char: 'pdt', description: "Friendly policy/compliance check title. Recommend short title", required: true}),
-        initiatedBy: Flags.string({char: 'i', description: "Person initiating the process email address", required: false}),
-        cspAccountId: Flags.string({char: 'ca', description: "System/owner's CSP account ID/number", required: false}),
-        cspRegion: Flags.string({char: 'cr', description: "CSP region of system", required: false}),
-        isBaseline: Flags.string({char: 'b', description: "Flag that indicates in results is a baseline", required: false}),
-        text: Flags.string({char: 't', description: "Text that specifies the tag type", required: false}),
-        assessmentProcedure: Flags.string({char: 'a', description: "Comma separated correlation to Assessment Procedure (i.e. CCI number for DoD Control Set)", required: false}),
-        complianceCheckTimestamp: Flags.string({char: 'cct', description: "The compliance check date - Unix time format", required: false}),
-        complianceReason: Flags.string({char: 'cr', description: "Reason/comments for compliance result", required: false}),
-        control: Flags.string({char: 'c', description: "Comma separated correlation to Security Control (e.g. exact NIST Control acronym)", required: false}),
-        policyDeploymentName: Flags.string({char: 'pdn', description: "Name of policy deployment", required: false}),
-        policyDeploymentVersion: Flags.string({char: 'pdv', description: "Version of policy deployment", required: false}),
-        severity: Flags.string({char: 'sv', description: "Possible Values: Low, Medium, High, Critical", options: ['Low', 'Medium', 'Moderate', 'High', 'Critical'], required: false}),
+        cloudResourceFile: Flags.string({char: 'f', description: "A well formed JSON file with the cloud resources and their scan results. It can ba a single object or an array of objects.", required: true}), 
       }
     } else if (args.endpoint === 'static_code_scan') {
       return {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
-        applicationName: Flags.string({char: 'a', description: "Name of the software application that was assessed", required: true}),
-        version: Flags.string({char: 'v', description: "The version of the application", required: true}),
-        codeCheckName: Flags.string({char: 'c', description: "Name of the software vulnerability or weakness", required: true}),
-        scanDate: Flags.string({char: 'd', description: "The findings scan date - Unix time format", required: true}),
-        cweId: Flags.string({char: 'i', description: "The Common Weakness Enumerator (CWE) identifier", required: true}),
-        rawSeverity: Flags.string({char: 'r', description: "Possible Values: Low, Medium, Moderate, High, Critical", options: ['Low', 'Medium', 'Moderate', 'High', 'Critical'], required: false}),
-        count: Flags.string({char: 't', description: "Number of instances observed for a specified", required: false}),
+        //applicationName: Flags.string({char: 'a', description: "Name of the software application that was assessed", required: true}),
+        // version: Flags.string({char: 'v', description: "The version of the application", required: true}),
+        // codeCheckName: Flags.string({char: 'c', description: "Name of the software vulnerability or weakness", required: true}),
+        // scanDate: Flags.string({char: 'd', description: "The findings scan date - Unix time format", required: true}),
+        // cweId: Flags.string({char: 'i', description: "The Common Weakness Enumerator (CWE) identifier", required: true}),
+        // rawSeverity: Flags.string({char: 'r', description: "Possible Values: Low, Medium, Moderate, High, Critical", options: ['Low', 'Medium', 'Moderate', 'High', 'Critical'], required: false}),
+        // count: Flags.string({char: 't', description: "Number of instances observed for a specified", required: false}),
       }
     }
   } else if (args.requestType === 'put') {
@@ -268,7 +251,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
       return {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
         filename: Flags.string({char: 'f', description: "Artifact file name to update for the given system", required: true}),
-        isTemplate: Flags.boolean({char: 'T', description: "Boolean - Indicates whether an artifact is a template.", allowNo: true, required: false}),
+        isTemplate: Flags.boolean({char: 'T', description: "Boolean - Indicates whether an artifact is a template.", allowNo: true, required: true}),
         type: Flags.string({char: 't', description: "Artifact file type",
           options: ['Procedure','Diagram','Policy','Labor','Document','Image','Other','Scan Result','Auditor Report'], required: true}), 
         category: Flags.string({char: 'g', description: "Artifact category", options: ['Implementation Guidance','Evidence'], required: true}), 
@@ -298,6 +281,12 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         controlFile: Flags.string({char: 'f', description: "A well formed JSON file with the Security Control information to be updated to the specified system. It can ba a single object or an array of objects.", required: true}), 
       }      
     }
+  } else if (args.requestType === 'delete') {
+    return {
+      systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+      poamId: Flags.integer({char: "p", description: "The poam identification number", required: true}),
+      milestonesId: Flags.integer({char: "M", description: "Unique milestone identifier, can have multiple (space separated)", required: true, multiple: true}),
+    }       
   }
   return {}
 }
@@ -579,13 +568,43 @@ export function getJsonExamples(endpoint?: string): string[] {
       '"testMethod": "One of the following [Test, Interview, Examine, Test,Interview, Test,Examine, Interview,Examine, Test,Interview,Examine]"' +
       '}';
     return JSON.parse(data);
+  } else if (endpoint === 'cloud_resources-required') {
+    let data = '{ ' +
+      '"provider": "Cloud service provider name",' +
+      '"resourceId": "Unique identifier/resource namespace for policy compliance result",' +
+      '"resourceName":  "Friendly name of Cloud resource",' +
+      '"resourceType": "The cloud resource type",' +
+      '"complianceResults": [{' +
+      '"cspPolicyDefinitionId": "Unique identifier/compliance namespace for CSP/Resource\'s policy definition/compliance check", ' +
+      '"isCompliant": "True/false flag for compliance status of the policy for the identified cloud resource", ' +
+      '"policyDefinitionTitle": "Friendly policy/compliance check title. Recommend short title"}]' +
+      '}';
+    return JSON.parse(data);  
+  } else if (endpoint === 'cloud_resources-optional') {
+    let data = '{ ' +
+      '"cspAccountId": "System/owner\'s CSP account ID/number",' +
+      '"cspRegion": "CSP region of system",' +
+      '"initiatedBy":  "Email of POC",' +
+      '"isBaseline": "True/false flag for providing results as baseline. If true, all existing compliance results for the resourceId will be replaced by results in the current call",' +
+      '"tags": {' +
+      '"test": "Informational tags associated to results for other metadata" },' +
+      '"complianceResults": [{' +
+      '"assessmentProcedure": "Comma separated correlation to Assessment Procedure (i.e. CCI number for DoD Control Set)", ' +
+      '"complianceCheckTimestamp": "Unix date format", ' +
+      '"complianceReason": "Reason/comments for compliance result", ' +
+      '"control": "Comma separated correlation to Security Control (e.g. exact NIST Control acronym)", ' +
+      '"policyDeploymentName": "Name of policy deployment", ' +
+      '"policyDeploymentVersion": "Version of policy deployment", ' +
+      '"severity": "One of the following [Low, Medium, High, Critical]"}]' +
+      '}';
+    return JSON.parse(data); 
   }
   return [];
 }
 
 // Supporting Function
 function getArgs(argv: string[], endpointValue?: string ): CliArgs {
-  const requestTypeIndex = argv.findIndex(arg => (arg === 'get' || arg === 'post' || arg === 'put'))
+  const requestTypeIndex = argv.findIndex(arg => (arg === 'get' || arg === 'post' || arg === 'put' || arg === 'delete'))
   return {
     requestType: argv[requestTypeIndex],
     endpoint: (endpointValue) ? endpointValue : argv[requestTypeIndex + 1],

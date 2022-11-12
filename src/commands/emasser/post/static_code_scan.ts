@@ -1,11 +1,11 @@
 import colorize from 'json-colorizer';
-import {Command, Flags} from "@oclif/core"
+import { Command, Flags } from "@oclif/core"
 import { StaticCodeScansApi } from '@mitre/emass_client';
-import { StaticCodeResponsePost } from '@mitre/emass_client/dist/api';
-import { ApiConnection } from "../../../emasscommands/apiConnection"
-import { outputFormat } from '../../../emasscommands/outputFormatter';
-import { getFlagsForEndpoint } from '../../../emasscommands/utilities';
-import { outputError } from '../../../emasscommands/outputError';
+import { StaticCodeRequestPostBody, StaticCodeResponsePost } from '@mitre/emass_client/dist/api';
+import { ApiConnection } from "../../../utils/emasser/apiConnection"
+import { outputFormat } from '../../../utils/emasser/outputFormatter';
+import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
+import { outputError } from '../../../utils/emasser/outputError';
 
 export default class EmasserPostStaticCodeScan extends Command {
   static usage = '<%= command.id %> [ARGUMENTS]'
@@ -15,7 +15,7 @@ export default class EmasserPostStaticCodeScan extends Command {
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-a, --applicationName] [-v, --version] [-c, --codeCheckName] [-s, --scanDate] [-i, --cweId] [options]']
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) static code scans'}),
+    help: Flags.help({char: 'h', description: 'Post (add) static code scans '}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions,
   }
   
@@ -24,14 +24,14 @@ export default class EmasserPostStaticCodeScan extends Command {
     const apiCxn = new ApiConnection();
     const addStaticCodeScan = new StaticCodeScansApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
     
-    let requestBodyArray: object[] = [];
-    requestBodyArray.push({
-      control_acronym: flags.control_acronym,
-      comments: flags.comments
-    });
+    let requestBodyArray: StaticCodeRequestPostBody = {};
 
-    addStaticCodeScan.addStaticCodeScansBySystemId(flags.systemId, flags.staticCodeRequestPostBody).then((data:any) => {
-      console.log(colorize(outputFormat(outputFormat(data.data))));
+
+    
+
+
+    addStaticCodeScan.addStaticCodeScansBySystemId(flags.systemId, flags.staticCodeRequestPostBody).then((response: StaticCodeResponsePost) => {
+      console.log(colorize(outputFormat(response, false)));
     }).catch((error:any) => console.error(colorize(outputError(error))));
   }
 }

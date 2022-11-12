@@ -1,5 +1,5 @@
 import colorize from 'json-colorizer';
-import {Command, Flags} from "@oclif/core"
+import { Command, Flags } from "@oclif/core"
 import { POAMApi } from '@mitre/emass_client';
 import { MilestonesGet, PoamResponsePut } from '@mitre/emass_client/dist/api';
 import { PoamGet as Poams } from '@mitre/emass_client/dist/api';
@@ -250,9 +250,9 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void {
 }
 
 function printHelpMsg() {
-  console.log('\x1b[33m','\nInvoke \"saf emasser post poams [-h, --help] for additional help','\x1b[0m');
+  console.log('\x1b[93m','\nInvoke \"saf emasser put poams [-h, --help] for additional help','\x1b[0m');
 }
 
 function printRedMsg(msg: string) {
-  console.log('\x1b[31m',msg,'\x1b[0m');
+  console.log('\x1b[91m',msg,'\x1b[0m');
 }

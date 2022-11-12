@@ -1,124 +1,137 @@
 import { ApiConfig } from "./apiConfig";
 import _ from 'lodash';
-import { exit } from "process";
 
-export function outputFormat(data: Object): string {
+export function outputFormat(data: Object, test = true): string {
   
   const conf = new ApiConfig();
   let hideNulls: boolean = (conf.displayNulls === 'true') ? false : true;
   let showEpoch: boolean = (conf.displayDateTime === 'true') ? true : false;
+  let debugging: boolean = (conf.debugging === 'true') ? true : false;
+
+  if (debugging) {
+    let str = '';
+    for (const [p, val] of Object.entries(data)) {
+      let obj: {[key: string]: any} = {};
+      obj[p] = val;
+      try {
+        str += JSON.stringify(obj) +'\n';
+      } catch (error) { }
+    }
+    return str;
+  }
 
   try {
     if (data.hasOwnProperty('headers')) {
       data = _.get(data, 'data');
     }
 
-    if (hideNulls) {
-      let newData: {[key: string]: any} = {};
+    if (test) {
+      if (hideNulls) {
+        let newData: {[key: string]: any} = {};
 
-      (Object.keys(data) as (keyof typeof data)[]).forEach((key, index) => {
-        // Process the 'meta' content
-        if (key.toString() === 'meta') {
-          var jsonData: {[key: string]: any} = {};
-          jsonData[key] =  data[key];
-          _.merge(newData, jsonData);
-        // Process the 'data' content
-        } else if (key.toString() === 'data') {
-          // data: is an array of objects        
-          if (Array.isArray(data[key])) {
-            let data_array = Object.values(data[key]);
-            let hash_array: Object[] = [];
-            data_array.forEach(dataEntries => {
-              jsonData = removeNullsFromObject(dataEntries)
-              hash_array.push(jsonData);
-            });
-            _.merge(newData, {data: hash_array});
-            data = newData;
-          // data: is NOT and array of object it is a simple object
-          } else {
+        (Object.keys(data) as (keyof typeof data)[]).forEach((key, index) => {
+          // Process the 'meta' content
+          if (key.toString() === 'meta') {
             var jsonData: {[key: string]: any} = {};
-            const obj = data[key];
-            // If we have a data key/pair of null
-            if (data[key] === null ) {
-              _.merge(newData, {data: null});
+            jsonData[key] =  data[key];
+            _.merge(newData, jsonData);
+          // Process the 'data' content
+          } else if (key.toString() === 'data') {
+            // data: is an array of objects        
+            if (Array.isArray(data[key])) {
+              let data_array = Object.values(data[key]);
+              let hash_array: Object[] = [];
+              data_array.forEach(dataEntries => {
+                jsonData = removeNullsFromObject(dataEntries)
+                hash_array.push(jsonData);
+              });
+              _.merge(newData, {data: hash_array});
+              data = newData;
+            // data: is NOT and array of object it is a simple object
             } else {
-              (Object.keys(obj) as (keyof typeof obj)[]).forEach((key, index) => {
+              var jsonData: {[key: string]: any} = {};
+              const obj = data[key];
+              // If we have a data key/pair of null
+              if (data[key] === null ) {
+                _.merge(newData, {data: null});
+              } else {
+                (Object.keys(obj) as (keyof typeof obj)[]).forEach((key, index) => {
+                  if (Array.isArray(obj[key])) {
+                    var jsonObj: {[key: string]: any} = {};
+                    let data_array: any = Object.values(obj[key]);
+                    let hash_array: Object[] = [];
+                    data_array.forEach((dataObject: Object) => {
+                      jsonObj = removeNullsFromObject(dataObject);
+                      hash_array.push(jsonObj);
+                    });
+                    jsonData[key] = hash_array;
+                  } else {
+                    if (obj[key] !== null ) {
+                      jsonData[key] = obj[key];
+                    }
+                  }
+                });
+                var dataObj: {[key: string]: any} = {};
+                dataObj.data = jsonData;
+                _.merge(newData, dataObj);
+              }
+              data = newData;
+            }
+          }
+        });
+      }
+
+      if (showEpoch) {
+        var newData: {[key: string]: any} = {};
+        var dataObj: {[key: string]: any} = {};
+        (Object.keys(data) as (keyof typeof data)[]).forEach((key, index, keyArray) => {
+          var jsonData: {[key: string]: any} = {};
+          if (key.toString() === 'meta') {
+            jsonData[key] =  data[key];
+            _.merge(newData, jsonData);
+          } else if (key.toString() === 'data') {
+            if (Array.isArray(data[key])) {
+              let data_array = Object.values(data[key]);
+              let hash_array: Object[] = [];
+              data_array.forEach(dataEntries => {
+                jsonData = convertEpochToDateTime(dataEntries)
+                hash_array.push(jsonData);
+              });
+              _.merge(newData, {data: hash_array});
+              data = newData;
+            } else {
+              const obj = data[key];
+              (Object.keys(obj) as (keyof typeof obj)[]).forEach((key, index, keyArray) => {
                 if (Array.isArray(obj[key])) {
                   var jsonObj: {[key: string]: any} = {};
                   let data_array: any = Object.values(obj[key]);
                   let hash_array: Object[] = [];
                   data_array.forEach((dataObject: Object) => {
-                    jsonObj = removeNullsFromObject(dataObject);
+                    jsonObj = convertEpochToDateTime(dataObject);
                     hash_array.push(jsonObj);
                   });
                   jsonData[key] = hash_array;
                 } else {
-                  if (obj[key] !== null ) {
+                  if (obj[key] !== null) {
+                    let value: string = key;
+                    if (value.search('date') > 0 || value.search('Date') > 0) {
+                      jsonData[key] = new Date(obj[key] * 1000);
+                    } else {
+                      jsonData[key] = obj[key];
+                    }
+                  } else {
                     jsonData[key] = obj[key];
                   }
                 }
               });
-              var dataObj: {[key: string]: any} = {};
-              dataObj.data = jsonData;
-              _.merge(newData, dataObj);
-            }
-            data = newData;
+            }          
+            dataObj.data = jsonData;
+            _.merge(newData, dataObj);
           }
-        }
-      });
+        });
+        data = newData;
+      }
     }
-
-    if (showEpoch) {
-      var newData: {[key: string]: any} = {};
-      var dataObj: {[key: string]: any} = {};
-      (Object.keys(data) as (keyof typeof data)[]).forEach((key, index, keyArray) => {
-        var jsonData: {[key: string]: any} = {};
-        if (key.toString() === 'meta') {
-          jsonData[key] =  data[key];
-          _.merge(newData, jsonData);
-        } else if (key.toString() === 'data') {
-          if (Array.isArray(data[key])) {
-            let data_array = Object.values(data[key]);
-            let hash_array: Object[] = [];
-            data_array.forEach(dataEntries => {
-              jsonData = convertEpochToDateTime(dataEntries)
-              hash_array.push(jsonData);
-            });
-            _.merge(newData, {data: hash_array});
-            data = newData;
-          } else {
-            const obj = data[key];
-            (Object.keys(obj) as (keyof typeof obj)[]).forEach((key, index, keyArray) => {
-              if (Array.isArray(obj[key])) {
-                var jsonObj: {[key: string]: any} = {};
-                let data_array: any = Object.values(obj[key]);
-                let hash_array: Object[] = [];
-                data_array.forEach((dataObject: Object) => {
-                  jsonObj = convertEpochToDateTime(dataObject);
-                  hash_array.push(jsonObj);
-                });
-                jsonData[key] = hash_array;
-              } else {
-                if (obj[key] !== null) {
-                  let value: string = key;
-                  if (value.search('date') > 0 || value.search('Date') > 0) {
-                    jsonData[key] = new Date(obj[key] * 1000);
-                  } else {
-                    jsonData[key] = obj[key];
-                  }
-                } else {
-                  jsonData[key] = obj[key];
-                }
-              }
-            });
-          }          
-          dataObj.data = jsonData;
-          _.merge(newData, dataObj);
-        }
-      });
-      data = newData;
-    }
-  
 
     if (typeof data === 'string') {
       return data;

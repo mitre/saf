@@ -1,5 +1,5 @@
 import colorize from 'json-colorizer';
-import {Command, Flags} from "@oclif/core"
+import { Command, Flags } from "@oclif/core"
 import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { MilestonesApi } from '@mitre/emass_client';
 import { MilestoneResponseGet, MilestoneResponseGetMilestone } from '@mitre/emass_client/dist/api';

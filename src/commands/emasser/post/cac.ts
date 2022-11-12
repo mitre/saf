@@ -1,7 +1,8 @@
 import colorize from 'json-colorizer';
-import {Command, Flags} from "@oclif/core"
+import { Command, Flags } from "@oclif/core"
 import { CACApi } from '@mitre/emass_client';
 import { CacResponsePost } from '@mitre/emass_client/dist/api';
+import { CacGet as CAC } from '@mitre/emass_client/dist/api';
 import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
@@ -24,14 +25,14 @@ export default class EmasserPostCac extends Command {
     const apiCxn = new ApiConnection();
     const addCac = new CACApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
     
-    let requestBodyArray: object[] = [];
+    let requestBodyArray: CAC[] = [];
     requestBodyArray.push({
       controlAcronym: flags.controlAcronym,
       comments: flags.comments
     });
 
     addCac.addSystemCac(flags.systemId, requestBodyArray).then((response: CacResponsePost) => {
-      console.log(colorize(outputFormat(response)));
+      console.log(colorize(outputFormat(response, false)));
     }).catch((error:any) => console.error(colorize(outputError(error))));
   }
 }

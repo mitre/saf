@@ -1,4 +1,4 @@
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import { name, version } from '@mitre/emass_client/package.json';
 
 export default class EmasserGetVersion extends Command {

@@ -1,5 +1,5 @@
 import colorize from 'json-colorizer';
-import {Command, Flags} from "@oclif/core"
+import { Command, Flags } from "@oclif/core"
 import { ControlsApi } from '@mitre/emass_client';
 import { ControlsResponsePut } from '@mitre/emass_client/dist/api';
 import { ControlsGet as Controls } from '@mitre/emass_client/dist/api';
@@ -89,7 +89,7 @@ export default class EmasserPutControls extends Command {
     }
 
     updateControl.updateControlBySystemId(flags.systemId, requestBodyArray).then((response: ControlsResponsePut) => {
-      console.log(colorize(outputFormat(response)));
+      console.log(colorize(outputFormat(response, false)));
     }).catch((error:any) => console.error(colorize(outputError(error))));
   }
 }

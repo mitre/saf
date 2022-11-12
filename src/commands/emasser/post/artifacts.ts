@@ -50,7 +50,7 @@ export default class EmasserPostArtifacts extends Command {
     optionObj.headers = form.getHeaders();
 
     artifactApi.addArtifactsBySystemId(flags.systemId, form, String(flags.isTemplate), flags.type, flags.category, optionObj).then((response: ArtifactsResponsePutPost) => {
-      console.log(colorize(outputFormat(response)));
+      console.log(colorize(outputFormat(response, false)));
     }).catch((error:any) => console.error(colorize(outputError(error))));
   }
 }

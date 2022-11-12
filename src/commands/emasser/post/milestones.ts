@@ -1,7 +1,8 @@
 import colorize from 'json-colorizer';
-import {Command, Flags} from "@oclif/core"
+import { Command, Flags } from "@oclif/core"
 import { MilestonesApi } from '@mitre/emass_client';
 import { MilestoneResponsePost } from '@mitre/emass_client/dist/api';
+import { MilestonesGet as Milestones } from '@mitre/emass_client/dist/api';
 import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
@@ -24,14 +25,14 @@ export default class EmasserPostMilestones extends Command {
     const apiCxn = new ApiConnection();
     const addMilestone = new MilestonesApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
     
-    let requestBodyArray: object[] = [];
+    let requestBodyArray: Milestones[] = [];
     requestBodyArray.push({
       description: flags.description,
       scheduledCompletionDate: flags.scheduledCompletionDate
     });
 
     addMilestone.addMilestoneBySystemIdAndPoamId(flags.systemId, flags.poamId, requestBodyArray).then((response: MilestoneResponsePost) => {
-      console.log(colorize(outputFormat(response)));
+      console.log(colorize(outputFormat(response, false)));
     }).catch((error:any) => console.error(colorize(outputError(error))));
   }
 }

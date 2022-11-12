@@ -1,7 +1,8 @@
 import colorize from 'json-colorizer';
-import {Command, Flags} from "@oclif/core"
+import { Command, Flags } from "@oclif/core"
 import { PACApi } from '@mitre/emass_client';
 import { PacResponsePost } from '@mitre/emass_client/dist/api';
+import { PacGet as PAC } from '@mitre/emass_client/dist/api';
 import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
 import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
@@ -24,7 +25,7 @@ export default class EmasserPostPac extends Command {
     const apiCxn = new ApiConnection();
     const addPac = new PACApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
     
-    let requestBodyArray: object[] = [];
+    let requestBodyArray: PAC[] = [];
     requestBodyArray.push({
       workflow: flags.workflow,
       name: flags.name,
@@ -32,7 +33,7 @@ export default class EmasserPostPac extends Command {
     });
 
     addPac.addSystemPac(flags.systemId, requestBodyArray).then((response: PacResponsePost) => {
-      console.log(colorize(outputFormat(response)));
+      console.log(colorize(outputFormat(response, false)));
     }).catch((error:any) => console.error(colorize(outputError(error))));
   }
 }
