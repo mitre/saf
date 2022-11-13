@@ -1,37 +1,162 @@
 import colorize from 'json-colorizer';
 import { Command, Flags } from "@oclif/core"
 import { StaticCodeScansApi } from '@mitre/emass_client';
-import { StaticCodeRequestPostBody, StaticCodeResponsePost } from '@mitre/emass_client/dist/api';
+import { StaticCodeApplication, StaticCodeResponsePost } from '@mitre/emass_client/dist/api';
+import { StaticCodeRequestPostBody as StaticCodeRequest } from '@mitre/emass_client/dist/api';
+import { StaticCodeRequestPostBodyApplication as ApplicationRequestBody } from '@mitre/emass_client/dist/api';
 import { ApiConnection } from "../../../utils/emasser/apiConnection"
 import { outputFormat } from '../../../utils/emasser/outputFormatter';
-import { FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
+import { FlagOptions, getFlagsForEndpoint, getJsonExamples } from '../../../utils/emasser/utilities';
 import { outputError } from '../../../utils/emasser/outputError';
+import { readFile } from 'fs/promises';
+import _ from 'lodash';
+import fs from 'fs'
 
-export default class EmasserPostStaticCodeScan extends Command {
+export default class EmasserPostStaticCodeScans extends Command {
+
   static usage = '<%= command.id %> [ARGUMENTS]'
 
-  static description = "Add scan_findings in a system which determine Security Control compliance"
+  static description = "upload application scan findings into a system\'s assets module"
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-a, --applicationName] [-v, --version] [-c, --codeCheckName] [-s, --scanDate] [-i, --cweId] [options]']
+  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--cloudResourceFile]',
+      'The input file should be a well formed JSON containing application scan findings.',
+      'Required \"application\" JSON object parameter/fields are: ',
+      colorize(JSON.stringify(getJsonExamples('scan_findings-application'),null,2)),
+      'Required \"applicationFindings\" JSON array parameters/fields are:',
+      colorize(JSON.stringify(getJsonExamples('scan_findings-applicationFindings'),null,2)),
+      'Required \"applicationFindings\" JSON array for clearing findings for an application is:',
+      colorize(JSON.stringify(getJsonExamples('scan_findings-clearFindings'),null,2)),      
+    ]
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) static code scans '}),
+    help: Flags.help({char: 'h', description: 'Post (upload) static code scans, can also clear application\'s findings'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions,
   }
   
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserPostStaticCodeScan)
+    const {flags} = await this.parse(EmasserPostStaticCodeScans)
     const apiCxn = new ApiConnection();
-    const addStaticCodeScan = new StaticCodeScansApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
+    const addStaticCodeScans = new StaticCodeScansApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
     
-    let requestBodyArray: StaticCodeRequestPostBody = {};
+    let requestBodyArray: StaticCodeRequest[] = [];
 
+    // Check if a Cloud Resource json file was provided
+    if(fs.existsSync(flags.statiCodeScanFile)) {
+      let data: any;
+      try {
+        data = JSON.parse(await readFile(flags.statiCodeScanFile, "utf8"));
+      } catch (error: any) {
+        if (error.code === 'ENOENT') {
+          console.log('Scan Findings JSON file not found!');
+          process.exit(1);
+        } else {
+          console.log('Error reading Scan Findings file, possible malformed json. Please use the -h flag for help.')
+          console.log('Error message was: ', error.message);
+          process.exit(1);
+        }
+      }
 
-    
+      // Create request body based on key/pair values provide in the input file
+      if (Array.isArray(data)) {
+        data.forEach(function(dataObject: StaticCodeRequest) {
+          let bodyObj: StaticCodeRequest = {};
+          // Add required fields to request array object based on business logic
+          try {
+            bodyObj = addApplicationToRequestBody(dataObject);
+            addApplicationFindingsFields(bodyObj, dataObject);
+            requestBodyArray.push(bodyObj);
+          } catch (error) {
+            process.exit(1);
+          }
+        });
+      } else if (typeof data === 'object') {
+        let dataObject: StaticCodeRequest = data;
+        let bodyObj: StaticCodeRequest = {};        
+        // Add required fields to request array object based on business logic
+        try {
+          bodyObj = addApplicationToRequestBody(dataObject);
+          addApplicationFindingsFields(bodyObj, dataObject);
+          requestBodyArray.push(bodyObj);
+      } catch (error) {
+          process.exit(1);
+        }
+      }
+    } else {
+      console.error('Invalid or Scan Findings JSON file not found on the provided directory: ', flags.statiCodeScanFile);
+      process.exit(1);
+    }
 
-
-    addStaticCodeScan.addStaticCodeScansBySystemId(flags.systemId, flags.staticCodeRequestPostBody).then((response: StaticCodeResponsePost) => {
+    addStaticCodeScans.addStaticCodeScansBySystemId(flags.systemId, requestBodyArray).then((response: StaticCodeResponsePost) => {
       console.log(colorize(outputFormat(response, false)));
     }).catch((error:any) => console.error(colorize(outputError(error))));
   }
+}
+
+function addApplicationToRequestBody(dataObj: StaticCodeRequest): StaticCodeRequest {
+  let bodyObj: ApplicationRequestBody  = {
+    applicationName: '',
+    version: ''
+  };
+  let requestBody: StaticCodeRequest = {};
+
+  try {
+    assertParamExists('application.applicationName', dataObj.application?.applicationName);
+    assertParamExists('application.version', dataObj.application?.version);
+  } catch (error) {
+    console.log('Required JSON fields are:');
+    console.log(colorize(JSON.stringify(getJsonExamples('scan_findings-application'), null,2)));
+    throw error;
+  }
+
+  bodyObj.applicationName = dataObj.application?.applicationName;
+  bodyObj.version = dataObj.application?.version;
+  
+  requestBody.application = bodyObj;
+
+  return requestBody;
+}
+
+function addApplicationFindingsFields(bodyObject: StaticCodeRequest, dataObj: StaticCodeRequest): void {
+  let findingsArray: StaticCodeApplication[] = []; 
+
+  try {
+    let findingsObj: StaticCodeApplication = {};
+    let i = 0;
+    dataObj.applicationFindings?.forEach(function(appFindings) {
+      if (appFindings.hasOwnProperty('clearFindings')) {
+        findingsObj.clearFindings = appFindings.clearFindings;
+        findingsArray.push(findingsObj);
+      } else {
+        assertParamExists(`applicationFindings[${i}].codeCheckName`, appFindings.codeCheckName);
+        assertParamExists(`applicationFindings[${i}].count`, appFindings.count);
+        assertParamExists(`applicationFindings[${i}].cweId`, appFindings.cweId);
+        assertParamExists(`applicationFindings[${i}].scanDate`, appFindings.scanDate);
+
+        findingsObj.codeCheckName = appFindings.codeCheckName;
+        findingsObj.count = appFindings.count;
+        findingsObj.cweId = appFindings.cweId;
+        findingsObj.scanDate = appFindings.scanDate;
+
+        if (appFindings.hasOwnProperty('rawSeverity')) { findingsObj.rawSeverity = appFindings.rawSeverity; }
+
+        findingsArray.push(findingsObj);          
+      }
+    });
+  } catch (error) {
+    console.log('Required JSON fields are:');
+    console.log(colorize(JSON.stringify(getJsonExamples('scan_findings-applicationFindings'), null,2)));
+    throw error;
+  }
+  bodyObject.applicationFindings = findingsArray;
+}
+
+function assertParamExists(object: string, value: string|boolean|number|undefined|null): void {
+  if(typeof value === 'undefined') {
+    printRedMsg(`Missing required parameter/field: ${object}`)
+    throw new Error("Value not defined");
+  }
+}
+
+function printRedMsg(msg: string) {
+  console.log('\x1b[31m',msg,'\x1b[0m');
 }

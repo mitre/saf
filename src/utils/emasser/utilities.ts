@@ -11,6 +11,7 @@ interface CliArgs {
 export interface FlagOptions {
   systemId?: OptionFlag<number>;
   poamId?: OptionFlag<number>;
+  poamsId?: OptionFlag<number[]>;
   milestoneId?: OptionFlag<number>;
   milestonesId?: OptionFlag<number[]>;
   workflowInstanceId?: OptionFlag<number>;
@@ -48,9 +49,11 @@ export interface FlagOptions {
   orgId?:OptionFlag<number>;
   pageSize?: OptionFlag<number|undefined>;
   input?: OptionFlag<string[]>;
+  fileName?: OptionFlag<string[]>;
   poamFile?: OptionFlag<string>;
   controlFile?: OptionFlag<string>;
   cloudResourceFile?: OptionFlag<string>;
+  statiCodeScanFile?: OptionFlag<string>;
   type?: OptionFlag<string|any>;
   category?: OptionFlag<string|any>;
   refPageNumber?: OptionFlag<string|undefined>;
@@ -229,21 +232,15 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
         poamFile: Flags.string({char: 'f', description: "A well formed JSON file with the POA&M(s) to be added to the specified system. It can ba a single object or an array of objects.", required: true}), 
       }
-    } else if (args.endpoint === 'cloud_resource') {
+    } else if (args.endpoint === 'cloud_resources') {
       return {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
         cloudResourceFile: Flags.string({char: 'f', description: "A well formed JSON file with the cloud resources and their scan results. It can ba a single object or an array of objects.", required: true}), 
       }
-    } else if (args.endpoint === 'static_code_scan') {
+    } else if (args.endpoint === 'static_code_scans') {
       return {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
-        //applicationName: Flags.string({char: 'a', description: "Name of the software application that was assessed", required: true}),
-        // version: Flags.string({char: 'v', description: "The version of the application", required: true}),
-        // codeCheckName: Flags.string({char: 'c', description: "Name of the software vulnerability or weakness", required: true}),
-        // scanDate: Flags.string({char: 'd', description: "The findings scan date - Unix time format", required: true}),
-        // cweId: Flags.string({char: 'i', description: "The Common Weakness Enumerator (CWE) identifier", required: true}),
-        // rawSeverity: Flags.string({char: 'r', description: "Possible Values: Low, Medium, Moderate, High, Critical", options: ['Low', 'Medium', 'Moderate', 'High', 'Critical'], required: false}),
-        // count: Flags.string({char: 't', description: "Number of instances observed for a specified", required: false}),
+        statiCodeScanFile: Flags.string({char: 'f', description: "A well formed JSON file with application scan findings. It can ba a single object or an array of objects.", required: true}), 
       }
     }
   } else if (args.requestType === 'put') {
@@ -282,11 +279,23 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
       }      
     }
   } else if (args.requestType === 'delete') {
-    return {
-      systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
-      poamId: Flags.integer({char: "p", description: "The poam identification number", required: true}),
-      milestonesId: Flags.integer({char: "M", description: "Unique milestone identifier, can have multiple (space separated)", required: true, multiple: true}),
-    }       
+    if (args.endpoint === 'milestones') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        poamId: Flags.integer({char: "p", description: "The poam identification number", required: true}),
+        milestonesId: Flags.integer({char: "M", description: "Unique milestone identifier, can have multiple (space separated)", required: true, multiple: true}),
+      }
+    } else if (args.endpoint === 'poams') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        poamsId: Flags.integer({char: "P", description: "Unique POA&M identification number, can have multiple (space separated)", required: true, multiple: true}),
+      }
+    } else if (args.endpoint === 'artifacts') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        fileName: Flags.string({char: "F", description: "The artifact file name to remove, can have multiple (space separated)", required: true, multiple: true}),
+      }
+    }
   }
   return {}
 }
@@ -598,6 +607,29 @@ export function getJsonExamples(endpoint?: string): string[] {
       '"severity": "One of the following [Low, Medium, High, Critical]"}]' +
       '}';
     return JSON.parse(data); 
+  } else if (endpoint === 'scan_findings-application') {
+    let data = '{ ' +
+      '"applicationName": "Name of the software application that was assessed",' +
+      '"version": "The version of the application"' +
+      '}';
+    return JSON.parse(data);  
+  } else if (endpoint === 'scan_findings-applicationFindings') {
+    let data = '{ ' +
+      '"applicationFindings": [{' +
+      '"codeCheckName": "Name of the software vulnerability or weakness",' +
+      '"scanDate": "The scan date, Unix date format",' +
+      '"resourceName":  "Friendly name of Cloud resource",' +
+      '"cweId": "The Common Weakness Enumerator (CWE) identifier",' +
+      '"count": "Number of instances observed for a specified finding",' +
+      '"rawSeverity": "OPTIONAL - One of the following [Low, Medium, Moderate, High, Critical]"}]' +
+      '}';
+    return JSON.parse(data);  
+  } else if (endpoint === 'scan_findings-clearFindings') {
+    let data = '{ ' +
+      '"applicationFindings": [{' +
+      '"clearFindings": "When used by itself, can clear out all application findings for a single application/version pairing"}]' +
+      '}';
+    return JSON.parse(data);  
   }
   return [];
 }
