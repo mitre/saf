@@ -54,6 +54,7 @@ export interface FlagOptions {
   controlFile?: OptionFlag<string>;
   cloudResourceFile?: OptionFlag<string>;
   statiCodeScanFile?: OptionFlag<string>;
+  containerCodeScanFile?: OptionFlag<string>;
   type?: OptionFlag<string|any>;
   category?: OptionFlag<string|any>;
   refPageNumber?: OptionFlag<string|undefined>;
@@ -241,6 +242,11 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions {
       return {
         systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
         statiCodeScanFile: Flags.string({char: 'f', description: "A well formed JSON file with application scan findings. It can ba a single object or an array of objects.", required: true}), 
+      }
+    } else if (args.endpoint === 'container_scans') {
+      return {
+        systemId: Flags.integer({char: "s", description: "The system identification number", required: true}),
+        containerCodeScanFile: Flags.string({char: 'f', description: "A well formed JSON file with container scan results. It can ba a single object or an array of objects.", required: true}), 
       }
     }
   } else if (args.requestType === 'put') {
@@ -630,6 +636,34 @@ export function getJsonExamples(endpoint?: string): string[] {
       '"clearFindings": "When used by itself, can clear out all application findings for a single application/version pairing"}]' +
       '}';
     return JSON.parse(data);  
+  } else if (endpoint === 'container_scans-required') {
+    let data = '{ ' +
+      '"containerId": "Unique identifier of the container",' +
+      '"containerName": "Friendly name of the container",' +
+      '"time": "Datetime of scan/result. Unix date format",' +
+      '"benchmarks": [{' +
+      '"benchmark": "Identifier of the benchmark/grouping of compliance results. (e.g. for STIG results, provide the benchmark id for the STIG technology)", ' +
+      '"results": [{' +
+      '"ruleId": "Identifier for the compliance result, vulnerability, etc. the result is for. (e.g. for STIGs, use the SV-XXXrXX identifier; for CVEs, the CVE-XXXX-XXX identifier, etc.).", ' +
+      '"lastSeen": "Datetime last seen. Unix date format",' +
+      '"status": "One of the following [Pass,Fail,Other,Not Reviewed,Not Checked,Not Applicable]"}]' +
+      '}]' +
+      '}';
+    return JSON.parse(data);  
+  } else if (endpoint === 'container_scans-optional') {
+    let data = '{ ' +
+      '"namespace": "Namespace of container in container orchestration (e.g. Kubernetes namespace)",' +
+      '"podIp": "IP address of pod (e.g. Kubernetes assigned IP)",' +
+      '"podName":  "Name of pod (e.g. Kubernetes pod)",' +
+      '"tags": {' +
+      '"test": "Informational tags associated to results for other metadata" },' +
+      '"benchmarks": [{' +
+      '"isBaseline": "True/false flag for providing results as baseline. If true, all existing compliance results for the provided benchmark within the container will be replaced by results in the current call", ' +
+      '"results": [{' +
+      '"message": "Comments for the result"}]' +
+      '}]' +
+      '}';
+    return JSON.parse(data); 
   }
   return [];
 }
