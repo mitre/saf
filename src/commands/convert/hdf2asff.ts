@@ -88,7 +88,7 @@ export default class HDF2ASFF extends Command {
                 console.log(result.FailedFindings)
               }
             } catch (error) {
-              if (typeof error === 'object' && _.get(error, 'code', false) === 'NetworkingError') {
+              if (_.isObject(error) && _.get(error, 'code') === 'NetworkingError') {
                 console.error(`Failed to upload controls: ${error}; Using --certificate to provide your own SSL intermediary certificate (in .crt format) or use the flag --insecure to ignore SSL might resolve this issue`)
               } else {
                 console.error(`Failed to upload controls: ${error}`)
