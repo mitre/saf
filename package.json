@@ -37,7 +37,7 @@
     "express": "^4.17.1",
     "fast-xml-parser": "^3.19.0",
     "flat": "^5.0.2",
-    "fs-extra": "^10.1.0",
+    "fs-extra": "^11.0.0",
     "get-installed-path": "^4.0.8",
     "htmlparser2": "^8.0.1",
     "https": "^1.0.0",
