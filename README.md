@@ -9,8 +9,8 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 - "[Heimdall](https://github.com/mitre/heimdall2)" - Our visualizer for all security result data
 - "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - Our common data format to preserve and transform security data
 
-## Contents:
-* [Installation](#installation)
+## Installation:
+
   * [Via NPM](#installation-via-npm)
       * [Update via NPM](#update-via-npm)
   * [Via Brew](#installation-via-brew)
@@ -19,10 +19,23 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Update via Docker](#update-via-docker)
   * [Via Windows Installer](#installation-via-windows-installer)
       * [Update via Windows Installer](#update-via-windows-installer)
-* [Usage](#usage)
+
+</details>
+
+## Usage
+
+<details>
+  <summary>Attest</summary>
+  
   * [Attest](#attest)
       * [Create Attestations](#create-attestations)
       * [Apply Attestations](#apply-attestations)
+
+</details>
+
+<details>
+  <summary>Convert From HDF</summary>
+
   * [Convert](#convert)
   * [Convert From HDF](#convert-from-hdf)
       * [HDF to ASFF](#hdf-to-asff)
@@ -31,7 +44,13 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [HDF to Checklist](#hdf-to-checklist)
       * [HDF to CSV](#hdf-to-csv)
       * [HDF to Condensed JSON](#hdf-to-condensed-json)
-  * [To HDF](#to-hdf)
+
+</details>
+
+<details>
+  <summary>Convert To HDF</summary>
+
+  * [Convert To HDF](#to-hdf)
       * [ASFF to HDF](#asff-to-hdf)
       * [AWS Config to HDF](#aws-config-to-hdf)
       * [Burp Suite to HDF](#burp-suite-to-hdf)
@@ -54,12 +73,36 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Twistlock to HDF](#twistlock-to-hdf)
       * [XCCDF Results to HDF](#xccdf-results-to-hdf)
       * [OWASP ZAP to HDF](#owasp-zap-to-hdf)
+
+</details>
+
+<details>
+  <summary>eMASS API CLI</summary>
+
   * [eMASS API CLI](#emass-api-cli)
+
+</details>
+
+<details>
+  <summary>View</summary>
+
   * [View](#view)
       * [Heimdall](#heimdall)
       * [Summary](#summary)
+
+</details>
+
+<details>
+  <summary>Validate</summary>
+
   * [Validate](#validate)
       * [Thresholds](#thresholds)
+
+</details>
+
+<details>
+  <summary>Generate</summary>
+
   * [Generate](#generate)
       * [Delta](#delta)
       * [CKL Templates](#ckl-templates)
@@ -70,6 +113,12 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Other](#other)
       * [Notes](#notes)
       * [Mapping Files](#mapping-files)
+
+</details>
+
+<details>
+  <summary>Supplement</summary>
+
   * [Supplement](#supplement)
       * [Passthrough](#passthrough)
         * [Read](#read)
@@ -77,7 +126,17 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Target](#target)
         * [Read](#read-1)
         * [Write](#write-1)
+
+</details>
+
+<details>
+  <summary>License and Authors</summary>
+
 * [License and Author](#license-and-author)
+
+</details>
+
+---
 
 ## Installation
 
