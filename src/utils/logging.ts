@@ -49,22 +49,22 @@ export function getHDFSummary(hdf: ExecJSON.Execution): string {
   )
   controls.forEach(control => {
     switch (control.hdf.status) {
-    case 'Passed':
-      summaryObject.passedCount += 1
-      break
-    case 'Failed':
-      summaryObject.failedCount += 1
-      break
-    case 'Not Applicable':
-      summaryObject.notApplicableCount += 1
-      break
-    case 'Not Reviewed':
-      summaryObject.notReviewedCount += 1
-      break
-    case 'Profile Error':
-      summaryObject.errorCount += 1
-      break
-    default:
+      case 'Passed':
+        summaryObject.passedCount += 1
+        break
+      case 'Failed':
+        summaryObject.failedCount += 1
+        break
+      case 'Not Applicable':
+        summaryObject.notApplicableCount += 1
+        break
+      case 'Not Reviewed':
+        summaryObject.notReviewedCount += 1
+        break
+      case 'Profile Error':
+        summaryObject.errorCount += 1
+        break
+      default:
     }
   })
 

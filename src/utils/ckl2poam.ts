@@ -21,17 +21,17 @@ export function extractSTIGUrl(findingDetails: string): string {
 
 export function cklSeverityToPOAMSeverity(severity: string): string {
   switch (severity) {
-  case 'none':
-    return ''
-  case 'low':
-    return 'Low'
-  case 'medium':
-    return 'Moderate'
-  case 'high':
-  case 'critical':
-    return 'High'
-  default:
-    throw new Error(`Invalid severity passed: ${severity}`)
+    case 'none':
+      return ''
+    case 'low':
+      return 'Low'
+    case 'medium':
+      return 'Moderate'
+    case 'high':
+    case 'critical':
+      return 'High'
+    default:
+      throw new Error(`Invalid severity passed: ${severity}`)
   }
 }
 
@@ -41,43 +41,43 @@ export function cklSeverityToRelevanceOfThreat(severity: string) {
 
 export function cklSeverityToLikelihood(severity: string) {
   switch (severity) {
-  case 'none':
-    return ''
-  case 'low':
-    return 'Low'
-  case 'medium':
-    return 'Moderate'
-  case 'high':
-  case 'critical':
-    return 'Moderate'
+    case 'none':
+      return ''
+    case 'low':
+      return 'Low'
+    case 'medium':
+      return 'Moderate'
+    case 'high':
+    case 'critical':
+      return 'Moderate'
   }
 }
 
 export function cklSeverityToImpact(severity: string) {
   switch (severity) {
-  case 'none':
-    return ''
-  case 'low':
-    return 'Low'
-  case 'medium':
-    return 'Moderate'
-  case 'high':
-  case 'critical':
-    return 'High'
+    case 'none':
+      return ''
+    case 'low':
+      return 'Low'
+    case 'medium':
+      return 'Moderate'
+    case 'high':
+    case 'critical':
+      return 'High'
   }
 }
 
 export function cklSeverityToResidualRiskLevel(severity: string) {
   switch (severity) {
-  case 'none':
-    return ''
-  case 'low':
-    return 'Low'
-  case 'medium':
-    return 'Moderate'
-  case 'high':
-  case 'critical':
-    return 'Moderate'
+    case 'none':
+      return ''
+    case 'low':
+      return 'Low'
+    case 'medium':
+      return 'Moderate'
+    case 'high':
+    case 'critical':
+      return 'Moderate'
   }
 }
 
@@ -91,26 +91,26 @@ export function createCVD(vulnerability: Vulnerability): string {
 
 export function convertToRawSeverity(severity: string) {
   switch (severity) {
-  case 'none':
-    return 'Unknown'
-  case 'low':
-    return 'III'
-  case 'medium':
-    return 'II'
-  case 'high':
-  case 'critical':
-    return 'I'
+    case 'none':
+      return 'Unknown'
+    case 'low':
+      return 'III'
+    case 'medium':
+      return 'II'
+    case 'high':
+    case 'critical':
+      return 'I'
   }
 }
 
 export function cleanStatus(status: string) {
   switch (status) {
-  case 'Not_Applicable':
-    return 'Not Applicable'
-  case 'Open':
-    return 'Ongoing'
-  default:
-    return status
+    case 'Not_Applicable':
+      return 'Not Applicable'
+    case 'Open':
+      return 'Ongoing'
+    default:
+      return status
   }
 }
 

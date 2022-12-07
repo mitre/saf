@@ -60,8 +60,8 @@ export default class Heimdall extends Command {
     const installedPath = getInstalledPath()
 
     express()
-    .use(predefinedLoadJSON)
-    .use(express.static(path.join(installedPath, 'node_modules/@mitre/heimdall-lite/dist')))
-    .listen(flags.port)
+      .use(predefinedLoadJSON)
+      .use(express.static(path.join(installedPath, 'node_modules/@mitre/heimdall-lite/dist')))
+      .listen(flags.port)
   }
 }

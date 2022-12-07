@@ -177,12 +177,12 @@ export function inspecControlToRubyCode(control: InSpecControl, lineLength?: num
         } else {
           // Convert JSON Object to Ruby Hash
           const stringifiedObject = JSON.stringify(value, null, 2)
-          .replace(/\n/g, '\n  ')
-          .replace(/\{\n {6}/g, '{')
-          .replace(/\[\n {8}/g, '[')
-          .replace(/\n {6}\]/g, ']')
-          .replace(/\n {4}\}/g, '}')
-          .replace(/": \[/g, '" => [')
+            .replace(/\n/g, '\n  ')
+            .replace(/\{\n {6}/g, '{')
+            .replace(/\[\n {8}/g, '[')
+            .replace(/\n {6}\]/g, ']')
+            .replace(/\n {4}\}/g, '}')
+            .replace(/": \[/g, '" => [')
           result += `  tag ${tag}: ${stringifiedObject}\n`
         }
       } else if (typeof value === 'string') {

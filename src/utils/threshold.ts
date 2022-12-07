@@ -107,35 +107,35 @@ export function exitNonZeroIfTrue(condition: boolean, reason?: string) {
 
 export function renameStatusName(statusName: string): string {
   switch (statusName) {
-  case 'passed':
-    return 'Passed'
-  case 'failed':
-    return 'Failed'
-  case 'skipped':
-    return 'Not Reviewed'
-  case 'no_impact':
-    return 'Not Applicable'
-  case 'error':
-    return 'Profile Error'
-  default:
-    return 'Profile Error'
+    case 'passed':
+      return 'Passed'
+    case 'failed':
+      return 'Failed'
+    case 'skipped':
+      return 'Not Reviewed'
+    case 'no_impact':
+      return 'Not Applicable'
+    case 'error':
+      return 'Profile Error'
+    default:
+      return 'Profile Error'
   }
 }
 
 export function reverseStatusName(statusName: string): 'passed' | 'failed' | 'skipped' | 'no_impact' | 'error' {
   switch (statusName) {
-  case 'Passed':
-    return 'passed'
-  case 'Failed':
-    return 'failed'
-  case 'Not Reviewed':
-    return 'skipped'
-  case 'Not Applicable':
-    return 'no_impact'
-  case 'Profile Error':
-    return 'error'
-  default:
-    return 'error'
+    case 'Passed':
+      return 'passed'
+    case 'Failed':
+      return 'failed'
+    case 'Not Reviewed':
+      return 'skipped'
+    case 'Not Applicable':
+      return 'no_impact'
+    case 'Profile Error':
+      return 'error'
+    default:
+      return 'error'
   }
 }
 
@@ -192,16 +192,16 @@ function cklControlStatus(control: ContextualizedControl, for_summary?: boolean)
 function controlFindingDetails(control: {message: string[]}, controlCKLStatus: 'Not_Applicable' | 'Profile_Error' | 'Open' | 'NotAFinding' | 'Not_Reviewed') {
   control.message.sort()
   switch (controlCKLStatus) {
-  case 'Open':
-    return `One or more of the automated tests failed or was inconclusive for the control \n\n ${control.message.join('\n')}`
-  case 'NotAFinding':
-    return `All Automated tests passed for the control \n\n ${control.message.join('\n')}`
-  case 'Not_Reviewed':
-    return `Automated test skipped due to known accepted condition in the control : \n\n${control.message.join('\n')}`
-  case 'Not_Applicable':
-    return `Justification: \n ${control.message.join('\n')}`
-  default:
-    return 'No test available or some test errors occurred for this control'
+    case 'Open':
+      return `One or more of the automated tests failed or was inconclusive for the control \n\n ${control.message.join('\n')}`
+    case 'NotAFinding':
+      return `All Automated tests passed for the control \n\n ${control.message.join('\n')}`
+    case 'Not_Reviewed':
+      return `Automated test skipped due to known accepted condition in the control : \n\n${control.message.join('\n')}`
+    case 'Not_Applicable':
+      return `Justification: \n ${control.message.join('\n')}`
+    default:
+      return 'No test available or some test errors occurred for this control'
   }
 }
 
@@ -238,20 +238,20 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
     }
     control.hdf.segments?.forEach(segment => {
       switch (segment.status) {
-      case 'skipped':
-        extracted.message.push(`SKIPPED -- Test: ${segment.code_desc}\nMessage: ${segment.skip_message}\n`)
-        break
-      case 'failed':
-        extracted.message.push(`FAILED -- Test: ${segment.code_desc}\nMessage: ${segment.message}\n`)
-        break
-      case 'passed':
-        extracted.message.push(`PASS -- ${segment.code_desc}\n`)
-        break
-      case 'error':
-        extracted.message.push(`PROFILE_ERROR -- Test: ${segment.code_desc}\nMessage: ${segment.code_desc}\n`)
-        break
-      default:
-        break
+        case 'skipped':
+          extracted.message.push(`SKIPPED -- Test: ${segment.code_desc}\nMessage: ${segment.skip_message}\n`)
+          break
+        case 'failed':
+          extracted.message.push(`FAILED -- Test: ${segment.code_desc}\nMessage: ${segment.message}\n`)
+          break
+        case 'passed':
+          extracted.message.push(`PASS -- ${segment.code_desc}\n`)
+          break
+        case 'error':
+          extracted.message.push(`PROFILE_ERROR -- Test: ${segment.code_desc}\nMessage: ${segment.code_desc}\n`)
+          break
+        default:
+          break
       }
     })
     if (control.data.impact === 0) {

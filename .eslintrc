@@ -23,6 +23,7 @@
     "no-console": "off",
     "node/no-missing-import": "off",
     "complexity": "off",
-    "no-constant-condition": "off"
+    "no-constant-condition": "off",
+    "indent": ["error", 2, { "SwitchCase": 1 }]
   }
 }
