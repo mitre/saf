@@ -27,10 +27,10 @@ export default class Convert extends Command {
     ...Convert.getFlagsForInputFile(getInputFilename()),
   }
 
-  static getFlagsForInputFile(path: string) {
-    if (path) {
-      Convert.detectedType = fingerprint({data: fs.readFileSync(path, 'utf8'), filename: convertFullPathToFilename(path)})
-      switch (Convert.detectedType) {
+  static getFlagsForInputFile(filePath: string) {
+    if (filePath) {
+      Convert.detectedType = fingerprint({data: fs.readFileSync(filePath, 'utf8'), filename: convertFullPathToFilename(filePath)})
+      switch (Convert.detectedType) { // skipcq: JS-0047
         case 'asff':
           return ASFF2HDF.flags
         case 'zap':
@@ -57,7 +57,7 @@ export default class Convert extends Command {
 
   static detectedType: string;
 
-  async run() {
+  async run() { // skipcq: JS-0044
     const {flags} = await this.parse(Convert)
     let converter
     switch (Convert.detectedType) {

@@ -29,7 +29,7 @@ export default class CreateAttestations extends Command {
       format: Flags.string({char: 't', description: '(optional) The output file type', default: 'json', options: ['json', 'xlsx', 'yml', 'yaml']}),
     }
 
-    promptForever(promptValue: string): string {
+    promptForever(promptValue: string): string { // skipcq: JS-0105
       while (true) {
         const ret = prompt(promptValue)
         if (ret.trim() !== '') {
@@ -38,7 +38,7 @@ export default class CreateAttestations extends Command {
       }
     }
 
-    getStatus(): 'passed' | 'failed' {
+    getStatus(): 'passed' | 'failed' { // skipcq: JS-0105
       const validPassResponses = new Set(['p', 'passed', 'pass'])
       const validFailResponses = new Set(['f', 'failed', 'fail', 'failure'])
       while (true) {

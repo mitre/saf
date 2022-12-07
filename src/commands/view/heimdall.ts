@@ -44,7 +44,7 @@ export default class Heimdall extends Command {
     }
 
     // Provide Heimdall with a path to grab our Data from
-    const predefinedLoadJSON = (req: Record<string, any>, res: Record<string, any>, next: () => void) => {
+    const predefinedLoadJSON = (req: Record<string, any>, res: Record<string, any>, next: () => void) => { // skipcq: JS-0045
       if (req.originalUrl.toLowerCase() === '/dynamic/predefinedload.json' && flags.files) {
         return res.json(parsedJSONs)
       }

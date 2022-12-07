@@ -141,7 +141,7 @@ export function reverseStatusName(statusName: string): 'passed' | 'failed' | 'sk
 
 export function getControlIdMap(profile: ContextualizedProfile, thresholds?: ThresholdValues) {
   if (!thresholds) {
-    thresholds = {}
+    thresholds = {} // skipcq: JS-0083
   }
 
   for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {

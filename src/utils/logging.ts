@@ -17,7 +17,7 @@ export function createWinstonLogger(
 ): winston.Logger {
   return winston.createLogger({
     transports: [new winston.transports.Console()],
-    level: level,
+    level: level, // skipcq: JS-0240
     format: winston.format.combine(
       winston.format.timestamp({
         format: 'MMM-DD-YYYY HH:mm:ss Z',

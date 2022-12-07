@@ -35,7 +35,7 @@ function descriptionsToString(
       description => description.label === 'caveat',
     )
     if (caveats.length) {
-      descriptions = descriptions.filter(
+      descriptions = descriptions.filter( // skipcq: JS-0083
         description => description.label !== 'caveat',
       )
       caveats.forEach(caveat => {
@@ -91,9 +91,9 @@ export function convertRow(
     fix = getDescription(control.data.descriptions, 'fix') || ''
   }
 
-  fieldsToAdd.forEach(field => {
-    switch (field) {
-    // Results Set
+  fieldsToAdd.forEach(field => { // skipcq: JS-0044
+    switch (field) { // skipcq: JS-0047
+      // Results Set
       case csvExportFields[0]:
         result[csvExportFields[0]] = filename
         break
