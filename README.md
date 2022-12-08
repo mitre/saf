@@ -22,17 +22,13 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
 ## Usage
 
-<details>
-  <summary>Attest</summary>
+### Attest
 
   * [Attest](#attest)
       * [Create Attestations](#create-attestations)
       * [Apply Attestations](#apply-attestations)
   
-</details>
-
-<details>
-  <summary>Convert From HDF</summary>
+### Convert From HDF
 
   * [Convert](#convert)
   * [Convert From HDF](#convert-from-hdf)
@@ -43,10 +39,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [HDF to CSV](#hdf-to-csv)
       * [HDF to Condensed JSON](#hdf-to-condensed-json)
 
-</details>
-
-<details>
-  <summary>Convert To HDF</summary>
+### Convert To HDF
 
   * [Convert To HDF](#to-hdf)
       * [ASFF to HDF](#asff-to-hdf)
@@ -72,34 +65,22 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [XCCDF Results to HDF](#xccdf-results-to-hdf)
       * [OWASP ZAP to HDF](#owasp-zap-to-hdf)
 
-</details>
-
-<details>
-  <summary>eMASS API CLI</summary>
+### eMASS API CLI
 
   * [eMASS API CLI](#emass-api-cli)
 
-</details>
-
-<details>
-  <summary>View</summary>
+### View
 
   * [View](#view)
       * [Heimdall](#heimdall)
       * [Summary](#summary)
 
-</details>
-
-<details>
-  <summary>Validate</summary>
+### Validate
 
   * [Validate](#validate)
       * [Thresholds](#thresholds)
 
-</details>
-
-<details>
-  <summary>Generate</summary>
+### Generate
 
   * [Generate](#generate)
       * [Delta](#delta)
@@ -112,10 +93,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Notes](#notes)
       * [Mapping Files](#mapping-files)
 
-</details>
-
-<details>
-  <summary>Supplement</summary>
+### Supplement
 
   * [Supplement](#supplement)
       * [Passthrough](#passthrough)
@@ -125,14 +103,9 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
         * [Read](#read-1)
         * [Write](#write-1)
 
-</details>
-
-<details>
-  <summary>License and Authors</summary>
+### License and Authors
 
 * [License and Author](#license-and-author)
-
-</details>
 
 ---
 
@@ -901,7 +874,7 @@ convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall D
 
 ### eMASS API CLI
 
-The SAF CLI implements the eMASS REST API functions via the emasser CLI incorporated here with the SAF CLI. Please references the [emasser Features](https://saf-cli.mitre.org/docs/index.md) 📜 for additional information
+The SAF CLI implements the eMASS REST API functions via the emasser CLI incorporated here with the SAF CLI. Please references the [emasser Features](https://saf-cli.mitre.org/docs) 📜 for additional information
 
 [top](#usage)
 
