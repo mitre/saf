@@ -224,11 +224,11 @@ docker pull mitre/saf:latest
 
 ### Installation via Windows Installer
 
-To install the latest release of the SAF CLI on Windows, download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases) page.
+To install the latest release of the SAF CLI on Windows, download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases)  :octocat: page.
 
 #### Update via Windows Installer
 
-To update the SAF CLI on Windows, uninstall any existing version from your system and then download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases) page.
+To update the SAF CLI on Windows, uninstall any existing version from your system and then download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases)  :octocat: page.
 
 [top](#installation)
 ## Usage
@@ -903,7 +903,7 @@ convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall D
 
 ### eMASS API CLI
 
-The SAF CLI implements the eMASS REST API functions via the emasser CLI incorporated here with the SAF CLI. Please references the [emasser Features](https://saf-cli.mitre.org/docs/emasserFeatures.md) for additional information
+The SAF CLI implements the eMASS REST API functions via the emasser CLI incorporated here with the SAF CLI. Please references the [emasser Features](https://saf-cli.mitre.org/docs/) :scroll: for additional information
 
 [top](#usage)
 
@@ -966,7 +966,7 @@ view summary                  Get a quick compliance overview of an HDF file
 
 #### Thresholds
 
-See the wiki for more information on [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
+See the wiki for more information on :point_right: [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
 
 ```
 validate threshold            Validate the compliance and status counts of an HDF file
@@ -1056,7 +1056,7 @@ generate inspec_metadata      Generate an InSpec metadata template for "saf conv
 
 Threshold files are used in CI to ensure minimum compliance levels and validate control severities and statuses using `saf validate threshold`
 
-See the wiki for more information on [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
+See the wiki for more information on :point_right: [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
 
 ```
 generate threshold            Generate a compliance template for "saf validate threshold".
@@ -1189,7 +1189,7 @@ EXAMPLE (combined read, modfication, and overwrite of the original file)
   $ saf supplement passthrough read -i hdf_with_passthrough.json | jq -rc '.key = "new value"' | xargs -0 -I{} saf supplement passthrough write -i hdf_with_passthrough.json -d {}
 ```
 
-Passthrough data can be any context/structure. See the sample below or visit [Supplement HDF files with additional information](https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60))
+Passthrough data can be any context/structure. See the sample below or visit :point_right: [Supplement HDF files with additional information](https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60))
 ```json
 {
   "CDM": {
@@ -1265,7 +1265,7 @@ EXAMPLE (combined read, modfication, and overwrite of the original file)
   $ saf supplement target read -i hdf_with_target.json | jq -rc '.key = "new value"' | xargs -0 -I{} saf supplement target write -i hdf_with_target.json -d {}
 ```
 
-Passthrough data can be any context/structure. See the sample below or visit [Supplement HDF files with additional information](https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60))
+Passthrough data can be any context/structure. See the sample below or visit :point_right: [Supplement HDF files with additional information](https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60))
 ```json
 {
   "AWS":{
