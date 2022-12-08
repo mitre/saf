@@ -105,11 +105,29 @@ Fo instruction on how to request an eMASS visit [eMASS Account Process Request a
 * [/api/systems/{systemId}/artifacts](#delete-artifacts)
 
 ## Endpoints CLI help
+To get the top level help for the eMASS API help use the following command:
+
+```
+$ saf emasser [-h or -help]
+[eMASS]        The eMASS REST API implementation
+
+USAGE
+  $ saf emasser COMMAND
+
+TOPICS
+  emasser delete  eMass REST API DELETE endpoint commands
+  emasser get     eMass REST API GET endpoint commands
+  emasser post    eMass REST API POST endpoint commands
+  emasser put     eMass REST API PUT endpoint commands
+
+COMMANDS
+  emasser version
+```
 
 Each CLI endpoint command have several layers of help. 
 - Using `-h or -help` after a topic (command) `get, put, post, or delete` lists all available endpoint calls. The following command would list all available `GET` endpoints commands.
     ```
-    $ saf emasser get [-h, -help]
+    $ saf emasser get [-h or -help]
     eMass REST API GET endpoint commands
 
     USAGE
@@ -174,7 +192,7 @@ Each CLI endpoint command have several layers of help.
     EXAMPLES
       $ saf emasser get artifacts export [-s, --systemId] <value> [-f, --filename] <value> [options]
     ```
-**The same format is applicable for POST, PUT and DELETE requests as well, however there may be additional help content**
+**The same format is applicable for POST, PUT, and DELETE requests as well, however there may be additional help content**
 
 ## Command line flags
 All command line flags have a short and long option, for example: -s or --systemId can be use as:

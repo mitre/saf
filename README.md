@@ -443,8 +443,8 @@ convert hdf2condensed         Condensed format used by some community members
     $ saf convert hdf2condensed -i rhel7-results.json -o rhel7-condensed.json
 ```
 [top](#usage)
----
 
+---
 ### Convert To HDF
 
 #### ASFF to HDF
@@ -958,6 +958,7 @@ view summary                  Get a quick compliance overview of an HDF file
     $ saf view summary -i rhel7-results.json
     $ saf view summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json
 ```
+[top](#usage)
 
 ---
 
