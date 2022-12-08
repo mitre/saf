@@ -257,7 +257,7 @@ EXAMPLES
 
   $ saf attest create -o attestation.xlsx -t xlsx
 ```
-
+[top](#usage)
 #### Apply Attestations
 ```
 attest apply              Apply one or more attestation files to one or more HDF results sets
@@ -288,7 +288,7 @@ Want to Recommend or Help Develop a Converter? See [the wiki](https://github.com
 
 #### HDF to ASFF
 
-Note: Uploading findings into AWS Security hub requires configuration of the AWS CLI, see [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.
+***Note:*** Uploading findings into AWS Security hub requires configuration of the AWS CLI, see [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.
 
 ```
 convert hdf2asff              Translate a Heimdall Data Format JSON file into
@@ -384,7 +384,7 @@ convert hdf2xccdf             Translate an HDF file into an XCCDF XML
   EXAMPLES
     $ saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml
 ```
-
+[top](#usage)
 #### HDF to Checklist
 ```
 convert hdf2ckl               Translate a Heimdall Data Format JSON file into a
@@ -443,7 +443,6 @@ convert hdf2condensed         Condensed format used by some community members
     $ saf convert hdf2condensed -i rhel7-results.json -o rhel7-condensed.json
 ```
 [top](#usage)
-
 ---
 
 ### Convert To HDF
@@ -484,10 +483,9 @@ convert asff2hdf              Translate a AWS Security Finding Format JSON into 
     $ saf convert asff2hdf --aws -o out -r us-west-2 --target rhel7
 ```
 [top](#usage)
-
 #### AWS Config to HDF
 
-Note: Pulling AWS Config results data requires configuration of the AWS CLI, see [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.
+***Note:*** Pulling AWS Config results data requires configuration of the AWS CLI, see [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.
 
 ```
 convert aws_config2hdf        Pull Configuration findings from AWS Config and convert
@@ -508,7 +506,6 @@ convert aws_config2hdf        Pull Configuration findings from AWS Config and co
     $ saf convert aws_config2hdf -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json
 ```
 [top](#usage)
-
 #### Burp Suite to HDF
 ```
 convert burpsuite2hdf         Translate a BurpSuite Pro XML file into a Heimdall
@@ -567,7 +564,6 @@ convert dbprotect2hdf         Translate a DBProtect report in "Check Results
 ```
 
 [top](#usage)
-
 #### Fortify to HDF
 ```
 convert fortify2hdf           Translate a Fortify results FVDL file into a Heimdall
@@ -587,7 +583,6 @@ convert fortify2hdf           Translate a Fortify results FVDL file into a Heimd
 ```
 
 [top](#usage)
-
 #### Ion Channel 2 HDF
 ```
 convert ionchannel2hdf        Pull and translate SBOM data from Ion Channel
@@ -609,7 +604,6 @@ convert ionchannel2hdf        Pull and translate SBOM data from Ion Channel
 ```
 
 [top](#usage)
-
 #### JFrog Xray to HDF
 ```
 convert jfrog_xray2hdf        Translate a JFrog Xray results JSON file into a
@@ -627,7 +621,6 @@ convert jfrog_xray2hdf        Translate a JFrog Xray results JSON file into a
 ```
 
 [top](#usage)
-
 #### Tenable Nessus to HDF
 ```
 convert nessus2hdf            Translate a Nessus XML results file into a Heimdall
@@ -647,7 +640,6 @@ convert nessus2hdf            Translate a Nessus XML results file into a Heimdal
 ```
 
 [top](#usage)
-
 #### Netsparker to HDF
 ```
 convert netsparker2hdf        Translate a Netsparker XML results file into a
@@ -667,7 +659,6 @@ convert netsparker2hdf        Translate a Netsparker XML results file into a
 ```
 
 [top](#usage)
-
 #### Nikto to HDF
 ```
 convert nikto2hdf             Translate a Nikto results JSON file into a Heimdall
@@ -686,7 +677,6 @@ convert nikto2hdf             Translate a Nikto results JSON file into a Heimdal
     $ saf convert nikto2hdf -i nikto-results.json -o output-hdf-name.json
 ```
 [top](#usage)
-
 #### Prisma to HDF
 ```
 convert prisma2hdf            Translate a Prisma Cloud Scan Report CSV file into
@@ -703,7 +693,6 @@ convert prisma2hdf            Translate a Prisma Cloud Scan Report CSV file into
     $ saf convert prisma2hdf -i prismacloud-report.csv -o output-hdf-name.json
 ```
 [top](#usage)
-
 #### Prowler to HDF
 ```
 convert prowler2hdf           Translate a Prowler-derived AWS Security Finding
@@ -721,7 +710,6 @@ convert prowler2hdf           Translate a Prowler-derived AWS Security Finding
     $ saf convert prowler2hdf -i prowler-asff.json -o output-folder
 ```
 [top](#usage)
-
 #### Sarif to HDF
 ```
 convert sarif2hdf             Translate a SARIF JSON file into a Heimdall Data
@@ -747,7 +735,6 @@ convert sarif2hdf             Translate a SARIF JSON file into a Heimdall Data
 ```
 
 [top](#usage)
-
 #### Scoutsuite to HDF
 ```
 convert scoutsuite2hdf        Translate a ScoutSuite results from a Javascript
@@ -766,7 +753,6 @@ convert scoutsuite2hdf        Translate a ScoutSuite results from a Javascript
     $ saf convert scoutsuite2hdf -i scoutsuite-results.js -o output-hdf-name.json
 ```
 [top](#usage)
-
 #### Snyk to HDF
 ```
 convert snyk2hdf              Translate a Snyk results JSON file into a Heimdall
@@ -785,7 +771,6 @@ convert snyk2hdf              Translate a Snyk results JSON file into a Heimdall
     $ saf convert snyk2hdf -i snyk_results.json -o output-file-prefix
 ```
 [top](#usage)
-
 #### SonarQube to HDF
 ```
 convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
@@ -809,7 +794,6 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
 ```
 
 [top](#usage)
-
 #### Splunk to HDF
 ```
 convert splunk2hdf            Pull HDF data from your Splunk instance back into an HDF file
@@ -837,7 +821,6 @@ convert splunk2hdf            Pull HDF data from your Splunk instance back into 
 ```
 
 [top](#usage)
-
 #### Trivy to HDF
 ```
 convert trivy2hdf             Translate a Trivy-derived AWS Security Finding
@@ -863,7 +846,6 @@ convert trivy2hdf             Translate a Trivy-derived AWS Security Finding
 ```
 
 [top](#usage)
-
 #### Twistlock to HDF
 ```
 convert twistlock2hdf         Translate a Twistlock CLI output file into an HDF results set
@@ -881,9 +863,8 @@ convert twistlock2hdf         Translate a Twistlock CLI output file into an HDF 
 ```
 
 [top](#usage)
-
 #### XCCDF Results to HDF
-NOTE: `xccdf_results2hdf` only supports native OpenSCAP output and SCC output.
+***Note:*** `xccdf_results2hdf` only supports native OpenSCAP and SCC output.
 ```
 convert xccdf_results2hdf     Translate a SCAP client XCCDF-Results XML report
                               to a Heimdall Data Format JSON file
@@ -900,7 +881,6 @@ convert xccdf_results2hdf     Translate a SCAP client XCCDF-Results XML report
 ```
 
 [top](#usage)
-
 #### OWASP ZAP to HDF
 ```
 convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall Data Format JSON file
@@ -923,7 +903,7 @@ convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall D
 
 ### eMASS API CLI
 
-The SAF CLI implements the eMASS REST API functions via the emasser CLI incorporated here with the SAF CLI. Please references the [emasser Features](./docs/emasserFeatures.md) for additional information
+The SAF CLI implements the eMASS REST API functions via the emasser CLI incorporated here with the SAF CLI. Please references the [emasser Features](https://saf-cli.mitre.org/docs/emasserFeatures.md) for additional information
 
 [top](#usage)
 
