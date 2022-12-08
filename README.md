@@ -28,6 +28,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
   * [Attest](#attest)
       * [Create Attestations](#create-attestations)
       * [Apply Attestations](#apply-attestations)
+  
 </details>
 
 <details>
@@ -41,6 +42,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [HDF to Checklist](#hdf-to-checklist)
       * [HDF to CSV](#hdf-to-csv)
       * [HDF to Condensed JSON](#hdf-to-condensed-json)
+
 </details>
 
 <details>
@@ -69,12 +71,14 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Twistlock to HDF](#twistlock-to-hdf)
       * [XCCDF Results to HDF](#xccdf-results-to-hdf)
       * [OWASP ZAP to HDF](#owasp-zap-to-hdf)
+
 </details>
 
 <details>
   <summary>eMASS API CLI</summary>
 
   * [eMASS API CLI](#emass-api-cli)
+
 </details>
 
 <details>
@@ -83,6 +87,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
   * [View](#view)
       * [Heimdall](#heimdall)
       * [Summary](#summary)
+
 </details>
 
 <details>
@@ -90,6 +95,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
   * [Validate](#validate)
       * [Thresholds](#thresholds)
+
 </details>
 
 <details>
@@ -105,6 +111,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Other](#other)
       * [Notes](#notes)
       * [Mapping Files](#mapping-files)
+
 </details>
 
 <details>
@@ -117,12 +124,14 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Target](#target)
         * [Read](#read-1)
         * [Write](#write-1)
+
 </details>
 
 <details>
   <summary>License and Authors</summary>
 
 * [License and Author](#license-and-author)
+
 </details>
 
 ---
