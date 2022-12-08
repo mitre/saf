@@ -213,11 +213,11 @@ docker pull mitre/saf:latest
 
 ### Installation via Windows Installer
 
-To install the latest release of the SAF CLI on Windows, download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases)  :octocat: page.
+To install the latest release of the SAF CLI on Windows, download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases) 🌬️ page.
 
 #### Update via Windows Installer
 
-To update the SAF CLI on Windows, uninstall any existing version from your system and then download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases) :octocat: page.
+To update the SAF CLI on Windows, uninstall any existing version from your system and then download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases) 🌬️ page.
 
 [top](#installation)
 ## Usage
