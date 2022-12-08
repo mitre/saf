@@ -178,8 +178,6 @@
     "prepack": "run-script-os",
     "prepack:win32": "(IF EXIST lib rmdir /s /q lib) && node_modules\\.bin\\tsc -b",
     "prepack:darwin:linux": "rm -rf lib && node_modules/.bin/tsc -b",
-    "test_emasser": "ts-mocha --timeout 8000 --forbid-only \"test/commands/emasser/*.ts\"",
-    "test_convert": "ts-mocha --timeout 8000 --forbid-only \"test/commands/convert/convert.test.ts\"",
     "test": "ts-mocha --timeout 8000 --forbid-only \"test/**/*.test.ts\""
   },
   "types": "lib/index.d.ts"
