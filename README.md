@@ -340,7 +340,7 @@ index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) value
 | table meta.guid "Results Set" "Scan Type" "Scan (Profile) Name" ID "NIST SP 800-53 Controls" Title "Control Status" "Test(s) Status" "Results Description" "Results Skip Message (if applicable)"  Description Impact Severity  Check Fix "CCI IDs" Code "Scan Duration" "Scan (Profile) Summary" "Scan (Profile) Version"
 ```
 [top](#usage)
-#### HDF to XCCDF
+#### HDF to XCCDF Results
 ```
 convert hdf2xccdf             Translate an HDF file into an XCCDF XML
 
@@ -874,7 +874,7 @@ convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall D
 
 ### eMASS API CLI
 
-The SAF CLI implements the eMASS REST API functions via the emasser CLI incorporated here with the SAF CLI. Please references the [emasser Features](https://saf-cli.mitre.org/docs) 📜 for additional information
+The SAF CLI implements the eMASS REST API functions via the emasser CLI incorporated here with the SAF CLI. Please references the [emasser Features](https://saf-cli.mitre.org/docs/emasser) 📜 for additional information
 
 [top](#usage)
 
@@ -1078,9 +1078,9 @@ EXAMPLES
 ```
 [top](#usage)
 
-#### XCCDF to InSpec Stub
+#### XCCDF Benchmark to InSpec Stub
 ```
-generate xccdf2inspec_stub              Translate a DISA STIG XCCDF XML file into a skeleton for an InSpec profile
+generate xccdf_benchmark2inspec_stub              Translate a DISA STIG XCCDF Benchmark XML file into a skeleton for an InSpec profile
 
   USAGE
     $ saf generate xccdf2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-s] [-r | -S] [-l <line-length>] [-e]
