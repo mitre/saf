@@ -20,8 +20,6 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
   * [Via Windows Installer](#installation-via-windows-installer)
       * [Update via Windows Installer](#update-via-windows-installer)
 
-</details>
-
 ## Usage
 
 <details>
@@ -224,7 +222,7 @@ docker pull mitre/saf:latest
 
 ### Installation via Windows Installer
 
-To install the latest release of the SAF CLI on Windows, download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases) :octocat: page.
+To install the latest release of the SAF CLI on Windows, download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases)  :octocat: page.
 
 #### Update via Windows Installer
 

@@ -105,7 +105,7 @@ Fo instruction on how to request an eMASS visit [eMASS Account Process Request a
 * [/api/systems/{systemId}/artifacts](#delete-artifacts)
 
 ## Endpoints CLI help
-To view eMASS API top help (all available topics & commands) use the following command:
+To view eMASS API top help (available topics & commands) use the following command:
 
 ```
 $ saf emasser [-h or -help]
