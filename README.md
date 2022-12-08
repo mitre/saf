@@ -224,11 +224,11 @@ docker pull mitre/saf:latest
 
 ### Installation via Windows Installer
 
-To install the latest release of the SAF CLI on Windows, download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases)  :octocat: page.
+To install the latest release of the SAF CLI on Windows, download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases) :octocat: page.
 
 #### Update via Windows Installer
 
-To update the SAF CLI on Windows, uninstall any existing version from your system and then download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases)  :octocat: page.
+To update the SAF CLI on Windows, uninstall any existing version from your system and then download and run the most recent installer for your system architecture from the [Releases](https://github.com/mitre/saf/releases) :octocat: page.
 
 [top](#installation)
 ## Usage
@@ -280,7 +280,7 @@ EXAMPLES
 
 Translating your data to and from Heimdall Data Format (HDF) is done using the `saf convert` command.
 
-Want to Recommend or Help Develop a Converter? See [the wiki](https://github.com/mitre/saf/wiki/How-to-recommend-development-of-a-mapper) on how to get started.
+Want to Recommend or Help Develop a Converter? See [the wiki](https://github.com/mitre/saf/wiki/How-to-recommend-development-of-a-mapper) :book: on how to get started.
 
 
 ### Convert From HDF
@@ -288,7 +288,7 @@ Want to Recommend or Help Develop a Converter? See [the wiki](https://github.com
 
 #### HDF to ASFF
 
-***Note:*** Uploading findings into AWS Security hub requires configuration of the AWS CLI, see [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.
+***Note:*** Uploading findings into AWS Security hub requires configuration of the AWS CLI, see :point_right: [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.
 
 ```
 convert hdf2asff              Translate a Heimdall Data Format JSON file into
@@ -318,7 +318,7 @@ convert hdf2asff              Translate a Heimdall Data Format JSON file into
 [top](#usage)
 #### HDF to Splunk
 
-**Notice**: HDF to Splunk requires configuration on the Splunk server. See [Splunk Configuration](https://github.com/mitre/saf/wiki/Splunk-Configuration).
+**Notice**: HDF to Splunk requires configuration on the Splunk server. See :point_right: [Splunk Configuration](https://github.com/mitre/saf/wiki/Splunk-Configuration).
 
 ```
 convert hdf2splunk            Translate and upload a Heimdall Data Format JSON file into a Splunk server
@@ -485,7 +485,7 @@ convert asff2hdf              Translate a AWS Security Finding Format JSON into 
 [top](#usage)
 #### AWS Config to HDF
 
-***Note:*** Pulling AWS Config results data requires configuration of the AWS CLI, see [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.
+***Note:*** Pulling AWS Config results data requires configuration of the AWS CLI, see :point_right: [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.
 
 ```
 convert aws_config2hdf        Pull Configuration findings from AWS Config and convert
@@ -1248,7 +1248,7 @@ FLAGS
 
 DESCRIPTION
   Passthrough data can be any context/structure. See sample ideas at [https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60)#:~:text=Settings-,Supplement%20HDF%20files%20with%20additional%20information,-(ex.%20%60passthrough%60%2C%20%60target](https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60))
-
+  
 EXAMPLES
   $ saf supplement passthrough write -i hdf.json -d '{"a": 5}'
 
