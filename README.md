@@ -22,24 +22,24 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
 ## Usage
 
-### Attest
+### Attest HDF Data
 
   * [Attest](#attest)
       * [Create Attestations](#create-attestations)
       * [Apply Attestations](#apply-attestations)
   
-### Convert From HDF
+### Convert HDF to other formats
 
-  * [Convert](#convert)
+  * [Get Help with Convert](#convert)
   * [Convert From HDF](#convert-from-hdf)
       * [HDF to ASFF](#hdf-to-asff)
       * [HDF to Splunk](#hdf-to-splunk)
-      * [HDF to XCCDF](#hdf-to-xccdf)
+      * [HDF to XCCDF Results](#hdf-to-xccdf)
       * [HDF to Checklist](#hdf-to-checklist)
       * [HDF to CSV](#hdf-to-csv)
       * [HDF to Condensed JSON](#hdf-to-condensed-json)
 
-### Convert To HDF
+### Convert other formats to HDF
 
   * [Convert To HDF](#to-hdf)
       * [ASFF to HDF](#asff-to-hdf)
@@ -65,22 +65,22 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [XCCDF Results to HDF](#xccdf-results-to-hdf)
       * [OWASP ZAP to HDF](#owasp-zap-to-hdf)
 
-### eMASS API CLI
+### eMasser Client
 
   * [eMASS API CLI](#emass-api-cli)
 
-### View
+### View HDF Summaries and Data
 
   * [View](#view)
       * [Heimdall](#heimdall)
       * [Summary](#summary)
 
-### Validate
+### Validate HDF Thresholds
 
   * [Validate](#validate)
       * [Thresholds](#thresholds)
 
-### Generate
+### Generate Data, Reports & More
 
   * [Generate](#generate)
       * [Delta](#delta)
@@ -88,12 +88,11 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [InSpec Metadata](#inspec-metadata)
       * [Thresholds](#thresholds-1)
       * [Spreadsheet (csv/xlsx) to InSpec](#spreadsheet-csvxlsx-to-inspec)
-      * [XCCDF to InSpec Stub](#xccdf-to-inspec-stub)
-      * [Other](#other)
-      * [Notes](#notes)
+      * [XCCDF Benchmark to InSpec Stubs](#xccdf-benchmark-to-inspec-stub)
+        * [DoD Stub vs CIS Stub Formatting](#dod-stub-vs-cis-stub-formatting)
       * [Mapping Files](#mapping-files)
 
-### Supplement
+### Enhance and Supplement your HDF Data
 
   * [Supplement](#supplement)
       * [Passthrough](#passthrough)
@@ -1098,9 +1097,10 @@ generate xccdf_benchmark2inspec_stub              Translate a DISA STIG XCCDF Be
 ```
 [top](#usage)
 
-#### Other
 
-#### Notes
+##### DoD Stub vs CIS Stub Formatting
+
+The converter supports both Stub and CIS style. You specify with the `--format` flag  to satisfy your needs. The default is the DoD Stub Format.
 
 - Specifying the `--format` flag as either `cis` or `disa` will parse the input spreadsheet according to the standard formats for CIS Benchmark exports and DISA STIG exports, respectively.
 - You can also use the `general` setting (the default) to parse an arbitrary spreadsheet, but if you do so, you must provide a mapping file with the `--mapping` flag so that `saf` can parse the input.

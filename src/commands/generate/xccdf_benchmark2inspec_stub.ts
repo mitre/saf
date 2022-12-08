@@ -10,7 +10,7 @@ import YAML from 'yaml'
 import {CciNistMappingData} from '@mitre/hdf-converters'
 
 export default class XCCDFBenchmark2InSpec extends Command {
-  static usage = 'generate xccdf2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-s] [-r | -S] [-l <line-length>] [-e]'
+  static usage = 'generate xccdf_benchmark2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-s] [-r | -S] [-l <line-length>] [-e]'
 
   static description = 'Translate a DISA STIG XCCDF-Benchmark XML file into a skeleton for an InSpec profile'
 
@@ -27,7 +27,7 @@ export default class XCCDFBenchmark2InSpec extends Command {
   }
 
   async run() {
-    const {flags} = await this.parse(XCCDF2InSpec)
+    const {flags} = await this.parse(XCCDFBenchmark2InSpec)
 
     // Check if the output folder already exists
     if (!fs.existsSync(flags.output)) {

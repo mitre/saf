@@ -434,7 +434,7 @@ EXAMPLES
   $ saf emasser get poams byPoamId [-s, --systemId] <value> [-p, --poamId] <value>
 ```
 - forSystem - Retrieves all poams for specified system ID
-    ````
+    ```
     USAGE
       $ saf emasser get poams [ARGUMENTS]
 
@@ -456,7 +456,7 @@ EXAMPLES
 
     EXAMPLES
       $ saf emasser get poams forSystem [-s, --systemId] <value> [options]
-    ````
+    ```
     - required flag (parameter):
 
       |parameter    | type or values                    |
@@ -475,7 +475,7 @@ EXAMPLES
 
 
 - byPoamId - Retrieves all poams for specified system and poam ID 
-    ````
+    ```
     USAGE
       $ saf emasser get poams [ARGUMENTS]
 
@@ -493,7 +493,7 @@ EXAMPLES
 
     EXAMPLES
       $ saf emasser get poams byPoamId [-s, --systemId] <value> [-p, --poamId] <value>    
-    ````
+    ```
   - required flags (parameters) are:
 
     |parameter    | type or values                    |
@@ -526,7 +526,7 @@ EXAMPLES
   $ saf emasser get milestones byMilestoneId [-s, --systemId] <value> [-p, --poamId] <value> [-m, --milestoneId] <value>
 ```
 - byPoamId - Retrieves milestone(s) for specified system and poam ID
-    ````
+    ```shell
     USAGE
       $ saf emasser get milestones [ARGUMENTS]
 
@@ -546,7 +546,7 @@ EXAMPLES
 
     EXAMPLES
       $ saf emasser get milestones byPoamId [-s, --systemId] <value> [-p, --poamId] <value> [options]
-    ````
+    ```
   - required flags (parameters) are:
 
     |parameter    | type or values                    |
@@ -563,7 +563,7 @@ EXAMPLES
 
 
 - byMilestoneId, Retrieve milestone(s) for specified system, poam, and milestone ID"
-    ````
+    ```
     USAGE
       $ saf emasser get milestones [ARGUMENTS]
 
@@ -582,7 +582,7 @@ EXAMPLES
 
     EXAMPLES
       $ saf emasser get milestones byMilestoneId [-s, --systemId] <value> [-p, --poamId] <value> [-m, --milestoneId] <value>
-        ````
+    ```
   - required flags (parameters) are:
 
     |parameter     | type or values                       |
@@ -617,7 +617,7 @@ EXAMPLES
 ```
 
 - forSystem - Retrieves one or many artifacts in a system specified system ID
-    ````
+    ```
     USAGE
       $ saf emasser get artifacts [ARGUMENTS]
 
@@ -638,7 +638,7 @@ EXAMPLES
 
     EXAMPLES
       $ saf emasser get artifacts forSystem [-s, --systemId] <value> [options]
-    ````
+    ```
   - required flag (parameter):
 
     |parameter    | type or values                    |
@@ -656,7 +656,7 @@ EXAMPLES
 
 
 - export - Retrieves the file artifacts (if compress is true the file binary contents are returned, otherwise the file textual contents are returned.)
-  ````
+  ```
   USAGE
     $ saf emasser get artifacts [ARGUMENTS]
 
@@ -675,7 +675,7 @@ EXAMPLES
 
   EXAMPLES
     $ saf emasser get artifacts export [-s, --systemId] <value> [-f, --filename] <value> [options]
-  ````
+  ```
   - required flags (parameters) are:
 
     |parameter    | type or values                    |
@@ -727,7 +727,7 @@ To view one or many Control Approval Chain (CAC) in a system specified system ID
 ----
 To view one or many Package Approval Chain (PAC) in a system specified system ID use the following command:
 
-  ````
+  ```
   USAGE
     $ saf emasser get pac [options]
 
@@ -740,7 +740,7 @@ To view one or many Package Approval Chain (PAC) in a system specified system ID
 
   EXAMPLES
     $ saf emasser get pac --systemId <value>
-  ````
+  ```
   - required flag (parameter):
 
     |parameter    | type or values                    |
@@ -1026,7 +1026,7 @@ Test Result add (POST) endpoint API business rules.
 ---
 Add (POST) test results CLI usage
 
-  ````
+  ```
   USAGE
     $ saf emasser post test_results [ARGUMENTS]
 
@@ -1045,7 +1045,7 @@ Add (POST) test results CLI usage
 
   EXAMPLES
     $ saf emasser post test_results [-s,--systemId] [-c,--cci] [-b,--testedBy] [-t,--testDate] [-d,--description] [-S,--complianceStatus]
-  ````
+  ```
 Note: If no POA&Ms or AP exist for the control (system), the following message is returned:
 "You have entered a Non-Compliant Test Result. You must create a POA&M Item for this Control and/or AP if one does not already exist."
 
@@ -1238,7 +1238,7 @@ EXAMPLES
 ---
 Add (POST) milestones to one or many POA&M items in a system
 
-````
+```
 USAGE
   $ saf emasser post milestones [ARGUMENTS]
 
@@ -1254,7 +1254,7 @@ DESCRIPTION
 
 EXAMPLES
   $ saf emasser post milestones [-s,--systemId] [-p,--poamId] [-d,--description] [-c,--scheduledCompletionDate]
-````
+```
   - required parameter are:
 
     |parameter                  | type or values                                      |
@@ -1344,7 +1344,7 @@ Add a Control Approval Chain (CAC) items in a system
 
 ### Add (POST) CAC CLI usages
 
- ````
+ ```
 USAGE
   $ saf emasser post cac [ARGUMENTS]
 
@@ -1360,7 +1360,7 @@ DESCRIPTION
 EXAMPLES
   $ saf emasser post cac [-s,--systemId] [-a,--controlAcronym] [options]
 
- ````
+ ```
   - required parameter are:
 
     |parameter          | type or values                                              |
@@ -1383,7 +1383,7 @@ Add new Package Approval Chain (PAC) workflow(s) for a system
 
 ### Add (POST) PAC CLI usages
 
-````
+```
 USAGE
   $ saf emasser post pac [ARGUMENTS]
 
@@ -1400,7 +1400,7 @@ DESCRIPTION
 
 EXAMPLES
   $ saf emasser post pac [-s,--systemId] [-w,--workflow] [-n,--name] [-c,--comments]
-````
+```
   - required parameter are:
 
     |parameter     | type or values                                                            |
@@ -1417,7 +1417,7 @@ EXAMPLES
 ----
 To add (POST) static code scans use the following command:
 
-````
+```
 USAGE
   $ saf emasser post static_code_scans [ARGUMENTS]
 
@@ -1431,7 +1431,7 @@ DESCRIPTION
 
 EXAMPLES
   $ saf emasser post static_code_scans [-s,--systemId] [-f,--cloudResourceFile]
-````
+```
 
 **Note:** The input file `[-f,--statiCodeScanFile]` should be a well formed JSON containing application scan findings. 
 
@@ -1483,7 +1483,7 @@ EXAMPLES
   $ saf emasser post static_code_scans [-s,--systemId] [-f,--cloudResourceFile]
   ```
 With the following JSON content:  
-  ````json
+  ```json
   {
     "application": {
       "applicationName": "Name of the software application that was assessed",
@@ -1495,7 +1495,7 @@ With the following JSON content:
       }
     ]
   }
-  ````
+  ```
   - required parameter are:
 
     |parameter          | type or values                                             |
@@ -1535,7 +1535,7 @@ With the following JSON content:
 
 ### Add (POST) Cloud Resources CLI usages
 
-````
+```
 USAGE
   $ saf emasser post cloud_resources [ARGUMENTS]
 
@@ -1549,7 +1549,7 @@ DESCRIPTION
 
 EXAMPLES
   $ saf emasser post cloud_resources [-s,--systemId] [-f,--cloudResourceFile]
-````
+```
 
 **Note:** The input file `[-f, --cloudResourceFile]`should be a well formed JSON containing the cloud resources and their scan results information.
 
@@ -1648,7 +1648,7 @@ EXAMPLES
 
 ### Add (POST) Container Scan Results CLI usages
 
-````
+```
 USAGE
   $ saf emasser post container_scans [ARGUMENTS]
 
@@ -1663,7 +1663,7 @@ DESCRIPTION
 EXAMPLES
   $ saf emasser post container_scans [-s,--systemId] [-f,--containerCodeScanFile]
  
-````
+```
 **Note:** The input file `[-f, --containerCodeScanFile]` should be a well formed JSON containing the container scan results information.
 
 ---
@@ -1777,7 +1777,7 @@ Implementation Plan information cannot be updated if Security Control does not e
 ---
 ### Update (PUT) System Controls CLI usages
 
-````
+```
 USAGE
   $ saf emasser put controls [ARGUMENTS]
 
@@ -1791,7 +1791,7 @@ DESCRIPTION
 
 EXAMPLES
   $ saf emasser put controls [-s,--systemId] [-f,--controlsFile]
-````
+```
 **Note:** The input file should be a well formed JSON containing the Security Control information based on defined business rules. 
  
 ---
@@ -2068,7 +2068,7 @@ EXAMPLES
 ----
 Update (PUT) one or many milestones for a POA&M items in a system
 
-````
+```
 USAGE
   $ saf emasser put milestones [ARGUMENTS]
 
@@ -2085,7 +2085,7 @@ DESCRIPTION
 
 EXAMPLES
   $ saf emasser put milestones [-s,--systemId] [-p,--poamId] [-m,--milestoneId] [-d,--description] [-c,--scheduledCompletionDate]
-````
+```
 
   - required parameter are:
 
@@ -2121,7 +2121,7 @@ EXAMPLES
 ---
 ### Update (PUT) Artifacts CLI usages
 
-````
+```
 USAGE
   $ saf emasser put artifacts [ARGUMENTS]
 
@@ -2145,7 +2145,7 @@ DESCRIPTION
 
 EXAMPLES
   $ saf emasser put artifacts [-s,--systemId] [-f,--filename] [--isTemplate,--no-isTemplate] [-t,--type] [-g--category] [options]
-````
+```
   - required parameter are:
 
     |parameter     | type or values                                      |
