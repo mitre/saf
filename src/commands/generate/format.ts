@@ -89,18 +89,18 @@ export default class GenerateFormat extends Command {
         controls = {}
       }
 
-        // If existingProfileFolderPath exists
-        if (existingProfileFolderPath && fs.existsSync(path.join(existingProfileFolderPath, 'controls'))) {
-            logger.debug(`Deleting existing profile folder ${path.join(existingProfileFolderPath, 'controls')}`)
-            fse.emptyDirSync(path.join(existingProfileFolderPath, 'controls'))
-        }
+      // If existingProfileFolderPath exists
+      if (existingProfileFolderPath && fs.existsSync(path.join(existingProfileFolderPath, 'controls'))) {
+        logger.debug(`Deleting existing profile folder ${path.join(existingProfileFolderPath, 'controls')}`)
+        fse.emptyDirSync(path.join(existingProfileFolderPath, 'controls'))
+      }
 
-        logger.debug('Formatting the original controls with no diff.')
-        existingProfile.controls.forEach((control: Control) => {
-            // Write the new control to the controls folder
-            logger.debug(`Writing updated control ${control.id} to profile`)
-            fs.writeFileSync(path.join(existingProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby()) // Ensure we always have a newline at EOF
-        })
+      logger.debug('Formatting the original controls with no diff.')
+      existingProfile.controls.forEach((control: Control) => {
+        // Write the new control to the controls folder
+        logger.debug(`Writing updated control ${control.id} to profile`)
+        fs.writeFileSync(path.join(existingProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby()) // Ensure we always have a newline at EOF
+      })
     }
   }
 }

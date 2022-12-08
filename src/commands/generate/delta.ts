@@ -16,7 +16,7 @@ export default class GenerateDelta extends Command {
     useVulnerabilityId: Flags.boolean({char: 'r', required: false, default: true, description: "Use Vulnerability IDs for control IDs (ex. 'SV-XXXXX')", exclusive: ['useStigID']}),
     useStigID: Flags.boolean({char: 'S', required: false, default: false, description: 'Use STIG IDs for control IDs (ex. RHEL-07-010020, also known as Version)', exclusive: ['useVulnerabilityId']}),
     useCISId: Flags.boolean({char: 'C', required: false, default: false, description: 'Use CIS Rule IDs for control IDs (ex. C-1.1.1.1)'}),
-    logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']})
+    logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
   static examples = [
@@ -131,8 +131,7 @@ export default class GenerateDelta extends Command {
       if (flags.report) {
         logger.debug('Writing report markdown file')
         fs.writeFileSync(path.join(flags.report), updatedResult.markdown)
-      } 
-      else {
+      } else {
         logger.error('Could not generate delta because one or more of the following variables were not satisfied:')
 
         if (!existingProfile) {
