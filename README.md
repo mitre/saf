@@ -24,11 +24,10 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
 <details>
   <summary>Attest</summary>
-  
+
   * [Attest](#attest)
       * [Create Attestations](#create-attestations)
       * [Apply Attestations](#apply-attestations)
-
 </details>
 
 <details>
@@ -42,7 +41,6 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [HDF to Checklist](#hdf-to-checklist)
       * [HDF to CSV](#hdf-to-csv)
       * [HDF to Condensed JSON](#hdf-to-condensed-json)
-
 </details>
 
 <details>
@@ -71,14 +69,12 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Twistlock to HDF](#twistlock-to-hdf)
       * [XCCDF Results to HDF](#xccdf-results-to-hdf)
       * [OWASP ZAP to HDF](#owasp-zap-to-hdf)
-
 </details>
 
 <details>
   <summary>eMASS API CLI</summary>
 
   * [eMASS API CLI](#emass-api-cli)
-
 </details>
 
 <details>
@@ -87,7 +83,6 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
   * [View](#view)
       * [Heimdall](#heimdall)
       * [Summary](#summary)
-
 </details>
 
 <details>
@@ -95,7 +90,6 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
   * [Validate](#validate)
       * [Thresholds](#thresholds)
-
 </details>
 
 <details>
@@ -111,7 +105,6 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Other](#other)
       * [Notes](#notes)
       * [Mapping Files](#mapping-files)
-
 </details>
 
 <details>
@@ -124,14 +117,12 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Target](#target)
         * [Read](#read-1)
         * [Write](#write-1)
-
 </details>
 
 <details>
   <summary>License and Authors</summary>
 
 * [License and Author](#license-and-author)
-
 </details>
 
 ---
@@ -278,7 +269,7 @@ EXAMPLES
 
 Translating your data to and from Heimdall Data Format (HDF) is done using the `saf convert` command.
 
-Want to Recommend or Help Develop a Converter? See [the wiki](https://github.com/mitre/saf/wiki/How-to-recommend-development-of-a-mapper) :book: on how to get started.
+Want to Recommend or Help Develop a Converter? See [the wiki](https://github.com/mitre/saf/wiki/How-to-recommend-development-of-a-mapper) 📰 on how to get started.
 
 
 ### Convert From HDF
@@ -286,7 +277,7 @@ Want to Recommend or Help Develop a Converter? See [the wiki](https://github.com
 
 #### HDF to ASFF
 
-***Note:*** Uploading findings into AWS Security hub requires configuration of the AWS CLI, see :point_right: [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.
+***Note:*** Uploading findings into AWS Security hub requires configuration of the AWS CLI, see 👉 [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.
 
 ```
 convert hdf2asff              Translate a Heimdall Data Format JSON file into
@@ -316,7 +307,7 @@ convert hdf2asff              Translate a Heimdall Data Format JSON file into
 [top](#usage)
 #### HDF to Splunk
 
-**Notice**: HDF to Splunk requires configuration on the Splunk server. See :point_right: [Splunk Configuration](https://github.com/mitre/saf/wiki/Splunk-Configuration).
+**Notice**: HDF to Splunk requires configuration on the Splunk server. See 👉 [Splunk Configuration](https://github.com/mitre/saf/wiki/Splunk-Configuration).
 
 ```
 convert hdf2splunk            Translate and upload a Heimdall Data Format JSON file into a Splunk server
@@ -343,7 +334,7 @@ convert hdf2splunk            Translate and upload a Heimdall Data Format JSON f
     $ saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf
 ```
 
-For HDF Splunk Schema documentation visit [Heimdall converter schemas](https://github.com/mitre/heimdall2/blob/master/libs/hdf-converters/src/converters-from-hdf/splunk/Schemas.md#schemas)
+For HDF Splunk Schema documentation visit 👉 [Heimdall converter schemas](https://github.com/mitre/heimdall2/blob/master/libs/hdf-converters/src/converters-from-hdf/splunk/Schemas.md#schemas)
 
 **Previewing HDF Data Within Splunk:**
 
@@ -483,7 +474,7 @@ convert asff2hdf              Translate a AWS Security Finding Format JSON into 
 [top](#usage)
 #### AWS Config to HDF
 
-***Note:*** Pulling AWS Config results data requires configuration of the AWS CLI, see :point_right: [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.
+***Note:*** Pulling AWS Config results data requires configuration of the AWS CLI, see 👉 [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.
 
 ```
 convert aws_config2hdf        Pull Configuration findings from AWS Config and convert
@@ -901,7 +892,7 @@ convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall D
 
 ### eMASS API CLI
 
-The SAF CLI implements the eMASS REST API functions via the emasser CLI incorporated here with the SAF CLI. Please references the [emasser Features](https://saf-cli.mitre.org/docs/) :scroll: for additional information
+The SAF CLI implements the eMASS REST API functions via the emasser CLI incorporated here with the SAF CLI. Please references the [emasser Features](https://saf-cli.mitre.org/docs/) 📜 for additional information
 
 [top](#usage)
 
@@ -964,7 +955,7 @@ view summary                  Get a quick compliance overview of an HDF file
 
 #### Thresholds
 
-See the wiki for more information on :point_right: [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
+See the wiki for more information on 👉 [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
 
 ```
 validate threshold            Validate the compliance and status counts of an HDF file
@@ -1054,7 +1045,7 @@ generate inspec_metadata      Generate an InSpec metadata template for "saf conv
 
 Threshold files are used in CI to ensure minimum compliance levels and validate control severities and statuses using `saf validate threshold`
 
-See the wiki for more information on :point_right: [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
+See the wiki for more information on 👉 [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
 
 ```
 generate threshold            Generate a compliance template for "saf validate threshold".
@@ -1187,7 +1178,7 @@ EXAMPLE (combined read, modfication, and overwrite of the original file)
   $ saf supplement passthrough read -i hdf_with_passthrough.json | jq -rc '.key = "new value"' | xargs -0 -I{} saf supplement passthrough write -i hdf_with_passthrough.json -d {}
 ```
 
-Passthrough data can be any context/structure. See the sample below or visit :point_right: [Supplement HDF files with additional information](https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60))
+Passthrough data can be any context/structure. See the sample below or visit 👉 [Supplement HDF files with additional information](https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60))
 ```json
 {
   "CDM": {
@@ -1263,7 +1254,7 @@ EXAMPLE (combined read, modfication, and overwrite of the original file)
   $ saf supplement target read -i hdf_with_target.json | jq -rc '.key = "new value"' | xargs -0 -I{} saf supplement target write -i hdf_with_target.json -d {}
 ```
 
-Passthrough data can be any context/structure. See the sample below or visit :point_right: [Supplement HDF files with additional information](https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60))
+Passthrough data can be any context/structure. See the sample below or visit 👉 [Supplement HDF files with additional information](https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60))
 ```json
 {
   "AWS":{
@@ -1342,7 +1333,7 @@ EXAMPLES
 - Author:: Ryan Lin [Rlin232](https://github.com/rlin232)
 - Author:: Amndeep Singh Mann [Amndeep7](https://github.com/amndeep7)
 - Author:: Camden Moors [camdenmoors](https://github.com/camdenmoors)
-- Author:: Emily Rodriquez [em-c-rod](https://github.com/em-c-rod)
+- Author:: Emily Rodriguez [em-c-rod](https://github.com/em-c-rod)
 - Author:: George Dias [georgedias](https://github.com/georgedias)
 
 ### NOTICE
