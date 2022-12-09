@@ -28,20 +28,20 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Create Attestations](#create-attestations)
       * [Apply Attestations](#apply-attestations)
   
-### Convert HDF to other formats
+### Convert HDF to Other Formats
 
   * [Get Help with Convert](#convert)
   * [Convert From HDF](#convert-from-hdf)
       * [HDF to ASFF](#hdf-to-asff)
       * [HDF to Splunk](#hdf-to-splunk)
-      * [HDF to XCCDF Results](#hdf-to-xccdf)
+      * [HDF to XCCDF Results](#hdf-to-xccdf-results)
       * [HDF to Checklist](#hdf-to-checklist)
       * [HDF to CSV](#hdf-to-csv)
       * [HDF to Condensed JSON](#hdf-to-condensed-json)
 
-### Convert other formats to HDF
+### Convert Other Formats to HDF
 
-  * [Convert To HDF](#to-hdf)
+  * [Convert To HDF](#convert-to-hdf)
       * [ASFF to HDF](#asff-to-hdf)
       * [AWS Config to HDF](#aws-config-to-hdf)
       * [Burp Suite to HDF](#burp-suite-to-hdf)
@@ -80,7 +80,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
   * [Validate](#validate)
       * [Thresholds](#thresholds)
 
-### Generate Data, Reports & More
+### Generate Data Reports and More
 
   * [Generate](#generate)
       * [Delta](#delta)
@@ -92,7 +92,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
         * [DoD Stub vs CIS Stub Formatting](#dod-stub-vs-cis-stub-formatting)
       * [Mapping Files](#mapping-files)
 
-### Enhance and Supplement your HDF Data
+### Enhance and Supplement HDF Data
 
   * [Supplement](#supplement)
       * [Passthrough](#passthrough)
@@ -128,9 +128,9 @@ To update the SAF CLI with `npm`:
 ```bash
 npm update -g @mitre/saf
 ```
+[top](#installation)
 
 ---
-
 
 ### Installation via Brew
 
@@ -148,9 +148,9 @@ To update the SAF CLI with `brew`:
 ```
 brew upgrade mitre/saf/saf-cli
 ```
+[top](#installation)
 
 ---
-
 
 ### Installation via Docker
 
@@ -189,6 +189,7 @@ To update the SAF CLI with `docker`:
 ```bash
 docker pull mitre/saf:latest
 ```
+[top](#installation)
 
 ---
 
@@ -285,7 +286,7 @@ convert hdf2asff              Translate a Heimdall Data Format JSON file into
     $ saf convert hdf2asff -i rds_mysql_i123456789scan_03042022A.json -a 987654321 -r us-west-1 -t Instance_i123456789 -u
     $ saf convert hdf2asff -i snyk_acme_project5_hdf_04052022A.json -a 2143658798 -r us-east-1 -t acme_project5 -o snyk_acme_project5 -u
 ```
-[top](#usage)
+[top](#convert-hdf-to-other-formats)
 #### HDF to Splunk
 
 **Notice**: HDF to Splunk requires configuration on the Splunk server. See ðŸ‘‰ [Splunk Configuration](https://github.com/mitre/saf/wiki/Splunk-Configuration).
@@ -338,7 +339,7 @@ index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) value
 | rename values(meta.filename) AS "Results Set", values(meta.filetype) AS "Scan Type", list(statistics.duration) AS "Scan Duration", first(meta.status) AS "Control Status", list(results{}.status) AS "Test(s) Status", id AS "ID", values(title) AS "Title", values(desc) AS "Description", values(impact) AS "Impact", last(code) AS Code, values(descriptions.check) AS "Check", values(descriptions.fix) AS "Fix", values(tags.cci{}) AS "CCI IDs", list(results{}.code_desc) AS "Results Description",  list(results{}.skip_message) AS "Results Skip Message (if applicable)", values(tags.nist{}) AS "NIST SP 800-53 Controls", last(name) AS "Scan (Profile) Name", last(summary) AS "Scan (Profile) Summary", last(version) AS "Scan (Profile) Version"
 | table meta.guid "Results Set" "Scan Type" "Scan (Profile) Name" ID "NIST SP 800-53 Controls" Title "Control Status" "Test(s) Status" "Results Description" "Results Skip Message (if applicable)"  Description Impact Severity  Check Fix "CCI IDs" Code "Scan Duration" "Scan (Profile) Summary" "Scan (Profile) Version"
 ```
-[top](#usage)
+[top](#convert-hdf-to-other-formats)
 #### HDF to XCCDF Results
 ```
 convert hdf2xccdf             Translate an HDF file into an XCCDF XML
@@ -354,7 +355,7 @@ convert hdf2xccdf             Translate an HDF file into an XCCDF XML
   EXAMPLES
     $ saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml
 ```
-[top](#usage)
+[top](#convert-hdf-to-other-formats)
 #### HDF to Checklist
 ```
 convert hdf2ckl               Translate a Heimdall Data Format JSON file into a
@@ -376,7 +377,7 @@ convert hdf2ckl               Translate a Heimdall Data Format JSON file into a
   EXAMPLES
     $ saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90
 ```
-[top](#usage)
+[top](#convert-hdf-to-other-formats)
 #### HDF to CSV
 ```
 convert hdf2csv               Translate a Heimdall Data Format JSON file into a
@@ -395,7 +396,7 @@ convert hdf2csv               Translate a Heimdall Data Format JSON file into a
   EXAMPLES
     $ saf convert hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"
 ```
-[top](#usage)
+[top](#convert-hdf-to-other-formats)
 #### HDF to Condensed JSON
 ```
 convert hdf2condensed         Condensed format used by some community members
@@ -412,7 +413,7 @@ convert hdf2condensed         Condensed format used by some community members
   EXAMPLES
     $ saf convert hdf2condensed -i rhel7-results.json -o rhel7-condensed.json
 ```
-[top](#usage)
+[top](#convert-hdf-to-other-formats)
 
 ---
 ### Convert To HDF
@@ -452,7 +453,7 @@ convert asff2hdf              Translate a AWS Security Finding Format JSON into 
     $ saf convert asff2hdf -i asff-findings.json --securityhub <standard-1-json> ... --securityhub <standard-n-json> -o output-folder-name
     $ saf convert asff2hdf --aws -o out -r us-west-2 --target rhel7
 ```
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### AWS Config to HDF
 
 ***Note:*** Pulling AWS Config results data requires configuration of the AWS CLI, see ðŸ‘‰ [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.
@@ -475,7 +476,7 @@ convert aws_config2hdf        Pull Configuration findings from AWS Config and co
   EXAMPLES
     $ saf convert aws_config2hdf -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json
 ```
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### Burp Suite to HDF
 ```
 convert burpsuite2hdf         Translate a BurpSuite Pro XML file into a Heimdall
@@ -491,7 +492,7 @@ convert burpsuite2hdf         Translate a BurpSuite Pro XML file into a Heimdall
   EXAMPLES
     $ saf convert burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json
 ```
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### CKL to POA&M
 
 Note: The included CCI to NIST Mappings are the extracted from NIST.gov, for mappings specific to eMASS use [this](https://github.com/mitre/ckl2POAM/blob/main/resources/cci2nist.json) file instead).
@@ -516,7 +517,7 @@ convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M file
   EXAMPLES
     $ saf convert ckl2POAM -i checklist_file.ckl -o output-folder -d abcdefg -s 2
 ```
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### DBProtect to HDF
 ```
 convert dbprotect2hdf         Translate a DBProtect report in "Check Results
@@ -533,7 +534,7 @@ convert dbprotect2hdf         Translate a DBProtect report in "Check Results
     $ saf convert dbprotect2hdf -i check_results_details_report.xml -o output-hdf-name.json
 ```
 
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### Fortify to HDF
 ```
 convert fortify2hdf           Translate a Fortify results FVDL file into a Heimdall
@@ -552,7 +553,7 @@ convert fortify2hdf           Translate a Fortify results FVDL file into a Heimd
     $ saf convert fortify2hdf -i audit.fvdl -o output-hdf-name.json
 ```
 
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### Ion Channel 2 HDF
 ```
 convert ionchannel2hdf        Pull and translate SBOM data from Ion Channel
@@ -573,7 +574,7 @@ convert ionchannel2hdf        Pull and translate SBOM data from Ion Channel
     --raw                               Output Ion Channel raw data
 ```
 
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### JFrog Xray to HDF
 ```
 convert jfrog_xray2hdf        Translate a JFrog Xray results JSON file into a
@@ -590,7 +591,7 @@ convert jfrog_xray2hdf        Translate a JFrog Xray results JSON file into a
     $ saf convert jfrog_xray2hdf -i xray_results.json -o output-hdf-name.json
 ```
 
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### Tenable Nessus to HDF
 ```
 convert nessus2hdf            Translate a Nessus XML results file into a Heimdall
@@ -609,7 +610,7 @@ convert nessus2hdf            Translate a Nessus XML results file into a Heimdal
     $ saf convert nessus2hdf -i nessus_results.xml -o output-hdf-name.json
 ```
 
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### Netsparker to HDF
 ```
 convert netsparker2hdf        Translate a Netsparker XML results file into a
@@ -628,7 +629,7 @@ convert netsparker2hdf        Translate a Netsparker XML results file into a
     $ saf convert netsparker2hdf -i netsparker_results.xml -o output-hdf-name.json
 ```
 
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### Nikto to HDF
 ```
 convert nikto2hdf             Translate a Nikto results JSON file into a Heimdall
@@ -646,7 +647,7 @@ convert nikto2hdf             Translate a Nikto results JSON file into a Heimdal
   EXAMPLES
     $ saf convert nikto2hdf -i nikto-results.json -o output-hdf-name.json
 ```
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### Prisma to HDF
 ```
 convert prisma2hdf            Translate a Prisma Cloud Scan Report CSV file into
@@ -662,7 +663,7 @@ convert prisma2hdf            Translate a Prisma Cloud Scan Report CSV file into
   EXAMPLES
     $ saf convert prisma2hdf -i prismacloud-report.csv -o output-hdf-name.json
 ```
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### Prowler to HDF
 ```
 convert prowler2hdf           Translate a Prowler-derived AWS Security Finding
@@ -679,7 +680,7 @@ convert prowler2hdf           Translate a Prowler-derived AWS Security Finding
   EXAMPLES
     $ saf convert prowler2hdf -i prowler-asff.json -o output-folder
 ```
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### Sarif to HDF
 ```
 convert sarif2hdf             Translate a SARIF JSON file into a Heimdall Data
@@ -704,7 +705,7 @@ convert sarif2hdf             Translate a SARIF JSON file into a Heimdall Data
     $ saf convert sarif2hdf -i sarif-results.json -o output-hdf-name.json
 ```
 
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### Scoutsuite to HDF
 ```
 convert scoutsuite2hdf        Translate a ScoutSuite results from a Javascript
@@ -722,7 +723,7 @@ convert scoutsuite2hdf        Translate a ScoutSuite results from a Javascript
   EXAMPLES
     $ saf convert scoutsuite2hdf -i scoutsuite-results.js -o output-hdf-name.json
 ```
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### Snyk to HDF
 ```
 convert snyk2hdf              Translate a Snyk results JSON file into a Heimdall
@@ -740,7 +741,7 @@ convert snyk2hdf              Translate a Snyk results JSON file into a Heimdall
   EXAMPLES
     $ saf convert snyk2hdf -i snyk_results.json -o output-file-prefix
 ```
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### SonarQube to HDF
 ```
 convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
@@ -763,7 +764,7 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
     $ saf convert sonarqube2hdf -n sonar_project_key -u http://sonar:9000 --auth abcdefg -p 123 -o scan_results.json
 ```
 
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### Splunk to HDF
 ```
 convert splunk2hdf            Pull HDF data from your Splunk instance back into an HDF file
@@ -790,7 +791,7 @@ convert splunk2hdf            Pull HDF data from your Splunk instance back into 
     $ saf convert splunk2hdf -H 127.0.0.1 -u admin -p Valid_password! -I hdf -i some-file-in-your-splunk-instance.json -i yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder
 ```
 
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### Trivy to HDF
 ```
 convert trivy2hdf             Translate a Trivy-derived AWS Security Finding
@@ -815,7 +816,7 @@ convert trivy2hdf             Translate a Trivy-derived AWS Security Finding
     $ saf convert trivy2hdf -i trivy-asff.json -o output-folder
 ```
 
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### Twistlock to HDF
 ```
 convert twistlock2hdf         Translate a Twistlock CLI output file into an HDF results set
@@ -832,7 +833,7 @@ convert twistlock2hdf         Translate a Twistlock CLI output file into an HDF 
     $ saf convert twistlock2hdf -i twistlock.json -o output-hdf-name.json
 ```
 
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### XCCDF Results to HDF
 ***Note:*** `xccdf_results2hdf` only supports native OpenSCAP and SCC output.
 ```
@@ -850,7 +851,7 @@ convert xccdf_results2hdf     Translate a SCAP client XCCDF-Results XML report
     $ saf convert xccdf_results2hdf -i results-xccdf.xml -o output-hdf-name.json
 ```
 
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 #### OWASP ZAP to HDF
 ```
 convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall Data Format JSON file
@@ -867,7 +868,7 @@ convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall D
   EXAMPLES
     $ saf convert zap2hdf -i zap_results.json -n mitre.org -o scan_results.json
 ```
-[top](#usage)
+[top](#convert-other-formats-to-hdf)
 
 ---
 
@@ -875,7 +876,26 @@ convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall D
 
 The SAF CLI implements the eMASS REST API functions via the emasser CLI incorporated here with the SAF CLI. Please references the [emasser Features](https://saf-cli.mitre.org/docs/emasser) ðŸ“œ for additional information
 
-[top](#usage)
+To get top level help execute the following commad:
+
+```
+$ saf emasser [-h or -help]
+[eMASS]        The eMASS REST API implementation
+
+USAGE
+  $ saf emasser COMMAND
+
+TOPICS
+  emasser delete  eMass REST API DELETE endpoint commands
+  emasser get     eMass REST API GET endpoint commands
+  emasser post    eMass REST API POST endpoint commands
+  emasser put     eMass REST API PUT endpoint commands
+
+COMMANDS
+  emasser version
+```
+
+[top](#emasser-client)
 
 ___
 
@@ -903,7 +923,7 @@ view heimdall                 Run an instance of Heimdall Lite to
   EXAMPLES
     $ saf view heimdall -p 8080
 ```
-[top](#usage)
+[top](#view-hdf-summaries-and-data)
 
 #### Summary
 
@@ -928,7 +948,7 @@ view summary                  Get a quick compliance overview of an HDF file
     $ saf view summary -i rhel7-results.json
     $ saf view summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json
 ```
-[top](#usage)
+[top](#view-hdf-summaries-and-data)
 
 ---
 
@@ -955,7 +975,7 @@ validate threshold            Validate the compliance and status counts of an HD
     $ saf validate threshold -i rhel7-results.json -F output.yaml
 ```
 
-[top](#usage)
+[top](#validate-hdf-thresholds)
 
 ---
 
@@ -982,7 +1002,7 @@ EXAMPLES
 
   $ saf generate delta -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml ./canonical-ubuntu-18.04-lts-server-cis-baseline ./canonical-ubuntu-18.04-lts-server-cis-baseline/profile.json --logLevel debug
 ```
-[top](#usage)
+[top](#generate-data-reports-and-more)
 
 #### CKL Templates
 
@@ -1001,7 +1021,7 @@ generate ckl_metadata         Generate a checklist metadata template for "saf co
   EXAMPLES
     $ saf generate ckl_metadata -o rhel_metadata.json
 ```
-[top](#usage)
+[top](#generate-data-reports-and-more)
 
 #### InSpec Metadata
 
@@ -1020,7 +1040,7 @@ generate inspec_metadata      Generate an InSpec metadata template for "saf conv
   EXAMPLES
     $ saf generate inspec_metadata -o ms_sql_baseline_metadata.json
 ```
-[top](#usage)
+[top](#generate-data-reports-and-more)
 
 #### Thresholds
 
@@ -1048,7 +1068,7 @@ generate threshold            Generate a compliance template for "saf validate t
   EXAMPLES
     $ saf generate threshold -i rhel7-results.json -e -c -o output.yaml
 ```
-[top](#usage)
+[top](#generate-data-reports-and-more)
 
 #### Spreadsheet (csv/xlsx) to InSpec
 
@@ -1075,38 +1095,38 @@ OPTIONS
 EXAMPLES
   saf generate spreadsheet2inspec_stub -i spreadsheet.xlsx -o profile
 ```
-[top](#usage)
+[top](#generate-data-reports-and-more)
 
 #### XCCDF Benchmark to InSpec Stub
 ```
 generate xccdf_benchmark2inspec_stub              Translate a DISA STIG XCCDF Benchmark XML file into a skeleton for an InSpec profile
 
   USAGE
-    $ saf generate xccdf2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-s] [-r | -S] [-l <line-length>] [-e]
+    $ saf generate xccdf_benchmark2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-s] [-r | -S] [-l <line-length>] [-e]
 
   FLAGS
     -S, --useStigID                 Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs
     -e, --encodingHeader            Add the "# encoding: UTF-8" comment at the top of each control
     -h, --help                      Show CLI help.
-    -i, --input=<stig-xccdf-xml>    (required) Path to the DISA STIG XCCDF file
+    -i, --input=<stig-xccdf-xml>    (required) Path to the DISA STIG XCCDF Benchmark file
     -l, --lineLength=<line-length>  [default: 80] Characters between lines within InSpec controls
     -m, --metadata=<metadata-json>  Path to a JSON file with additional metadata for the inspec.yml file
     -o, --output=<output-folder>    (required) [default: profile]
     -r, --useVulnerabilityId        Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')
     -s, --singleFile                Output the resulting controls as a single file
 ```
-[top](#usage)
+[top](#generate-data-reports-and-more)
 
 
 ##### DoD Stub vs CIS Stub Formatting
 
-The converter supports both Stub and CIS style. You specify with the `--format` flag  to satisfy your needs. The default is the DoD Stub Format.
+The converter supports both Stub and CIS styles. The `--format` flag is used to specify the required output format. Default is DoD Stub Format.
 
 - Specifying the `--format` flag as either `cis` or `disa` will parse the input spreadsheet according to the standard formats for CIS Benchmark exports and DISA STIG exports, respectively.
 - You can also use the `general` setting (the default) to parse an arbitrary spreadsheet, but if you do so, you must provide a mapping file with the `--mapping` flag so that `saf` can parse the input.
 - If you provide a non-standard spreadsheet, the first row of values are assumed to be column headers.
 
-[top](#usage)
+[top](#generate-data-reports-and-more)
 
 #### Mapping Files
 
@@ -1143,7 +1163,7 @@ ref:                          # InSpec keyword - saf will check this column for 
 
 Where the keys (`title`) are InSpec control attributes and the values (`- Title`) are the column headers in the input spreadsheet that correspond to that attribute.
 
-[top](#usage)
+[top](#generate-data-reports-and-more)
 
 ---
 
@@ -1182,7 +1202,7 @@ Passthrough data can be any context/structure. See the sample below or visit ðŸ‘
   }
 }
 ```
-[top](#usage)
+[top](#enhance-and-supplement-hdf-data)
 
 ##### Read
 
@@ -1200,7 +1220,7 @@ FLAGS
 EXAMPLES
   $ saf supplement passthrough read -i hdf.json -o passthrough.json
 ```
-[top](#usage)
+[top](#enhance-and-supplement-hdf-data)
 
 ##### Write
 
@@ -1225,7 +1245,7 @@ EXAMPLES
 
   $ saf supplement passthrough write -i hdf.json -f passthrough.json -o new-hdf.json
 ```
-[top](#usage)
+[top](#enhance-and-supplement-hdf-data)
 
 #### Target
 
@@ -1263,7 +1283,7 @@ Passthrough data can be any context/structure. See the sample below or visit ðŸ‘
   }
 }
 ```
-[top](#usage)
+[top](#enhance-and-supplement-hdf-data)
 
 ##### Read
 
@@ -1281,7 +1301,7 @@ FLAGS
 EXAMPLES
   $ saf supplement target read -i hdf.json -o target.json
 ```
-[top](#usage)
+[top](#enhance-and-supplement-hdf-data)
 
 ##### Write
 
@@ -1306,6 +1326,7 @@ EXAMPLES
 
   $ saf supplement target write -i hdf.json -f target.json -o new-hdf.json
 ```
+[top](#enhance-and-supplement-hdf-data)
 
 # License and Author
 
