@@ -9,14 +9,14 @@ import _ from 'lodash'
 import YAML from 'yaml'
 import {CciNistMappingData} from '@mitre/hdf-converters'
 
-export default class XCCDF2InSpec extends Command {
-  static usage = 'generate xccdf2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-s] [-r | -S] [-l <line-length>] [-e]'
+export default class XCCDFBenchmark2InSpec extends Command {
+  static usage = 'generate xccdf_benchmark2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-s] [-r | -S] [-l <line-length>] [-e]'
 
-  static description = 'Translate a DISA STIG XCCDF XML file into a skeleton for an InSpec profile'
+  static description = 'Translate a DISA STIG XCCDF-Benchmark XML file into a skeleton for an InSpec profile'
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Path to the DISA STIG XCCDF file'}),
+    input: Flags.string({char: 'i', required: true, description: 'Path to the DISA STIG XCCDF Benchmark file'}),
     metadata: Flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
     singleFile: Flags.boolean({char: 's', required: false, default: false, description: 'Output the resulting controls as a single file'}),
     useVulnerabilityId: Flags.boolean({char: 'r', required: false, default: false, description: "Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')", exclusive: ['useStigID']}),
@@ -27,7 +27,7 @@ export default class XCCDF2InSpec extends Command {
   }
 
   async run() {
-    const {flags} = await this.parse(XCCDF2InSpec)
+    const {flags} = await this.parse(XCCDFBenchmark2InSpec)
 
     // Check if the output folder already exists
     if (!fs.existsSync(flags.output)) {

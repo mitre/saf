@@ -7,6 +7,7 @@
   "bugs": "https://github.com/mitre/saf/issues",
   "dependencies": {
     "@aws-sdk/client-config-service": "^3.53.0",
+    "@mitre/emass_client": "^3.0",
     "@mitre/hdf-converters": "^2.6.32",
     "@mitre/heimdall-lite": "^2.6.32",
     "@mitre/inspec-objects": "^0.0.31",
@@ -31,17 +32,22 @@
     "@types/uuid": "^8.3.4",
     "@types/xml2js": "^0.4.9",
     "accurate-search": "^1.2.15",
+    "ajv": "^8.11.2",
     "aws-sdk": "^2.1074.0",
+    "axios": "^1.2.0",
     "chai": "^4",
     "csv-parse": "^4.16.0",
+    "dotenv": "^16.0.3",
     "express": "^4.17.1",
     "fast-xml-parser": "^3.19.0",
     "flat": "^5.0.2",
+    "form-data": "^4.0.0",
     "fs-extra": "^10.1.0",
     "get-installed-path": "^4.0.8",
     "htmlparser2": "^8.0.1",
     "https": "^1.0.0",
     "inspecjs": "^2.6.30",
+    "json-colorizer": "^2.2.2",
     "lodash": "^4.17.21",
     "moment": "^2.29.1",
     "mustache": "^4.2.0",
@@ -57,7 +63,8 @@
     "winston": "^3.6.0",
     "xlsx-populate": "^1.21.0",
     "xml2js": "^0.4.23",
-    "yaml": "^1.10.2"
+    "yaml": "^1.10.2",
+    "zip-lib": "^0.7.3"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^5.11.0",
@@ -140,6 +147,21 @@
       },
       "view": {
         "description": "[Visualize]    Identify overall security status and deep-dive to solve specific security defects"
+      },
+      "emasser": {
+        "description": "[eMASS]        The eMASS REST API implementation"
+      },
+      "emasser:get": {
+        "description": "eMass REST API GET endpoint commands"
+      },
+      "emasser:post": {
+        "description": "eMass REST API POST endpoint commands"
+      },
+      "emasser:put": {
+        "description": "eMass REST API PUT endpoint commands"
+      },
+      "emasser:delete": {
+        "description": "eMass REST API DELETE endpoint commands"
       }
     }
   },
@@ -150,7 +172,7 @@
     "pack-hdf-converters": "run-script-os",
     "pack-hdf-converters:win32": "pack-hdf-converters.bat",
     "pack-hdf-converters:darwin:linux": "./pack-hdf-converters.sh",
-    "dev": "run-script-os --",
+    "dev": "run-script-os",
     "dev:win32": "(IF EXIST lib rmdir /s /q lib) && node_modules\\.bin\\tsc -b && bin\\run",
     "dev:darwin:linux": "rm -rf lib && node_modules/.bin/tsc -b && ./bin/run",
     "prepack": "run-script-os",
