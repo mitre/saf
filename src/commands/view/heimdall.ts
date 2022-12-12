@@ -8,9 +8,11 @@ import {getInstalledPath} from '../../utils/global'
 export default class Heimdall extends Command {
   static aliases = ['heimdall']
 
-  static usage = 'view:heimdall -p, --port=PORT <filename>'
+  static usage = 'view heimdall [-h] [-p <port>] [-f <file>] [-n]'
 
-  static description = 'Run an instance of Heimdall Lite to visualize your Data'
+  static description = 'Run an instance of Heimdall Lite to visualize your data'
+
+  static examples = ['saf view heimdall -p 8080']
 
   static flags = {
     help: Flags.help({char: 'h'}),
@@ -20,7 +22,7 @@ export default class Heimdall extends Command {
   }
 
   async run() {
-    const {flags, args} = await this.parse(Heimdall)
+    const {flags} = await this.parse(Heimdall)
     let parsedJSONs: Record<string, any>[] = []
 
     // Is the defined port valid?
@@ -42,7 +44,7 @@ export default class Heimdall extends Command {
     }
 
     // Provide Heimdall with a path to grab our Data from
-    const predefinedLoadJSON = (req: Record<string, any>, res: Record<string, any>, next: () => void) => {
+    const predefinedLoadJSON = (req: Record<string, any>, res: Record<string, any>, next: () => void) => { // skipcq: JS-0045
       if (req.originalUrl.toLowerCase() === '/dynamic/predefinedload.json' && flags.files) {
         return res.json(parsedJSONs)
       }
@@ -51,15 +53,21 @@ export default class Heimdall extends Command {
     }
 
     flags.files ? console.log(`Serving Heimdall at http://localhost:${flags.port}/?predefinedLoad=true`) : console.log(`Serving Heimdall at http://localhost:${flags.port}`)
+
+    // Open the browser
     if (!flags.noOpenBrowser) {
-      flags.files ? open('http://localhost:3000/?predefinedLoad=true') : open('http://localhost:3000/')
+      if (flags.port) {
+        flags.files ? open(`http://localhost:${flags.port}/?predefinedLoad=true`) : open(`http://localhost:${flags.port}/`)
+      } else {
+        flags.files ? open('http://localhost:3000/?predefinedLoad=true') : open('http://localhost:3000/')
+      }
     }
 
     const installedPath = getInstalledPath()
 
     express()
-    .use(predefinedLoadJSON)
-    .use(express.static(path.join(installedPath, 'node_modules/@mitre/heimdall-lite/dist')))
-    .listen(flags.port)
+      .use(predefinedLoadJSON)
+      .use(express.static(path.join(installedPath, 'node_modules/@mitre/heimdall-lite/dist')))
+      .listen(flags.port)
   }
 }

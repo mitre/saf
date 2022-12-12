@@ -36,19 +36,19 @@ export function severityStringToImpact(string: string): number {
     return 0.0
   }
 
-  if (/low|cat(egory)?\s*(iii|3)/i.test(string)) {
+  if (/low|cat(egory)?\s*(iii|3)/i.test(string)) { // skipcq: JS-0113
     return 0.3
   }
 
-  if (/med(ium)?|cat(egory)?\s*(ii|2)/i.test(string)) {
+  if (/med(ium)?|cat(egory)?\s*(ii|2)/i.test(string)) { // skipcq: JS-0113
     return 0.5
   }
 
-  if (/high|cat(egory)?\s*(i|1)/i.test(string)) {
+  if (/high|cat(egory)?\s*(i|1)/i.test(string)) { // skipcq: JS-0113
     return 0.7
   }
 
-  if (/crit(ical)?|severe/i.test(string)) {
+  if (/crit(ical)?|severe/i.test(string)) { // skipcq: JS-0113
     return 1.0
   }
 
@@ -126,12 +126,12 @@ export function inspecControlToRubyCode(control: InSpecControl, lineLength?: num
         } else {
           // Convert JSON Object to Ruby Hash
           const stringifiedObject = JSON.stringify(value, null, 2)
-          .replace(/\n/g, '\n  ')
-          .replace(/\{\n {6}/g, '{')
-          .replace(/\[\n {8}/g, '[')
-          .replace(/\n {6}\]/g, ']')
-          .replace(/\n {4}\}/g, '}')
-          .replace(/": \[/g, '" => [')
+            .replace(/\n/g, '\n  ')
+            .replace(/\{\n {6}/g, '{')
+            .replace(/\[\n {8}/g, '[')
+            .replace(/\n {6}\]/g, ']')
+            .replace(/\n {4}\}/g, '}')
+            .replace(/": \[/g, '" => [')
           result += `  tag ${tag}: ${stringifiedObject}\n`
         }
       } else if (typeof value === 'string') {

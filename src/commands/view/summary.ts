@@ -10,7 +10,7 @@ import {convertFullPathToFilename} from '../../utils/global'
 export default class Summary extends Command {
   static aliases = ['summary']
 
-  static usage = 'view -i, --input=FILE -j, --json'
+  static usage = 'view summary -i <hdf-file> [-h] [-j] [-o <output>]'
 
   static description = 'Get a quick compliance overview of an HDF file '
 
@@ -21,7 +21,7 @@ export default class Summary extends Command {
     output: Flags.string({char: 'o', required: false}),
   }
 
-  static examples = ['saf view summary -i rhel7-results.json']
+  static examples = ['saf view summary -i rhel7-results.json', 'saf view summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json']
 
   async run() {
     const {flags} = await this.parse(Summary)

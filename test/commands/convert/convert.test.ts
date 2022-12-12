@@ -9,50 +9,46 @@ describe('Test (generic) convert', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   test
-  .stdout()
-  .it('hdf-converter output test (asff)', () => {
-    execSync(
-      `node bin/run convert -i ./test/sample_data/asff/sample_input_report/asff_sample.json -o ${tmpobj.name}/asfftest`,
-    )
+    .it('hdf-converter output test (asff)', () => {
+      execSync( // skipcq: JS-D023
+        `node bin/run convert -i ./test/sample_data/asff/sample_input_report/asff_sample.json -o ${tmpobj.name}/asfftest`,
+      )
 
-    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/asfftest/CIS AWS Foundations Benchmark v1.2.0.json`, 'utf8'))
-    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/asff/asff-hdf.json'), 'utf8'))
-    expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
-  })
-
-  test
-  .stdout()
-  .it('hdf-converter output test (burpsuite)', () => {
-    execSync(
-      `node bin/run convert -i ./test/sample_data/burpsuite/sample_input_report/zero.webappsecurity.com.min -o ${tmpobj.name}/burpsuitetest.json`,
-    )
-
-    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/burpsuitetest.json`, 'utf8'))
-    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/burpsuite/burpsuite-hdf.json'), 'utf8'))
-    expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
-  })
+      const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/asfftest/CIS AWS Foundations Benchmark v1.2.0.json`, 'utf8'))
+      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/asff/asff-cis_aws-foundations_benchmark_v1.2.0-hdf.json'), 'utf8'))
+      expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
+    })
 
   test
-  .stdout()
-  .it('hdf-converter output test (jfrog)', () => {
-    execSync(
-      `node bin/run convert -i ./test/sample_data/jfrog_xray/sample_input_report/jfrog_xray_sample.json -o ${tmpobj.name}/jfrogtest.json`,
-    )
+    .it('hdf-converter output test (burpsuite)', () => {
+      execSync( // skipcq: JS-D023
+        `node bin/run convert -i ./test/sample_data/burpsuite/sample_input_report/zero.webappsecurity.com.min -o ${tmpobj.name}/burpsuitetest.json`,
+      )
 
-    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/jfrogtest.json`, 'utf8'))
-    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/jfrog_xray/jfrog-hdf.json'), 'utf8'))
-    expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
-  })
+      const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/burpsuitetest.json`, 'utf8'))
+      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/burpsuite/burpsuite-hdf.json'), 'utf8'))
+      expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
+    })
 
   test
-  .stdout()
-  .it('hdf-converter output test (zap) - zero.webappsecurity', () => {
-    execSync(
-      `node bin/run convert -i ./test/sample_data/zap/sample_input_report/zero.webappsecurity.json -n http://zero.webappsecurity.com -o ${tmpobj.name}/zaptest-webappsecurity.json`,
-    )
+    .it('hdf-converter output test (jfrog)', () => {
+      execSync( // skipcq: JS-D023
+        `node bin/run convert -i ./test/sample_data/jfrog_xray/sample_input_report/jfrog_xray_sample.json -o ${tmpobj.name}/jfrogtest.json`,
+      )
 
-    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/zaptest-webappsecurity.json`, 'utf8'))
-    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/zap/zap-webappsecurity-hdf.json'), 'utf8'))
-    expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
-  })
+      const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/jfrogtest.json`, 'utf8'))
+      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/jfrog_xray/jfrog-hdf.json'), 'utf8'))
+      expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
+    })
+
+  test
+    .it('hdf-converter output test (zap) - zero.webappsecurity', () => {
+      execSync( // skipcq: JS-D023
+        `node bin/run convert -i ./test/sample_data/zap/sample_input_report/zero.webappsecurity.json -n http://zero.webappsecurity.com -o ${tmpobj.name}/zaptest-webappsecurity.json`,
+      )
+
+      const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/zaptest-webappsecurity.json`, 'utf8'))
+      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/zap/zap-webappsecurity-hdf.json'), 'utf8'))
+      expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
+    })
 })

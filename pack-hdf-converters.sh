@@ -34,7 +34,7 @@ npm i
 echo "Executing - npm install local ..."
 npm i "${npm_config_heimdall:-../heimdall2}/libs/hdf-converters/mitre-hdf-converters-v"*".tgz"
 
-echo "Executing - yarn prepack ..."
-yarn prepack
+echo "Executing - npm run prepack ..."
+npm run prepack
 
 echo "Install of local hdf-converters complete."

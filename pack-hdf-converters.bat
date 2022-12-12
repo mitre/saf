@@ -50,7 +50,7 @@ IF DEFINED npm_config_heimdall (
 )
 CALL npm i %THIS_TAR_ZIP% || EXIT /B %ERRORLEVEL%
 
-ECHO Executing - yarn prepack ...
-CALL yarn prepack || EXIT /B %ERRORLEVEL%
+ECHO Executing - npm run prepack ...
+CALL npm run prepack || EXIT /B %ERRORLEVEL%
 
 ECHO Install of local hdf-converters complete.

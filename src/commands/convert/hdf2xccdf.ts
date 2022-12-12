@@ -4,7 +4,7 @@ import {FromHDFToXCCDFMapper as Mapper} from '@mitre/hdf-converters'
 import {default as files} from '../../resources/files.json'
 
 export default class HDF2XCCDF extends Command {
-  static usage = 'convet hdf2xccdf -i, --input=JSON -o, --output=OUTPUT'
+  static usage = 'convert hdf2xccdf -i <hdf-scan-results-json> -o <output-xccdf-xml> [-h]'
 
   static description = 'Translate an HDF file into an XCCDF XML'
 
@@ -13,7 +13,7 @@ export default class HDF2XCCDF extends Command {
   static flags = {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true, description: 'Input HDF file'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output HDF file'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
   }
 
   async run() {
