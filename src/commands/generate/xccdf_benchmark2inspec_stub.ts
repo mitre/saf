@@ -149,8 +149,8 @@ export default class XCCDF2InSpec extends Command {
     // Write all controls
     if (flags.singleFile) {
       const controls = profile.controls
-      .map(control => control.toRuby())
-      .join('\n\n')
+        .map(control => control.toRuby())
+        .join('\n\n')
       fs.writeFileSync(
         path.join(flags.output, 'controls', 'controls.rb'),
         controls,
