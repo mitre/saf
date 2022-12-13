@@ -1099,21 +1099,22 @@ EXAMPLES
 
 #### XCCDF Benchmark to InSpec Stub
 ```
-generate xccdf2inspec_stub              Translate a DISA STIG XCCDF Benchmark XML file into a skeleton for an InSpec profile
+generate xccdf_benchmark2inspec_stub              Translate a DISA STIG XCCDF Benchmark XML file into a skeleton for an InSpec profile
 
-  USAGE
-    $ saf generate xccdf2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-s] [-r | -S] [-l <line-length>] [-e]
+USAGE
+  $ saf generate xccdf_benchmark2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-T vuln|group|cis|stig] [-s] [-L info|warn|debug|verbose]
 
-  FLAGS
-    -S, --useStigID                 Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs
-    -e, --encodingHeader            Add the "# encoding: UTF-8" comment at the top of each control
-    -h, --help                      Show CLI help.
-    -i, --input=<stig-xccdf-xml>    (required) Path to the DISA STIG XCCDF Benchmark file
-    -l, --lineLength=<line-length>  [default: 80] Characters between lines within InSpec controls
-    -m, --metadata=<metadata-json>  Path to a JSON file with additional metadata for the inspec.yml file
-    -o, --output=<output-folder>    (required) [default: profile]
-    -r, --useVulnerabilityId        Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')
-    -s, --singleFile                Output the resulting controls as a single file
+FLAGS
+  -h, --help                     Show CLI help.
+  -i, --input=<value>            (required) Path to the XCCDF benchmark file
+  -o, --output=<value>           [default: profile] The output folder to write the generated InSpec content
+  -T, --idType=<option>          [default: vuln] Control ID Types: Vulnerability IDs (ex. 'SV-XXXXX'), Group IDs (ex. 'V-XXXXX'), CIS Rule IDs
+                                  (ex. C-1.1.1.1), STIG IDs (ex. RHEL-07-010020 - also known as Version)
+                                  <options: vuln|group|cis|stig>
+  -O, --ovalDefinitions=<value>  Path to an OVAL definitions file to populate profile elements that reference OVAL defintions
+  -m, --metadata=<value>         Path to a JSON file with additional metadata for the inspec.yml file
+  -s, --singleFile               Output the resulting controls as a single file
+  -L, --logLevel=<option>        [default: info] <options: info|warn|debug|verbose>
 ```
 [top](#generate-data-reports-and-more)
 
