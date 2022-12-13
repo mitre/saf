@@ -10,7 +10,7 @@ export default class GenerateDelta extends Command {
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, multiple: true, description: 'Input execution/profile JSON file(s) OR InSpec Profile Folder, and the updated XCCDF XML files'}),
+    input: Flags.string({char: 'i', required: true, multiple: true, description: 'Input execution/profile JSON file(s), InSpec Profile Folder, AND the updated XCCDF XML files'}),
     report: Flags.string({char: 'r', required: false, description: 'Output markdown report file'}),
     useGroupID: Flags.boolean({char: 'g', description: "Use Group ID for control IDs (ex. 'V-XXXXX')"}),
     useVulnerabilityId: Flags.boolean({char: 'r', required: false, default: true, description: "Use Vulnerability IDs for control IDs (ex. 'SV-XXXXX')", exclusive: ['useStigID']}),
