@@ -14,67 +14,14 @@ export default class XCCDF2InSpec extends Command {
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({
-      char: 'i',
-      required: true,
-      description: 'Path to the XCCDF benchmark file',
-    }),
-    metadata: Flags.string({
-      char: 'm',
-      required: false,
-      description:
-        'Path to a JSON file with additional metadata for the inspec.yml file',
-    }),
-    singleFile: Flags.boolean({
-      char: 's',
-      required: false,
-      default: false,
-      description: 'Output the resulting controls as a single file',
-    }),
-    useGroupID: Flags.boolean({
-      char: 'g',
-      description: "Use Group ID for control IDs (ex. 'V-XXXXX')",
-    }),
-    useVulnerabilityId: Flags.boolean({
-      char: 'r',
-      required: false,
-      default: true,
-      description: "Use Vulnerability IDs for control IDs (ex. 'SV-XXXXX')",
-      exclusive: ['useStigID'],
-    }),
-    useStigID: Flags.boolean({
-      char: 'S',
-      required: false,
-      default: false,
-      description:
-        'Use STIG IDs for control IDs (ex. RHEL-07-010020, also known as Version)',
-      exclusive: ['useVulnerabilityId'],
-    }),
-    useCISId: Flags.boolean({
-      char: 'C',
-      required: false,
-      default: false,
-      description: 'Use CIS Rule IDs for control IDs (ex. C-1.1.1.1)',
-    }),
-    lineLength: Flags.integer({
-      char: 'l',
-      required: false,
-      default: 80,
-      description: 'Characters between lines within InSpec controls',
-    }),
-    encodingHeader: Flags.boolean({
-      char: 'e',
-      required: false,
-      default: false,
-      description:
-        'Add the "# encoding: UTF-8" comment at the top of each control',
-    }),
-    ovalDefinitions: Flags.string({
-      char: 'O',
-      required: false,
-      description:
-        'Path to an OVAL definitions file to use for definitions in the profile',
-    }),
+    input: Flags.string({char: 'i', required: true, description: 'Path to the XCCDF benchmark file'}),
+    metadata: Flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
+    singleFile: Flags.boolean({char: 's', required: false, default: false, description: 'Output the resulting controls as a single file'}),
+    useGroupID: Flags.boolean({char: 'g', description: "Use Group ID for control IDs (ex. 'V-XXXXX')"}),
+    useVulnerabilityId: Flags.boolean({char: 'r', required: false, default: true, description: "Use Vulnerability IDs for control IDs (ex. 'SV-XXXXX')", exclusive: ['useStigID']}),
+    useStigID: Flags.boolean({char: 'S', required: false, default: false, description: 'Use STIG IDs for control IDs (ex. RHEL-07-010020, also known as Version)', exclusive: ['useVulnerabilityId']}),
+    useCISId: Flags.boolean({char: 'C', required: false, default: false, description: 'Use CIS Rule IDs for control IDs (ex. C-1.1.1.1)'}),
+    ovalDefinitions: Flags.string({char: 'O', required: false, description: 'Path to an OVAL definitions file to use for definitions in the profile'}),
     output: Flags.string({char: 'o', required: true, default: 'profile'}),
   };
 
