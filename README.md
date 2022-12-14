@@ -986,19 +986,23 @@ validate threshold            Validate the compliance and status counts of an HD
 ```
 Update an existing InSpec profile in-place with new XCCDF metadata
 
+USAGE
+  $ saf generate delta -i <value> [-h] [-r <value>] [-T vuln|group|cis|stig] [-L info|warn|debug|verbose]
+
 FLAGS
-  -C, --useCISId            Use CIS Rule IDs for control IDs (ex. C-1.1.1.1)
-  -L, --logLevel=<option>   [default: info]
-                            <options: info|warn|debug|verbose>
-  -S, --useStigID           Use STIG IDs for control IDs (ex. RHEL-07-010020, also known as Version)
-  -g, --useGroupID          Use Group ID for control IDs (ex. 'V-XXXXX')
-  -h, --help                Show CLI help.
-  -i, --input=<value>...    (required) Input execution/profile JSON file(s) OR InSpec Profile Folder, and the updated XCCDF XML files
-  -r, --report=<value>      Output markdown report file
-  -r, --useVulnerabilityId  Use Vulnerability IDs for control IDs (ex. 'SV-XXXXX')
+  -h, --help               Show CLI help.
+  -i, --input=<value>...   (required) Input execution/profile JSON file(s), InSpec Profile Folder, AND the
+                           updated XCCDF XML files
+  -T, --idType=<option>    [default: vuln] Control ID Types: Vulnerability IDs (ex. 'SV-XXXXX'), Group IDs (ex.
+                           'V-XXXXX'), CIS Rule IDs (ex. C-1.1.1.1), STIG IDs (ex. RHEL-07-010020 - also known
+                           as Version)
+                           <options: vuln|group|cis|stig>
+  -r, --report=<value>     Output markdown report file
+  -L, --logLevel=<option>  [default: info]
+                           <options: info|warn|debug|verbose>
 
 EXAMPLES
-  $ saf generate delta -i ./redhat-enterprise-linux-6-stig-baseline/ ./redhat-enterprise-linux-6-stig-baseline/profile.json ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml --logLevel debug -r rhel-6-update-report.md
+  $ saf generate delta -i ./redhat-enterprise-linux-6-stig-baseline/ ./redhat-enterprise-linux-6-stig-baseline/profile.json ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T vuln --logLevel debug -r rhel-6-update-report.md
 
   $ saf generate delta -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml ./canonical-ubuntu-18.04-lts-server-cis-baseline ./canonical-ubuntu-18.04-lts-server-cis-baseline/profile.json --logLevel debug
 ```
