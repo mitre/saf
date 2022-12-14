@@ -13,17 +13,17 @@ export default class GenerateDelta extends Command {
     input: Flags.string({char: 'i', required: true, multiple: true, description: 'Input execution/profile JSON file(s), InSpec Profile Folder, AND the updated XCCDF XML files'}),
     report: Flags.string({char: 'r', required: false, description: 'Output markdown report file'}),
     idType: Flags.string({
-      char: 'T', 
-      required: false, 
-      default: 'vuln', 
-      options: ['vuln', 'group', 'cis', 'stig'], 
-      description: "Control ID Types: Vulnerability IDs (ex. 'SV-XXXXX'), Group IDs (ex. 'V-XXXXX'), CIS Rule IDs (ex. C-1.1.1.1), STIG IDs (ex. RHEL-07-010020 - also known as Version)"
+      char: 'T',
+      required: false,
+      default: 'rule',
+      options: ['rule', 'group', 'cis', 'version'],
+      description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
     }),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
   static examples = [
-    'saf generate delta -i ./redhat-enterprise-linux-6-stig-baseline/ ./redhat-enterprise-linux-6-stig-baseline/profile.json ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T vuln --logLevel debug -r rhel-6-update-report.md',
+    'saf generate delta -i ./redhat-enterprise-linux-6-stig-baseline/ ./redhat-enterprise-linux-6-stig-baseline/profile.json ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md',
     'saf generate delta -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml ./canonical-ubuntu-18.04-lts-server-cis-baseline ./canonical-ubuntu-18.04-lts-server-cis-baseline/profile.json --logLevel debug',
   ]
 
@@ -103,14 +103,10 @@ export default class GenerateDelta extends Command {
 
       // Find the difference between existingProfile and updatedXCCDF
       let updatedResult
-      if (flags.idType === 'group') {
-        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'group', logger, ovalDefinitions)
-      } else if (flags.idType === 'stig') {
-        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'version', logger, ovalDefinitions)
-      } else if (flags.idType === 'cis') {
-        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'cis', logger, ovalDefinitions)
-      } else if (flags.idType === 'vuln') {
-        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, 'rule', logger, ovalDefinitions)
+      logger.debug(`Processing XCCDF Benchmark file: ${flags.input} using ${flags.idType} id.`)
+      const idTypes = ['rule', 'group', 'cis', 'version']
+      if (idTypes.includes(flags.idType)) {
+        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, flags.idType as 'cis' | 'version' | 'rule' | 'group', logger, ovalDefinitions)
       } else {
         logger.error(`Invalid ID Type: ${flags.idType}. Check the --help command for the available ID Type options.`)
         throw new Error('No ID type specified')

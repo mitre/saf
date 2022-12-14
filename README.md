@@ -993,16 +993,18 @@ FLAGS
   -h, --help               Show CLI help.
   -i, --input=<value>...   (required) Input execution/profile JSON file(s), InSpec Profile Folder, AND the
                            updated XCCDF XML files
-  -T, --idType=<option>    [default: vuln] Control ID Types: Vulnerability IDs (ex. 'SV-XXXXX'), Group IDs (ex.
-                           'V-XXXXX'), CIS Rule IDs (ex. C-1.1.1.1), STIG IDs (ex. RHEL-07-010020 - also known
-                           as Version)
-                           <options: vuln|group|cis|stig>
+  -T, --idType=<option>    [default: rule] Control ID Types: 
+                           'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 
+                           'group' - Group IDs (ex. 'V-XXXXX'), 
+                           'cis' - CIS Rule IDs (ex. C-1.1.1.1), 
+                           'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
+                           <options: rule|group|cis|version>
   -r, --report=<value>     Output markdown report file
   -L, --logLevel=<option>  [default: info]
                            <options: info|warn|debug|verbose>
 
 EXAMPLES
-  $ saf generate delta -i ./redhat-enterprise-linux-6-stig-baseline/ ./redhat-enterprise-linux-6-stig-baseline/profile.json ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T vuln --logLevel debug -r rhel-6-update-report.md
+  $ saf generate delta -i ./redhat-enterprise-linux-6-stig-baseline/ ./redhat-enterprise-linux-6-stig-baseline/profile.json ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md
 
   $ saf generate delta -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml ./canonical-ubuntu-18.04-lts-server-cis-baseline ./canonical-ubuntu-18.04-lts-server-cis-baseline/profile.json --logLevel debug
 ```
@@ -1112,13 +1114,20 @@ FLAGS
   -h, --help                     Show CLI help.
   -i, --input=<value>            (required) Path to the XCCDF benchmark file
   -o, --output=<value>           [default: profile] The output folder to write the generated InSpec content
-  -T, --idType=<option>          [default: vuln] Control ID Types: Vulnerability IDs (ex. 'SV-XXXXX'), Group IDs (ex. 'V-XXXXX'), CIS Rule IDs
-                                  (ex. C-1.1.1.1), STIG IDs (ex. RHEL-07-010020 - also known as Version)
-                                  <options: vuln|group|cis|stig>
+  -T, --idType=<option>          [default: rule] Control ID Types: 
+                                 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 
+                                 'group' - Group IDs (ex. 'V-XXXXX'), 
+                                 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 
+                                 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
+                                 <options: rule|group|cis|version>
   -O, --ovalDefinitions=<value>  Path to an OVAL definitions file to populate profile elements that reference OVAL defintions
   -m, --metadata=<value>         Path to a JSON file with additional metadata for the inspec.yml file
   -s, --singleFile               Output the resulting controls as a single file
   -L, --logLevel=<option>        [default: info] <options: info|warn|debug|verbose>
+
+EXAMPLES
+  $ saf generate xccdf_benchmark2inspec_stub -i ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md
+  $ saf generate xccdf_benchmark2inspec_stub -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml -O ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml --logLevel debug
 ```
 [top](#generate-data-reports-and-more)
 
