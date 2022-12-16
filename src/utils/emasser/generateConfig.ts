@@ -261,6 +261,7 @@ async function processPrompt() {
 
     for (const prop in answers) {
       if (answers[prop] !== null) {
+        // eslint-disable-next-line unicorn/prefer-number-properties
         data = isNaN(answers[prop]) ? data + prop + "='" + answers[prop] + "'\n" : data + prop + '=' + answers[prop] + '\n'
       }
     }
