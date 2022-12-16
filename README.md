@@ -987,7 +987,7 @@ validate threshold            Validate the compliance and status counts of an HD
 Update an existing InSpec profile in-place with new XCCDF metadata
 
 USAGE
-  $ saf generate delta -i <value> [-h] [-r <value>] [-T vuln|group|cis|stig] [-L info|warn|debug|verbose]
+  $ saf generate delta -i <value> [-h] [-r <value>] [-T (rule|group|cis|version)] [-L (info|warn|debug|verbose)]
 
 FLAGS
   -h, --help               Show CLI help.
@@ -1108,7 +1108,7 @@ EXAMPLES
 generate xccdf_benchmark2inspec_stub              Translate a DISA STIG XCCDF Benchmark XML file into a skeleton for an InSpec profile
 
 USAGE
-  $ saf generate xccdf_benchmark2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-T vuln|group|cis|stig] [-s] [-L info|warn|debug|verbose]
+  $ saf generate xccdf_benchmark2inspec_stub -i <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] [-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]
 
 FLAGS
   -h, --help                     Show CLI help.

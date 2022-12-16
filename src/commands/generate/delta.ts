@@ -1,6 +1,6 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import {processInSpecProfile, processOVAL, updateProfileUsingXCCDF} from '@mitre/inspec-objects'
+import {processInSpecProfile, processOVAL, UpdatedProfileReturn, updateProfileUsingXCCDF} from '@mitre/inspec-objects'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
@@ -102,7 +102,7 @@ export default class GenerateDelta extends Command {
       }
 
       // Find the difference between existingProfile and updatedXCCDF
-      let updatedResult
+      let updatedResult: UpdatedProfileReturn
       logger.debug(`Processing XCCDF Benchmark file: ${flags.input} using ${flags.idType} id.`)
       const idTypes = ['rule', 'group', 'cis', 'version']
       if (idTypes.includes(flags.idType)) {

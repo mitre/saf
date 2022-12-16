@@ -5,10 +5,11 @@ import {InSpecMetaData} from '../../types/inspec'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import {processOVAL, processXCCDF} from '@mitre/inspec-objects'
+import Profile from '@mitre/inspec-objects/lib/objects/profile'
 
-export default class XCCDF2InSpec extends Command {
+export default class XCCDFBenchmark2InSpec extends Command {
   static usage =
-    'generate xccdf_benchmark2inspec_stub -i, --input=XML -o, --output=FOLDER';
+    'saf generate xccdf_benchmark2inspec_stub -i <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] [-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]';
 
   static description =
     'Translate an XCCDF benchmark file to a skeleton for an InSpec profile';
@@ -36,7 +37,7 @@ export default class XCCDF2InSpec extends Command {
   ]
 
   async run() {
-    const {flags} = await this.parse(XCCDF2InSpec)
+    const {flags} = await this.parse(XCCDFBenchmark2InSpec)
 
     const logger = createWinstonLogger('generate:delta', flags.logLevel)
     // Check if the output folder already exists
@@ -78,7 +79,7 @@ export default class XCCDF2InSpec extends Command {
 
     // Read the XCCDF file
     const xccdf = fs.readFileSync(flags.input, 'utf8')
-    let profile
+    let profile: Profile
 
     logger.debug(`Processing XCCDF Benchmark file: ${flags.input} using ${flags.idType} id.`)
     const idTypes = ['rule', 'group', 'cis', 'version']
