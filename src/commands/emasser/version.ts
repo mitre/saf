@@ -3,7 +3,7 @@ import {name, version} from '@mitre/emass_client/package.json'
 
 export default class EmasserGetVersion extends Command {
   static flags = {
-    help: Flags.help({char: 'h'}),
+    help: Flags.help({char: 'h', description: 'Display the eMASS client package version'}),
   }
 
   static examples = ['<%= config.bin %> <%= command.id %>']

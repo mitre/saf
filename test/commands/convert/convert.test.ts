@@ -11,7 +11,7 @@ describe('Test (generic) convert', () => {
   test
     .it('hdf-converter output test (asff)', () => {
       execSync( // skipcq: JS-D023
-        `node bin/run convert -i ./test/sample_data/asff/sample_input_report/asff_sample.json -o ${tmpobj.name}/asfftest`,
+        `node --trace-warnings bin/run convert -i ./test/sample_data/asff/sample_input_report/asff_sample.json -o ${tmpobj.name}/asfftest`,
       )
 
       const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/asfftest/CIS AWS Foundations Benchmark v1.2.0.json`, 'utf8'))
