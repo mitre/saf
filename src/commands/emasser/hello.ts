@@ -1,4 +1,4 @@
-import {Command, Flags} from '@oclif/core'
+import {Command} from '@oclif/core'
 import {name, version} from '@mitre/emass_client/package.json'
 import os from 'os'
 

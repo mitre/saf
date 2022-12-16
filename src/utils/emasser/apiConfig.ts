@@ -94,7 +94,7 @@ export class ApiConfig {
 
   getOptionalEnv(key: string, defaultValue: boolean | number): string | boolean | number {
     if (Object.prototype.hasOwnProperty.call(this.envConfig, key)) {
-      return this.envConfig[key]!
+      return this.envConfig[key]
     }  // skipcq: JS-0056
 
     return defaultValue

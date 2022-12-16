@@ -63,7 +63,7 @@ function generateNewdotEnv() {
   })
 }
 
-async function processPrompt() {
+function processPrompt() {
   const envParse = dotenv.parse(fse.readFileSync('.env'))
   const envConfig = dotenvParseVariables(envParse)
 
@@ -78,7 +78,7 @@ async function processPrompt() {
         return envConfig.EMASSER_API_KEY_API_KEY
       },
       validate(input: string) {
-        if (/([a-zA-Z0-9-]{30,})/g.test(input)) {
+        if (/([a-zA-Z0-9-]{30,})/g.test(input)) { // skipcq: JS-0113
           return true
         }
 
@@ -102,7 +102,7 @@ async function processPrompt() {
       },
       validate(input: string) {
         // eslint-disable-next-line no-useless-escape
-        if (/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/g.test(input)) {
+        if (/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/g.test(input)) { // skipcq: JS-0113, JS-0097
           return true
         }
 
@@ -196,7 +196,7 @@ async function processPrompt() {
         return envConfig.EMASSER_PORT
       },
       validate(input: string) {
-        if (/(^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$)/g.test(input)) {
+        if (/(^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$)/g.test(input)) { // skipcq: JS-0113, 
           return true
         }
 
