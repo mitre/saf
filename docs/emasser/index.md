@@ -1295,6 +1295,7 @@ Any values not specified below will be null.
 - Artifact version cannot be saved if an Artifact with the same file name already exist in the system.
 - Artifact cannot be saved if the file size exceeds 30MB.
 - Artifact cannot be saved if the Last Review Date is set in the future.
+
 ---
 ### Add (POST) Artifacts CLI usages
 ```

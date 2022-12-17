@@ -171,7 +171,7 @@
   },
   "repository": "mitre/saf",
   "scripts": {
-    "lint": "eslint \"**/*.ts\"",
+    "lint": "eslint \"**/*.ts\" --fix",
     "lint:ci": "eslint \"**/*.ts\" --max-warnings 0",
     "pack-hdf-converters": "run-script-os",
     "pack-hdf-converters:win32": "pack-hdf-converters.bat",
