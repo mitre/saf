@@ -6,7 +6,7 @@ import tmp from 'tmp'
 // import {execSync} from 'child_process'
 
 describe('Test (generic) convert', () => {
-  const tmpobj = tmp.dirSync({unsafeCleanup: true})
+  // const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   test
     .it('hdf-converter output test (asff)', () => {
