@@ -1,5 +1,5 @@
 import colors from 'colors' // eslint-disable-line no-restricted-imports
-import {Command, Flags} from '@oclif/core'
+import {Command} from '@oclif/core'
 import {generateConfig} from '../../utils/emasser/generateConfig'
 
 export default class EmasserBuildConfig extends Command {
