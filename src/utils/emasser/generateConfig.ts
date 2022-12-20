@@ -3,7 +3,6 @@ import colors from 'colors' // eslint-disable-line no-restricted-imports
 import fse from 'fs-extra'
 import dotenv from 'dotenv'
 import inquirer from 'inquirer'
-import dotenvParseVariables from 'dotenv-parse-variables'
 import inquirerFileTreeSelection from 'inquirer-file-tree-selection-prompt'
 
 const PROMPT_MESSAGE = [
@@ -12,7 +11,7 @@ const PROMPT_MESSAGE = [
   'Provide the FQDN for the eMASS server:',
   'Provide the eMASS key.pem private encrypting the key in PEM format (file, include the path):',
   'Provide the eMASS cert.pem containing the certificate information in PEM format (file, include the path):',
-  'Provide the password for the private encryption key.pem file:',
+  'Provide the password for the private encryption key.pem file (no validation is performed):',
   'Provide the server communication port number (default is 443):',
   'Server requests a certificate from clients - true or false (default true):',
   'Reject connection not authorized with the list of supplied CAs- true or false (default true):',
@@ -64,9 +63,7 @@ function generateNewdotEnv() {
 }
 
 function processPrompt() {
-  const envParse = dotenv.parse(fse.readFileSync('.env'))
-  const envConfig = dotenvParseVariables(envParse)
-
+  const envConfig = dotenv.parse(fse.readFileSync('.env'))
   inquirer.registerPrompt('file-tree-selection', inquirerFileTreeSelection)
 
   const questions = [
@@ -179,13 +176,6 @@ function processPrompt() {
       message: PROMPT_MESSAGE[5],
       default() {
         return envConfig.EMASSER_KEY_PASSWORD
-      },
-      validate(value: string) {
-        if (/\w/.test(value) && /\d/.test(value)) {
-          return true
-        }
-
-        throw new Error('Invalid password provided. Password need to have at least a letter and a number')
       },
     },
     {

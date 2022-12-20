@@ -10,5 +10,3 @@ node_modules
 *.*.un~
 out
 .env
-package.json
-package-lock.json

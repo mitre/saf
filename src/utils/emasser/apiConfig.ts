@@ -30,7 +30,7 @@ function printHelpMessage() {
 }
 
 export class ApiConfig {
-  private envConfig: {[key: string]: string | boolean | number};
+  private envConfig: {[key: string]: string | undefined};
 
   public url: string;
   public port: number|any;
@@ -39,11 +39,11 @@ export class ApiConfig {
   public apiPassPhrase: string;
   public apiKey: string;
   public userUid: string;
-  public sslVerify: boolean|any;
-  public reqCert: boolean|any;
-  public debugging: boolean|any;
-  public displayNulls: boolean|any;
-  public displayDateTime: boolean|any;
+  public sslVerify: boolean;
+  public reqCert: boolean;
+  public debugging: string;
+  public displayNulls: string;
+  public displayDateTime: string;
 
   constructor() {
     try {
@@ -92,7 +92,7 @@ export class ApiConfig {
     throw new Error('Environment variable not found')
   }
 
-  getOptionalEnv(key: string, defaultValue: boolean | number): string | boolean | number {
+  getOptionalEnv(key: string, defaultValue: any): string | any {
     if (Object.prototype.hasOwnProperty.call(this.envConfig, key)) {
       return this.envConfig[key]
     }  // skipcq: JS-0056
