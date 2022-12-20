@@ -48,7 +48,7 @@ const OTIONAL_DEFAULT_VALUES = [
 ]
 
 function generateNewdotEnv() {
-  // data contains the .env variables without values.
+  // data contains the .env variables with optional default values.
   let data = ''
   PROMPT_NAMES_REQUIRED.forEach(element => {
     data = data + element + '=\n'
