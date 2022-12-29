@@ -55,12 +55,12 @@ export class ApiConfig {
 
     // Required Environment Variables
     try {
-      this.apiKey = this.getRequiredEnv('EMASSER_API_KEY_API_KEY')
-      this.userUid = this.getRequiredEnv('EMASSER_API_KEY_USER_UID')
-      this.url = this.getRequiredEnv('EMASSER_HOST')
+      this.apiKey = this.getRequiredEnv('EMASSER_API_KEY')
+      this.userUid = this.getRequiredEnv('EMASSER_USER_UID')
+      this.url = this.getRequiredEnv('EMASSER_HOST_URL')
       this.keyCert = this.getRequiredEnv('EMASSER_KEY_FILE_PATH')
       this.clientCert = this.getRequiredEnv('EMASSER_CERT_FILE_PATH')
-      this.apiPassPhrase = this.getRequiredEnv('EMASSER_KEY_PASSWORD')
+      this.apiPassPhrase = this.getRequiredEnv('EMASSER_KEY_FILE_PASSWORD')
     } catch (error: any) {
       if (error.name === 'EVNF') {
         printHelpMessage()

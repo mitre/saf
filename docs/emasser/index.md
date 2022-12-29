@@ -12,12 +12,12 @@ Place the file on the  path where the `emasser` command is executed.
 
 ### Required Environment Variables
 The following environment variables are required:
-* EMASSER_API_KEY_API_KEY=`<API key>`
-* EMASSER_API_KEY_USER_UID=`<unique identifier for the API Key (EMASSER_API_KEY_API_KEY)`
-* EMASSER_HOST=`<FQDN of the eMASS server>`
+* EMASSER_API_KEY=`<API key>`
+* EMASSER_USER_UID=`<unique identifier for the API Key`
+* EMASSER_HOST_URL=`<FQDN of the eMASS server>`
 * EMASSER_KEY_FILE_PATH=`<path to your eMASS key in PEM format>`
 * EMASSER_CERT_FILE_PATH=`<path to your eMASS certificate in PEM format>`
-* EMASSER_KEY_PASSWORD=`<password for the key given in EMASSER_KEY_FILE_PATH>`
+* EMASSER_KEY_FILE_PASSWORD=`<password for the key given in EMASSER_KEY_FILE_PATH>`
 
 ### Optional Environment Variables
 The following environment variables are *optional:
@@ -105,10 +105,10 @@ Fo instruction on how to request an eMASS visit [eMASS Account Process Request a
 * [/api/systems/{systemId}/artifacts](#delete-artifacts)
 
 ## Generating an eMASS Configuration File
-Provided with the eMASS API CLI is an interactive command line user interface for generating the configuration file `.env` required to connect to an eMASS instance.
+Provided with the eMASS API CLI is an interactive command line user interface for generating the configuration file `.env` required to connect to an eMASS instance(s).
 
 ```
-Generate a configuration file (.env) for accessing an eMASS instances.
+Generate a configuration file (.env) for accessing an eMASS instance(s).
 
 USAGE
   $ saf emasser configure
@@ -117,20 +117,20 @@ DESCRIPTION
   Generate a configuration file (.env) for accessing an eMASS instances.
 
   The following variables are required:
-  EMASSER_API_KEY_API_KEY  <The eMASS API key (api-key) - valid key is > 30 alpha numeric characters>
-  EMASSER_API_KEY_USER_UID <The eMASS User Unique Identifier (user-uid)>
-  EMASSER_HOST             <The Full Qualified Domain Name (FQDN) for the eMASS server>
-  EMASSER_KEY_FILE_PATH    <The eMASS key.pem private encrypting the key in PEM format (file, include the path)>
-  EMASSER_CERT_FILE_PATH   <The eMASS cert.pem containing the certificate information in PEM format (file, include the path)
-  EMASSER_KEY_PASSWORD     <The password for the private encryption key.pem file
+  EMASSER_API_KEY           <The eMASS API key (api-key) - valid key is > 30 alpha numeric characters>
+  EMASSER_USER_UID          <The eMASS User Unique Identifier (user-uid)>
+  EMASSER_HOST_URL          <The Full Qualified Domain Name (FQDN) for the eMASS server>
+  EMASSER_KEY_FILE_PATH     <The eMASS key.pem private encrypting the key in PEM format (file, include the path)>
+  EMASSER_CERT_FILE_PATH    <The eMASS cert.pem containing the certificate information in PEM format (file, include the path)>
+  EMASSER_KEY_FILE_PASSWORD <The password for the private encryption key.pem file>
 
   The following variables are optional, if not provided defaults are used:
-  EMASSER_PORT                <The server communication port number (default is 443)
-  EMASSER_REQUEST_CERT        <Server requests a certificate from clients - true or false (default true)
-  EMASSER_REJECT_UNAUTHORIZED <Reject connection not authorized with the list of supplied CAs- true or false (default true)
-  EMASSER_DEBUGGING           <Set debugging on or off - true or false (default false)
-  EMASSER_CLI_DISPLAY_NULL    <Display null value fields - true or false (default true)
-  EMASSER_EPOCH_TO_DATETIME   <Convert epoch to data/time value - true or false (default false)
+  EMASSER_PORT                <The server communication port number (default is 443)>
+  EMASSER_REQUEST_CERT        <Server requests a certificate from connecting clients - true or false (default true)>
+  EMASSER_REJECT_UNAUTHORIZED <Reject clients with invalid certificates - true or false (default true)>
+  EMASSER_DEBUGGING           <Set debugging on (true) or off (false) (default false)>
+  EMASSER_CLI_DISPLAY_NULL    <Display null value fields - true or false (default true)>
+  EMASSER_EPOCH_TO_DATETIME   <Convert epoch to data/time value - true or false (default false)>
 
 EXAMPLES
   $ saf emasser configure
@@ -153,7 +153,7 @@ TOPICS
   emasser put     eMass REST API PUT endpoint commands
 
 COMMANDS
-  emasser configure  Generate a configuration file (.env) for accessing an eMASS instances.
+  emasser configure  Generate a configuration file (.env) for accessing an eMASS instance(s).
   emasser version    Display the eMASS API specification version the CLI implements.
 ```
 

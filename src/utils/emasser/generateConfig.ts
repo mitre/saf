@@ -6,27 +6,27 @@ import inquirer from 'inquirer'
 import inquirerFileTreeSelection from 'inquirer-file-tree-selection-prompt'
 
 const PROMPT_MESSAGE = [
-  'Provide the eMASS API key (api-key) - valid key is > 30 alpha numeric characters:',
-  'Provide the eMASS User unique identifier (user-uid):',
-  'Provide the FQDN for the eMASS server:',
-  'Provide the eMASS key.pem private encrypting the key in PEM format (file, include the path):',
-  'Provide the eMASS cert.pem containing the certificate information in PEM format (file, include the path):',
-  'Provide the password for the private encryption key.pem file (no validation is performed):',
+  'Provide the eMASS API key (EMASSER_API_KEY) - valid key is > 30 alpha numeric characters:',
+  'Provide the eMASS User unique identifier (EMASSER_USER_UID):',
+  'Provide the eMASS server FQDN (EMASSER_HOST_URL) :',
+  'Provide the eMASS private encrypting file (key.pem) - include the path (EMASSER_KEY_FILE_PATH)):',
+  'Provide the eMASS client certificate file (cert.pem) - include the path (EMASSER_CERT_FILE_PATH):',
+  'Provide the password for the private encryption key.pem file (EMASSER_KEY_FILE_PASSWORD):',
   'Provide the server communication port number (default is 443):',
-  'Server requests a certificate from clients - true or false (default true):',
-  'Reject connection not authorized with the list of supplied CAs- true or false (default true):',
-  'Set debugging on or off - true or false (default false):',
+  'Server requests a certificate from connecting clients - true or false (default true):',
+  'Reject clients with invalid certificates - true or false (default true):',
+  'Set debugging on (true) or off (false) (default false):',
   'Display null value fields - true or false (default true):',
   'Convert epoch to data/time value - true or false (default false):',
 ]
 
 const PROMPT_NAMES_REQUIRED = [
-  'EMASSER_API_KEY_API_KEY',
-  'EMASSER_API_KEY_USER_UID',
-  'EMASSER_HOST',
+  'EMASSER_API_KEY',
+  'EMASSER_USER_UID',
+  'EMASSER_HOST_URL',
   'EMASSER_KEY_FILE_PATH',
   'EMASSER_CERT_FILE_PATH',
-  'EMASSER_KEY_PASSWORD',
+  'EMASSER_KEY_FILE_PASSWORD',
 ]
 
 const PROMPT_NAMES_OPTIONAL = [
@@ -38,7 +38,7 @@ const PROMPT_NAMES_OPTIONAL = [
   'EMASSER_EPOCH_TO_DATETIME',
 ]
 
-const OTIONAL_DEFAULT_VALUES = [
+const OPTIONAL_DEFAULT_VALUES = [
   443,
   true,
   true,
@@ -54,12 +54,10 @@ function generateNewdotEnv() {
     data = data + element + '=\n'
   })
   PROMPT_NAMES_OPTIONAL.forEach((element, index) => {
-    data = data + element + '=' + OTIONAL_DEFAULT_VALUES[index] + '\n'
+    data = data + element + '=' + OPTIONAL_DEFAULT_VALUES[index] + '\n'
   })
 
-  fse.writeFile('.env', data, err => {
-    if (err) throw err
-  })
+  fse.writeFileSync('.env', data)
 }
 
 function processPrompt() {
@@ -72,7 +70,7 @@ function processPrompt() {
       name: PROMPT_NAMES_REQUIRED[0],
       message: PROMPT_MESSAGE[0],
       default() {
-        return envConfig.EMASSER_API_KEY_API_KEY
+        return envConfig.EMASSER_API_KEY
       },
       validate(input: string) {
         if (/([a-zA-Z0-9-]{30,})/g.test(input)) { // skipcq: JS-0113
@@ -87,7 +85,7 @@ function processPrompt() {
       name: PROMPT_NAMES_REQUIRED[1],
       message: PROMPT_MESSAGE[1],
       default() {
-        return envConfig.EMASSER_API_KEY_USER_UID
+        return envConfig.EMASSER_USER_UID
       },
     },
     {
@@ -95,7 +93,7 @@ function processPrompt() {
       name: PROMPT_NAMES_REQUIRED[2],
       message: PROMPT_MESSAGE[2],
       default() {
-        return envConfig.EMASSER_HOST
+        return envConfig.EMASSER_HOST_URL
       },
       validate(input: string) {
         // eslint-disable-next-line no-useless-escape
@@ -111,6 +109,7 @@ function processPrompt() {
       name: PROMPT_NAMES_REQUIRED[3],
       message: PROMPT_MESSAGE[3],
       filters: 'pem',
+      pageSize: 15,
       default() {
         return envConfig.EMASSER_KEY_FILE_PATH
       },
@@ -143,6 +142,7 @@ function processPrompt() {
       name: PROMPT_NAMES_REQUIRED[4],
       message: PROMPT_MESSAGE[4],
       filters: 'pem',
+      pageSize: 15,
       default() {
         return envConfig.EMASSER_CERT_FILE_PATH
       },
@@ -175,7 +175,7 @@ function processPrompt() {
       name: PROMPT_NAMES_REQUIRED[5],
       message: PROMPT_MESSAGE[5],
       default() {
-        return envConfig.EMASSER_KEY_PASSWORD
+        return envConfig.EMASSER_KEY_FILE_PASSWORD
       },
     },
     {
@@ -248,17 +248,38 @@ function processPrompt() {
   inquirer.prompt(questions).then((answers: any) => {
     // Save the content to the .env file
     let data = ''
-
-    for (const prop in answers) {
-      if (answers[prop] !== null) {
+    let envGenerated = true
+    for (const envVar in answers) {
+      if (answers[envVar] !== null) {
         // eslint-disable-next-line unicorn/prefer-number-properties
-        data = isNaN(answers[prop]) ? data + prop + "='" + answers[prop] + "'\n" : data + prop + '=' + answers[prop] + '\n'
+        data = isNaN(answers[envVar]) ? data + envVar + "='" + answers[envVar] + "'\n" : data + envVar + '=' + answers[envVar] + '\n'
       }
     }
 
-    fse.writeFile('.env', data, err => {
-      if (err) throw err
-    })
+    // Write the .env file
+    try {
+      fse.writeFileSync('.env', data)
+    } catch {
+      envGenerated = false
+    }
+
+    // Output the content of the new or updated .env configuration file
+    if (envGenerated) {
+      const table: string[][] = fse.readFileSync('.env', 'utf8').split('\n').map(pair => pair.split('='))
+      const envData: object = Object.fromEntries(table)
+
+      console.log('\n', colors.yellow('An eMASS configuration file with the following environment variables was created:'))
+
+      for (const [key, value] of Object.entries(envData)) {
+        if (key.trim() !== '') {
+          console.log(`\t${colors.blue(key)}=${colors.green(value)}`)
+        }
+      }
+
+      console.log('\n', colors.yellow('To modify any of the entries, simple run the configure command again.'))
+      console.log('\n', colors.cyan.bold('To verify connection to the eMASS services use the command: '), colors.green.underline('saf emasser get test_connection'))
+      console.log('\n', colors.cyan.bold('For additional help on available eMASS CLI API commands use: '), colors.green.underline('saf emasser -h or -help'))
+    }
   })
 }
 
