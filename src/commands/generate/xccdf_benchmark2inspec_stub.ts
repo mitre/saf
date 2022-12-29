@@ -39,7 +39,7 @@ export default class XCCDFBenchmark2InSpec extends Command {
   async run() {
     const {flags} = await this.parse(XCCDFBenchmark2InSpec)
 
-    const logger = createWinstonLogger('generate:delta', flags.logLevel)
+    const logger = createWinstonLogger('generate:xccdf_benchmark2inspec_stub', flags.logLevel)
     // Check if the output folder already exists
     if (!fs.existsSync(flags.output)) {
       logger.debug('Creating output folder with controls and libraries directories')
