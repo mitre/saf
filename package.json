@@ -66,7 +66,7 @@
     "winston": "^3.6.0",
     "xlsx-populate": "^1.21.0",
     "xml2js": "^0.4.23",
-    "yaml": "^1.10.2",
+    "yaml": "^2.2.0",
     "zip-lib": "^0.7.3"
   },
   "devDependencies": {
