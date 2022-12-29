@@ -892,7 +892,8 @@ TOPICS
   emasser put     eMass REST API PUT endpoint commands
 
 COMMANDS
-  emasser version
+  emasser configure  Generate a configuration file (.env) for accessing an eMASS instances.
+  emasser version    Display the eMASS API specification version the CLI implements.
 ```
 
 [top](#emasser-client)

@@ -1,7 +1,7 @@
 # emasser CLI Features and Capabilities
 
 ## Environment Variables
-To facilitate setting the required environment variables the `emasser ` SAF CLI utilized the zero-dependency module to load these variables from a `.env` file.  
+To facilitate setting the required environment variables the `emasser ` SAF CLI utilized the zero-dependency module to load these variables from a `.env` file.  See [Generating an eMASS Configuration File](#generating-an-emass-configuration-file)
 
 ### Configuring the `.env` File
 An `.env-example` file is provided with the required and optional fields.
@@ -12,12 +12,12 @@ Place the file on the  path where the `emasser` command is executed.
 
 ### Required Environment Variables
 The following environment variables are required:
-* EMASSER_API_KEY_API_KEY=`<API key>`
-* EMASSER_API_KEY_USER_UID=`<unique identifier for the API Key (EMASSER_API_KEY_API_KEY)`
-* EMASSER_HOST=`<FQDN of the eMASS server>`
+* EMASSER_API_KEY=`<API key>`
+* EMASSER_USER_UID=`<unique identifier for the API Key`
+* EMASSER_HOST_URL=`<FQDN of the eMASS server>`
 * EMASSER_KEY_FILE_PATH=`<path to your eMASS key in PEM format>`
 * EMASSER_CERT_FILE_PATH=`<path to your eMASS certificate in PEM format>`
-* EMASSER_KEY_PASSWORD=`<password for the key given in EMASSER_KEY_FILE_PATH>`
+* EMASSER_KEY_FILE_PASSWORD=`<password for the key given in EMASSER_KEY_FILE_PATH>`
 
 ### Optional Environment Variables
 The following environment variables are *optional:
@@ -104,6 +104,38 @@ Fo instruction on how to request an eMASS visit [eMASS Account Process Request a
 * [/api/systems/{systemId}/poams/{poamId}/milestones](#delete-milestones)
 * [/api/systems/{systemId}/artifacts](#delete-artifacts)
 
+## Generating an eMASS Configuration File
+Provided with the eMASS API CLI is an interactive command line user interface for generating the configuration file `.env` required to connect to an eMASS instance(s).
+
+```
+Generate a configuration file (.env) for accessing an eMASS instance(s).
+
+USAGE
+  $ saf emasser configure
+
+DESCRIPTION
+  Generate a configuration file (.env) for accessing an eMASS instances.
+
+  The following variables are required:
+  EMASSER_API_KEY           <The eMASS API key (api-key) - valid key is > 30 alpha numeric characters>
+  EMASSER_USER_UID          <The eMASS User Unique Identifier (user-uid)>
+  EMASSER_HOST_URL          <The Full Qualified Domain Name (FQDN) for the eMASS server>
+  EMASSER_KEY_FILE_PATH     <The eMASS key.pem private encrypting the key in PEM format (file, include the path)>
+  EMASSER_CERT_FILE_PATH    <The eMASS cert.pem containing the certificate information in PEM format (file, include the path)>
+  EMASSER_KEY_FILE_PASSWORD <The password for the private encryption key.pem file>
+
+  The following variables are optional, if not provided defaults are used:
+  EMASSER_PORT                <The server communication port number (default is 443)>
+  EMASSER_REQUEST_CERT        <Server requests a certificate from connecting clients - true or false (default true)>
+  EMASSER_REJECT_UNAUTHORIZED <Reject clients with invalid certificates - true or false (default true)>
+  EMASSER_DEBUGGING           <Set debugging on (true) or off (false) (default false)>
+  EMASSER_CLI_DISPLAY_NULL    <Display null value fields - true or false (default true)>
+  EMASSER_EPOCH_TO_DATETIME   <Convert epoch to data/time value - true or false (default false)>
+
+EXAMPLES
+  $ saf emasser configure
+```
+
 ## Endpoints CLI help
 To view eMASS API top help (available topics & commands) use the following command:
 
@@ -121,7 +153,8 @@ TOPICS
   emasser put     eMass REST API PUT endpoint commands
 
 COMMANDS
-  emasser version
+  emasser configure  Generate a configuration file (.env) for accessing an eMASS instance(s).
+  emasser version    Display the eMASS API specification version the CLI implements.
 ```
 
 Each CLI endpoint command have several layers of help. 
@@ -1295,6 +1328,7 @@ Any values not specified below will be null.
 - Artifact version cannot be saved if an Artifact with the same file name already exist in the system.
 - Artifact cannot be saved if the file size exceeds 30MB.
 - Artifact cannot be saved if the Last Review Date is set in the future.
+  
 ---
 ### Add (POST) Artifacts CLI usages
 ```
