@@ -9,7 +9,7 @@ permissions:
 jobs:
   approve:
     name: Auto-approve dependabot PRs
-    if: github.event.pull_request.user.login == 'dependabot' && contains(github.event.pull_request.labels.*.name, 'dependencies')
+    if: github.event.pull_request.user.login == 'dependabot[bot]' && contains(github.event.pull_request.labels.*.name, 'dependencies')
     runs-on: ubuntu-20.04
     steps:
     - uses: hmarr/auto-approve-action@v2
