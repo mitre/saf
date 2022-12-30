@@ -48,7 +48,7 @@
     "htmlparser2": "^8.0.1",
     "https": "^1.0.0",
     "inquirer": "^8.0.0",
-    "inquirer-file-tree-selection-prompt": "^1.0.19",
+    "inquirer-file-tree-selection-prompt": "^2.0.2",
     "inspecjs": "^2.6.30",
     "json-colorizer": "^2.2.2",
     "lodash": "^4.17.21",
