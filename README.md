@@ -988,25 +988,26 @@ validate threshold            Validate the compliance and status counts of an HD
 Update an existing InSpec profile in-place with new XCCDF metadata
 
 USAGE
-  $ saf generate delta -i <value> [-h] [-r <value>] [-T (rule|group|cis|version)] [-L (info|warn|debug|verbose)]
+  $ saf generate delta -J <value> -X <value> -o <value> [-h] [-O <value>] [-r <value>] [-T rule|group|cis|version] [-L info|warn|debug|verbose]
 
 FLAGS
   -h, --help               Show CLI help.
-  -i, --inputProfile=<value>  (required) Input execution/profile JSON file - can be generated using the "inspec json" command
-  -x, --xccdfFile=<value>     (required) The XCCDF or Oval XML file containing the new profile guidance - in the form of .xml file
-  -o, --outputFolder=<value>  (required) The output folder for the updated profile - if not empty it will be overwritten
-  -T, --idType=<option>       [default: rule] Control ID Types: 
-                              'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 
-                              'group' - Group IDs (ex. 'V-XXXXX'), 
-                              'cis' - CIS Rule IDs (ex. C-1.1.1.1), 
-                              'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
-                              <options: rule|group|cis|version>
-  -r, --report=<value>        Output markdown report file
-  -L, --logLevel=<option>     [default: info]
-                              <options: info|warn|debug|verbose>
+  -J, --inspecJsonFile=<value>  (required) Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command
+  -X, --xccdfXmlFile=<value>    (required) The XCCDF XML file containing the new profile guidance - in the form of .xml file
+  -o, --outputFolder=<value>    (required) The output folder for the updated profile - if not empty it will be overwritten
+  -O, --ovalXmlFile=<value>     The OVAL XML file containing the new profile guidance - in the form of .xml file
+  -T, --idType=<option>         [default: rule] Control ID Types: 
+                                'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 
+                                'group' - Group IDs (ex. 'V-XXXXX'), 
+                                'cis' - CIS Rule IDs (ex. C-1.1.1.1), 
+                                'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
+                                <options: rule|group|cis|version>
+  -r, --report=<value>          Output markdown report file
+  -L, --logLevel=<option>       [default: info]
+                                <options: info|warn|debug|verbose>
 
 EXAMPLES
-  $ saf generate delta -i ./the_profile_json_file.json -x ./the_xccdf_or_oval_profile_guidance_file.xml -o the_output_directory [-T group (default rule)] [-r the_update_report_file.md] [-L debug]
+  $ saf generate delta -J ./the_profile_json_file.json -X ./the_xccdf_profile_guidance_file.xml  -o the_output_directory [-O ./the_oval_profile_guidance_file.xml] [-T group (default rule)] [-r the_update_report_file.md] [-L debug]
 ```
 [top](#generate-data-reports-and-more)
 
