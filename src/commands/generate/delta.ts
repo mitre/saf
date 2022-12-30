@@ -51,14 +51,14 @@ export default class GenerateDelta extends Command {
           existingProfile = processInSpecProfile(fs.readFileSync(inputProfile, 'utf8'))
           logger.debug(`Loaded ${inputProfile} as Profile JSON/Execution JSON`)
         } catch (error) {
-          logger.error(`Could not processed ${inputProfile} as an InsPec Profile JSON because:`)
+          logger.error(`Could not process ${inputProfile} as an InsPec Profile JSON because:`)
           logger.error(error)
           throw error
         }
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {
-        logger.error(`Invalid InsPec Profile JSON file: ${flags.inputProfile}. Check the --help command for expected input file.`)
+        logger.error(`Invalid InSpec Profile JSON file: ${flags.inputProfile}. Check the --help command for expected input file.`)
         throw new Error('Invalid InsPec Profile JSON file provided')
       } else {
         logger.error(`Unable to process Input execution/profile JSON ${flags.inputProfile} because:`)
