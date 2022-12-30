@@ -10,7 +10,7 @@ export default class GenerateDelta extends Command {
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    inputProfile: Flags.string({char: 'i', required: true, description: 'Input execution/profile JSON file - can be generated using the "inspec json" command'}),
+    inputProfile: Flags.string({char: 'i', required: true, description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command'}),
     xccdfFile: Flags.string({char: 'x', required: true, description: 'The XCCDF or Oval XML file containing the new profile guidance - in the form of .xml file'}),
     outputFolder: Flags.string({char: 'o', required: true, description: 'The output folder for the updated profile - if not empty it will be overwritten'}),
     report: Flags.string({char: 'r', required: false, description: 'Output markdown report file'}),
@@ -67,7 +67,7 @@ export default class GenerateDelta extends Command {
       }
     }
 
-    // Process the The XCCDF or Oval XML file containing the new/updated profile guidance
+    // Process the XCCDF or Oval XML file containing the new/updated profile guidance failures 
     try {
       if (fs.lstatSync(flags.xccdfFile).isFile()) {
         const xccdfFile = flags.xccdfFile
