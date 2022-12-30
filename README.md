@@ -992,22 +992,21 @@ USAGE
 
 FLAGS
   -h, --help               Show CLI help.
-  -i, --input=<value>...   (required) Input execution/profile JSON file(s), InSpec Profile Folder, AND the
-                           updated XCCDF XML files
-  -T, --idType=<option>    [default: rule] Control ID Types: 
-                           'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 
-                           'group' - Group IDs (ex. 'V-XXXXX'), 
-                           'cis' - CIS Rule IDs (ex. C-1.1.1.1), 
-                           'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
-                           <options: rule|group|cis|version>
-  -r, --report=<value>     Output markdown report file
-  -L, --logLevel=<option>  [default: info]
-                           <options: info|warn|debug|verbose>
+  -i, --inputProfile=<value>  (required) Input execution/profile JSON file - can be generated using the "inspec json" command
+  -x, --xccdfFile=<value>     (required) The XCCDF or Oval XML file containing the new profile guidance - in the form of .xml file
+  -o, --outputFolder=<value>  (required) The output folder for the updated profile - if not empty it will be overwritten
+  -T, --idType=<option>       [default: rule] Control ID Types: 
+                              'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 
+                              'group' - Group IDs (ex. 'V-XXXXX'), 
+                              'cis' - CIS Rule IDs (ex. C-1.1.1.1), 
+                              'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
+                              <options: rule|group|cis|version>
+  -r, --report=<value>        Output markdown report file
+  -L, --logLevel=<option>     [default: info]
+                              <options: info|warn|debug|verbose>
 
 EXAMPLES
-  $ saf generate delta -i ./redhat-enterprise-linux-6-stig-baseline/ ./redhat-enterprise-linux-6-stig-baseline/profile.json ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md
-
-  $ saf generate delta -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml ./canonical-ubuntu-18.04-lts-server-cis-baseline ./canonical-ubuntu-18.04-lts-server-cis-baseline/profile.json --logLevel debug
+  $ saf generate delta -i ./the_profile_json_file.json -x ./the_xccdf_or_oval_profile_guidance_file.xml -o the_output_directory [-T group (default rule)] [-r the_update_report_file.md] [-L debug]
 ```
 [top](#generate-data-reports-and-more)
 

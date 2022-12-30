@@ -6,15 +6,13 @@ import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
 
 export default class GenerateDelta extends Command {
-  static description = 'Update an existing InSpec profile in-place with new XCCDF metadata'
+  static description = 'Update an existing InSpec profile in-place with new/updated XCCDF or Oval metadata'
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    // input: Flags.string({char: 'i', required: true, multiple: true, description: 'Input execution/profile JSON file(s), InSpec Profile Folder, AND the updated XCCDF XML files'}),
     inputProfile: Flags.string({char: 'i', required: true, description: 'Input execution/profile JSON file - can be generated using the "inspec json" command'}),
     xccdfFile: Flags.string({char: 'x', required: true, description: 'The XCCDF or Oval XML file containing the new profile guidance - in the form of .xml file'}),
     outputFolder: Flags.string({char: 'o', required: true, description: 'The output folder for the updated profile - if not empty it will be overwritten'}),
-
     report: Flags.string({char: 'r', required: false, description: 'Output markdown report file'}),
     idType: Flags.string({
       char: 'T',
@@ -27,11 +25,10 @@ export default class GenerateDelta extends Command {
   }
 
   static examples = [
-    'saf generate delta -i ./redhat-enterprise-linux-6-stig-baseline/ ./redhat-enterprise-linux-6-stig-baseline/profile.json ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md',
-    'saf generate delta -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml ./canonical-ubuntu-18.04-lts-server-cis-baseline ./canonical-ubuntu-18.04-lts-server-cis-baseline/profile.json --logLevel debug',
+    'saf generate delta -i ./the_profile_json_file.json -x ./the_xccdf_or_oval_profile_guidance_file.xml -o the_output_directory [-T group (default rule)] [-r the_update_report_file.md] [-L debug]',
   ]
 
-  async run() {
+  async run() { // skipcq: JS-0044
     const {flags} = await this.parse(GenerateDelta)
 
     const logger = createWinstonLogger('generate:delta', flags.logLevel)
