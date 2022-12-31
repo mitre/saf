@@ -177,9 +177,9 @@ export default class GenerateDelta extends Command {
         try {
           fs.mkdirSync(path.join(flags.output, 'controls'), {recursive: true})
           outputProfileFolderPath = flags.output
-        } catch (errorDir: any) {
+        } catch (error_: any) {
           logger.error(`Failed to create output directory ${flags.output}`)
-          throw errorDir
+          throw error_
         }
       } else {
         logger.error(`Unable to create the output directory ${flags.output} because:`)
