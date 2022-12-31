@@ -1,5 +1,5 @@
 import {expect, test} from '@oclif/test'
-import assert from 'assert'
+// import assert from 'assert'
 import tmp from 'tmp'
 import path from 'path'
 import fs from 'fs'
@@ -49,7 +49,7 @@ describe('The generate delta command', () => {
       '-r',
       `${tmpobj.name}/RHEL_7/my-report.md`])
     .it('should generate a report with given file name and place it on the specified directory', () => {
-      expect(fs.lstatSync((`${tmpobj.name}/RHEL_7/my-report.md`)).isFile()).to.be.true
+      expect(fs.lstatSync((`${tmpobj.name}/RHEL_7/my-report.md`)).isFile()).to.be.true // skipcq: JS-0354
     })
 
   test
@@ -64,7 +64,7 @@ describe('The generate delta command', () => {
       '-r',
       `${tmpobj.name}`])
     .it('should generate a report name delta.md and place it the default directory', () => {
-      expect(fs.lstatSync((`${tmpobj.name}/delta.md`)).isFile()).to.be.true
+      expect(fs.lstatSync((`${tmpobj.name}/delta.md`)).isFile()).to.be.true // skipcq: JS-0354
     })
 
   // test
