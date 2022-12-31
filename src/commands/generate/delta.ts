@@ -14,7 +14,7 @@ export default class GenerateDelta extends Command {
     xccdfXmlFile: Flags.string({char: 'X', required: true, description: 'The XCCDF XML file containing the new profile guidance - in the form of .xml file'}),
     ovalXmlFile: Flags.string({char: 'O', required: false, description: 'The OVAL XML file containing the new profile guidance - in the form of .xml file'}),
     output: Flags.string({char: 'o', required: true, description: 'The output folder for the updated profile - if not empty it will be overwritten'}),
-    report: Flags.string({char: 'r', required: false, description: 'Output markdown report file'}),
+    report: Flags.string({char: 'r', required: false, description: 'Output markdown report file - must have an extension of .md'}),
     idType: Flags.string({
       char: 'T',
       required: false,
@@ -40,6 +40,7 @@ export default class GenerateDelta extends Command {
     let updatedXCCDF: any = {}
     let ovalDefinitions: any = {}
 
+    let markDownFile = ''
     let outputProfileFolderPath = ''
 
     // Process the Input execution/profile JSON file
@@ -145,31 +146,61 @@ export default class GenerateDelta extends Command {
     }
 
     // Process the output folder for the updated profile
-    if (fs.lstatSync(flags.output).isDirectory()) {
-      if (path.basename(flags.output) === 'controls') {
-        logger.debug(`Deleting existing profile folder ${flags.output}`)
-        fse.emptyDirSync(flags.output)
-        outputProfileFolderPath = path.dirname(flags.output)
-      } else {
-        const controlDir = path.join(flags.output, 'controls')
-        try {
-          if (fs.lstatSync(controlDir).isDirectory()) {
-            outputProfileFolderPath = flags.output
-          }
-        } catch (error: any) {
-          if (error.code === 'ENOENT') {
-            fse.mkdirSync(controlDir)
-            outputProfileFolderPath = flags.output
-          } else {
-            throw error
+    try {
+      if (fs.lstatSync(flags.output).isDirectory()) {
+        if (path.basename(flags.output) === 'controls') {
+          logger.debug(`Deleting existing profile folder ${flags.output}`)
+          fse.emptyDirSync(flags.output)
+          outputProfileFolderPath = path.dirname(flags.output)
+        } else {
+          const controlDir = path.join(flags.output, 'controls')
+          try {
+            // eslint-disable-next-line max-depth
+            if (fs.lstatSync(controlDir).isDirectory()) {
+              outputProfileFolderPath = flags.output
+            }
+          } catch (error: any) {
+            // eslint-disable-next-line max-depth
+            if (error.code === 'ENOENT') {
+              fse.mkdirSync(controlDir)
+              outputProfileFolderPath = flags.output
+            } else {
+              throw error
+            }
           }
         }
-      }
 
-      logger.debug(`Output folder for the updated profile is: ${outputProfileFolderPath}`)
-    } else {
-      logger.error('No output folder provided for the updated profile controls.')
-      throw new Error(`Expected a folder to output the updated profile controls, received: ${flags.outputFolder}.`)
+        logger.debug(`Output folder for the updated profile is: ${outputProfileFolderPath}`)
+      }
+    } catch (error: any) {
+      if (error.code === 'ENOENT') {
+        try {
+          fs.mkdirSync(path.join(flags.output, 'controls'), {recursive: true})
+          outputProfileFolderPath = flags.output
+        } catch (error: any) {
+          logger.error(`Failed to create output directory ${flags.output}`)
+          throw error
+        }
+      } else {
+        logger.error(`Unable to create the output directory ${flags.output} because:`)
+        logger.error(error)
+        throw error
+      }
+    }
+
+    // Set the report markdown file location
+    if (flags.report) {
+      if (fs.existsSync(flags.report) && fs.lstatSync(flags.report).isDirectory()) {
+        // Not a file - directory provided
+        markDownFile = path.join(flags.report, 'delta.md')
+      } else if (fs.existsSync(flags.report) && fs.lstatSync(flags.report).isFile()) {
+        // File name provided and exists - will be overwritten
+        markDownFile = flags.report
+      } else if (path.extname(flags.report) === '.md') {
+        markDownFile = flags.report
+      } else {
+        markDownFile = path.join(outputProfileFolderPath, 'delta.md')
+      }
     }
 
     // If all variables have been satisfied, we can generate the delta
@@ -197,7 +228,7 @@ export default class GenerateDelta extends Command {
       fs.writeFileSync(path.join(outputProfileFolderPath, 'delta.json'), JSON.stringify(updatedResult.diff, null, 2))
       if (flags.report) {
         logger.debug('Writing report markdown file')
-        fs.writeFileSync(path.join(flags.report), updatedResult.markdown)
+        fs.writeFileSync(path.join(markDownFile), updatedResult.markdown)
       }
     } else {
       logger.error('Could not generate delta because one or more of the following variables were not satisfied:')
