@@ -10,7 +10,7 @@ describe('Test gosec', () => {
   test
     .stdout()
     .command(['convert gosec2hdf', '-i', path.resolve('./test/sample_data/gosec/sample_input_report/Grype_gosec_results.json'), '-o', `${tmpobj.name}/gosectest.json`])
-    .it('hdf-converter output test - gosec', () => {
+    .it('hdf-converter output test', () => {
       const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/gosectest.json`, 'utf8'))
       const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/gosec/gosec-hdf.json'), 'utf8'))
       expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
