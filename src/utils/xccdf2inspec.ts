@@ -1,4 +1,4 @@
-import parser from 'fast-xml-parser'
+import {XMLParser} from 'fast-xml-parser'
 import * as htmlparser from 'htmlparser2'
 import _ from 'lodash'
 import {InSpecControl} from '../types/inspec'
@@ -25,13 +25,13 @@ export const escapeQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/'/g
 export const escapeDoubleQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/"/g, '\\"') // Escape backslashes and double quotes
 export const wrapAndEscapeQuotes = (s: string, lineLength?: number) => escapeDoubleQuotes(wrap(s, lineLength)) // Escape backslashes and quotes, and wrap long lines
 
-export function convertEncodedXmlIntoJson(
-  encodedXml: string,
-): any {
-  return parser.parse(encodedXml, {
+export function convertEncodedXmlIntoJson(encodedXml: string): any {
+  const options = {
     ignoreAttributes: false,
     attributeNamePrefix: '@_',
-  })
+  }
+  const parser = new XMLParser(options)
+  return parser.parse(encodedXml)
 }
 
 export function convertEncodedHTMLIntoJson(encodedHTML?: string): DecodedDescription {
