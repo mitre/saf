@@ -1,12 +1,14 @@
-import {expect, test} from '@oclif/test'
+// This file contains problems (See Issue #978)
+
+import { expect, test } from '@oclif/test'
 import tmp from 'tmp'
 import path from 'path'
 import fs from 'fs'
-import {omitHDFChangingFields} from '../utils'
-import {execSync} from 'child_process'
+import { omitHDFChangingFields } from '../utils'
+import { execSync } from 'child_process'
 
 describe('Test (generic) convert', () => {
-  const tmpobj = tmp.dirSync({unsafeCleanup: true})
+  const tmpobj = tmp.dirSync({ unsafeCleanup: true })
 
   test
     .it('hdf-converter output test (asff)', () => {
