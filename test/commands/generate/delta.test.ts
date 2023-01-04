@@ -82,12 +82,12 @@ describe('The generate delta command', () => {
   //     'rule'])
   //   .it('should throw an exception if not given a proper InSpec Profile JSON file', () => {
   //     console.log(process.exitCode)
-    // console.log(ctx.stdout)
-    // expect(ctx.stdout).to.equal('Invalid InSpec Profile JSON file provided')
-    // expect(() => {
-    //   processXCCDF(fs.readFileSync('./test/sample_data/inspec/json/rhel-7-v3r6-mini-profile.json', 'utf-8'), false, 'group')
-    // }).toThrow('Could not process the XCCDF file, check the input to make sure this is a properly formatted XCCDF file.');
-    // })
+  // console.log(ctx.stdout)
+  // expect(ctx.stdout).to.equal('Invalid InSpec Profile JSON file provided')
+  // expect(() => {
+  //   processXCCDF(fs.readFileSync('./test/sample_data/inspec/json/rhel-7-v3r6-mini-profile.json', 'utf-8'), false, 'group')
+  // }).toThrow('Could not process the XCCDF file, check the input to make sure this is a properly formatted XCCDF file.');
+  // })
 
   // should process delta request with group id type
   // should process delta request with cis id type
