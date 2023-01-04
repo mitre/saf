@@ -1003,7 +1003,7 @@ validate threshold            Validate the compliance and status counts of an HD
 #### Delta
 
 ```
-Update an existing InSpec profile in-place with new XCCDF metadata
+Update an existing InSpec profile with updated XCCDF guidance
 
 USAGE
   $ saf generate delta -J <value> -X <value> -o <value> [-h] [-O <value>] [-r <value>] [-T rule|group|cis|version] [-L info|warn|debug|verbose]
@@ -1011,21 +1011,21 @@ USAGE
 FLAGS
   -h, --help               Show CLI help.
   -J, --inspecJsonFile=<value>  (required) Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command
-  -X, --xccdfXmlFile=<value>    (required) The XCCDF XML file containing the new profile guidance - in the form of .xml file
+  -X, --xccdfXmlFile=<value>    (required) The XCCDF XML file containing the new guidance - in the form of .xml file
   -o, --outputFolder=<value>    (required) The output folder for the updated profile - if not empty it will be overwritten
-  -O, --ovalXmlFile=<value>     The OVAL XML file containing the new profile guidance - in the form of .xml file
+  -O, --ovalXmlFile=<value>     The OVAL XML file containing definitions used in the new guidance - in the form of .xml file
   -T, --idType=<option>         [default: rule] Control ID Types: 
                                 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 
                                 'group' - Group IDs (ex. 'V-XXXXX'), 
                                 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 
                                 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
                                 <options: rule|group|cis|version>
-  -r, --report=<value>          Output markdown report file
+  -r, --report=<value>          Output markdown report file - must have an extension of .md
   -L, --logLevel=<option>       [default: info]
                                 <options: info|warn|debug|verbose>
 
 EXAMPLES
-  $ saf generate delta -J ./the_profile_json_file.json -X ./the_xccdf_profile_guidance_file.xml  -o the_output_directory [-O ./the_oval_profile_guidance_file.xml] [-T group (default rule)] [-r the_update_report_file.md] [-L debug]
+  $ saf generate delta -J ./the_profile_json_file.json -X ./the_xccdf_guidance_file.xml  -o the_output_directory -O ./the_oval_file.xml -T group -r the_update_report_file.md -L debug
 ```
 [top](#generate-data-reports-and-more)
 

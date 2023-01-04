@@ -6,13 +6,13 @@ import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
 
 export default class GenerateDelta extends Command {
-  static description = 'Update an existing InSpec profile in-place with new/updated XCCDF or OVAL metadata'
+  static description = 'Update an existing InSpec profile with updated XCCDF guidance'
 
   static flags = {
     help: Flags.help({char: 'h'}),
     inspecJsonFile: Flags.string({char: 'J', required: true, description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command'}),
-    xccdfXmlFile: Flags.string({char: 'X', required: true, description: 'The XCCDF XML file containing the new profile guidance - in the form of .xml file'}),
-    ovalXmlFile: Flags.string({char: 'O', required: false, description: 'The OVAL XML file containing definitions used in the new profile guidance - in the form of .xml file'}),
+    xccdfXmlFile: Flags.string({char: 'X', required: true, description: 'The XCCDF XML file containing the new guidance - in the form of .xml file'}),
+    ovalXmlFile: Flags.string({char: 'O', required: false, description: 'The OVAL XML file containing definitions used in the new guidance - in the form of .xml file'}),
     output: Flags.string({char: 'o', required: true, description: 'The output folder for the updated profile - if it is not empty, it will be overwritten'}),
     report: Flags.string({char: 'r', required: false, description: 'Output markdown report file - must have an extension of .md'}),
     idType: Flags.string({
@@ -26,7 +26,7 @@ export default class GenerateDelta extends Command {
   }
 
   static examples = [
-    'saf generate delta -J ./the_profile_json_file.json -X ./the_xccdf_profile_guidance_file.xml  -o the_output_directory -O ./the_oval_profile_guidance_file.xml -T group -r the_update_report_file.md -L debug',
+    'saf generate delta -J ./the_profile_json_file.json -X ./the_xccdf_guidance_file.xml  -o the_output_directory -O ./the_oval_file.xml -T group -r the_update_report_file.md -L debug',
   ]
 
   async run() { // skipcq: JS-0044
@@ -53,15 +53,14 @@ export default class GenerateDelta extends Command {
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {
-        logger.error(`Invalid InSpec Profile JSON file: ${flags.inspecJsonFile}. Check the --help command for expected input file.`)
-        throw new Error('Invalid InSpec Profile JSON file provided')
+        throw new Error(`${error.code}: No entity found for: ${flags.inspecJsonFile}. Run the --help command to more information on expected input files.`)
       } else {
         logger.error(`Unable to process Input execution/profile JSON ${flags.inspecJsonFile} because: ${error}`)
         throw error
       }
     }
 
-    // Process the XCCDF XML file containing the new/updated profile guidance failures
+    // Process the XCCDF XML file containing the new/updated profile guidance
     try {
       if (fs.lstatSync(flags.xccdfXmlFile).isFile()) {
         const xccdfXmlFile = flags.xccdfXmlFile
@@ -80,15 +79,14 @@ export default class GenerateDelta extends Command {
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {
-        logger.error(`Invalid XCCDF file: ${flags.xccdfXmlFile}. Check the --help command for expected input file.`)
-        throw new Error('Invalid XCCDF XML file containing the new/updated profile guidance provided')
+        throw new Error(`${error.code}: No entity found for: ${flags.xccdfXmlFile}. Run the --help command to more information on expected input files.`)
       } else {
         logger.error(`Unable to process the XCCDF XML file ${flags.xccdfXmlFile} because: ${error}`)
         throw error
       }
     }
 
-    // Process the OVAL XML file containing the new/updated profile guidance failures
+    // Process the OVAL XML file
     try {
       if (flags.ovalXmlFile) {
         if (fs.lstatSync(flags.ovalXmlFile).isFile()) {
@@ -104,8 +102,6 @@ export default class GenerateDelta extends Command {
             logger.error(`Unable to load ${ovalXmlFile} as OVAL`)
             process.exit(1)
           }
-
-          logger.debug(`Loaded ${ovalXmlFile} as OVAL`)
         } else {
           logger.error(`An OVAL flag option was detected, but no file was provided, received: ${flags.ovalXmlFile}`)
           process.exit(1)
@@ -113,8 +109,7 @@ export default class GenerateDelta extends Command {
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {
-        logger.error(`Invalid OVAL file: ${flags.ovalXmlFile}. Check the --help command for expected input file.`)
-        throw new Error('Invalid OVAL XML file containing the new/updated profile guidance provided')
+        throw new Error(`${error.code}: No entity found for: ${flags.ovalXmlFile}. Run the --help command to more information on expected input files.`)
       } else {
         logger.error(`Unable to process the OVAL XML file ${flags.ovalXmlFile} because: ${error}`)
         throw error
@@ -124,11 +119,15 @@ export default class GenerateDelta extends Command {
     // Process the output folder for the updated profile
     try {
       if (fs.lstatSync(flags.output).isDirectory()) {
+        console.log(`PATH BASENAME: ${path.basename(flags.output)}`)
         if (path.basename(flags.output) === 'controls') {
+          console.log(`In control case: ${path.basename(flags.output)}`)
           logger.debug(`Deleting existing profile folder ${flags.output}`)
           fse.emptyDirSync(flags.output)
+          console.log(`PATH DIR NAME: ${path.dirname(flags.output)}`)
           outputProfileFolderPath = path.dirname(flags.output)
         } else {
+          // outputProfileFolderPath = flags.output
           const controlDir = path.join(flags.output, 'controls')
           try {
             // eslint-disable-next-line max-depth
@@ -180,40 +179,36 @@ export default class GenerateDelta extends Command {
 
     // If all variables have been satisfied, we can generate the delta
     if (existingProfile && updatedXCCDF) {
-      // Find the difference between existingProfile and updatedXCCDF
       let updatedResult: UpdatedProfileReturn
       logger.debug(`Processing XCCDF Benchmark file: ${flags.input} using ${flags.idType} id.`)
       const idTypes = ['rule', 'group', 'cis', 'version']
       if (idTypes.includes(flags.idType)) {
         updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, flags.idType as 'cis' | 'version' | 'rule' | 'group', logger, ovalDefinitions)
       } else {
-        logger.error(`Invalid ID Type: ${flags.idType}. Check the --help command for the available ID Type options.`)
-        throw new Error('No ID type specified')
+        throw new Error(`Invalid ID Type: ${flags.idType}. Check the --help command for the available ID Type options.`)
       }
 
-      logger.debug('Received updated profile from inspec-objects')
+      logger.debug('Computed the delta between the existing profile and updated benchmark.')
+
       updatedResult.profile.controls.forEach(control => {
-        // Write the new control to the controls folder
-        logger.debug(`Writing updated control ${control.id} to profile`)
-        fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby()) // Ensure we always have a newline at EOF
+        logger.debug(`Writing updated control ${control.id}.`)
+        fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby())
       })
 
       logger.info(`Writing delta file for ${existingProfile.title}`)
-      // Write the delta to a file
       fs.writeFileSync(path.join(outputProfileFolderPath, 'delta.json'), JSON.stringify(updatedResult.diff, null, 2))
+
       if (flags.report) {
         logger.debug('Writing report markdown file')
         fs.writeFileSync(path.join(markDownFile), updatedResult.markdown)
       }
     } else {
-      logger.error('Could not generate delta because one or more of the following variables were not satisfied:')
-
       if (!existingProfile) {
-        logger.error('existingProfile')
+        logger.error('Could not generate delta because the existingProfile variable was not satisfied.')
       }
 
       if (!updatedXCCDF) {
-        logger.error('updatedXCCDF')
+        logger.error('Could not generate delta because the updatedXCCDF variable was not satisfied.')
       }
     }
   }
