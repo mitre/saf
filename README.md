@@ -48,6 +48,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [CKL to POA&amp;M](#ckl-to-poam)
       * [DBProtect to HDF](#dbprotect-to-hdf)
       * [Fortify to HDF](#fortify-to-hdf)
+      * [GoSec to HDF](#gosec-to-hdf)
       * [Ion Channel 2 HDF](#ion-channel-2-hdf)
       * [JFrog Xray to HDF](#jfrog-xray-to-hdf)
       * [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
@@ -551,6 +552,23 @@ convert fortify2hdf           Translate a Fortify results FVDL file into a Heimd
 
   EXAMPLES
     $ saf convert fortify2hdf -i audit.fvdl -o output-hdf-name.json
+```
+
+[top](#convert-other-formats-to-hdf)
+#### GoSec to HDF
+```
+convert gosec2hdf             Translate a GoSec (Golang Security Checker) results file
+                              into a Heimdall Data Format JSON file
+  USAGE
+    $ saf convert gosec2hdf -i <gosec-json> -o <hdf-scan-results-json> [-h]
+
+  FLAGS
+    -h, --help            Show CLI help.
+    -i, --input=<value>   (required) Input GoSec Results JSON File
+    -o, --output=<value>  (required) Output HDF JSON File
+
+  EXAMPLES
+    $ saf convert gosec2hdf -i gosec_results.json -o output-hdf-name.json
 ```
 
 [top](#convert-other-formats-to-hdf)
