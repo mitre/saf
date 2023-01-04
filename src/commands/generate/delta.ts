@@ -12,8 +12,8 @@ export default class GenerateDelta extends Command {
     help: Flags.help({char: 'h'}),
     inspecJsonFile: Flags.string({char: 'J', required: true, description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command'}),
     xccdfXmlFile: Flags.string({char: 'X', required: true, description: 'The XCCDF XML file containing the new profile guidance - in the form of .xml file'}),
-    ovalXmlFile: Flags.string({char: 'O', required: false, description: 'The OVAL XML file containing the new profile guidance - in the form of .xml file'}),
-    output: Flags.string({char: 'o', required: true, description: 'The output folder for the updated profile - if not empty it will be overwritten'}),
+    ovalXmlFile: Flags.string({char: 'O', required: false, description: 'The OVAL XML file containing definitions used in the new profile guidance - in the form of .xml file'}),
+    output: Flags.string({char: 'o', required: true, description: 'The output folder for the updated profile - if it is not empty, it will be overwritten'}),
     report: Flags.string({char: 'r', required: false, description: 'Output markdown report file - must have an extension of .md'}),
     idType: Flags.string({
       char: 'T',
@@ -26,7 +26,7 @@ export default class GenerateDelta extends Command {
   }
 
   static examples = [
-    'saf generate delta -J ./the_profile_json_file.json -X ./the_xccdf_profile_guidance_file.xml  -o the_output_directory [-O ./the_oval_profile_guidance_file.xml] [-T group (default rule)] [-r the_update_report_file.md] [-L debug]',
+    'saf generate delta -J ./the_profile_json_file.json -X ./the_xccdf_profile_guidance_file.xml  -o the_output_directory -O ./the_oval_profile_guidance_file.xml -T group -r the_update_report_file.md -L debug',
   ]
 
   async run() { // skipcq: JS-0044
@@ -47,24 +47,16 @@ export default class GenerateDelta extends Command {
     try {
       if (fs.lstatSync(flags.inspecJsonFile).isFile()) {
         const inspecJsonFile = flags.inspecJsonFile
-        try {
-          // This should fail if we aren't passed an execution/profile JSON
-          logger.debug(`Loading ${inspecJsonFile} as Profile JSON/Execution JSON`)
-          existingProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
-          logger.debug(`Loaded ${inspecJsonFile} as Profile JSON/Execution JSON`)
-        } catch (error) {
-          logger.error(`Could not process ${inspecJsonFile} as an InsPec Profile JSON because:`)
-          logger.error(error)
-          throw error
-        }
+        logger.debug(`Loading ${inspecJsonFile} as Profile JSON/Execution JSON`)
+        existingProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
+        logger.debug(`Loaded ${inspecJsonFile} as Profile JSON/Execution JSON`)
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {
         logger.error(`Invalid InSpec Profile JSON file: ${flags.inspecJsonFile}. Check the --help command for expected input file.`)
-        throw new Error('Invalid InsPec Profile JSON file provided')
+        throw new Error('Invalid InSpec Profile JSON file provided')
       } else {
-        logger.error(`Unable to process Input execution/profile JSON ${flags.inspecJsonFile} because:`)
-        logger.error(error)
+        logger.error(`Unable to process Input execution/profile JSON ${flags.inspecJsonFile} because: ${error}`)
         throw error
       }
     }
@@ -73,33 +65,25 @@ export default class GenerateDelta extends Command {
     try {
       if (fs.lstatSync(flags.xccdfXmlFile).isFile()) {
         const xccdfXmlFile = flags.xccdfXmlFile
-        try {
-          // Check if we have an XCCDF XML file
-          const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8')
-          const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase()
-          if (inputFirstLine.includes('xccdf')) {
-            logger.debug(`Loading ${xccdfXmlFile} as XCCDF`)
-            updatedXCCDF = inputFile
-            logger.debug(`Loaded ${xccdfXmlFile} as XCCDF`)
-          } else {
-            logger.error(`Unable to load ${xccdfXmlFile} as XCCDF`)
-            process.exit(1)
-          }
-
+        const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8')
+        const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase()
+        if (inputFirstLine.includes('xccdf')) {
+          logger.debug(`Loading ${xccdfXmlFile} as XCCDF`)
+          updatedXCCDF = inputFile
           logger.debug(`Loaded ${xccdfXmlFile} as XCCDF`)
-        } catch (error) {
-          logger.error(`Could not load ${xccdfXmlFile} as an XCCDF XML file because:`)
-          logger.error(error)
-          throw error
+        } else {
+          logger.error(`Unable to load ${xccdfXmlFile} as XCCDF`)
+          process.exit(1)
         }
+
+        logger.debug(`Loaded ${xccdfXmlFile} as XCCDF`)
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {
         logger.error(`Invalid XCCDF file: ${flags.xccdfXmlFile}. Check the --help command for expected input file.`)
         throw new Error('Invalid XCCDF XML file containing the new/updated profile guidance provided')
       } else {
-        logger.error(`Unable to process the XCCDF XML file ${flags.xccdfXmlFile} because:`)
-        logger.error(error)
+        logger.error(`Unable to process the XCCDF XML file ${flags.xccdfXmlFile} because: ${error}`)
         throw error
       }
     }
@@ -109,26 +93,19 @@ export default class GenerateDelta extends Command {
       if (flags.ovalXmlFile) {
         if (fs.lstatSync(flags.ovalXmlFile).isFile()) {
           const ovalXmlFile = flags.ovalXmlFile
-          try {
-            // Read the OVAL XML file
-            const inputFile = fs.readFileSync(ovalXmlFile, 'utf8')
-            const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase()
-            // eslint-disable-next-line max-depth
-            if (inputFirstLine.includes('oval_definitions')) {
-              logger.debug(`Loading ${ovalXmlFile} as OVAL`)
-              ovalDefinitions = processOVAL(inputFile)
-              logger.debug(`Loaded ${ovalXmlFile} as OVAL`)
-            } else {
-              logger.error(`Unable to load ${ovalXmlFile} as OVAL`)
-              process.exit(1)
-            }
+          const inputFile = fs.readFileSync(ovalXmlFile, 'utf8')
+          const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase()
 
+          if (inputFirstLine.includes('oval_definitions')) {
+            logger.debug(`Loading ${ovalXmlFile} as OVAL`)
+            ovalDefinitions = processOVAL(inputFile)
             logger.debug(`Loaded ${ovalXmlFile} as OVAL`)
-          } catch (error) {
-            logger.error(`Could not load ${ovalXmlFile} as an OVAL XML file because:`)
-            logger.error(error)
-            throw error
+          } else {
+            logger.error(`Unable to load ${ovalXmlFile} as OVAL`)
+            process.exit(1)
           }
+
+          logger.debug(`Loaded ${ovalXmlFile} as OVAL`)
         } else {
           logger.error(`An OVAL flag option was detected, but no file was provided, received: ${flags.ovalXmlFile}`)
           process.exit(1)
@@ -139,8 +116,7 @@ export default class GenerateDelta extends Command {
         logger.error(`Invalid OVAL file: ${flags.ovalXmlFile}. Check the --help command for expected input file.`)
         throw new Error('Invalid OVAL XML file containing the new/updated profile guidance provided')
       } else {
-        logger.error(`Unable to process the OVAL XML file ${flags.ovalXmlFile} because:`)
-        logger.error(error)
+        logger.error(`Unable to process the OVAL XML file ${flags.ovalXmlFile} because: ${error}`)
         throw error
       }
     }
@@ -182,8 +158,7 @@ export default class GenerateDelta extends Command {
           throw error_
         }
       } else {
-        logger.error(`Unable to create the output directory ${flags.output} because:`)
-        logger.error(error)
+        logger.error(`Unable to create the output directory ${flags.output} because: ${error}`)
         throw error
       }
     }
