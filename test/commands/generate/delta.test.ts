@@ -1,5 +1,4 @@
 import {expect, test} from '@oclif/test'
-// import assert from 'assert'
 import tmp from 'tmp'
 import path from 'path'
 import fs from 'fs'
@@ -69,35 +68,62 @@ describe('The generate delta command', () => {
       expect(fs.lstatSync((`${tmpobj.name}/delta.md`)).isFile()).to.be.true // skipcq: JS-0354
     })
 
-  // test
-  //   .stdout()
-  //   .command(['generate delta',
-  //     '-J',
-  //     path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
-  //     '-X',
-  //     path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
-  //     '-o',
-  //     `${tmpobj.name}`,
-  //     '-T',
-  //     'rule'])
-  //   .it('should throw an exception if not given a proper InSpec Profile JSON file', () => {
-  //     console.log(process.exitCode)
-  // console.log(ctx.stdout)
-  // expect(ctx.stdout).to.equal('Invalid InSpec Profile JSON file provided')
-  // expect(() => {
-  //   processXCCDF(fs.readFileSync('./test/sample_data/inspec/json/rhel-7-v3r6-mini-profile.json', 'utf-8'), false, 'group')
-  // }).toThrow('Could not process the XCCDF file, check the input to make sure this is a properly formatted XCCDF file.');
-  // })
-
   // should process delta request with group id type
+  // should process delta with output folder that contains controls information
+  test
+    .stdout()
+    .command(['generate delta',
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
+      '-o',
+      `${tmpobj.name}`,
+      '-T',
+      'group'])
+    .it('should generate the controls for delta request with "group" id type', () => {
+      const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length
+      expect(fileCount).to.eql(4)
+    })
+
   // should process delta request with cis id type
+  test
+    .stdout()
+    .command(['generate delta',
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
+      '-o',
+      `${tmpobj.name}`,
+      '-T',
+      'cis'])
+    .it('should generate the controls for delta request with "cis" id type', () => {
+      const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length
+      expect(fileCount).to.eql(4)
+    })
+
   // should process delta request with version id type
-  // should provide proper error message if provided an incorrect id type option (oclif should take care of this test case)
+  // should process delta request if given the "controls" folder
+  test
+    .stdout()
+    .command(['generate delta',
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
+      '-o',
+      `${tmpobj.name}/controls`,
+      '-T',
+      'version'])
+    .it('should generate the controls for delta request with "version" id type', () => {
+      const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length
+      expect(fileCount).to.eql(4)
+    })
 
   // should provide error if not given a proper InSpec Profile JSON file
   // should provide error if not given a proper XCCDF file
 
   // should process delta request with oval definitions file specified
   // should provide error if oval definitions flag is specified with incorrect file format
-  // should process delta with output folder that contains controls information
 })

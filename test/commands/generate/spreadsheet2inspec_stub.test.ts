@@ -13,12 +13,4 @@ describe('Test spreadsheet2inspec_stub', () => {
       const fileCount = fs.readdirSync(`${tmpobj.name}/Ubuntu/controls/`).length
       expect(fileCount).to.eql(194)
     })
-
-  // test
-  //   .stdout()
-  //   .command(['generate spreadsheet2inspec_stub', '-i', path.resolve('./test/sample_data/csv/input/Ubuntu.csv'), '-o', `./test/sample_data/ac-test/Ubuntu`, '--format', 'disa'])
-  //   .it('Has the same number of controls in the CSV as generated - Ubuntu', () => {
-  //     const fileCount = fs.readdirSync('./test/sample_data/ac-test/Ubuntu/controls/').length
-  //     expect(fileCount).to.eql(194)
-  //   })
 })

@@ -53,9 +53,10 @@ export default class GenerateDelta extends Command {
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {
-        throw new Error(`${error.code}: No entity found for: ${flags.inspecJsonFile}. Run the --help command to more information on expected input files.`)
+        logger.error(`ERROR: No entity found for: ${flags.inspecJsonFile}. Run the --help command to more information on expected input files.`)
+        throw error
       } else {
-        logger.error(`Unable to process Input execution/profile JSON ${flags.inspecJsonFile} because: ${error}`)
+        logger.error(`ERROR: Unable to process Input execution/profile JSON ${flags.inspecJsonFile} because: ${error}`)
         throw error
       }
     }
@@ -71,17 +72,18 @@ export default class GenerateDelta extends Command {
           updatedXCCDF = inputFile
           logger.debug(`Loaded ${xccdfXmlFile} as XCCDF`)
         } else {
-          logger.error(`Unable to load ${xccdfXmlFile} as XCCDF`)
-          process.exit(1)
+          logger.error(`ERROR: Unable to load ${xccdfXmlFile} as XCCDF`)
+          throw new Error('Cannot load XCCDF file')
         }
 
         logger.debug(`Loaded ${xccdfXmlFile} as XCCDF`)
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {
-        throw new Error(`${error.code}: No entity found for: ${flags.xccdfXmlFile}. Run the --help command to more information on expected input files.`)
+        logger.error(`ERROR: No entity found for: ${flags.xccdfXmlFile}. Run the --help command to more information on expected input files.`)
+        throw error
       } else {
-        logger.error(`Unable to process the XCCDF XML file ${flags.xccdfXmlFile} because: ${error}`)
+        logger.error(`ERROR: Unable to process the XCCDF XML file ${flags.xccdfXmlFile} because: ${error}`)
         throw error
       }
     }
@@ -99,67 +101,49 @@ export default class GenerateDelta extends Command {
             ovalDefinitions = processOVAL(inputFile)
             logger.debug(`Loaded ${ovalXmlFile} as OVAL`)
           } else {
-            logger.error(`Unable to load ${ovalXmlFile} as OVAL`)
-            process.exit(1)
+            logger.error(`ERROR: Unable to load ${ovalXmlFile} as OVAL`)
+            throw new Error('Cannot load OVAL file')
           }
         } else {
-          logger.error(`An OVAL flag option was detected, but no file was provided, received: ${flags.ovalXmlFile}`)
-          process.exit(1)
+          logger.error(`ERROR: An OVAL flag option was detected, but no file was provided, received: ${flags.ovalXmlFile}`)
+          throw new Error('No OVAL file detected')
         }
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {
-        throw new Error(`${error.code}: No entity found for: ${flags.ovalXmlFile}. Run the --help command to more information on expected input files.`)
+        logger.error(`ERROR: No entity found for: ${flags.ovalXmlFile}. Run the --help command to more information on expected input files.`)
+        throw error
       } else {
         logger.error(`Unable to process the OVAL XML file ${flags.ovalXmlFile} because: ${error}`)
         throw error
       }
     }
 
-    // Process the output folder for the updated profile
+    // Process the output folder
     try {
-      if (fs.lstatSync(flags.output).isDirectory()) {
-        console.log(`PATH BASENAME: ${path.basename(flags.output)}`)
-        if (path.basename(flags.output) === 'controls') {
-          console.log(`In control case: ${path.basename(flags.output)}`)
-          logger.debug(`Deleting existing profile folder ${flags.output}`)
-          fse.emptyDirSync(flags.output)
-          console.log(`PATH DIR NAME: ${path.dirname(flags.output)}`)
-          outputProfileFolderPath = path.dirname(flags.output)
+      // Create the folder if it doesn't exist
+      if (!fs.existsSync(flags.output)) {
+        fs.mkdirSync(path.join(flags.output), {recursive: true})
+      }
+
+      if (path.basename(flags.output) === 'controls') {
+        logger.debug(`Deleting existing profile folder ${flags.output}`)
+        fse.emptyDirSync(flags.output)
+        outputProfileFolderPath = path.dirname(flags.output)
+      } else {
+        const controlDir = path.join(flags.output, 'controls')
+        if (fs.existsSync(controlDir)) {
+          logger.debug(`Deleting content within existing controls folder within the profile folder ${flags.output}`)
+          fse.emptyDirSync(controlDir)
         } else {
-          // outputProfileFolderPath = flags.output
-          const controlDir = path.join(flags.output, 'controls')
-          try {
-            // eslint-disable-next-line max-depth
-            if (fs.lstatSync(controlDir).isDirectory()) {
-              outputProfileFolderPath = flags.output
-            }
-          } catch (error: any) {
-            // eslint-disable-next-line max-depth
-            if (error.code === 'ENOENT') {
-              fse.mkdirSync(controlDir)
-              outputProfileFolderPath = flags.output
-            } else {
-              throw error
-            }
-          }
+          fse.mkdirSync(controlDir)
         }
 
-        logger.debug(`Output folder for the updated profile is: ${outputProfileFolderPath}`)
+        outputProfileFolderPath = flags.output
       }
     } catch (error: any) {
-      if (error.code === 'ENOENT') {
-        try {
-          fs.mkdirSync(path.join(flags.output, 'controls'), {recursive: true})
-          outputProfileFolderPath = flags.output
-        } catch (error_: any) {
-          logger.error(`Failed to create output directory ${flags.output}`)
-          throw error_
-        }
-      } else {
-        logger.error(`Unable to create the output directory ${flags.output} because: ${error}`)
-        throw error
-      }
+      logger.error(`ERROR: Could not process output ${flags.output}. Check the --help command for more information on the -o flag.`)
+      throw error
     }
 
     // Set the report markdown file location
@@ -185,7 +169,8 @@ export default class GenerateDelta extends Command {
       if (idTypes.includes(flags.idType)) {
         updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, flags.idType as 'cis' | 'version' | 'rule' | 'group', logger, ovalDefinitions)
       } else {
-        throw new Error(`Invalid ID Type: ${flags.idType}. Check the --help command for the available ID Type options.`)
+        logger.error(`ERROR: Invalid ID Type: ${flags.idType}. Check the --help command for the available ID Type options.`)
+        throw new Error('Invalid ID Type')
       }
 
       logger.debug('Computed the delta between the existing profile and updated benchmark.')
@@ -204,11 +189,11 @@ export default class GenerateDelta extends Command {
       }
     } else {
       if (!existingProfile) {
-        logger.error('Could not generate delta because the existingProfile variable was not satisfied.')
+        logger.error('ERROR: Could not generate delta because the existingProfile variable was not satisfied.')
       }
 
       if (!updatedXCCDF) {
-        logger.error('Could not generate delta because the updatedXCCDF variable was not satisfied.')
+        logger.error('ERROR: Could not generate delta because the updatedXCCDF variable was not satisfied.')
       }
     }
   }
