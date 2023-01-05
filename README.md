@@ -1003,23 +1003,29 @@ validate threshold            Validate the compliance and status counts of an HD
 #### Delta
 
 ```
-Update an existing InSpec profile in-place with new XCCDF metadata
+Update an existing InSpec profile with updated XCCDF guidance
+
+USAGE
+  $ saf generate delta -J <value> -X <value> -o <value> [-h] [-O <value>] [-r <value>] [-T rule|group|cis|version] [-L info|warn|debug|verbose]
 
 FLAGS
-  -C, --useCISId            Use CIS Rule IDs for control IDs (ex. C-1.1.1.1)
-  -L, --logLevel=<option>   [default: info]
-                            <options: info|warn|debug|verbose>
-  -S, --useStigID           Use STIG IDs for control IDs (ex. RHEL-07-010020, also known as Version)
-  -g, --useGroupID          Use Group ID for control IDs (ex. 'V-XXXXX')
-  -h, --help                Show CLI help.
-  -i, --input=<value>...    (required) Input execution/profile JSON file(s) OR InSpec Profile Folder, and the updated XCCDF XML files
-  -r, --report=<value>      Output markdown report file
-  -r, --useVulnerabilityId  Use Vulnerability IDs for control IDs (ex. 'SV-XXXXX')
+  -h, --help               Show CLI help.
+  -J, --inspecJsonFile=<value>  (required) Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command
+  -X, --xccdfXmlFile=<value>    (required) The XCCDF XML file containing the new guidance - in the form of .xml file
+  -o, --outputFolder=<value>    (required) The output folder for the updated profile - if not empty it will be overwritten
+  -O, --ovalXmlFile=<value>     The OVAL XML file containing definitions used in the new guidance - in the form of .xml file
+  -T, --idType=<option>         [default: rule] Control ID Types: 
+                                'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 
+                                'group' - Group IDs (ex. 'V-XXXXX'), 
+                                'cis' - CIS Rule IDs (ex. C-1.1.1.1), 
+                                'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
+                                <options: rule|group|cis|version>
+  -r, --report=<value>          Output markdown report file - must have an extension of .md
+  -L, --logLevel=<option>       [default: info]
+                                <options: info|warn|debug|verbose>
 
 EXAMPLES
-  $ saf generate delta -i ./redhat-enterprise-linux-6-stig-baseline/ ./redhat-enterprise-linux-6-stig-baseline/profile.json ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml --logLevel debug -r rhel-6-update-report.md
-
-  $ saf generate delta -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml ./canonical-ubuntu-18.04-lts-server-cis-baseline ./canonical-ubuntu-18.04-lts-server-cis-baseline/profile.json --logLevel debug
+  $ saf generate delta -J ./the_profile_json_file.json -X ./the_xccdf_guidance_file.xml  -o the_output_directory -O ./the_oval_file.xml -T group -r the_update_report_file.md -L debug
 ```
 [top](#generate-data-reports-and-more)
 
@@ -1120,19 +1126,27 @@ EXAMPLES
 ```
 generate xccdf_benchmark2inspec_stub              Translate a DISA STIG XCCDF Benchmark XML file into a skeleton for an InSpec profile
 
-  USAGE
-    $ saf generate xccdf_benchmark2inspec_stub -i <stig-xccdf-xml> -o <output-folder> [-h] [-m <metadata-json>] [-s] [-r | -S] [-l <line-length>] [-e]
+USAGE
+  $ saf generate xccdf_benchmark2inspec_stub -i <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] [-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]
 
-  FLAGS
-    -S, --useStigID                 Use STIG IDs (<Group/Rule/Version>) instead of Group IDs (ex. 'V-XXXXX') for InSpec Control IDs
-    -e, --encodingHeader            Add the "# encoding: UTF-8" comment at the top of each control
-    -h, --help                      Show CLI help.
-    -i, --input=<stig-xccdf-xml>    (required) Path to the DISA STIG XCCDF Benchmark file
-    -l, --lineLength=<line-length>  [default: 80] Characters between lines within InSpec controls
-    -m, --metadata=<metadata-json>  Path to a JSON file with additional metadata for the inspec.yml file
-    -o, --output=<output-folder>    (required) [default: profile]
-    -r, --useVulnerabilityId        Use Vulnerability IDs (ex. 'SV-XXXXX') instead of Group IDs (ex. 'V-XXXXX')
-    -s, --singleFile                Output the resulting controls as a single file
+FLAGS
+  -h, --help                     Show CLI help.
+  -i, --input=<value>            (required) Path to the XCCDF benchmark file
+  -o, --output=<value>           [default: profile] The output folder to write the generated InSpec content
+  -T, --idType=<option>          [default: rule] Control ID Types: 
+                                 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 
+                                 'group' - Group IDs (ex. 'V-XXXXX'), 
+                                 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 
+                                 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
+                                 <options: rule|group|cis|version>
+  -O, --ovalDefinitions=<value>  Path to an OVAL definitions file to populate profile elements that reference OVAL defintions
+  -m, --metadata=<value>         Path to a JSON file with additional metadata for the inspec.yml file
+  -s, --singleFile               Output the resulting controls as a single file
+  -L, --logLevel=<option>        [default: info] <options: info|warn|debug|verbose>
+
+EXAMPLES
+  $ saf generate xccdf_benchmark2inspec_stub -i ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md
+  $ saf generate xccdf_benchmark2inspec_stub -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml -O ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml --logLevel debug
 ```
 [top](#generate-data-reports-and-more)
 
