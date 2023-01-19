@@ -1,5 +1,5 @@
 import {Configuration} from '@mitre/emass_client/dist/configuration'
-import {AxiosInstance} from 'axios'
+import {AxiosInstance} from '@mitre/emass_client/node_modules/axios'
 import {ApiConfig} from './apiConfig'
 import {InitConnections} from './initConnection'
 
