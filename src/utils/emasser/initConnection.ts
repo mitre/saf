@@ -1,9 +1,9 @@
 import fs from 'fs'
 import https from 'https'
-import {Configuration} from '@mitre/emass_client/dist/configuration'
-import globalAxios, {AxiosInstance, AxiosRequestConfig} from 'axios'
 import FormData from 'form-data'
 import {ApiConfig} from './apiConfig'
+import {Configuration} from '@mitre/emass_client/dist/configuration'
+import globalAxios, {AxiosInstance, AxiosRequestConfig} from '@mitre/emass_client/node_modules/axios'
 
 export class InitConnections {
   private axiosRequestConfig: AxiosRequestConfig;
@@ -23,9 +23,7 @@ export class InitConnections {
     //   The Connection: keep-alive header is always sent when using an agent except when the Connection header
     //   is explicitly specified or when the keepAlive and maxSockets options are respectively set to false
     //   and Infinity, in which case Connection: close will be used. Default: false.
-
     // requestCert <boolean> true to specify whether a server should request a certificate from a connecting client. Only applies when isServer is true.
-
     // rejectUnauthorized <boolean> If not false a server automatically reject clients with invalid certificates. Only applies when isServer is true.
     this.axiosRequestConfig = {
       httpsAgent: new https.Agent({
