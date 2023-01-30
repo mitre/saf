@@ -21,27 +21,37 @@ export function extractSTIGUrl(findingDetails: string): string {
 
 export function cklSeverityToPOAMSeverity(severity: string): string {
   switch (severity) {
-    case 'none':
+    case 'none': {
       return ''
-    case 'low':
+    }
+
+    case 'low': {
       return 'Low'
-    case 'medium':
+    }
+
+    case 'medium': {
       return 'Moderate'
+    }
+
     case 'high':
-    case 'critical':
+    case 'critical': {
       return 'High'
-    default:
+    }
+
+    default: {
       throw new Error(`Invalid severity passed: ${severity}`)
+    }
   }
 }
 
 export function cklSeverityToRelevanceOfThreat(severity: string) {
   let severityAsThreat = ''
   switch (severity) {
-    default:
+    default: {
       severityAsThreat = 'Moderate'
 
       break
+    }
   }
 
   return severityAsThreat
@@ -49,43 +59,64 @@ export function cklSeverityToRelevanceOfThreat(severity: string) {
 
 export function cklSeverityToLikelihood(severity: string) { // skipcq: JS-0045
   switch (severity) { // skipcq: JS-0045, JS-0047
-    case 'none':
+    case 'none': {
       return ''
-    case 'low':
+    }
+
+    case 'low': {
       return 'Low'
-    case 'medium':
+    }
+
+    case 'medium': {
       return 'Moderate'
+    }
+
     case 'high':
-    case 'critical':
+    case 'critical': {
       return 'Moderate'
+    }
   }
 }
 
 export function cklSeverityToImpact(severity: string) { // skipcq: JS-0045
   switch (severity) { // skipcq: JS-0045, JS-0047
-    case 'none':
+    case 'none': {
       return ''
-    case 'low':
+    }
+
+    case 'low': {
       return 'Low'
-    case 'medium':
+    }
+
+    case 'medium': {
       return 'Moderate'
+    }
+
     case 'high':
-    case 'critical':
+    case 'critical': {
       return 'High'
+    }
   }
 }
 
 export function cklSeverityToResidualRiskLevel(severity: string) { // skipcq: JS-0045
   switch (severity) { // skipcq: JS-0045, JS-0047
-    case 'none':
+    case 'none': {
       return ''
-    case 'low':
+    }
+
+    case 'low': {
       return 'Low'
-    case 'medium':
+    }
+
+    case 'medium': {
       return 'Moderate'
+    }
+
     case 'high':
-    case 'critical':
+    case 'critical': {
       return 'Moderate'
+    }
   }
 }
 
@@ -99,26 +130,38 @@ export function createCVD(vulnerability: Vulnerability): string {
 
 export function convertToRawSeverity(severity: string) { // skipcq: JS-0045
   switch (severity) { // skipcq: JS-0047
-    case 'none':
+    case 'none': {
       return 'Unknown'
-    case 'low':
+    }
+
+    case 'low': {
       return 'III'
-    case 'medium':
+    }
+
+    case 'medium': {
       return 'II'
+    }
+
     case 'high':
-    case 'critical':
+    case 'critical': {
       return 'I'
+    }
   }
 }
 
 export function cleanStatus(status: string) {
   switch (status) {
-    case 'Not_Applicable':
+    case 'Not_Applicable': {
       return 'Not Applicable'
-    case 'Open':
+    }
+
+    case 'Open': {
       return 'Ongoing'
-    default:
+    }
+
+    default: {
       return status
+    }
   }
 }
 

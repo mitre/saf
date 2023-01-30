@@ -32,11 +32,7 @@ function convertEpochToDateTime(dataObject: object): object {
     } else if (dataObject[key] !== null) {
       const value: string = key
       const epochDate: number = Number.parseInt(dataObject[key], 10)
-      if (value.search('date') > 0 || value.search('Date') > 0) {
-        jsonData[key] = new Date(epochDate * 1000)
-      } else {
-        jsonData[key] = dataObject[key]
-      }
+      jsonData[key] = value.search('date') > 0 || value.search('Date') > 0 ? new Date(epochDate * 1000) : dataObject[key]
     } else if (dataObject[key] === null) {
       jsonData[key] = dataObject[key]
     }
@@ -158,11 +154,7 @@ export function outputFormat(data: object, doConversion = true): string {
                   jsonData[key2] = hash_array
                 } else if (obj[key2] !== null) {
                   const value: string = key2
-                  if (value.search('date') > 0 || value.search('Date') > 0) {
-                    jsonData[key2] = new Date(obj[key2] * 1000)
-                  } else {
-                    jsonData[key2] = obj[key2]
-                  }
+                  jsonData[key2] = value.search('date') > 0 || value.search('Date') > 0 ? new Date(obj[key2] * 1000) : obj[key2]
                 } else if (obj[key2] === null) {
                   jsonData[key2] = obj[key2]
                 }

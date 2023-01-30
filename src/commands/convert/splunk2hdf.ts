@@ -28,7 +28,7 @@ export default class Splunk2HDF extends Command {
   static examples = ['saf convert splunk2hdf -H 127.0.0.1 -u admin -p Valid_password! -I hdf -i some-file-in-your-splunk-instance.json -i yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder']
 
   async searchExecutions(mapper: SplunkMapper, filename: string, index?: string) {
-    return mapper.queryData(`search index="${index ? index : '*'}" meta.filename="${filename ? filename : '*'}" meta.subtype="header" | head 100`)
+    return mapper.queryData(`search index="${index || '*'}" meta.filename="${filename || '*'}" meta.subtype="header" | head 100`)
   }
 
   async run() {

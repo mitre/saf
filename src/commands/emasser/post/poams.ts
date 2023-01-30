@@ -20,7 +20,7 @@ function printRedMsg(msg: string) {
 }
 
 function assertParamExists(object: string, value: string|undefined|null): void {
-  if (typeof value === 'undefined') {
+  if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')
   }
@@ -133,7 +133,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
   const HELP_MSG = '\nInvoke saf emasser post poams [-h, --help] for additional help'
   switch (dataObj.status) {
     case 'Risk Accepted': {
-      if (typeof dataObj.comments === 'undefined') {
+      if (dataObj.comments === undefined) {
         printRedMsg('When status is "Risk Accepted" the following parameters/fields are required:')
         printRedMsg('    comments')
         printHelpMsg(HELP_MSG)
@@ -156,12 +156,12 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         printRedMsg('    scheduledCompletionDate, milestones')
         printHelpMsg(HELP_MSG)
         process.exit(1)
-      } else if ((typeof (_.find(dataObj.milestones, function (milestone) { // skipcq: JS-0241
+      } else if (((_.some(dataObj.milestones, function (milestone) { // skipcq: JS-0241
         return milestone.description
-      })) === 'undefined') ||
-                  (typeof (_.find(dataObj.milestones, function (milestone) { // skipcq: JS-0241
+      }))) ||
+                  ((_.some(dataObj.milestones, function (milestone) { // skipcq: JS-0241
                     return milestone.scheduledCompletionDate
-                  })) === 'undefined')) {
+                  })))) {
         printRedMsg('At least one milestone parameters/fields object must be defined:')
         printRedMsg('    "milestones": [{"description": "The milestone description", "scheduledCompletionDate": 1637342288 }], ')
         process.exit(1)

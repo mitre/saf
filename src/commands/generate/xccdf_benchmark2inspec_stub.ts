@@ -1,4 +1,4 @@
-/* eslint-disable no-negated-condition */
+
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {InSpecMetaData} from '../../types/inspec'
@@ -41,16 +41,16 @@ export default class XCCDFBenchmark2InSpec extends Command {
 
     const logger = createWinstonLogger('generate:xccdf_benchmark2inspec_stub', flags.logLevel)
     // Check if the output folder already exists
-    if (!fs.existsSync(flags.output)) {
-      logger.debug('Creating output folder with controls and libraries directories')
-      fs.mkdirSync(flags.output)
-      fs.mkdirSync(path.join(flags.output, 'controls'))
-      fs.mkdirSync(path.join(flags.output, 'libraries'))
-    } else {
+    if (fs.existsSync(flags.output)) {
       // Folder should not exist already
       throw new Error(
         'Profile output folder already exists, please specify a new folder',
       )
+    } else {
+      logger.debug('Creating output folder with controls and libraries directories')
+      fs.mkdirSync(flags.output)
+      fs.mkdirSync(path.join(flags.output, 'controls'))
+      fs.mkdirSync(path.join(flags.output, 'libraries'))
     }
 
     // This will get overridden if a metadata file is passed

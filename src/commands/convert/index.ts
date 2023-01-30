@@ -31,10 +31,14 @@ export default class Convert extends Command {
     if (filePath) {
       Convert.detectedType = fingerprint({data: fs.readFileSync(filePath, 'utf8'), filename: convertFullPathToFilename(filePath)})
       switch (Convert.detectedType) { // skipcq: JS-0047
-        case 'asff':
+        case 'asff': {
           return ASFF2HDF.flags
-        case 'zap':
+        }
+
+        case 'zap': {
           return Zap2HDF.flags
+        }
+
         case 'burp':
         case 'dbProtect':
         case 'fortify':
@@ -47,8 +51,9 @@ export default class Convert extends Command {
         case 'scoutsuite':
         case 'snyk':
         case 'twistlock':
-        case 'xccdf':
+        case 'xccdf': {
           return {}
+        }
       }
     }
 
