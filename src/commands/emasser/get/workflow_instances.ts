@@ -1,5 +1,5 @@
 import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
+import {Args, Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {WorkflowInstancesApi} from '@mitre/emass_client'
 import {WorkflowInstancesResponseGet,
@@ -25,11 +25,15 @@ export default class EmasserGetWorkflowInstances extends Command {
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
-  static args = [
-    {name: 'name', required: false, hidden: true},
-    {name: 'all', description: 'Retrieves all workflow instances in a site', required: false},
-    {name: 'byInstanceId', description: 'Retrieves workflow(s) instance by ID', required: false},
-  ]
+  // NOTE: The way args are being implemented are mainly for the purposes of help clarity, there is, displays
+  //       the available arguments with associate description.
+  // Only args.name is used, there is, it contains the argument listed by the user.
+  // Example: If the user uses the command (saf emasser get workflow_instances byInstanceId), args.name is set to byInstanceId
+  static args = {
+    name: Args.string({name: 'name', required: false, hidden: true}),
+    all: Args.string({name: 'all', description: 'Retrieves all workflow instances in a site', required: false}),
+    byInstanceId: Args.string({name: 'byInstanceId', description: 'Retrieves workflow(s) instance by ID', required: false}),
+  }
 
   async run(): Promise<void> {
     const {args, flags} = await this.parse(EmasserGetWorkflowInstances)

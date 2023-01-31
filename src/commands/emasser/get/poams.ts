@@ -1,5 +1,5 @@
 import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
+import {Args, Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {POAMApi} from '@mitre/emass_client'
 import {PoamResponseGetSystems, PoamResponseGetPoams} from '@mitre/emass_client/dist/api'
@@ -24,11 +24,15 @@ export default class EmasserGetPoams extends Command {
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
-  static args = [
-    {name: 'name', required: false, hidden: true},
-    {name: 'forSystem', description: 'Retrieves Poams for specified system ID', required: false},
-    {name: 'byPoamId', description: 'Retrieves Poams for specified system and poam ID', required: false},
-  ]
+  // NOTE: The way args are being implemented are mainly for the purposes of help clarity, there is, displays
+  //       the available arguments with associate description.
+  // Only args.name is used, there is, it contains the argument listed by the user.
+  // Example: If the user uses the command (saf emasser get poams byPoamId), args.name is set to byPoamId
+  static args = {
+    name: Args.string({name: 'name', required: false, hidden: true}),
+    forSystem: Args.string({name: 'forSystem', description: 'Retrieves Poams for specified system ID', required: false}),
+    byPoamId: Args.string({name: 'byPoamId', description: 'Retrieves Poams for specified system and poam ID', required: false}),
+  }
 
   async run(): Promise<void> {
     const {args, flags} = await this.parse(EmasserGetPoams)
