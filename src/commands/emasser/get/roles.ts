@@ -24,7 +24,12 @@ export default class EmasserGetRoles extends Command {
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
+  // NOTE: The way args are being implemented are mainly for the purposes of help clarity, there is, displays
+  //       the available arguments with associate description.
+  // Only args.name is used, there is, it contains the argument listed by the user.
+  // Example: If the user uses the command (saf emasser get roles byCategory), args.name is set to byCategory
   static args = {
+    name: Args.string({name: 'name', required: false, hidden: true}),
     all: Args.string({name: 'all', description: 'Retrieves all available system roles', required: false}),
     byCategory: Args.string({name: 'byCategory', description: 'Retrieves role(s) - filtered by [options] params', required: false}),
   }
@@ -34,12 +39,12 @@ export default class EmasserGetRoles extends Command {
     const apiCxn = new ApiConnection()
     const getSystemRoles = new SystemRolesApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
 
-    if (args.all === 'all') {
+    if (args.name === 'all') {
       // Order is important here
       getSystemRoles.getSystemRoles().then((response: SystemRolesResponse) => {
         console.log(colorize(outputFormat(response)))
       }).catch((error:any) => console.error(colorize(outputError(error))))
-    } else if (args.all === 'byCategory') {
+    } else if (args.name === 'byCategory') {
       // Order is important here
       getSystemRoles.getSystemRolesByCategoryId(flags.roleCategory, flags.role, flags.policy, flags.includeDecommissioned).then((response: SystemRolesCategoryResponse) => {
         console.log(colorize(outputFormat(response)))
