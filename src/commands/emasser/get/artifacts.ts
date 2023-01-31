@@ -1,5 +1,5 @@
 import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
+import {Args, Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {ArtifactsApi, ArtifactsExportApi} from '@mitre/emass_client'
 import {ArtifactsResponseGet} from '@mitre/emass_client/dist/api'
@@ -24,11 +24,15 @@ export default class EmasserGetArtifacts extends Command {
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   };
 
-  static args = [
-    {name: 'name', required: false, hidden: true},
-    {name: 'forSystem', description: 'Retrieves available milestones for provided system (Id)', required: false},
-    {name: 'export', description: 'Exports the milestone(s) for provided system (Id) and file name', required: false},
-  ];
+  // NOTE: The way args are being implemented are mainly for the purposes of help clarity, there is, displays
+  //       the available arguments with associate description.
+  // Only args.name is used, there is, it contains the argument listed by the user.
+  // Example: If the user uses the command (saf emasser get artifacts forSystem), args.name is set to forSystem
+  static args = {
+    name: Args.string({name: 'name', required: false, hidden: true}),
+    forSystem: Args.string({name: 'forSystem', description: 'Retrieves available milestones for provided system (Id)', required: false}),
+    export: Args.string({name: 'export', description: 'Exports the milestone(s) for provided system (Id) and file name', required: false}),
+  };
 
   async run(): Promise<void> {
     const {args, flags} = await this.parse(EmasserGetArtifacts)
