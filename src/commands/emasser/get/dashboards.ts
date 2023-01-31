@@ -1,5 +1,5 @@
 import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
+import {Args, Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {DashboardsApi} from '@mitre/emass_client'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
@@ -23,25 +23,25 @@ export default class EmassergetDashboards extends Command {
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   };
 
-  static args = [
-    {name: 'name', required: false, hidden: true},
-    {name: 'status_details', description: 'Get systems status detail dashboard information', required: false},
-    {name: 'control_compliance_summary', description: 'Get systems control compliance summary dashboard information', required: false},
-    {name: 'security_control_details', description: 'Get systems security control details dashboard information', required: false},
-    {name: 'assessment_procedures_details', description: 'Get systems assessment procedures details dashboard information', required: false},
-    {name: 'poam_summary', description: 'Get systems POA&Ms summary dashboard information', required: false},
-    {name: 'poam_details', description: 'Get system POA&Ms details dashboard information', required: false},
-    {name: 'hardware_summary', description: 'Get system hardware summary dashboard information', required: false},
-    {name: 'hardware_details', description: 'Get system hardware details dashboard information', required: false},
-    {name: 'associations_details', description: 'Get system associations details dashboard information', required: false},
-    {name: 'assignments_details', description: 'Get user system assignments details dashboard information', required: false},
-    {name: 'privacy_summary', description: 'Get user system privacy summary dashboard information', required: false},
-    {name: 'fisma_saop_summary', description: 'Get VA OMB-FISMA SAOP summary dashboard information', required: false},
-    {name: 'va_aa_summary', description: 'Get VA system A&A summary dashboard information', required: false},
-    {name: 'va_a2_summary', description: 'Get VA system A2.0 summary dashboard information', required: false},
-    {name: 'va_pl_109_summary', description: 'Get VA System P.L. 109 reporting summary dashboard information', required: false},
-    {name: 'fisma_inventory_summary', description: 'Get VA system FISMA inventory summary dashboard information', required: false},
-  ];
+  static args = {
+    name: Args.string({name: 'name', required: false, hidden: true}),
+    status_details: Args.string({name: 'status_details', description: 'Get systems status detail dashboard information', required: false}),
+    control_compliance_summary: Args.string({name: 'control_compliance_summary', description: 'Get systems control compliance summary dashboard information', required: false}),
+    security_control_details: Args.string({name: 'security_control_details', description: 'Get systems security control details dashboard information', required: false}),
+    assessment_procedures_details: Args.string({name: 'assessment_procedures_details', description: 'Get systems assessment procedures details dashboard information', required: false}),
+    poam_summary: Args.string({name: 'poam_summary', description: 'Get systems POA&Ms summary dashboard information', required: false}),
+    poam_details: Args.string({name: 'poam_details', description: 'Get system POA&Ms details dashboard information', required: false}),
+    hardware_summary: Args.string({name: 'hardware_summary', description: 'Get system hardware summary dashboard information', required: false}),
+    hardware_details: Args.string({name: 'hardware_details', description: 'Get system hardware details dashboard information', required: false}),
+    associations_details: Args.string({name: 'associations_details', description: 'Get system associations details dashboard information', required: false}),
+    assignments_details: Args.string({name: 'assignments_details', description: 'Get user system assignments details dashboard information', required: false}),
+    privacy_summary: Args.string({name: 'privacy_summary', description: 'Get user system privacy summary dashboard information', required: false}),
+    fisma_saop_summary: Args.string({name: 'fisma_saop_summary', description: 'Get VA OMB-FISMA SAOP summary dashboard information', required: false}),
+    va_aa_summary: Args.string({name: 'va_aa_summary', description: 'Get VA system A&A summary dashboard information', required: false}),
+    va_a2_summary: Args.string({name: 'va_a2_summary', description: 'Get VA system A2.0 summary dashboard information', required: false}),
+    va_pl_109_summary: Args.string({name: 'va_pl_109_summary', description: 'Get VA System P.L. 109 reporting summary dashboard information', required: false}),
+    fisma_inventory_summary: Args.string({name: 'fisma_inventory_summary', description: 'Get VA system FISMA inventory summary dashboard information', required: false}),
+  };
 
   async run(): Promise<void> {
     const {args, flags} = await this.parse(EmassergetDashboards)

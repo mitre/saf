@@ -1,5 +1,5 @@
 import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
+import {Args, Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {SystemRolesApi} from '@mitre/emass_client'
 import {SystemRolesResponse, SystemRolesCategoryResponse} from '@mitre/emass_client/dist/api'
@@ -24,10 +24,10 @@ export default class EmasserGetRoles extends Command {
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
-  static args = [
-    {name: 'all', description: 'Retrieves all available system roles', required: false},
-    {name: 'byCategory', description: 'Retrieves role(s) - filtered by [options] params', required: false},
-  ]
+  static args = {
+    all: Args.string({name: 'all', description: 'Retrieves all available system roles', required: false}),
+    byCategory: Args.string({name: 'byCategory', description: 'Retrieves role(s) - filtered by [options] params', required: false}),
+  }
 
   async run(): Promise<void> {
     const {args, flags} = await this.parse(EmasserGetRoles)

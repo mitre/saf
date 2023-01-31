@@ -1,5 +1,5 @@
 import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
+import {Args, Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {MilestonesApi} from '@mitre/emass_client'
 import {MilestoneResponseGet, MilestoneResponseGetMilestone} from '@mitre/emass_client/dist/api'
@@ -24,11 +24,11 @@ export default class EmasserGetMilestones extends Command {
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
-  static args = [
-    {name: 'name', required: false, hidden: true},
-    {name: 'byPoamId', description: 'Retrieves milestone(s) for specified system and poam Id', required: false},
-    {name: 'byMilestoneId', description: 'Retrieves milestone(s) for specified system, poam, and milestone Id', required: false},
-  ]
+  static args = {
+    name: Args.string({name: 'name', required: false, hidden: true}),
+    byPoamId: Args.string({name: 'byPoamId', description: 'Retrieves milestone(s) for specified system and poam Id', required: false}),
+    byMilestoneId: Args.string({name: 'byMilestoneId', description: 'Retrieves milestone(s) for specified system, poam, and milestone Id', required: false}),
+  }
 
   async run(): Promise<void> {
     const {args, flags} = await this.parse(EmasserGetMilestones)
