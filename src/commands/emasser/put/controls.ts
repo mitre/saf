@@ -20,7 +20,7 @@ function printRedMsg(msg: string) {
 }
 
 function assertParamExists(object: string, value: string|number|undefined|null): void {
-  if (typeof value === 'undefined') {
+  if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')
   }

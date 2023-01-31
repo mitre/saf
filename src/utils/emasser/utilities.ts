@@ -72,7 +72,7 @@ function getArgs(argv: string[], endpointValue?: string): CliArgs {
   const requestTypeIndex = argv.findIndex(arg => (arg === 'get' || arg === 'post' || arg === 'put' || arg === 'delete'))
   return {
     requestType: argv[requestTypeIndex],
-    endpoint: (endpointValue) ? endpointValue : argv[requestTypeIndex + 1],
+    endpoint: endpointValue || argv[requestTypeIndex + 1],
     argument: argv[requestTypeIndex + 2],
   }
 }
@@ -82,16 +82,18 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
   let flagObj: FlagOptions = {}
 
   switch (args.requestType) { // skipcq: JS-0047
-    case 'get':
+    case 'get': {
       switch (args.endpoint) { // skipcq: JS-0047
-        case 'system':
+        case 'system': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             includePackage: Flags.boolean({char: 'I', description: 'Boolean - include system packages', allowNo: true, required: false}),
             policy: Flags.string({char: 'p', description: 'Filter on policy', required: false, options: ['diacap', 'rmf', 'reporting']}),
           }
           break
-        case 'systems':
+        }
+
+        case 'systems': {
           flagObj = {
             registrationType: Flags.string({char: 'r', description: 'Filter on registration type',
               options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false}),
@@ -104,7 +106,9 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             reportsForScorecard: Flags.boolean({char: 'S', description: 'Boolean - include score card', allowNo: true, required: false}),
           }
           break
-        case 'roles':
+        }
+
+        case 'roles': {
           if (args.argument === 'byCategory') {
             flagObj = {
               roleCategory: Flags.string({char: 'c', description: 'Filter on role category', options: ['CAC', 'PAC', 'Other'], required: true}),
@@ -116,29 +120,39 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           }
 
           break
-        case 'controls':
+        }
+
+        case 'controls': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             acronyms: Flags.boolean({char: 'A', description: 'The system acronym(s) e.g "AC-1, AC-2" - if not provided all controls for systemId are returned', allowNo: true, required: false}),
           }
           break
-        case 'cac':
+        }
+
+        case 'cac': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
           }
           break
-        case 'pac':
+        }
+
+        case 'pac': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
           }
           break
-        case 'cmmc':
+        }
+
+        case 'cmmc': {
           flagObj = {
             sinceDate: Flags.string({char: 'd', description: 'The CMMC date. Unix date format', required: true}),
           }
           break
-        case 'test_results':
+        }
+
+        case 'test_results': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
@@ -146,14 +160,18 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             latestOnly: Flags.boolean({char: 'L', description: 'Boolean - Filter on latest only', allowNo: true, required: false}),
           }
           break
-        case 'workflow_definitions':
+        }
+
+        case 'workflow_definitions': {
           flagObj = {
             includeInactive: Flags.boolean({char: 'i', description: 'Boolean - Include inactive workflows', allowNo: true, required: false}),
             registrationType: Flags.string({char: 'r', description: 'The registration type - must be a valid type',
               options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false}),
           }
           break
-        case 'poams':
+        }
+
+        case 'poams': {
           if (args.argument === 'forSystem') {
             flagObj = {
               systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
@@ -171,7 +189,9 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           }
 
           break
-        case 'artifacts':
+        }
+
+        case 'artifacts': {
           if (args.argument === 'forSystem') {
             flagObj = {
               systemId: Flags.integer({char: 's', description: 'Unique system identifier', required: true}),
@@ -189,7 +209,9 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           }
 
           break
-        case 'milestones':
+        }
+
+        case 'milestones': {
           if (args.argument === 'byPoamId') {
             flagObj = {
               systemId: Flags.integer({char: 's', description: 'Unique system identifier', required: true}),
@@ -206,7 +228,9 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           }
 
           break
-        case 'workflow_instances':
+        }
+
+        case 'workflow_instances': {
           if (args.argument === 'all') {
             flagObj = {
               includeComments: Flags.boolean({char: 'i', description: 'Boolean - Include transition comments', allowNo: true, required: false}),
@@ -221,20 +245,24 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           }
 
           break
-        case 'dashboards':
+        }
+
+        case 'dashboards': {
           flagObj = {
             orgId: Flags.integer({char: 'o', description: 'The organization identification number', required: true}),
             pageIndex: Flags.integer({char: 'i', description: 'The index of the starting page (default first page 0)', required: false}),
             pageSize: Flags.integer({char: 's', description: 'The number of entries per page (default 20000)', required: false}),
           }
           break
+        }
       }
 
       break
+    }
 
-    case 'post':
+    case 'post': {
       switch (args.endpoint) { // skipcq: JS-0047
-        case 'test_results':
+        case 'test_results': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             cci: Flags.string({char: 'c', description: 'The system CCI string numerical value', required: true}),
@@ -245,7 +273,9 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
               options: ['Compliant', 'Non-Compliant', 'Not Applicable'], required: true}),
           }
           break
-        case 'milestones':
+        }
+
+        case 'milestones': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
@@ -253,7 +283,9 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             scheduledCompletionDate: Flags.string({char: 'c', description: 'The scheduled completion date - Unix time format', required: true}),
           }
           break
-        case 'artifacts':
+        }
+
+        case 'artifacts': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             input: Flags.string({char: 'i', description: 'Artifact file(s) to post to the given system, can have multiple (space separated)', required: true, multiple: true}),
@@ -263,14 +295,18 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             category: Flags.string({char: 'c', description: 'Artifact category', options: ['Implementation Guidance', 'Evidence'], required: false}),
           }
           break
-        case 'cac':
+        }
+
+        case 'cac': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             controlAcronym: Flags.string({char: 'a', description: 'The system acronym "AC-1, AC-2"', required: true}),
             comments: Flags.string({char: 'c', description: 'The control approval chain comments', required: false}),
           }
           break
-        case 'pac':
+        }
+
+        case 'pac': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             workflow: Flags.string({char: 'w', description: 'The appropriate workflow',
@@ -279,37 +315,47 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             comments: Flags.string({char: 'c', description: 'The control approval chain comments', required: true}),
           }
           break
-        case 'poams':
+        }
+
+        case 'poams': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             poamFile: Flags.string({char: 'f', description: 'A well formed JSON file with the POA&M(s) to add. It can ba a single object or an array of objects.', required: true}),
           }
           break
-        case 'cloud_resources':
+        }
+
+        case 'cloud_resources': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             cloudResourceFile: Flags.string({char: 'f', description: 'A well formed JSON file with the cloud resources and their scan results. It can ba a single object or an array of objects.', required: true}),
           }
           break
-        case 'static_code_scans':
+        }
+
+        case 'static_code_scans': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             statiCodeScanFile: Flags.string({char: 'f', description: 'A well formed JSON file with application scan findings. It can ba a single object or an array of objects.', required: true}),
           }
           break
-        case 'container_scans':
+        }
+
+        case 'container_scans': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             containerCodeScanFile: Flags.string({char: 'f', description: 'A well formed JSON file with container scan results. It can ba a single object or an array of objects.', required: true}),
           }
           break
+        }
       }
 
       break
+    }
 
-    case 'put':
+    case 'put': {
       switch (args.endpoint) { // skipcq: JS-0047
-        case 'artifacts':
+        case 'artifacts': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             filename: Flags.string({char: 'f', description: 'Artifact file name to update for the given system', required: true}),
@@ -325,7 +371,9 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             lastReviewDate: Flags.string({char: 'R', description: 'Date artifact was last reviewed', required: false}),
           }
           break
-        case 'milestones':
+        }
+
+        case 'milestones': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
@@ -334,46 +382,58 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             scheduledCompletionDate: Flags.string({char: 'c', description: 'The scheduled completion date - Unix time format', required: false}),
           }
           break
-        case 'poams':
+        }
+
+        case 'poams': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             poamFile: Flags.string({char: 'f', description: 'A well formed JSON file with the POA&M(s) to updated the specified system. It can ba a single object or an array of objects.', required: true}),
           }
           break
-        case 'controls':
+        }
+
+        case 'controls': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             controlFile: Flags.string({char: 'f', description: 'A well formed JSON file with the Security Control information to updated the specified system. It can ba a single object or an array of objects.', required: true}),
           }
           break
+        }
       }
 
       break
+    }
 
-    case 'delete':
+    case 'delete': {
       switch (args.endpoint) { // skipcq: JS-0047
-        case 'artifacts':
+        case 'artifacts': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             fileName: Flags.string({char: 'F', description: 'The artifact file name to remove, can have multiple (space separated)', required: true, multiple: true}),
           }
           break
-        case 'milestones':
+        }
+
+        case 'milestones': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
             milestonesId: Flags.integer({char: 'M', description: 'Unique milestone identifier, can have multiple (space separated)', required: true, multiple: true}),
           }
           break
-        case 'poams':
+        }
+
+        case 'poams': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             poamsId: Flags.integer({char: 'P', description: 'Unique POA&M identification number, can have multiple (space separated)', required: true, multiple: true}),
           }
           break
+        }
       }
 
       break
+    }
   }
 
   return flagObj
@@ -385,132 +445,201 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
 
   if (args.requestType === 'get') {
     switch (args.endpoint) { // skipcq: JS-0047
-      case 'roles':
+      case 'roles': {
         switch (args.argument) {
-          case 'all':
+          case 'all': {
             description = 'Retrieve all available system roles'
             break
-          case 'byCategory':
+          }
+
+          case 'byCategory': {
             description = 'Retrieve system roles filter by options'
             break
-          default:
+          }
+
+          default: {
             description = 'Retrieve all available system roles, or filter by options'
             break
+          }
         }
 
         break
-      case 'poams':
+      }
+
+      case 'poams': {
         switch (args.argument) {
-          case 'forSystem':
+          case 'forSystem': {
             description = 'Retrieves Poams for specified system ID'
             break
-          case 'byPoamId':
+          }
+
+          case 'byPoamId': {
             description = 'Retrieves Poams for specified system and poam ID'
             break
-          default:
+          }
+
+          default: {
             description = 'Retrieve Poams for a system or system/poam Id combination'
             break
+          }
         }
 
         break
-      case 'artifacts':
+      }
+
+      case 'artifacts': {
         switch (args.argument) {
-          case 'forSystem':
+          case 'forSystem': {
             description = 'Retrieves one or many artifacts for a system specified by system ID'
             break
-          case 'export':
+          }
+
+          case 'export': {
             description = 'Retrieves the artifact file (if compress is true the file binary contents are returned, otherwise the file textual contents are returned.)'
             break
-          default:
+          }
+
+          default: {
             description = 'Retrieve artifacts for a system or system/filename combination'
             break
+          }
         }
 
         break
-      case 'milestones':
+      }
+
+      case 'milestones': {
         switch (args.argument) {
-          case 'byPoamId':
+          case 'byPoamId': {
             description = 'Retrieves milestone(s) for specified system and poam ID'
             break
-          case 'byMilestoneId':
+          }
+
+          case 'byMilestoneId': {
             description = 'Retrieve milestone(s) for specified system, poam, and milestone ID'
             break
-          default:
+          }
+
+          default: {
             description = 'Retrieve milestones by system by systemID/poamID or systemID/poamID/milestoneID combination'
             break
+          }
         }
 
         break
-      case 'workflow_instances':
+      }
+
+      case 'workflow_instances': {
         switch (args.argument) {
-          case 'all':
+          case 'all': {
             description = 'Retrieves all workflow instances'
             break
-          case 'byInstanceId':
+          }
+
+          case 'byInstanceId': {
             description = 'Retrieves workflow instance by workflow Instance ID'
             break
-          default:
+          }
+
+          default: {
             description = 'Retrieve all workflow instances or workflow instances noted by workflowInstanceID'
             break
+          }
         }
 
         break
-      case 'dashboards':
+      }
+
+      case 'dashboards': {
         switch (args.argument) {
-          case 'status_details':
+          case 'status_details': {
             description = 'Get systems status detail dashboard information'
             break
-          case 'control_compliance_summary':
+          }
+
+          case 'control_compliance_summary': {
             description = 'Get systems control compliance summary dashboard information'
             break
-          case 'security_control_details':
+          }
+
+          case 'security_control_details': {
             description = 'Get systems security control details dashboard information'
             break
-          case 'assessment_procedures_details':
+          }
+
+          case 'assessment_procedures_details': {
             description = 'Get systems assessment procedures details dashboard information'
             break
-          case 'poam_summary':
+          }
+
+          case 'poam_summary': {
             description = 'Get systems POA&Ms summary dashboard information'
             break
-          case 'poam_details':
+          }
+
+          case 'poam_details': {
             description = 'Get system POA&Ms details dashboard information'
             break
-          case 'hardware_summary':
+          }
+
+          case 'hardware_summary': {
             description = 'Get system hardware summary dashboard information'
             break
-          case 'hardware_details':
+          }
+
+          case 'hardware_details': {
             description = 'Get system hardware details dashboard information'
             break
-          case 'associations_details':
+          }
+
+          case 'associations_details': {
             description = 'Get system associations details dashboard information'
             break
-          case 'assignments_details':
+          }
+
+          case 'assignments_details': {
             description = 'Get user system assignments details dashboard information'
             break
-          case 'privacy_summary':
+          }
+
+          case 'privacy_summary': {
             description = 'Get user system privacy summary dashboard information'
             break
-          case 'fisma_saop_summary':
+          }
+
+          case 'fisma_saop_summary': {
             description = 'Get VA OMB-FISMA SAOP summary dashboard information'
             break
-          case 'va_aa_summary':
+          }
+
+          case 'va_aa_summary': {
             description = 'Get VA system A&A summary dashboard information'
             break
-          case 'va_a2_summary':
+          }
+
+          case 'va_a2_summary': {
             description = 'Get VA system A2.0 summary dashboard information'
             break
-          case 'va_pl_109_summary':
+          }
+
+          case 'va_pl_109_summary': {
             description = 'Get VA System P.L. 109 reporting summary dashboard information'
             break
-          case 'fisma_inventory_summary':
+          }
+
+          case 'fisma_inventory_summary': {
             description = 'Get VA system FISMA inventory summary dashboard information'
             break
-          default:
+          }
+
+          default: {
             description = 'Retrieves a pre-defined dashboard by orgId'
             break
+          }
         }
 
         break
+      }
     }
   }
 
@@ -526,132 +655,201 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
 
   if (args.requestType === 'get') {
     switch (args.endpoint) { // skipcq: JS-0047
-      case 'roles':
+      case 'roles': {
         switch (args.argument) {
-          case 'all':
+          case 'all': {
             exampleArray.push(`${baseCmd} roles all`)
             break
-          case 'byCategory':
+          }
+
+          case 'byCategory': {
             exampleArray.push(`${baseCmd} byCategory [-c, --roleCategory] <value> [-r, --role] <value> [options]`)
             break
-          default:
+          }
+
+          default: {
             exampleArray.push(`${baseCmd} all`, `${baseCmd} byCategory [-c, --roleCategory] <value> [-r, --role] <value> [options]`)
             break
+          }
         }
 
         break
-      case 'poams':
+      }
+
+      case 'poams': {
         switch (args.argument) {
-          case 'forSystem':
+          case 'forSystem': {
             exampleArray.push(`${baseCmd} forSystem [-s, --systemId] <value> [options]`)
             break
-          case 'byPoamId':
+          }
+
+          case 'byPoamId': {
             exampleArray.push(`${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value>`)
             break
-          default:
+          }
+
+          default: {
             exampleArray.push(`${baseCmd} forSystem [-s, --systemId] <value> [options]`, `${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value>`)
             break
+          }
         }
 
         break
-      case 'artifacts':
+      }
+
+      case 'artifacts': {
         switch (args.argument) {
-          case 'forSystem':
+          case 'forSystem': {
             exampleArray.push(`${baseCmd} forSystem [-s, --systemId] <value> [options]`)
             break
-          case 'export':
+          }
+
+          case 'export': {
             exampleArray.push(`${baseCmd} export [-s, --systemId] <value> [-f, --filename] <value> [options]`)
             break
-          default:
+          }
+
+          default: {
             exampleArray.push(`${baseCmd} forSystem [-s, --systemId] <value> [options]`, `${baseCmd} export [-s, --systemId] <value> [-f, --filename] <value> [options]`)
             break
+          }
         }
 
         break
-      case 'milestones':
+      }
+
+      case 'milestones': {
         switch (args.argument) {
-          case 'byPoamId':
+          case 'byPoamId': {
             exampleArray.push(`${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value> [options]`)
             break
-          case 'byMilestoneId':
+          }
+
+          case 'byMilestoneId': {
             exampleArray.push(`${baseCmd} byMilestoneId [-s, --systemId] <value> [-p, --poamId] <value> [-m, --milestoneId] <value>`)
             break
-          default:
+          }
+
+          default: {
             exampleArray.push(`${baseCmd} byPoamId [-s, --systemId] <value> [-p, --poamId] <value> [options]`, `${baseCmd} byMilestoneId [-s, --systemId] <value> [-p, --poamId] <value> [-m, --milestoneId] <value>`)
             break
+          }
         }
 
         break
-      case 'workflow_instances':
+      }
+
+      case 'workflow_instances': {
         switch (args.argument) {
-          case 'all':
+          case 'all': {
             exampleArray.push(`${baseCmd} all [options]`)
             break
-          case 'byInstanceId':
+          }
+
+          case 'byInstanceId': {
             exampleArray.push(`${baseCmd} byInstanceId [-w, --workflowInstanceId] <value>`)
             break
-          default:
+          }
+
+          default: {
             exampleArray.push(`${baseCmd} all [options]`, `${baseCmd} byInstanceId [-w, --workflowInstanceId] <value>`)
             break
+          }
         }
 
         break
-      case 'dashboards':
+      }
+
+      case 'dashboards': {
         switch (args.argument) {
-          case 'status_details':
+          case 'status_details': {
             exampleArray.push(`${baseCmd} status_details [-o, --orgId] <value> [options]`)
             break
-          case 'control_compliance_summary':
+          }
+
+          case 'control_compliance_summary': {
             exampleArray.push(`${baseCmd} control_compliance_summary [-o, --orgId] <value> [options]`)
             break
-          case 'security_control_details':
+          }
+
+          case 'security_control_details': {
             exampleArray.push(`${baseCmd} security_control_details [-o, --orgId] <value> [options]`)
             break
-          case 'assessment_procedures_details':
+          }
+
+          case 'assessment_procedures_details': {
             exampleArray.push(`${baseCmd} assessment_procedures_details [-o, --orgId] <value> [options]`)
             break
-          case 'poam_summary':
+          }
+
+          case 'poam_summary': {
             exampleArray.push(`${baseCmd} poam_summary [-o, --orgId] <value> [options]`)
             break
-          case 'poam_details':
+          }
+
+          case 'poam_details': {
             exampleArray.push(`${baseCmd} poam_details [-o, --orgId] <value> [options]`)
             break
-          case 'hardware_summary':
+          }
+
+          case 'hardware_summary': {
             exampleArray.push(`${baseCmd} hardware_summary [-o, --orgId] <value> [options]`)
             break
-          case 'hardware_details':
+          }
+
+          case 'hardware_details': {
             exampleArray.push(`${baseCmd} hardware_details [-o, --orgId] <value> [options]`)
             break
-          case 'associations_details':
+          }
+
+          case 'associations_details': {
             exampleArray.push(`${baseCmd} associations_details [-o, --orgId] <value> [options]`)
             break
-          case 'assignments_details':
+          }
+
+          case 'assignments_details': {
             exampleArray.push(`${baseCmd} assignments_details [-o, --orgId] <value> [options]`)
             break
-          case 'privacy_summary':
+          }
+
+          case 'privacy_summary': {
             exampleArray.push(`${baseCmd} privacy_summary [-o, --orgId] <value> [options]`)
             break
-          case 'fisma_saop_summary':
+          }
+
+          case 'fisma_saop_summary': {
             exampleArray.push(`${baseCmd} fisma_saop_summary [-o, --orgId] <value> [options]`)
             break
-          case 'va_aa_summary':
+          }
+
+          case 'va_aa_summary': {
             exampleArray.push(`${baseCmd} va_aa_summary [-o, --orgId] <value> [options]`)
             break
-          case 'va_a2_summary':
+          }
+
+          case 'va_a2_summary': {
             exampleArray.push(`${baseCmd} va_a2_summary [-o, --orgId] <value> [options]`)
             break
-          case 'va_pl_109_summary':
+          }
+
+          case 'va_pl_109_summary': {
             exampleArray.push(`${baseCmd} va_pl_109_summary [-o, --orgId] <value> [options]`)
             break
-          case 'fisma_inventory_summary':
+          }
+
+          case 'fisma_inventory_summary': {
             exampleArray.push(`${baseCmd} fisma_inventory_summary [-o, --orgId] <value> [options]`)
             break
-          default:
+          }
+
+          default: {
             exampleArray.push(`${baseCmd} [dashboard name] [flag] [options]`)
             break
+          }
         }
 
         break
+      }
     }
   }
 

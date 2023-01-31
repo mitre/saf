@@ -6,36 +6,50 @@ import _ from 'lodash'
 export function cklSeverity(severity: Severity): 'low' | 'medium' | 'high' {
   switch (severity) {
     case 'critical':
-    case 'high':
+    case 'high': {
       return 'high'
-    case 'medium':
+    }
+
+    case 'medium': {
       return 'medium'
+    }
+
     case 'low':
-    case 'none':
+    case 'none': {
       return 'low'
-    default:
+    }
+
+    default: {
       return 'high'
+    }
   }
 }
 
 export function cklStatus(status: ControlStatus): string {
   switch (status) {
     case 'Not Applicable':
-    case 'From Profile':
+    case 'From Profile': {
       return 'Not_Applicable'
+    }
+
     case 'Profile Error':
-    case 'Not Reviewed':
+    case 'Not Reviewed': {
       return 'Not_Reviewed'
-    case 'Passed':
+    }
+
+    case 'Passed': {
       return 'NotAFinding'
-    default:
+    }
+
+    default: {
       return 'Open'
+    }
   }
 }
 
 // Get segments/results as strings
 export function cklResults(segments?: HDFControlSegment[]): string {
-  if (typeof segments === 'undefined') {
+  if (segments === undefined) {
     return ''
   }
 
