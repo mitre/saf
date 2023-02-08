@@ -1,6 +1,6 @@
 ARG BASE_CONTAINER=node:16-alpine
 
-FROM $BASE_CONTAINER as builder
+FROM $BASE_CONTAINER AS builder
 
 LABEL name="SAF" \
       vendor="The MITRE Corporation" \
@@ -19,7 +19,7 @@ RUN rm -rf test
 RUN npm ci --omit=dev --fetch-timeout=600000
 RUN mv "$(npm pack | tail -1)" saf.tgz
 
-FROM $BASE_CONTAINER as app
+FROM $BASE_CONTAINER AS app
 
 COPY --from=builder /build/saf.tgz /build/
 RUN npm install -g /build/saf.tgz && npm cache clean --force;
