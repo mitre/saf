@@ -25,7 +25,7 @@ RUN npm install -g /build/saf.tgz && npm cache clean --force;
 # Useful for CI pipelines
 RUN apk add --no-cache bash jq curl ca-certificates
 
-USER ${USER:-node}
+USER node
 
 ENTRYPOINT ["saf"]
 VOLUME ["/share"]
