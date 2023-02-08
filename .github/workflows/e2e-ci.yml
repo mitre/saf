@@ -13,6 +13,11 @@ jobs:
     steps:
      - uses: actions/checkout@v2
 
+     - name: Setup Node.js
+       uses: actions/setup-node@v1
+       with:
+        node-version: '16.x'
+
      - name: Cache node modules
        uses: actions/cache@v2
        env:
@@ -20,22 +25,15 @@ jobs:
        with:
          # npm cache files are stored in `~/.npm` on Linux/macOS
          path: ~/.npm
-         key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/yarn.lock') }}
+         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.lock') }}
          restore-keys: |
-           ${{ runner.os }}-build-${{ env.cache-name }}-
-           ${{ runner.os }}-build-
-           ${{ runner.os }}-
-
-     - name: Setup Node.js
-       uses: actions/setup-node@v1
-       with:
-        node-version: '16.x'
+           ${{ runner.os }}-node-
 
      - name: Install dependencies
-       run: yarn install
-     
+       run: npm install
+
      - name: Prepack
-       run: yarn prepack
+       run: npm run prepack
 
      - name: Run e2e tests
-       run: yarn test
+       run: npm run test

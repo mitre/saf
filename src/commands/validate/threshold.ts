@@ -9,14 +9,16 @@ import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlI
 import {expect} from 'chai'
 
 export default class Threshold extends Command {
-  static usage = 'validate threshold -i, --input=JSON -T, --templateInline="JSON Data" -F --templateFile=YAML File'
+  static usage = 'validate threshold -i <hdf-json> [-h] [-T <flattened-threshold-json> | -F <template-file>]'
 
   static description = 'Validate the compliance and status counts of an HDF file'
 
+  static examples = ['saf validate threshold -i rhel7-results.json -F output.yaml']
+
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true}),
-    templateInline: Flags.string({char: 'T', required: false, exclusive: ['templateFile']}),
+    input: Flags.string({char: 'i', required: true, description: 'Input HDF JSON File'}),
+    templateInline: Flags.string({char: 'T', required: false, exclusive: ['templateFile'], description: 'Flattened JSON containing your validation thresholds (Intended for backwards compatibility with InSpec Tools)'}),
     templateFile: Flags.string({char: 'F', required: false, exclusive: ['templateInline'], description: 'Expected data template, generate one with "saf generate threshold"'}),
   }
 
@@ -25,7 +27,7 @@ export default class Threshold extends Command {
     let thresholds: ThresholdValues = {}
     if (flags.templateInline) {
       // Need to do some processing to convert this into valid JSON
-      const flattenedObjects = flags.templateInline.split(',').map(value => value.trim().replace('{', '').replace('}', ''))
+      const flattenedObjects = flags.templateInline.split(',').map((value: string) => value.trim().replace('{', '').replace('}', ''))
       const toUnpack: Record<string, number> = {}
       for (const flattenedObject of flattenedObjects) {
         const [key, value] = flattenedObject.split(':')
@@ -117,7 +119,7 @@ export default class Threshold extends Command {
 
     // Expect Control IDs to match placed severities
     const controlIdMap = getControlIdMap(parsedExecJSON.contains[0] as ContextualizedProfile)
-    for (const [severity, targetPaths] of Object.entries(statusSeverityPaths)) {
+    for (const [_severity, targetPaths] of Object.entries(statusSeverityPaths)) {
       for (const targetPath of targetPaths) {
         const expectedControlIds: string[] | undefined = _.get(thresholds, targetPath)
         const actualControlIds: string[] | undefined = _.get(controlIdMap, targetPath)

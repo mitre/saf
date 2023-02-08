@@ -7,24 +7,14 @@ import path from 'path'
 
 export type SpreadsheetTypes = 'cis' | 'disa' | 'general'
 
+export const knownInspecMetadataKeys = ['control', 'title', 'desc', 'description', 'rationale', 'impact', 'references', 'tag']
+
 export function checkSuffix(input: string) {
   if (input.endsWith('.json')) {
     return input
   }
 
   return `${input}.json`
-}
-
-export function sliceIntoChunks(
-  arr: any[],
-  chunkSize: number,
-): any[][] {
-  const res = []
-  for (let i = 0; i < arr.length; i += chunkSize) {
-    res.push(arr.slice(i, i + chunkSize))
-  }
-
-  return res
 }
 
 export function convertFullPathToFilename(inputPath: string): string {

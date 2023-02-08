@@ -4,6 +4,9 @@
 /dist
 /lib
 /tmp
+/bin/deepsource
 node_modules
 **/.DS_Store
 *.*.un~
+out
+.env
