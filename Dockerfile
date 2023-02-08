@@ -1,4 +1,6 @@
-FROM node:lts-alpine as builder
+ARG BASE_CONTAINER=node:16-alpine
+
+FROM $BASE_CONTAINER as builder
 
 LABEL name="SAF" \
       vendor="The MITRE Corporation" \
@@ -17,7 +19,7 @@ RUN rm -rf test
 RUN yarn --frozen-lockfile --production --network-timeout 600000
 RUN yarn pack --install-if-needed --prod --filename saf.tgz
 
-FROM node:lts-alpine
+FROM $BASE_CONTAINER as app
 
 COPY --from=builder /build/saf.tgz /build/
 RUN npm install -g /build/saf.tgz && npm cache clean --force;
