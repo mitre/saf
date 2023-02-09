@@ -183,6 +183,7 @@ docker run --rm -it --entrypoint sh -v%cd%:/share mitre/saf
 ```
 
 **NOTE:**
+
 Remember to use Docker CLI flags as necessary to run the various subcommands.
 
 For example, to run the `emasser configure` subcommand, you need to pass in a volume that contains your certificates and where you can store the resultant .env.  Furthermore, you need to pass in flags for enabling the pseudo-TTY and interactivity.
