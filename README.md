@@ -182,6 +182,24 @@ To run the SAF CLI with a persistent shell for one or more commands, use the fol
 docker run --rm -it --entrypoint sh -v%cd%:/share mitre/saf
 ```
 
+**NOTE:**
+
+Remember to use Docker CLI flags as necessary to run the various subcommands.
+
+For example, to run the `emasser configure` subcommand, you need to pass in a volume that contains your certificates and where you can store the resultant .env.  Furthermore, you need to pass in flags for enabling the pseudo-TTY and interactivity.
+
+```
+docker run -it -v "$(pwd)":/share mitre/saf emasser configure
+```
+
+Other commands might not require the `-i` or `-t` flags and instead only need a bind-mounted volume, such as a file based `convert`.
+
+```
+docker run --rm -v "$(pwd)":/share mitre/saf convert -i test/sample_data/trivy/sample_input_report/trivy-image_golang-1.12-alpine_sample.json -o test.json
+```
+
+Other flags exist to open up network ports or pass through environment variables so make sure to use whichever ones are required to successfully run a command.
+
 
 #### Update via Docker
 
