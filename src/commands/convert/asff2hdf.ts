@@ -4,9 +4,9 @@ import {ASFFResults as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
-import AWS from 'aws-sdk'
+import {AwsSecurityFindingFilters, DescribeStandardsControlsCommandOutput, GetEnabledStandardsCommandOutput, SecurityHub, SecurityHubClientConfig, StandardsControl, StandardsSubscription} from '@aws-sdk/client-securityhub'
+import {NodeHttpHandler} from '@aws-sdk/node-http-handler'
 import https from 'https'
-import {AwsSecurityFindingFilters} from 'aws-sdk/clients/securityhub'
 import {createWinstonLogger} from '../../utils/logging'
 
 // Should be no more than 100
@@ -86,23 +86,22 @@ export default class ASFF2HDF extends Command {
         )
       }
     } else if (flags.aws) { // Flag to pull findings from AWS Security Hub
-      AWS.config.update({
-        httpOptions: {
-          agent: new https.Agent({
+      const clientOptions: SecurityHubClientConfig = {
+        region: flags.region,
+        requestHandler: new NodeHttpHandler({
+          httpsAgent: new https.Agent({
             // Disable HTTPS verification if requested
             rejectUnauthorized: !flags.insecure,
             // Pass an SSL certificate to trust
             ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf8') : undefined,
           }),
-        },
-      })
-      const clientOptions: AWS.SecurityHub.ClientConfiguration = {
-        region: flags.region,
+        }),
       }
       // Create our SecurityHub client
-      const client = new AWS.SecurityHub(clientOptions)
+      const client = new SecurityHub(clientOptions)
       // Pagination
-      let nextToken = null
+      let nextToken
+      let first = true
       let filters: AwsSecurityFindingFilters = {}
 
       // Filter by target name
@@ -117,29 +116,39 @@ export default class ASFF2HDF extends Command {
       logger.info('Starting collection of Findings')
       let queryParams: Record<string, unknown> = {Filters: filters, MaxResults: API_MAX_RESULTS}
       // Get findings
-      while (nextToken !== undefined) {
+      while (first || nextToken !== undefined) {
+        first = false
         logger.debug(`Querying for NextToken: ${nextToken}`)
         _.set(queryParams, 'NextToken', nextToken)
-        const getFindingsResult = await client.getFindings(queryParams).promise()
-        logger.debug(`Received: ${getFindingsResult.Findings.length} findings`)
-        findings.push(...getFindingsResult.Findings.map(finding => JSON.stringify(finding)))
+
+        const getFindingsResult = await client.getFindings(queryParams)
+        logger.debug(`Received: ${getFindingsResult.Findings?.length} findings`)
+        if (getFindingsResult.Findings) {
+          findings.push(...getFindingsResult.Findings.map(finding => JSON.stringify(finding)))
+        }
+
         nextToken = getFindingsResult.NextToken
       }
 
-      nextToken = null
+      nextToken = undefined
+      first = true
 
       logger.info('Starting collection of enabled security standards')
-      const enabledStandards: AWS.SecurityHub.StandardsSubscriptions = []
+      const enabledStandards: StandardsSubscription[] = []
 
       queryParams = _.omit(queryParams, ['Filters'])
 
       // Get active security standards subscriptions (enabled standards)
-      while (nextToken !== undefined) {
+      while (first || nextToken !== undefined) {
+        first = false
         logger.debug(`Querying for NextToken: ${nextToken}`)
-        const getEnabledStandardsResult: any = await client.getEnabledStandards({NextToken: nextToken}).promise()
+        // type system seems to think that this call / the result is from the callback variant of the function instead of the promise based one and throwing fits
+        const getEnabledStandardsResult: GetEnabledStandardsCommandOutput = (await client.getEnabledStandards({NextToken: nextToken})) as unknown as GetEnabledStandardsCommandOutput
 
         logger.debug(`Received: ${getEnabledStandardsResult.StandardsSubscriptions?.length} standards`)
-        enabledStandards.push(...getEnabledStandardsResult.StandardsSubscriptions)
+        if (getEnabledStandardsResult.StandardsSubscriptions) {
+          enabledStandards.push(...getEnabledStandardsResult.StandardsSubscriptions)
+        }
 
         nextToken = getEnabledStandardsResult.NextToken
       }
@@ -148,12 +157,19 @@ export default class ASFF2HDF extends Command {
 
       // Describe the controls to give context to the mapper
       for (const standard of enabledStandards) {
-        nextToken = null
-        const standardsControls: AWS.SecurityHub.StandardsControls = []
+        nextToken = undefined
+        first = true
+        const standardsControls: StandardsControl[] = []
 
         while (nextToken !== undefined) {
+          first = false
           logger.debug(`Querying for NextToken: ${nextToken}`)
-          const getEnabledStandardsResult: AWS.SecurityHub.DescribeStandardsControlsResponse = await client.describeStandardsControls({StandardsSubscriptionArn: standard.StandardsSubscriptionArn, NextToken: nextToken || ''}).promise()
+          const getEnabledStandardsResult: DescribeStandardsControlsCommandOutput = await client.describeStandardsControls(
+            {
+              StandardsSubscriptionArn: standard.StandardsSubscriptionArn,
+              NextToken: nextToken || '',
+            },
+          )
           logger.info(`Received: ${getEnabledStandardsResult.Controls?.length} Controls`)
 
           if (getEnabledStandardsResult.Controls) {

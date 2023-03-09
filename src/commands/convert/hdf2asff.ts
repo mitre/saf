@@ -3,10 +3,10 @@ import fs from 'fs'
 import https from 'https'
 import {FromHdfToAsffMapper as Mapper} from '@mitre/hdf-converters'
 import path from 'path'
-import AWS from 'aws-sdk'
+import {AwsSecurityFinding, SecurityHub, SecurityHubClientConfig} from '@aws-sdk/client-securityhub'
+import {NodeHttpHandler} from '@aws-sdk/node-http-handler'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import _ from 'lodash'
-import {BatchImportFindingsRequestFindingList} from 'aws-sdk/clients/securityhub'
 
 export default class HDF2ASFF extends Command {
   static usage = 'convert hdf2asff -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] (-u [-I -C <certificate>] | [-o <asff-output-folder>])'
@@ -56,30 +56,30 @@ export default class HDF2ASFF extends Command {
 
     if (flags.upload) {
       const profileInfoFinding = converted.pop()
-      const convertedSlices = _.chunk(converted, 100) as BatchImportFindingsRequestFindingList[]
+      const convertedSlices = _.chunk(converted, 100) as AwsSecurityFinding[][]
 
       if (flags.insecure) {
         console.warn('WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate')
       }
 
-      const clientOptions: AWS.SecurityHub.ClientConfiguration = {
+      const clientOptions: SecurityHubClientConfig = {
         region: flags.region,
-      }
-      AWS.config.update({
-        httpOptions: {
-          agent: new https.Agent({
+        requestHandler: new NodeHttpHandler({
+          httpsAgent: new https.Agent({
+            // Disable HTTPS verification if requested
             rejectUnauthorized: !flags.insecure,
+            // Pass an SSL certificate to trust
             ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf8') : undefined,
           }),
-        },
-      })
-      const client = new AWS.SecurityHub(clientOptions)
+        }),
+      }
+      const client = new SecurityHub(clientOptions)
 
       try {
         await Promise.all(
           convertedSlices.map(async chunk => {
             try {
-              const result = await client.batchImportFindings({Findings: chunk}).promise()
+              const result = await client.batchImportFindings({Findings: chunk})
               console.log(
                 `Uploaded ${chunk.length} controls. Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
               )
@@ -107,7 +107,9 @@ export default class HDF2ASFF extends Command {
       try {
         if (profileInfoFinding) {
           profileInfoFinding.UpdatedAt = new Date().toISOString()
-          const result = await client.batchImportFindings({Findings: [profileInfoFinding as unknown] as BatchImportFindingsRequestFindingList}).promise()
+          const result = await client.batchImportFindings(
+            {Findings: [profileInfoFinding as unknown] as AwsSecurityFinding[]},
+          )
           console.info(`Statistics: ${profileInfoFinding.Description}`)
           console.info(
             `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
