@@ -71,6 +71,9 @@ export function cklResults(segments?: HDFControlSegment[]): string {
 export function getDetails(control: ContextualizedControl, profileName: string): ChecklistControl {
   return {
     vid: control.data.id,
+    rid: control.data.tags.rid || control.data.id,
+    ruleVersion: control.data.tags.stig_id || control.data.id,
+    gtitle: control.data.tags.gtitle || control.data.id,
     severity: cklSeverity(control.root.hdf.severity),
     title: control.data.title || '',
     description: control.data.desc || '',
