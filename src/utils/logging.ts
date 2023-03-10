@@ -17,7 +17,7 @@ export function createWinstonLogger(
 ): winston.Logger {
   return winston.createLogger({
     transports: [new winston.transports.Console()],
-    level: level,
+    level: level, // skipcq: JS-0240
     format: winston.format.combine(
       winston.format.timestamp({
         format: 'MMM-DD-YYYY HH:mm:ss Z',
@@ -49,22 +49,32 @@ export function getHDFSummary(hdf: ExecJSON.Execution): string {
   )
   controls.forEach(control => {
     switch (control.hdf.status) {
-    case 'Passed':
-      summaryObject.passedCount += 1
-      break
-    case 'Failed':
-      summaryObject.failedCount += 1
-      break
-    case 'Not Applicable':
-      summaryObject.notApplicableCount += 1
-      break
-    case 'Not Reviewed':
-      summaryObject.notReviewedCount += 1
-      break
-    case 'Profile Error':
-      summaryObject.errorCount += 1
-      break
-    default:
+      case 'Passed': {
+        summaryObject.passedCount += 1
+        break
+      }
+
+      case 'Failed': {
+        summaryObject.failedCount += 1
+        break
+      }
+
+      case 'Not Applicable': {
+        summaryObject.notApplicableCount += 1
+        break
+      }
+
+      case 'Not Reviewed': {
+        summaryObject.notReviewedCount += 1
+        break
+      }
+
+      case 'Profile Error': {
+        summaryObject.errorCount += 1
+        break
+      }
+
+      default:
     }
   })
 

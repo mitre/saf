@@ -1,0 +1,274 @@
+{
+    "name": "RHEL_7_STIG",
+    "title": "Red Hat Enterprise Linux 7 Security Technical Implementation Guide",
+    "maintainer": "MITRE SAF Team",
+    "copyright": "MITRE, 2022",
+    "copyright_email": "saf@groups.mitre.org",
+    "license": "Apache-2.0",
+    "summary": "Inspec Validation Profile for Red Hat Enterprise Linux 7 STIG",
+    "version": "3.7.0",
+    "inspec_version": ">= 4.26",
+    "supports": [
+        {
+            "platform-name": "centos",
+            "release": "7.*"
+        },
+        {
+            "platform-name": "redhat",
+            "release": "7.*"
+        },
+        {
+            "platform-name": "amazon",
+            "release": "2*"
+        }
+    ],
+    "inputs": [
+        {
+            "name": "disable_slow_controls",
+            "options": {
+                "type": "Boolean",
+                "value": false
+            }
+        },
+        {
+            "name": "rpm_verify_perms_except",
+            "options": {
+                "type": "Array",
+                "value": [
+                    "/etc/issue"
+                ]
+            }
+        },
+        {
+            "name": "banner_message_enabled",
+            "options": {
+                "type": "Boolean",
+                "value": true
+            }
+        },
+        {
+            "name": "dconf_user",
+            "options": {
+                "type": "String",
+                "value": ""
+            }
+        }
+    ],
+    "controls": [
+        {
+            "title": "The Red Hat Enterprise Linux operating system must be configured so \n    that the file permissions, ownership, and group membership of system \n    files and commands match the vendor values.",
+            "desc": "Discretionary access control is weakened if a user or group \n    has access permissions to system files and directories greater than the default.",
+            "descriptions": {
+                "default": "Discretionary access control is weakened if a user or group \n    has access permissions to system files and directories greater than the default.",
+                "check": "Verify the file permissions, ownership, and group membership of \n    system files and commands match the vendor values.\n\n    Check the default file permissions, ownership, and group membership of system \n    files and commands with the following command:\n\n    # for i in `rpm -Va | egrep '^.{1}M|^.{5}U|^.{6}G' | cut -d \" \" -f 4,5`;do \n    for j in `rpm -qf $i`;do rpm -ql $j --dump | cut -d \" \" -f 1,5,6,7 | grep $i;\n    done;done\n\n    /var/log/gdm 040755 root root\n    /etc/audisp/audisp-remote.conf 0100640 root root\n    /usr/bin/passwd 0104755 root root\n\n    For each file returned, verify the current permissions, ownership, and group \n    membership:\n    # ls -la <filename>\n\n    -rw-------. 1 root root 133 Jan 11 13:25 /etc/audisp/audisp-remote.conf\n\n    If the file is more permissive than the default permissions, this is a finding.\n\n    If the file is not owned by the default owner and is not documented with the \n    Information System Security Officer (ISSO), this is a finding.\n\n    If the file is not a member of the default group and is not documented with the \n    Information System Security Officer (ISSO), this is a finding.",
+                "fix": "Run the following command to determine which package owns the \n    file:\n\n    # rpm -qf <filename>\n\n    Reset the user and group ownership of files within a package with the \n    following command:\n\n    # rpm --setugids <packagename>\n\n\n    Reset the permissions of files within a package with the following \n    command:\n\n    # rpm --setperms <packagename>"
+            },
+            "impact": 0.7,
+            "refs": [
+                {
+                    "ref": "DPMS Target Red Hat Enterprise Linux 7"
+                }
+            ],
+            "tags": {
+                "legacy": [
+                    "V-71849",
+                    "SV-86473"
+                ],
+                "severity": "high",
+                "gtitle": "SRG-OS-000257-GPOS-00098",
+                "satisfies": [
+                    "SRG-OS-000257-GPOS-00098",
+                    "SRG-OS-000278-GPOS-00108"
+                ],
+                "gid": "V-204392",
+                "rid": "SV-204392r646841_rule",
+                "stig_id": "RHEL-07-010010",
+                "fix_id": "F-36302r646840_fix",
+                "cci": [
+                    "CCI-001494",
+                    "CCI-001496",
+                    "CCI-002165",
+                    "CCI-002235"
+                ],
+                "nist": [
+                    "AU-9",
+                    "AU-9 (3)",
+                    "AC-3 (4)",
+                    "AC-6 (10)"
+                ],
+                "subsystems": [
+                    "permissions",
+                    "package",
+                    "rpm"
+                ]
+            },
+            "code": "control \"SV-204392\" do\n  title \"The Red Hat Enterprise Linux operating system must be configured so \n    that the file permissions, ownership, and group membership of system \n    files and commands match the vendor values.\"\n  desc \"Discretionary access control is weakened if a user or group has access \n  permissions to system files and directories greater than the default.\"\n  desc \"default\", \"Discretionary access control is weakened if a user or group \n    has access permissions to system files and directories greater than the default.\"\n  desc \"check\", \"Verify the file permissions, ownership, and group membership of \n    system files and commands match the vendor values.\n\n    Check the default file permissions, ownership, and group membership of system \n    files and commands with the following command:\n\n    # for i in `rpm -Va | egrep '^.{1}M|^.{5}U|^.{6}G' | cut -d \\\" \\\" -f 4,5`;do \n    for j in `rpm -qf $i`;do rpm -ql $j --dump | cut -d \\\" \\\" -f 1,5,6,7 | grep $i;\n    done;done\n\n    /var/log/gdm 040755 root root\n    /etc/audisp/audisp-remote.conf 0100640 root root\n    /usr/bin/passwd 0104755 root root\n\n    For each file returned, verify the current permissions, ownership, and group \n    membership:\n    # ls -la <filename>\n\n    -rw-------. 1 root root 133 Jan 11 13:25 /etc/audisp/audisp-remote.conf\n\n    If the file is more permissive than the default permissions, this is a finding.\n\n    If the file is not owned by the default owner and is not documented with the \n    Information System Security Officer (ISSO), this is a finding.\n\n    If the file is not a member of the default group and is not documented with the \n    Information System Security Officer (ISSO), this is a finding.\"\n  desc \"fix\", \"Run the following command to determine which package owns the \n    file:\n\n    # rpm -qf <filename>\n\n    Reset the user and group ownership of files within a package with the \n    following command:\n\n    # rpm --setugids <packagename>\n\n\n    Reset the permissions of files within a package with the following \n    command:\n\n    # rpm --setperms <packagename>\"\n  impact 0.7\n  ref 'DPMS Target Red Hat Enterprise Linux 7'\n  tag legacy: [\"V-71849\", \"SV-86473\"]\n  tag severity: \"high\"\n  tag gtitle: \"SRG-OS-000257-GPOS-00098\"\n  tag satisfies: [\"SRG-OS-000257-GPOS-00098\", \"SRG-OS-000278-GPOS-00108\"]\n  tag gid: \"V-204392\"\n  tag rid: \"SV-204392r646841_rule\"\n  tag stig_id: \"RHEL-07-010010\"\n  tag fix_id: \"F-36302r646840_fix\"\n  tag cci: [\"CCI-001494\", \"CCI-001496\", \"CCI-002165\", \"CCI-002235\"]\n  tag nist: [\"AU-9\", \"AU-9 (3)\", \"AC-3 (4)\", \"AC-6 (10)\"]\n  tag subsystems: [\"permissions\", \"package\", \"rpm\"]\n\n  if input('disable_slow_controls')\n    describe \"This control consistently takes a long time to run and has been \n    disabled using the disable_slow_controls attribute.\" do\n      skip \"This control consistently takes a long time to run and has been disabled\n            using the disable_slow_controls attribute. You must enable this control for a\n            full accredidation for production.\"\n    end\n  else\n    allowlist = input('rpm_verify_perms_except')\n    misconfigured_packages = command('rpm -Va').stdout.split(\"\\n\")\n      .select{ |package| package[0..7].match(/M|U|G/) }\n      .map{ |package| package.match(/\\S+$/)[0] }\n    unless misconfigured_packages.empty?\n      describe \"The list of rpm packages with permissions changed from the vendor values\" do\n        fail_msg = \"Files that have been modified from vendor-approved permissions but are not in the allowlist: #{(misconfigured_packages - allowlist).join(', ')}\"\n        it \"should all appear in the allowlist\" do\n          expect(misconfigured_packages).to all( be_in allowlist ), fail_msg\n        end\n      end\n    else\n      describe \"The list of rpm packages with permissions changed from the vendor values\" do\n        subject { misconfigured_packages }\n        it { should be_empty }\n      end\n    end\n  end\nend",
+            "source_location": {
+                "ref": "./controls/SV-204392.rb",
+                "line": 3
+            },
+            "id": "SV-204392"
+        },
+        {
+            "title": "The Red Hat Enterprise Linux operating system must specify the default \n      \"include\" directory for the /etc/sudoers file.",
+            "desc": "The \"sudo\" command allows authorized users to run programs \n      (including shells) as other users, system users, and root. The \"/etc/sudoers\" \n      file is used to configure authorized \"sudo\" users as well as the programs \n      they are allowed to run. Some configuration options in the \"/etc/sudoers\" \n      file allow configured users to run programs without re-authenticating. Use of \n      these configuration options makes it easier for one compromised account to be \n      used to compromise other accounts.\n  \n      It is possible to include other sudoers files from within the sudoers file \n      currently being parsed using the #include and #includedir directives. When \n      sudo reaches this line it will suspend processing of the current file (/etc/sudoers) \n      and switch to the specified file/directory. Once the end of the included \n      file(s) is reached, the rest of /etc/sudoers will be processed. Files that \n      are included may themselves include other files. A hard limit of 128 nested \n      include files is enforced to prevent include file loops.",
+            "descriptions": {
+                "default": "The \"sudo\" command allows authorized users to run programs \n      (including shells) as other users, system users, and root. The \"/etc/sudoers\" \n      file is used to configure authorized \"sudo\" users as well as the programs \n      they are allowed to run. Some configuration options in the \"/etc/sudoers\" \n      file allow configured users to run programs without re-authenticating. Use of \n      these configuration options makes it easier for one compromised account to be \n      used to compromise other accounts.\n  \n      It is possible to include other sudoers files from within the sudoers file \n      currently being parsed using the #include and #includedir directives. When \n      sudo reaches this line it will suspend processing of the current file (/etc/sudoers) \n      and switch to the specified file/directory. Once the end of the included \n      file(s) is reached, the rest of /etc/sudoers will be processed. Files that \n      are included may themselves include other files. A hard limit of 128 nested \n      include files is enforced to prevent include file loops.",
+                "check": "Verify the operating system specifies only the default \"include\"\n      directory for the /etc/sudoers file with the following command:\n  \n      $ sudo grep include /etc/sudoers\n  \n      #includedir /etc/sudoers.d\n  \n      If the results are not \"/etc/sudoers.d\" or additional files or directories \n      are specified, this is a finding.\n  \n      Verify the operating system does not have nested \"include\" files or directories \n      within the /etc/sudoers.d directory with the following command:\n  \n      $ sudo grep include /etc/sudoers.d/*\n  \n      If results are returned, this is a finding.",
+                "fix": "Configure the /etc/sudoers file to only include the /etc/sudoers.d \n      directory.\n  \n      Edit the /etc/sudoers file with the following command:\n      \n      $ sudo visudo\n      \n      Add or modify the following line:\n      #includedir /etc/sudoers.d"
+            },
+            "impact": 0.5,
+            "refs": [
+                {
+                    "ref": "DPMS Target Red Hat Enterprise Linux 7"
+                }
+            ],
+            "tags": {
+                "severity": "medium",
+                "gtitle": "SRG-OS-000480-GPOS-00227",
+                "gid": "V-251703",
+                "rid": "SV-251703r809566_rule",
+                "stig_id": "RHEL-07-010339",
+                "fix_id": "F-55094r809222_fix",
+                "cci": [
+                    "CCI-000366"
+                ],
+                "legacy": [],
+                "subsystems": [
+                    "sudo"
+                ]
+            },
+            "code": "control \"SV-251703\" do\n    title \"The Red Hat Enterprise Linux operating system must specify the default \n      \\\"include\\\" directory for the /etc/sudoers file.\"\n    desc \"The \\\"sudo\\\" command allows authorized users to run programs (including \n      shells) as other users, system users, and root. The \\\"/etc/sudoers\\\" file \n      is used to configure authorized \\\"sudo\\\" users as well as the programs \n      they are allowed to run. Some configuration options in the \\\"/etc/sudoers\\\" \n      file allow configured users to run programs without re-authenticating. Use of \n      these configuration options makes it easier for one compromised account to be \n      used to compromise other accounts.\n  \n      It is possible to include other sudoers files from within the sudoers file \n      currently being parsed using the #include and #includedir directives. When \n      sudo reaches this line it will suspend processing of the current file (/etc/sudoers) \n      and switch to the specified file/directory. Once the end of the included file(s) \n      is reached, the rest of /etc/sudoers will be processed. Files that are included \n      may themselves include other files. A hard limit of 128 nested include files \n      is enforced to prevent include file loops.\"\n    desc \"default\", \"The \\\"sudo\\\" command allows authorized users to run programs \n      (including shells) as other users, system users, and root. The \\\"/etc/sudoers\\\" \n      file is used to configure authorized \\\"sudo\\\" users as well as the programs \n      they are allowed to run. Some configuration options in the \\\"/etc/sudoers\\\" \n      file allow configured users to run programs without re-authenticating. Use of \n      these configuration options makes it easier for one compromised account to be \n      used to compromise other accounts.\n  \n      It is possible to include other sudoers files from within the sudoers file \n      currently being parsed using the #include and #includedir directives. When \n      sudo reaches this line it will suspend processing of the current file (/etc/sudoers) \n      and switch to the specified file/directory. Once the end of the included \n      file(s) is reached, the rest of /etc/sudoers will be processed. Files that \n      are included may themselves include other files. A hard limit of 128 nested \n      include files is enforced to prevent include file loops.\"\n    desc \"check\", \"Verify the operating system specifies only the default \\\"include\\\"\n      directory for the /etc/sudoers file with the following command:\n  \n      $ sudo grep include /etc/sudoers\n  \n      #includedir /etc/sudoers.d\n  \n      If the results are not \\\"/etc/sudoers.d\\\" or additional files or directories \n      are specified, this is a finding.\n  \n      Verify the operating system does not have nested \\\"include\\\" files or directories \n      within the /etc/sudoers.d directory with the following command:\n  \n      $ sudo grep include /etc/sudoers.d/*\n  \n      If results are returned, this is a finding.\"\n    desc \"fix\", \"Configure the /etc/sudoers file to only include the /etc/sudoers.d \n      directory.\n  \n      Edit the /etc/sudoers file with the following command:\n      \n      $ sudo visudo\n      \n      Add or modify the following line:\n      #includedir /etc/sudoers.d\"\n    impact 0.5\n    ref 'DPMS Target Red Hat Enterprise Linux 7'\n    tag severity: \"medium\"\n    tag gtitle: \"SRG-OS-000480-GPOS-00227\"\n    tag gid: \"V-251703\"\n    tag rid: \"SV-251703r809566_rule\"\n    tag stig_id: \"RHEL-07-010339\"\n    tag fix_id: \"F-55094r809222_fix\"\n    tag cci: [\"CCI-000366\"]\n    tag legacy: []\n    tag subsystems: [\"sudo\"]\n  \n    if virtualization.system.eql?('docker') && !command(\"sudo\").exist?\n      impact 0.0\n      describe \"Control not applicable within a container without sudo enabled\" do\n        skip \"Control not applicable within a container without sudo enabled\"\n      end\n    else\n      options = {\n        assignment_regex: /^(#includedirs?)\\s*(.*?)\\s*$/\n      }\n      describe parse_config_file('/etc/sudoers', options) do\n        its('#includedirs') { should cmp '/etc/sudoers.d' }\n      end\n      describe command('grep include /etc/sudoers.d') do\n        its('stdout') { should be_empty }\n      end\n    end\n  end",
+            "source_location": {
+                "ref": "./controls/SV-251703.rb",
+                "line": 3
+            },
+            "id": "SV-251703"
+        },
+        {
+            "title": "The Red Hat Enterprise Linux operating system must be configured so that all local initialization files for\n    interactive users are owned by the home directory user or root.",
+            "desc": "Local initialization files are used to configure the user's shell environment upon logon. Malicious\n    modification of these files could compromise accounts upon logon.",
+            "descriptions": {
+                "default": "Local initialization files are used to configure the user's shell environment upon logon. Malicious\n    modification of these files could compromise accounts upon logon.",
+                "rationale": "",
+                "check": "Verify the local initialization files of all local interactive users are owned by that user.\n    Check the home directory assignment for all non-privileged users on the system with the following command:\n    Note: The example will be for the smithj user, who has a home directory of \"/home/smithj\".\n    # awk -F: '($3>=1000)&&($7 !~ /nologin/){print $1, $3, $6}' /etc/passwd\n    smithj 1000 /home/smithj\n    Note: This may miss interactive users that have been assigned a privileged User Identifier (UID). Evidence of\n    interactive use may be obtained from a number of log files containing system logon information.\n    Check the owner of all local interactive user's initialization files with the following command:\n    # ls -al /home/smithj/.[^.]* | more\n    -rwxr-xr-x 1 smithj users 896 Mar 10 2011 .profile\n    -rwxr-xr-x 1 smithj users 497 Jan 6 2007 .login\n    -rwxr-xr-x 1 smithj users 886 Jan 6 2007 .something\n    If all local interactive user's initialization files are not owned by that user or root, this is a finding.",
+                "fix": "Set the owner of the local initialization files for interactive users to\neither the directory owner or root with the following command:\n\n    Note: The example will be for the smithj user, who has a home directory of\n\"/home/smithj\".\n\n    # chown smithj /home/smithj/.[^.]*"
+            },
+            "impact": 0.5,
+            "refs": [],
+            "tags": {
+                "legacy": [
+                    "V-72029",
+                    "SV-86653"
+                ],
+                "severity": "medium",
+                "gtitle": "SRG-OS-000480-GPOS-00227",
+                "gid": "V-204474",
+                "rid": "SV-204474r603834_rule",
+                "stig_id": "RHEL-07-020690",
+                "fix_id": "F-4598r462464_fix",
+                "cci": [
+                    "CCI-000366"
+                ],
+                "nist": [
+                    "CM-6 b"
+                ],
+                "subsystems": [
+                    "init_files"
+                ],
+                "host": null
+            },
+            "code": "control 'SV-204474' do\n  title 'The Red Hat Enterprise Linux operating system must be configured so that all local initialization files for\n    interactive users are owned by the home directory user or root.'\n  desc \"Local initialization files are used to configure the user's shell environment upon logon. Malicious\n    modification of these files could compromise accounts upon logon.\"\n  desc 'rationale', ''\n  desc 'check', %q{Verify the local initialization files of all local interactive users are owned by that user.\n    Check the home directory assignment for all non-privileged users on the system with the following command:\n    Note: The example will be for the smithj user, who has a home directory of \"/home/smithj\".\n    # awk -F: '($3>=1000)&&($7 !~ /nologin/){print $1, $3, $6}' /etc/passwd\n    smithj 1000 /home/smithj\n    Note: This may miss interactive users that have been assigned a privileged User Identifier (UID). Evidence of\n    interactive use may be obtained from a number of log files containing system logon information.\n    Check the owner of all local interactive user's initialization files with the following command:\n    # ls -al /home/smithj/.[^.]* | more\n    -rwxr-xr-x 1 smithj users 896 Mar 10 2011 .profile\n    -rwxr-xr-x 1 smithj users 497 Jan 6 2007 .login\n    -rwxr-xr-x 1 smithj users 886 Jan 6 2007 .something\n    If all local interactive user's initialization files are not owned by that user or root, this is a finding.}\n  desc  'fix', \"\n    Set the owner of the local initialization files for interactive users to\neither the directory owner or root with the following command:\n\n    Note: The example will be for the smithj user, who has a home directory of\n\\\"/home/smithj\\\".\n\n    # chown smithj /home/smithj/.[^.]*\n  \"\n  impact 0.5\n  tag 'legacy': ['V-72029', 'SV-86653']\n  tag 'severity': 'medium'\n  tag 'gtitle': 'SRG-OS-000480-GPOS-00227'\n  tag 'gid': 'V-204474'\n  tag 'rid': 'SV-204474r603834_rule'\n  tag 'stig_id': 'RHEL-07-020690'\n  tag 'fix_id': 'F-4598r462464_fix'\n  tag 'cci': ['CCI-000366']\n  tag nist: ['CM-6 b']\n  tag subsystems: [\"init_files\"]\n  tag 'host'\n\n  if virtualization.system.eql?('docker')\n    impact 0.0\n    describe \"Control not applicable to a container\" do\n      skip \"Control not applicable to a container\"\n    end\n  else \n\n    exempt_home_users = input('exempt_home_users')\n    non_interactive_shells = input('non_interactive_shells')\n\n    ignore_shells = non_interactive_shells.join('|')\n\n    findings = Set[]\n    users.where do\n      !shell.match(ignore_shells) && (uid >= 1000 || uid == 0)\n    end.entries.each do |user_info|\n      next if exempt_home_users.include?(user_info.username.to_s)\n\n      findings += command(\"find #{user_info.home} -name '.*' -not -user #{user_info.username} -a -not -user root\").stdout.split(\"\\n\")\n    end\n    describe 'Files and Directories not owned by the user or root of the parent home directory' do\n      subject { findings.to_a }\n      it { should be_empty }\n    end\n  end\nend\n",
+            "source_location": {
+                "ref": "./controls/SV-204474.rb",
+                "line": 1
+            },
+            "id": "SV-204474"
+        },
+        {
+            "title": "The Red Hat Enterprise Linux operating system must generate audit records for all account creations,\n    modifications, disabling, and termination events that affect /etc/group.",
+            "desc": "Without generating audit records that are specific to the security and mission needs of the organization, it\n    would be difficult to establish, correlate, and investigate the events relating to an incident or identify those\n    responsible for one.\n    Audit records can be generated from various components within the information system (e.g., module or policy\n    filter).",
+            "descriptions": {
+                "default": "Without generating audit records that are specific to the security and mission needs of the organization, it\n    would be difficult to establish, correlate, and investigate the events relating to an incident or identify those\n    responsible for one.\n    Audit records can be generated from various components within the information system (e.g., module or policy\n    filter).",
+                "rationale": "",
+                "check": "Verify the operating system must generate audit records for all account creations, modifications,\n    disabling, and termination events that affect \"/etc/group\".\n    Check the auditing rules in \"/etc/audit/audit.rules\" with the following command:\n    # grep /etc/group /etc/audit/audit.rules\n    -w /etc/group -p wa -k identity\n    If the command does not return a line, or the line is commented out, this is a finding.",
+                "fix": "Configure the operating system to generate audit records for all account creations, modifications,\n    disabling, and termination events that affect \"/etc/group\".\n    Add or update the following rule in \"/etc/audit/rules.d/audit.rules\":\n    -w /etc/group -p wa -k identity\n    The audit daemon must be restarted for the changes to take effect."
+            },
+            "impact": 0.5,
+            "refs": [],
+            "tags": {
+                "legacy": [
+                    "SV-87817",
+                    "V-73165"
+                ],
+                "severity": "medium",
+                "gtitle": "SRG-OS-000004-GPOS-00004",
+                "gid": "V-204565",
+                "rid": "SV-204565r603261_rule",
+                "stig_id": "RHEL-07-030871",
+                "fix_id": "F-4689r88888_fix",
+                "cci": [
+                    "CCI-000018",
+                    "CCI-000172",
+                    "CCI-001403",
+                    "CCI-002130"
+                ],
+                "nist": [
+                    "AC-2 (4)",
+                    "AU-12 c",
+                    "AC-2 (4)",
+                    "AC-2 (4)"
+                ],
+                "subsystems": [
+                    "audit",
+                    "auditd",
+                    "audit_rule"
+                ],
+                "host": null
+            },
+            "code": "control 'SV-204565' do\n  title 'The Red Hat Enterprise Linux operating system must generate audit records for all account creations,\n    modifications, disabling, and termination events that affect /etc/group.'\n  desc 'Without generating audit records that are specific to the security and mission needs of the organization, it\n    would be difficult to establish, correlate, and investigate the events relating to an incident or identify those\n    responsible for one.\n    Audit records can be generated from various components within the information system (e.g., module or policy\n    filter).'\n  desc 'rationale', ''\n  desc 'check', 'Verify the operating system must generate audit records for all account creations, modifications,\n    disabling, and termination events that affect \"/etc/group\".\n    Check the auditing rules in \"/etc/audit/audit.rules\" with the following command:\n    # grep /etc/group /etc/audit/audit.rules\n    -w /etc/group -p wa -k identity\n    If the command does not return a line, or the line is commented out, this is a finding.'\n  desc 'fix', 'Configure the operating system to generate audit records for all account creations, modifications,\n    disabling, and termination events that affect \"/etc/group\".\n    Add or update the following rule in \"/etc/audit/rules.d/audit.rules\":\n    -w /etc/group -p wa -k identity\n    The audit daemon must be restarted for the changes to take effect.'\n  tag 'legacy': ['SV-87817', 'V-73165']\n  tag 'severity': 'medium'\n  tag 'gtitle': 'SRG-OS-000004-GPOS-00004'\n  tag 'gid': 'V-204565'\n  tag 'rid': 'SV-204565r603261_rule'\n  tag 'stig_id': 'RHEL-07-030871'\n  tag 'fix_id': 'F-4689r88888_fix'\n  tag 'cci': ['CCI-000018', 'CCI-000172', 'CCI-001403', 'CCI-002130']\n  tag nist: ['AC-2 (4)', 'AU-12 c', 'AC-2 (4)', 'AC-2 (4)']\n  tag subsystems: [\"audit\",\"auditd\",\"audit_rule\"]\n  tag 'host'\n\n  audit_command = '/etc/group'\n\n  if virtualization.system.eql?('docker')\n    impact 0.0\n    describe \"Control not applicable - audit config must be done on the host\" do\n      skip \"Control not applicable - audit config must be done on the host\"\n    end\n  else\n    describe \"Command\" do\n      it \"#{audit_command} is audited properly\" do\n        audit_rule = auditd.file(audit_command)\n        expect(audit_rule).to exist\n        expect(audit_rule.key).to cmp 'identity'\n        expect(audit_rule.permissions.flatten).to include('w', 'a')\n      end\n    end\n  end\nend\n",
+            "source_location": {
+                "ref": "./controls/SV-204565.rb",
+                "line": 1
+            },
+            "id": "V-73165"
+        }
+    ],
+    "groups": [
+        {
+            "title": null,
+            "controls": [
+                "SV-204392"
+            ],
+            "id": "controls/SV-204392.rb"
+        },
+        {
+            "title": null,
+            "controls": [
+                "SV-251703"
+            ],
+            "id": "controls/SV-251703.rb"
+        },
+        {
+            "title": null,
+            "controls": [
+                "SV-204474"
+            ],
+            "id": "controls/SV-204474.rb"
+        },
+        {
+            "title": null,
+            "controls": [
+                "V-73165"
+            ],
+            "id": "controls/V-73165.rb"
+        }        
+    ],
+    "sha256": "68a785be0e25cd3dfe50d0850678bc6f18250033e501bb9f02f0276be6bdde10",
+    "status_message": "",
+    "status": "loaded",
+    "generator": {
+        "name": "inspec",
+        "version": "5.18.14"
+    }
+}

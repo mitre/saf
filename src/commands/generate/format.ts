@@ -11,14 +11,14 @@ export default class GenerateFormat extends Command {
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, multiple: true, description: 'Input execution/profile JSON file(s) and InSpec Profile Folder'}),
-    report: Flags.string({char: 'r', required: false, description: 'Output markdown report file'}),
+    inspecJsonFile: Flags.string({char: 'J', required: true, description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command'}),
+    output: Flags.string({char: 'o', required: true, description: 'The output folder for the updated profile - if it is not empty, it will be overwritten'}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
   static examples = [
-    'saf generate format -i ./redhat-enterprise-linux-6-stig-baseline/ ./redhat-enterprise-linux-6-stig-baseline/profile.json --logLevel debug -r rhel-6-format-report.md',
-    'saf generate format -i ./canonical-ubuntu-18.04-lts-server-cis-baseline ./canonical-ubuntu-18.04-lts-server-cis-baseline/profile.json --logLevel debug',
+    'saf generate format -o ./redhat-enterprise-linux-6-stig-baseline/ -J ./redhat-enterprise-linux-6-stig-baseline/profile.json --logLevel debug -r rhel-6-format-report.md',
+    'saf generate format -o ./canonical-ubuntu-18.04-lts-server-cis-baseline -J ./canonical-ubuntu-18.04-lts-server-cis-baseline/profile.json --logLevel debug',
   ]
 
   async run() {
@@ -31,56 +31,53 @@ export default class GenerateFormat extends Command {
     let controls: Record<string, string> = {}
     let existingProfile: any | null = null
 
-    let existingProfileFolderPath = ''
+    let markDownFile = ''
+    let outputProfileFolderPath = ''
 
-    flags.input.forEach((inputPath: string) => {
-      // Check if input is a folder
-      if (fs.lstatSync(inputPath).isDirectory()) {
-        logger.debug(`Loading profile folder ${inputPath}`)
-        const controlFiles = fs.readdirSync(path.join(inputPath, 'controls')).filter(file => file.toLowerCase().endsWith('.rb'))
-        logger.debug(`Found ${controlFiles.length} control files in ${inputPath}`)
-
-        controls = {}
-        // Read all control files into an array as strings
-        controlFiles.forEach(control => {
-          const controlData = fs.readFileSync(path.join(inputPath, 'controls', control), 'utf8')
-          controls[control.replace('.rb', '')] = controlData
-        })
-
-        logger.debug(`Loaded ${inputPath} as profile folder`)
-
-        existingProfileFolderPath = inputPath
-      } else {
-        try {
-          // This should fail if we aren't passed an execution/profile JSON
-          logger.debug(`Loading ${inputPath} as Profile JSON/Execution JSON`)
-          existingProfile = processInSpecProfile(fs.readFileSync(inputPath, 'utf8'))
-          logger.debug(`Loaded ${inputPath} as Profile JSON/Execution JSON`)
-        } catch (error) {
-          try {
-            // Check if we have an XCCDF XML file
-            const inputFile = fs.readFileSync(inputPath, 'utf8')
-            const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase()
-            if (inputFirstLine.includes('xccdf')) {
-              logger.debug(`No need to input XCCDF definitions at ${inputPath} for formatting only. To run a delta command, check "saf generate delta -h" instead.`)
-            } else if (inputFirstLine.includes('oval_definitions')) {
-              logger.debug(`No need to input OVAL definitions at ${inputPath} for formatting only. To run a delta command, check "saf generate delta -h" instead.`)
-            } else {
-              logger.error(`Unable to load ${inputPath} as XCCDF or OVAL`)
-              process.exit(1)
-            }
-
-            logger.debug(`Loaded ${inputPath} as XCCDF`)
-          } catch (xccdfError) {
-            logger.error(`Could not load ${inputPath} as an execution/profile JSON because:`)
-            logger.error(error)
-            logger.error(`Could not load ${inputPath} as an XCCDF/OVAL XML file because:`)
-            logger.error(xccdfError)
-            throw error
-          }
-        }
+    // Process the Input execution/profile JSON file
+    try {
+      if (fs.lstatSync(flags.inspecJsonFile).isFile()) {
+        const inspecJsonFile = flags.inspecJsonFile
+        logger.debug(`Loading ${inspecJsonFile} as Profile JSON/Execution JSON`)
+        existingProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
+        logger.debug(`Loaded ${inspecJsonFile} as Profile JSON/Execution JSON`)
       }
-    })
+    } catch (error: any) {
+      if (error.code === 'ENOENT') {
+        logger.error(`ERROR: No entity found for: ${flags.inspecJsonFile}. Run the --help command to more information on expected input files.`)
+        throw error
+      } else {
+        logger.error(`ERROR: Unable to process Input execution/profile JSON ${flags.inspecJsonFile} because: ${error}`)
+        throw error
+      }
+    }
+
+    // Process the output folder
+    try {
+      // Create the folder if it doesn't exist
+      if (!fs.existsSync(flags.output)) {
+        fs.mkdirSync(path.join(flags.output), {recursive: true})
+      }
+
+      if (path.basename(flags.output) === 'controls') {
+        logger.debug(`Deleting existing profile folder ${flags.output}`)
+        fse.emptyDirSync(flags.output)
+        outputProfileFolderPath = path.dirname(flags.output)
+      } else {
+        const controlDir = path.join(flags.output, 'controls')
+        if (fs.existsSync(controlDir)) {
+          logger.debug(`Deleting content within existing controls folder within the profile folder ${flags.output}`)
+          fse.emptyDirSync(controlDir)
+        } else {
+          fse.mkdirSync(controlDir)
+        }
+
+        outputProfileFolderPath = flags.output
+      }
+    } catch (error: any) {
+      logger.error(`ERROR: Could not process output ${flags.output}. Check the --help command for more information on the -o flag.`)
+      throw error
+    }
 
     // If all variables have been satisfied, we can generate the delta
     if (existingProfile) {
@@ -90,16 +87,16 @@ export default class GenerateFormat extends Command {
       }
 
       // If existingProfileFolderPath exists
-      if (existingProfileFolderPath && fs.existsSync(path.join(existingProfileFolderPath, 'controls'))) {
-        logger.debug(`Deleting existing profile folder ${path.join(existingProfileFolderPath, 'controls')}`)
-        fse.emptyDirSync(path.join(existingProfileFolderPath, 'controls'))
+      if (outputProfileFolderPath && fs.existsSync(path.join(outputProfileFolderPath, 'controls'))) {
+        logger.debug(`Deleting existing profile folder ${path.join(outputProfileFolderPath, 'controls')}`)
+        fse.emptyDirSync(path.join(outputProfileFolderPath, 'controls'))
       }
 
       logger.debug('Formatting the original controls with no diff.')
       existingProfile.controls.forEach((control: Control) => {
         // Write the new control to the controls folder
         logger.debug(`Writing updated control ${control.id} to profile`)
-        fs.writeFileSync(path.join(existingProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby()) // Ensure we always have a newline at EOF
+        fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby()) // Ensure we always have a newline at EOF
       })
     }
   }
