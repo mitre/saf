@@ -36,8 +36,8 @@ export default class HDF2CKL extends Command {
     const cklMetadata: CKLMetadata = {
       fileName: convertFullPathToFilename(flags.input),
       benchmark: {
-        title: null,
-        version: null,
+        title: profileName || null,
+        version: '1',
         plaintext: null,
       },
       stigid: profileName || null,
