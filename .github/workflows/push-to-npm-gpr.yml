@@ -1,4 +1,4 @@
-name: Push SAF-CLI to NPM
+name: Push SAF-CLI to NPM and GPR
 on:
   release:
     types: [published]
@@ -28,3 +28,15 @@ jobs:
         run: npm publish --access public mitre-saf-v*.tgz
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Setup .npmrc file to publish to GitHub Package Registry
+      - uses: actions/setup-node@v3
+        with:
+          registry-url: 'https://npm.pkg.github.com'
+          scope: '@mitre'
+
+      # Publish SAF CLI to GitHub Package Registry
+      - name: Publish SAF CLI to GPR
+        run: npm publish mitre-saf-v*.tgz
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
