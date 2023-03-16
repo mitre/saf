@@ -5,12 +5,12 @@ on:
 
 jobs:
   build-deploy:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
 
       - name: setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: "16.x"
           registry-url: 'https://registry.npmjs.org'
@@ -37,6 +37,6 @@ jobs:
 
       # Publish SAF CLI to GitHub Package Registry
       - name: Publish SAF CLI to GPR
-        run: npm publish mitre-saf-v*.tgz
+        run: npm publish --access public mitre-saf-v*.tgz
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}      
