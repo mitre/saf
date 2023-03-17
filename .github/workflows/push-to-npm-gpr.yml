@@ -15,11 +15,11 @@ jobs:
           node-version: "16.x"
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Install project dependencies
-        run: yarn install --frozen-lockfile --production
-
       - name: Remove testing resources
         run: rm -rf test
+
+      - name: Install project dependencies
+        run: yarn install --frozen-lockfile --production
 
       - name: Pack all items that are published as packages
         run: yarn pack
