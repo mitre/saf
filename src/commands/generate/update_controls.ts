@@ -57,7 +57,7 @@ export default class UpdateControls extends Command {
     // Check if we have a controls folder
     if (fs.existsSync(flags.controlsDir)) {
       logger.debug('Found controls directory')
-      fs.readdir(flags.controlsDir, function (err, files) {
+      fs.readdir(flags.controlsDir, function (err, files) { // skipcq: JS-0241
         if (err) {
           logger.error(`ERROR: Checking in controls directory is empty, received: ${err.message}`)
           throw new Error(`Error checking controls directory, error: ${err.message}`)
@@ -83,7 +83,7 @@ export default class UpdateControls extends Command {
     const xccdf = fs.readFileSync(flags.xccdfXmlFile, 'utf8')
     /* eslint-disable prefer-const, max-depth */
     let profile: Profile
-    profile = processXCCDF(xccdf, false, 'rule')
+    profile = processXCCDF(xccdf, false, 'rule') // skipcq: JS-0242
 
     // Create a map with: key = legacy id (v or SV number) and value = new id (SV number)
     const controlsMap = new Map()
