@@ -1018,7 +1018,32 @@ validate threshold            Validate the compliance and status counts of an HD
 
 ### Generate
 
+#### Update Controls
+Use this process prior of running the `Delta` if the updated guidance's have new control numbers. Running this process minimizes the delta output content and makes for better and easier visualization of the modification provided by the Delta process.
+
+```
+USAGE
+  $ saf generate update_controls -X <value> -c <value> [-P V|VS] [--[no-]backupControls] [-r <value>] [-L info|warn|debug|verbose]
+
+FLAGS
+  -h, --help                    Show CLI help.
+  -X, --xccdfXmlFile=<value>    (required) The XCCDF XML file containing the new guidance - in the form of .xml file
+  -c, --controlsDir=<value>     (required) The InsPect profile controls directory containing the profiles to be updated  
+  -P, --controlPrefix=<option>  [default: V] Old control number prefix V or SV, default V
+                                <options: V|SV>
+  -b, --[no-]backupControls     Create an oldControls directory in the controls directory and save old controls there
+  -L, --logLevel=<option>       [default: info]
+                                <options: info|warn|debug|verbose> 
+
+EXAMPLES
+  $ saf generate update_controls -X ./the_xccdf_guidance_file.xml  -c the_controls_directory -L debug
+  $ saf generate update_controls -X ./the_xccdf_guidance_file.xml  -c the_controls_directory --no-backupControls -P SV -L debug
+```
+[top](#generate-data-reports-and-more)
+
 #### Delta
+
+See the wiki for more information on 👉 [Delta](https://github.com/mitre/saf/wiki/Delta-(WIP)).
 
 ```
 Update an existing InSpec profile with updated XCCDF guidance
