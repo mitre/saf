@@ -5,6 +5,7 @@ import {Command, Flags} from '@oclif/core'
 import {processXCCDF} from '@mitre/inspec-objects'
 import {createWinstonLogger} from '../../utils/logging'
 import Profile from '@mitre/inspec-objects/lib/objects/profile'
+import colors from 'colors' // eslint-disable-line no-restricted-imports
 
 export default class UpdateControls extends Command {
   static usage = '<%= command.id %> [ARGUMENTS]'
@@ -15,7 +16,7 @@ export default class UpdateControls extends Command {
     help: Flags.help({char: 'h'}),
     xccdfXmlFile: Flags.string({char: 'X', required: true, description: 'The XCCDF XML file containing the new guidance - in the form of .xml file'}),
     controlsDir: Flags.string({char: 'c', required: true, description: 'The InsPect profile controls directory containing the profiles to be updated'}),
-    controlPrefix: Flags.string({char: 'P', required: false, default: 'V', options: ['V', 'SV'], description: 'New control number prefix V or SV, default V'}),
+    controlPrefix: Flags.string({char: 'P', required: false, default: 'V', options: ['V', 'SV'], description: 'Old control number prefix V or SV, default V'}),
     backupControls: Flags.boolean({char: 'b', required: false, default: true, allowNo: true, description: 'Create an oldControls directory in the controls directory and save old controls there'}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
@@ -86,34 +87,46 @@ export default class UpdateControls extends Command {
     profile = processXCCDF(xccdf, false, 'rule') // skipcq: JS-0242
 
     // Create a map with: key = legacy id (v or SV number) and value = new id (SV number)
-    const controlsMap = new Map()
+    const xccdfControlsMap = new Map()
+    const newControlsMap = new Map()
     profile.controls.forEach(control => {
       const controlId = control.tags.legacy?.map(value => {
-        // let control: string | undefined
         const control = flags.controlPrefix === 'V' ? value.match(/^V-\d+/)?.toString() : value.match(/^SV-\d+/)?.toString()
         return (control === undefined) ? '' : control
       }).find(Boolean)
 
-      controlsMap.set(controlId, control.id)
+      xccdfControlsMap.set(controlId, control.id)
+      newControlsMap.set(control.id, control.id)
     })
 
     logger.debug(`Processing controls directory: ${flags.controlsDir} and updating controls file name and Id.`)
     const ext = '.rb'
-    let processed = 0
     let skipped = 0
+    let processed = 0
+    let isNewControl = 0
     const controlsDir = flags.controlsDir
     const files = await readdir(controlsDir)
 
     // Iterate trough all files processing ony control files, have a .rb extension
+    let skippedControls = []
+    let isNewControlMap  = new Map()
     const controlsProcessedMap = new Map()
     for (const file of files) {
       const fileExt = path.extname(file)
       if (fileExt === ext) {
         const oldControlNumber = path.parse(file).name
-        const newControlNumber = controlsMap.get(path.parse(file).name)
+        const newControlNumber = xccdfControlsMap.get(oldControlNumber)
+        // No mapping for the control being processed, either:
+        //    1-New Control
+        //    2-Already has correct control Id
         if (newControlNumber === undefined) {
-          skipped++
-          console.log('No SV number found, skipping file:', file)
+          if (newControlsMap.has(oldControlNumber)) {
+            isNewControl++
+            isNewControlMap.set(oldControlNumber, oldControlNumber)
+          } else {
+            skipped++
+            skippedControls.push(oldControlNumber)
+          }
         } else {
           const filePath = path.join(controlsDir, file)
           // Read the control content
@@ -142,17 +155,21 @@ export default class UpdateControls extends Command {
     }
 
     let newControls = 0
-    let newControlsId = ''
-    for (const newControl of controlsMap.values()) {
-      if (!controlsProcessedMap.has(newControl)) {
+    let newControlsFound = []
+    for (const newControl of xccdfControlsMap.values()) {
+      if (!controlsProcessedMap.has(newControl) && !isNewControlMap.has(newControl)) {
         newControls++
-        newControlsId += newControl + ' '
+        newControlsFound.push(newControl)
       }
     }
 
-    console.log(`Total skipped files: ${skipped}`)
-    console.log(`Total processed files: ${processed}`)
-    console.log(`Total new controls found in the XCCDF guidance: ${newControls}`)
-    console.log(`New control(s) found: ${newControlsId}`)
+    console.log(colors.yellow('\n     Total skipped files - no mapping to new control Id:'), `${colors.green(skipped.toString())}`)
+    console.log(colors.yellow('Total processed files - found mapping to new control Id: '), `${colors.green(processed.toString())}`)
+
+    console.log(colors.yellow('\n    Total controls with correct identification: '), `${colors.green(isNewControl.toString())}`)
+    console.log(colors.yellow('Total new controls found in the XCCDF guidance: '), `${colors.green(newControls.toString())}`)
+
+    console.log(colors.yellow('\nSkipped controls - not included in XCCDF guidance: '), `${colors.green(skippedControls.toString())}`)
+    console.log(colors.yellow('\nNew control(s) found - included in XCCDF guidance: '), `${colors.green(newControlsFound.toString())}`)
   }
 }
