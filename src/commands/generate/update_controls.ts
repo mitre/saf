@@ -163,11 +163,11 @@ export default class UpdateControls extends Command {
       }
     }
 
-    console.log(colors.yellow('\n     Total skipped files - no mapping to new control Id:'), `${colors.green(skipped.toString())}`)
-    console.log(colors.yellow('Total processed files - found mapping to new control Id: '), `${colors.green(processed.toString())}`)
+    console.log(colors.yellow('\n     Total skipped files - no mapping to new control Id:'), colors.green(`${skipped.toString().padStart(4)}`))
+    console.log(colors.yellow('Total processed files - found mapping to new control Id: '), colors.green(`${processed.toString().padStart(3)}`))
 
-    console.log(colors.yellow('\n    Total controls with correct identification: '), `${colors.green(isNewControl.toString())}`)
-    console.log(colors.yellow('Total new controls found in the XCCDF guidance: '), `${colors.green(newControls.toString())}`)
+    console.log(colors.yellow('\n    Total controls with correct identification: '), colors.green(`${isNewControl.toString().padStart(3)}`))
+    console.log(colors.yellow('Total new controls found in the XCCDF guidance: '), colors.green(`${newControls.toString().padStart(3)}`))
 
     console.log(colors.yellow('\nSkipped controls - not included in XCCDF guidance: '), `${colors.green(skippedControls.toString())}`)
     console.log(colors.yellow('\nNew control(s) found - included in XCCDF guidance: '), `${colors.green(newControlsFound.toString())}`)
