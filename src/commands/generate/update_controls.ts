@@ -108,8 +108,8 @@ export default class UpdateControls extends Command {
     const files = await readdir(controlsDir)
 
     // Iterate trough all files processing ony control files, have a .rb extension
-    let skippedControls = []
-    let isNewControlMap  = new Map()
+    const skippedControls = []
+    const isNewControlMap  = new Map()
     const controlsProcessedMap = new Map()
     for (const file of files) {
       const fileExt = path.extname(file)
@@ -155,7 +155,7 @@ export default class UpdateControls extends Command {
     }
 
     let newControls = 0
-    let newControlsFound = []
+    const newControlsFound = []
     for (const newControl of xccdfControlsMap.values()) {
       if (!controlsProcessedMap.has(newControl) && !isNewControlMap.has(newControl)) {
         newControls++
