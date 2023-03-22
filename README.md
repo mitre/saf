@@ -1023,21 +1023,24 @@ Use this process prior of running the `Delta` if the updated guidance's have new
 
 ```
 USAGE
-  $ saf generate update_controls -X <value> -c <value> [-P V|VS] [--[no-]backupControls] [-r <value>] [-L info|warn|debug|verbose]
+  $ saf generate update_controls -X <value> -J <value> -c <value> [-P V|VS] [--[no-]backupControls] [--[no-]formatControls] [-L info|warn|debug|verbose]
 
 FLAGS
   -h, --help                    Show CLI help.
   -X, --xccdfXmlFile=<value>    (required) The XCCDF XML file containing the new guidance - in the form of .xml file
+  -J, --inspecJsonFile=<value>  Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command
   -c, --controlsDir=<value>     (required) The InsPect profile controls directory containing the profiles to be updated  
   -P, --controlPrefix=<option>  [default: V] Old control number prefix V or SV, default V
                                 <options: V|SV>
   -b, --[no-]backupControls     Create an oldControls directory in the controls directory and save old controls there
+  -f, --[no-]formatControls     Format controls to be satisfy ruby compliance
   -L, --logLevel=<option>       [default: info]
                                 <options: info|warn|debug|verbose> 
 
 EXAMPLES
-  $ saf generate update_controls -X ./the_xccdf_guidance_file.xml  -c the_controls_directory -L debug
-  $ saf generate update_controls -X ./the_xccdf_guidance_file.xml  -c the_controls_directory --no-backupControls -P SV -L debug
+  $ saf generate update_controls -X ./the_xccdf_guidance_file.xml  -J ./the_profile_json -c the_controls_directory -L debug
+  $ saf generate update_controls -X ./the_xccdf_guidance_file.xml  -c the_controls_directory --no-formatControls -P SV -L debug
+  $ saf generate update_controls -X ./the_xccdf_guidance_file.xml  -c the_controls_directory --no-backupControls --no-formatControls -P SV -L debug
 ```
 [top](#generate-data-reports-and-more)
 
