@@ -16,7 +16,7 @@ export default class GenerateThreshold extends Command {
   static flags = {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true, description: 'Input HDF JSON File'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output Threshold YAML File'}),
+    output: Flags.string({char: 'o', required: false, description: 'Output Threshold YAML File'}),
     exact: Flags.boolean({char: 'e', description: 'All counts should be exactly the same when validating, not just less than or greater than'}),
     generateControlIds: Flags.boolean({char: 'c', required: false, description: 'Validate control IDs have the correct severity and status'}),
   }
@@ -60,7 +60,10 @@ export default class GenerateThreshold extends Command {
     if (flags.generateControlIds) {
       getControlIdMap(parsedProfile, thresholds)
     }
-
-    fs.writeFileSync(flags.output, YAML.stringify(thresholds))
+    if (flags.output) {
+      fs.writeFileSync(flags.output, YAML.stringify(thresholds))
+    } else {
+      console.log(YAML.stringify(thresholds))
+    }
   }
 }
