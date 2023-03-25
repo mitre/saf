@@ -55,7 +55,7 @@
     "moment": "^2.29.1",
     "mustache": "^4.2.0",
     "objects-to-csv": "^1.3.6",
-    "open": "^8.4.0",
+    "open": "^9.0.0",
     "prompt-sync": "^4.1.6",
     "run-script-os": "^1.1.6",
     "table": "^6.8.0",
