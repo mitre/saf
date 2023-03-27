@@ -1,26 +1,25 @@
 import fs from 'fs'
 import path from 'path'
 import {readdir} from 'fs/promises'
+import {execSync} from 'child_process'
 import {Command, Flags} from '@oclif/core'
 import {createWinstonLogger} from '../../utils/logging'
 import Profile from '@mitre/inspec-objects/lib/objects/profile'
-import Control from '@mitre/inspec-objects/lib/objects/control'
 import {processInSpecProfile, processXCCDF} from '@mitre/inspec-objects'
 import colors from 'colors' // eslint-disable-line no-restricted-imports
-import { exec, execSync } from 'child_process'
 
 export default class UpdateControls extends Command {
   static usage = '<%= command.id %> [ARGUMENTS]'
 
-  static description = 'Update the control names for an existing InSpec profile with updated XCCDF guidance, old controls are saved by default'
+  static description = 'Update the control names and/or format for an existing InSpec profile with updated XCCDF guidance, old controls are saved by default'
 
   static flags = {
     help: Flags.help({char: 'h'}),
     xccdfXmlFile: Flags.string({char: 'X', required: true, description: 'The XCCDF XML file containing the new guidance - in the form of .xml file'}),
-    inspecJsonFile: Flags.string({char: 'J', required: false, description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command'}),
+    inspecJsonFile: Flags.string({char: 'J', required: false, description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> > profile.json" command'}),
     controlsDir: Flags.string({char: 'c', required: true, description: 'The InsPec profile controls directory containing the profiles to be updated'}),
     controlPrefix: Flags.string({char: 'P', required: false, default: 'V', options: ['V', 'SV'], description: 'Old control number prefix V or SV, default V'}),
-    formatControls: Flags.boolean({char: 'f', required: false, default: true, allowNo: true, description: 'Format controls to be satisfy ruby compliance'}),
+    formatControls: Flags.boolean({char: 'f', required: false, default: true, allowNo: true, description: 'Format control contents in the same way `generate delta` will write controls'}),
     backupControls: Flags.boolean({char: 'b', required: false, default: true, allowNo: true, description: 'Create an oldControls directory in the controls directory and save old controls there'}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
@@ -35,7 +34,6 @@ export default class UpdateControls extends Command {
     const {flags} = await this.parse(UpdateControls)
     const logger = createWinstonLogger('generate:update_controls', flags.logLevel)
 
-    //let existingProfile: any | null = null
     let existingProfile: Profile
 
     // Process the XCCDF XML file containing the new/updated profile guidance
@@ -75,8 +73,9 @@ export default class UpdateControls extends Command {
           if (flags.backupControls) {
             const oldControlsDir = path.join(flags.controlsDir, 'oldControls')
             if (fs.existsSync(oldControlsDir)) {
-              fs.rmSync(oldControlsDir, { recursive: true, force: true });
+              fs.rmSync(oldControlsDir, {recursive: true, force: true})
             }
+
             fs.mkdirSync(oldControlsDir)
           }
         } else {
@@ -94,23 +93,22 @@ export default class UpdateControls extends Command {
       if (flags.formatControls) {
         try {
           logger.debug(`Generating the profile json using inspec json command on '${flags.controlsDir}'`)
-          // Get the directory name without the trailing "controls" directory 
+          // Get the directory name without the trailing "controls" directory
           const profileDir = path.dirname(flags.controlsDir)
-          const inspecJsonFile = execSync(`inspec json '${profileDir}'`, { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 })
-          logger.debug(`Generating InsPec profiles from generated inspect json`)
+          const inspecJsonFile = execSync(`inspec json '${profileDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
+          logger.debug('Generating InsPec profiles from generated inspect json')
 
           existingProfile = processInSpecProfile(inspecJsonFile)
 
-          //fs.writeFileSync(path.join(profileDir, 'profile-2.json'), inspecJsonFile)
-          //fs.writeFileSync(path.join(profileDir, 'existingProfile.json'), JSON.stringify(existingProfile,null,2))
-
+          // fs.writeFileSync(path.join(profileDir, 'profile-2.json'), inspecJsonFile)
+          // fs.writeFileSync(path.join(profileDir, 'existingProfile.json'), JSON.stringify(existingProfile,null,2))
         } catch (error: any) {
           logger.error(`ERROR: Unable to generate or process the profile json because: ${error}`)
           throw error
         }
-        //console.log(existingProfile)
-        //fs.writeFileSync(path.join('D:\\2-SourceCode\\examples', 'profile-2.json'), existingProfile)
-        
+        // console.log(existingProfile)
+        // fs.writeFileSync(path.join('D:\\2-SourceCode\\examples', 'profile-2.json'), existingProfile)
+
         // if (flags.inspecJsonFile) {
         //   if (fs.lstatSync(flags.inspecJsonFile).isFile()) {
         //     const inspecJsonFile = flags.inspecJsonFile
@@ -156,16 +154,15 @@ export default class UpdateControls extends Command {
     })
 
     // Create a map data type containing the controls found in the processed inspec json file
-    //   The inspect json file contains the controls and associated code block (these are 
+    //   The inspect json file contains the controls and associated code block (these are
     //   created from the existing controls - They are updated via the Delta process)
     // Lint the controls using the toRuby method provided by the Controls class
     const existingFormatedControl = new Map()
     if (flags.formatControls) {
       logger.debug('Formatting the existing controls with no diff.')
-      existingProfile!.controls.forEach((control) => {
-
-        //fs.writeFileSync(path.join('D:\\2-SourceCode\\examples\\ruby_controls', `${control.id}.rb`), JSON.stringify(control,null,2))
-        //fs.writeFileSync(path.join('D:\\2-SourceCode\\examples\\ruby_controls', `${control.id}_toRuby.rd`), control.toRuby(false))
+      existingProfile!.controls.forEach(control => {
+        // fs.writeFileSync(path.join('D:\\2-SourceCode\\examples\\ruby_controls', `${control.id}.rb`), JSON.stringify(control,null,2))
+        // fs.writeFileSync(path.join('D:\\2-SourceCode\\examples\\ruby_controls', `${control.id}_toRuby.rd`), control.toRuby(false))
         existingFormatedControl.set(control.id, control.toRuby(false))
       })
     }
@@ -175,7 +172,7 @@ export default class UpdateControls extends Command {
     let skipped = 0
     let processed = 0
     let isNewControl = 0
-    let notInProfileJason = 0
+    let notInProfileJSON = 0
     const controlsDir = flags.controlsDir
     const files = await readdir(controlsDir)
 
@@ -209,7 +206,7 @@ export default class UpdateControls extends Command {
               // console.log('HERE -> ', existingFormatedControl.get(oldControlNumber))
               updatedControl = existingFormatedControl.get(oldControlNumber).replace(`${oldControlNumber}`, `${newControlNumber}`)
             }  else {
-              notInProfileJason++
+              notInProfileJSON++
               skippedFormatting.push(`Old control: ${oldControlNumber} New control: ${newControlNumber}`)
               updatedControl = getUpdatedControl(filePath, oldControlNumber, newControlNumber)
             }
@@ -247,7 +244,6 @@ export default class UpdateControls extends Command {
       }
     }
 
-
     console.log(colors.yellow('\n     Total skipped files - no mapping to new control Id:'), colors.green(`${skipped.toString().padStart(4)}`))
     console.log(colors.yellow('Total processed files - found mapping to new control Id: '), colors.green(`${processed.toString().padStart(3)}`))
 
@@ -257,8 +253,8 @@ export default class UpdateControls extends Command {
     console.log(colors.yellow('\nSkipped control(s) - not included in XCCDF guidance: '), `${colors.green(skippedControls.toString())}`)
     console.log(colors.yellow('\n  New control(s) found - included in XCCDF guidance: '), `${colors.green(newControlsFound.toString())}`)
 
-    if (flags.formatControls && notInProfileJason > 0) {
-      console.log(colors.bold.red('\nTotal skipped formatting - not found in the profile json: '), colors.green(`${notInProfileJason.toString().padStart(3)}`))
+    if (flags.formatControls && notInProfileJSON > 0) {
+      console.log(colors.bold.red('\nTotal skipped formatting - not found in the profile json: '), colors.green(`${notInProfileJSON.toString().padStart(3)}`))
       console.log(colors.bold.red('Control(s) skipped formatting: '), colors.green(`${skippedFormatting.toString()}`))
     }
   }
