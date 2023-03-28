@@ -7,7 +7,7 @@ import {ThresholdValues} from '../../types/threshold'
 import {calculateCompliance, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 
 export default class GenerateThreshold extends Command {
-  static usage = 'generate threshold -i <hdf-json> -o <threshold-yaml> [-h] [-e] [-c]'
+  static usage = 'generate threshold -i <hdf-json> [-o <threshold-yaml>] [-h] [-e] [-c]'
 
   static description = 'Generate a compliance template for "saf validate threshold". Default output states that you must have your current control counts or better (More Passes and/or less Fails/Skips/Not Applicable/No Impact/Errors)'
 
@@ -60,6 +60,7 @@ export default class GenerateThreshold extends Command {
     if (flags.generateControlIds) {
       getControlIdMap(parsedProfile, thresholds)
     }
+
     if (flags.output) {
       fs.writeFileSync(flags.output, YAML.stringify(thresholds))
     } else {
