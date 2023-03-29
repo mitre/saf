@@ -7,7 +7,6 @@ import {createWinstonLogger} from '../../utils/logging'
 import Profile from '@mitre/inspec-objects/lib/objects/profile'
 import {processInSpecProfile, processXCCDF} from '@mitre/inspec-objects'
 import colors from 'colors' // eslint-disable-line no-restricted-imports
-import Control from '@mitre/inspec-objects/lib/objects/control'
 
 export default class UpdateControls extends Command {
   static usage = '<%= command.id %> [ARGUMENTS]'
@@ -32,7 +31,7 @@ export default class UpdateControls extends Command {
     'saf generate update_controls -X ./the_xccdf_guidance_file.xml  -c the_controls_directory --no-backupControls --no-formatControls -P SV -L debug',
   ]
 
-  async run(): Promise<any> {
+  async run(): Promise<any> { // skipcq: JS-0044
     const {flags} = await this.parse(UpdateControls)
     const logger = createWinstonLogger('generate:update_controls', flags.logLevel)
 
@@ -161,7 +160,7 @@ export default class UpdateControls extends Command {
     const existingFormatedControl = new Map()
     if (flags.formatControls) {
       logger.debug('Formatting the existing controls with no diff.')
-      existingProfile!.controls.forEach(control => {
+      existingProfile!.controls.forEach(control => { // skipcq: JS-0339
         existingFormatedControl.set(control.id, control.toRuby(false))
       })
     }
