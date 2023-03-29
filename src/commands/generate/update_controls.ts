@@ -7,6 +7,7 @@ import {createWinstonLogger} from '../../utils/logging'
 import Profile from '@mitre/inspec-objects/lib/objects/profile'
 import {processInSpecProfile, processXCCDF} from '@mitre/inspec-objects'
 import colors from 'colors' // eslint-disable-line no-restricted-imports
+import Control from '@mitre/inspec-objects/lib/objects/control'
 
 export default class UpdateControls extends Command {
   static usage = '<%= command.id %> [ARGUMENTS]'
@@ -25,6 +26,7 @@ export default class UpdateControls extends Command {
   }
 
   static examples = [
+    'saf generate update_controls -X ./the_xccdf_guidance_file.xml  -c the_controls_directory -L debug',
     'saf generate update_controls -X ./the_xccdf_guidance_file.xml  -J ./the_profile_json -c the_controls_directory -L debug',
     'saf generate update_controls -X ./the_xccdf_guidance_file.xml  -c the_controls_directory --no-formatControls -P SV -L debug',
     'saf generate update_controls -X ./the_xccdf_guidance_file.xml  -c the_controls_directory --no-backupControls --no-formatControls -P SV -L debug',
@@ -34,12 +36,16 @@ export default class UpdateControls extends Command {
     const {flags} = await this.parse(UpdateControls)
     const logger = createWinstonLogger('generate:update_controls', flags.logLevel)
 
+    this.warn('----------------------------------------------------------------------------------------------------------')
+    this.warn('Make sure that profile controls are in cookstyle format - see https://docs.chef.io/workstation/cookstyle/')
+    this.warn('----------------------------------------------------------------------------------------------------------')
     let existingProfile: Profile
 
     // Process the XCCDF XML file containing the new/updated profile guidance
     try {
       if (fs.lstatSync(flags.xccdfXmlFile).isFile()) {
         const xccdfXmlFile = flags.xccdfXmlFile
+        logger.debug(`Processing the ${xccdfXmlFile} XCCDF file`)
         const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8')
         const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase()
         if (inputFirstLine.includes('xccdf')) {
@@ -69,7 +75,7 @@ export default class UpdateControls extends Command {
           logger.error(`ERROR: Checking in controls directory is empty, received: ${err.message}`)
           throw new Error(`Error checking controls directory, error: ${err.message}`)
         } else if (files.length) {
-          logger.debug(`Found controls in the controls directory files.length is: ${files.length}`)
+          logger.debug(`Found ${files.length} InSpec Profiles in the controls directory`)
           if (flags.backupControls) {
             const oldControlsDir = path.join(flags.controlsDir, 'oldControls')
             if (fs.existsSync(oldControlsDir)) {
@@ -88,47 +94,42 @@ export default class UpdateControls extends Command {
       throw new Error('Controls folder not specified or does not exist')
     }
 
-    // Process the Input execution/profile JSON file
-    try {
-      if (flags.formatControls) {
+    // Generate or Process the Input execution/profile JSON file
+    if (flags.formatControls) {
+      // Process provided Profile JSON file
+      if (flags.inspecJsonFile) {
+        try {
+          if (fs.lstatSync(flags.inspecJsonFile).isFile()) {
+            const inspecJsonFile = flags.inspecJsonFile
+            logger.debug(`Loading ${inspecJsonFile} as Profile JSON/Execution JSON`)
+            existingProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
+            logger.debug(`Loaded ${inspecJsonFile} as Profile JSON/Execution JSON`)
+          } else {
+            throw new Error(`No entity found for: ${flags.inspecJsonFile}. Run the --help command to more information on expected input files.`)
+          }
+        } catch (error: any) {
+          if (error.code === 'ENOENT') {
+            logger.error(`ERROR: No entity found for: ${flags.inspecJsonFile}. Run the --help command to more information on expected input files.`)
+            throw error
+          } else {
+            logger.error(`ERROR: Unable to process Input execution/profile JSON ${flags.inspecJsonFile} because: ${error}`)
+            throw error
+          }
+        }
+      } else {
+        // Generate the profile json
         try {
           logger.debug(`Generating the profile json using inspec json command on '${flags.controlsDir}'`)
           // Get the directory name without the trailing "controls" directory
           const profileDir = path.dirname(flags.controlsDir)
           const inspecJsonFile = execSync(`inspec json '${profileDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
-          logger.debug('Generating InsPec profiles from generated inspect json')
 
+          logger.debug('Generating InsPec Profiles from provided inspect json')
           existingProfile = processInSpecProfile(inspecJsonFile)
-
-          // fs.writeFileSync(path.join(profileDir, 'profile-2.json'), inspecJsonFile)
-          // fs.writeFileSync(path.join(profileDir, 'existingProfile.json'), JSON.stringify(existingProfile,null,2))
         } catch (error: any) {
-          logger.error(`ERROR: Unable to generate or process the profile json because: ${error}`)
+          logger.error(`ERROR: Unable to generate the profile json because: ${error}`)
           throw error
         }
-        // console.log(existingProfile)
-        // fs.writeFileSync(path.join('D:\\2-SourceCode\\examples', 'profile-2.json'), existingProfile)
-
-        // if (flags.inspecJsonFile) {
-        //   if (fs.lstatSync(flags.inspecJsonFile).isFile()) {
-        //     const inspecJsonFile = flags.inspecJsonFile
-        //     logger.debug(`Loading ${inspecJsonFile} as Profile JSON/Execution JSON`)
-        //     existingProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
-        //     logger.debug(`Loaded ${inspecJsonFile} as Profile JSON/Execution JSON`)
-        //   } else {
-        //     throw new Error(`No entity found for: ${flags.inspecJsonFile}. Run the --help command to more information on expected input files.`)
-        //   }
-        // } else {
-        //   throw new Error('No inspec Json File was provided. Run the --help command to more information on expected input files.')
-        // }
-      }
-    } catch (error: any) {
-      if (error.code === 'ENOENT') {
-        logger.error(`ERROR: No entity found for: ${flags.inspecJsonFile}. Run the --help command to more information on expected input files.`)
-        throw error
-      } else {
-        logger.error(`ERROR: Unable to process Input execution/profile JSON ${flags.inspecJsonFile} because: ${error}`)
-        throw error
       }
     }
 
@@ -161,8 +162,6 @@ export default class UpdateControls extends Command {
     if (flags.formatControls) {
       logger.debug('Formatting the existing controls with no diff.')
       existingProfile!.controls.forEach(control => {
-        // fs.writeFileSync(path.join('D:\\2-SourceCode\\examples\\ruby_controls', `${control.id}.rb`), JSON.stringify(control,null,2))
-        // fs.writeFileSync(path.join('D:\\2-SourceCode\\examples\\ruby_controls', `${control.id}_toRuby.rd`), control.toRuby(false))
         existingFormatedControl.set(control.id, control.toRuby(false))
       })
     }
@@ -203,7 +202,6 @@ export default class UpdateControls extends Command {
           let updatedControl
           if (flags.formatControls) {
             if (existingFormatedControl.has(oldControlNumber)) {
-              // console.log('HERE -> ', existingFormatedControl.get(oldControlNumber))
               updatedControl = existingFormatedControl.get(oldControlNumber).replace(`${oldControlNumber}`, `${newControlNumber}`)
             }  else {
               notInProfileJSON++
@@ -219,10 +217,10 @@ export default class UpdateControls extends Command {
           // Save new file
           fs.writeFileSync(newFileName, updatedControl)
           processed++
-          // Move old control to oldControls folder
+          // Move processed (old) control to oldControls folder
           if (flags.backupControls) {
             fs.renameSync(filePath, path.resolve(path.join(controlsDir, 'oldControls'), oldControlNumber + '.rb'))
-          // Deleted old file
+          // Deleted processed (old) file
           } else {
             try {
               fs.unlinkSync(filePath)

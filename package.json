@@ -10,7 +10,7 @@
     "@mitre/emass_client": "^3.4.1",
     "@mitre/hdf-converters": "^2.6.38",
     "@mitre/heimdall-lite": "^2.6.41",
-    "@mitre/inspec-objects": "^0.0.34",
+    "@mitre/inspec-objects": "file:../../../Inspect-Objects/describeBlockReturnFix/ts-inspec-objects",
     "@oclif/core": "^2.0.6",
     "@oclif/plugin-help": "^5",
     "@oclif/plugin-plugins": "^2.0.1",
