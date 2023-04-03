@@ -8,7 +8,7 @@ import Profile from '@mitre/inspec-objects/lib/objects/profile'
 import {processInSpecProfile, processXCCDF} from '@mitre/inspec-objects'
 import colors from 'colors' // eslint-disable-line no-restricted-imports
 
-export default class UpdateControls extends Command {
+export default class GenerateUpdateControls extends Command {
   static usage = '<%= command.id %> [ARGUMENTS]'
 
   static description = 'Update the control names and/or format for an existing InSpec profile with updated XCCDF guidance, old controls are saved by default'
@@ -20,7 +20,7 @@ export default class UpdateControls extends Command {
     controlsDir: Flags.string({char: 'c', required: true, description: 'The InsPec profile controls directory containing the profiles to be updated'}),
     controlPrefix: Flags.string({char: 'P', required: false, default: 'V', options: ['V', 'SV'], description: 'Old control number prefix V or SV, default V'}),
     formatControls: Flags.boolean({char: 'f', required: false, default: true, allowNo: true, description: 'Format control contents in the same way `generate delta` will write controls'}),
-    backupControls: Flags.boolean({char: 'b', required: false, default: true, allowNo: true, description: 'Create an oldControls directory in the controls directory and save old controls there'}),
+    backupControls: Flags.boolean({char: 'b', required: false, default: true, allowNo: true, description: 'Preserve modified controls in a backup directory (oldControls) inside the controls directory'}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
@@ -32,13 +32,13 @@ export default class UpdateControls extends Command {
   ]
 
   async run(): Promise<any> { // skipcq: JS-0044
-    const {flags} = await this.parse(UpdateControls)
+    const {flags} = await this.parse(GenerateUpdateControls)
     const logger = createWinstonLogger('generate:update_controls', flags.logLevel)
 
     this.warn('----------------------------------------------------------------------------------------------------------')
     this.warn('Make sure that profile controls are in cookstyle format - see https://docs.chef.io/workstation/cookstyle/')
     this.warn('----------------------------------------------------------------------------------------------------------')
-    let existingProfile: Profile
+    let inspecProfile: Profile
 
     // Process the XCCDF XML file containing the new/updated profile guidance
     try {
@@ -101,7 +101,7 @@ export default class UpdateControls extends Command {
           if (fs.lstatSync(flags.inspecJsonFile).isFile()) {
             const inspecJsonFile = flags.inspecJsonFile
             logger.debug(`Loading ${inspecJsonFile} as Profile JSON/Execution JSON`)
-            existingProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
+            inspecProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
             logger.debug(`Loaded ${inspecJsonFile} as Profile JSON/Execution JSON`)
           } else {
             throw new Error(`No entity found for: ${flags.inspecJsonFile}. Run the --help command to more information on expected input files.`)
@@ -124,7 +124,7 @@ export default class UpdateControls extends Command {
           const inspecJsonFile = execSync(`inspec json '${profileDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
 
           logger.debug('Generating InsPec Profiles from provided inspect json')
-          existingProfile = processInSpecProfile(inspecJsonFile)
+          inspecProfile = processInSpecProfile(inspecJsonFile)
         } catch (error: any) {
           logger.error(`ERROR: Unable to generate the profile json because: ${error}`)
           throw error
@@ -137,31 +137,32 @@ export default class UpdateControls extends Command {
     logger.debug(`Processing XCCDF Benchmark file: ${flags.xccdfXmlFile} using rule id.`)
     const xccdf = fs.readFileSync(flags.xccdfXmlFile, 'utf8')
     /* eslint-disable prefer-const, max-depth */
-    let profile: Profile
-    profile = processXCCDF(xccdf, false, 'rule') // skipcq: JS-0242
+    let xccdfProfile: Profile
+    xccdfProfile = processXCCDF(xccdf, false, 'rule') // skipcq: JS-0242
 
-    // Create a map data type with: key = legacy Id (v or SV number) and value = new Id (SV number)
-    // Create a mad data type with to be used as a flag to identify new controls (key is new control Id)
+    // Create a map data type with: key = legacy Id (V or SV number) and value = new Id (SV number)
+    // Create a map data type to be used as a flag to identify new controls (key and value are the new control Id)
+    // This is used so we can invoke .has(key) method (test if map contains provide key)
     const xccdfControlsMap = new Map()
     const newControlsMap = new Map()
-    profile.controls.forEach(control => {
+    xccdfProfile.controls.forEach(control => {
       const controlId = control.tags.legacy?.map(value => {
         const control = flags.controlPrefix === 'V' ? value.match(/^V-\d+/)?.toString() : value.match(/^SV-\d+/)?.toString()
         return (control === undefined) ? '' : control
       }).find(Boolean)
       xccdfControlsMap.set(controlId, control.id)
-      newControlsMap.set(control.id, control.id)
+      newControlsMap.set(control.id, controlId)
     })
 
     // Create a map data type containing the controls found in the processed inspec json file
     //   The inspect json file contains the controls and associated code block (these are
     //   created from the existing controls - They are updated via the Delta process)
     // Lint the controls using the toRuby method provided by the Controls class
-    const existingFormatedControl = new Map()
+    const toRubyFormatedControls = new Map()
     if (flags.formatControls) {
       logger.debug('Formatting the existing controls with no diff.')
-      existingProfile!.controls.forEach(control => { // skipcq: JS-0339
-        existingFormatedControl.set(control.id, control.toRuby(false))
+      inspecProfile!.controls.forEach(control => { // skipcq: JS-0339
+        toRubyFormatedControls.set(control.id, control.toRuby(false))
       })
     }
 
@@ -169,7 +170,7 @@ export default class UpdateControls extends Command {
     const ext = '.rb'
     let skipped = 0
     let processed = 0
-    let isNewControl = 0
+    let isCorrectControl = 0
     let notInProfileJSON = 0
     const controlsDir = flags.controlsDir
     const files = await readdir(controlsDir)
@@ -177,57 +178,59 @@ export default class UpdateControls extends Command {
     // Iterate trough all files processing ony control files, have a .rb extension
     const skippedControls = []
     const skippedFormatting = []
-    const isNewControlMap  = new Map()
+    const isCorrectControlMap  = new Map()
     const controlsProcessedMap = new Map()
     for (const file of files) {
       const fileExt = path.extname(file)
       if (fileExt === ext) {
-        const oldControlNumber = path.parse(file).name
-        const newControlNumber = xccdfControlsMap.get(oldControlNumber)
+        const currentFileFullPath = path.join(controlsDir, file)
+        const currentControlNumber = path.parse(file).name
+        const newXCCDFControlNumber = xccdfControlsMap.get(currentControlNumber)
+        // xccdfControlsMap is indexed by the legacy control Id (value is the new control Id)
         // No mapping for the control being processed, either:
         //    1-New Control
         //    2-Already has correct control Id
-        if (newControlNumber === undefined) {
-          if (newControlsMap.has(oldControlNumber)) {
-            isNewControl++
-            isNewControlMap.set(oldControlNumber, oldControlNumber)
+        if (newXCCDFControlNumber === undefined) {
+          // newControlsMap is indexed by the new control Id (value is also the legacy control Id)
+          if (newControlsMap.has(currentControlNumber)) {
+            isCorrectControl++
+            isCorrectControlMap.set(currentControlNumber, currentControlNumber) // Map used to compute output (value does not matter)
+            if (flags.formatControls) {
+              let updatedControl
+              const thisFormateControl = newControlsMap.get(currentControlNumber)
+              if (toRubyFormatedControls.get(thisFormateControl)) {
+                updatedControl = toRubyFormatedControls.get(thisFormateControl).replace(`${thisFormateControl}`, `${currentControlNumber}`)
+              } else {
+                notInProfileJSON++
+                skippedFormatting.push(`(Profile: ${thisFormateControl} XCCDF: ${currentControlNumber})`)
+                updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, newXCCDFControlNumber)
+              }
+
+              saveControl(currentFileFullPath, currentControlNumber, currentControlNumber, updatedControl, flags.backupControls, false)
+            }
           } else {
             skipped++
-            skippedControls.push(oldControlNumber)
+            skippedControls.push(currentControlNumber)
           }
         } else {
-          const filePath = path.join(controlsDir, file)
           // Change the V or SV Id to the SV Id based on format flag
           let updatedControl
           if (flags.formatControls) {
-            if (existingFormatedControl.has(oldControlNumber)) {
-              updatedControl = existingFormatedControl.get(oldControlNumber).replace(`${oldControlNumber}`, `${newControlNumber}`)
-            }  else {
+            if (toRubyFormatedControls.has(currentControlNumber)) {
+              updatedControl = toRubyFormatedControls.get(currentControlNumber).replace(`${currentControlNumber}`, `${newXCCDFControlNumber}`)
+            } else {
               notInProfileJSON++
-              skippedFormatting.push(`Old control: ${oldControlNumber} New control: ${newControlNumber}`)
-              updatedControl = getUpdatedControl(filePath, oldControlNumber, newControlNumber)
+              skippedFormatting.push(`(Profile: ${currentControlNumber} XCCDF: ${newXCCDFControlNumber})`)
+              updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, newXCCDFControlNumber)
             }
+          // Don't format, just replace the control name (SV or V) and assign value to the updatedControl variable
           } else {
-            updatedControl = getUpdatedControl(filePath, oldControlNumber, newControlNumber)
+            updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, newXCCDFControlNumber)
           }
 
-          controlsProcessedMap.set(newControlNumber, 'processed')
-          const newFileName = path.join(controlsDir, newControlNumber + '.rb')
-          // Save new file
-          fs.writeFileSync(newFileName, updatedControl)
+          saveControl(currentFileFullPath, newXCCDFControlNumber, currentControlNumber, updatedControl, flags.backupControls, true)
           processed++
-          // Move processed (old) control to oldControls folder
-          if (flags.backupControls) {
-            fs.renameSync(filePath, path.resolve(path.join(controlsDir, 'oldControls'), oldControlNumber + '.rb'))
-          // Deleted processed (old) file
-          } else {
-            try {
-              fs.unlinkSync(filePath)
-            } catch (error: any) {
-              logger.error(`ERROR: Unable to deleted old file ${filePath} because: ${error}`)
-              throw error
-            }
-          }
+          controlsProcessedMap.set(newXCCDFControlNumber, 'processed')
         }
       }
     }
@@ -235,7 +238,7 @@ export default class UpdateControls extends Command {
     let newControls = 0
     const newControlsFound = []
     for (const newControl of xccdfControlsMap.values()) {
-      if (!controlsProcessedMap.has(newControl) && !isNewControlMap.has(newControl)) {
+      if (!controlsProcessedMap.has(newControl) && !isCorrectControlMap.has(newControl)) {
         newControls++
         newControlsFound.push(newControl)
       }
@@ -244,7 +247,7 @@ export default class UpdateControls extends Command {
     console.log(colors.yellow('\n     Total skipped files - no mapping to new control Id:'), colors.green(`${skipped.toString().padStart(4)}`))
     console.log(colors.yellow('Total processed files - found mapping to new control Id: '), colors.green(`${processed.toString().padStart(3)}`))
 
-    console.log(colors.yellow('\n    Total controls with correct identification: '), colors.green(`${isNewControl.toString().padStart(3)}`))
+    console.log(colors.yellow('\n    Total controls with correct identification: '), colors.green(`${isCorrectControl.toString().padStart(3)}`))
     console.log(colors.yellow('Total new controls found in the XCCDF guidance: '), colors.green(`${newControls.toString().padStart(3)}`))
 
     console.log(colors.yellow('\nSkipped control(s) - not included in XCCDF guidance: '), `${colors.green(skippedControls.toString())}`)
@@ -257,8 +260,35 @@ export default class UpdateControls extends Command {
   }
 }
 
-function getUpdatedControl(path: fs.PathOrFileDescriptor, oldControlNumber: string, newControlNumber: string) {
+function getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: string, newXCCDFControlNumber: string) {
   // Read the control content
   const controlData = fs.readFileSync(path, {encoding: 'utf8', flag: 'r'})
-  return controlData.replace(oldControlNumber, newControlNumber)
+  if (newXCCDFControlNumber !== undefined) {
+    controlData.replace(currentControlNumber, newXCCDFControlNumber)
+  }
+
+  return controlData
+}
+
+function saveControl(filePath: string, newXCCDFControlNumber: string, currentControlNumber: string,
+  updatedControl: string, backupControls: boolean, renamedControl: boolean) {
+  const controlsDir = path.dirname(filePath)
+  const newFileName = path.join(controlsDir, newXCCDFControlNumber + '.rb')
+
+  // Move processed (old) control to oldControls folder
+  if (backupControls) {
+    const destFilePath = path.resolve(path.join(controlsDir, 'oldControls', currentControlNumber + '.rb'))
+    if (renamedControl) {
+      fs.renameSync(filePath, destFilePath)
+    } else {
+      fs.copyFileSync(filePath, destFilePath)
+    }
+
+  // Deleted processed (old) file
+  } else if (renamedControl) {
+    fs.unlinkSync(filePath)
+  }
+
+  // Save new file
+  fs.writeFileSync(newFileName, updatedControl)
 }
