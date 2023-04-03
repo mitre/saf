@@ -270,6 +270,7 @@ function getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: 
   return controlData
 }
 
+/* eslint-disable-next-line max-params */
 function saveControl(filePath: string, newXCCDFControlNumber: string, currentControlNumber: string,
   updatedControl: string, backupControls: boolean, renamedControl: boolean) {
   const controlsDir = path.dirname(filePath)
