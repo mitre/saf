@@ -1,0 +1,51 @@
+compliance:
+  min: 96
+passed:
+  critical:
+    min: 0
+  high:
+    min: 22
+  medium:
+    min: 177
+  low:
+    min: 14
+  total:
+    min: 213
+failed:
+  critical:
+    max: 0
+  high:
+    max: 0
+  medium:
+    max: 0
+  low:
+    max: 0
+  total:
+    max: 0
+skipped:
+  critical:
+    max: 0
+  high:
+    max: 2
+  medium:
+    max: 7
+  low:
+    max: 0
+  total:
+    max: 9
+error:
+  critical:
+    max: 0
+  high:
+    max: 0
+  medium:
+    max: 1
+  low:
+    max: 0
+  total:
+    max: 1
+no_impact:
+  none:
+    max: 24
+  total:
+    max: 24

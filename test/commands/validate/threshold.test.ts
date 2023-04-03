@@ -13,7 +13,7 @@ describe('Test validate threshold', () => {
       ),
       '--templateFile',
       path.resolve(
-        './test/sample_data/HDF/input/thresholds/triple_overlay_profile_example.json.counts.good.yml',
+        './test/sample_data/thresholds/triple_overlay_profile_example.json.counts.good.yml',
       ),
     ])
     .it('Validate threshold test - Triple Overlay Valid Counts', ctx => {
@@ -32,7 +32,7 @@ describe('Test validate threshold', () => {
       ),
       '--templateFile',
       path.resolve(
-        './test/sample_data/HDF/input/thresholds/triple_overlay_profile_example.json.counts.bad.total.yml',
+        './test/sample_data/thresholds/triple_overlay_profile_example.json.counts.bad.total.yml',
       ),
     ])
     .catch(error => {
@@ -56,7 +56,7 @@ describe('Test validate threshold', () => {
       ),
       '--templateFile',
       path.resolve(
-        './test/sample_data/HDF/input/thresholds/triple_overlay_profile_example.json.counts.bad.compliance.yml',
+        './test/sample_data/thresholds/triple_overlay_profile_example.json.counts.bad.compliance.yml',
       ),
     ])
     .catch(error => {
@@ -76,7 +76,7 @@ describe('Test validate threshold', () => {
       ),
       '--templateFile',
       path.resolve(
-        './test/sample_data/HDF/input/thresholds/triple_overlay_profile_example.json.counts.totalMinMax.yml',
+        './test/sample_data/thresholds/triple_overlay_profile_example.json.counts.totalMinMax.yml',
       )]).catch(error => {
       expect(error.message).to.equal('passed.total.max: Threshold not met. Number of received total passed controls (19) is greater than your set threshold for the number of passed controls (18)')
     })
