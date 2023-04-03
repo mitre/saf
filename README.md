@@ -1128,16 +1128,14 @@ generate threshold            Generate a compliance template for "saf validate t
                               control counts or better (More Passes and/or less
                               Fails/Skips/Not Applicable/No Impact/Errors)
   USAGE
-    $ saf generate threshold -i <hdf-json> -o <threshold-yaml> [-h] [-e] [-c]
+    $ saf generate threshold -i <hdf-json> [-o <threshold-yaml>] [-h] [-e] [-c]
 
   FLAGS
-    -c, --generateControlIds        Validate control IDs have the correct severity
-                                    and status
-    -e, --exact                     All counts should be exactly the same when
-                                    validating, not just less than or greater than
-    -h, --help                      Show CLI help.
-    -i, --input=<hdf-json>          (required) Input HDF JSON File
-    -o, --output=<threshold-yaml>   (required) Output Threshold YAML File
+    -c, --generateControlIds  Validate control IDs have the correct severity and status
+    -e, --exact               All counts should be exactly the same when validating, not just less than or greater than
+    -h, --help                Show CLI help.
+    -i, --input=<value>       (required) Input HDF JSON File
+    -o, --output=<value>      Output Threshold YAML File
 
   EXAMPLES
     $ saf generate threshold -i rhel7-results.json -e -c -o output.yaml
