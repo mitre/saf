@@ -25,10 +25,10 @@ export default class GenerateUpdateControls extends Command {
   }
 
   static examples = [
-    'saf generate update_controls -X ./the_xccdf_guidance_file.xml  -c the_controls_directory -L debug',
-    'saf generate update_controls -X ./the_xccdf_guidance_file.xml  -J ./the_profile_json -c the_controls_directory -L debug',
-    'saf generate update_controls -X ./the_xccdf_guidance_file.xml  -c the_controls_directory --no-formatControls -P SV -L debug',
-    'saf generate update_controls -X ./the_xccdf_guidance_file.xml  -c the_controls_directory --no-backupControls --no-formatControls -P SV -L debug',
+    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml  -c the_controls_directory -L debug',
+    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml  -J ./the_profile_json -c the_controls_directory -L debug',
+    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml  -c the_controls_directory --no-formatControls -P SV -L debug',
+    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml  -c the_controls_directory --no-backupControls --no-formatControls -P SV -L debug',
   ]
 
   async run(): Promise<any> { // skipcq: JS-0044
@@ -55,6 +55,8 @@ export default class GenerateUpdateControls extends Command {
         }
 
         logger.debug(`Loaded ${xccdfXmlFile} as XCCDF`)
+      } else {
+        throw new Error('No benchmark (XCCDF) file was provided.')
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {
@@ -123,7 +125,7 @@ export default class GenerateUpdateControls extends Command {
           const profileDir = path.dirname(flags.controlsDir)
           const inspecJsonFile = execSync(`inspec json '${profileDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
 
-          logger.debug('Generating InsPec Profiles from provided inspect json')
+          logger.debug('Generating InsPec Profiles from generated inspect json')
           inspecProfile = processInSpecProfile(inspecJsonFile)
         } catch (error: any) {
           logger.error(`ERROR: Unable to generate the profile json because: ${error}`)
@@ -143,26 +145,28 @@ export default class GenerateUpdateControls extends Command {
     // Create a map data type with: key = legacy Id (V or SV number) and value = new Id (SV number)
     // Create a map data type to be used as a flag to identify new controls (key and value are the new control Id)
     // This is used so we can invoke .has(key) method (test if map contains provide key)
+    const xccdfLegacyToControlMap = new Map()
+    const xccdfLegacyControlsMap = new Map()
     const xccdfControlsMap = new Map()
-    const newControlsMap = new Map()
     xccdfProfile.controls.forEach(control => {
       const controlId = control.tags.legacy?.map(value => {
         const control = flags.controlPrefix === 'V' ? value.match(/^V-\d+/)?.toString() : value.match(/^SV-\d+/)?.toString()
         return (control === undefined) ? '' : control
       }).find(Boolean)
-      xccdfControlsMap.set(controlId, control.id)
-      newControlsMap.set(control.id, controlId)
+      xccdfLegacyToControlMap.set(controlId, control.id)
+      xccdfLegacyControlsMap.set(controlId, controlId)
+      xccdfControlsMap.set(control.id, control.id)
     })
 
     // Create a map data type containing the controls found in the processed inspec json file
     //   The inspect json file contains the controls and associated code block (these are
     //   created from the existing controls - They are updated via the Delta process)
     // Lint the controls using the toRuby method provided by the Controls class
-    const toRubyFormatedControls = new Map()
+    const inspecProfileFormattedControls = new Map()
     if (flags.formatControls) {
       logger.debug('Formatting the existing controls with no diff.')
       inspecProfile!.controls.forEach(control => { // skipcq: JS-0339
-        toRubyFormatedControls.set(control.id, control.toRuby(false))
+        inspecProfileFormattedControls.set(control.id, control.toRuby(false))
       })
     }
 
@@ -185,43 +189,44 @@ export default class GenerateUpdateControls extends Command {
       if (fileExt === ext) {
         const currentFileFullPath = path.join(controlsDir, file)
         const currentControlNumber = path.parse(file).name
-        const newXCCDFControlNumber = xccdfControlsMap.get(currentControlNumber)
-        // xccdfControlsMap is indexed by the legacy control Id (value is the new control Id)
-        // No mapping for the control being processed, either:
-        //    1-New Control
-        //    2-Already has correct control Id
-        if (newXCCDFControlNumber === undefined) {
-          // newControlsMap is indexed by the new control Id (value is also the legacy control Id)
-          if (newControlsMap.has(currentControlNumber)) {
-            isCorrectControl++
-            isCorrectControlMap.set(currentControlNumber, currentControlNumber) // Map used to compute output (value does not matter)
-            if (flags.formatControls) {
-              let updatedControl
-              const thisFormateControl = newControlsMap.get(currentControlNumber)
-              if (toRubyFormatedControls.get(thisFormateControl)) {
-                updatedControl = toRubyFormatedControls.get(thisFormateControl).replace(`${thisFormateControl}`, `${currentControlNumber}`)
-              } else {
-                notInProfileJSON++
-                skippedFormatting.push(`(Profile: ${thisFormateControl} XCCDF: ${currentControlNumber})`)
-                updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, newXCCDFControlNumber)
-              }
+        const newXCCDFControlNumber = xccdfLegacyToControlMap.get(currentControlNumber)
+        const xccdfControlNumber = xccdfControlsMap.get(currentControlNumber)
+        const xccdfLegacyControlNumber = xccdfLegacyControlsMap.get(currentControlNumber)
+        let updatedControl
+        // FILE = XCCDF
+        if (currentControlNumber === xccdfControlNumber) {
+          logger.debug(`Control Profile number is current: ${currentControlNumber} `)
 
-              saveControl(currentFileFullPath, currentControlNumber, currentControlNumber, updatedControl, flags.backupControls, false)
+          isCorrectControl++
+          isCorrectControlMap.set(currentControlNumber, currentControlNumber) // Map used to compute output statistics (value does not matter)
+          if (flags.formatControls) {
+            // Check if the formatted control is indexed by current control - if it isn't, this control was already processed
+            /* eslint-disable-next-line unicorn/prefer-ternary */
+            if (inspecProfileFormattedControls.get(currentControlNumber)) {
+              updatedControl = inspecProfileFormattedControls.get(currentControlNumber)
+            } else {
+              updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, 'undefined')
             }
           } else {
-            skipped++
-            skippedControls.push(currentControlNumber)
+            // Just get the control data
+            updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, 'undefined')
           }
-        } else {
+
+          // Save file
+          saveControl(currentFileFullPath, currentControlNumber, currentControlNumber, updatedControl, flags.backupControls, false)
+
+        // FILE = LEGACY NUMBER
+        } else if (currentControlNumber === xccdfLegacyControlNumber) {
+          logger.debug(`Control Profile number is not current - changing: ${currentControlNumber} with: ${newXCCDFControlNumber}`)
+
           // Change the V or SV Id to the SV Id based on format flag
-          let updatedControl
           if (flags.formatControls) {
-            if (toRubyFormatedControls.has(currentControlNumber)) {
-              updatedControl = toRubyFormatedControls.get(currentControlNumber).replace(`${currentControlNumber}`, `${newXCCDFControlNumber}`)
+            if (inspecProfileFormattedControls.has(xccdfLegacyControlNumber)) {
+              updatedControl = inspecProfileFormattedControls.get(xccdfLegacyControlNumber).replace(`${currentControlNumber}`, `${newXCCDFControlNumber}`)
             } else {
               notInProfileJSON++
               skippedFormatting.push(`(Profile: ${currentControlNumber} XCCDF: ${newXCCDFControlNumber})`)
-              updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, newXCCDFControlNumber)
+              updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, 'undefined')
             }
           // Don't format, just replace the control name (SV or V) and assign value to the updatedControl variable
           } else {
@@ -231,6 +236,15 @@ export default class GenerateUpdateControls extends Command {
           saveControl(currentFileFullPath, newXCCDFControlNumber, currentControlNumber, updatedControl, flags.backupControls, true)
           processed++
           controlsProcessedMap.set(newXCCDFControlNumber, 'processed')
+
+        // FILE ≠ XCCDF
+        } else if (xccdfControlNumber === undefined) {
+          logger.debug(`Found a Control Profile not included in the XCCDF: ${currentControlNumber}`)
+          skipped++
+          skippedControls.push(currentControlNumber)
+        // FILE ≠ XCCDF ≠ LEGACY NUMBER
+        } else {
+          logger.debug(`No logic found processing Control Profile: ${currentControlNumber}`)
         }
       }
     }
@@ -260,11 +274,11 @@ export default class GenerateUpdateControls extends Command {
   }
 }
 
-function getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: string, newXCCDFControlNumber: string) {
+function getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: string, newControlNumber: string) {
   // Read the control content
   const controlData = fs.readFileSync(path, {encoding: 'utf8', flag: 'r'})
-  if (newXCCDFControlNumber !== undefined) {
-    controlData.replace(currentControlNumber, newXCCDFControlNumber)
+  if (newControlNumber !== undefined) {
+    controlData.replace(currentControlNumber, newControlNumber)
   }
 
   return controlData
