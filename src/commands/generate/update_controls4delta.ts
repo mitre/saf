@@ -19,8 +19,8 @@ export default class GenerateUpdateControls extends Command {
     inspecJsonFile: Flags.string({char: 'J', required: false, description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> > profile.json" command'}),
     controlsDir: Flags.string({char: 'c', required: true, description: 'The InsPec profile controls directory containing the profiles to be updated'}),
     controlPrefix: Flags.string({char: 'P', required: false, default: 'V', options: ['V', 'SV'], description: 'Old control number prefix V or SV, default V'}),
-    formatControls: Flags.boolean({char: 'f', required: false, default: true, allowNo: true, description: 'Format control contents in the same way `generate delta` will write controls'}),
-    backupControls: Flags.boolean({char: 'b', required: false, default: true, allowNo: true, description: 'Preserve modified controls in a backup directory (oldControls) inside the controls directory'}),
+    formatControls: Flags.boolean({char: 'f', required: false, default: true, allowNo: true, description: 'Format control contents in the same way `generate delta` will write controls\n[default: true]'}),
+    backupControls: Flags.boolean({char: 'b', required: false, default: true, allowNo: true, description: 'Preserve modified controls in a backup directory (oldControls) inside the controls directory\n[default: true]'}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
@@ -35,9 +35,10 @@ export default class GenerateUpdateControls extends Command {
     const {flags} = await this.parse(GenerateUpdateControls)
     const logger = createWinstonLogger('generate:update_controls', flags.logLevel)
 
-    this.warn('----------------------------------------------------------------------------------------------------------')
-    this.warn('Make sure that profile controls are in cookstyle format - see https://docs.chef.io/workstation/cookstyle/')
-    this.warn('----------------------------------------------------------------------------------------------------------')
+    this.warn(colors.yellow('╔═══════════════════════════════════════════════════════════════════════════════════════════════════════════╗'))
+    this.warn(colors.yellow('║ Make sure that profile controls are in cookstyle format - see https://docs.chef.io/workstation/cookstyle/ ║'))
+    this.warn(colors.yellow('╚═══════════════════════════════════════════════════════════════════════════════════════════════════════════╝'))
+
     let inspecProfile: Profile
 
     // Process the XCCDF XML file containing the new/updated profile guidance
@@ -120,12 +121,12 @@ export default class GenerateUpdateControls extends Command {
       } else {
         // Generate the profile json
         try {
-          logger.debug(`Generating the profile json using inspec json command on '${flags.controlsDir}'`)
+          logger.info(`Generating the profile json using inspec json command on '${flags.controlsDir}'`)
           // Get the directory name without the trailing "controls" directory
           const profileDir = path.dirname(flags.controlsDir)
           const inspecJsonFile = execSync(`inspec json '${profileDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
 
-          logger.debug('Generating InsPec Profiles from generated inspect json')
+          logger.info('Generating InsPec Profiles from generated inspect json')
           inspecProfile = processInSpecProfile(inspecJsonFile)
         } catch (error: any) {
           logger.error(`ERROR: Unable to generate the profile json because: ${error}`)
@@ -144,7 +145,8 @@ export default class GenerateUpdateControls extends Command {
 
     // Create a map data type with: key = legacy Id (V or SV number) and value = new Id (SV number)
     // Create a map data type to be used as a flag to identify new controls (key and value are the new control Id)
-    // This is used so we can invoke .has(key) method (test if map contains provide key)
+    // Create a map data type to be used as a flag to identify legacy controls (key and value are the legacy control Id)
+    // The new and legacy controls Map is used used so we can invoke .has(key) method (test if map contains provide key)
     const xccdfLegacyToControlMap = new Map()
     const xccdfLegacyControlsMap = new Map()
     const xccdfControlsMap = new Map()
