@@ -1062,12 +1062,12 @@ FLAGS
   -X, --xccdfXmlFile=<value>    (required) The XCCDF XML file containing the new guidance - in the form of an .xml file
   -c, --controlsDir=<value>     (required) The InsPec profile controls directory containing the profiles to be updated  
   -J, --inspecJsonFile=<value>  Input execution/profile JSON file - can be generated using the "inspec json <profile path> > profile.json" command. If not provided the `inspec` CLI must be installed
-  -P, --controlPrefix=<option>  [default: V] Old control number prefix V or SV, default V
-                                <options: V|SV>
+  -P, --controlPrefix=<option>  [default: V] Old control number prefix V or SV, default V <options: V|SV>
   -b, --[no-]backupControls     Preserve modified controls in a backup directory (oldControls) inside the controls directory
+                                [default: true]
   -f, --[no-]formatControls     Format control contents in the same way `generate delta` will write controls
-  -L, --logLevel=<option>       [default: info]
-                                <options: info|warn|debug|verbose> 
+                                [default: true]
+  -L, --logLevel=<option>       [default: info] <options: info|warn|debug|verbose> 
 
 EXAMPLES
   $ saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory -L debug

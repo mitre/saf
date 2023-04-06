@@ -77,6 +77,8 @@ export default class GenerateDelta extends Command {
         }
 
         logger.debug(`Loaded ${xccdfXmlFile} as XCCDF`)
+      } else {
+        throw new Error('No benchmark (XCCDF) file was provided.')
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {

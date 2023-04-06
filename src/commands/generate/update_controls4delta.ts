@@ -126,7 +126,7 @@ export default class GenerateUpdateControls extends Command {
           const profileDir = path.dirname(flags.controlsDir)
           const inspecJsonFile = execSync(`inspec json '${profileDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
 
-          logger.info('Generating InsPec Profiles from generated inspect json')
+          logger.info('Generating InsPec Profiles from inspect json summary')
           inspecProfile = processInSpecProfile(inspecJsonFile)
         } catch (error: any) {
           logger.error(`ERROR: Unable to generate the profile json because: ${error}`)
