@@ -6,15 +6,15 @@ on:
 
 jobs:
   build-deploy:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
 
       - name: setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: "16.x"
-          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
 
       - name: Install Nullsoft Scriptable Install System and p7zip
         run: sudo apt install nsis p7zip-full
@@ -23,28 +23,28 @@ jobs:
         run: rm -rf test
 
       - name: Install project dependencies
-        run: npm install
+        run: npm ci
 
       - name: Pack Windows Installer
-        run: yarn run oclif pack win
+        run: npx oclif pack win
 
       - name: Pack Debian Package
-        run: sudo yarn run oclif pack deb
+        run: sudo npx oclif pack deb
 
       - name: Upload SAF-CLI Windows Build x64 Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SAF-CLI Windows Build x64
           path: dist/win32/saf-*-x64.exe
 
       - name: Upload SAF-CLI Windows Build x86 Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SAF-CLI Windows Build x86
           path: dist/win32/saf-*-x86.exe
 
       - name: Upload SAF-CLI Debian x64 Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SAF-CLI Debian Build x64
-          path: dist/deb/saf_*.deb
+          path: dist/deb/saf-*.deb
