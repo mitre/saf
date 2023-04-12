@@ -43,8 +43,9 @@ jobs:
           name: SAF-CLI Windows Build x86
           path: dist/win32/saf-*-x86.exe
 
+      # underscore here since that's how the file is named
       - name: Upload SAF-CLI Debian x64 Artifact
         uses: actions/upload-artifact@v3
         with:
           name: SAF-CLI Debian Build x64
-          path: dist/deb/saf-*.deb
+          path: dist/deb/saf_*.deb
