@@ -39,6 +39,6 @@ jobs:
 
       # Publish SAF CLI to GitHub Package Registry
       - name: Publish SAF CLI to GPR
-        run: npm publish --access public mitre-saf-v*.tgz
+        run: npm publish --access public mitre-saf-*.tgz
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
