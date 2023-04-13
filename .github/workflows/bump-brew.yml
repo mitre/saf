@@ -23,7 +23,6 @@ jobs:
         with:
           formula-name: saf-cli
           homebrew-tap: mitre/homebrew-saf
-          base-branch: main
           download-url: https://registry.npmjs.org/@mitre/saf/-/saf-${{ steps.extract-version.outputs.tag }}.tgz
         env:
           COMMITTER_TOKEN: ${{ secrets.HOMEBREW_PAT }}
