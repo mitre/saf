@@ -63,6 +63,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Splunk to HDF](#splunk-to-hdf)
       * [Trivy to HDF](#trivy-to-hdf)
       * [Twistlock to HDF](#twistlock-to-hdf)
+      * [Veracode to HDF](#veracode-to-hdf)
       * [XCCDF Results to HDF](#xccdf-results-to-hdf)
       * [OWASP ZAP to HDF](#owasp-zap-to-hdf)
 
@@ -870,9 +871,27 @@ convert twistlock2hdf         Translate a Twistlock CLI output file into an HDF 
 ```
 
 [top](#convert-other-formats-to-hdf)
+#### Veracode to HDF
+```
+convert veracode2hdf          Translate a Veracode XML file into a Heimdall Data
+                              Format JSON file
+  USAGE
+    $ saf convert veracode2hdf -i <veracode-xml> -o <hdf-scan-results-json> [-h]
+
+  FLAGS
+    -h, --help                            Show CLI help.
+    -i, --input=<veracode-xml>            (required) Input Veracode XML File
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+
+  EXAMPLES
+    $ saf convert veracode2hdf -i veracode_results.xml -o output-hdf-name.json
+```
+
 #### XCCDF Results to HDF
 ***Note:*** `xccdf_results2hdf` only supports native OpenSCAP and SCC output.
 ```
+
+[top](#convert-other-formats-to-hdf)
 convert xccdf_results2hdf     Translate a SCAP client XCCDF-Results XML report
                               to a Heimdall Data Format JSON file
   USAGE
