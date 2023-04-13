@@ -13,8 +13,8 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-      - name: Get all tags
-        run: git fetch --tags origin
+        with:
+          fetch-depth: 0
       - name: Extract version
         id: extract-version
         run: echo "tag=$(git describe --abbrev=0 --tags)" >> $GITHUB_OUTPUT
