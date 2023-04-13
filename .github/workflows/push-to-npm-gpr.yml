@@ -25,7 +25,7 @@ jobs:
         run: npm pack
 
       - name: Publish SAF CLI to NPM
-        run: npm publish --access public mitre-saf-v*.tgz
+        run: npm publish --access public mitre-saf-*.tgz
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
