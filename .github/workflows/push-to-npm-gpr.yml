@@ -33,14 +33,12 @@ jobs:
 
       # Setup .npmrc file to publish to GitHub Package Registry
       - uses: actions/setup-node@v3
-        if: always()
         with:
           node-version: "16.x"
           registry-url: 'https://npm.pkg.github.com'
 
       # Publish SAF CLI to GitHub Package Registry
       - name: Publish SAF CLI to GPR
-        if: always()
         run: npm publish --access public mitre-saf-*.tgz
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
