@@ -37,7 +37,7 @@
     "axios": "^1.2.3",
     "chai": "^4",
     "colors": "^1.4.0",
-    "csv-parse": "^4.16.0",
+    "csv-parse": "^5.3.6",
     "dotenv": "^16.0.3",
     "express": "^4.17.1",
     "fast-xml-parser": "^3.19.0",
