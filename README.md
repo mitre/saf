@@ -63,6 +63,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Splunk to HDF](#splunk-to-hdf)
       * [Trivy to HDF](#trivy-to-hdf)
       * [Twistlock to HDF](#twistlock-to-hdf)
+      * [Veracode to HDF](#veracode-to-hdf)
       * [XCCDF Results to HDF](#xccdf-results-to-hdf)
       * [OWASP ZAP to HDF](#owasp-zap-to-hdf)
 
@@ -870,9 +871,27 @@ convert twistlock2hdf         Translate a Twistlock CLI output file into an HDF 
 ```
 
 [top](#convert-other-formats-to-hdf)
+#### Veracode to HDF
+```
+convert veracode2hdf          Translate a Veracode XML file into a Heimdall Data
+                              Format JSON file
+  USAGE
+    $ saf convert veracode2hdf -i <veracode-xml> -o <hdf-scan-results-json> [-h]
+
+  FLAGS
+    -h, --help                            Show CLI help.
+    -i, --input=<veracode-xml>            (required) Input Veracode XML File
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+
+  EXAMPLES
+    $ saf convert veracode2hdf -i veracode_results.xml -o output-hdf-name.json
+```
+
 #### XCCDF Results to HDF
 ***Note:*** `xccdf_results2hdf` only supports native OpenSCAP and SCC output.
 ```
+
+[top](#convert-other-formats-to-hdf)
 convert xccdf_results2hdf     Translate a SCAP client XCCDF-Results XML report
                               to a Heimdall Data Format JSON file
   USAGE
@@ -1097,16 +1116,14 @@ generate threshold            Generate a compliance template for "saf validate t
                               control counts or better (More Passes and/or less
                               Fails/Skips/Not Applicable/No Impact/Errors)
   USAGE
-    $ saf generate threshold -i <hdf-json> -o <threshold-yaml> [-h] [-e] [-c]
+    $ saf generate threshold -i <hdf-json> [-o <threshold-yaml>] [-h] [-e] [-c]
 
   FLAGS
-    -c, --generateControlIds        Validate control IDs have the correct severity
-                                    and status
-    -e, --exact                     All counts should be exactly the same when
-                                    validating, not just less than or greater than
-    -h, --help                      Show CLI help.
-    -i, --input=<hdf-json>          (required) Input HDF JSON File
-    -o, --output=<threshold-yaml>   (required) Output Threshold YAML File
+    -c, --generateControlIds  Validate control IDs have the correct severity and status
+    -e, --exact               All counts should be exactly the same when validating, not just less than or greater than
+    -h, --help                Show CLI help.
+    -i, --input=<value>       (required) Input HDF JSON File
+    -o, --output=<value>      Output Threshold YAML File
 
   EXAMPLES
     $ saf generate threshold -i rhel7-results.json -e -c -o output.yaml

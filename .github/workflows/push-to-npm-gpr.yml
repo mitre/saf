@@ -1,0 +1,43 @@
+name: Push SAF-CLI to NPM and GPR
+on:
+  release:
+    types: [published]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+          registry-url: "https://registry.npmjs.org"
+          cache: 'npm'
+
+      - name: Remove testing resources
+        run: rm -rf test
+
+      - name: Install project dependencies
+        run: npm ci
+
+      - name: Pack all items that are published as packages
+        run: npm pack
+
+      - name: Publish SAF CLI to NPM
+        run: npm publish --access public mitre-saf-*.tgz
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Setup .npmrc file to publish to GitHub Package Registry
+      - uses: actions/setup-node@v3
+        with:
+          node-version: "16.x"
+          registry-url: 'https://npm.pkg.github.com'
+
+      # Publish SAF CLI to GitHub Package Registry
+      - name: Publish SAF CLI to GPR
+        run: npm publish --access public mitre-saf-*.tgz
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
