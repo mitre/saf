@@ -16,7 +16,7 @@ jobs:
         id: format-tag
         with:
           pattern: 'v'
-          string: "${{ github.event.release.tag_name }}"
+          string: "1.2.11"
           replace-with: ''
           flags: 'g'
       - name: Login to DockerHub
