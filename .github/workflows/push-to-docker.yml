@@ -1,6 +1,7 @@
 name: Push SAF CLI to Docker Hub on every release
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
 
