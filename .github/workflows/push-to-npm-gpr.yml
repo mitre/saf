@@ -1,5 +1,6 @@
 name: Push SAF-CLI to NPM and GPR
 on:
+  workflow_dispatch:
   release:
     types: [published]
 
