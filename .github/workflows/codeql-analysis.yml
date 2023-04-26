@@ -71,7 +71,8 @@ jobs:
 
     - name: CSV export
       uses: advanced-security/ghas-to-csv@v2
-
+      env:
+        GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
     - name: Upload CSV
       uses: actions/upload-artifact@v3
       with:
