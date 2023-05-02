@@ -7,7 +7,7 @@ export default class ReadTags extends Command {
 
     static description = 'Read the `tags` attribute in a given Heimdall Data Format or InSpec Profile JSON file and send it to stdout or write it to a file'
 
-    static examples = ['saf supplement tags read -i hdf.json -o tag.json']
+    static examples = ['saf supplement tags read -i hdf.json -o tag.json', 'saf supplement tags read -i hdf.json -o tag.json -c V-00001 V-00002']
 
     static flags = {
       help: Flags.help({char: 'h'}),
@@ -21,18 +21,11 @@ export default class ReadTags extends Command {
 
       const input: ExecJSON.Execution | ProfileJSON.Profile = JSON.parse(fs.readFileSync(flags.input, 'utf8'))
 
-      const extractTags = (profile: ExecJSON.Profile | ProfileJSON.Profile) => profile.controls.map(control => control.tags)
+      const extractTags = (profile: ExecJSON.Profile | ProfileJSON.Profile) => (profile.controls as Array<ExecJSON.Control | ProfileJSON.Control>).filter(control => flags.controls ? flags.controls.includes(control.id) : true).map(control => control.tags)
 
       const tags = Object.hasOwn(input, 'profiles') ? (input as ExecJSON.Execution).profiles.map(profile => extractTags(profile)) : extractTags(input as ProfileJSON.Profile)
 
-      if (flags.controls) {
-        const filterTags: any[][] = tags.map(tags => tags.filter((tag: { gid: string }) => flags.controls?.includes(tag.gid)))
-        if (flags.output) {
-          fs.writeFileSync(flags.output, JSON.stringify(filterTags, null, 2))
-        } else {
-          process.stdout.write(JSON.stringify(filterTags, null, 2))
-        }
-      } else if (flags.output) {
+      if (flags.output) {
         fs.writeFileSync(flags.output, JSON.stringify(tags, null, 2))
       } else {
         process.stdout.write(JSON.stringify(tags, null, 2))
