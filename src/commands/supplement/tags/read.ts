@@ -25,7 +25,14 @@ export default class ReadTags extends Command {
 
       const tags = Object.hasOwn(input, 'profiles') ? (input as ExecJSON.Execution).profiles.map(profile => extractTags(profile)) : extractTags(input as ProfileJSON.Profile)
 
-      if (flags.output) {
+      if (flags.controls) {
+        const filterTags: any[][] = tags.map(tags => tags.filter((tag: { gid: string }) => flags.controls?.includes(tag.gid)))
+        if (flags.output) {
+          fs.writeFileSync(flags.output, JSON.stringify(filterTags, null, 2))
+        } else {
+          process.stdout.write(JSON.stringify(filterTags, null, 2))
+        }
+      } else if (flags.output) {
         fs.writeFileSync(flags.output, JSON.stringify(tags, null, 2))
       } else {
         process.stdout.write(JSON.stringify(tags, null, 2))
