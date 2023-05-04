@@ -51,9 +51,10 @@ export default class WriteTags extends Command {
           throw new TypeError('Structure of tags data is invalid')
         }
 
-        for (const profile of (input as ExecJSON.Execution).profiles) {
+        for (const [i, profile] of (input as ExecJSON.Execution).profiles.entries()) {
+          const currTags = tags[i]
           for (const control of profile.controls) {
-            const matchingTag = tags[0].find((tag: { gid: string }) => tag.gid === control.id)
+            const matchingTag = currTags.find((tag: { gid: string }) => tag.gid === control.id)
             if (matchingTag !== undefined) {
               control.tags = matchingTag
             }
@@ -65,7 +66,7 @@ export default class WriteTags extends Command {
         }
 
         for (const control of (input as ProfileJSON.Profile).controls) {
-          const matchingTag = tags[0].find((tag: { gid: string }) => tag.gid === control.id)
+          const matchingTag = tags.find((tag: { gid: string }) => tag.gid === control.id)
           if (matchingTag !== undefined) {
             control.tags = matchingTag
           }
