@@ -12,6 +12,7 @@ export default class WriteTags extends Command {
     static examples = [
       'saf supplement tags write -i hdf.json -d \'[[{"a": 5}]]\'',
       'saf supplement tags write -i hdf.json -f tags.json -o new-hdf.json',
+      'saf supplement tags write -i hdf.json -f tags.json -o new-hdf.json -c "V-000001',
     ]
 
     static flags = {
@@ -20,6 +21,7 @@ export default class WriteTags extends Command {
       tagsFile: Flags.string({char: 'f', exclusive: ['tagsData'], description: 'An input tags-data file (can contain JSON that matches structure of tags in input file(HDF or profile)); this flag or `tagsData` must be provided'}),
       tagsData: Flags.string({char: 'd', exclusive: ['tagsFile'], description: 'Input tags-data (can contain JSON that matches structure of tags in input file(HDF or profile)); this flag or `tagsFile` must be provided'}),
       output: Flags.string({char: 'o', description: 'An output file that matches structure of input file (otherwise the input file is overwritten)'}),
+      controls: Flags.string({char: 'c', description: 'The id of the control whose tags will be extracted', multiple: true}),
     }
 
     async run() {
@@ -46,34 +48,45 @@ export default class WriteTags extends Command {
         throw new Error('One out of tagsFile or tagsData must be passed')
       }
 
-      if (Object.hasOwn(input, 'profiles')) {
-        if (Object.keys((input as ExecJSON.Execution).profiles).length !== Object.keys(tags).length) {
+      const overwriteTags = (profile: ExecJSON.Profile | ProfileJSON.Profile, tags: any) => {
+        // Filter our controls
+        const filteredControls = (profile.controls as Array<ExecJSON.Control | ProfileJSON.Control>)?.filter(control => flags.controls ?  flags.controls.includes(control.id) : true)
+
+        // Check shape
+        console.log(profile.controls.length)
+        console.log(tags.length)
+        if (!flags.controls && profile.controls.length !== tags.length) {
           throw new TypeError('Structure of tags data is invalid')
         }
 
-        for (const [i, profile] of (input as ExecJSON.Execution).profiles.entries()) {
-          const currTags = tags[i]
-          for (const control of profile.controls) {
-            const matchingTag = currTags.find((tag: { gid: string }) => tag.gid === control.id)
-            if (matchingTag !== undefined) {
-              control.tags = matchingTag
+        // Overwrite tags
+        const updatedControls = profile.controls.map((control: any, index: number) => {
+          if (filteredControls.includes(control)) {
+            return {
+              ...control,
+              tags: tags[index],
             }
           }
+
+          return control
+        })
+        return updatedControls
+      }
+
+      if (Object.hasOwn(input, 'profiles')) {
+        for (const [i, profile] of (input as ExecJSON.Execution).profiles.entries()) {
+          const updatedControls =  overwriteTags(profile, tags[i])
+
+          profile.controls = updatedControls
         }
       } else {
-        if (Object.keys((input as ProfileJSON.Profile).controls).length !== Object.keys(tags).length) {
-          throw new TypeError('Structure of tags data is invalid')
-        }
+        const updatedControls = overwriteTags((input as ProfileJSON.Profile), tags);
 
-        for (const control of (input as ProfileJSON.Profile).controls) {
-          const matchingTag = tags.find((tag: { gid: string }) => tag.gid === control.id)
-          if (matchingTag !== undefined) {
-            control.tags = matchingTag
-          }
-        }
+        (input as ProfileJSON.Profile).controls = updatedControls
       }
 
       fs.writeFileSync(output, JSON.stringify(input, null, 2))
       console.log('Tags successfully overwritten')
     }
 }
+
