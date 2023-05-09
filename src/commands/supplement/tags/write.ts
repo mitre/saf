@@ -51,38 +51,23 @@ export default class WriteTags extends Command {
       const overwriteTags = (profile: ExecJSON.Profile | ProfileJSON.Profile, tags: any) => {
         // Filter our controls
         const filteredControls = (profile.controls as Array<ExecJSON.Control | ProfileJSON.Control>)?.filter(control => flags.controls ?  flags.controls.includes(control.id) : true)
-
         // Check shape
-        console.log(profile.controls.length)
-        console.log(tags.length)
-        if (!flags.controls && profile.controls.length !== tags.length) {
+        if (filteredControls.length !== tags.length) {
           throw new TypeError('Structure of tags data is invalid')
         }
 
         // Overwrite tags
-        const updatedControls = profile.controls.map((control: any, index: number) => {
-          if (filteredControls.includes(control)) {
-            return {
-              ...control,
-              tags: tags[index],
-            }
-          }
-
-          return control
-        })
-        return updatedControls
+        for (const [index, control] of filteredControls.entries()) {
+          control.tags = tags[index]
+        }
       }
 
       if (Object.hasOwn(input, 'profiles')) {
         for (const [i, profile] of (input as ExecJSON.Execution).profiles.entries()) {
-          const updatedControls =  overwriteTags(profile, tags[i])
-
-          profile.controls = updatedControls
+          overwriteTags(profile, tags[i])
         }
       } else {
-        const updatedControls = overwriteTags((input as ProfileJSON.Profile), tags);
-
-        (input as ProfileJSON.Profile).controls = updatedControls
+        overwriteTags((input as ProfileJSON.Profile), tags)
       }
 
       fs.writeFileSync(output, JSON.stringify(input, null, 2))
