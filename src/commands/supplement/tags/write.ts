@@ -52,7 +52,6 @@ export default class WriteTags extends Command {
         // Filter our controls
         const filteredControls = (profile.controls as Array<ExecJSON.Control | ProfileJSON.Control>)?.filter(control => flags.controls ?  flags.controls.includes(control.id) : true)
         // Check shape
-        console.log()
         if (filteredControls.length !== tags.length) {
           throw new TypeError('Structure of tags data is invalid')
         }
