@@ -31,7 +31,7 @@ export default class WriteTags extends Command {
 
       const output: string = flags.output || flags.input
 
-      let tags: any
+      let tags: ExecJSON.Control[][] | ProfileJSON.Control[] | string
       if (flags.tagsFile) {
         try {
           tags = JSON.parse(fs.readFileSync(flags.tagsFile, 'utf8'))
@@ -48,10 +48,11 @@ export default class WriteTags extends Command {
         throw new Error('One out of tagsFile or tagsData must be passed')
       }
 
-      const overwriteTags = (profile: ExecJSON.Profile | ProfileJSON.Profile, tags: any) => {
+      const overwriteTags = (profile: ExecJSON.Profile | ProfileJSON.Profile, tags: ExecJSON.Control[] | ProfileJSON.Control[]) => {
         // Filter our controls
         const filteredControls = (profile.controls as Array<ExecJSON.Control | ProfileJSON.Control>)?.filter(control => flags.controls ?  flags.controls.includes(control.id) : true)
         // Check shape
+        console.log()
         if (filteredControls.length !== tags.length) {
           throw new TypeError('Structure of tags data is invalid')
         }
@@ -64,10 +65,10 @@ export default class WriteTags extends Command {
 
       if (Object.hasOwn(input, 'profiles')) {
         for (const [i, profile] of (input as ExecJSON.Execution).profiles.entries()) {
-          overwriteTags(profile, tags[i])
+          overwriteTags(profile, tags[i] as ExecJSON.Control[])
         }
       } else {
-        overwriteTags((input as ProfileJSON.Profile), tags)
+        overwriteTags((input as ProfileJSON.Profile), (tags as ProfileJSON.Control[]))
       }
 
       fs.writeFileSync(output, JSON.stringify(input, null, 2))
