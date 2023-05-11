@@ -18,8 +18,8 @@ export default class WriteTags extends Command {
     static flags = {
       help: Flags.help({char: 'h'}),
       input: Flags.string({char: 'i', required: true, description: 'An input HDF or profile file'}),
-      tagsFile: Flags.string({char: 'f', exclusive: ['tagsData'], description: 'An input tags-data file (can contain JSON that matches structure of tags in input file(HDF or profile)); this flag or `tagsData` must be provided'}),
-      tagsData: Flags.string({char: 'd', exclusive: ['tagsFile'], description: 'Input tags-data (can contain JSON that matches structure of tags in input file(HDF or profile)); this flag or `tagsFile` must be provided'}),
+      tagsFile: Flags.string({char: 'f', exclusive: ['tagsFile'], description: 'An input tags-data file (can contain JSON that matches structure of tags in input file(HDF or profile)); this flag or `tagsData` must be provided'}),
+      tagsData: Flags.string({char: 'd', exclusive: ['tagsData'], description: 'Input tags-data (can contain JSON that matches structure of tags in input file(HDF or profile)); this flag or `tagsFile` must be provided'}),
       output: Flags.string({char: 'o', description: 'An output file that matches structure of input file (otherwise the input file is overwritten)'}),
       controls: Flags.string({char: 'c', description: 'The id of the control whose tags will be extracted', multiple: true}),
     }
