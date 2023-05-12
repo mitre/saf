@@ -33,6 +33,7 @@ export default class WriteTags extends Command {
       const output: string = flags.output || flags.input
 
       let CCItags: object | string
+      // TODO: Make more generic 
       if (flags.tagsFile) {
         try {
           const fileContent = fs.readFileSync(flags.tagsFile, 'utf8')
@@ -42,6 +43,7 @@ export default class WriteTags extends Command {
             }
 
             CCItags = JSON.parse(JSON.stringify(output))
+            // TODO: Right now passing into function. When parsing csv add proper await function
             processParsedData(CCItags)
           })
         } catch (error: unknown) {
@@ -66,6 +68,7 @@ export default class WriteTags extends Command {
           if (tag.cci) {
             const cms_ars5_ce: string[] = []
             for (const cci of tag.cci) {
+              // TODO: Currently striping whitespace might not need this
               const matchingTag = CCItags.find((currTag: { cci: any }) => currTag.cci.replace(/\s/g, '').includes(cci))
               if (matchingTag && matchingTag['cms-ars5-ce'] !== '') {
                 cms_ars5_ce.push(matchingTag['cms-ars5-ce'])
