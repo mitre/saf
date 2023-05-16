@@ -26,7 +26,7 @@ export default class XCCDFBenchmark2InSpec extends Command {
       options: ['rule', 'group', 'cis', 'version'],
       description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
     }),
-    ovalDefinitions: Flags.string({char: 'O', required: false, description: 'Path to an OVAL definitions file to populate profile elements that reference OVAL defintions'}),
+    ovalDefinitions: Flags.string({char: 'O', required: false, description: 'Path to an OVAL definitions file to populate profile elements that reference OVAL definitions'}),
     output: Flags.string({char: 'o', required: false, default: 'profile', description: 'The output folder to write the generated InSpec content'}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   };

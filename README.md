@@ -86,6 +86,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
   * [Generate](#generate)
       * [Delta](#delta)
+      * [Delta Supporting Commands](#delta-supporting-options) 
       * [CKL Templates](#ckl-templates)
       * [InSpec Metadata](#inspec-metadata)
       * [Thresholds](#thresholds-1)
@@ -1039,6 +1040,8 @@ validate threshold            Validate the compliance and status counts of an HD
 
 #### Delta
 
+See the wiki for more information on 👉 [Delta](https://github.com/mitre/saf/wiki/Delta-(WIP)).
+
 ```
 Update an existing InSpec profile with updated XCCDF guidance
 
@@ -1063,6 +1066,34 @@ FLAGS
 
 EXAMPLES
   $ saf generate delta -J ./the_profile_json_file.json -X ./the_xccdf_guidance_file.xml  -o the_output_directory -O ./the_oval_file.xml -T group -r the_update_report_file.md -L debug
+```
+[top](#generate-data-reports-and-more)
+
+#### Delta Supporting Options
+Use this process prior of running `generate delta` if the updated guidance's have new control numbers and/or to format the controls how `generate delta` will. Running this process minimizes the delta output content and makes for better and easier visualization of the modification provided by the Delta process.
+
+```
+USAGE
+  $ saf generate update_controls4delta -X <value> -J <value> -c <value> [-P V|VS] [--[no-]backupControls] [--[no-]formatControls] [-L info|warn|debug|verbose]
+
+FLAGS
+  -h, --help                    Show CLI help.
+  -X, --xccdfXmlFile=<value>    (required) The XCCDF XML file containing the new guidance - in the form of an .xml file
+  -c, --controlsDir=<value>     (required) The InSpec profile controls directory containing the profiles to be updated  
+  -J, --inspecJsonFile=<value>  Input execution/profile JSON file - can be generated using the "inspec json <profile path> > profile.json" command. If not provided the `inspec` CLI must be installed
+  -P, --controlPrefix=<option>  [default: V] Old control number prefix V or SV, default V <options: V|SV>
+  -b, --[no-]backupControls     Preserve modified controls in a backup directory (oldControls) inside the controls directory
+                                [default: true]
+  -f, --[no-]formatControls     Format control contents in the same way `generate delta` will write controls
+                                [default: true]
+  -L, --logLevel=<option>       [default: info] <options: info|warn|debug|verbose> 
+
+EXAMPLES
+  $ saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory -L debug
+  $ saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -J ./the_profile_json -c the_controls_directory -L debug
+  $ saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory --no-formatControls -P SV -L debug
+  $ saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory --no-backupControls --no-formatControls -P SV -L debug
+
 ```
 [top](#generate-data-reports-and-more)
 
