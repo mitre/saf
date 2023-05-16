@@ -10,16 +10,18 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Extract version
         id: extract-version
-        run: |
-          printf "::set-output name=tag-name::%s" "${GITHUB_REF#refs/tags/}"
+        run: echo "tag=$(git describe --abbrev=0 --tags)" >> $GITHUB_OUTPUT
       - uses: mislav/bump-homebrew-formula-action@v2
-        if: "!contains(github.ref, '-')" # skip prereleases
         with:
           formula-name: saf-cli
           homebrew-tap: mitre/homebrew-saf
-          base-branch: main
-          download-url: https://registry.npmjs.org/@mitre/saf/-/saf-${{ steps.extract-version.outputs.tag-name }}.tgz
+          download-url: https://registry.npmjs.org/@mitre/saf/-/saf-${{ steps.extract-version.outputs.tag }}.tgz
+          tag-name: ${{ steps.extract-version.outputs.tag }}
         env:
           COMMITTER_TOKEN: ${{ secrets.HOMEBREW_PAT }}
