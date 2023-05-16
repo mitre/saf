@@ -17,7 +17,7 @@ export default class GenerateUpdateControls extends Command {
     help: Flags.help({char: 'h'}),
     xccdfXmlFile: Flags.string({char: 'X', required: true, description: 'The XCCDF XML file containing the new guidance - in the form of .xml file'}),
     inspecJsonFile: Flags.string({char: 'J', required: false, description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> > profile.json" command'}),
-    controlsDir: Flags.string({char: 'c', required: true, description: 'The InsPec profile controls directory containing the profiles to be updated'}),
+    controlsDir: Flags.string({char: 'c', required: true, description: 'The InSpec profile controls directory containing the profiles to be updated'}),
     controlPrefix: Flags.string({char: 'P', required: false, default: 'V', options: ['V', 'SV'], description: 'Old control number prefix V or SV, default V'}),
     formatControls: Flags.boolean({char: 'f', required: false, default: true, allowNo: true, description: 'Format control contents in the same way `generate delta` will write controls\n[default: true]'}),
     backupControls: Flags.boolean({char: 'b', required: false, default: true, allowNo: true, description: 'Preserve modified controls in a backup directory (oldControls) inside the controls directory\n[default: true]'}),
@@ -126,7 +126,7 @@ export default class GenerateUpdateControls extends Command {
           const profileDir = path.dirname(flags.controlsDir)
           const inspecJsonFile = execSync(`inspec json '${profileDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
 
-          logger.info('Generating InsPec Profiles from inspect json summary')
+          logger.info('Generating InSpec Profiles from InSpec JSON summary')
           inspecProfile = processInSpecProfile(inspecJsonFile)
         } catch (error: any) {
           logger.error(`ERROR: Unable to generate the profile json because: ${error}`)
@@ -160,8 +160,8 @@ export default class GenerateUpdateControls extends Command {
       xccdfControlsMap.set(control.id, control.id)
     })
 
-    // Create a map data type containing the controls found in the processed inspec json file
-    //   The inspect json file contains the controls and associated code block (these are
+    // Create a map data type containing the controls found in the processed InSpec JSON file
+    //   The InSpec JSON file contains the controls and associated code block (these are
     //   created from the existing controls - They are updated via the Delta process)
     // Lint the controls using the toRuby method provided by the Controls class
     const inspecProfileFormattedControls = new Map()

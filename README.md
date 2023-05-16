@@ -1060,7 +1060,7 @@ USAGE
 FLAGS
   -h, --help                    Show CLI help.
   -X, --xccdfXmlFile=<value>    (required) The XCCDF XML file containing the new guidance - in the form of an .xml file
-  -c, --controlsDir=<value>     (required) The InsPec profile controls directory containing the profiles to be updated  
+  -c, --controlsDir=<value>     (required) The InSpec profile controls directory containing the profiles to be updated  
   -J, --inspecJsonFile=<value>  Input execution/profile JSON file - can be generated using the "inspec json <profile path> > profile.json" command. If not provided the `inspec` CLI must be installed
   -P, --controlPrefix=<option>  [default: V] Old control number prefix V or SV, default V <options: V|SV>
   -b, --[no-]backupControls     Preserve modified controls in a backup directory (oldControls) inside the controls directory
