@@ -7,7 +7,7 @@
   "bugs": "https://github.com/mitre/saf/issues",
   "dependencies": {
     "@aws-sdk/client-config-service": "^3.53.0",
-    "@mitre/emass_client": "^3.4.1",
+    "@mitre/emass_client": "^3",
     "@mitre/hdf-converters": "^2.6.43",
     "@mitre/heimdall-lite": "^2.6.45",
     "@mitre/inspec-objects": "^1.0.0",

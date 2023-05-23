@@ -33,10 +33,10 @@ export default class EmasserPutArtifacts extends Command {
       category: flags.category,
       // Optional arguments
       description: flags.description,
-      refPageNumber: flags.refPageNumber,
+      referencePageNumber: flags.referencePageNumber,
       ccis: flags.ccis,
       controls: flags.controls,
-      artifactExpirationDate: Number.parseFloat(flags.artifactExpirationDate),
+      expirationDate: Number.parseFloat(flags.expirationDate),
       lastReviewedDate: Number.parseFloat(flags.lastReviewDate),
     })
 
