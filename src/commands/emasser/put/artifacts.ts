@@ -1,8 +1,8 @@
 import colorize from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 import {ArtifactsApi} from '@mitre/emass_client'
-import {ArtifactsResponsePutPost} from '@mitre/emass_client/dist/api'
-import {ArtifactsGet as Artifacts} from '@mitre/emass_client/dist/api'
+import {ArtifactsResponsePutPost} from '@mitre/emass_client/dist/api' // skipcq: JS-R1000
+import {ArtifactsGet as Artifacts} from '@mitre/emass_client/dist/api' // skipcq: JS-R1000
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'

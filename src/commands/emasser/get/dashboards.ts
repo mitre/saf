@@ -72,7 +72,7 @@ export default class EmasserGetDashboards extends Command {
     va_threat_architecture_details: Args.string({name: 'va_threat_architecture_details', description: 'Get VA threat architecture details dashboard information', required: false}),
   };
 
-  async run(): Promise<void> {
+  async run(): Promise<void> { // skipcq: JS-0044
     const {args, flags} = await this.parse(EmasserGetDashboards)
     const apiCxn = new ApiConnection()
     const getDashboards = new DashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
