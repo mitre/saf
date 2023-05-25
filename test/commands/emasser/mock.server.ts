@@ -24,7 +24,7 @@ export class InitMockServer {
       }),
     }
 
-    this.axiosInstances =  globalAxios.create(this.axiosRequestConfig)
+    this.axiosInstances = globalAxios.create(this.axiosRequestConfig)
     this.axiosInstances.defaults.headers.common = {
       'api-key': 123,
       'user-uid': 321,

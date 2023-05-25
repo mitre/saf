@@ -1,6 +1,6 @@
 import colorize from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
-import {CloudResourcesApi} from '@mitre/emass_client'
+import {CloudResourceResultsApi} from '@mitre/emass_client'
 import {CloudResourcesResponsePost} from '@mitre/emass_client/dist/api'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
@@ -192,7 +192,7 @@ export default class EmasserPostCloudResources extends Command {
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserPostCloudResources)
     const apiCxn = new ApiConnection()
-    const addCloudResource = new CloudResourcesApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+    const addCloudResource = new CloudResourceResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
 
     const requestBodyArray: CloudResource[] = []
 
