@@ -1,16 +1,18 @@
+import fs from 'fs'
+import _ from 'lodash'
+import {readFile} from 'fs/promises'
 import colorize from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
-import {StaticCodeScansApi} from '@mitre/emass_client'
-import {StaticCodeApplication, StaticCodeResponsePost} from '@mitre/emass_client/dist/api'
-import {StaticCodeRequestPostBody as StaticCodeRequest} from '@mitre/emass_client/dist/api'
-import {StaticCodeRequestPostBodyApplication as ApplicationRequestBody} from '@mitre/emass_client/dist/api'
+
+import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
-import {outputError} from '../../../utils/emasser/outputError'
-import {readFile} from 'fs/promises'
-import _ from 'lodash'
-import fs from 'fs'
+
+import {StaticCodeScansApi} from '@mitre/emass_client'
+import {StaticCodeApplication, StaticCodeResponsePost,
+  StaticCodeRequestPostBody as StaticCodeRequest,
+  StaticCodeRequestPostBodyApplication as ApplicationRequestBody} from '@mitre/emass_client/dist/api'
 
 function printRedMsg(msg: string) {
   console.log('\x1B[91m', msg, '\x1B[0m')

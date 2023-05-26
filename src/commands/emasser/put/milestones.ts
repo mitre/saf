@@ -1,12 +1,14 @@
 import colorize from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
-import {MilestonesApi} from '@mitre/emass_client'
-import {MilestoneResponsePut} from '@mitre/emass_client/dist/api'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {MilestonesGet as Milestones} from '@mitre/emass_client/dist/api'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
+
 import {outputError} from '../../../utils/emasser/outputError'
+import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
+
+import {MilestonesApi} from '@mitre/emass_client'
+import {MilestoneResponsePut,
+  MilestonesGet as Milestones} from '@mitre/emass_client/dist/api'
 
 export default class EmasserPutMilestones extends Command {
   static usage = '<%= command.id %> [options]';
