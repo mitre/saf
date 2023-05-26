@@ -9,7 +9,7 @@ import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities
 import {outputError} from '../../../utils/emasser/outputError'
 
 export default class EmasserPostTestResults extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]'
+  static usage = '<%= command.id %> [options]'
 
   static description = "Add test results for a system's Assessment Procedures (CCIs) which determine Security Control compliance"
 

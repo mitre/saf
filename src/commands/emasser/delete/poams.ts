@@ -9,7 +9,7 @@ import {outputError} from '../../../utils/emasser/outputError'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserDeletePoams extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]';
+  static usage = '<%= command.id %> [options]';
 
   static description = 'Remove one or many POA&M items in a system identified by system and poam Id';
 

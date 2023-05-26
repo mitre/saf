@@ -9,7 +9,7 @@ import {outputError} from '../../../utils/emasser/outputError'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserDeleteArtifacts extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]';
+  static usage = '<%= command.id %> [options]';
 
   static description = 'Remove one or many artifacts in a system identified by system Id';
 

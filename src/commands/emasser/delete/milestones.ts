@@ -9,7 +9,7 @@ import {outputError} from '../../../utils/emasser/outputError'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserDeleteMilestones extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]';
+  static usage = '<%= command.id %> [options]';
 
   static description = 'Remove milestones in a system for one or many POA&M items identified by system, poam, and milestone Id';
 

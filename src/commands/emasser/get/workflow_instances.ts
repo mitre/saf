@@ -14,7 +14,7 @@ import {FlagOptions,
 const endpoint = 'workflow_instances'
 
 export default class EmasserGetWorkflowInstances extends Command {
-  static usage = '<%= command.id %> [ARGUMENT]';
+  static usage = '<%= command.id %> [ARGUMENT] \n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m';
 
   static description = getDescriptionForEndpoint(process.argv, endpoint);
 

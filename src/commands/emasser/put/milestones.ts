@@ -9,7 +9,7 @@ import {outputError} from '../../../utils/emasser/outputError'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserPutMilestones extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]';
+  static usage = '<%= command.id %> [options]';
 
   static description = 'Update milestone(s) for specified system, poam, and milestone Id';
 

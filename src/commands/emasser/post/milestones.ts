@@ -9,7 +9,7 @@ import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities
 import {outputError} from '../../../utils/emasser/outputError'
 
 export default class EmasserPostMilestones extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]'
+  static usage = '<%= command.id %> [options]'
 
   static description = 'Add milestones to one or many POA&M items in a system'
 

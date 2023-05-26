@@ -9,7 +9,7 @@ import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities
 import {outputError} from '../../../utils/emasser/outputError'
 
 export default class EmasserPostCac extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]'
+  static usage = '<%= command.id %> [options]'
 
   static description = 'Add a Control Approval Chain (CAC) items in a system'
 

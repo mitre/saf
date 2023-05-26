@@ -844,6 +844,16 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
             break
           }
 
+          case 'artifacts_summary': {
+            exampleArray.push(`${baseCmd} artifacts_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'artifacts_details': {
+            exampleArray.push(`${baseCmd} artifacts_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
           case 'hardware_summary': {
             exampleArray.push(`${baseCmd} hardware_summary [-o, --orgId] <value> [options]`)
             break
@@ -851,6 +861,26 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
 
           case 'hardware_details': {
             exampleArray.push(`${baseCmd} hardware_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'sensor_hardware_summary': {
+            exampleArray.push(`${baseCmd} sensor_hardware_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'sensor_hardware_details': {
+            exampleArray.push(`${baseCmd} sensor_hardware_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'ports_protocols_summary': {
+            exampleArray.push(`${baseCmd} ports_protocols_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'ports_protocols_details': {
+            exampleArray.push(`${baseCmd} ports_protocols_details [-o, --orgId] <value> [options]`)
             break
           }
 
@@ -894,12 +924,33 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
             break
           }
 
+          case 'fisma_inventory_crypto_summary': {
+            exampleArray.push(`${baseCmd} fisma_inventory_crypto_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'va_threat_risk_summary': {
+            exampleArray.push(`${baseCmd} va_threat_risk_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'va_threat_source_details': {
+            exampleArray.push(`${baseCmd} va_threat_source_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'va_threat_architecture_details': {
+            exampleArray.push(`${baseCmd} va_threat_architecture_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
           default: {
-            exampleArray.push(`${baseCmd} [dashboard name] [flag] [options]`)
+            exampleArray.push(`${baseCmd} [dashboard name] [options]`)
             break
           }
         }
 
+        exampleArray.push('\x1B[93m NOTE: dashboard names are provided in the ARGUMENTS list, use lowercase format\x1B[0m')
         break
       }
     }
@@ -1065,8 +1116,9 @@ export function getJsonExamples(endpoint?: string): string[] {
 
   if (endpoint === 'scan_findings-application') {
     const data = '{ ' +
+      '"application": {' +
       '"applicationName": "Name of the software application that was assessed",' +
-      '"version": "The version of the application"' +
+      '"version": "The version of the application"}' +
       '}'
     return JSON.parse(data)
   }
@@ -1087,7 +1139,7 @@ export function getJsonExamples(endpoint?: string): string[] {
   if (endpoint === 'scan_findings-clearFindings') {
     const data = '{ ' +
       '"applicationFindings": [{' +
-      '"clearFindings": "When used by itself, can clear out all application findings for a single application/version pairing"}]' +
+      '"clearFindings": "To clear an application\'s findings, use only the field clearFindings and set it to true."}]' +
       '}'
     return JSON.parse(data)
   }
