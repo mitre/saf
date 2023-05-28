@@ -1,6 +1,6 @@
 import _ from 'lodash'
 /* eslint-disable unicorn/import-style */
-import * as util from 'util'
+import * as util from 'util' // skipcq: JS-C1003 - util does not expose itself as an ES Module.
 /* eslint-enable unicorn/import-style */
 import {Command, Help} from '@oclif/core'
 
@@ -26,7 +26,7 @@ import {Command, Help} from '@oclif/core'
   For additional information references the oclif Help Classes (https://oclif.io/docs/help_classes)
 */
 export default class MyHelpClass extends Help {
-  public async showCommandHelp(command: Command.Class | Command.Loadable | Command.Cached): Promise<void> {
+  public async showCommandHelp(command: Command.Class | Command.Loadable | Command.Cached): Promise<void> { // skipcq: JS-0116
     const name = command.id
     const depth = name.split(':').length
 
@@ -41,7 +41,7 @@ export default class MyHelpClass extends Help {
     const hasArgs = _.has(command.args, 'name')
     if (hasArgs) {
       const argNamesMap = new Map<string, string>()
-      _.forOwn(command.args, function (value, key) {
+      _.forOwn(command.args, function (value, key) { // skipcq: JS-0241
         if (key !== 'name') {
           const argName = _.get(command.args[key], 'name')
           argNamesMap.set(argName.toUpperCase(), argName)
@@ -77,11 +77,11 @@ export default class MyHelpClass extends Help {
       args[0] = args[0].replace(key, value)
     }
 
-    stdout.write(util.format.apply(this, args) + '\n')
+    stdout.write(util.format.apply(this, args) + '\n') // skipcq: JS-0357
   }
 
   protected log(...args: string[]): void {
-    stdout.write(util.format.apply(this, args) + '\n')
+    stdout.write(util.format.apply(this, args) + '\n') // skipcq: JS-0357
   }
 }
 
