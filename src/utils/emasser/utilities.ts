@@ -950,7 +950,6 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
           }
         }
 
-        exampleArray.push('\x1B[93m NOTE: dashboard names are provided in the ARGUMENTS list, use lowercase format\x1B[0m')
         break
       }
     }
