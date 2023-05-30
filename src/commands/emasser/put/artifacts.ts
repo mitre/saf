@@ -1,15 +1,15 @@
 import colorize from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 import {ArtifactsApi} from '@mitre/emass_client'
-import {ArtifactsResponsePutPost} from '@mitre/emass_client/dist/api'
-import {ArtifactsGet as Artifacts} from '@mitre/emass_client/dist/api'
+import {ArtifactsResponsePutPost} from '@mitre/emass_client/dist/api' // skipcq: JS-R1000
+import {ArtifactsGet as Artifacts} from '@mitre/emass_client/dist/api' // skipcq: JS-R1000
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 import {outputError} from '../../../utils/emasser/outputError'
 
 export default class EmasserPutArtifacts extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]'
+  static usage = '<%= command.id %> [options]'
 
   static description = 'Updates artifacts for a system with provided entries'
 
@@ -33,10 +33,10 @@ export default class EmasserPutArtifacts extends Command {
       category: flags.category,
       // Optional arguments
       description: flags.description,
-      refPageNumber: flags.refPageNumber,
+      referencePageNumber: flags.referencePageNumber,
       ccis: flags.ccis,
       controls: flags.controls,
-      artifactExpirationDate: Number.parseFloat(flags.artifactExpirationDate),
+      expirationDate: Number.parseFloat(flags.expirationDate),
       lastReviewedDate: Number.parseFloat(flags.lastReviewDate),
     })
 
