@@ -6,11 +6,11 @@ import {Command, Help} from '@oclif/core'
 
 /*
   Override the showCommandHelp (called directly for single-command CLIs) method defined in the oclif Help class.
-  This is done to modifying how the arguments are displayed (uppercase), which becomes obscured on how to use
-  the arguments, as some are named in camelCase format. The override method implemented here only affects help
+  This is done to modify how the arguments are displayed (uppercase), which obscures how to use
+  the arguments, as some are named in lowercase or camelCase format. The override method implemented here only affects help
   calls for commands that provide arguments.
 
-  To prevent this override from being used remove the filepath of this help class in oclif's config in package.json.
+  To prevent this override from being used, remove the filepath of this help class in oclif's config in package.json.
   The help is defined in the package.json "oclif" section:
     "oclif": {
       "helpClass": "./lib/help/help"
@@ -18,12 +18,12 @@ import {Command, Help} from '@oclif/core'
     }
 
   How does it work:
-    1 - When the showCommandHelp is called we store the arguments (if provided) into a Map object with key
+    1 - When the showCommandHelp is called, we store the arguments (if provided) into a Map object with key
         of the argument name in uppercase and the value as the argument name in its natural format.
-    2 - Next we call a modified log method with the generated Map object
+    2 - Next, we call a modified log method with the generated Map object
     3 - The modified log method replaces the formatted ARGUMENTS list with its natural format.
 
-  For additional information references the oclif Help Classes (https://oclif.io/docs/help_classes)
+  For additional information, reference the oclif Help Classes (https://oclif.io/docs/help_classes)
 */
 export default class MyHelpClass extends Help {
   public async showCommandHelp(command: Command.Class | Command.Loadable | Command.Cached): Promise<void> { // skipcq: JS-0116
