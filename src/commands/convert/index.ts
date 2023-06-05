@@ -1,4 +1,4 @@
-import {ASFFResults, BurpSuiteMapper, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockResults, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
+import {ASFFResults, ChecklistResults, BurpSuiteMapper, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockResults, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
 import fs from 'fs'
 import _ from 'lodash'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
@@ -40,6 +40,7 @@ export default class Convert extends Command {
         }
 
         case 'burp':
+        case 'checklist':
         case 'dbProtect':
         case 'fortify':
         case 'jfrog':
@@ -92,6 +93,12 @@ export default class Convert extends Command {
 
       case 'burp': {
         converter = new BurpSuiteMapper(fs.readFileSync(flags.input, 'utf8'))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        break
+      }
+
+      case 'checklist': {
+        converter = new ChecklistResults(fs.readFileSync(flags.input, 'utf8'))
         fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
         break
       }
