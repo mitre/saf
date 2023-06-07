@@ -8,8 +8,8 @@
   "dependencies": {
     "@aws-sdk/client-config-service": "^3.53.0",
     "@mitre/emass_client": "^3",
-    "@mitre/hdf-converters": "^2.6.49",
-    "@mitre/heimdall-lite": "^2.6.49",
+    "@mitre/hdf-converters": "^2.6.50",
+    "@mitre/heimdall-lite": "^2.6.52",
     "@mitre/inspec-objects": "^1.0.0",
     "@oclif/core": "^2.0.6",
     "@oclif/plugin-help": "^5",
