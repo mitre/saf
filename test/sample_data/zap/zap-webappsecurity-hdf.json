@@ -1,9 +1,9 @@
 {
   "platform": {
     "name": "Heimdall Tools",
-    "release": "2.6.28"
+    "release": "2.6.47"
   },
-  "version": "2.6.28",
+  "version": "2.6.47",
   "statistics": {},
   "profiles": [
     {
@@ -18,6 +18,10 @@
       "controls": [
         {
           "tags": {
+            "cci": [
+              "CCI-003173",
+              "CCI-001643"
+            ],
             "nist": [
               "SA-11",
               "RA-5"
@@ -146,6 +150,10 @@
         },
         {
           "tags": {
+            "cci": [
+              "CCI-003173",
+              "CCI-001643"
+            ],
             "nist": [
               "SA-11",
               "RA-5"
@@ -274,6 +282,9 @@
         },
         {
           "tags": {
+            "cci": [
+              "CCI-002418"
+            ],
             "nist": [
               "SC-8"
             ],
@@ -401,6 +412,9 @@
         },
         {
           "tags": {
+            "cci": [
+              "CCI-002418"
+            ],
             "nist": [
               "SC-8"
             ],
@@ -483,6 +497,9 @@
         },
         {
           "tags": {
+            "cci": [
+              "CCI-002418"
+            ],
             "nist": [
               "SC-8"
             ],
@@ -598,6 +615,11 @@
             },
             {
               "status": "failed",
+              "code_desc": "Uri: http://zero.webappsecurity.com/bank/pay-bills-get-payee-details.html\nMethod: GET\nAttack: TRACE, OPTIONS methods with 'Max-Forwards' header. TRACK method.\n",
+              "start_time": "Wed, 5 Dec 2018 19:00:19"
+            },
+            {
+              "status": "failed",
               "code_desc": "Uri: http://zero.webappsecurity.com/signin.html\nMethod: GET\nAttack: TRACE, OPTIONS methods with 'Max-Forwards' header. TRACK method.\n",
               "start_time": "Wed, 5 Dec 2018 19:00:19"
             }
@@ -605,6 +627,10 @@
         },
         {
           "tags": {
+            "cci": [
+              "CCI-003173",
+              "CCI-001643"
+            ],
             "nist": [
               "SA-11",
               "RA-5"
@@ -733,6 +759,9 @@
         },
         {
           "tags": {
+            "cci": [
+              "CCI-001310"
+            ],
             "nist": [
               "SI-10"
             ],
@@ -860,6 +889,10 @@
         },
         {
           "tags": {
+            "cci": [
+              "CCI-003173",
+              "CCI-001643"
+            ],
             "nist": [
               "SA-11",
               "RA-5"
@@ -988,6 +1021,9 @@
         },
         {
           "tags": {
+            "cci": [
+              "CCI-002418"
+            ],
             "nist": [
               "SC-8"
             ],
@@ -1070,6 +1106,9 @@
         },
         {
           "tags": {
+            "cci": [
+              "CCI-001310"
+            ],
             "nist": [
               "SI-10"
             ],
@@ -1107,6 +1146,9 @@
         },
         {
           "tags": {
+            "cci": [
+              "CCI-001310"
+            ],
             "nist": [
               "SI-10"
             ],
@@ -1139,6 +1181,10 @@
         },
         {
           "tags": {
+            "cci": [
+              "CCI-003173",
+              "CCI-001643"
+            ],
             "nist": [
               "SA-11",
               "RA-5"
@@ -1172,6 +1218,9 @@
         },
         {
           "tags": {
+            "cci": [
+              "CCI-001310"
+            ],
             "nist": [
               "SI-10"
             ],
@@ -1203,7 +1252,7 @@
           ]
         }
       ],
-      "sha256": "9df0e67ba47f2467405a5038b0d58600436169c7490bae5c0e39fde80f2d03d9"
+      "sha256": "dc87fef5b7ce93b02f962f859309f21d08b33c3754667fac7c1214f52bb70f07"
     }
   ],
   "passthrough": {

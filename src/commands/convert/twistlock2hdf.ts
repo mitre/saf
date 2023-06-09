@@ -1,6 +1,6 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import {TwistlockMapper as Mapper} from '@mitre/hdf-converters'
+import {TwistlockResults as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class Twistlock2HDF extends Command {
