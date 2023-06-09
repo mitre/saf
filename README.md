@@ -9,63 +9,107 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 - "[Heimdall](https://github.com/mitre/heimdall2)" - Our visualizer for all security result data
 - "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - Our common data format to preserve and transform security data
 
-## Contents
+## Installation:
 
-- [SAF CLI Installation](#installation)
-  - [Via NPM](#installation-via-npm)
-  - [Via Brew](#installation-via-brew)
-  - [Via Docker](#installation-via-docker)
-  - [Via Windows Installer](#installation-via-windows-installer)
+  * [Via NPM](#installation-via-npm)
+      * [Update via NPM](#update-via-npm)
+  * [Via Brew](#installation-via-brew)
+      * [Update via Brew](#update-via-brew)
+  * [Via Docker](#installation-via-docker)
+      * [Update via Docker](#update-via-docker)
+  * [Via Windows Installer](#installation-via-windows-installer)
+      * [Update via Windows Installer](#update-via-windows-installer)
 
-- [SAF CLI Usage](#usage)
-  - [Attest](#attest) - Create and Apply attestations in JSON, YAML, and XLSX format
-  - [Convert](#convert) - Convert security results from all your security tools into a common data format
-    - [To HDF](#to-hdf)
-      - [ASFF to HDF](#asff-to-hdf)
-      - [AWS Config to HDF](#aws-config-to-hdf)
-      - [Burp Suite to HDF](#burp-suite-to-hdf)
-      - [CKL to POA&M](#ckl-to-poam)
-      - [DBProtect to HDF](#dbprotect-to-hdf)
-      - [Fortify to HDF](#fortify-to-hdf)
-      - [Ion Channel 2 HDF](#ion-channel-2-hdf)
-      - [JFrog Xray to HDF](#jfrog-xray-to-hdf)
-      - [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
-      - [Netsparker to HDF](#netsparker-to-hdf)
-      - [Nikto to HDF](#nikto-to-hdf)
-      - [Prisma to HDF](#prisma-to-hdf)
-      - [Prowler to HDF](#prowler-to-hdf)
-      - [Sarif to HDF](#sarif-to-hdf)
-      - [Scoutsuite to HDF](#scoutsuite-to-hdf)
-      - [Snyk to HDF](#snyk-to-hdf)
-      - [SonarQube to HDF](#sonarqube-to-hdf)
-      - [Splunk to HDF](#splunk-to-hdf)
-      - [Trivy to HDF](#trivy-to-hdf)
-      - [Twistlock to HDF](#twistlock-to-hdf)
-      - [XCCDF Results to HDF](#xccdf-results-to-hdf)
-      - [OWASP ZAP to HDF](#owasp-zap-to-hdf)
-    - [From HDF](#from-hdf)
-      - [HDF to ASFF](#hdf-to-asff)
-      - [HDF to Checklist](#hdf-to-checklist)
-      - [HDF to CSV](#hdf-to-csv)
-      - [HDF to Condensed JSON](#hdf-to-condensed-json)
-      - [HDF to Splunk](#hdf-to-splunk)
-      - [HDF to XCCDF](#hdf-to-xccdf)
-  - [View](#view) - Identify overall security status and deep-dive to solve specific security defects
-    - [Heimdall](#heimdall)
-    - [Summary](#summary)
-  - [Validate](#validate) - Verify pipeline thresholds
-  - [Generate](#generate) - Generate InSpec validation code, set pipeline thresholds, and generate options to support other saf commands.
-    - [CKL Templates](#ckl-templates)
-    - [InSpec Metadata](#inspec-metadata)
-    - [Thresholds](#thresholds-1)
-    - [Spreadsheet (csv/xlsx) to InSpec](#spreadsheet-csvxlsx-to-inspec)
-    - [XCCDF to InSpec Stub](#xccdf-to-inspec-stub)
-    - [Other](#other)
-      - [Notes](#notes)
-      - [Mapping Files](#mapping-files)
-  - Scan - Visit https://saf.mitre.org/#/validate to explore and run inspec profiles
-  - Harden - Visit https://saf.mitre.org/#/harden to explore and run hardening scripts
-- [License and Author](#license-and-author)
+## Usage
+
+### Attest HDF Data
+
+  * [Attest](#attest)
+      * [Create Attestations](#create-attestations)
+      * [Apply Attestations](#apply-attestations)
+  
+### Convert HDF to Other Formats
+
+  * [Get Help with Convert](#convert)
+  * [Convert From HDF](#convert-from-hdf)
+      * [HDF to ASFF](#hdf-to-asff)
+      * [HDF to Splunk](#hdf-to-splunk)
+      * [HDF to XCCDF Results](#hdf-to-xccdf-results)
+      * [HDF to Checklist](#hdf-to-checklist)
+      * [HDF to CSV](#hdf-to-csv)
+      * [HDF to Condensed JSON](#hdf-to-condensed-json)
+
+### Convert Other Formats to HDF
+
+  * [Convert To HDF](#convert-to-hdf)
+      * [ASFF to HDF](#asff-to-hdf)
+      * [AWS Config to HDF](#aws-config-to-hdf)
+      * [Burp Suite to HDF](#burp-suite-to-hdf)
+      * [CKL to POA&amp;M](#ckl-to-poam)
+      * [DBProtect to HDF](#dbprotect-to-hdf)
+      * [Fortify to HDF](#fortify-to-hdf)
+      * [GoSec to HDF](#gosec-to-hdf)
+      * [Ion Channel 2 HDF](#ion-channel-2-hdf)
+      * [JFrog Xray to HDF](#jfrog-xray-to-hdf)
+      * [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
+      * [Netsparker to HDF](#netsparker-to-hdf)
+      * [Nikto to HDF](#nikto-to-hdf)
+      * [Prisma to HDF](#prisma-to-hdf)
+      * [Prowler to HDF](#prowler-to-hdf)
+      * [Sarif to HDF](#sarif-to-hdf)
+      * [Scoutsuite to HDF](#scoutsuite-to-hdf)
+      * [Snyk to HDF](#snyk-to-hdf)
+      * [SonarQube to HDF](#sonarqube-to-hdf)
+      * [Splunk to HDF](#splunk-to-hdf)
+      * [Trivy to HDF](#trivy-to-hdf)
+      * [Twistlock to HDF](#twistlock-to-hdf)
+      * [Veracode to HDF](#veracode-to-hdf)
+      * [XCCDF Results to HDF](#xccdf-results-to-hdf)
+      * [OWASP ZAP to HDF](#owasp-zap-to-hdf)
+
+### eMasser Client
+
+  * [eMASS API CLI](#emass-api-cli)
+
+### View HDF Summaries and Data
+
+  * [View](#view)
+      * [Heimdall](#heimdall)
+      * [Summary](#summary)
+
+### Validate HDF Thresholds
+
+  * [Validate](#validate)
+      * [Thresholds](#thresholds)
+
+### Generate Data Reports and More
+
+  * [Generate](#generate)
+      * [Delta](#delta)
+      * [Delta Supporting Commands](#delta-supporting-options) 
+      * [CKL Templates](#ckl-templates)
+      * [InSpec Metadata](#inspec-metadata)
+      * [Thresholds](#thresholds-1)
+      * [Spreadsheet (csv/xlsx) to InSpec](#spreadsheet-csvxlsx-to-inspec)
+      * [XCCDF Benchmark to InSpec Stubs](#xccdf-benchmark-to-inspec-stub)
+        * [DoD Stub vs CIS Stub Formatting](#dod-stub-vs-cis-stub-formatting)
+      * [Mapping Files](#mapping-files)
+
+### Enhance and Supplement HDF Data
+
+  * [Supplement](#supplement)
+      * [Passthrough](#passthrough)
+        * [Read](#read)
+        * [Write](#write)
+      * [Target](#target)
+        * [Read](#read-1)
+        * [Write](#write-1)
+
+### License and Authors
+
+* [License and Author](#license-and-author)
+
+---
 
 ## Installation
 
