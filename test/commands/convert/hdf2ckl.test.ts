@@ -9,10 +9,10 @@ describe('Test hdf2checklist', () => {
 
   test
     .stdout()
-    .command(['convert hdf2ckl', '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'), '-o', `${tmpobj.name}/hdf2ckl_test.json`])
+    .command(['convert hdf2ckl', '-i', path.resolve('./test/sample_data/HDF/input/vSphere8_report.json'), '-o', `${tmpobj.name}/hdf2ckl_test.json`])
     .it('hdf-converter output test - defaults', () => {
       const test = fs.readFileSync(`${tmpobj.name}/hdf2ckl_test.json`, 'utf8')
-      const sample = fs.readFileSync(path.resolve('./test/sample_data/checklist/red_hat_good.ckl'), 'utf8')
+      const sample = fs.readFileSync(path.resolve('./test/sample_data/checklist/vSphere8_report.ckl'), 'utf8')
       expect(omitChecklistChangingFields(test)).to.eql(omitChecklistChangingFields(sample))
     })
 
