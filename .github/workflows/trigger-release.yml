@@ -1,0 +1,44 @@
+on: push
+name: Update Version
+jobs:
+  createPullRequest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Bump version
+        run: npm version patch
+      - name: Update VERSION file
+        run: echo "$NEXT_PATCH_VERSION" > 'VERSION'
+      - name: Create a fresh build
+        run: npm pack
+      - name: Run the tests
+        run: npm test
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: Bump version
+          title: Bump version
+
+
+name-template: "$NEXT_PATCH_VERSION"
+tag-template: "$NEXT_PATCH_VERSION"
+categories:
+  - title: "New Features"
+    labels:
+      - "feature"
+      - "enhancement"
+  - title: "Bug Fixes"
+    labels:
+      - "fix"
+      - "bugfix"
+      - "bug"
+  - title: "Security Enhancements"
+    labels:
+      - "security"
+  - title: "Dependency Updates"
+    labels:
+      - "dependencies"
+change-template: "- $TITLE @$AUTHOR (#$NUMBER)"
+template: |
+  $CHANGES
