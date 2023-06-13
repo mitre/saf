@@ -1,15 +1,17 @@
+import fs from 'fs'
+import _ from 'lodash'
+import {readFile} from 'fs/promises'
 import colorize from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
-import {ControlsApi} from '@mitre/emass_client'
-import {ControlsResponsePut} from '@mitre/emass_client/dist/api'
-import {ControlsGet as Controls} from '@mitre/emass_client/dist/api'
+
+import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
-import {outputError} from '../../../utils/emasser/outputError'
-import {readFile} from 'fs/promises'
-import _ from 'lodash'
-import fs from 'fs'
+
+import {ControlsApi} from '@mitre/emass_client'
+import {ControlsResponsePut,
+  ControlsGet as Controls} from '@mitre/emass_client/dist/api'
 
 function printHelpMsg() {
   console.log('\x1B[93m', '\nInvoke saf emasser put controls [-h, --help] for additional help', '\x1B[0m')
@@ -250,7 +252,7 @@ function generateBodyObj(dataObject: Controls): Controls {
 }
 
 export default class EmasserPutControls extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]'
+  static usage = '<%= command.id %> [options]'
 
   static description = 'Update Security Control information of a system for both the Implementation Plan and Risk Assessment.'
 

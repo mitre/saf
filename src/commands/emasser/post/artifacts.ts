@@ -12,7 +12,7 @@ import os from 'os'
 import path from 'path'
 
 export default class EmasserPostArtifacts extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]'
+  static usage = '<%= command.id %> [options]'
 
   static description = 'Uploads [FILES] to the given [SYSTEM_ID] as artifacts'
 

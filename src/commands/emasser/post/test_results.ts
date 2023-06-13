@@ -1,15 +1,17 @@
 import colorize from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
-import {TestResultsApi} from '@mitre/emass_client'
-import {TestResultsResponsePost} from '@mitre/emass_client/dist/api'
-import {TestResultsGet as TestResult} from '@mitre/emass_client/dist/api'
+
+import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
-import {outputError} from '../../../utils/emasser/outputError'
+
+import {TestResultsApi} from '@mitre/emass_client'
+import {TestResultsResponsePost,
+  TestResultsGet as TestResult} from '@mitre/emass_client/dist/api'
 
 export default class EmasserPostTestResults extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]'
+  static usage = '<%= command.id %> [options]'
 
   static description = "Add test results for a system's Assessment Procedures (CCIs) which determine Security Control compliance"
 
