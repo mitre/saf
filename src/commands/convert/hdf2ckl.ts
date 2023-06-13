@@ -32,6 +32,9 @@ export default class HDF2CKL extends Command {
     const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf8')))
     const profileName = contextualizedEvaluation.data.profiles[0].name
     const controls = contextualizedEvaluation.contains.flatMap(profile => profile.contains) || []
+    const rootControls = _.uniqBy(controls, control =>
+      _.get(control, 'root.hdf.wraps.id'),
+    ).map(({root}) => root)
     let cklData = {}
     const cklMetadata: CKLMetadata = {
       fileName: convertFullPathToFilename(flags.input),
@@ -68,7 +71,7 @@ export default class HDF2CKL extends Command {
       ...cklMetadata,
       profileInfo: getProfileInfo(contextualizedEvaluation, cklMetadata.fileName),
       uuid: v4(),
-      controls: controls.map(control => getDetails(control, profileName)),
+      controls: rootControls.map(control => getDetails(control, profileName)),
     }
     fs.writeFileSync(flags.output, Mustache.render(files['cklExport.ckl'].data, cklData).replace(/[^\x00-\x7F]/g, ''))
   }
