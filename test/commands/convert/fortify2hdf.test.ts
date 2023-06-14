@@ -19,7 +19,7 @@ describe('Test fortify', () => {
 
 describe('Test fortify using withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
-  
+
   test
     .stdout()
     .command(['convert fortify2hdf', '-i', path.resolve('./test/sample_data/fortify/sample_input_report/fortify_webgoat_results.fvdl'), '-o', `${tmpobj.name}/fortify.json`, '-w'])
