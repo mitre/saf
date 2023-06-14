@@ -4,7 +4,7 @@ import {XCCDFResultsMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class XCCDFResults2HDF extends Command {
-  static usage = 'convert xccdf_results2hdf -i <xccdf-results-xml> -o <hdf-scan-results-json> [-h]'
+  static usage = 'convert xccdf_results2hdf -i <xccdf-results-xml> -o <hdf-scan-results-json> [-h] [-w]'
 
   static description = 'Translate a SCAP client XCCDF-Results XML report to a Heimdall Data Format JSON file'
 
@@ -14,6 +14,7 @@ export default class XCCDFResults2HDF extends Command {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true, description: 'Input XCCDF Results XML File'}),
     output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
+    'with-raw': Flags.boolean({char: 'w', required: false, description: 'Include raw input file in HDF JSON file'}),
   }
 
   async run() {
@@ -23,7 +24,7 @@ export default class XCCDFResults2HDF extends Command {
     const data = fs.readFileSync(flags.input, 'utf8')
     checkInput({data: data, filename: flags.input}, 'xccdf', 'SCAP client XCCDF-Results XML report')
 
-    const converter = new Mapper(data)
+    const converter = new Mapper(data, flags['with-raw'])
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }

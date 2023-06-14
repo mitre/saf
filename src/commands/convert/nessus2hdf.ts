@@ -5,7 +5,7 @@ import _ from 'lodash'
 import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class Nessus2HDF extends Command {
-  static usage = 'convert nessus2hdf -i <nessus-xml> -o <hdf-scan-results-json> [-h]'
+  static usage = 'convert nessus2hdf -i <nessus-xml> -o <hdf-scan-results-json> [-h] [-w]'
 
   static description = "Translate a Nessus XML results file into a Heimdall Data Format JSON file\nThe current iteration maps all plugin families except 'Policy Compliance'\nA separate HDF JSON is generated for each host reported in the Nessus Report."
 
@@ -15,6 +15,7 @@ export default class Nessus2HDF extends Command {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true, description: 'Input Nessus XML File'}),
     output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
+    'with-raw': Flags.boolean({char: 'w', required: false, description: 'Include raw input file in HDF JSON file'}),
   }
 
   async run() {
@@ -24,7 +25,7 @@ export default class Nessus2HDF extends Command {
     const data = fs.readFileSync(flags.input, 'utf8')
     checkInput({data: data, filename: flags.input}, 'nessus', 'Nessus XML results file')
 
-    const converter = new Mapper(data)
+    const converter = new Mapper(data, flags['with-raw'])
     const result = converter.toHdf()
     if (Array.isArray(result)) {
       for (const element of result) {
