@@ -45,6 +45,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [ASFF to HDF](#asff-to-hdf)
       * [AWS Config to HDF](#aws-config-to-hdf)
       * [Burp Suite to HDF](#burp-suite-to-hdf)
+      * [CKL to HDF](#ckl-to-hdf)
       * [CKL to POA&amp;M](#ckl-to-poam)
       * [DBProtect to HDF](#dbprotect-to-hdf)
       * [Fortify to HDF](#fortify-to-hdf)
@@ -512,6 +513,25 @@ convert burpsuite2hdf         Translate a BurpSuite Pro XML file into a Heimdall
     $ saf convert burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json
 ```
 [top](#convert-other-formats-to-hdf)
+
+#### CKL to HDF
+```
+convert ckl2hdf               Translate a Checklist XML file into a Heimdall Data 
+                              Format JSON file
+  USAGE
+    $ saf convert ckl2hdf -i <ckl-xml> -o <hdf-scan-results-json> [-h] [-s] [-w]
+
+  FLAGS
+    -h, --help            Show CLI help.
+    -i, --input=<value>   (required) Input Checklist XML File
+    -o, --output=<value>  (required) Output HDF JSON File
+    -w, --with-raw        Include raw input file in HDF JSON file
+
+  EXAMPLES
+    $ saf convert ckl2hdf -i ckl_results.xml -o output-hdf-name.json
+```
+[top](#convert-other-formats-to-hdf)
+  
 #### CKL to POA&M
 
 Note: The included CCI to NIST Mappings are the extracted from NIST.gov, for mappings specific to eMASS use [this](https://github.com/mitre/ckl2POAM/blob/main/resources/cci2nist.json) file instead).

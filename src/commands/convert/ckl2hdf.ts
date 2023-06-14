@@ -14,6 +14,7 @@ export default class CKL2HDF extends Command {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true, description: 'Input Checklist XML File'}),
     output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
+    'with-raw': Flags.boolean({char: 'w', required: false, description: 'Include raw input file in HDF JSON file'}),
   }
 
   async run() {
@@ -22,7 +23,7 @@ export default class CKL2HDF extends Command {
     const data = fs.readFileSync(flags.input, 'utf8')
     checkInput({data: data, filename: flags.input}, 'checklist', 'DISA Checklist')
 
-    const converter = new Mapper(data)
+    const converter = new Mapper(data, flags['with-raw'])
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
   }
 }
