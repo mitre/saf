@@ -1,6 +1,6 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import {ConveyorResults as Mapper} from '@mitre/hdf-converters'
+import {ConveyorResult as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class Conveyor2HDF extends Command {
