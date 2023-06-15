@@ -22,7 +22,7 @@ export default class Scoutsuite2HDF extends Command {
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8')
-    checkInput({data: data, filename: flags.input}, 'scoutsuite', 'ScoutSuite results from a Javascript object')
+    checkInput({data, filename: flags.input}, 'scoutsuite', 'ScoutSuite results from a Javascript object')
 
     const converter = new Mapper(data, flags['with-raw'])
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))

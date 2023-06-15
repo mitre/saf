@@ -22,7 +22,7 @@ export default class XCCDFResults2HDF extends Command {
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8')
-    checkInput({data: data, filename: flags.input}, 'xccdf', 'SCAP client XCCDF-Results XML report')
+    checkInput({data, filename: flags.input}, 'xccdf', 'SCAP client XCCDF-Results XML report')
 
     const converter = new Mapper(data, flags['with-raw'])
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))

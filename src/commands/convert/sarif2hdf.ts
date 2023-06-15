@@ -22,7 +22,7 @@ export default class Sarif2HDF extends Command {
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8')
-    checkInput({data: data, filename: flags.input}, 'sarif', 'SARIF JSON')
+    checkInput({data, filename: flags.input}, 'sarif', 'SARIF JSON')
 
     const converter = new Mapper(data, flags['with-raw'])
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))

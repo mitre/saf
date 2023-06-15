@@ -23,7 +23,7 @@ export default class Nessus2HDF extends Command {
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8')
-    checkInput({data: data, filename: flags.input}, 'nessus', 'Nessus XML results file')
+    checkInput({data, filename: flags.input}, 'nessus', 'Nessus XML results file')
 
     const converter = new Mapper(data, flags['with-raw'])
     const result = converter.toHdf()
