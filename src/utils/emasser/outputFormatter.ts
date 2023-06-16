@@ -78,7 +78,7 @@ export function outputFormat(data: object, doConversion = true): string {
             // Process the 'meta' content
             case 'meta': {
               const jsonData: {[key: string]: any} = {}
-              jsonData[key1] =  formatDataObj[key1]
+              jsonData[key1] = formatDataObj[key1]
               _.merge(newData, jsonData)
               break
             }
@@ -130,6 +130,13 @@ export function outputFormat(data: object, doConversion = true): string {
 
             case 'pagination': {
               _.merge(newData, paginationObj)
+              break
+            }
+
+            default: {
+              const jsonData: {[key: string]: any} = {}
+              jsonData[key1] = formatDataObj[key1]
+              _.merge(newData, jsonData)
               break
             }
           }
@@ -186,6 +193,12 @@ export function outputFormat(data: object, doConversion = true): string {
 
             case 'pagination': {
               _.merge(newData, paginationObj)
+              break
+            }
+
+            default: {
+              jsonData[key1] = formatDataObj[key1]
+              _.merge(newData, jsonData)
               break
             }
           }
