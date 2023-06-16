@@ -47,9 +47,14 @@ export default class EmasserGetDashboards extends Command {
     // Enterprise Sensor-based Hardware Resources Dashboard
     sensor_hardware_summary: Args.string({name: 'sensor_hardware_summary', description: 'Get sensor hardware summary dashboard information', required: false}),
     sensor_hardware_details: Args.string({name: 'sensor_hardware_details', description: 'Get sensor hardware details dashboard information', required: false}),
+    // Software Baseline Dashboard
+    software_summary: Args.string({name: 'software_summary', description: 'Get software baseline summary dashboard information', required: false}),
+    software_details: Args.string({name: 'software_details', description: 'Get software baseline details dashboard information', required: false}),
     // Ports and Protocols Dashboard
     ports_protocols_summary: Args.string({name: 'ports_protocols_summary', description: 'Get ports and protocols summary dashboard information', required: false}),
     ports_protocols_details: Args.string({name: 'ports_protocols_details', description: 'Get ports and protocols details dashboard information', required: false}),
+    // System CONMON Integration Status Dashboard
+    integration_status_summary: Args.string({name: 'integration_status_summary', description: 'Get CONMON integration status summary dashboard information', required: false}),
     // System Associations Dashboard
     associations_details: Args.string({name: 'associations_details', description: 'Get system associations details dashboard information', required: false}),
     // Users Dashboard
@@ -186,6 +191,24 @@ export default class EmasserGetDashboards extends Command {
         break
       }
 
+      case 'software_summary': {
+        // Order is important here
+        getDashboards.getSystemSoftwareSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
+
+        break
+      }
+
+      case 'software_details': {
+        // Order is important here
+        getDashboards.getSystemSoftwareDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
+
+        break
+      }
+
       case 'ports_protocols_summary': {
         // Order is important here
         getDashboards.getSystemPortsProtocolsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
@@ -198,6 +221,15 @@ export default class EmasserGetDashboards extends Command {
       case 'ports_protocols_details': {
         // Order is important here
         getDashboards.getSystemPortsProtocolsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
+
+        break
+      }
+
+      case 'integration_status_summary': {
+        // Order is important here
+        getDashboards.getSystemCommonIntegrationStatusSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
         }).catch((error:any) => console.error(colorize(outputError(error))))
 
