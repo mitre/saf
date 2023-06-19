@@ -19,10 +19,11 @@
     "no-control-regex": "off",
     "max-nested-callbacks": "off",
     "unicorn/prefer-json-parse-buffer": "off",
-    "camelcase": "off", // Camel case fields are used in CKL
+    "camelcase": "off",
     "no-console": "off",
     "node/no-missing-import": "off",
     "complexity": "off",
-    "no-constant-condition": "off"
+    "no-constant-condition": "off",
+    "indent": ["error", 2, { "SwitchCase": 1 }]
   }
 }

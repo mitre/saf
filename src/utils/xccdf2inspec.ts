@@ -1,8 +1,5 @@
-import parser from 'fast-xml-parser'
-import * as htmlparser from 'htmlparser2'
-import _ from 'lodash'
+import {XMLParser} from 'fast-xml-parser'
 import {InSpecControl} from '../types/inspec'
-import {DecodedDescription} from '../types/xccdf'
 
 // Breaks lines down to lineLength number of characters
 export function wrap(s: string, lineLength = 80): string {
@@ -28,58 +25,12 @@ export const wrapAndEscapeQuotes = (s: string, lineLength?: number) => escapeDou
 export function convertEncodedXmlIntoJson(
   encodedXml: string,
 ): any {
-  return parser.parse(encodedXml, {
+  const options = {
     ignoreAttributes: false,
     attributeNamePrefix: '@_',
-  })
-}
-
-export function convertEncodedHTMLIntoJson(encodedHTML?: string): DecodedDescription {
-  if (encodedHTML) {
-    // Some STIGs regarding XSS put the < character inside of the description which breaks parsing
-    const patchedHTML = encodedHTML.replace(/"&lt;"/g, '[[[REPLACE_LESS_THAN]]]')
-
-    const xmlChunks: string[] = []
-    const htmlParser = new htmlparser.Parser({
-      ontext(text: string) {
-        xmlChunks.push(text)
-      },
-    })
-    htmlParser.write(patchedHTML)
-    htmlParser.end()
-    const converted = convertEncodedXmlIntoJson(xmlChunks.join(''))
-    let cleaned: Record<string, string | boolean | undefined> = {}
-
-    if (typeof converted.VulnDiscussion === 'object') { // Some STIGs have xml tags inside of the actual text which breaks processing, e.g U_ASD_STIG_V5R1_Manual-xccdf.xml and all Oracle Database STIGs
-      let extractedVulnDescription = ''
-      const remainingFields = _.omit(converted.VulnDiscussion, ['FalsePositives', 'FalseNegatives', 'Documentable', 'Mitigations', 'SeverityOverrideGuidance', 'PotentialImpacts', 'ThirdPartyTools', 'MitigationControl', 'Responsibility', 'IAControls'])
-      Object.entries(remainingFields).forEach(([field, value]) => {
-        extractedVulnDescription += `<${field}> ${value}`
-      })
-      cleaned = {
-        VulnDiscussion: extractedVulnDescription.replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"'),
-      }
-      Object.entries(converted.VulnDiscussion).forEach(([key, value]) => {
-        if (typeof value === 'string') {
-          cleaned[key] = (value as string).replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"')
-        } else {
-          cleaned[key] = (value as boolean)
-        }
-      })
-    } else {
-      Object.entries(converted).forEach(([key, value]) => {
-        if (typeof value === 'string') {
-          cleaned[key] = (value as string).replace(/\[\[\[REPLACE_LESS_THAN]]]/, '"<"')
-        } else {
-          cleaned[key] = (value as boolean)
-        }
-      })
-    }
-
-    return cleaned
   }
-
-  return {}
+  const parser = new XMLParser(options)
+  return parser.parse(encodedXml)
 }
 
 export function severityStringToImpact(string: string): number {
@@ -87,19 +38,19 @@ export function severityStringToImpact(string: string): number {
     return 0.0
   }
 
-  if (/low|cat(egory)?\s*(iii|3)/i.test(string)) {
+  if (/low|cat(egory)?\s*(iii|3)/i.test(string)) { // skipcq: JS-0113
     return 0.3
   }
 
-  if (/med(ium)?|cat(egory)?\s*(ii|2)/i.test(string)) {
+  if (/med(ium)?|cat(egory)?\s*(ii|2)/i.test(string)) { // skipcq: JS-0113
     return 0.5
   }
 
-  if (/high|cat(egory)?\s*(i|1)/i.test(string)) {
+  if (/high|cat(egory)?\s*(i|1)/i.test(string)) { // skipcq: JS-0113
     return 0.7
   }
 
-  if (/crit(ical)?|severe/i.test(string)) {
+  if (/crit(ical)?|severe/i.test(string)) { // skipcq: JS-0113
     return 1.0
   }
 
@@ -177,12 +128,12 @@ export function inspecControlToRubyCode(control: InSpecControl, lineLength?: num
         } else {
           // Convert JSON Object to Ruby Hash
           const stringifiedObject = JSON.stringify(value, null, 2)
-          .replace(/\n/g, '\n  ')
-          .replace(/\{\n {6}/g, '{')
-          .replace(/\[\n {8}/g, '[')
-          .replace(/\n {6}\]/g, ']')
-          .replace(/\n {4}\}/g, '}')
-          .replace(/": \[/g, '" => [')
+            .replace(/\n/g, '\n  ')
+            .replace(/\{\n {6}/g, '{')
+            .replace(/\[\n {8}/g, '[')
+            .replace(/\n {6}\]/g, ']')
+            .replace(/\n {4}\}/g, '}')
+            .replace(/": \[/g, '" => [')
           result += `  tag ${tag}: ${stringifiedObject}\n`
         }
       } else if (typeof value === 'string') {

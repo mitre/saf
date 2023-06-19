@@ -7,7 +7,7 @@ import {calculateCompliance, extractStatusCounts, getControlIdMap, renameStatusN
 import {readFileURI, writeFileURI} from '../../utils/io'
 
 export default class GenerateThreshold extends Command {
-  static usage = 'generate threshold -i <hdf-json> -o <threshold-yaml> [-h] [-e] [-c]'
+  static usage = 'generate threshold -i <hdf-json> [-o <threshold-yaml>] [-h] [-e] [-c]'
 
   static description = 'Generate a compliance template for "saf validate threshold". Default output states that you must have your current control counts or better (More Passes and/or less Fails/Skips/Not Applicable/No Impact/Errors)'
 
@@ -16,7 +16,7 @@ export default class GenerateThreshold extends Command {
   static flags = {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true, description: 'Input HDF JSON File'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output Threshold YAML File'}),
+    output: Flags.string({char: 'o', required: false, description: 'Output Threshold YAML File'}),
     exact: Flags.boolean({char: 'e', description: 'All counts should be exactly the same when validating, not just less than or greater than'}),
     generateControlIds: Flags.boolean({char: 'c', required: false, description: 'Validate control IDs have the correct severity and status'}),
   }
@@ -61,6 +61,10 @@ export default class GenerateThreshold extends Command {
       getControlIdMap(parsedProfile, thresholds)
     }
 
-    await writeFileURI(flags.output, YAML.stringify(thresholds))
+    if (flags.output) {
+      await writeFileURI(flags.output, YAML.stringify(thresholds))
+    } else {
+      console.log(YAML.stringify(thresholds))
+    }
   }
 }
