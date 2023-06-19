@@ -32,7 +32,11 @@ function convertEpochToDateTime(dataObject: object): object {
     } else if (dataObject[key] !== null) {
       const value: string = key
       const epochDate: number = Number.parseInt(dataObject[key], 10)
-      jsonData[key] = value.toUpperCase().search('DATE') >= 0 || value.toUpperCase().search('ATD') >= 0 ? new Date(epochDate * 1000) : dataObject[key]
+      if (Number.isNaN(epochDate) || epochDate < 100000000) {
+        jsonData[key] = dataObject[key]
+      } else {
+        jsonData[key] = value.toUpperCase().search('DATE') >= 0 || value.toUpperCase().search('ATD') >= 0 ? new Date(epochDate * 1000) : dataObject[key]
+      }
     } else if (dataObject[key] === null) {
       jsonData[key] = dataObject[key]
     }
@@ -89,13 +93,14 @@ export function outputFormat(data: object, doConversion = true): string {
               if (Array.isArray(formatDataObj[key1])) {
                 const data_array: object[] = Object.values(formatDataObj[key1])
                 const hash_array: object[] = []
-                data_array.forEach(dataEntries => {
+                for (const dataEntries of data_array) {
                   const jsonData = removeNullsFromObject(dataEntries)
                   hash_array.push(jsonData)
-                })
+                }
+
                 _.merge(newData, {data: hash_array})
                 formatDataObj = newData
-              // data: is NOT and array of object it is a simple object
+              // data: is NOT an array of objects, it is a simple object
               } else {
                 const jsonData: {[key: string]: any} = {}
                 const obj: object = formatDataObj[key1]
@@ -108,10 +113,11 @@ export function outputFormat(data: object, doConversion = true): string {
                       let jsonObj: {[key: string]: any} = {} // skipcq: JS-0242
                       const data_array: object[] = Object.values(obj[key2])
                       const hash_array: object[] = []
-                      data_array.forEach((dataObject: object) => {
+                      for (const dataObject of data_array) {
                         jsonObj = removeNullsFromObject(dataObject)
                         hash_array.push(jsonObj)
-                      })
+                      }
+
                       jsonData[key2] = hash_array
                     } else if (obj[key2] !== null) {
                       jsonData[key2] = obj[key2]
@@ -147,10 +153,10 @@ export function outputFormat(data: object, doConversion = true): string {
         const newData: {[key: string]: any} = {}
         const dataObj: {[key: string]: any} = {};
         (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[]).forEach(key1 => {
-          let jsonData: {[key: string]: any} = {} // skipcq: JS-0242
+          const jsonData: {[key: string]: any} = {} // skipcq: JS-0242
           switch (key1) {
             case 'meta': {
-              jsonData[key1] =  formatDataObj[key1]
+              jsonData[key1] = formatDataObj[key1]
               _.merge(newData, jsonData)
               break
             }
@@ -159,10 +165,11 @@ export function outputFormat(data: object, doConversion = true): string {
               if (Array.isArray(formatDataObj[key1])) {
                 const data_array: object[] = Object.values(formatDataObj[key1])
                 const hash_array: object[] = []
-                data_array.forEach(dataEntries => {
-                  jsonData = convertEpochToDateTime(dataEntries)
+                for (const dataEntries of data_array) {
+                  const jsonData = convertEpochToDateTime(dataEntries)
                   hash_array.push(jsonData)
-                })
+                }
+
                 _.merge(newData, {data: hash_array})
                 formatDataObj = newData
               } else {
@@ -172,10 +179,11 @@ export function outputFormat(data: object, doConversion = true): string {
                     let jsonObj: {[key: string]: any} = {} // skipcq: JS-0242
                     const data_array: object[] = Object.values(obj[key2])
                     const hash_array: object[] = []
-                    data_array.forEach((dataObject: object) => {
-                      jsonObj = convertEpochToDateTime(dataObject)
+                    for (const dataObject of data_array) {
+                      jsonObj = removeNullsFromObject(dataObject)
                       hash_array.push(jsonObj)
-                    })
+                    }
+
                     jsonData[key2] = hash_array
                   } else if (obj[key2] !== null) {
                     const value: string = key2

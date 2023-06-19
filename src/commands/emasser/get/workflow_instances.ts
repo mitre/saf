@@ -25,7 +25,7 @@ export default class EmasserGetWorkflowInstances extends Command {
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
-  // NOTE: The way args are being implemented are mainly for the clarity purposes, there is, displays
+  // NOTE: The way args are being implemented are mainly for clarity purposes, there is, it displays
   //       the available arguments with associate description.
   // Only args.name is used, there is, it contains the argument listed by the user.
   // Example: If the user uses the command (saf emasser get workflow_instances byInstanceId), args.name is set to byInstanceId
