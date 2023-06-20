@@ -1,4 +1,4 @@
-import parser from 'fast-xml-parser'
+import {XMLParser} from 'fast-xml-parser'
 import {InSpecControl} from '../types/inspec'
 
 // Breaks lines down to lineLength number of characters
@@ -25,10 +25,12 @@ export const wrapAndEscapeQuotes = (s: string, lineLength?: number) => escapeDou
 export function convertEncodedXmlIntoJson(
   encodedXml: string,
 ): any {
-  return parser.parse(encodedXml, {
+  const options = {
     ignoreAttributes: false,
     attributeNamePrefix: '@_',
-  })
+  }
+  const parser = new XMLParser(options)
+  return parser.parse(encodedXml)
 }
 
 export function severityStringToImpact(string: string): number {
