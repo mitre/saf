@@ -503,12 +503,13 @@ convert aws_config2hdf        Pull Configuration findings from AWS Config and co
 convert burpsuite2hdf         Translate a BurpSuite Pro XML file into a Heimdall
                               Data Format JSON file
   USAGE
-    $ saf convert burpsuite2hdf -i <burpsuite-xml> -o <hdf-scan-results-json> [-h]
+    $ saf convert burpsuite2hdf -i <burpsuite-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                              Show CLI help.
     -i, --input=<burpsuite-xml>             (required) Input Burpsuite Pro XML File
     -o, --output=<hdf-scan-results-json>    (required) Output HDF JSON File
+    -w, --with-raw                          Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json
@@ -564,12 +565,13 @@ convert fortify2hdf           Translate a Fortify results FVDL file into a Heimd
                               extracted from the Fortify FPR project file using standard
                               file compression tools
   USAGE
-    $ saf convert fortify2hdf -i <fortify-fvdl> -o <hdf-scan-results-json> [-h]
+    $ saf convert fortify2hdf -i <fortify-fvdl> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<fortify-fvdl>            (required) Input FVDL File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert fortify2hdf -i audit.fvdl -o output-hdf-name.json
@@ -619,12 +621,13 @@ convert ionchannel2hdf        Pull and translate SBOM data from Ion Channel
 convert jfrog_xray2hdf        Translate a JFrog Xray results JSON file into a
                               Heimdall Data Format JSON file
   USAGE
-    $ saf convert jfrog_xray2hdf -i <jfrog-xray-json> -o <hdf-scan-results-json> [-h]
+    $ saf convert jfrog_xray2hdf -i <jfrog-xray-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<jfrog-xray-json>         (required) Input JFrog JSON File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert jfrog_xray2hdf -i xray_results.json -o output-hdf-name.json
@@ -638,12 +641,13 @@ convert nessus2hdf            Translate a Nessus XML results file into a Heimdal
                               plugin families except for 'Policy Compliance'
                               A separate HDF JSON is generated for each host reported in the Nessus Report.
   USAGE
-    $ saf convert nessus2hdf -i <nessus-xml> -o <hdf-scan-results-json> [-h]
+    $ saf convert nessus2hdf -i <nessus-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<nessus-xml>              (required) Input Nessus XML File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert nessus2hdf -i nessus_results.xml -o output-hdf-name.json
@@ -676,12 +680,13 @@ convert nikto2hdf             Translate a Nikto results JSON file into a Heimdal
                               Note: Currently this mapper only supports single
                               target Nikto Scans
   USAGE
-    $ saf convert nikto2hdf -i <nikto-json> -o <hdf-scan-results-json> [-h]
+    $ saf convert nikto2hdf -i <nikto-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<nikto-json>              (required) Input Niktop Results JSON File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert nikto2hdf -i nikto-results.json -o output-hdf-name.json
@@ -725,12 +730,13 @@ convert prowler2hdf           Translate a Prowler-derived AWS Security Finding
 convert sarif2hdf             Translate a SARIF JSON file into a Heimdall Data
                               Format JSON file
   USAGE
-    $ saf convert sarif2hdf -i <sarif-json> -o <hdf-scan-results-json> [-h]
+    $ saf convert sarif2hdf -i <sarif-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<sarif-json>              (required) Input SARIF JSON File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   DESCRIPTION
     SARIF level to HDF impact Mapping:
@@ -752,12 +758,13 @@ convert scoutsuite2hdf        Translate a ScoutSuite results from a Javascript
 
                               Note: Currently this mapper only supports AWS
   USAGE
-    $ saf convert scoutsuite2hdf -i <scoutsuite-results-js> -o <hdf-scan-results-json> [-h]
+    $ saf convert scoutsuite2hdf -i <scoutsuite-results-js> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<scoutsuite-results-js>   (required) Input ScoutSuite Results JS File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert scoutsuite2hdf -i scoutsuite-results.js -o output-hdf-name.json
@@ -861,12 +868,13 @@ convert trivy2hdf             Translate a Trivy-derived AWS Security Finding
 convert twistlock2hdf         Translate a Twistlock CLI output file into an HDF results set
 
   USAGE
-    $ saf convert twistlock2hdf -i <twistlock-json> -o <hdf-scan-results-json>
+    $ saf convert twistlock2hdf -i <twistlock-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<twistlock-json>          (required) Input Twistlock file
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert twistlock2hdf -i twistlock.json -o output-hdf-name.json
@@ -897,12 +905,13 @@ convert veracode2hdf          Translate a Veracode XML file into a Heimdall Data
 convert xccdf_results2hdf     Translate a SCAP client XCCDF-Results XML report
                               to a Heimdall Data Format JSON file
   USAGE
-    $ saf convert xccdf_results2hdf -i <xccdf-results-xml> -o <hdf-scan-results-json> [-h]
+    $ saf convert xccdf_results2hdf -i <xccdf-results-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help            Show CLI help.
     -i, --input=<xccdf-results-xml>       (required) Input XCCDF Results XML File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert xccdf_results2hdf -i results-xccdf.xml -o output-hdf-name.json
@@ -914,13 +923,14 @@ convert xccdf_results2hdf     Translate a SCAP client XCCDF-Results XML report
 convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall Data Format JSON file
 
   USAGE
-    $ saf convert zap2hdf -i <zap-json> -n <target-site-name> -o <hdf-scan-results-json> [-h]
+    $ saf convert zap2hdf -i <zap-json> -n <target-site-name> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<zap-json>                (required) Input OWASP Zap Results JSON File
     -n, --name=<target-site-name>         (required) Target Site Name
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert zap2hdf -i zap_results.json -n mitre.org -o scan_results.json
