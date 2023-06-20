@@ -1,7 +1,6 @@
 name: Push SAF CLI to Docker Hub on every release
 
 on:
-  workflow_dispatch:
   release:
     types: [published]
 
@@ -16,7 +15,7 @@ jobs:
         id: format-tag
         with:
           pattern: 'v'
-          string: "1.2.11"
+          string: "${{ github.event.release.tag_name }}"
           replace-with: ''
           flags: 'g'
       - name: Login to DockerHub
