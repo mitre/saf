@@ -90,7 +90,7 @@ export default class CreateAttestations extends Command {
             const ids = search.search(input).slice(0, MAX_SEARCH_RESULTS)
             for (const id of ids) {
               const control = controls[id]
-              console.log(`\t${control.id}: ${control.title?.replaceAll(/\n/, '').replaceAll(/\s\s+/, ' ')}`)
+              console.log(`\t${control.id}: ${control.title?.replaceAll('\n', '').replaceAll(/\s\s+/g, ' ')}`)
             }
           }
         }

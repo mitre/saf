@@ -166,7 +166,7 @@ export function cleanStatus(status: string) {
 }
 
 export function replaceSpecialCharacters(text: string): string {
-  return text.replaceAll(/'/, '`').replaceAll(/"/, '`').replaceAll(/</, '(').replaceAll(/>/, ')').replaceAll(/\\/, '\\\\')
+  return text.replaceAll("'", '`').replaceAll('"', '`').replaceAll('<', '(').replaceAll('>', ')').replaceAll('\\', '\\\\')
 }
 
 function cleanComments(comments: string): string {

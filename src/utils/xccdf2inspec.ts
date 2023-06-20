@@ -18,8 +18,8 @@ export function wrap(s: string, lineLength = 80): string {
   return finalString
 }
 
-export const escapeQuotes = (s: string) => s.replaceAll(/\\/, '\\\\').replaceAll(/'/, "\\'") // Escape backslashes and quotes
-export const escapeDoubleQuotes = (s: string) => s.replaceAll(/\\/, '\\\\').replaceAll(/"/, '\\"') // Escape backslashes and double quotes
+export const escapeQuotes = (s: string) => s.replaceAll('\\', '\\\\').replaceAll("'", "\\'") // Escape backslashes and quotes
+export const escapeDoubleQuotes = (s: string) => s.replaceAll('\\', '\\\\').replaceAll('"', '\\"') // Escape backslashes and double quotes
 export const wrapAndEscapeQuotes = (s: string, lineLength?: number) => escapeDoubleQuotes(wrap(s, lineLength)) // Escape backslashes and quotes, and wrap long lines
 
 export function convertEncodedXmlIntoJson(
@@ -126,12 +126,12 @@ export function inspecControlToRubyCode(control: InSpecControl, lineLength?: num
         } else {
           // Convert JSON Object to Ruby Hash
           const stringifiedObject = JSON.stringify(value, null, 2)
-            .replaceAll(/\n/, '\n  ')
-            .replaceAll(/\{\n {6}/, '{')
-            .replaceAll(/\[\n {8}/, '[')
-            .replaceAll(/\n {6}\]/, ']')
-            .replaceAll(/\n {4}\}/, '}')
-            .replaceAll(/": \[/, '" => [')
+            .replaceAll('\n', '\n  ')
+            .replaceAll(/\{\n {6}/g, '{')
+            .replaceAll(/\[\n {8}/g, '[')
+            .replaceAll(/\n {6}\]/g, ']')
+            .replaceAll(/\n {4}\}/g, '}')
+            .replaceAll('": [', '" => [')
           result += `  tag ${tag}: ${stringifiedObject}\n`
         }
       } else if (typeof value === 'string') {
