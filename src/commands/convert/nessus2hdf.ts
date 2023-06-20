@@ -28,7 +28,7 @@ export default class Nessus2HDF extends Command {
     const result = converter.toHdf()
     if (Array.isArray(result)) {
       for (const element of result) {
-        fs.writeFileSync(`${flags.output.replace(/.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
+        fs.writeFileSync(`${flags.output.replaceAll(/.json/i, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
       }
     } else {
       fs.writeFileSync(`${checkSuffix(flags.output)}`, JSON.stringify(result))
