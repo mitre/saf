@@ -2572,8 +2572,8 @@ available-typed-arrays@^1.0.5:
   resolved "https://registry.npmjs.org/available-typed-arrays/-/available-typed-arrays-1.0.5.tgz"
 
 aws-sdk@^2.1046.0, aws-sdk@^2.1074.0, aws-sdk@^2.1231.0:
-  version "2.1400.0"
-  resolved "https://registry.npmjs.org/aws-sdk/-/aws-sdk-2.1400.0.tgz"
+  version "2.1401.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1401.0.tgz#c283de69b9beb76a39243d1331c63c21f0ff5a0e"
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
@@ -4766,11 +4766,11 @@ iconv-lite@^0.6.2:
   dependencies:
     safer-buffer ">= 2.1.2 < 3.0.0"
 
-ieee754@1.1.13, ieee754@^1.1.4:
+ieee754@1.1.13:
   version "1.1.13"
   resolved "https://registry.npmjs.org/ieee754/-/ieee754-1.1.13.tgz"
 
-ieee754@^1.2.1:
+ieee754@^1.1.4, ieee754@^1.2.1:
   version "1.2.1"
   resolved "https://registry.npmjs.org/ieee754/-/ieee754-1.2.1.tgz"
 
@@ -7425,11 +7425,11 @@ sax@1.1.4:
   version "1.1.4"
   resolved "https://registry.npmjs.org/sax/-/sax-1.1.4.tgz"
 
-sax@1.2.1, sax@>=0.6.0:
+sax@1.2.1:
   version "1.2.1"
   resolved "https://registry.npmjs.org/sax/-/sax-1.2.1.tgz"
 
-sax@^1.2.4:
+sax@>=0.6.0, sax@^1.2.4:
   version "1.2.4"
   resolved "https://registry.npmjs.org/sax/-/sax-1.2.4.tgz"
 
