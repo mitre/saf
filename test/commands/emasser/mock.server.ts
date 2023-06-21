@@ -4,7 +4,7 @@ import globalAxios, {AxiosInstance, AxiosRequestConfig} from 'axios'
 import FormData from 'form-data'
 
 export class InitMockServer {
-  private axiosRequestConfig: AxiosRequestConfig;
+  readonly axiosRequestConfig: AxiosRequestConfig;
   public configuration: Configuration;
   public axiosInstances: AxiosInstance;
   public basePath: Configuration['basePath'];
@@ -24,7 +24,7 @@ export class InitMockServer {
       }),
     }
 
-    this.axiosInstances =  globalAxios.create(this.axiosRequestConfig)
+    this.axiosInstances = globalAxios.create(this.axiosRequestConfig)
     this.axiosInstances.defaults.headers.common = {
       'api-key': 123,
       'user-uid': 321,

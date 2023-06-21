@@ -1,4 +1,4 @@
-import parser from 'fast-xml-parser'
+import {XMLParser} from 'fast-xml-parser'
 import {InSpecControl} from '../types/inspec'
 
 // Breaks lines down to lineLength number of characters
@@ -18,17 +18,19 @@ export function wrap(s: string, lineLength = 80): string {
   return finalString
 }
 
-export const escapeQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/'/g, "\\'") // Escape backslashes and quotes
-export const escapeDoubleQuotes = (s: string) => s.replace(/\\/g, '\\\\').replace(/"/g, '\\"') // Escape backslashes and double quotes
+export const escapeQuotes = (s: string) => s.replaceAll('\\', '\\\\').replaceAll("'", "\\'") // Escape backslashes and quotes
+export const escapeDoubleQuotes = (s: string) => s.replaceAll('\\', '\\\\').replaceAll('"', '\\"') // Escape backslashes and double quotes
 export const wrapAndEscapeQuotes = (s: string, lineLength?: number) => escapeDoubleQuotes(wrap(s, lineLength)) // Escape backslashes and quotes, and wrap long lines
 
 export function convertEncodedXmlIntoJson(
   encodedXml: string,
 ): any {
-  return parser.parse(encodedXml, {
+  const options = {
     ignoreAttributes: false,
     attributeNamePrefix: '@_',
-  })
+  }
+  const parser = new XMLParser(options)
+  return parser.parse(encodedXml)
 }
 
 export function severityStringToImpact(string: string): number {
@@ -126,12 +128,12 @@ export function inspecControlToRubyCode(control: InSpecControl, lineLength?: num
         } else {
           // Convert JSON Object to Ruby Hash
           const stringifiedObject = JSON.stringify(value, null, 2)
-            .replace(/\n/g, '\n  ')
-            .replace(/\{\n {6}/g, '{')
-            .replace(/\[\n {8}/g, '[')
-            .replace(/\n {6}\]/g, ']')
-            .replace(/\n {4}\}/g, '}')
-            .replace(/": \[/g, '" => [')
+            .replaceAll('\n', '\n  ')
+            .replaceAll(/\{\n {6}/g, '{')
+            .replaceAll(/\[\n {8}/g, '[')
+            .replaceAll(/\n {6}\]/g, ']')
+            .replaceAll(/\n {4}\}/g, '}')
+            .replaceAll('": [', '" => [')
           result += `  tag ${tag}: ${stringifiedObject}\n`
         }
       } else if (typeof value === 'string') {

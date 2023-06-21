@@ -8,7 +8,7 @@ import {outputError} from '../../../utils/emasser/outputError'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetSystem extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]'
+  static usage = '<%= command.id %> [options]'
 
   static description = 'Get system information for a specific system defined by ID (systemId)'
 

@@ -2,31 +2,33 @@ name: Build macOS Installer
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 
 jobs:
   build-deploy:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@master
+      - uses: actions/checkout@v3
 
       - name: setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v3
         with:
           node-version: "16.x"
-          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
 
       - name: Install project dependencies
-        run: npm install
+        run: npm ci
 
       - name: Remove testing resources
         run: rm -rf test
 
-      - name: npm install and pack
-        run: yarn run oclif pack macos
+      - name: npm pack
+        run: npx oclif pack macos
 
       - name: Upload SAF-CLI macOS Installer Artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: SAF-CLI macOS Installer
           path: dist/macos/saf-*.pkg
