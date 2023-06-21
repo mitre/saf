@@ -22,7 +22,7 @@ export default class DBProtect2HDF extends Command {
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8')
-    checkInput({data: data, filename: flags.input}, 'dbProtect', 'DBProtect report in "Check Results Details" XML format')
+    checkInput({data, filename: flags.input}, 'dbProtect', 'DBProtect report in "Check Results Details" XML format')
 
     const converter = new Mapper(data, flags['with-raw'])
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
