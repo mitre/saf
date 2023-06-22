@@ -1254,11 +1254,11 @@
     axios "^0.21.4"
 
 "@mitre/hdf-converters@^2.6.50":
-  version "2.6.50"
-  resolved "https://registry.npmjs.org/@mitre/hdf-converters/-/hdf-converters-2.6.50.tgz"
+  version "2.6.54"
+  resolved "https://registry.yarnpkg.com/@mitre/hdf-converters/-/hdf-converters-2.6.54.tgz#68558beadc5b13b95f77b98634f54ca97ad48359"
   dependencies:
     "@aws-sdk/client-config-service" "^3.95.0"
-    "@mitre/splunk-sdk-no-env" "^1.10.0"
+    "@mitre/jsonix" "^3.0.6"
     "@types/csv2json" "^1.4.2"
     "@types/ms" "^0.7.31"
     "@types/mustache" "^4.1.2"
@@ -1316,14 +1316,13 @@
     winston "^3.8.1"
     yaml "^1.10.2"
 
-"@mitre/splunk-sdk-no-env@^1.10.0":
-  version "1.10.0"
-  resolved "https://registry.npmjs.org/@mitre/splunk-sdk-no-env/-/splunk-sdk-no-env-1.10.0.tgz"
+"@mitre/jsonix@^3.0.6":
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/@mitre/jsonix/-/jsonix-3.0.6.tgz#4697012f995ca2e9f1088d882a401dca7ae9b106"
   dependencies:
-    cookie "0.4.1"
-    dotenv "^10.0.0"
-    elementtree "0.1.7"
-    needle "2.6.0"
+    "@xmldom/xmldom" "^0.8.2"
+    amdefine "^0.0.4"
+    xmlhttprequest "^1.8.0"
 
 "@nicolo-ribaudo/eslint-scope-5-internals@5.1.1-v1":
   version "5.1.1-v1"
@@ -2341,6 +2340,10 @@
     "@typescript-eslint/types" "5.60.0"
     eslint-visitor-keys "^3.3.0"
 
+"@xmldom/xmldom@^0.8.2":
+  version "0.8.8"
+  resolved "https://registry.yarnpkg.com/@xmldom/xmldom/-/xmldom-0.8.8.tgz#d0d11511cbc1de77e53342ad1546a4d487d6ea72"
+
 abbrev@1, abbrev@^1.0.0:
   version "1.1.1"
   resolved "https://registry.npmjs.org/abbrev/-/abbrev-1.1.1.tgz"
@@ -2420,6 +2423,10 @@ ajv@^8.0.1, ajv@^8.11.2:
     json-schema-traverse "^1.0.0"
     require-from-string "^2.0.2"
     uri-js "^4.2.2"
+
+amdefine@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-0.0.4.tgz#510e24a0f231314e1105b9c747e79aaed694a0e9"
 
 ansi-colors@4.1.1:
   version "4.1.1"
@@ -3294,10 +3301,6 @@ cookie-signature@1.0.6:
   version "1.0.6"
   resolved "https://registry.npmjs.org/cookie-signature/-/cookie-signature-1.0.6.tgz"
 
-cookie@0.4.1:
-  version "0.4.1"
-  resolved "https://registry.npmjs.org/cookie/-/cookie-0.4.1.tgz"
-
 cookie@0.5.0:
   version "0.5.0"
   resolved "https://registry.npmjs.org/cookie/-/cookie-0.5.0.tgz"
@@ -3407,12 +3410,6 @@ debug@4, debug@4.3.4, debug@^4.1.0, debug@^4.1.1, debug@^4.3.1, debug@^4.3.2, de
   resolved "https://registry.npmjs.org/debug/-/debug-4.3.4.tgz"
   dependencies:
     ms "2.1.2"
-
-debug@^3.2.6:
-  version "3.2.7"
-  resolved "https://registry.npmjs.org/debug/-/debug-3.2.7.tgz"
-  dependencies:
-    ms "^2.1.1"
 
 debuglog@^1.0.1:
   version "1.0.1"
@@ -3581,10 +3578,6 @@ domutils@^3.1.0:
     domelementtype "^2.3.0"
     domhandler "^5.0.3"
 
-dotenv@^10.0.0:
-  version "10.0.0"
-  resolved "https://registry.npmjs.org/dotenv/-/dotenv-10.0.0.tgz"
-
 dotenv@^16.0.3:
   version "16.3.1"
   resolved "https://registry.npmjs.org/dotenv/-/dotenv-16.3.1.tgz"
@@ -3630,12 +3623,6 @@ ejs@^3.1.8:
 electron-to-chromium@^1.4.284:
   version "1.4.359"
   resolved "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.4.359.tgz"
-
-elementtree@0.1.7:
-  version "0.1.7"
-  resolved "https://registry.npmjs.org/elementtree/-/elementtree-0.1.7.tgz"
-  dependencies:
-    sax "1.1.4"
 
 emittery@^0.10.2:
   version "0.10.2"
@@ -4770,7 +4757,7 @@ hyperlinker@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/hyperlinker/-/hyperlinker-1.0.0.tgz"
 
-iconv-lite@0.4.24, iconv-lite@^0.4.24, iconv-lite@^0.4.4:
+iconv-lite@0.4.24, iconv-lite@^0.4.24:
   version "0.4.24"
   resolved "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.24.tgz"
   dependencies:
@@ -6292,14 +6279,6 @@ natural-orderby@^2.0.3:
   version "2.0.3"
   resolved "https://registry.npmjs.org/natural-orderby/-/natural-orderby-2.0.3.tgz"
 
-needle@2.6.0:
-  version "2.6.0"
-  resolved "https://registry.npmjs.org/needle/-/needle-2.6.0.tgz"
-  dependencies:
-    debug "^3.2.6"
-    iconv-lite "^0.4.4"
-    sax "^1.2.4"
-
 negotiator@0.6.3, negotiator@^0.6.2, negotiator@^0.6.3:
   version "0.6.3"
   resolved "https://registry.npmjs.org/negotiator/-/negotiator-0.6.3.tgz"
@@ -7437,10 +7416,6 @@ safe-stable-stringify@^2.3.1:
   version "2.1.2"
   resolved "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz"
 
-sax@1.1.4:
-  version "1.1.4"
-  resolved "https://registry.npmjs.org/sax/-/sax-1.1.4.tgz"
-
 sax@1.2.1:
   version "1.2.1"
   resolved "https://registry.npmjs.org/sax/-/sax-1.2.1.tgz"
@@ -8545,6 +8520,10 @@ xml2js@^0.6.0:
 xmlbuilder@~11.0.0:
   version "11.0.1"
   resolved "https://registry.npmjs.org/xmlbuilder/-/xmlbuilder-11.0.1.tgz"
+
+xmlhttprequest@^1.8.0:
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/xmlhttprequest/-/xmlhttprequest-1.8.0.tgz#67fe075c5c24fef39f9d65f5f7b7fe75171968fc"
 
 y18n@^5.0.5:
   version "5.0.8"
