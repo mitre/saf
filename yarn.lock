@@ -1269,8 +1269,8 @@
     yaml "^2.1.1"
 
 "@mitre/heimdall-lite@^2.6.53":
-  version "2.6.53"
-  resolved "https://registry.npmjs.org/@mitre/heimdall-lite/-/heimdall-lite-2.6.53.tgz"
+  version "2.6.54"
+  resolved "https://registry.yarnpkg.com/@mitre/heimdall-lite/-/heimdall-lite-2.6.54.tgz#99ecc176197234c1f007b508f037a3d444baa335"
   dependencies:
     express "^4.17.1"
 
