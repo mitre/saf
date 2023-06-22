@@ -71,9 +71,9 @@ export function outputFormat(data: object, doConversion = true): string {
       formatDataObj = _.get(data, 'data') || {}
     }
 
-    const paginationObj = {pagination: _.get(formatDataObj, 'pagination')}
-
     if (doConversion) {
+      const paginationObj = {pagination: _.get(formatDataObj, 'pagination')}
+
       if (hideNulls) {
         const newData: {[key: string]: any} = {};
 
@@ -134,11 +134,13 @@ export function outputFormat(data: object, doConversion = true): string {
               break
             }
 
+            // Process the 'pagination' content
             case 'pagination': {
               _.merge(newData, paginationObj)
               break
             }
 
+            // Process any other key-pair not specified
             default: {
               const jsonData: {[key: string]: any} = {}
               jsonData[key1] = formatDataObj[key1]
