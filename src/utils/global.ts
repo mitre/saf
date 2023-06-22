@@ -17,11 +17,21 @@ export function checkSuffix(input: string) {
   return `${input}.json`
 }
 
+// replacement for path.basename since it doesn't "just work" as one would expect with handling paths from other filesystem types
 export function convertFullPathToFilename(inputPath: string): string {
   let filePath = inputPath.split('/')
-  const relativeFileName = filePath[filePath.length - 1]
-  filePath = relativeFileName.split('\\')
-  return filePath[filePath.length - 1]
+  let basename = filePath.at(-1)
+  if (!basename) {
+    throw new Error('Could not derive basename from file path')
+  }
+
+  filePath = basename.split('\\')
+  basename = filePath.at(-1)
+  if (!basename) {
+    throw new Error('Could not derive basename from file path')
+  }
+
+  return basename
 }
 
 export function dataURLtoU8Array(dataURL: string): Uint8Array {

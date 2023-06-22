@@ -35,7 +35,7 @@ export default class Spreadsheet2HDF extends Command {
   // Extract URLs for references
   matchReferences(control: Partial<InSpecControl>): Partial<InSpecControl> {
     if (control.ref) {
-      const urlMatches = control.ref.replace(/\r/g, '').replace(/\n/g, '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g)
+      const urlMatches = control.ref.replaceAll('\r', '').replaceAll('\n', '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g)
       if (urlMatches) {
         control.refs = urlMatches
       }
@@ -265,13 +265,13 @@ export default class Spreadsheet2HDF extends Command {
       // Read the input file into lines
       const inputDataLines = fs.readFileSync(flags.input, 'utf8').split('\n')
       // Replace BOM if it exists
-      inputDataLines[0] = inputDataLines[0].replace(/\uFEFF/g, '')
+      inputDataLines[0] = inputDataLines[0].replaceAll('\u{FEFF}', '')
       // STIG Viewer embeds the classification level in the first and last line for CSV export, breaking parsing
       if (/~~~~~.*~~~~~/.test(inputDataLines[0])) {
         inputDataLines.shift()
       }
 
-      if (/~~~~~.*~~~~~/.test(inputDataLines[inputDataLines.length - 1])) {
+      if (/~~~~~.*~~~~~/.test(inputDataLines.at(-1) || '')) {
         inputDataLines.pop()
       }
 

@@ -3,6 +3,8 @@ name: Build SAF-CLI Windows/Linux Installers
 on:
   push:
     branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build-deploy:
