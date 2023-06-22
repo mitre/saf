@@ -4140,7 +4140,7 @@ fast-levenshtein@^3.0.0:
   dependencies:
     fastest-levenshtein "^1.0.7"
 
-fast-xml-parser@4.2.4, fast-xml-parser@^4.2.0, fast-xml-parser@^4.2.4:
+fast-xml-parser@4.2.4:
   version "4.2.4"
   resolved "https://registry.npmjs.org/fast-xml-parser/-/fast-xml-parser-4.2.4.tgz"
   dependencies:
@@ -4151,6 +4151,12 @@ fast-xml-parser@^3.1.19:
   resolved "https://registry.npmjs.org/fast-xml-parser/-/fast-xml-parser-3.21.1.tgz"
   dependencies:
     strnum "^1.0.4"
+
+fast-xml-parser@^4.2.0, fast-xml-parser@^4.2.4:
+  version "4.2.5"
+  resolved "https://registry.yarnpkg.com/fast-xml-parser/-/fast-xml-parser-4.2.5.tgz#a6747a09296a6cb34f2ae634019bf1738f3b421f"
+  dependencies:
+    strnum "^1.0.5"
 
 fastest-levenshtein@^1.0.16, fastest-levenshtein@^1.0.7:
   version "1.0.16"
