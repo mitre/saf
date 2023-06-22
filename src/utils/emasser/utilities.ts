@@ -17,6 +17,7 @@ export interface FlagOptions {
   workflowInstanceId?: OptionFlag<number>;
   pageIndex?: OptionFlag<number|undefined>;
   includeComments?: BooleanFlag<boolean|undefined>;
+  includeDecommissionSystems?: BooleanFlag<boolean|undefined>;
   excludeInherited?: BooleanFlag<boolean|undefined>;
   includeInactive?: BooleanFlag<boolean|undefined>;
   isTemplate?: BooleanFlag<boolean>;
@@ -234,10 +235,11 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'workflow_instances': {
           if (args.argument === 'all') {
             flagObj = {
-              includeComments: Flags.boolean({char: 'i', description: 'Boolean - Include transition comments', allowNo: true, required: false}),
-              pageIndex: Flags.integer({char: 'p', description: 'The page number to query', required: false}),
+              includeComments: Flags.boolean({char: 'C', description: 'Boolean - Include transition comments', allowNo: true, required: false}),
+              includeDecommissionSystems: Flags.boolean({char: 'D', description: 'Boolean - Include decommissioned systems', allowNo: true, required: false}),
+              pageIndex: Flags.integer({char: 'i', description: 'The page number to query', required: false}),
               sinceDate: Flags.string({char: 'd', description: 'The Workflow Instance date. Unix date format', required: false}),
-              status: Flags.string({char: 's', description: 'The Workflow status - must be a valid status', options: ['active', 'inactive', 'all'], required: false}),
+              status: Flags.string({char: 's', description: 'The Workflow status - must be a valid status. if not provided includes all systems', options: ['active', 'inactive', 'all'], required: false}),
             }
           } else if (args.argument === 'byInstanceId') {
             flagObj = {

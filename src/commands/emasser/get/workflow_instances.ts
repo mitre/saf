@@ -25,7 +25,7 @@ export default class EmasserGetWorkflowInstances extends Command {
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
-  // NOTE: The way args are being implemented are mainly for the purposes of help clarity, there is, displays
+  // NOTE: The way args are being implemented are mainly for clarity purposes, there is, it displays
   //       the available arguments with associate description.
   // Only args.name is used, there is, it contains the argument listed by the user.
   // Example: If the user uses the command (saf emasser get workflow_instances byInstanceId), args.name is set to byInstanceId
@@ -42,7 +42,7 @@ export default class EmasserGetWorkflowInstances extends Command {
 
     if (args.name === 'all') {
       // Order is important here
-      getWorkflowInstances.getSystemWorkflowInstances(flags.includeComments, flags.pageIndex, flags.sinceDate, flags.status).then((response: WorkflowInstancesResponseGet) => {
+      getWorkflowInstances.getSystemWorkflowInstances(flags.includeComments, flags.includeDecommissionSystems, flags.pageIndex, flags.sinceDate, flags.status).then((response: WorkflowInstancesResponseGet) => {
         console.log(colorize(outputFormat(response)))
       }).catch((error:any) => console.error(colorize(outputError(error))))
     } else if (args.name === 'byInstanceId') {

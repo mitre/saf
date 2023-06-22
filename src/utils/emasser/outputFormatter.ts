@@ -32,7 +32,11 @@ function convertEpochToDateTime(dataObject: object): object {
     } else if (dataObject[key] !== null) {
       const value: string = key
       const epochDate: number = Number.parseInt(dataObject[key], 10)
-      jsonData[key] = value.search('date') > 0 || value.search('Date') > 0 ? new Date(epochDate * 1000) : dataObject[key]
+      if (Number.isNaN(epochDate) || epochDate < 100000000) {
+        jsonData[key] = dataObject[key]
+      } else {
+        jsonData[key] = value.toUpperCase().search('DATE') >= 0 || value.toUpperCase().search('ATD') >= 0 ? new Date(epochDate * 1000) : dataObject[key]
+      }
     } else if (dataObject[key] === null) {
       jsonData[key] = dataObject[key]
     }
@@ -68,55 +72,80 @@ export function outputFormat(data: object, doConversion = true): string {
     }
 
     if (doConversion) {
+      const paginationObj = {pagination: _.get(formatDataObj, 'pagination')}
+
       if (hideNulls) {
         const newData: {[key: string]: any} = {};
 
         (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[]).forEach(key1 => {
-          // Process the 'meta' content
-          if (key1 === 'meta') {
-            const jsonData: {[key: string]: any} = {}
-            jsonData[key1] =  formatDataObj[key1]
-            _.merge(newData, jsonData)
-          // Process the 'data' content
-          } else if (key1 === 'data') {
-            // data: is an array of objects
-            if (Array.isArray(formatDataObj[key1])) {
-              const data_array: object[] = Object.values(formatDataObj[key1])
-              const hash_array: object[] = []
-              data_array.forEach(dataEntries => {
-                const jsonData = removeNullsFromObject(dataEntries)
-                hash_array.push(jsonData)
-              })
-              _.merge(newData, {data: hash_array})
-              formatDataObj = newData
-            // data: is NOT and array of object it is a simple object
-            } else {
+          switch (key1) {
+            // Process the 'meta' content
+            case 'meta': {
               const jsonData: {[key: string]: any} = {}
-              const obj: object = formatDataObj[key1]
-              // If we have a data key/pair of null
-              if (formatDataObj[key1] === null) {
-                _.merge(newData, {data: null})
+              jsonData[key1] = formatDataObj[key1]
+              _.merge(newData, jsonData)
+              break
+            }
+
+            // Process the 'data' content
+            case 'data': {
+              // data: is an array of objects
+              if (Array.isArray(formatDataObj[key1])) {
+                const data_array: object[] = Object.values(formatDataObj[key1])
+                const hash_array: object[] = []
+                for (const dataEntries of data_array) {
+                  const jsonData = removeNullsFromObject(dataEntries)
+                  hash_array.push(jsonData)
+                }
+
+                _.merge(newData, {data: hash_array})
+                formatDataObj = newData
+              // data: is NOT an array of objects, it is a simple object
               } else {
-                (Object.keys(obj) as (keyof typeof obj)[]).forEach(key2 => {
-                  if (Array.isArray(obj[key2])) {
-                    let jsonObj: {[key: string]: any} = {} // skipcq: JS-0242
-                    const data_array: object[] = Object.values(obj[key2])
-                    const hash_array: object[] = []
-                    data_array.forEach((dataObject: object) => {
-                      jsonObj = removeNullsFromObject(dataObject)
-                      hash_array.push(jsonObj)
-                    })
-                    jsonData[key2] = hash_array
-                  } else if (obj[key2] !== null) {
-                    jsonData[key2] = obj[key2]
-                  }
-                })
-                const dataObj: {[key: string]: any} = {}
-                dataObj.data = jsonData
-                _.merge(newData, dataObj)
+                const jsonData: {[key: string]: any} = {}
+                const obj: object = formatDataObj[key1]
+                // If we have a data key/pair of null
+                if (formatDataObj[key1] === null) {
+                  _.merge(newData, {data: null})
+                } else {
+                  (Object.keys(obj) as (keyof typeof obj)[]).forEach(key2 => {
+                    if (Array.isArray(obj[key2])) {
+                      let jsonObj: {[key: string]: any} = {} // skipcq: JS-0242
+                      const data_array: object[] = Object.values(obj[key2])
+                      const hash_array: object[] = []
+                      for (const dataObject of data_array) {
+                        jsonObj = removeNullsFromObject(dataObject)
+                        hash_array.push(jsonObj)
+                      }
+
+                      jsonData[key2] = hash_array
+                    } else if (obj[key2] !== null) {
+                      jsonData[key2] = obj[key2]
+                    }
+                  })
+                  const dataObj: {[key: string]: any} = {}
+                  dataObj.data = jsonData
+                  _.merge(newData, dataObj)
+                }
+
+                formatDataObj = newData
               }
 
-              formatDataObj = newData
+              break
+            }
+
+            // Process the 'pagination' content
+            case 'pagination': {
+              _.merge(newData, paginationObj)
+              break
+            }
+
+            // Process any other key-pair not specified
+            default: {
+              const jsonData: {[key: string]: any} = {}
+              jsonData[key1] = formatDataObj[key1]
+              _.merge(newData, jsonData)
+              break
             }
           }
         })
@@ -126,43 +155,62 @@ export function outputFormat(data: object, doConversion = true): string {
         const newData: {[key: string]: any} = {}
         const dataObj: {[key: string]: any} = {};
         (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[]).forEach(key1 => {
-          let jsonData: {[key: string]: any} = {} // skipcq: JS-0242
-          if (key1 === 'meta') {
-            jsonData[key1] =  formatDataObj[key1]
-            _.merge(newData, jsonData)
-          } else if (key1 === 'data') {
-            if (Array.isArray(formatDataObj[key1])) {
-              const data_array: object[] = Object.values(formatDataObj[key1])
-              const hash_array: object[] = []
-              data_array.forEach(dataEntries => {
-                jsonData = convertEpochToDateTime(dataEntries)
-                hash_array.push(jsonData)
-              })
-              _.merge(newData, {data: hash_array})
-              formatDataObj = newData
-            } else {
-              const obj: object = formatDataObj[key1];
-              (Object.keys(obj) as (keyof typeof obj)[]).forEach(key2 => {
-                if (Array.isArray(obj[key2])) {
-                  let jsonObj: {[key: string]: any} = {} // skipcq: JS-0242
-                  const data_array: object[] = Object.values(obj[key2])
-                  const hash_array: object[] = []
-                  data_array.forEach((dataObject: object) => {
-                    jsonObj = convertEpochToDateTime(dataObject)
-                    hash_array.push(jsonObj)
-                  })
-                  jsonData[key2] = hash_array
-                } else if (obj[key2] !== null) {
-                  const value: string = key2
-                  jsonData[key2] = value.search('date') > 0 || value.search('Date') > 0 ? new Date(obj[key2] * 1000) : obj[key2]
-                } else if (obj[key2] === null) {
-                  jsonData[key2] = obj[key2]
-                }
-              })
+          const jsonData: {[key: string]: any} = {} // skipcq: JS-0242
+          switch (key1) {
+            case 'meta': {
+              jsonData[key1] = formatDataObj[key1]
+              _.merge(newData, jsonData)
+              break
             }
 
-            dataObj.data = jsonData
-            _.merge(newData, dataObj)
+            case 'data': {
+              if (Array.isArray(formatDataObj[key1])) {
+                const data_array: object[] = Object.values(formatDataObj[key1])
+                const hash_array: object[] = []
+                for (const dataEntries of data_array) {
+                  const jsonData = convertEpochToDateTime(dataEntries)
+                  hash_array.push(jsonData)
+                }
+
+                _.merge(newData, {data: hash_array})
+                formatDataObj = newData
+              } else {
+                const obj: object = formatDataObj[key1];
+                (Object.keys(obj) as (keyof typeof obj)[]).forEach(key2 => {
+                  if (Array.isArray(obj[key2])) {
+                    let jsonObj: {[key: string]: any} = {} // skipcq: JS-0242
+                    const data_array: object[] = Object.values(obj[key2])
+                    const hash_array: object[] = []
+                    for (const dataObject of data_array) {
+                      jsonObj = removeNullsFromObject(dataObject)
+                      hash_array.push(jsonObj)
+                    }
+
+                    jsonData[key2] = hash_array
+                  } else if (obj[key2] !== null) {
+                    const value: string = key2
+                    jsonData[key2] = value.toUpperCase().search('DATE') >= 0 || value.toUpperCase().search('ATD') >= 0 ? new Date(obj[key2] * 1000) : obj[key2]
+                  } else if (obj[key2] === null) {
+                    jsonData[key2] = obj[key2]
+                  }
+                })
+              }
+
+              dataObj.data = jsonData
+              _.merge(newData, dataObj)
+              break
+            }
+
+            case 'pagination': {
+              _.merge(newData, paginationObj)
+              break
+            }
+
+            default: {
+              jsonData[key1] = formatDataObj[key1]
+              _.merge(newData, jsonData)
+              break
+            }
           }
         })
         formatDataObj = newData
