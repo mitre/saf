@@ -32,11 +32,11 @@ The following environment variables are *optional:
 
 The proper format to set these variables in the `.env` files is as follows:
 ```bash
-export [VARIABLE_NAME]='value'
+[VARIABLE_NAME]='value'
 ```
 ***NOTE***
 
-`emasser` requires authentication to an eMASS instance as well as authorization to use the eMASS API. This authentication and authorization is **not** a function of `emasser` and needs to be accomplished with the eMASS instances owner organization. Further information about eMASS credential requirements refer to [Defense Counterintelligence and Security Agency](https://www.dcsa.mil/is/emass/) about eMASS access.
+The `emasser` commands requires access to an eMASS instance. Authentication and authorization to an eMASS instance is **not** a function of `emasser` and needs to be accomplished with the eMASS instance owner organization. Further information about eMASS credential requirements refer to [Defense Counterintelligence and Security Agency](https://www.dcsa.mil/is/emass/) about eMASS access.
 
 Fo instruction on how to request an eMASS visit [eMASS Account Process Request and API Registration](https://github.com/mitre/emasser/wiki/eMASS-Account-Process-Request-and-API-Registration)
 
@@ -71,8 +71,17 @@ Fo instruction on how to request an eMASS visit [eMASS Account Process Request a
 * [/api/dashboards/system-assessment-procedures-details](#get-dashboards)
 * [/api/dashboards/system-poam-summary](#get-dashboards)
 * [/api/dashboards/system-poam-details](#get-dashboards)
+* [/api/dashboards/system-artifacts-summary](#get-dashboards)
+* [/api/dashboards/system-artifacts-details](#get-dashboards)
 * [/api/dashboards/system-hardware-summary](#get-dashboards)
 * [/api/dashboards/system-hardware-details](#get-dashboards)
+* [/api/dashboards/system-sensor-hardware-summary](#get-dashboards)
+* [/api/dashboards/system-sensor-hardware-details](#get-dashboards)
+* [/api/dashboards/system-software-summary](#get-dashboards)
+* [/api/dashboards/system-software-details](#get-dashboards)
+* [/api/dashboards/system-ports-protocols-summary](#get-dashboards)
+* [/api/dashboards/system-ports-protocols-details](#get-dashboards)
+* [/api/dashboards/system-conmon-integration-status-summary](#get-dashboards)
 * [/api/dashboards/system-associations-details](#get-dashboards)
 * [/api/dashboards/user-system-assignments-details](#get-dashboards)
 * [/api/dashboards/system-privacy-summary](#get-dashboards)
@@ -81,6 +90,10 @@ Fo instruction on how to request an eMASS visit [eMASS Account Process Request a
 * [/api/dashboards/va-system-a2-summary](#get-dashboards)
 * [/api/dashboards/va-system-pl-109-reporting-summary](#get-dashboards)
 * [/api/dashboards/va-system-fisma-inventory-summary](#get-dashboards)
+* [/api/dashboards/va-system-fisma-inventory-crypto-summary](#get-dashboards)
+* [/api/dashboards/va-system-threat-risks-summary](#get-dashboards)
+* [/api/dashboards/va-system-threat-sources-details](#get-dashboards)
+* [/api/dashboards/va-system-threat-architecture-details](#get-dashboards)
   
 ### POST
 * [/api/systems/{systemId}/test-results](#post-test_results)
@@ -189,11 +202,11 @@ Each CLI endpoint command have several layers of help.
     Retrieve artifacts for a system or system/filename combination
 
     USAGE
-      $ saf emasser get artifacts [ARGUMENTS]
+      $ saf emasser get artifacts [ARGUMENT]
 
     ARGUMENTS
-      FORSYSTEM  Retrieves available milestones for provided system (Id)
-      EXPORT     Exports the milestone(s) for provided system (Id) and file name
+      forSystem  Retrieves available milestones for provided system (Id)
+      export     Exports the milestone(s) for provided system (Id) and file name
 
     FLAGS
       -h, --help  Show emasser CLI help for the GET Artifacts endpoint
@@ -207,11 +220,11 @@ Each CLI endpoint command have several layers of help.
     Retrieves the file artifacts (if compress is true the file binary contents are returned, otherwise the file textual contents are returned.)
 
     USAGE
-      $ saf emasser get artifacts [ARGUMENTS]
+      $ saf emasser get artifacts [ARGUMENT]
 
     ARGUMENTS
-      FORSYSTEM  Retrieves available milestones for provided system (Id)
-      EXPORT     Exports the milestone(s) for provided system (Id) and file name
+      forSystem  Retrieves available milestones for provided system (Id)
+      export     Exports the milestone(s) for provided system (Id) and file name
 
     FLAGS
       -h, --help              Show emasser CLI help for the GET Artifacts endpoint
@@ -259,7 +272,7 @@ The `get system` command retrieves a single system defined by the ID (systemId).
 Get system information for a specific system defined by ID (systemId)
 
 USAGE
-  $ saf emasser get system [ARGUMENTS]
+  $ saf emasser get system [options]
 
 FLAGS
   -h, --help                 Show emasser CLI help for the GET System endpoint
@@ -299,7 +312,7 @@ The `get systems` command retrieves all available system defined by the ID (syst
 Get available systems filter on provided options
 
 USAGE
-  $ saf emasser get systems [ARGUMENTS]
+  $ saf emasser get systems [options]
 
 FLAGS
   -h, --help                        Show emasser CLI help for the GET Systems endpoint
@@ -342,11 +355,11 @@ EXAMPLES
 There are two endpoints for system roles - `all` and `byCategory`
 ```
 USAGE
-  $ saf emasser get roles [ARGUMENTS]
+  $ saf emasser get roles [ARGUMENT]
 
 ARGUMENTS
-  ALL         Retrieves all available system roles
-  BYCATEGORY  Retrieves role(s) - filtered by [options] params
+  all         Retrieves all available system roles
+  byCategory  Retrieves role(s) - filtered by [options] params
 
 FLAGS
   -h, --help  Show emasser CLI help for the GET Roles endpoint
@@ -412,7 +425,7 @@ EXAMPLES
 Get test results for a specific system defined by ID (systemId)
 ```
 USAGE
-  $ saf emasser get test_results [ARGUMENTS]
+  $ saf emasser get test_results [options]
 
 FLAGS
   -h, --help                     Show emasser CLI help for the GET Test Results endpoint
@@ -446,34 +459,16 @@ EXAMPLES
 ### ```get poams```
 
 ----
-There are two endpoints for system poams - `forSystem` and `byPoamId`
-```
-USAGE
-  $ saf emasser get poams [ARGUMENTS]
+There are two endpoints for system poams `forSystem` and `byPoamId`
 
-ARGUMENTS
-  FORSYSTEM  Retrieves Poams for specified system ID
-  BYPOAMID   Retrieves Poams for specified system and poam ID
-
-FLAGS
-  -h, --help  Show emasser CLI help for the GET POA&Ms endpoint
-
-DESCRIPTION
-  Retrieve Poams for a system or system/poam Id combination
-
-EXAMPLES
-  $ saf emasser get poams forSystem [-s, --systemId] <value> [options]
-
-  $ saf emasser get poams byPoamId [-s, --systemId] <value> [-p, --poamId] <value>
-```
 - forSystem - Retrieves all poams for specified system ID
     ```
     USAGE
-      $ saf emasser get poams [ARGUMENTS]
+      $ saf emasser get poams [ARGUMENT]
 
     ARGUMENTS
-      FORSYSTEM  Retrieves Poams for specified system ID
-      BYPOAMID   Retrieves Poams for specified system and poam ID
+      forSystem  Retrieves Poams for specified system ID
+      byPoamId   Retrieves Poams for specified system and poam ID
 
     FLAGS
       -h, --help                              Show emasser CLI help for the GET POA&Ms endpoint
@@ -510,11 +505,11 @@ EXAMPLES
 - byPoamId - Retrieves all poams for specified system and poam ID 
     ```
     USAGE
-      $ saf emasser get poams [ARGUMENTS]
+      $ saf emasser get poams [ARGUMENT]
 
     ARGUMENTS
-      FORSYSTEM  Retrieves Poams for specified system ID
-      BYPOAMID   Retrieves Poams for specified system and poam ID
+      forSystem  Retrieves Poams for specified system ID
+      byPoamId   Retrieves Poams for specified system and poam ID
 
     FLAGS
       -h, --help              Show emasser CLI help for the GET POA&Ms endpoint
@@ -538,34 +533,16 @@ EXAMPLES
 ### ```get milestones```
 
 ----
-There are two endpoints for system milestones - `byPoamId` and `byMilestoneId`
-```
-USAGE
-  $ saf emasser get milestones [ARGUMENTS]
+There are two endpoints for system milestones `byPoamId` and `byMilestoneId`
 
-ARGUMENTS
-  BYPOAMID       Retrieves milestone(s) for specified system and poam Id
-  BYMILESTONEID  Retrieves milestone(s) for specified system, poam, and milestone Id
-
-FLAGS
-  -h, --help  Show emasser CLI help for the GET Milestones endpoint
-
-DESCRIPTION
-  Retrieve milestones by system by systemID/poamID or systemID/poamID/milestoneID combination
-
-EXAMPLES
-  $ saf emasser get milestones byPoamId [-s, --systemId] <value> [-p, --poamId] <value> [options]
-
-  $ saf emasser get milestones byMilestoneId [-s, --systemId] <value> [-p, --poamId] <value> [-m, --milestoneId] <value>
-```
 - byPoamId - Retrieves milestone(s) for specified system and poam ID
     ```shell
     USAGE
-      $ saf emasser get milestones [ARGUMENTS]
+      $ saf emasser get milestones [ARGUMENT]
 
     ARGUMENTS
-      BYPOAMID       Retrieves milestone(s) for specified system and poam Id
-      BYMILESTONEID  Retrieves milestone(s) for specified system, poam, and milestone Id
+      byPoamId       Retrieves milestone(s) for specified system and poam Id
+      byMilestoneId  Retrieves milestone(s) for specified system, poam, and milestone Id
 
     FLAGS
       -h, --help                                  Show emasser CLI help for the GET Milestones endpoint
@@ -598,11 +575,11 @@ EXAMPLES
 - byMilestoneId, Retrieve milestone(s) for specified system, poam, and milestone ID"
     ```
     USAGE
-      $ saf emasser get milestones [ARGUMENTS]
+      $ saf emasser get milestones [ARGUMENT]
 
     ARGUMENTS
-      BYPOAMID       Retrieves milestone(s) for specified system and poam Id
-      BYMILESTONEID  Retrieves milestone(s) for specified system, poam, and milestone Id
+      byPoamId       Retrieves milestone(s) for specified system and poam Id
+      byMilestoneId  Retrieves milestone(s) for specified system, poam, and milestone Id
 
     FLAGS
       -h, --help                 Show emasser CLI help for the GET Milestones endpoint
@@ -628,35 +605,16 @@ EXAMPLES
 ### ```get artifacts```
 
 ----
-There are two endpoints for artifacts - `forSystem` and `export`
-```
-USAGE
-  $ saf emasser get artifacts [ARGUMENTS]
-
-ARGUMENTS
-  FORSYSTEM  Retrieves available milestones for provided system (Id)
-  EXPORT     Exports the milestone(s) for provided system (Id) and file name
-
-FLAGS
-  -h, --help  Show emasser CLI help for the GET Artifacts endpoint
-
-DESCRIPTION
-  Retrieve artifacts for a system or system/filename combination
-
-EXAMPLES
-  $ saf emasser get artifacts forSystem [-s, --systemId] <value> [options]
-
-  $ saf emasser get artifacts export [-s, --systemId] <value> [-f, --filename] <value> [options]
-```
+There are two endpoints for artifacts `forSystem` and `export`
 
 - forSystem - Retrieves one or many artifacts in a system specified system ID
     ```
     USAGE
-      $ saf emasser get artifacts [ARGUMENTS]
+      $ saf emasser get artifacts [ARGUMENT]
 
     ARGUMENTS
-      FORSYSTEM  Retrieves available milestones for provided system (Id)
-      EXPORT     Exports the milestone(s) for provided system (Id) and file name
+      forSystem  Retrieves available milestones for provided system (Id)
+      export     Exports the milestone(s) for provided system (Id) and file name
 
     FLAGS
       -h, --help                     Show emasser CLI help for the GET Artifacts endpoint
@@ -691,11 +649,11 @@ EXAMPLES
 - export - Retrieves the file artifacts (if compress is true the file binary contents are returned, otherwise the file textual contents are returned.)
   ```
   USAGE
-    $ saf emasser get artifacts [ARGUMENTS]
+    $ saf emasser get artifacts [ARGUMENT]
 
   ARGUMENTS
-    FORSYSTEM  Retrieves available milestones for provided system (Id)
-    EXPORT     Exports the milestone(s) for provided system (Id) and file name
+    forSystem  Retrieves available milestones for provided system (Id)
+    export     Exports the milestone(s) for provided system (Id) and file name
 
   FLAGS
     -h, --help              Show emasser CLI help for the GET Artifacts endpoint
@@ -729,7 +687,7 @@ EXAMPLES
 To view one or many Control Approval Chain (CAC) in a system specified system ID use the following command:
   ```
   USAGE
-    $ saf emasser get cac [ARGUMENTS]
+    $ saf emasser get cac [options]
 
   FLAGS
     -h, --help                     Show emasser CLI help for the GET CAC endpoint
@@ -787,7 +745,7 @@ To view one or many Package Approval Chain (PAC) in a system specified system ID
 To view Cybersecurity Maturity Model Certification (CMMC) Assessments use the following command:
   ```
   USAGE
-    $ saf emasser get cmmc [ARGUMENTS]
+    $ saf emasser get cmmc [options]
 
   FLAGS
     -h, --help               Show emasser CLI help for the GET CMMC endpoint  
@@ -839,42 +797,24 @@ To view Workflow Definitions use the following command:
 ### ```get workflow_instances```
 
 ----
-There are two endpoints to view workflow instances - `all` and `byInstanceId`
-```
-USAGE
-  $ saf emasser get workflow_instances [ARGUMENT]
-
-ARGUMENTS
-  ALL           Retrieves all workflow instances in a site
-  BYINSTANCEID  Retrieves workflow(s) instance by ID
-
-FLAGS
-  -h, --help  Show emasser CLI help for the GET Workflow Instances endpoint
-
-DESCRIPTION
-  Retrieve all workflow instances or workflow instances noted by workflowInstanceID
-
-EXAMPLES
-  $ saf emasser get workflow_instances all [options]
-
-  $ saf emasser get workflow_instances byInstanceId [-w, --workflowInstanceId] <value>
-```
+There are two endpoints to view workflow instances `all` and `byInstanceId`
   - all
     ```
     USAGE
       $ saf emasser get workflow_instances [ARGUMENT]
 
     ARGUMENTS
-      ALL           Retrieves all workflow instances in a site
-      BYINSTANCEID  Retrieves workflow(s) instance by ID
+      all           Retrieves all workflow instances in a site
+      byInstanceId  Retrieves workflow(s) instance by ID
 
     FLAGS
-      -h, --help                  Show emasser CLI help for the GET Workflow Instances endpoint    
-      -d, --sinceDate=<value>     The Workflow Instance date. Unix date format
-      -i, --[no-]includeComments  Boolean - Include transition comments
-      -p, --pageIndex=<value>     The page number to query
-      -s, --status=<option>       The Workflow status - must be a valid status
-                                  <options: active|inactive|all>
+      -h, --help                            Show emasser CLI help for the GET Workflow Instances endpoint
+      -C, --[no-]includeComments            Boolean - Include transition comments
+      -D, --[no-]includeDecommissionSystems Boolean - Include decommissioned systems
+      -p, --pageIndex=<value>               The page number to query     
+      -d, --sinceDate=<value>               The Workflow Instance date. Unix date format
+      -s, --status=<option>                 The Workflow status - must be a valid status. If not provided includes all systems
+                                            <options: active|inactive|all>
 
     DESCRIPTION
       Retrieves all workflow instances
@@ -884,12 +824,13 @@ EXAMPLES
     ```
     - Optional flags (parameters) are:
 
-      |parameter          | type or values                                     |
-      |-------------------|:---------------------------------------------------|
-      |--includeComments  |BOOLEAN - true or false                             |    
-      |--pageIndex        |Integer - The page number to query                  |
-      |--sinceDate        |Date - The Workflow Instance date. Unix date format |
-      |--status           |Possible values: active, inactive, all              | 
+      |parameter                    | type or values                                     |
+      |-----------------------------|:---------------------------------------------------|
+      |--includeComments            |BOOLEAN - true or false                             |  
+      |--includeDecommissionSystems |BOOLEAN - true or false                             |     
+      |--pageIndex                  |Integer - The page number to query                  |
+      |--sinceDate                  |Date - The Workflow Instance date. Unix date format |
+      |--status                     |Possible values: active, inactive, all (If no value is specified, returns all active and inactive workflows)             | 
 
   - byWorkflowInstanceId
     ```
@@ -897,8 +838,8 @@ EXAMPLES
       $ saf emasser get workflow_instances [ARGUMENT]
 
     ARGUMENTS
-      ALL           Retrieves all workflow instances in a site
-      BYINSTANCEID  Retrieves workflow(s) instance by ID
+      all           Retrieves all workflow instances in a site
+      byInstanceId  Retrieves workflow(s) instance by ID
 
     FLAGS
       -h, --help                        Show emasser CLI help for the GET Workflow Instances endpoint
@@ -924,31 +865,45 @@ The Dashboards endpoints provide the ability to view data contained in dashboard
 
 ```
 USAGE
-  $ saf emasser get dashboards [ARGUMENTS]
+  $ saf emasser get dashboards [ARGUMENT]
 
 ARGUMENTS
-  STATUS_DETAILS                 Get systems status detail dashboard information
-  CONTROL_COMPLIANCE_SUMMARY     Get systems control compliance summary dashboard information
-  SECURITY_CONTROL_DETAILS       Get systems security control details dashboard information
-  ASSESSMENT_PROCEDURES_DETAILS  Get systems assessment procedures details dashboard information
-  POAM_SUMMARY                   Get systems POA&Ms summary dashboard information
-  POAM_DETAILS                   Get system POA&Ms details dashboard information
-  HARDWARE_SUMMARY               Get system hardware summary dashboard information
-  HARDWARE_DETAILS               Get system hardware details dashboard information
-  ASSOCIATIONS_DETAILS           Get system associations details dashboard information
-  ASSIGNMENTS_DETAILS            Get user system assignments details dashboard information
-  PRIVACY_SUMMARY                Get user system privacy summary dashboard information
-  FISMA_SAOP_SUMMARY             Get VA OMB-FISMA SAOP summary dashboard information
-  VA_AA_SUMMARY                  Get VA system A&A summary dashboard information
-  VA_A2_SUMMARY                  Get VA system A2.0 summary dashboard information
-  VA_PL_109_SUMMARY              Get VA System P.L. 109 reporting summary dashboard information
-  FISMA_INVENTORY_SUMMARY        Get VA system FISMA inventory summary dashboard information
+  status_details                  Get systems status detail dashboard information
+  control_compliance_summary      Get control compliance summary dashboard information
+  security_control_details        Get security control details dashboard information
+  assessment_procedures_details   Get assessment procedures details dashboard information
+  poam_summary                    Get systems POA&Ms summary dashboard information
+  poam_details                    Get system POA&Ms details dashboard information
+  artifacts_summary               Get artifacts summary dashboard information
+  artifacts_details               Get artifacts details dashboard information
+  hardware_summary                Get hardware summary dashboard information
+  hardware_details                Get hardware details dashboard information
+  sensor_hardware_summary         Get sensor hardware summary dashboard information
+  sensor_hardware_details         Get sensor hardware details dashboard information
+  software_summary                Get software baseline summary dashboard information
+  software_details                Get software baseline details dashboard information
+  ports_protocols_summary         Get ports and protocols summary dashboard information
+  ports_protocols_details         Get ports and protocols details dashboard information
+  integration_status_summary      Get CONMON integration status summary dashboard information
+  associations_details            Get system associations details dashboard information
+  assignments_details             Get user system assignments details dashboard information
+  privacy_summary                 Get system privacy summary dashboard information
+  fisma_saop_summary              Get VA OMB-FISMA SAOP summary dashboard information
+  va_aa_summary                   Get VA system A&A summary dashboard information
+  va_a2_summary                   Get VA system A2.0 summary dashboard information
+  va_pl_109_summary               Get VA System P.L. 109 reporting summary dashboard information
+  fisma_inventory_summary         Get VA system FISMA inventory summary dashboard information
+  fisma_inventory_crypto_summary  Get VA system FISMA inventory summary dashboard information
+  va_threat_risk_summary          Get VA threat risk summary dashboard information
+  va_threat_source_details        Get VA threat source details dashboard information
+  va_threat_architecture_details  Get VA threat architecture details dashboard information
 
 FLAGS
-  -h, --help               Show emasser CLI help for the GET Dashboards endpoint
-  -i, --pageIndex=<value>  The index of the starting page (default first page 0)
-  -o, --orgId=<value>      (required) The organization identification number
-  -s, --pageSize=<value>   The number of entries per page (default 20000)
+  -h, --help                  Show emasser CLI help for the GET Dashboards endpoint
+  -I, --[no-]excludeInherited Boolean - exclude inherited data (default false)
+  -i, --pageIndex=<value>     The index of the starting page (default first page 0)
+  -o, --orgId=<value>         (required) The organization identification number
+  -s, --pageSize=<value>      The number of entries per page (default 20000)
 
 DESCRIPTION
   Retrieves a pre-defined dashboard by orgId
@@ -965,10 +920,11 @@ All endpoint calls utilize the same parameter values, they are:
 
   - Optional flags (parameters) are:
 
-    |parameter    | type or values                                                |
-    |-------------|:--------------------------------------------------------------|
-    |--pageIndex  |Integer - The index of the starting page (default first page 0)|
-    |--pageSize   |Integer - The number of entries per page (default 20000)       |
+    |parameter          | type or values                                                |
+    |-------------------|:--------------------------------------------------------------|
+    |--excludeInherited |BOOLEAN - If no value is specified, includes inherited data    |
+    |--pageIndex        |Integer - The index of the starting page (default first page 0)|
+    |--pageSize         |Integer - The number of entries per page (default 20000)       |
 
 Available commands are:
   - Get systems status detail dashboard information
@@ -995,6 +951,14 @@ Available commands are:
     ```
     $ saf emasser get dashboards poam_details [-o, --orgId] <value> [options]
     ```
+  - Get artifacts summary dashboard information
+    ```
+    $ saf emasser get dashboards artifacts_summary [-o, --orgId] <value> [options]
+    ```
+  - Get artifacts details dashboard information
+    ```
+    $ saf emasser get dashboards artifacts_details [-o, --orgId] <value> [options]
+    ```
   - Get system hardware summary dashboard information
     ```
     $ saf emasser get dashboards hardware_summary [-o, --orgId] <value> [options]
@@ -1003,13 +967,41 @@ Available commands are:
     ```
     $ saf emasser get dashboards hardware_details [-o, --orgId] <value> [options]
     ```
+  - Get sensor hardware summary dashboard information
+    ```
+    $ saf emasser get dashboards sensor_hardware_summary [-o, --orgId] <value> [options]
+    ```
+  - Get sensor hardware details dashboard information
+    ```
+    $ saf emasser get dashboards sensor_hardware_details [-o, --orgId] <value> [options]
+    ```
+  - Get software baseline summary dashboard information
+    ```
+    $ saf emasser get dashboards software_summary [-o, --orgId] <value> [options]
+    ```
+  - Get software baseline details dashboard information
+    ```
+    $ saf emasser get dashboards software_details [-o, --orgId] <value> [options]
+    ```
+  - Get ports and protocols summary dashboard information
+    ```
+    $ saf emasser get dashboards ports_protocols_summary [-o, --orgId] <value> [options]
+    ```
+  - Get ports and protocols details dashboard information
+    ```
+    $ saf emasser get dashboards ports_protocols_details [-o, --orgId] <value> [options]
+    ```
+  - Get CONMON integration status summary dashboard information
+    ```
+    $ saf emasser get dashboards integration_status_summary [-o, --orgId] <value> [options]
+    ```
   - Get system associations details dashboard information
     ```
     $ saf emasser get dashboards associations_details [-o, --orgId] <value> [options]
     ```
   - Get user system assignments details dashboard information
     ```
-    $$ saf emasser get dashboards assignments_details [-o, --orgId] <value> [options]
+    $ saf emasser get dashboards assignments_details [-o, --orgId] <value> [options]
     ```
   - Get user system privacy summary dashboard information
     ```
@@ -1034,6 +1026,22 @@ Available commands are:
   - Get VA system FISMA inventory summary dashboard information
     ```
     $ saf emasser get dashboards fisma_inventory_summary [-o, --orgId] <value> [options]
+    ```
+  - Get VA system FISMA inventory summary dashboard information
+    ```
+    $ saf emasser get dashboards fisma_inventory_crypto_summary [-o, --orgId] <value> [options]
+    ```
+  - Get VA threat risk summary dashboard information
+    ```
+    $ saf emasser get dashboards va_threat_risk_summary [-o, --orgId] <value> [options]
+    ```
+  - Get VA threat source details dashboard information
+    ```
+    $ saf emasser get dashboards va_threat_source_details [-o, --orgId] <value> [options]
+    ```
+  - Get VA threat architecture details dashboard information
+    ```
+    $ saf emasser get dashboards va_threat_architecture_details [-o, --orgId] <value> [options]
     ```
 
 [top](#api-endpoints-provided)
@@ -1061,7 +1069,7 @@ Add (POST) test results CLI usage
 
   ```
   USAGE
-    $ saf emasser post test_results [ARGUMENTS]
+    $ saf emasser post test_results [options]
 
   FLAGS
     -h, --help                       Post (add) test results to a system's Assessment Procedures (CCIs)
@@ -1154,7 +1162,7 @@ fields are required within the request.
 ### Add (POST) POA&Ms CLI usages
 ```
 USAGE
-  $ saf emasser post poams [ARGUMENTS]
+  $ saf emasser post poams [options]
 
 FLAGS
   -h, --help              Post (add) a Plan of Action and Milestones (POA&M) item(s) in a system. See emasser Features (emasserFeatures.md) for additional information.
@@ -1273,7 +1281,7 @@ Add (POST) milestones to one or many POA&M items in a system
 
 ```
 USAGE
-  $ saf emasser post milestones [ARGUMENTS]
+  $ saf emasser post milestones [options]
 
 FLAGS
   -h, --help                             Post (add) milestones to one or many POA&M items in a system
@@ -1333,7 +1341,7 @@ Any values not specified below will be null.
 ### Add (POST) Artifacts CLI usages
 ```
 USAGE
-  $ saf emasser post artifacts [ARGUMENTS]
+  $ saf emasser post artifacts [options]
 
 FLAGS
   -h, --help               Post (add) artifact file(s) to a system
@@ -1380,7 +1388,7 @@ Add a Control Approval Chain (CAC) items in a system
 
  ```
 USAGE
-  $ saf emasser post cac [ARGUMENTS]
+  $ saf emasser post cac [options]
 
 FLAGS
   -h, --help                    Post (add) control to second stage of CAC
@@ -1419,7 +1427,7 @@ Add new Package Approval Chain (PAC) workflow(s) for a system
 
 ```
 USAGE
-  $ saf emasser post pac [ARGUMENTS]
+  $ saf emasser post pac [options]
 
 FLAGS
   -h, --help               Post (add) a Package Approval Chain (PAC) item in a system
@@ -1453,7 +1461,7 @@ To add (POST) static code scans use the following command:
 
 ```
 USAGE
-  $ saf emasser post static_code_scans [ARGUMENTS]
+  $ saf emasser post static_code_scans [options]
 
 FLAGS
   -h, --help                       Post (upload) static code scans, can also clear application's findings
@@ -1571,7 +1579,7 @@ With the following JSON content:
 
 ```
 USAGE
-  $ saf emasser post cloud_resources [ARGUMENTS]
+  $ saf emasser post cloud_resources [options]
 
 FLAGS
   -h, --help                       Post (add) cloud resources and their scan results in the assets module for a system
@@ -1684,7 +1692,7 @@ EXAMPLES
 
 ```
 USAGE
-  $ saf emasser post container_scans [ARGUMENTS]
+  $ saf emasser post container_scans [options]
 
 FLAGS
   -h, --help                           Post (upload) one or many containers and their scan results for a system
@@ -1813,7 +1821,7 @@ Implementation Plan information cannot be updated if Security Control does not e
 
 ```
 USAGE
-  $ saf emasser put controls [ARGUMENTS]
+  $ saf emasser put controls [options]
 
 FLAGS
   -h, --help                 Put (update) control information in a system for one or many controls. See emasser Features (emasserFeatures.md) for additional information.
@@ -1980,7 +1988,7 @@ The following parameters/fields have the following character limitations:
 ### Updating (PUT) POA&Ms CLI usages
 ```
 USAGE
-  $ saf emasser put poams [ARGUMENTS]
+  $ saf emasser put poams [options]
 
 FLAGS
   -h, --help              Put (update) a Plan of Action and Milestones (POA&M) item(s) in a system. See emasser Features (emasserFeatures.md) for additional information.
@@ -2104,7 +2112,7 @@ Update (PUT) one or many milestones for a POA&M items in a system
 
 ```
 USAGE
-  $ saf emasser put milestones [ARGUMENTS]
+  $ saf emasser put milestones [options]
 
 FLAGS
   -h, --help                             Show emasser CLI help for the PUT Milestones endpoint
@@ -2157,7 +2165,7 @@ EXAMPLES
 
 ```
 USAGE
-  $ saf emasser put artifacts [ARGUMENTS]
+  $ saf emasser put artifacts [options]
 
 FLAGS
   -h, --help                            Put (update) one or many artifacts in a system
@@ -2213,7 +2221,7 @@ EXAMPLES
 Remove (DELETE) POA&Ms CLI usages
 ```
 USAGE
-  $ saf emasser delete poams [ARGUMENTS]
+  $ saf emasser delete poams [options]
 
 FLAGS
   -h, --help                Show emasser CLI help for the DELETE POA&M endpoint
@@ -2240,7 +2248,7 @@ The last milestone can not be deleted, at-least on must exist.
 Remove (DELETE) Milestones CLI usages
 ```
 USAGE
-  $ saf emasser delete milestones [ARGUMENTS]
+  $ saf emasser delete milestones [options]
 
 FLAGS
   -h, --help                     Show emasser CLI help for the DELETE Milestones endpoint
@@ -2267,7 +2275,7 @@ Remove one or many artifacts in a system
 Remove (DELETE) Artifact files CLI usages
 ```
 USAGE
-  $ saf emasser delete artifacts [ARGUMENTS]
+  $ saf emasser delete artifacts [options]
 
 FLAGS
   -h, --help                 Show emasser CLI help for the DELETE POA&M endpoint
