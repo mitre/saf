@@ -45,11 +45,11 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [ASFF to HDF](#asff-to-hdf)
       * [AWS Config to HDF](#aws-config-to-hdf)
       * [Burp Suite to HDF](#burp-suite-to-hdf)
-      * [CKL to POA&amp;M](#ckl-to-poam)
+      * [Checklist to HDF](#checklist-to-hdf)
       * [DBProtect to HDF](#dbprotect-to-hdf)
       * [Fortify to HDF](#fortify-to-hdf)
       * [GoSec to HDF](#gosec-to-hdf)
-      * [Ion Channel 2 HDF](#ion-channel-2-hdf)
+      * [Ion Channel to HDF](#ion-channel-to-hdf)
       * [JFrog Xray to HDF](#jfrog-xray-to-hdf)
       * [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
       * [Netsparker to HDF](#netsparker-to-hdf)
@@ -66,6 +66,10 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Veracode to HDF](#veracode-to-hdf)
       * [XCCDF Results to HDF](#xccdf-results-to-hdf)
       * [OWASP ZAP to HDF](#owasp-zap-to-hdf)
+
+### Non-HDF Converters
+
+  * [Checklist to POA&amp;M](#checklist-to-poam)
 
 ### eMasser Client
 
@@ -515,31 +519,25 @@ convert burpsuite2hdf         Translate a BurpSuite Pro XML file into a Heimdall
     $ saf convert burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json
 ```
 [top](#convert-other-formats-to-hdf)
-#### CKL to POA&M
 
-Note: The included CCI to NIST Mappings are the extracted from NIST.gov, for mappings specific to eMASS use [this](https://github.com/mitre/ckl2POAM/blob/main/resources/cci2nist.json) file instead).
-
+#### Checklist to HDF
 ```
-convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M files
-
+convert ckl2hdf               Translate a DISA Checklist XML file into a Heimdall Data 
+                              Format JSON file
   USAGE
-    $ saf convert ckl2POAM -i <disa-checklist> -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]
+    $ saf convert ckl2hdf -i <ckl-xml> -o <hdf-scan-results-json> [-h] [-s] [-w]
 
   FLAGS
-    -O, --officeOrg=<office/org>          Default value for Office/org (prompts for each file if not set)
-    -d, --deviceName=<device-name>        Name of target device (prompts for each file if not set)
-    -h, --help                            Show CLI help.
-    -i, --input=<disa-checklist>...       (required) Path to the DISA Checklist File(s)
-    -o, --output=<poam-output-folder>     (required) Path to output PO&M File(s)
-    -s, --rowsToSkip=<num-rows>           [default: 4] Rows to leave between POA&M Items for milestones
-
-  ALIASES
-    $ saf convert ckl2poam
+    -h, --help            Show CLI help.
+    -i, --input=<value>   (required) Input Checklist XML File
+    -o, --output=<value>  (required) Output HDF JSON File
+    -w, --with-raw        Include raw input file in HDF JSON file
 
   EXAMPLES
-    $ saf convert ckl2POAM -i checklist_file.ckl -o output-folder -d abcdefg -s 2
+    $ saf convert ckl2hdf -i ckl_results.xml -o output-hdf-name.json
 ```
 [top](#convert-other-formats-to-hdf)
+  
 #### DBProtect to HDF
 ```
 convert dbprotect2hdf         Translate a DBProtect report in "Check Results
@@ -595,7 +593,7 @@ convert gosec2hdf             Translate a GoSec (Golang Security Checker) result
 ```
 
 [top](#convert-other-formats-to-hdf)
-#### Ion Channel 2 HDF
+#### Ion Channel to HDF
 ```
 convert ionchannel2hdf        Pull and translate SBOM data from Ion Channel
                               into Heimdall Data Format
@@ -936,6 +934,36 @@ convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall D
     $ saf convert zap2hdf -i zap_results.json -n mitre.org -o scan_results.json
 ```
 [top](#convert-other-formats-to-hdf)
+
+---
+
+### Non-HDF Converters
+
+#### Checklist to POA&M
+
+Note: The included CCI to NIST Mappings are the extracted from NIST.gov, for mappings specific to eMASS use [this](https://github.com/mitre/ckl2POAM/blob/main/resources/cci2nist.json) file instead).
+
+```
+convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M files
+
+  USAGE
+    $ saf convert ckl2POAM -i <disa-checklist> -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]
+
+  FLAGS
+    -O, --officeOrg=<office/org>          Default value for Office/org (prompts for each file if not set)
+    -d, --deviceName=<device-name>        Name of target device (prompts for each file if not set)
+    -h, --help                            Show CLI help.
+    -i, --input=<disa-checklist>...       (required) Path to the DISA Checklist File(s)
+    -o, --output=<poam-output-folder>     (required) Path to output PO&M File(s)
+    -s, --rowsToSkip=<num-rows>           [default: 4] Rows to leave between POA&M Items for milestones
+
+  ALIASES
+    $ saf convert ckl2poam
+
+  EXAMPLES
+    $ saf convert ckl2POAM -i checklist_file.ckl -o output-folder -d abcdefg -s 2
+```
+[top](#non-hdf-converters)
 
 ---
 
