@@ -49,7 +49,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [DBProtect to HDF](#dbprotect-to-hdf)
       * [Fortify to HDF](#fortify-to-hdf)
       * [GoSec to HDF](#gosec-to-hdf)
-      * [Ion Channel 2 HDF](#ion-channel-2-hdf)
+      * [Ion Channel to HDF](#ion-channel-to-hdf)
       * [JFrog Xray to HDF](#jfrog-xray-to-hdf)
       * [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
       * [Netsparker to HDF](#netsparker-to-hdf)
@@ -593,7 +593,7 @@ convert gosec2hdf             Translate a GoSec (Golang Security Checker) result
 ```
 
 [top](#convert-other-formats-to-hdf)
-#### Ion Channel 2 HDF
+#### Ion Channel to HDF
 ```
 convert ionchannel2hdf        Pull and translate SBOM data from Ion Channel
                               into Heimdall Data Format
