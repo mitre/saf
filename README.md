@@ -45,6 +45,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [ASFF to HDF](#asff-to-hdf)
       * [AWS Config to HDF](#aws-config-to-hdf)
       * [Burp Suite to HDF](#burp-suite-to-hdf)
+      * [Conveyor to HDF](#conveyor-to-hdf)
       * [CKL to POA&amp;M](#ckl-to-poam)
       * [DBProtect to HDF](#dbprotect-to-hdf)
       * [Fortify to HDF](#fortify-to-hdf)
@@ -514,6 +515,22 @@ convert burpsuite2hdf         Translate a BurpSuite Pro XML file into a Heimdall
     $ saf convert burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json
 ```
 [top](#convert-other-formats-to-hdf)
+
+#### Conveyor to HDF
+```
+convert conveyor2hdf          Translate a conveyor JSON file into a Heimdall Data
+                              Format JSON file
+  USAGE
+    $ saf convert conveyor2hdf -i <conveyor-json> -o <hdf-scan-results-dir> [-h]
+
+  FLAGS
+    -h, --help                            Show CLI help.
+    -i, --input=<conveyor-json>            (required) Input Conveyor JSON File
+    -o, --output=<hdf-scan-results-dir>  (required) Output HDF Folder
+
+  EXAMPLES
+    $ saf convert conveyor2hdf -i conveyor_results.json -o output-hdf-dirs.json
+
 #### CKL to POA&M
 
 Note: The included CCI to NIST Mappings are the extracted from NIST.gov, for mappings specific to eMASS use [this](https://github.com/mitre/ckl2POAM/blob/main/resources/cci2nist.json) file instead).
