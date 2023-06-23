@@ -565,12 +565,13 @@ convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M file
 convert dbprotect2hdf         Translate a DBProtect report in "Check Results
                               Details" XML format into a Heimdall Data Format JSON file
   USAGE
-    $ saf convert dbprotect2hdf -i <dbprotect-xml> -o <hdf-scan-results-json> [-h]
+    $ saf convert dbprotect2hdf -i <dbprotect-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<dbprotect-xml>           (required) 'Check Results Details' XML File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert dbprotect2hdf -i check_results_details_report.xml -o output-hdf-name.json
