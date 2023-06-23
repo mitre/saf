@@ -2595,8 +2595,8 @@ available-typed-arrays@^1.0.5:
   resolved "https://registry.npmjs.org/available-typed-arrays/-/available-typed-arrays-1.0.5.tgz"
 
 aws-sdk@^2.1046.0, aws-sdk@^2.1074.0, aws-sdk@^2.1231.0:
-  version "2.1402.0"
-  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1402.0.tgz#e8ff13f6bfe668e726af7a2ded8f750cedc3ebfc"
+  version "2.1403.0"
+  resolved "https://registry.yarnpkg.com/aws-sdk/-/aws-sdk-2.1403.0.tgz#17c5728995d8de208af28eb81cf6bbbdc6a1ec71"
   dependencies:
     buffer "4.9.2"
     events "1.1.1"
