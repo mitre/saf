@@ -21,7 +21,7 @@ export default class CKL2HDF extends Command {
     const {flags} = await this.parse(CKL2HDF)
 
     const data = fs.readFileSync(flags.input, 'utf8')
-    checkInput({data: data, filename: flags.input}, 'checklist', 'DISA Checklist')
+    checkInput({data, filename: flags.input}, 'checklist', 'DISA Checklist')
 
     const converter = new Mapper(data, flags['with-raw'])
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
