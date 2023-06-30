@@ -47,7 +47,7 @@ export default class Summary extends Command {
 
       const existingCompliance = _.get(complianceScores, profileName) || []
       existingCompliance.push(overallCompliance)
-      _.set(complianceScores, `["${profileName.replace(/"/g, '\\"')}"]`, existingCompliance)
+      _.set(complianceScores, `["${profileName.replaceAll('"', '\\"')}"]`, existingCompliance)
 
       // Severity counts
       for (const [severity, severityTargets] of Object.entries(severityTargetsObject)) {
@@ -79,9 +79,9 @@ export default class Summary extends Command {
         Object.entries(flattened).forEach(([key, value]) => {
           const existingValue = _.get(totals, `${profileName}.${key}`)
           if (existingValue) {
-            _.set(totals, `["${profileName.replace(/"/g, '\\"')}"].${key}`, existingValue + value)
+            _.set(totals, `["${profileName.replaceAll('"', '\\"')}"].${key}`, existingValue + value)
           } else {
-            _.set(totals, `["${profileName.replace(/"/g, '\\"')}"].${key}`, value)
+            _.set(totals, `["${profileName.replaceAll('"', '\\"')}"].${key}`, value)
           }
         })
       })

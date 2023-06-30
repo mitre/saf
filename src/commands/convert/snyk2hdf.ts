@@ -28,7 +28,7 @@ export default class Snyk2HDF extends Command {
     const result = converter.toHdf()
     if (Array.isArray(result)) {
       for (const element of result) {
-        await writeFileURI(`${flags.output.replace(/.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
+        await writeFileURI(`${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
       }
     } else {
       await writeFileURI(checkSuffix(flags.output), JSON.stringify(result))
