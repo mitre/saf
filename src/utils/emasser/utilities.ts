@@ -17,6 +17,8 @@ export interface FlagOptions {
   workflowInstanceId?: OptionFlag<number>;
   pageIndex?: OptionFlag<number|undefined>;
   includeComments?: BooleanFlag<boolean|undefined>;
+  includeDecommissionSystems?: BooleanFlag<boolean|undefined>;
+  excludeInherited?: BooleanFlag<boolean|undefined>;
   includeInactive?: BooleanFlag<boolean|undefined>;
   isTemplate?: BooleanFlag<boolean>;
   includePackage?: BooleanFlag<boolean|undefined>;
@@ -233,10 +235,11 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'workflow_instances': {
           if (args.argument === 'all') {
             flagObj = {
-              includeComments: Flags.boolean({char: 'i', description: 'Boolean - Include transition comments', allowNo: true, required: false}),
-              pageIndex: Flags.integer({char: 'p', description: 'The page number to query', required: false}),
+              includeComments: Flags.boolean({char: 'C', description: 'Boolean - Include transition comments', allowNo: true, required: false}),
+              includeDecommissionSystems: Flags.boolean({char: 'D', description: 'Boolean - Include decommissioned systems', allowNo: true, required: false}),
+              pageIndex: Flags.integer({char: 'i', description: 'The page number to query', required: false}),
               sinceDate: Flags.string({char: 'd', description: 'The Workflow Instance date. Unix date format', required: false}),
-              status: Flags.string({char: 's', description: 'The Workflow status - must be a valid status', options: ['active', 'inactive', 'all'], required: false}),
+              status: Flags.string({char: 's', description: 'The Workflow status - must be a valid status. if not provided includes all systems', options: ['active', 'inactive', 'all'], required: false}),
             }
           } else if (args.argument === 'byInstanceId') {
             flagObj = {
@@ -250,6 +253,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'dashboards': {
           flagObj = {
             orgId: Flags.integer({char: 'o', description: 'The organization identification number', required: true}),
+            excludeInherited: Flags.boolean({char: 'I', description: 'Boolean - exclude inherited data (default false)', allowNo: true, required: false, default: false}),
             pageIndex: Flags.integer({char: 'i', description: 'The index of the starting page (default first page 0)', required: false}),
             pageSize: Flags.integer({char: 's', description: 'The number of entries per page (default 20000)', required: false}),
           }
@@ -558,37 +562,67 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
           }
 
           case 'control_compliance_summary': {
-            description = 'Get systems control compliance summary dashboard information'
+            description = 'Get enterprise systems control compliance summary dashboard information'
             break
           }
 
           case 'security_control_details': {
-            description = 'Get systems security control details dashboard information'
+            description = 'Get enterprise systems security control details dashboard information'
             break
           }
 
           case 'assessment_procedures_details': {
-            description = 'Get systems assessment procedures details dashboard information'
+            description = 'Get enterprise systems assessment procedures details dashboard information'
             break
           }
 
           case 'poam_summary': {
-            description = 'Get systems POA&Ms summary dashboard information'
+            description = 'Get enterprise systems POA&Ms summary dashboard information'
             break
           }
 
           case 'poam_details': {
-            description = 'Get system POA&Ms details dashboard information'
+            description = 'Get enterprise system POA&Ms details dashboard information'
+            break
+          }
+
+          case 'artifacts_summary': {
+            description = 'Get enterprise system artifacts summary dashboard information'
+            break
+          }
+
+          case 'artifacts_details': {
+            description = 'Get enterprise system artifacts details dashboard information'
             break
           }
 
           case 'hardware_summary': {
-            description = 'Get system hardware summary dashboard information'
+            description = 'Get system hardware baseline summary dashboard information'
             break
           }
 
           case 'hardware_details': {
-            description = 'Get system hardware details dashboard information'
+            description = 'Get systems hardware baseline details dashboard information'
+            break
+          }
+
+          case 'sensor_hardware_summary': {
+            description = 'Get system sensor-based hardware summary dashboard information'
+            break
+          }
+
+          case 'sensor_hardware_details': {
+            description = 'Get system sensor-based hardware details dashboard information'
+            break
+          }
+
+          case 'ports_protocols_summary': {
+            description = 'Get system ports and protocols summary dashboard information'
+            break
+          }
+
+          case 'ports_protocols_details': {
+            description = 'Get system ports and protocols details dashboard information'
             break
           }
 
@@ -629,6 +663,26 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
 
           case 'fisma_inventory_summary': {
             description = 'Get VA system FISMA inventory summary dashboard information'
+            break
+          }
+
+          case 'fisma_inventory_crypto_summary': {
+            description = 'Get VA system FISMA inventory crypto summary dashboard information'
+            break
+          }
+
+          case 'va_threat_risk_summary': {
+            description = 'Get VA threat risk summary dashboard information'
+            break
+          }
+
+          case 'va_threat_source_details': {
+            description = 'Get VA threat sources details dashboard information'
+            break
+          }
+
+          case 'va_threat_architecture_details': {
+            description = 'Get VA threat architecture details dashboard information'
             break
           }
 
@@ -792,6 +846,16 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
             break
           }
 
+          case 'artifacts_summary': {
+            exampleArray.push(`${baseCmd} artifacts_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'artifacts_details': {
+            exampleArray.push(`${baseCmd} artifacts_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
           case 'hardware_summary': {
             exampleArray.push(`${baseCmd} hardware_summary [-o, --orgId] <value> [options]`)
             break
@@ -799,6 +863,26 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
 
           case 'hardware_details': {
             exampleArray.push(`${baseCmd} hardware_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'sensor_hardware_summary': {
+            exampleArray.push(`${baseCmd} sensor_hardware_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'sensor_hardware_details': {
+            exampleArray.push(`${baseCmd} sensor_hardware_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'ports_protocols_summary': {
+            exampleArray.push(`${baseCmd} ports_protocols_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'ports_protocols_details': {
+            exampleArray.push(`${baseCmd} ports_protocols_details [-o, --orgId] <value> [options]`)
             break
           }
 
@@ -842,8 +926,28 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
             break
           }
 
+          case 'fisma_inventory_crypto_summary': {
+            exampleArray.push(`${baseCmd} fisma_inventory_crypto_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'va_threat_risk_summary': {
+            exampleArray.push(`${baseCmd} va_threat_risk_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'va_threat_source_details': {
+            exampleArray.push(`${baseCmd} va_threat_source_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'va_threat_architecture_details': {
+            exampleArray.push(`${baseCmd} va_threat_architecture_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
           default: {
-            exampleArray.push(`${baseCmd} [dashboard name] [flag] [options]`)
+            exampleArray.push(`${baseCmd} [dashboard name] [options]`)
             break
           }
         }
@@ -1013,8 +1117,9 @@ export function getJsonExamples(endpoint?: string): string[] {
 
   if (endpoint === 'scan_findings-application') {
     const data = '{ ' +
+      '"application": {' +
       '"applicationName": "Name of the software application that was assessed",' +
-      '"version": "The version of the application"' +
+      '"version": "The version of the application"}' +
       '}'
     return JSON.parse(data)
   }
@@ -1035,7 +1140,7 @@ export function getJsonExamples(endpoint?: string): string[] {
   if (endpoint === 'scan_findings-clearFindings') {
     const data = '{ ' +
       '"applicationFindings": [{' +
-      '"clearFindings": "When used by itself, can clear out all application findings for a single application/version pairing"}]' +
+      '"clearFindings": "To clear an application\'s findings, use only the field clearFindings and set it to true."}]' +
       '}'
     return JSON.parse(data)
   }

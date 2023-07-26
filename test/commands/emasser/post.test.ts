@@ -1,6 +1,6 @@
 import {expect, test} from '@oclif/test'
 import {InitMockServer} from './mock.server'
-import {CACApi, PACApi, CloudResourcesApi, ContainersApi,
+import {CACApi, PACApi, CloudResourceResultsApi, ContainerScanResultsApi,
   MilestonesApi, POAMApi, RegistrationApi, StaticCodeScansApi,
   TestResultsApi} from '@mitre/emass_client'
 import {CacResponsePost, PacResponsePost, CloudResourcesResponsePost,
@@ -47,7 +47,7 @@ describe('Test eMASS API CLI (post) commands', () => {
     })
   test
     .it('Successfully tested endpoint - cloud_resources', async () => {
-      const addCloudResource = new CloudResourcesApi(mocSer.configuration, mocSer.basePath, mocSer.axiosInstances)
+      const addCloudResource = new CloudResourceResultsApi(mocSer.configuration, mocSer.basePath, mocSer.axiosInstances)
       await addCloudResource.addCloudResourcesBySystemId(123, []).then((response: CloudResourcesResponsePost) => {
         responseDataObj = new Map(Object.entries(response))
       }).catch((error:any) => {
@@ -62,7 +62,7 @@ describe('Test eMASS API CLI (post) commands', () => {
     })
   test
     .it('Successfully tested endpoint - container_scans', async () => {
-      const addContainer = new ContainersApi(mocSer.configuration, mocSer.basePath, mocSer.axiosInstances)
+      const addContainer = new ContainerScanResultsApi(mocSer.configuration, mocSer.basePath, mocSer.axiosInstances)
       await addContainer.addContainerSansBySystemId(123, []).then((response: ContainersResponsePost) => {
         responseDataObj = new Map(Object.entries(response))
       }).catch((error:any) => {

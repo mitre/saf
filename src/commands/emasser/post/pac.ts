@@ -1,15 +1,17 @@
 import colorize from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
-import {PACApi} from '@mitre/emass_client'
-import {PacResponsePost} from '@mitre/emass_client/dist/api'
-import {PacGet as PAC} from '@mitre/emass_client/dist/api'
+
+import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
-import {outputError} from '../../../utils/emasser/outputError'
+
+import {PACApi} from '@mitre/emass_client'
+import {PacResponsePost,
+  PacGet as PAC} from '@mitre/emass_client/dist/api'
 
 export default class EmasserPostPac extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]'
+  static usage = '<%= command.id %> [options]'
 
   static description = 'Add new Package Approval Chain (PAC) workflow(s) for a system'
 

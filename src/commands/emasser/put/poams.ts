@@ -1,15 +1,17 @@
+import fs from 'fs'
+import _ from 'lodash'
+import {readFile} from 'fs/promises'
 import colorize from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
-import {POAMApi} from '@mitre/emass_client'
-import {MilestonesGet, PoamResponsePut} from '@mitre/emass_client/dist/api'
-import {PoamGet as Poams} from '@mitre/emass_client/dist/api'
+
+import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
-import {outputError} from '../../../utils/emasser/outputError'
-import {readFile} from 'fs/promises'
-import _ from 'lodash'
-import fs from 'fs'
+
+import {POAMApi} from '@mitre/emass_client'
+import {MilestonesGet, PoamResponsePut,
+  PoamGet as Poams} from '@mitre/emass_client/dist/api'
 
 function printRedMsg(msg: string) {
   console.log('\x1B[91m', msg, '\x1B[0m')
@@ -257,7 +259,7 @@ function generateBodyObj(dataObject: Poams): Poams {
 }
 
 export default class EmasserPutPoams extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]'
+  static usage = '<%= command.id %> [options]'
 
   static description = 'Update a Plan of Action and Milestones (POA&M) into a systems.'
 

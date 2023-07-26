@@ -1,15 +1,17 @@
 import colorize from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
-import {ArtifactsApi} from '@mitre/emass_client'
-import {ArtifactsResponseDel} from '@mitre/emass_client/dist/api'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {ArtifactsRequestDeleteBodyInner as ArtifactDeleteBody} from '@mitre/emass_client/dist/api'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
+
 import {outputError} from '../../../utils/emasser/outputError'
+import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
+import {ArtifactsApi} from '@mitre/emass_client'
+import {ArtifactsResponseDel,
+  ArtifactsRequestDeleteBodyInner as ArtifactDeleteBody} from '@mitre/emass_client/dist/api'
+
 export default class EmasserDeleteArtifacts extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]';
+  static usage = '<%= command.id %> [options]';
 
   static description = 'Remove one or many artifacts in a system identified by system Id';
 

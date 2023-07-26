@@ -19,6 +19,7 @@ on:
     branches: [ main ]
   schedule:
     - cron: '27 2 * * 6'
+  workflow_dispatch:
 
 jobs:
   analyze:
@@ -68,3 +69,13 @@ jobs:
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
+
+#     - name: CSV export
+#       uses: advanced-security/ghas-to-csv@v2
+#       env:
+#         GITHUB_PAT: ${{ secrets.SAF_GHAS_SCANNING_PAT }}
+#     - name: Upload CSV
+#       uses: actions/upload-artifact@v3
+#       with:
+#         name: ghas-data
+#         path: ${{ github.workspace }}/*.csv
