@@ -659,12 +659,13 @@ convert netsparker2hdf        Translate a Netsparker XML results file into a
                               iteration only works with Netsparker Enterprise
                               Vulnerabilities Scan.
   USAGE
-    $ saf convert netsparker2hdf -i <netsparker-xml> -o <hdf-scan-results-json> [-h]
+    $ saf convert netsparker2hdf -i <netsparker-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<netsparker-xml>          (required) Input Netsparker XML File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert netsparker2hdf -i netsparker_results.xml -o output-hdf-name.json
