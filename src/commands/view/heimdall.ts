@@ -2,7 +2,6 @@ import {Command, Flags} from '@oclif/core'
 import express from 'express'
 import fs from 'fs'
 import path from 'path'
-import open from 'open'
 import {getInstalledPath} from '../../utils/global'
 
 export default class Heimdall extends Command {
@@ -22,6 +21,11 @@ export default class Heimdall extends Command {
   }
 
   async run() {
+    // NOTE: The npm open package is native ESM and no longer provides a CommonJS export
+    // The SAF CLI is a CommonJS project and needs to dynamic import the open package
+    const dynamicImport = await import('open')
+    const open = dynamicImport.default
+
     const {flags} = await this.parse(Heimdall)
     let parsedJSONs: Record<string, any>[] = []
 
