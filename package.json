@@ -182,7 +182,8 @@
     "prepack": "run-script-os",
     "prepack:win32": "(IF EXIST lib rmdir /s /q lib) && node_modules\\.bin\\tsc -b",
     "prepack:darwin:linux": "rm -rf lib && node_modules/.bin/tsc -b",
-    "test": "ts-mocha --timeout 8500 --forbid-only \"test/**/*.test.ts\""
+    "test": "ts-mocha --timeout 8500 --forbid-only \"test/**/*.test.ts\"",
+    "test-one": "ts-mocha --timeout 8500 --forbid-only"
   },
   "types": "lib/index.d.ts"
 }
