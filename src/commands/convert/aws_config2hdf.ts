@@ -1,8 +1,8 @@
 import {Command, Flags} from '@oclif/core'
-import fs from 'fs'
 import {AwsConfigMapper as Mapper} from '@mitre/hdf-converters'
 import {ExecJSON} from 'inspecjs'
 import {checkSuffix} from '../../utils/global'
+import {writeFileURI} from '../../utils/io'
 
 export default class AWSConfig2HDF extends Command {
   static usage = 'convert aws_config2hdf -r <region> -o <hdf-scan-results-json> [-h] [-a <access-key-id>] [-s <secret-access-key>] [-t <session-token>] [-i]'
@@ -56,6 +56,6 @@ export default class AWSConfig2HDF extends Command {
       region: flags.region,
     }, !flags.insecure) : new Mapper({region: flags.region}, !flags.insecure)
 
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(this.ensureRefs(await converter.toHdf())))
+    await writeFileURI(checkSuffix(flags.output), JSON.stringify(this.ensureRefs(await converter.toHdf())))
   }
 }

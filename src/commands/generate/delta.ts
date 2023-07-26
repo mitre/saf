@@ -4,6 +4,7 @@ import {processInSpecProfile, processOVAL, UpdatedProfileReturn, updateProfileUs
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
+import {writeFileURI} from '../../utils/io'
 
 export default class GenerateDelta extends Command {
   static description = 'Update an existing InSpec profile with updated XCCDF guidance'
@@ -187,7 +188,7 @@ export default class GenerateDelta extends Command {
 
       if (flags.report) {
         logger.debug('Writing report markdown file')
-        fs.writeFileSync(path.join(markDownFile), updatedResult.markdown)
+        await writeFileURI(path.join(markDownFile), updatedResult.markdown)
       }
     } else {
       if (!existingProfile) {

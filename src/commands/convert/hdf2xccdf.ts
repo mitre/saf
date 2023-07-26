@@ -1,7 +1,7 @@
 import {Command, Flags} from '@oclif/core'
-import fs from 'fs'
 import {FromHDFToXCCDFMapper as Mapper} from '@mitre/hdf-converters'
 import {default as files} from '../../resources/files.json'
+import {readFileURI, writeFileURI} from '../../utils/io'
 
 export default class HDF2XCCDF extends Command {
   static usage = 'convert hdf2xccdf -i <hdf-scan-results-json> -o <output-xccdf-xml> [-h]'
@@ -19,7 +19,7 @@ export default class HDF2XCCDF extends Command {
   async run() {
     const {flags} = await this.parse(HDF2XCCDF)
 
-    const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'), files['xccdfTemplate.xml'].data)
-    fs.writeFileSync(flags.output, converter.toXCCDF())
+    const converter = new Mapper(await readFileURI(flags.input, 'utf8'), files['xccdfTemplate.xml'].data)
+    await writeFileURI(flags.output, converter.toXCCDF())
   }
 }

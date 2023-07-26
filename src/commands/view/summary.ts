@@ -1,11 +1,11 @@
 import {Command, Flags} from '@oclif/core'
 import {ContextualizedEvaluation, ContextualizedProfile, convertFileContextual} from 'inspecjs'
-import fs from 'fs'
 import YAML from 'yaml'
 import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 import _ from 'lodash'
 import flat from 'flat'
 import {convertFullPathToFilename} from '../../utils/global'
+import {readFileURI, writeFileURI} from '../../utils/io'
 
 export default class Summary extends Command {
   static aliases = ['summary']
@@ -29,9 +29,15 @@ export default class Summary extends Command {
     const complianceScores: Record<string, number[]> = {}
 
     const execJSONs: Record<string, ContextualizedEvaluation> = {}
-    flags.input.forEach((file: string) => {
-      execJSONs[file] = convertFileContextual(fs.readFileSync(file, 'utf8')) as ContextualizedEvaluation
+
+    const parsedFiles = await Promise.all(flags.input.map(file => {
+      return readFileURI(file, 'utf8')
+    }))
+
+    parsedFiles.forEach((file: string, index) => {
+      execJSONs[file] = convertFileContextual(parsedFiles[index]) as ContextualizedEvaluation
     })
+
     Object.entries(execJSONs).forEach(([, parsedExecJSON]) => {
       const summary: Record<string, Record<string, number>> = {}
       const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
@@ -96,7 +102,7 @@ export default class Summary extends Command {
     })
     console.log(flags.json ? JSON.stringify(printableSummaries) : YAML.stringify(printableSummaries))
     if (flags.output) {
-      fs.writeFileSync(flags.output, flags.json ? JSON.stringify(printableSummaries) : YAML.stringify(printableSummaries))
+      await writeFileURI(flags.output, flags.json ? JSON.stringify(printableSummaries) : YAML.stringify(printableSummaries))
     }
   }
 }

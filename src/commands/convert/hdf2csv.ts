@@ -1,11 +1,11 @@
 import {Command, Flags} from '@oclif/core'
 import {ContextualizedEvaluation, contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
-import fs from 'fs'
 import ObjectsToCsv from 'objects-to-csv'
 import {ControlSetRows} from '../../types/csv'
 import {convertRow, csvExportFields} from '../../utils/csv'
 import {convertFullPathToFilename} from '../../utils/global'
+import {readFileURI, writeFileURI} from '../../utils/io'
 
 export default class HDF2CSV extends Command {
   static usage = 'convert hdf2csv -i <hdf-scan-results-json> -o <output-csv> [-h] [-f <csv-fields>] [-t]'
@@ -29,7 +29,10 @@ export default class HDF2CSV extends Command {
 
   async run() {
     const {flags} = await this.parse(HDF2CSV)
-    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf8')))
+
+    const data = JSON.parse(await readFileURI(flags.input, 'utf8'))
+
+    const contextualizedEvaluation = contextualizeEvaluation(data)
 
     // Convert all controls from a file to ControlSetRows
     let rows: ControlSetRows = this.convertRows(contextualizedEvaluation, convertFullPathToFilename(flags.input), flags.fields.split(','))
@@ -51,6 +54,8 @@ export default class HDF2CSV extends Command {
 
       return cleanedRow
     })
-    await new ObjectsToCsv(rows).toDisk(flags.output)
+
+    const output = await new ObjectsToCsv(rows).toString(true)
+    await writeFileURI(flags.output, output)
   }
 }

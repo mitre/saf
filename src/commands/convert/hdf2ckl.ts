@@ -1,13 +1,13 @@
 import {Command, Flags} from '@oclif/core'
 import {contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
-import fs from 'fs'
 import {v4} from 'uuid'
 import {default as files} from '../../resources/files.json'
 import Mustache from 'mustache'
 import {CKLMetadata} from '../../types/checklist'
 import {convertFullPathToFilename, getProfileInfo} from '../../utils/global'
 import {getDetails} from '../../utils/checklist'
+import {readFileURI, writeFileURI} from '../../utils/io'
 
 export default class HDF2CKL extends Command {
   static usage = 'convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [-H <hostname>] [-F <fqdn>] [-M <mac-address>] [-I <ip-address>]'
@@ -29,7 +29,7 @@ export default class HDF2CKL extends Command {
 
   async run() {
     const {flags} = await this.parse(HDF2CKL)
-    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf8')))
+    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(await readFileURI(flags.input, 'utf8')))
     const profileName = contextualizedEvaluation.data.profiles[0].name
     const controls = contextualizedEvaluation.contains.flatMap(profile => profile.contains) || []
     const rootControls = _.uniqBy(controls, control =>
@@ -58,7 +58,7 @@ export default class HDF2CKL extends Command {
     }
 
     if (flags.metadata) {
-      const cklMetadataInput: CKLMetadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf8'))
+      const cklMetadataInput: CKLMetadata = JSON.parse(await readFileURI(flags.metadata, 'utf8'))
       for (const field in cklMetadataInput) {
         if (typeof cklMetadata[field] === 'string' || typeof cklMetadata[field] === 'object') {
           cklMetadata[field] = cklMetadataInput[field]
@@ -73,6 +73,6 @@ export default class HDF2CKL extends Command {
       uuid: v4(),
       controls: rootControls.map(control => getDetails(control, profileName)),
     }
-    fs.writeFileSync(flags.output, Mustache.render(files['cklExport.ckl'].data, cklData).replaceAll(/[^\x00-\x7F]/g, ''))
+    await writeFileURI(flags.output, Mustache.render(files['cklExport.ckl'].data, cklData).replaceAll(/[^\x00-\x7F]/gu, ''))
   }
 }

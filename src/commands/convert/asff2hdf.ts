@@ -1,5 +1,4 @@
 import {Command, Flags} from '@oclif/core'
-import fs from 'fs'
 import {ASFFResults as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
@@ -8,6 +7,7 @@ import AWS from 'aws-sdk'
 import https from 'https'
 import {AwsSecurityFindingFilters} from 'aws-sdk/clients/securityhub'
 import {createWinstonLogger} from '../../utils/logging'
+import {createFolderIfNotExists, folderExistsURI, readFileURI, writeFileURI} from '../../utils/io'
 
 // Should be no more than 100
 const API_MAX_RESULTS = 100
@@ -40,17 +40,17 @@ export default class ASFF2HDF extends Command {
   async run() {
     const {flags} = await this.parse(ASFF2HDF)
     const logger = createWinstonLogger('asff2hdf', flags.logLevel)
-    let securityhub
+    let securityhub: string[] | undefined
 
     // Check if output folder already exists
-    if (fs.existsSync(flags.output)) {
+    if (await folderExistsURI(flags.output)) {
       throw new Error(`Output folder ${flags.output} already exists`)
     }
 
     const findings: string[] = []
     // If we've been passed an input file
     if (flags.input) {
-      const data = fs.readFileSync(flags.input, 'utf8')
+      const data = await readFileURI(flags.input, 'utf8')
       // Attempt to convert to one finding per line
       try {
         const convertedJson = JSON.parse(data)
@@ -81,9 +81,9 @@ export default class ASFF2HDF extends Command {
 
       // If we've been passed any Security Standards JSONs
       if (flags.securityhub) {
-        securityhub = flags.securityhub.map((file: string) =>
-          fs.readFileSync(file, 'utf8'),
-        )
+        securityhub = await Promise.all(flags.securityhub.map((file: string) =>
+          readFileURI(file, 'utf8'),
+        ))
       }
     } else if (flags.aws) { // Flag to pull findings from AWS Security Hub
       AWS.config.update({
@@ -92,7 +92,7 @@ export default class ASFF2HDF extends Command {
             // Disable HTTPS verification if requested
             rejectUnauthorized: !flags.insecure,
             // Pass an SSL certificate to trust
-            ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf8') : undefined,
+            ca: flags.certificate ? await readFileURI(flags.certificate, 'utf8') : undefined,
           }),
         },
       })
@@ -176,9 +176,9 @@ export default class ASFF2HDF extends Command {
 
     const results = converter.toHdf()
 
-    fs.mkdirSync(flags.output)
-    _.forOwn(results, (result, filename) => {
-      fs.writeFileSync(
+    createFolderIfNotExists(flags.output)
+    _.forOwn(results, async (result, filename) => {
+      await writeFileURI(
         path.join(flags.output, checkSuffix(filename)),
         JSON.stringify(result),
       )
