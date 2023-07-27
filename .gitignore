@@ -10,3 +10,4 @@ node_modules
 *.*.un~
 out
 .env
+*.tgz

@@ -67,7 +67,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [XCCDF Results to HDF](#xccdf-results-to-hdf)
       * [OWASP ZAP to HDF](#owasp-zap-to-hdf)
 
-### Non-HDF Converters
+### Other Useful Converters
 
   * [Checklist to POA&amp;M](#checklist-to-poam)
 
@@ -659,12 +659,13 @@ convert netsparker2hdf        Translate a Netsparker XML results file into a
                               iteration only works with Netsparker Enterprise
                               Vulnerabilities Scan.
   USAGE
-    $ saf convert netsparker2hdf -i <netsparker-xml> -o <hdf-scan-results-json> [-h]
+    $ saf convert netsparker2hdf -i <netsparker-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<netsparker-xml>          (required) Input Netsparker XML File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert netsparker2hdf -i netsparker_results.xml -o output-hdf-name.json
@@ -937,7 +938,7 @@ convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall D
 
 ---
 
-### Non-HDF Converters
+### Other Useful Converters
 
 #### Checklist to POA&M
 
@@ -963,7 +964,7 @@ convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M file
   EXAMPLES
     $ saf convert ckl2POAM -i checklist_file.ckl -o output-folder -d abcdefg -s 2
 ```
-[top](#non-hdf-converters)
+[top](#other-useful-converters)
 
 ---
 
