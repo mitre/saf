@@ -109,8 +109,10 @@ export default class Convert extends Command {
             JSON.stringify(result),
           )
         }
-         break
+
+        break
       }
+
       case 'checklist': {
         converter = new ChecklistResults(fs.readFileSync(flags.input, 'utf8'))
         fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
