@@ -166,11 +166,11 @@ export function cleanStatus(status: string) {
 }
 
 export function replaceSpecialCharacters(text: string): string {
-  return text.replace(/'/g, '`').replace(/"/g, '`').replace(/</g, '(').replace(/>/g, ')').replace(/\\/g, '\\\\')
+  return text.replaceAll("'", '`').replaceAll('"', '`').replaceAll('<', '(').replaceAll('>', ')').replaceAll('\\', '\\\\')
 }
 
 function cleanComments(comments: string): string {
-  return comments.replace(/Automated(.*?)project\.\n/, '').replace(/Profile shasum.*/sg, '').trim() // skipcq: JS-0113
+  return comments.replace(/Automated(.*?)project\.\n/, '').replaceAll(/Profile shasum.*/s, '').trim() // skipcq: JS-0113
 }
 
 export function combineComments(vulnerability: Vulnerability, host: string) {

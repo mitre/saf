@@ -47,10 +47,11 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Burp Suite to HDF](#burp-suite-to-hdf)
       * [Conveyor to HDF](#conveyor-to-hdf)
       * [CKL to POA&amp;M](#ckl-to-poam)
+      * [Checklist to HDF](#checklist-to-hdf)
       * [DBProtect to HDF](#dbprotect-to-hdf)
       * [Fortify to HDF](#fortify-to-hdf)
       * [GoSec to HDF](#gosec-to-hdf)
-      * [Ion Channel 2 HDF](#ion-channel-2-hdf)
+      * [Ion Channel to HDF](#ion-channel-to-hdf)
       * [JFrog Xray to HDF](#jfrog-xray-to-hdf)
       * [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
       * [Netsparker to HDF](#netsparker-to-hdf)
@@ -67,6 +68,10 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Veracode to HDF](#veracode-to-hdf)
       * [XCCDF Results to HDF](#xccdf-results-to-hdf)
       * [OWASP ZAP to HDF](#owasp-zap-to-hdf)
+
+### Other Useful Converters
+
+  * [Checklist to POA&amp;M](#checklist-to-poam)
 
 ### eMasser Client
 
@@ -504,12 +509,13 @@ convert aws_config2hdf        Pull Configuration findings from AWS Config and co
 convert burpsuite2hdf         Translate a BurpSuite Pro XML file into a Heimdall
                               Data Format JSON file
   USAGE
-    $ saf convert burpsuite2hdf -i <burpsuite-xml> -o <hdf-scan-results-json> [-h]
+    $ saf convert burpsuite2hdf -i <burpsuite-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                              Show CLI help.
     -i, --input=<burpsuite-xml>             (required) Input Burpsuite Pro XML File
     -o, --output=<hdf-scan-results-json>    (required) Output HDF JSON File
+    -w, --with-raw                          Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json
@@ -535,38 +541,36 @@ convert conveyor2hdf          Translate a conveyor JSON file into a Heimdall Dat
 
 Note: The included CCI to NIST Mappings are the extracted from NIST.gov, for mappings specific to eMASS use [this](https://github.com/mitre/ckl2POAM/blob/main/resources/cci2nist.json) file instead).
 
+#### Checklist to HDF
 ```
-convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M files
-
+convert ckl2hdf               Translate a DISA Checklist XML file into a Heimdall Data 
+                              Format JSON file
   USAGE
-    $ saf convert ckl2POAM -i <disa-checklist> -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]
+    $ saf convert ckl2hdf -i <ckl-xml> -o <hdf-scan-results-json> [-h] [-s] [-w]
 
   FLAGS
-    -O, --officeOrg=<office/org>          Default value for Office/org (prompts for each file if not set)
-    -d, --deviceName=<device-name>        Name of target device (prompts for each file if not set)
-    -h, --help                            Show CLI help.
-    -i, --input=<disa-checklist>...       (required) Path to the DISA Checklist File(s)
-    -o, --output=<poam-output-folder>     (required) Path to output PO&M File(s)
-    -s, --rowsToSkip=<num-rows>           [default: 4] Rows to leave between POA&M Items for milestones
-
-  ALIASES
-    $ saf convert ckl2poam
+    -h, --help            Show CLI help.
+    -i, --input=<value>   (required) Input Checklist XML File
+    -o, --output=<value>  (required) Output HDF JSON File
+    -w, --with-raw        Include raw input file in HDF JSON file
 
   EXAMPLES
-    $ saf convert ckl2POAM -i checklist_file.ckl -o output-folder -d abcdefg -s 2
+    $ saf convert ckl2hdf -i ckl_results.xml -o output-hdf-name.json
 ```
 [top](#convert-other-formats-to-hdf)
+  
 #### DBProtect to HDF
 ```
 convert dbprotect2hdf         Translate a DBProtect report in "Check Results
                               Details" XML format into a Heimdall Data Format JSON file
   USAGE
-    $ saf convert dbprotect2hdf -i <dbprotect-xml> -o <hdf-scan-results-json> [-h]
+    $ saf convert dbprotect2hdf -i <dbprotect-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<dbprotect-xml>           (required) 'Check Results Details' XML File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert dbprotect2hdf -i check_results_details_report.xml -o output-hdf-name.json
@@ -580,12 +584,13 @@ convert fortify2hdf           Translate a Fortify results FVDL file into a Heimd
                               extracted from the Fortify FPR project file using standard
                               file compression tools
   USAGE
-    $ saf convert fortify2hdf -i <fortify-fvdl> -o <hdf-scan-results-json> [-h]
+    $ saf convert fortify2hdf -i <fortify-fvdl> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<fortify-fvdl>            (required) Input FVDL File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert fortify2hdf -i audit.fvdl -o output-hdf-name.json
@@ -609,7 +614,7 @@ convert gosec2hdf             Translate a GoSec (Golang Security Checker) result
 ```
 
 [top](#convert-other-formats-to-hdf)
-#### Ion Channel 2 HDF
+#### Ion Channel to HDF
 ```
 convert ionchannel2hdf        Pull and translate SBOM data from Ion Channel
                               into Heimdall Data Format
@@ -635,12 +640,13 @@ convert ionchannel2hdf        Pull and translate SBOM data from Ion Channel
 convert jfrog_xray2hdf        Translate a JFrog Xray results JSON file into a
                               Heimdall Data Format JSON file
   USAGE
-    $ saf convert jfrog_xray2hdf -i <jfrog-xray-json> -o <hdf-scan-results-json> [-h]
+    $ saf convert jfrog_xray2hdf -i <jfrog-xray-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<jfrog-xray-json>         (required) Input JFrog JSON File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert jfrog_xray2hdf -i xray_results.json -o output-hdf-name.json
@@ -654,12 +660,13 @@ convert nessus2hdf            Translate a Nessus XML results file into a Heimdal
                               plugin families except for 'Policy Compliance'
                               A separate HDF JSON is generated for each host reported in the Nessus Report.
   USAGE
-    $ saf convert nessus2hdf -i <nessus-xml> -o <hdf-scan-results-json> [-h]
+    $ saf convert nessus2hdf -i <nessus-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<nessus-xml>              (required) Input Nessus XML File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert nessus2hdf -i nessus_results.xml -o output-hdf-name.json
@@ -673,12 +680,13 @@ convert netsparker2hdf        Translate a Netsparker XML results file into a
                               iteration only works with Netsparker Enterprise
                               Vulnerabilities Scan.
   USAGE
-    $ saf convert netsparker2hdf -i <netsparker-xml> -o <hdf-scan-results-json> [-h]
+    $ saf convert netsparker2hdf -i <netsparker-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<netsparker-xml>          (required) Input Netsparker XML File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert netsparker2hdf -i netsparker_results.xml -o output-hdf-name.json
@@ -692,12 +700,13 @@ convert nikto2hdf             Translate a Nikto results JSON file into a Heimdal
                               Note: Currently this mapper only supports single
                               target Nikto Scans
   USAGE
-    $ saf convert nikto2hdf -i <nikto-json> -o <hdf-scan-results-json> [-h]
+    $ saf convert nikto2hdf -i <nikto-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<nikto-json>              (required) Input Niktop Results JSON File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert nikto2hdf -i nikto-results.json -o output-hdf-name.json
@@ -741,12 +750,13 @@ convert prowler2hdf           Translate a Prowler-derived AWS Security Finding
 convert sarif2hdf             Translate a SARIF JSON file into a Heimdall Data
                               Format JSON file
   USAGE
-    $ saf convert sarif2hdf -i <sarif-json> -o <hdf-scan-results-json> [-h]
+    $ saf convert sarif2hdf -i <sarif-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<sarif-json>              (required) Input SARIF JSON File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   DESCRIPTION
     SARIF level to HDF impact Mapping:
@@ -768,12 +778,13 @@ convert scoutsuite2hdf        Translate a ScoutSuite results from a Javascript
 
                               Note: Currently this mapper only supports AWS
   USAGE
-    $ saf convert scoutsuite2hdf -i <scoutsuite-results-js> -o <hdf-scan-results-json> [-h]
+    $ saf convert scoutsuite2hdf -i <scoutsuite-results-js> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<scoutsuite-results-js>   (required) Input ScoutSuite Results JS File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert scoutsuite2hdf -i scoutsuite-results.js -o output-hdf-name.json
@@ -877,12 +888,13 @@ convert trivy2hdf             Translate a Trivy-derived AWS Security Finding
 convert twistlock2hdf         Translate a Twistlock CLI output file into an HDF results set
 
   USAGE
-    $ saf convert twistlock2hdf -i <twistlock-json> -o <hdf-scan-results-json>
+    $ saf convert twistlock2hdf -i <twistlock-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<twistlock-json>          (required) Input Twistlock file
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert twistlock2hdf -i twistlock.json -o output-hdf-name.json
@@ -913,12 +925,13 @@ convert veracode2hdf          Translate a Veracode XML file into a Heimdall Data
 convert xccdf_results2hdf     Translate a SCAP client XCCDF-Results XML report
                               to a Heimdall Data Format JSON file
   USAGE
-    $ saf convert xccdf_results2hdf -i <xccdf-results-xml> -o <hdf-scan-results-json> [-h]
+    $ saf convert xccdf_results2hdf -i <xccdf-results-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help            Show CLI help.
     -i, --input=<xccdf-results-xml>       (required) Input XCCDF Results XML File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert xccdf_results2hdf -i results-xccdf.xml -o output-hdf-name.json
@@ -930,18 +943,49 @@ convert xccdf_results2hdf     Translate a SCAP client XCCDF-Results XML report
 convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall Data Format JSON file
 
   USAGE
-    $ saf convert zap2hdf -i <zap-json> -n <target-site-name> -o <hdf-scan-results-json> [-h]
+    $ saf convert zap2hdf -i <zap-json> -n <target-site-name> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<zap-json>                (required) Input OWASP Zap Results JSON File
     -n, --name=<target-site-name>         (required) Target Site Name
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --with-raw                        Include raw input file in HDF JSON file
 
   EXAMPLES
     $ saf convert zap2hdf -i zap_results.json -n mitre.org -o scan_results.json
 ```
 [top](#convert-other-formats-to-hdf)
+
+---
+
+### Other Useful Converters
+
+#### Checklist to POA&M
+
+Note: The included CCI to NIST Mappings are the extracted from NIST.gov, for mappings specific to eMASS use [this](https://github.com/mitre/ckl2POAM/blob/main/resources/cci2nist.json) file instead).
+
+```
+convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M files
+
+  USAGE
+    $ saf convert ckl2POAM -i <disa-checklist> -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]
+
+  FLAGS
+    -O, --officeOrg=<office/org>          Default value for Office/org (prompts for each file if not set)
+    -d, --deviceName=<device-name>        Name of target device (prompts for each file if not set)
+    -h, --help                            Show CLI help.
+    -i, --input=<disa-checklist>...       (required) Path to the DISA Checklist File(s)
+    -o, --output=<poam-output-folder>     (required) Path to output PO&M File(s)
+    -s, --rowsToSkip=<num-rows>           [default: 4] Rows to leave between POA&M Items for milestones
+
+  ALIASES
+    $ saf convert ckl2poam
+
+  EXAMPLES
+    $ saf convert ckl2POAM -i checklist_file.ckl -o output-folder -d abcdefg -s 2
+```
+[top](#other-useful-converters)
 
 ---
 

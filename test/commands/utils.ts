@@ -5,7 +5,7 @@ export function omitHDFChangingFields(
   input: Partial<ExecJSON.Execution> & {profiles: ExecJSON.Profile[]},
 ) {
   return {
-    ..._.omit(input, ['version', 'platform.release', 'profiles[0].sha256']),
+    ..._.omit(input, ['version', 'platform.release', 'profiles[0].sha256', 'profiles[0].version']),
     profiles: input.profiles.map(profile => {
       return {
         ...profile,
