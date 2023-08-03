@@ -102,7 +102,7 @@ export default class Convert extends Command {
           fs.readFileSync(flags.input, 'utf8'))
         const results = converter.toHdf()
         fs.mkdirSync(flags.output)
-        for( const [result, filename]  of Object.entries(results)){
+        for (const [filename, result]  of Object.entries(results)) {
           fs.writeFileSync(
             path.join(flags.output, checkSuffix(filename as string)),
             JSON.stringify(result),

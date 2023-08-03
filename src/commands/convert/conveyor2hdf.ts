@@ -26,7 +26,7 @@ export default class Conveyor2HDF extends Command {
     const converter = new Mapper(data)
     const results = converter.toHdf()
     fs.mkdirSync(flags.output)
-    for(const [result, filename] of Object.entries(results) ){
+    for (const [filename, result] of Object.entries(results)) {
       fs.writeFileSync(
         path.join(flags.output, checkSuffix(filename as string)),
         JSON.stringify(result),
@@ -34,3 +34,4 @@ export default class Conveyor2HDF extends Command {
     }
   }
 }
+
