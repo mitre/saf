@@ -13,14 +13,14 @@ import {createWinstonLogger} from '../../utils/logging'
 const API_MAX_RESULTS = 100
 
 export default class ASFF2HDF extends Command {
-  static usage = 'convert asff2hdf -o <hdf-output-folder> [-h] (-i <asff-json> [--securityhub <standard-json>]... | -a -r <region> [-I | -C <certificate>] [-t <target>]) [-L info|warn|debug|verbose]'
+  static usage = 'convert asff2hdf -o <hdf-output-folder> [-h] (-i <asff-json> [--securityhub <standard-json>...] | -a -r <region> [-I | -C <certificate>] [-t <target>...]) [-L info|warn|debug|verbose]'
 
   static description =
     'Translate a AWS Security Finding Format JSON into a Heimdall Data Format JSON file(s)';
 
   static examples = [
     'saf convert asff2hdf -i asff-findings.json -o output-folder-name',
-    'saf convert asff2hdf -i asff-findings.json --securityhub <standard-1-json> ... --securityhub <standard-n-json> -o output-folder-name',
+    'saf convert asff2hdf -i asff-findings.json --securityhub standard-1.json standard-2.json -o output-folder-name',
     'saf convert asff2hdf --aws -o out -r us-west-2 --target rhel7',
   ];
 

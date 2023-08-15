@@ -456,7 +456,7 @@ AWS SecurityHub standard controls json|Get all the controls for a standard that 
 convert asff2hdf              Translate a AWS Security Finding Format JSON into a
                               Heimdall Data Format JSON file(s)
   USAGE
-    $ saf convert asff2hdf -o <hdf-output-folder> [-h] (-i <asff-json> [--securityhub <standard-json>]... | -a -r <region> [-I | -C <certificate>] [-t <target>]) [-L info|warn|debug|verbose]
+    $ saf convert asff2hdf -o <hdf-output-folder> [-h] (-i <asff-json> [--securityhub <standard-json>...] | -a -r <region> [-I | -C <certificate>] [-t <target>...]) [-L info|warn|debug|verbose]
 
   FLAGS
     -C, --certificate=<certificate>       Trusted signing certificate file
@@ -475,7 +475,7 @@ convert asff2hdf              Translate a AWS Security Finding Format JSON into 
 
   EXAMPLES
     $ saf convert asff2hdf -i asff-findings.json -o output-folder-name
-    $ saf convert asff2hdf -i asff-findings.json --securityhub <standard-1-json> ... --securityhub <standard-n-json> -o output-folder-name
+    $ saf convert asff2hdf -i asff-findings.json --securityhub standard-1.json standard-2.json -o output-folder-name
     $ saf convert asff2hdf --aws -o out -r us-west-2 --target rhel7
 ```
 [top](#convert-other-formats-to-hdf)
@@ -598,7 +598,7 @@ convert gosec2hdf             Translate a GoSec (Golang Security Checker) result
 convert ionchannel2hdf        Pull and translate SBOM data from Ion Channel
                               into Heimdall Data Format
   USAGE
-    $ saf convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json> | -a <api-key> -t <team-name> [--raw ] [-p <project>] [-A ]) [-L info|warn|debug|verbose]
+    $ saf convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json>... | -a <api-key> -t <team-name> [--raw ] [-p <project>...] [-A ]) [-L info|warn|debug|verbose]
 
   FLAGS
     -A, --allProjects                   Pull all projects available within your team
@@ -815,7 +815,7 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
 convert splunk2hdf            Pull HDF data from your Splunk instance back into an HDF file
 
   USAGE
-    $ saf splunk2hdf -H <host> -I <index> [-h] [-P <port>] [-s http|https] (-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID> -o <hdf-output-folder>]
+    $ saf splunk2hdf -H <host> -I <index> [-h] [-P <port>] [-s http|https] (-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID>... -o <hdf-output-folder>]
 
   FLAGS
     -H, --host=<host>                   (required) Splunk Hostname or IP
@@ -948,7 +948,7 @@ Note: The included CCI to NIST Mappings are the extracted from NIST.gov, for map
 convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M files
 
   USAGE
-    $ saf convert ckl2POAM -i <disa-checklist> -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]
+    $ saf convert ckl2POAM -i <disa-checklist>... -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]
 
   FLAGS
     -O, --officeOrg=<office/org>          Default value for Office/org (prompts for each file if not set)
