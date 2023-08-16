@@ -37,6 +37,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [HDF to XCCDF Results](#hdf-to-xccdf-results)
       * [HDF to Checklist](#hdf-to-checklist)
       * [HDF to CSV](#hdf-to-csv)
+      * [HDF to CAAT](#hdf-to-caat)
       * [HDF to Condensed JSON](#hdf-to-condensed-json)
 
 ### Convert Other Formats to HDF
@@ -420,6 +421,23 @@ convert hdf2csv               Translate a Heimdall Data Format JSON file into a
 
   EXAMPLES
     $ saf convert hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"
+```
+[top](#convert-hdf-to-other-formats)
+#### HDF to CAAT
+```
+convert hdf2caat              Translate a Heimdall Data Format JSON file into a
+                              Compliance Assessment and Audit Tracking (CAAT) XLSX file
+
+  USAGE
+    $ saf convert hdf2caat -i <hdf-scan-results-json>... -o <output-caat-xlsx> [-h]
+
+  FLAGS
+    -h, --help              Show CLI help.
+    -i, --input=<value>...  (required) Input HDF JSON file
+    -o, --output=<value>    (required) Output CAAT XLSX File
+
+  EXAMPLES
+    $ saf convert hdf2caat -i hdf_input.json -o caat-results.xlsx
 ```
 [top](#convert-hdf-to-other-formats)
 #### HDF to Condensed JSON

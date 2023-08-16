@@ -6,7 +6,7 @@ import {FromHDFToCAATMapper as Mapper} from '@mitre/hdf-converters'
 export default class HDF2CAAT extends Command {
   static usage = 'convert hdf2caat -i <hdf-scan-results-json>... -o <output-caat-xlsx> [-h]'
 
-  static description = 'Translate an HDF file into a CAAT XLSX'
+  static description = 'Translate an HDF file into a Compliance Assessment and Audit Tracking (CAAT) XLSX file'
 
   static examples = ['saf convert hdf2caat -i hdf_input.json -o caat-results.xlsx']
 
