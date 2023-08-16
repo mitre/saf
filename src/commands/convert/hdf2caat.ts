@@ -13,7 +13,7 @@ export default class HDF2CAAT extends Command {
   static flags = {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true, multiple: true, description: 'Input HDF JSON file'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output CAAT XLSX File'}),
+    output: Flags.string({char: 'o', required: true, description: 'Output CAAT XLSX file'}),
   }
 
   async run() {

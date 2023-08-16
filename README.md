@@ -434,7 +434,7 @@ convert hdf2caat              Translate a Heimdall Data Format JSON file into a
   FLAGS
     -h, --help              Show CLI help.
     -i, --input=<value>...  (required) Input HDF JSON file
-    -o, --output=<value>    (required) Output CAAT XLSX File
+    -o, --output=<value>    (required) Output CAAT XLSX file
 
   EXAMPLES
     $ saf convert hdf2caat -i hdf_input.json -o caat-results.xlsx
