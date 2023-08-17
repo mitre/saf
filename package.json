@@ -70,6 +70,7 @@
     "zip-lib": "^0.7.3"
   },
   "devDependencies": {
+    "@e965/xlsx": "^0.20.0",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "eslint": "^8.8.0",
     "eslint-config-oclif": "^4.0",
