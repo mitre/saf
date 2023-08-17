@@ -368,7 +368,7 @@ index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) value
 [top](#convert-hdf-to-other-formats)
 #### HDF to XCCDF Results
 ```
-convert hdf2xccdf             Translate an HDF file into an XCCDF XML
+convert hdf2xccdf             Translate an HDF file into an XCCDF XML file
 
   USAGE
     $ saf convert hdf2xccdf -i <hdf-scan-results-json> -o <output-xccdf-xml> [-h]
@@ -376,7 +376,7 @@ convert hdf2xccdf             Translate an HDF file into an XCCDF XML
   FLAGS
     -h, --help                              Show CLI help.
     -i, --input=<hdf-scan-results-json>     (required) Input HDF file
-    -o, --output=<output-xccdf-xml>         (required) Output XCCDF XML File
+    -o, --output=<output-xccdf-xml>         (required) Output XCCDF XML file
 
   EXAMPLES
     $ saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml
