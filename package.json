@@ -1,6 +1,6 @@
 {
   "name": "@mitre/saf",
-  "description": "The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) brings together applications, techniques, libraries, and tools developed by MITRE and the security community to streamline security automation for systems and DevOps pipelines",
+  "description": "The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) brings together applications, techniques, libraries, and tools developed by MITRE and the security community to streamline security automation for systems and DevOps pipelines.",
   "version": "1.2.27",
   "author": "The MITRE Security Automation Framework",
   "bin": "./bin/run",
