@@ -6,7 +6,7 @@ import fs from 'fs'
 import path from 'path'
 
 export default class IonChannel2HDF extends Command {
-  static usage = 'convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json> | -a <api-key> -t <team-name> [--raw ] [-p <project>] [-A ]) [-L info|warn|debug|verbose]'
+  static usage = 'convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json>... | -a <api-key> -t <team-name> [--raw ] [-p <project>...] [-A ]) [-L info|warn|debug|verbose]'
 
   static description =
     'Pull and translate SBOM data from Ion Channel into Heimdall Data Format';
