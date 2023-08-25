@@ -26,20 +26,20 @@ export default class HDF2HTML extends Command {
   async run() {
     const {flags} = await this.parse(HDF2HTML)
 
-    const files = [];
+    const files = []
     for (const file of flags.input) {
       // Create (somewhat) unique fileID for html reference
-      const idCore = path.basename(file).replace(' ', '-');
-      const idTail1 = Math.random() * 100;
-      const idTail2 = Math.random() * 100;
+      const idCore = path.basename(file).replace(' ', '-')
+      const idTail1 = Math.random() * 100
+      const idTail2 = Math.random() * 100
 
-      const data = fs.readFileSync(file, 'utf8');
-      const fileName = path.basename(file);
-      const fileID = `${idCore}-${idTail1}-${idTail2}`;
-      files.push({data, fileName, fileID});
+      const data = fs.readFileSync(file, 'utf8')
+      const fileName = path.basename(file)
+      const fileID = `${idCore}-${idTail1}-${idTail2}`
+      files.push({data, fileName, fileID})
     }
 
-    const converter = await new Mapper(files, FileExportTypes.Administrator).toHTML('/html/');
+    const converter = await new Mapper(files, FileExportTypes.Administrator).toHTML('/html/')
     fs.writeFileSync(flags.output, converter)
   }
 }
