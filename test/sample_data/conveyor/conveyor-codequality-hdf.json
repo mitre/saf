@@ -6601,8 +6601,7 @@
   },
   "platform": {
     "name": "Heimdall Tools",
-    "release": "2.6.50",
-    "target_id": "registry.io/test:1a7a431a105aa04632f5f5fbe8f753bd245add0a"
+    "release": "2.6.50"
   },
   "version": "4.3.0.41",
   "statistics": {},
