@@ -37,6 +37,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [HDF to XCCDF Results](#hdf-to-xccdf-results)
       * [HDF to Checklist](#hdf-to-checklist)
       * [HDF to CSV](#hdf-to-csv)
+      * [HDF to CAAT](#hdf-to-caat)
       * [HDF to Condensed JSON](#hdf-to-condensed-json)
 
 ### Convert Other Formats to HDF
@@ -369,7 +370,7 @@ index="<<YOUR INDEX>>" meta.subtype=control | stats  values(meta.filename) value
 [top](#convert-hdf-to-other-formats)
 #### HDF to XCCDF Results
 ```
-convert hdf2xccdf             Translate an HDF file into an XCCDF XML
+convert hdf2xccdf             Translate an HDF file into an XCCDF XML file
 
   USAGE
     $ saf convert hdf2xccdf -i <hdf-scan-results-json> -o <output-xccdf-xml> [-h]
@@ -377,7 +378,7 @@ convert hdf2xccdf             Translate an HDF file into an XCCDF XML
   FLAGS
     -h, --help                              Show CLI help.
     -i, --input=<hdf-scan-results-json>     (required) Input HDF file
-    -o, --output=<output-xccdf-xml>         (required) Output XCCDF XML File
+    -o, --output=<output-xccdf-xml>         (required) Output XCCDF XML file
 
   EXAMPLES
     $ saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml
@@ -424,6 +425,23 @@ convert hdf2csv               Translate a Heimdall Data Format JSON file into a
     $ saf convert hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"
 ```
 [top](#convert-hdf-to-other-formats)
+#### HDF to CAAT
+```
+convert hdf2caat              Translate a Heimdall Data Format JSON file into a
+                              Compliance Assessment and Audit Tracking (CAAT) XLSX file
+
+  USAGE
+    $ saf convert hdf2caat -i <hdf-scan-results-json>... -o <output-caat-xlsx> [-h]
+
+  FLAGS
+    -h, --help              Show CLI help.
+    -i, --input=<value>...  (required) Input HDF JSON file
+    -o, --output=<value>    (required) Output CAAT XLSX file
+
+  EXAMPLES
+    $ saf convert hdf2caat -i hdf_input.json -o caat-results.xlsx
+```
+[top](#convert-hdf-to-other-formats)
 #### HDF to Condensed JSON
 ```
 convert hdf2condensed         Condensed format used by some community members
@@ -458,7 +476,7 @@ AWS SecurityHub standard controls json|Get all the controls for a standard that 
 convert asff2hdf              Translate a AWS Security Finding Format JSON into a
                               Heimdall Data Format JSON file(s)
   USAGE
-    $ saf convert asff2hdf -o <hdf-output-folder> [-h] (-i <asff-json> [--securityhub <standard-json>]... | -a -r <region> [-I | -C <certificate>] [-t <target>]) [-L info|warn|debug|verbose]
+    $ saf convert asff2hdf -o <hdf-output-folder> [-h] (-i <asff-json> [--securityhub <standard-json>...] | -a -r <region> [-I | -C <certificate>] [-t <target>...]) [-L info|warn|debug|verbose]
 
   FLAGS
     -C, --certificate=<certificate>       Trusted signing certificate file
@@ -477,7 +495,7 @@ convert asff2hdf              Translate a AWS Security Finding Format JSON into 
 
   EXAMPLES
     $ saf convert asff2hdf -i asff-findings.json -o output-folder-name
-    $ saf convert asff2hdf -i asff-findings.json --securityhub <standard-1-json> ... --securityhub <standard-n-json> -o output-folder-name
+    $ saf convert asff2hdf -i asff-findings.json --securityhub standard-1.json standard-2.json -o output-folder-name
     $ saf convert asff2hdf --aws -o out -r us-west-2 --target rhel7
 ```
 [top](#convert-other-formats-to-hdf)
@@ -619,7 +637,7 @@ convert gosec2hdf             Translate a GoSec (Golang Security Checker) result
 convert ionchannel2hdf        Pull and translate SBOM data from Ion Channel
                               into Heimdall Data Format
   USAGE
-    $ saf convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json> | -a <api-key> -t <team-name> [--raw ] [-p <project>] [-A ]) [-L info|warn|debug|verbose]
+    $ saf convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json>... | -a <api-key> -t <team-name> [--raw ] [-p <project>...] [-A ]) [-L info|warn|debug|verbose]
 
   FLAGS
     -A, --allProjects                   Pull all projects available within your team
@@ -836,7 +854,7 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
 convert splunk2hdf            Pull HDF data from your Splunk instance back into an HDF file
 
   USAGE
-    $ saf splunk2hdf -H <host> -I <index> [-h] [-P <port>] [-s http|https] (-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID> -o <hdf-output-folder>]
+    $ saf splunk2hdf -H <host> -I <index> [-h] [-P <port>] [-s http|https] (-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID>... -o <hdf-output-folder>]
 
   FLAGS
     -H, --host=<host>                   (required) Splunk Hostname or IP
@@ -969,7 +987,7 @@ Note: The included CCI to NIST Mappings are the extracted from NIST.gov, for map
 convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M files
 
   USAGE
-    $ saf convert ckl2POAM -i <disa-checklist> -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]
+    $ saf convert ckl2POAM -i <disa-checklist>... -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]
 
   FLAGS
     -O, --officeOrg=<office/org>          Default value for Office/org (prompts for each file if not set)
