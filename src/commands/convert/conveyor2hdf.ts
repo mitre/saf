@@ -3,7 +3,6 @@ import fs from 'fs'
 import {ConveyorResults as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 import path from 'path'
-import _ from 'lodash'
 export default class Conveyor2HDF extends Command {
   static usage = 'convert conveyor2hdf -i <conveyor-json> -o <hdf-scan-results-json> [-h]'
 
@@ -27,12 +26,11 @@ export default class Conveyor2HDF extends Command {
     const converter = new Mapper(data)
     const results = converter.toHdf()
     fs.mkdirSync(flags.output)
-    _.forOwn(results, (result, filename) => {
+    for (const [filename, result] of Object.entries(results)) {
       fs.writeFileSync(
-        path.join(flags.output, checkSuffix(filename as string)),
+        path.join(flags.output, checkSuffix(filename)),
         JSON.stringify(result),
       )
-    })
+    }
   }
 }
-
