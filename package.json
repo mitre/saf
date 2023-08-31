@@ -29,7 +29,7 @@
     "@types/objects-to-csv": "^1.3.1",
     "@types/prompt-sync": "^4.2.0",
     "@types/tmp": "^0.2.3",
-    "@types/uuid": "^9.0.0",
+    "@types/uuid": "^9.0.3",
     "@types/xml2js": "^0.4.9",
     "accurate-search": "^1.2.15",
     "ajv": "^8.11.2",
