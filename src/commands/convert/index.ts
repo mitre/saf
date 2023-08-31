@@ -10,7 +10,7 @@ import Zap2HDF from './zap2hdf'
 function getInputFilename(): string {
   const inputFileIndex = process.argv.findIndex(param => param.toLowerCase() === '-i' || param.toLowerCase() === '--input')
   if (inputFileIndex === -1) {
-    return process.env.INPUT_FILE || ''
+    return process.env.INPUT_FILE ?? ''
   }
 
   return process.argv[inputFileIndex + 1]
