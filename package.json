@@ -30,7 +30,7 @@
     "@types/prompt-sync": "^4.2.0",
     "@types/tmp": "^0.2.3",
     "@types/uuid": "^9.0.3",
-    "@types/xml2js": "^0.4.9",
+    "@types/xml2js": "^0.4.12",
     "accurate-search": "^1.2.15",
     "ajv": "^8.11.2",
     "aws-sdk": "^2.1074.0",
@@ -65,7 +65,7 @@
     "uuid": "^9.0.0",
     "winston": "^3.6.0",
     "xlsx-populate": "^1.21.0",
-    "xml2js": "^0.6.0",
+    "xml2js": "^0.6.2",
     "yaml": "^2.2.0",
     "zip-lib": "^0.7.3"
   },
