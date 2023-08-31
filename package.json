@@ -6,7 +6,7 @@
   "bin": "./bin/run",
   "bugs": "https://github.com/mitre/saf/issues",
   "dependencies": {
-    "@aws-sdk/client-config-service": "^3.53.0",
+    "@aws-sdk/client-config-service": "^3.398.0",
     "@mitre/emass_client": "^3",
     "@mitre/hdf-converters": "^2.8.1",
     "@mitre/heimdall-lite": "^2.8.1",
