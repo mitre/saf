@@ -22,7 +22,7 @@
     "@types/flat": "^5.0.2",
     "@types/fs-extra": "^11.0.1",
     "@types/get-installed-path": "^4.0.1",
-    "@types/lodash": "^4.14.178",
+    "@types/lodash": "^4.14.197",
     "@types/mocha": "^10",
     "@types/mustache": "^4.1.2",
     "@types/node": "^20",
