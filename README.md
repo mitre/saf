@@ -47,7 +47,6 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [AWS Config to HDF](#aws-config-to-hdf)
       * [Burp Suite to HDF](#burp-suite-to-hdf)
       * [Conveyor to HDF](#conveyor-to-hdf)
-      * [CKL to POA&amp;M](#ckl-to-poam)
       * [Checklist to HDF](#checklist-to-hdf)
       * [DBProtect to HDF](#dbprotect-to-hdf)
       * [Fortify to HDF](#fortify-to-hdf)
@@ -554,10 +553,8 @@ convert conveyor2hdf          Translate a conveyor JSON file into a Heimdall Dat
 
   EXAMPLES
     $ saf convert conveyor2hdf -i conveyor_results.json -o output-hdf-dirs.json
-
-#### CKL to POA&M
-
-Note: The included CCI to NIST Mappings are the extracted from NIST.gov, for mappings specific to eMASS use [this](https://github.com/mitre/ckl2POAM/blob/main/resources/cci2nist.json) file instead).
+```
+[top](#convert-other-formats-to-hdf)
 
 #### Checklist to HDF
 ```
