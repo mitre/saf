@@ -40,7 +40,7 @@
     "csv-parse": "^4.16.0",
     "dotenv": "^16.3.1",
     "express": "^4.17.3",
-    "fast-xml-parser": "^4.2.4",
+    "fast-xml-parser": "^4.2.7",
     "flat": "^5.0.2",
     "form-data": "^4.0.0",
     "fs-extra": "^11.1.1",
