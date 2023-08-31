@@ -61,7 +61,7 @@
     "table": "^6.8.1",
     "ts-node": "^10",
     "tslib": "^2",
-    "typescript": "^5.2",
+    "typescript": "~5.1",
     "uuid": "^9.0.0",
     "winston": "^3.10.0",
     "xlsx-populate": "^1.21.0",
