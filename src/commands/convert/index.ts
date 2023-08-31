@@ -1,4 +1,4 @@
-import {ASFFResults, ChecklistResults, BurpSuiteMapper, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockResults, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
+import {ASFFResults, ChecklistResults, BurpSuiteMapper, ConveyorResults, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockResults, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
 import fs from 'fs'
 import _ from 'lodash'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
@@ -10,7 +10,7 @@ import Zap2HDF from './zap2hdf'
 function getInputFilename(): string {
   const inputFileIndex = process.argv.findIndex(param => param.toLowerCase() === '-i' || param.toLowerCase() === '--input')
   if (inputFileIndex === -1) {
-    return process.env.INPUT_FILE || ''
+    return process.env.INPUT_FILE ?? ''
   }
 
   return process.argv[inputFileIndex + 1]
@@ -40,6 +40,7 @@ export default class Convert extends Command {
         }
 
         case 'burp':
+        case 'conveyor':
         case 'checklist':
         case 'dbProtect':
         case 'fortify':
@@ -94,6 +95,21 @@ export default class Convert extends Command {
       case 'burp': {
         converter = new BurpSuiteMapper(fs.readFileSync(flags.input, 'utf8'))
         fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        break
+      }
+
+      case 'conveyor': {
+        converter = new ConveyorResults(
+          fs.readFileSync(flags.input, 'utf8'))
+        const results = converter.toHdf()
+        fs.mkdirSync(flags.output)
+        for (const [filename, result]  of Object.entries(results)) {
+          fs.writeFileSync(
+            path.join(flags.output, checkSuffix(filename as string)),
+            JSON.stringify(result),
+          )
+        }
+
         break
       }
 
