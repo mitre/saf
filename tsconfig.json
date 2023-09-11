@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "noImplicitAny": true,
     "resolveJsonModule": true,
     "declaration": true,
@@ -15,5 +15,5 @@
   },
   "include": [
     "src/**/*"
-  ],
+  ]
 }
