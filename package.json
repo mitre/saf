@@ -78,7 +78,7 @@
     "eslint-config-oclif-typescript": "^1.0.3",
     "eslint-plugin-unicorn": "^48.0.1",
     "mocha": "^10",
-    "oclif": "^3",
+    "oclif": "^4",
     "tmp": "^0.2.1",
     "ts-mocha": "^10.0.0"
   },
