@@ -5,7 +5,7 @@ import {checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
 import {AwsSecurityFindingFilters, DescribeStandardsControlsCommandOutput, GetEnabledStandardsCommandOutput, SecurityHub, SecurityHubClientConfig, StandardsControl, StandardsSubscription} from '@aws-sdk/client-securityhub'
-import {NodeHttpHandler} from '@aws-sdk/node-http-handler'
+import {NodeHttpHandler} from '@smithy/node-http-handler'
 import https from 'https'
 import {createWinstonLogger} from '../../utils/logging'
 

@@ -4,7 +4,7 @@ import https from 'https'
 import {FromHdfToAsffMapper as Mapper} from '@mitre/hdf-converters'
 import path from 'path'
 import {AwsSecurityFinding, SecurityHub, SecurityHubClientConfig} from '@aws-sdk/client-securityhub'
-import {NodeHttpHandler} from '@aws-sdk/node-http-handler'
+import {NodeHttpHandler} from '@smithy/node-http-handler'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import _ from 'lodash'
 
