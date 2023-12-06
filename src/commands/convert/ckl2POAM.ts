@@ -33,7 +33,7 @@ const logger = createLogger({
 const STARTING_ROW = 8 // The row we start inserting controls into
 
 export default class CKL2POAM extends Command {
-  static usage = 'convert ckl2POAM -i <disa-checklist> -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]'
+  static usage = 'convert ckl2POAM -i <disa-checklist>... -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]'
 
   static description = 'Translate DISA Checklist CKL file(s) to POA&M files'
 

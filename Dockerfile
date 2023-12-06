@@ -1,4 +1,4 @@
-ARG BASE_CONTAINER=node:16-alpine
+ARG BASE_CONTAINER=node:18-alpine
 
 FROM $BASE_CONTAINER AS builder
 
@@ -25,7 +25,7 @@ COPY --from=builder /build/saf.tgz /build/
 RUN npm install -g /build/saf.tgz && npm cache clean --force;
 
 # Useful for CI pipelines
-RUN apk add --no-cache bash jq curl ca-certificates
+RUN apk add --no-cache bash jq curl ca-certificates yq
 
 USER node
 

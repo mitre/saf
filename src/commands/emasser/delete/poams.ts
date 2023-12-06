@@ -1,15 +1,17 @@
 import colorize from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
-import {POAMApi} from '@mitre/emass_client'
-import {PoamResponseDelete} from '@mitre/emass_client/dist/api'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {PoamRequestDeleteBodyInner as PoamDeleteBody} from '@mitre/emass_client/dist/api'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
+
 import {outputError} from '../../../utils/emasser/outputError'
+import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
+import {POAMApi} from '@mitre/emass_client'
+import {PoamResponseDelete,
+  PoamRequestDeleteBodyInner as PoamDeleteBody} from '@mitre/emass_client/dist/api'
+
 export default class EmasserDeletePoams extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]';
+  static usage = '<%= command.id %> [options]';
 
   static description = 'Remove one or many POA&M items in a system identified by system and poam Id';
 

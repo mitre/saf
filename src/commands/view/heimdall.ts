@@ -2,7 +2,7 @@ import {Command, Flags} from '@oclif/core'
 import express from 'express'
 import fs from 'fs'
 import path from 'path'
-import open from 'open'
+import {dynamicImport} from 'tsimportlib'
 import {getInstalledPath} from '../../utils/global'
 
 export default class Heimdall extends Command {
@@ -22,6 +22,12 @@ export default class Heimdall extends Command {
   }
 
   async run() {
+    // NOTE: The npm open package is native ESM and no longer provides a CommonJS export
+    // The SAF CLI is a CommonJS project and needs to dynamic import the open package
+    // Doing a normal dynamic import in typescript doesn't work because typescript will still translate the import into a require.  This library works around that issue by preventing that translation from occurring.
+    const openDynamicImport = await dynamicImport('open', module) // eslint-disable-line unicorn/prefer-module
+    const open = openDynamicImport.default
+
     const {flags} = await this.parse(Heimdall)
     let parsedJSONs: Record<string, any>[] = []
 

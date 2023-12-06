@@ -5,7 +5,7 @@ export function omitHDFChangingFields(
   input: Partial<ExecJSON.Execution> & {profiles: ExecJSON.Profile[]},
 ) {
   return {
-    ..._.omit(input, ['version', 'platform.release', 'profiles[0].sha256']),
+    ..._.omit(input, ['version', 'platform.release', 'profiles[0].sha256', 'profiles[0].version']),
     profiles: input.profiles.map(profile => {
       return {
         ...profile,
@@ -26,4 +26,9 @@ export function omitHDFChangingFields(
       }
     }),
   }
+}
+
+export function omitChecklistChangingFields(input: string) {
+  // remove UUIDs
+  return input.replaceAll(/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/gm, '')
 }

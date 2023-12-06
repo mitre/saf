@@ -1,27 +1,27 @@
 name: Bump Homebrew formula
 
 on:
-  release:
-    types: [published]
+  workflow_run:
+    workflows: ["Push SAF-CLI to NPM and GPR"]
+    types:
+      - completed
 jobs:
-  build-deploy:
-    runs-on: ubuntu-latest
+  update-formula:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-22.04
     steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
       - name: Extract version
         id: extract-version
-        run: |
-          printf "::set-output name=tag-name::%s" "${GITHUB_REF#refs/tags/}"
+        run: echo "tag=$(git describe --abbrev=0 --tags)" >> $GITHUB_OUTPUT
       - uses: mislav/bump-homebrew-formula-action@v2
-        if: "!contains(github.ref, '-')" # skip prereleases
         with:
           formula-name: saf-cli
-          formula-path: Formula/saf-cli.rb
           homebrew-tap: mitre/homebrew-saf
-          base-branch: main
-          download-url: https://registry.npmjs.org/@mitre/saf/-/saf-${{ steps.extract-version.outputs.tag-name }}.tgz
-          commit-message: |
-            {{formulaName}} {{version}}
-
-            Created by https://github.com/mislav/bump-homebrew-formula-action
+          download-url: https://registry.npmjs.org/@mitre/saf/-/saf-${{ steps.extract-version.outputs.tag }}.tgz
+          tag-name: ${{ steps.extract-version.outputs.tag }}
         env:
-          COMMITTER_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          COMMITTER_TOKEN: ${{ secrets.HOMEBREW_PAT }}

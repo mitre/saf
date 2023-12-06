@@ -7,7 +7,7 @@ import fs from 'fs'
 import path from 'path'
 
 export default class Splunk2HDF extends Command {
-  static usage = 'splunk2hdf -H <host> -I <index> [-h] [-P <port>] [-s http|https] (-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID> -o <hdf-output-folder>]'
+  static usage = 'splunk2hdf -H <host> -I <index> [-h] [-P <port>] [-s http|https] (-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID>... -o <hdf-output-folder>]'
 
   static description = 'Pull HDF data from your Splunk instance back into an HDF file'
 
@@ -48,7 +48,7 @@ export default class Splunk2HDF extends Command {
       password: flags.password,
       sessionKey: flags.token,
       index: flags.index,
-    }, false, logger)
+    }, logger)
 
     if (flags.input && flags.output) {
       const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
@@ -91,7 +91,7 @@ export default class Splunk2HDF extends Command {
       const executionsAvailable = await this.searchExecutions(mapper, '*')
 
       executionsAvailable.forEach(execution => {
-        availableExecutionsTable.push([_.get(execution, 'meta.filename') || null, _.get(execution, 'meta.guid') || null, _.get(execution, 'meta.parse_time') || null])
+        availableExecutionsTable.push([_.get(execution, 'meta.filename') || '', _.get(execution, 'meta.guid') || '', _.get(execution, 'meta.parse_time') || ''])
       })
 
       if (availableExecutionsTable.length === 1) {

@@ -2,6 +2,9 @@ import {ContextualizedEvaluation} from 'inspecjs'
 
 export interface ChecklistControl {
   vid: string;
+  rid: string;
+  ruleVersion: string;
+  gtitle: string;
   severity: string;
   title: string;
   description: string;

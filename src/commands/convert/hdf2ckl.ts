@@ -32,24 +32,27 @@ export default class HDF2CKL extends Command {
     const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf8')))
     const profileName = contextualizedEvaluation.data.profiles[0].name
     const controls = contextualizedEvaluation.contains.flatMap(profile => profile.contains) || []
+    const rootControls = _.uniqBy(controls, control =>
+      _.get(control, 'root.hdf.wraps.id'),
+    ).map(({root}) => root)
     let cklData = {}
     const cklMetadata: CKLMetadata = {
       fileName: convertFullPathToFilename(flags.input),
       benchmark: {
-        title: null,
-        version: null,
+        title: profileName || null,
+        version: '1',
         plaintext: null,
       },
       stigid: profileName || null,
-      role: null,
-      type: null,
+      role: 'None',
+      type: 'Computing',
       hostname: flags.hostname || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.hostname') || null,
       ip: flags.ip || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.ip') || null,
       mac: flags.mac || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.mac') || null,
       fqdn: flags.fqdn || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.fqdn') || null,
       tech_area: null,
-      target_key: null,
-      web_or_database: null,
+      target_key: '0',
+      web_or_database: 'false',
       web_db_site: null,
       web_db_instance: null,
     }
@@ -68,8 +71,8 @@ export default class HDF2CKL extends Command {
       ...cklMetadata,
       profileInfo: getProfileInfo(contextualizedEvaluation, cklMetadata.fileName),
       uuid: v4(),
-      controls: controls.map(control => getDetails(control, profileName)),
+      controls: rootControls.map(control => getDetails(control, profileName)),
     }
-    fs.writeFileSync(flags.output, Mustache.render(files['cklExport.ckl'].data, cklData).replace(/[^\x00-\x7F]/g, ''))
+    fs.writeFileSync(flags.output, Mustache.render(files['cklExport.ckl'].data, cklData).replaceAll(/[^\x00-\x7F]/g, ''))
   }
 }

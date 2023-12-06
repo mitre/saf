@@ -8,29 +8,19 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
 
     steps:
-     - uses: actions/checkout@v2
+     - uses: actions/checkout@v3
 
      - name: Setup Node.js
-       uses: actions/setup-node@v1
+       uses: actions/setup-node@v3
        with:
-        node-version: '16.x'
-
-     - name: Cache node modules
-       uses: actions/cache@v2
-       env:
-         cache-name: cache-node-modules
-       with:
-         # npm cache files are stored in `~/.npm` on Linux/macOS
-         path: ~/.npm
-         key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.lock') }}
-         restore-keys: |
-           ${{ runner.os }}-node-
+        node-version: 18
+        cache: 'npm'
 
      - name: Install dependencies
-       run: npm install
+       run: npm ci
 
      - name: Prepack
        run: npm run prepack

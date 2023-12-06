@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "noImplicitAny": true,
     "resolveJsonModule": true,
     "declaration": true,
@@ -11,9 +11,9 @@
     "rootDir": "src",
     "strict": true,
     "skipLibCheck": true,
-    "target": "es2019"
+    "target": "es2022"
   },
   "include": [
     "src/**/*"
-  ],
+  ]
 }
