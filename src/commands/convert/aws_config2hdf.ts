@@ -17,7 +17,8 @@ export default class AWSConfig2HDF extends Command {
     secretAccessKey: Flags.string({char: 's', required: false, description: 'Secret access key'}),
     sessionToken: Flags.string({char: 't', required: false, description: 'Session token'}),
     region: Flags.string({char: 'r', required: true, description: 'Region to pull findings from'}),
-    insecure: Flags.boolean({char: 'i', required: false, default: false, description: 'Disable SSL verification, this is insecure.'}),
+    insecure: Flags.boolean({char: 'i', required: false, default: false, description: 'Disable SSL verification, this is insecure.', exclusive: ['certificate']}),
+    certificate: Flags.string({char: 'C', required: false, description: 'Trusted signing certificate file', exclusive: ['insecure']}),
     output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
   }
 
@@ -54,7 +55,7 @@ export default class AWSConfig2HDF extends Command {
         sessionToken: flags.sessionToken,
       },
       region: flags.region,
-    }, !flags.insecure) : new Mapper({region: flags.region}, !flags.insecure)
+    }, !flags.insecure, flags.certificate ? fs.readFileSync(flags.certificate, 'utf8') : undefined) : new Mapper({region: flags.region}, !flags.insecure, flags.certificate ? fs.readFileSync(flags.certificate, 'utf8') : undefined)
 
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(this.ensureRefs(await converter.toHdf())))
   }
