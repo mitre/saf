@@ -1,40 +1,41 @@
 
-import {Command, Flags} from '@oclif/core'
-import fs from 'fs'
-import {InSpecMetaData} from '../../types/inspec'
-import path from 'path'
-import {createWinstonLogger} from '../../utils/logging'
 import {processOVAL, processXCCDF} from '@mitre/inspec-objects'
 import Profile from '@mitre/inspec-objects/lib/objects/profile'
+import {Command, Flags} from '@oclif/core'
+import fs from 'fs'
+import path from 'path'
+
+import {InSpecMetaData} from '../../types/inspec'
+import {createWinstonLogger} from '../../utils/logging'
 
 export default class XCCDFBenchmark2InSpec extends Command {
-  static usage =
-    'saf generate xccdf_benchmark2inspec_stub -i <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] [-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]';
-
   static description =
-    'Translate an XCCDF benchmark file to a skeleton for an InSpec profile';
-
-  static flags = {
-    help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Path to the XCCDF benchmark file'}),
-    metadata: Flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
-    singleFile: Flags.boolean({char: 's', required: false, default: false, description: 'Output the resulting controls as a single file'}),
-    idType: Flags.string({
-      char: 'T',
-      required: false,
-      default: 'rule',
-      options: ['rule', 'group', 'cis', 'version'],
-      description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
-    }),
-    ovalDefinitions: Flags.string({char: 'O', required: false, description: 'Path to an OVAL definitions file to populate profile elements that reference OVAL definitions'}),
-    output: Flags.string({char: 'o', required: false, default: 'profile', description: 'The output folder to write the generated InSpec content'}),
-    logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
-  };
+    'Translate an XCCDF benchmark file to a skeleton for an InSpec profile'
 
   static examples = [
     'saf generate xccdf_benchmark2inspec_stub -i ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md',
     'saf generate xccdf_benchmark2inspec_stub -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml -O ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml --logLevel debug',
   ]
+
+  static flags = {
+    help: Flags.help({char: 'h'}),
+    idType: Flags.string({
+      char: 'T',
+      default: 'rule',
+      description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
+      options: ['rule', 'group', 'cis', 'version'],
+      required: false,
+    }),
+    input: Flags.string({char: 'i', description: 'Path to the XCCDF benchmark file', required: true}),
+    logLevel: Flags.string({char: 'L', default: 'info', options: ['info', 'warn', 'debug', 'verbose'], required: false}),
+    metadata: Flags.string({char: 'm', description: 'Path to a JSON file with additional metadata for the inspec.yml file', required: false}),
+    output: Flags.string({char: 'o', default: 'profile', description: 'The output folder to write the generated InSpec content', required: false}),
+    ovalDefinitions: Flags.string({char: 'O', description: 'Path to an OVAL definitions file to populate profile elements that reference OVAL definitions', required: false}),
+    singleFile: Flags.boolean({char: 's', default: false, description: 'Output the resulting controls as a single file', required: false}),
+  }
+
+  static usage =
+    'saf generate xccdf_benchmark2inspec_stub -i <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] [-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]'
 
   async run() {
     const {flags} = await this.parse(XCCDFBenchmark2InSpec)
@@ -84,7 +85,7 @@ export default class XCCDFBenchmark2InSpec extends Command {
     logger.debug(`Processing XCCDF Benchmark file: ${flags.input} using ${flags.idType} id.`)
     const idTypes = ['rule', 'group', 'cis', 'version']
     if (idTypes.includes(flags.idType)) {
-      profile = processXCCDF(xccdf, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
+      profile = processXCCDF(xccdf, false, flags.idType as 'cis' | 'group' | 'rule' | 'version', ovalDefinitions)
     } else {
       logger.error(`Invalid ID Type: ${flags.idType}. Check the --help command for the available ID Type options.`)
       throw new Error('No ID type specified')

@@ -1,25 +1,26 @@
 import {Command, Flags} from '@oclif/core'
+import fs from 'fs'
 import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import _ from 'lodash'
-import fs from 'fs'
 import YAML from 'yaml'
+
 import {ThresholdValues} from '../../types/threshold'
 import {calculateCompliance, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 
 export default class GenerateThreshold extends Command {
-  static usage = 'generate threshold -i <hdf-json> [-o <threshold-yaml>] [-h] [-e] [-c]'
-
   static description = 'Generate a compliance template for "saf validate threshold". Default output states that you must have your current control counts or better (More Passes and/or less Fails/Skips/Not Applicable/No Impact/Errors)'
 
   static examples = ['saf generate threshold -i rhel7-results.json -e -c -o output.yaml']
 
   static flags = {
-    help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Input HDF JSON File'}),
-    output: Flags.string({char: 'o', required: false, description: 'Output Threshold YAML File'}),
     exact: Flags.boolean({char: 'e', description: 'All counts should be exactly the same when validating, not just less than or greater than'}),
-    generateControlIds: Flags.boolean({char: 'c', required: false, description: 'Validate control IDs have the correct severity and status'}),
+    generateControlIds: Flags.boolean({char: 'c', description: 'Validate control IDs have the correct severity and status', required: false}),
+    help: Flags.help({char: 'h'}),
+    input: Flags.string({char: 'i', description: 'Input HDF JSON File', required: true}),
+    output: Flags.string({char: 'o', description: 'Output Threshold YAML File', required: false}),
   }
+
+  static usage = 'generate threshold -i <hdf-json> [-o <threshold-yaml>] [-h] [-e] [-c]'
 
   async run() {
     const {flags} = await this.parse(GenerateThreshold)

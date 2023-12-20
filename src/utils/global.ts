@@ -72,7 +72,7 @@ export function arrayNeededPaths(typeOfPath: string, values: any) {
   return values
 }
 
-export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNumber: string | string[] | number, data: Record<string, any>): any {
+export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNumber: number | string | string[], data: Record<string, any>): any {
   // Maps paths from mapping file to target value
   if (typeof pathOrNumber === 'string') {
     return arrayNeededPaths(typeOfPathOrNumber, _.get(data, pathOrNumber))

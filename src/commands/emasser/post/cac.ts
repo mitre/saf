@@ -1,18 +1,15 @@
-import colorize from 'json-colorizer'
+import {CACApi} from '@mitre/emass_client'
+import {CacGet as CAC,
+  CacResponsePost} from '@mitre/emass_client/dist/api'
 import {Command, Flags} from '@oclif/core'
+import colorize from 'json-colorizer'
 
-import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputError} from '../../../utils/emasser/outputError'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
-import {CACApi} from '@mitre/emass_client'
-import {CacResponsePost,
-  CacGet as CAC} from '@mitre/emass_client/dist/api'
-
 export default class EmasserPostCac extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Add a Control Approval Chain (CAC) items in a system'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-a,--controlAcronym] [options]']
@@ -22,6 +19,8 @@ export default class EmasserPostCac extends Command {
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
+  static usage = '<%= command.id %> [options]'
+
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserPostCac)
     const apiCxn = new ApiConnection()
@@ -29,8 +28,8 @@ export default class EmasserPostCac extends Command {
 
     const requestBodyArray: CAC[] = []
     requestBodyArray.push({
-      controlAcronym: flags.controlAcronym,
       comments: flags.comments,
+      controlAcronym: flags.controlAcronym,
     })
 
     addCac.addSystemCac(flags.systemId, requestBodyArray).then((response: CacResponsePost) => {

@@ -1,12 +1,13 @@
 import {Configuration} from '@mitre/emass_client/dist/configuration'
 import {AxiosInstance} from '@mitre/emass_client/node_modules/axios'
+
 import {ApiConfig} from './apiConfig'
 import {InitConnections} from './initConnection'
 
 export class ApiConnection {
-  public configuration: Configuration;
-  public basePath: Configuration['basePath'];
   public axiosInstances: AxiosInstance
+  public basePath: Configuration['basePath']
+  public configuration: Configuration
 
   constructor() {
     const conf = new ApiConfig()

@@ -1,11 +1,12 @@
-import {expect, test} from '@oclif/test'
-import {InitMockServer} from './mock.server'
-import {CACApi, PACApi, CloudResourceResultsApi, ContainerScanResultsApi,
-  MilestonesApi, POAMApi, RegistrationApi, StaticCodeScansApi,
+import {CACApi, CloudResourceResultsApi, ContainerScanResultsApi, MilestonesApi,
+  PACApi, POAMApi, RegistrationApi, StaticCodeScansApi,
   TestResultsApi} from '@mitre/emass_client'
-import {CacResponsePost, PacResponsePost, CloudResourcesResponsePost,
-  ContainersResponsePost, MilestoneResponsePost, PoamResponsePost,
+import {CacResponsePost, CloudResourcesResponsePost, ContainersResponsePost,
+  MilestoneResponsePost, PacResponsePost, PoamResponsePost,
   Register, StaticCodeResponsePost, TestResultsResponsePost} from '@mitre/emass_client/dist/api'
+import {expect, test} from '@oclif/test'
+
+import {InitMockServer} from './mock.server'
 
 describe('Test eMASS API CLI (post) commands', () => {
   const mocSer = new InitMockServer()

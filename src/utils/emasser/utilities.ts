@@ -1,81 +1,81 @@
-import _ from 'lodash'
 import {Flags} from '@oclif/core'
 import {BooleanFlag, OptionFlag} from '@oclif/core/lib/interfaces'
+import _ from 'lodash'
 
 interface CliArgs {
-  requestType: string;
-  endpoint: string;
   argument: string;
+  endpoint: string;
+  requestType: string;
 }
 
 export interface FlagOptions {
-  systemId?: OptionFlag<number>;
-  poamId?: OptionFlag<number>;
-  poamsId?: OptionFlag<number[]>;
-  milestoneId?: OptionFlag<number>;
-  milestonesId?: OptionFlag<number[]>;
-  workflowInstanceId?: OptionFlag<number>;
-  pageIndex?: OptionFlag<number|undefined>;
+  acronyms?: BooleanFlag<boolean|undefined>;
+  artifactExpirationDate?: OptionFlag<any|string>;
+  category?: OptionFlag<any|string>;
+  cci?: OptionFlag<string>;
+  ccis?: OptionFlag<string|undefined>;
+  cloudResourceFile?: OptionFlag<string>;
+  coamsId?: OptionFlag<string|undefined>;
+  comments?: OptionFlag<any|string>;
+  complianceStatus?: OptionFlag<any|string>;
+  compress?: BooleanFlag<boolean|undefined>;
+  containerCodeScanFile?: OptionFlag<string>;
+  controlAcronym?: OptionFlag<any|string>;
+  controlAcronyms?: OptionFlag<string|undefined>;
+  controlFile?: OptionFlag<string>;
+  controls?: OptionFlag<string|undefined>;
+  description?: OptionFlag<any|string>;
+  ditprId?: OptionFlag<string|undefined>;
+  excludeInherited?: BooleanFlag<boolean|undefined>;
+  fileName?: OptionFlag<string[]>;
+  filename?: OptionFlag<any|string>;
   includeComments?: BooleanFlag<boolean|undefined>;
   includeDecommissionSystems?: BooleanFlag<boolean|undefined>;
-  excludeInherited?: BooleanFlag<boolean|undefined>;
-  includeInactive?: BooleanFlag<boolean|undefined>;
-  isTemplate?: BooleanFlag<boolean>;
-  includePackage?: BooleanFlag<boolean|undefined>;
-  includeDitprMetrics?: BooleanFlag<boolean|undefined>;
   includeDecommissioned?: BooleanFlag<boolean|undefined>;
-  reportsForScorecard?: BooleanFlag<boolean|undefined>;
-  acronyms?: BooleanFlag<boolean|undefined>;
-  latestOnly?: BooleanFlag<boolean|undefined>;
-  systemOnly?: BooleanFlag<boolean|undefined>;
-  compress?: BooleanFlag<boolean|undefined>;
-  policy?: OptionFlag<string|undefined>;
-  registrationType?: OptionFlag<string|undefined>;
-  ditprId?: OptionFlag<string|undefined>;
-  coamsId?: OptionFlag<string|undefined>;
-  roleCategory?: OptionFlag<string>;
-  role?: OptionFlag<string>;
-  controlAcronyms?: OptionFlag<string|undefined>;
-  ccis?: OptionFlag<string|undefined>;
-  sinceDate?: OptionFlag<string|any>;
-  scheduledCompletionDateStart?: OptionFlag<string|undefined>;
-  scheduledCompletionDateEnd?: OptionFlag<string|undefined>;
-  filename?: OptionFlag<string|any>;
-  status?: OptionFlag<string|undefined>;
-  cci?: OptionFlag<string>;
-  testedBy?: OptionFlag<string>;
-  testDate?: OptionFlag<string>;
-  description?: OptionFlag<string|any>;
-  complianceStatus?: OptionFlag<string|any>;
-  scheduledCompletionDate?: OptionFlag<string|any>;
-  orgId?:OptionFlag<number>;
-  pageSize?: OptionFlag<number|undefined>;
+  includeDitprMetrics?: BooleanFlag<boolean|undefined>;
+  includeInactive?: BooleanFlag<boolean|undefined>;
+  includePackage?: BooleanFlag<boolean|undefined>;
   input?: OptionFlag<string[]>;
-  fileName?: OptionFlag<string[]>;
+  isTemplate?: BooleanFlag<boolean>;
+  lastReviewDate?: OptionFlag<any|string>;
+  latestOnly?: BooleanFlag<boolean|undefined>;
+  milestoneId?: OptionFlag<number>;
+  milestonesId?: OptionFlag<number[]>;
+  name?: OptionFlag<any|string>;
+  orgId?:OptionFlag<number>;
+  pageIndex?: OptionFlag<number|undefined>;
+  pageSize?: OptionFlag<number|undefined>;
   poamFile?: OptionFlag<string>;
-  controlFile?: OptionFlag<string>;
-  cloudResourceFile?: OptionFlag<string>;
-  statiCodeScanFile?: OptionFlag<string>;
-  containerCodeScanFile?: OptionFlag<string>;
-  type?: OptionFlag<string|any>;
-  category?: OptionFlag<string|any>;
+  poamId?: OptionFlag<number>;
+  poamsId?: OptionFlag<number[]>;
+  policy?: OptionFlag<string|undefined>;
   refPageNumber?: OptionFlag<string|undefined>;
-  controls?: OptionFlag<string|undefined>;
-  artifactExpirationDate?: OptionFlag<string|any>;
-  lastReviewDate?: OptionFlag<string|any>;
-  controlAcronym?: OptionFlag<string|any>;
-  comments?: OptionFlag<string|any>;
-  workflow?: OptionFlag<string|any>;
-  name?: OptionFlag<string|any>;
+  registrationType?: OptionFlag<string|undefined>;
+  reportsForScorecard?: BooleanFlag<boolean|undefined>;
+  role?: OptionFlag<string>;
+  roleCategory?: OptionFlag<string>;
+  scheduledCompletionDate?: OptionFlag<any|string>;
+  scheduledCompletionDateEnd?: OptionFlag<string|undefined>;
+  scheduledCompletionDateStart?: OptionFlag<string|undefined>;
+  sinceDate?: OptionFlag<any|string>;
+  statiCodeScanFile?: OptionFlag<string>;
+  status?: OptionFlag<string|undefined>;
+  systemId?: OptionFlag<number>;
+  systemOnly?: BooleanFlag<boolean|undefined>;
+  testDate?: OptionFlag<string>;
+  testedBy?: OptionFlag<string>;
+  type?: OptionFlag<any|string>;
+  workflow?: OptionFlag<any|string>;
+  workflowInstanceId?: OptionFlag<number>;
 }
 
 // Supporting Function
 function getArgs(argv: string[], endpointValue?: string): CliArgs {
   const requestTypeIndex = argv.findIndex(arg => (arg === 'get' || arg === 'post' || arg === 'put' || arg === 'delete'))
   return {
-    requestType: argv[requestTypeIndex],
-    endpoint: endpointValue || argv[requestTypeIndex + 1],
     argument: argv[requestTypeIndex + 2],
+    endpoint: endpointValue || argv[requestTypeIndex + 1],
+    requestType: argv[requestTypeIndex],
   }
 }
 
@@ -88,24 +88,24 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
       switch (args.endpoint) { // skipcq: JS-0047
         case 'system': {
           flagObj = {
+            includePackage: Flags.boolean({allowNo: true, char: 'I', description: 'Boolean - include system packages', required: false}),
+            policy: Flags.string({char: 'p', description: 'Filter on policy', options: ['diacap', 'rmf', 'reporting'], required: false}),
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            includePackage: Flags.boolean({char: 'I', description: 'Boolean - include system packages', allowNo: true, required: false}),
-            policy: Flags.string({char: 'p', description: 'Filter on policy', required: false, options: ['diacap', 'rmf', 'reporting']}),
           }
           break
         }
 
         case 'systems': {
           flagObj = {
+            coamsId: Flags.string({char: 'c', description: 'Cyber Operational Attributes Management System (COAMS) string Id', required: false}),
+            ditprId: Flags.string({char: 't', description: 'DoD Information Technology (IT) Portfolio Repository (DITPR) string Id', required: false}),
+            includeDecommissioned: Flags.boolean({allowNo: true, char: 'D', description: 'Boolean - include decommissioned systems', required: false}),
+            includeDitprMetrics: Flags.boolean({allowNo: true, char: 'M', description: 'Boolean - include DoD Information Technology metrics', required: false}),
+            includePackage: Flags.boolean({allowNo: true, char: 'I', description: 'Boolean - include system packages', required: false}),
+            policy: Flags.string({char: 'p', description: 'Filter on policy', options: ['diacap', 'rmf', 'reporting'], required: false}),
             registrationType: Flags.string({char: 'r', description: 'Filter on registration type',
               options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false}),
-            ditprId: Flags.string({char: 't', description: 'DoD Information Technology (IT) Portfolio Repository (DITPR) string Id', required: false}),
-            coamsId: Flags.string({char: 'c', description: 'Cyber Operational Attributes Management System (COAMS) string Id', required: false}),
-            policy: Flags.string({char: 'p', description: 'Filter on policy', options: ['diacap', 'rmf', 'reporting'], required: false}),
-            includePackage: Flags.boolean({char: 'I', description: 'Boolean - include system packages', allowNo: true, required: false}),
-            includeDitprMetrics: Flags.boolean({char: 'M', description: 'Boolean - include DoD Information Technology metrics', allowNo: true, required: false}),
-            includeDecommissioned: Flags.boolean({char: 'D', description: 'Boolean - include decommissioned systems', allowNo: true, required: false}),
-            reportsForScorecard: Flags.boolean({char: 'S', description: 'Boolean - include score card', allowNo: true, required: false}),
+            reportsForScorecard: Flags.boolean({allowNo: true, char: 'S', description: 'Boolean - include score card', required: false}),
           }
           break
         }
@@ -113,11 +113,11 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'roles': {
           if (args.argument === 'byCategory') {
             flagObj = {
-              roleCategory: Flags.string({char: 'c', description: 'Filter on role category', options: ['CAC', 'PAC', 'Other'], required: true}),
+              includeDecommissioned: Flags.boolean({allowNo: true, char: 'D', description: 'Boolean - include decommissioned systems', required: false}),
+              policy: Flags.string({char: 'p', description: 'Filter on policy', options: ['diacap', 'rmf', 'reporting'], required: false}),
               role: Flags.string({char: 'r', description: 'Filter on role type',
                 options: ['AO', 'Auditor', 'Artifact Manager', 'C&A Team', 'IAO', 'ISSO', 'PM/IAM', 'SCA', 'User Rep', 'Validator'], required: true}),
-              policy: Flags.string({char: 'p', description: 'Filter on policy', options: ['diacap', 'rmf', 'reporting'], required: false}),
-              includeDecommissioned: Flags.boolean({char: 'D', description: 'Boolean - include decommissioned systems', allowNo: true, required: false}),
+              roleCategory: Flags.string({char: 'c', description: 'Filter on role category', options: ['CAC', 'PAC', 'Other'], required: true}),
             }
           }
 
@@ -126,16 +126,16 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
 
         case 'controls': {
           flagObj = {
+            acronyms: Flags.boolean({allowNo: true, char: 'A', description: 'The system acronym(s) e.g "AC-1, AC-2" - if not provided all controls for systemId are returned', required: false}),
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            acronyms: Flags.boolean({char: 'A', description: 'The system acronym(s) e.g "AC-1, AC-2" - if not provided all controls for systemId are returned', allowNo: true, required: false}),
           }
           break
         }
 
         case 'cac': {
           flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
           }
           break
         }
@@ -156,17 +156,17 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
 
         case 'test_results': {
           flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
             ccis: Flags.string({char: 'c', description: 'The system CCIS string numerical value', required: false}),
-            latestOnly: Flags.boolean({char: 'L', description: 'Boolean - Filter on latest only', allowNo: true, required: false}),
+            controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
+            latestOnly: Flags.boolean({allowNo: true, char: 'L', description: 'Boolean - Filter on latest only', required: false}),
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
           }
           break
         }
 
         case 'workflow_definitions': {
           flagObj = {
-            includeInactive: Flags.boolean({char: 'i', description: 'Boolean - Include inactive workflows', allowNo: true, required: false}),
+            includeInactive: Flags.boolean({allowNo: true, char: 'i', description: 'Boolean - Include inactive workflows', required: false}),
             registrationType: Flags.string({char: 'r', description: 'The registration type - must be a valid type',
               options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false}),
           }
@@ -176,17 +176,17 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'poams': {
           if (args.argument === 'forSystem') {
             flagObj = {
-              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-              scheduledCompletionDateStart: Flags.string({description: 'The completion start date', required: false}),
-              scheduledCompletionDateEnd: Flags.string({description: 'The completion end date', required: false}),
-              controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
               ccis: Flags.string({char: 'c', description: 'The system CCIS string numerical value', required: false}),
-              systemOnly: Flags.boolean({char: 'Y', description: 'Boolean - Return only systems', allowNo: true, required: false}),
+              controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
+              scheduledCompletionDateEnd: Flags.string({description: 'The completion end date', required: false}),
+              scheduledCompletionDateStart: Flags.string({description: 'The completion start date', required: false}),
+              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+              systemOnly: Flags.boolean({allowNo: true, char: 'Y', description: 'Boolean - Return only systems', required: false}),
             }
           } else if (args.argument === 'byPoamId') {
             flagObj = {
-              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
               poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
+              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             }
           }
 
@@ -196,17 +196,17 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'artifacts': {
           if (args.argument === 'forSystem') {
             flagObj = {
-              systemId: Flags.integer({char: 's', description: 'Unique system identifier', required: true}),
-              filename: Flags.string({char: 'f', description: 'The artifact file name', required: false}),
-              controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
               ccis: Flags.string({char: 'c', description: 'The system CCIS string numerical value', required: false}),
-              systemOnly: Flags.boolean({char: 'y', description: 'Boolean - Return only systems', allowNo: true, required: false}),
+              controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
+              filename: Flags.string({char: 'f', description: 'The artifact file name', required: false}),
+              systemId: Flags.integer({char: 's', description: 'Unique system identifier', required: true}),
+              systemOnly: Flags.boolean({allowNo: true, char: 'y', description: 'Boolean - Return only systems', required: false}),
             }
           } else if (args.argument === 'export') {
             flagObj = {
-              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+              compress: Flags.boolean({allowNo: true, char: 'C', description: 'Boolean - Compress true or false', required: false}),
               filename: Flags.string({char: 'f', description: 'The artifact file name', required: true}),
-              compress: Flags.boolean({char: 'C', description: 'Boolean - Compress true or false', allowNo: true, required: false}),
+              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             }
           }
 
@@ -216,16 +216,16 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'milestones': {
           if (args.argument === 'byPoamId') {
             flagObj = {
-              systemId: Flags.integer({char: 's', description: 'Unique system identifier', required: true}),
               poamId: Flags.integer({char: 'p', description: 'Unique poam identifier', required: true}),
-              scheduledCompletionDateStart: Flags.string({char: 't', description: 'Unix time format (e.g. 1499644800)', required: false}),
               scheduledCompletionDateEnd: Flags.string({char: 'c', description: 'Unix time format (e.g. 1499990400)', required: false}),
+              scheduledCompletionDateStart: Flags.string({char: 't', description: 'Unix time format (e.g. 1499644800)', required: false}),
+              systemId: Flags.integer({char: 's', description: 'Unique system identifier', required: true}),
             }
           } else if (args.argument === 'byMilestoneId') {
             flagObj = {
-              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-              poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
               milestoneId: Flags.integer({char: 'm', description: 'Unique milestone identifier', required: true}),
+              poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
+              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             }
           }
 
@@ -235,8 +235,8 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'workflow_instances': {
           if (args.argument === 'all') {
             flagObj = {
-              includeComments: Flags.boolean({char: 'C', description: 'Boolean - Include transition comments', allowNo: true, required: false}),
-              includeDecommissionSystems: Flags.boolean({char: 'D', description: 'Boolean - Include decommissioned systems', allowNo: true, required: false}),
+              includeComments: Flags.boolean({allowNo: true, char: 'C', description: 'Boolean - Include transition comments', required: false}),
+              includeDecommissionSystems: Flags.boolean({allowNo: true, char: 'D', description: 'Boolean - Include decommissioned systems', required: false}),
               pageIndex: Flags.integer({char: 'i', description: 'The page number to query', required: false}),
               sinceDate: Flags.string({char: 'd', description: 'The Workflow Instance date. Unix date format', required: false}),
               status: Flags.string({char: 's', description: 'The Workflow status - must be a valid status. if not provided includes all systems', options: ['active', 'inactive', 'all'], required: false}),
@@ -252,8 +252,8 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
 
         case 'dashboards': {
           flagObj = {
+            excludeInherited: Flags.boolean({allowNo: true, char: 'I', default: false, description: 'Boolean - exclude inherited data (default false)', required: false}),
             orgId: Flags.integer({char: 'o', description: 'The organization identification number', required: true}),
-            excludeInherited: Flags.boolean({char: 'I', description: 'Boolean - exclude inherited data (default false)', allowNo: true, required: false, default: false}),
             pageIndex: Flags.integer({char: 'i', description: 'The index of the starting page (default first page 0)', required: false}),
             pageSize: Flags.integer({char: 's', description: 'The number of entries per page (default 20000)', required: false}),
           }
@@ -268,87 +268,87 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
       switch (args.endpoint) { // skipcq: JS-0047
         case 'test_results': {
           flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             cci: Flags.string({char: 'c', description: 'The system CCI string numerical value', required: true}),
-            testedBy: Flags.string({char: 'b', description: 'The person that conducted the test (Last Name, First)', required: true}),
-            testDate: Flags.string({char: 't', description: 'The date test was conducted, Unix time format', required: true}),
-            description: Flags.string({char: 'd', description: 'The description of test result. 4000 Characters', required: true}),
             complianceStatus: Flags.string({char: 'S', description: 'The system CCI string numerical value',
               options: ['Compliant', 'Non-Compliant', 'Not Applicable'], required: true}),
+            description: Flags.string({char: 'd', description: 'The description of test result. 4000 Characters', required: true}),
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+            testDate: Flags.string({char: 't', description: 'The date test was conducted, Unix time format', required: true}),
+            testedBy: Flags.string({char: 'b', description: 'The person that conducted the test (Last Name, First)', required: true}),
           }
           break
         }
 
         case 'milestones': {
           flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
             description: Flags.string({char: 'd', description: 'The milestone description', required: true}),
+            poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
             scheduledCompletionDate: Flags.string({char: 'c', description: 'The scheduled completion date - Unix time format', required: true}),
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
           }
           break
         }
 
         case 'artifacts': {
           flagObj = {
+            category: Flags.string({char: 'c', description: 'Artifact category', options: ['Implementation Guidance', 'Evidence'], required: false}),
+            input: Flags.string({char: 'i', description: 'Artifact file(s) to post to the given system, can have multiple (space separated)', multiple: true, required: true}),
+            isTemplate: Flags.boolean({allowNo: true, char: 'T', description: 'Boolean - Indicates whether an artifact is a template.', required: false}),
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            input: Flags.string({char: 'i', description: 'Artifact file(s) to post to the given system, can have multiple (space separated)', required: true, multiple: true}),
-            isTemplate: Flags.boolean({char: 'T', description: 'Boolean - Indicates whether an artifact is a template.', allowNo: true, required: false}),
             type: Flags.string({char: 't', description: 'Artifact file type',
               options: ['Procedure', 'Diagram', 'Policy', 'Labor', 'Document', 'Image', 'Other', 'Scan Result', 'Auditor Report'], required: false}),
-            category: Flags.string({char: 'c', description: 'Artifact category', options: ['Implementation Guidance', 'Evidence'], required: false}),
           }
           break
         }
 
         case 'cac': {
           flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            controlAcronym: Flags.string({char: 'a', description: 'The system acronym "AC-1, AC-2"', required: true}),
             comments: Flags.string({char: 'c', description: 'The control approval chain comments', required: false}),
+            controlAcronym: Flags.string({char: 'a', description: 'The system acronym "AC-1, AC-2"', required: true}),
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
           }
           break
         }
 
         case 'pac': {
           flagObj = {
+            comments: Flags.string({char: 'c', description: 'The control approval chain comments', required: true}),
+            name: Flags.string({char: 'n', description: 'The control package name', required: true}),
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             workflow: Flags.string({char: 'w', description: 'The appropriate workflow',
               options: ['Assess and Authorize', 'Assess Only', 'Security Plan Approval'], required: true}),
-            name: Flags.string({char: 'n', description: 'The control package name', required: true}),
-            comments: Flags.string({char: 'c', description: 'The control approval chain comments', required: true}),
           }
           break
         }
 
         case 'poams': {
           flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             poamFile: Flags.string({char: 'f', description: 'A well formed JSON file with the POA&M(s) to add. It can ba a single object or an array of objects.', required: true}),
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
           }
           break
         }
 
         case 'cloud_resources': {
           flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             cloudResourceFile: Flags.string({char: 'f', description: 'A well formed JSON file with the cloud resources and their scan results. It can ba a single object or an array of objects.', required: true}),
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
           }
           break
         }
 
         case 'static_code_scans': {
           flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             statiCodeScanFile: Flags.string({char: 'f', description: 'A well formed JSON file with application scan findings. It can ba a single object or an array of objects.', required: true}),
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
           }
           break
         }
 
         case 'container_scans': {
           flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             containerCodeScanFile: Flags.string({char: 'f', description: 'A well formed JSON file with container scan results. It can ba a single object or an array of objects.', required: true}),
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
           }
           break
         }
@@ -361,45 +361,45 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
       switch (args.endpoint) { // skipcq: JS-0047
         case 'artifacts': {
           flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            filename: Flags.string({char: 'f', description: 'Artifact file name to update for the given system', required: true}),
-            isTemplate: Flags.boolean({char: 'T', description: 'Boolean - Indicates whether an artifact is a template.', allowNo: true, required: true}),
-            type: Flags.string({char: 't', description: 'Artifact file type',
-              options: ['Procedure', 'Diagram', 'Policy', 'Labor', 'Document', 'Image', 'Other', 'Scan Result', 'Auditor Report'], required: true}),
+            artifactExpirationDate: Flags.string({char: 'D', description: 'Date artifact expires and requires review', required: false}),
             category: Flags.string({char: 'g', description: 'Artifact category', options: ['Implementation Guidance', 'Evidence'], required: true}),
-            description: Flags.string({char: 'd', description: 'The artifact(s) description', required: false}),
-            refPageNumber: Flags.string({char: 'p', description: 'Artifact reference page number', required: false}),
             ccis: Flags.string({char: 'c', description: 'CCIs associated with artifact', required: false}),
             controls: Flags.string({char: 'C', description: 'Control acronym associated with the artifact. NIST SP 800-53 Revision 4 defined.', required: false}),
-            artifactExpirationDate: Flags.string({char: 'D', description: 'Date artifact expires and requires review', required: false}),
+            description: Flags.string({char: 'd', description: 'The artifact(s) description', required: false}),
+            filename: Flags.string({char: 'f', description: 'Artifact file name to update for the given system', required: true}),
+            isTemplate: Flags.boolean({allowNo: true, char: 'T', description: 'Boolean - Indicates whether an artifact is a template.', required: true}),
             lastReviewDate: Flags.string({char: 'R', description: 'Date artifact was last reviewed', required: false}),
+            refPageNumber: Flags.string({char: 'p', description: 'Artifact reference page number', required: false}),
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+            type: Flags.string({char: 't', description: 'Artifact file type',
+              options: ['Procedure', 'Diagram', 'Policy', 'Labor', 'Document', 'Image', 'Other', 'Scan Result', 'Auditor Report'], required: true}),
           }
           break
         }
 
         case 'milestones': {
           flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
-            milestoneId: Flags.integer({char: 'm', description: 'Unique milestone identifier', required: true}),
             description: Flags.string({char: 'd', description: 'The milestone description', required: false}),
+            milestoneId: Flags.integer({char: 'm', description: 'Unique milestone identifier', required: true}),
+            poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
             scheduledCompletionDate: Flags.string({char: 'c', description: 'The scheduled completion date - Unix time format', required: false}),
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
           }
           break
         }
 
         case 'poams': {
           flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             poamFile: Flags.string({char: 'f', description: 'A well formed JSON file with the POA&M(s) to updated the specified system. It can ba a single object or an array of objects.', required: true}),
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
           }
           break
         }
 
         case 'controls': {
           flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             controlFile: Flags.string({char: 'f', description: 'A well formed JSON file with the Security Control information to updated the specified system. It can ba a single object or an array of objects.', required: true}),
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
           }
           break
         }
@@ -412,25 +412,25 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
       switch (args.endpoint) { // skipcq: JS-0047
         case 'artifacts': {
           flagObj = {
+            fileName: Flags.string({char: 'F', description: 'The artifact file name to remove, can have multiple (space separated)', multiple: true, required: true}),
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            fileName: Flags.string({char: 'F', description: 'The artifact file name to remove, can have multiple (space separated)', required: true, multiple: true}),
           }
           break
         }
 
         case 'milestones': {
           flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+            milestonesId: Flags.integer({char: 'M', description: 'Unique milestone identifier, can have multiple (space separated)', multiple: true, required: true}),
             poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
-            milestonesId: Flags.integer({char: 'M', description: 'Unique milestone identifier, can have multiple (space separated)', required: true, multiple: true}),
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
           }
           break
         }
 
         case 'poams': {
           flagObj = {
+            poamsId: Flags.integer({char: 'P', description: 'Unique POA&M identification number, can have multiple (space separated)', multiple: true, required: true}),
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            poamsId: Flags.integer({char: 'P', description: 'Unique POA&M identification number, can have multiple (space separated)', required: true, multiple: true}),
           }
           break
         }

@@ -1,21 +1,21 @@
+import {PrismaMapper as Mapper} from '@mitre/hdf-converters'
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import {PrismaMapper as Mapper} from '@mitre/hdf-converters'
-import path from 'path'
 import _ from 'lodash'
+import path from 'path'
 
 export default class Prisma2HDF extends Command {
-  static usage = 'convert prisma2hdf -i <prisma-cloud-csv> -o <hdf-output-folder> [-h]'
-
   static description = 'Translate a Prisma Cloud Scan Report CSV file into Heimdall Data Format JSON files'
 
   static examples = ['saf convert prisma2hdf -i prismacloud-report.csv -o output-hdf-name.json']
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Prisma Cloud Scan Report CSV'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
+    input: Flags.string({char: 'i', description: 'Prisma Cloud Scan Report CSV', required: true}),
+    output: Flags.string({char: 'o', description: 'Output HDF JSON File', required: true}),
   }
+
+  static usage = 'convert prisma2hdf -i <prisma-cloud-csv> -o <hdf-output-folder> [-h]'
 
   async run() {
     const {flags} = await this.parse(Prisma2HDF)

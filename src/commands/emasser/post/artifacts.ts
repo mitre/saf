@@ -1,19 +1,18 @@
-import colorize from 'json-colorizer'
-import {Zip} from 'zip-lib'
-import {Command, Flags} from '@oclif/core'
 import {ArtifactsApi} from '@mitre/emass_client'
 import {ArtifactsResponsePutPost} from '@mitre/emass_client/dist/api'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
-import {outputError} from '../../../utils/emasser/outputError'
+import {Command, Flags} from '@oclif/core'
 import fs, {ReadStream} from 'fs'
+import colorize from 'json-colorizer'
 import os from 'os'
 import path from 'path'
+import {Zip} from 'zip-lib'
+
+import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputError} from '../../../utils/emasser/outputError'
+import {outputFormat} from '../../../utils/emasser/outputFormatter'
+import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserPostArtifacts extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Uploads [FILES] to the given [SYSTEM_ID] as artifacts'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-i,--input] [options]']
@@ -22,6 +21,8 @@ export default class EmasserPostArtifacts extends Command {
     help: Flags.help({char: 'h', description: 'Post (add) artifact file(s) to a system'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
+
+  static usage = '<%= command.id %> [options]'
 
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserPostArtifacts)

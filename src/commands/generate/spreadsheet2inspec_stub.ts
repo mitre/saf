@@ -1,55 +1,50 @@
-import {Command, Flags} from '@oclif/core'
-import fs from 'fs'
-import path from 'path'
-import parse from 'csv-parse/lib/sync'
-import {InSpecControl, InSpecMetaData} from '../../types/inspec'
-import YAML from 'yaml'
-import XlsxPopulate from 'xlsx-populate'
-import {impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact} from '../../utils/xccdf2inspec'
-import _ from 'lodash'
-import {CSVControl} from '../../types/csv'
-import {extractValueViaPathOrNumber} from '../../utils/global'
 import {CciNistMappingData} from '@mitre/hdf-converters'
+import {Command, Flags} from '@oclif/core'
+import parse from 'csv-parse/lib/sync'
+import fs from 'fs'
+import _ from 'lodash'
+import path from 'path'
+import XlsxPopulate from 'xlsx-populate'
+import YAML from 'yaml'
+
 import {default as CISNistMappings} from '../../resources/cis2nist.json'
 import {default as files} from '../../resources/files.json'
+import {CSVControl} from '../../types/csv'
+import {InSpecControl, InSpecMetaData} from '../../types/inspec'
+import {extractValueViaPathOrNumber} from '../../utils/global'
+import {impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact} from '../../utils/xccdf2inspec'
 
 export default class Spreadsheet2HDF extends Command {
-  static usage = 'generate spreadsheet2inspec_stub -i, --input=<XLSX or CSV> -o, --output=FOLDER'
-
   static description = 'Convert CSV STIGs or CIS XLSX benchmarks into a skeleton InSpec profile'
 
   static examples = ['saf generate spreadsheet2inspec_stub -i spreadsheet.xlsx -o profile']
 
   static flags = {
+    controlNamePrefix: Flags.string({char: 'c', default: '', description: 'Prefix for all control IDs', required: false}),
+    encodingHeader: Flags.boolean({char: 'e', default: false, description: 'Add the "# encoding: UTF-8" comment at the top of each control', required: false}),
+    format: Flags.string({char: 'f', default: 'general', options: ['cis', 'disa', 'general'], required: false}),
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true}),
-    controlNamePrefix: Flags.string({char: 'c', required: false, default: '', description: 'Prefix for all control IDs'}),
-    format: Flags.string({char: 'f', required: false, default: 'general', options: ['cis', 'disa', 'general']}),
-    encodingHeader: Flags.boolean({char: 'e', required: false, default: false, description: 'Add the "# encoding: UTF-8" comment at the top of each control'}),
-    metadata: Flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
-    mapping: Flags.string({char: 'M', required: false, description: 'Path to a YAML file with mappings for each field, by default, CIS Benchmark fields are used for XLSX, STIG Viewer CSV export is used by CSV'}),
-    lineLength: Flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output InSpec profile folder'}),
+    lineLength: Flags.integer({char: 'l', default: 80, description: 'Characters between lines within InSpec controls', required: false}),
+    mapping: Flags.string({char: 'M', description: 'Path to a YAML file with mappings for each field, by default, CIS Benchmark fields are used for XLSX, STIG Viewer CSV export is used by CSV', required: false}),
+    metadata: Flags.string({char: 'm', description: 'Path to a JSON file with additional metadata for the inspec.yml file', required: false}),
+    output: Flags.string({char: 'o', description: 'Output InSpec profile folder', required: true}),
   }
 
-  // Extract URLs for references
-  matchReferences(control: Partial<InSpecControl>): Partial<InSpecControl> {
-    if (control.ref) {
-      const urlMatches = control.ref.replaceAll('\r', '').replaceAll('\n', '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g)
-      if (urlMatches) {
-        control.refs = urlMatches
-      }
+  static usage = 'generate spreadsheet2inspec_stub -i, --input=<XLSX or CSV> -o, --output=FOLDER'
 
-      control.ref = undefined
-    }
-
-    return control
-  }
-
-  // Set impact from tags.severity if impact is not defined
-  matchImpactFromSeverityIfImpactNotSet(control: Partial<InSpecControl>): Partial<InSpecControl> {
-    if (!control.impact && control.tags?.severity) {
-      control.impact = severityStringToImpact(control.tags.severity)
+  extractCCIsFromText(control: Partial<InSpecControl>): Partial<InSpecControl> {
+    if (control.tags?.cci) {
+      const extractedCCIs: string[] = []
+      control.tags.cci.forEach(cci => {
+        const cciMatches = cci.match(/CCI-\d{4,}/g)
+        if (cciMatches) {
+          cciMatches.forEach(match => {
+            extractedCCIs.push(match)
+          })
+        }
+      })
+      control.tags.cci = extractedCCIs
     }
 
     return control
@@ -109,18 +104,24 @@ export default class Spreadsheet2HDF extends Command {
     return control
   }
 
-  extractCCIsFromText(control: Partial<InSpecControl>): Partial<InSpecControl> {
-    if (control.tags?.cci) {
-      const extractedCCIs: string[] = []
-      control.tags.cci.forEach(cci => {
-        const cciMatches = cci.match(/CCI-\d{4,}/g)
-        if (cciMatches) {
-          cciMatches.forEach(match => {
-            extractedCCIs.push(match)
-          })
-        }
-      })
-      control.tags.cci = extractedCCIs
+  // Set impact from tags.severity if impact is not defined
+  matchImpactFromSeverityIfImpactNotSet(control: Partial<InSpecControl>): Partial<InSpecControl> {
+    if (!control.impact && control.tags?.severity) {
+      control.impact = severityStringToImpact(control.tags.severity)
+    }
+
+    return control
+  }
+
+  // Extract URLs for references
+  matchReferences(control: Partial<InSpecControl>): Partial<InSpecControl> {
+    if (control.ref) {
+      const urlMatches = control.ref.replaceAll('\r', '').replaceAll('\n', '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g)
+      if (urlMatches) {
+        control.refs = urlMatches
+      }
+
+      control.ref = undefined
     }
 
     return control
@@ -144,7 +145,7 @@ export default class Spreadsheet2HDF extends Command {
     }
 
     let metadata: InSpecMetaData = {}
-    let mappings: Record<string, string | string[] | number> = {}
+    let mappings: Record<string, number | string | string[]> = {}
 
     // Read metadata file if passed
     if (flags.metadata) {
@@ -169,21 +170,21 @@ export default class Spreadsheet2HDF extends Command {
     const inspecControls: InSpecControl[] = []
 
     // Convert profile inspec.yml
-    const profileInfo: Record<string, string | number | undefined> = {
-      name: 'CIS Benchmark',
-      title: 'InSpec Profile',
-      maintainer: metadata.maintainer || 'The Authors',
+    const profileInfo: Record<string, number | string | undefined> = {
       copyright: metadata.copyright || 'The Authors',
       copyright_email: metadata.copyright_email || 'you@example.com',
       license: metadata.license || 'Apache-2.0',
+      maintainer: metadata.maintainer || 'The Authors',
+      name: 'CIS Benchmark',
       summary: '"An InSpec Compliance Profile"',
+      title: 'InSpec Profile',
       version: metadata.version || '0.1.0',
     }
 
     fs.writeFileSync(path.join(flags.output, 'inspec.yml'), YAML.stringify(profileInfo))
 
     // Write README.md
-    const readableMetadata: Record<string, string | number> = {}
+    const readableMetadata: Record<string, number | string> = {}
     Object.entries(profileInfo).forEach(([key, value]) => {
       // Filter out any undefined values and omit summary and title
       if (value && key !== 'summary' && key !== 'summary') {
@@ -199,7 +200,7 @@ export default class Spreadsheet2HDF extends Command {
         const usedRange = sheet.usedRange()
         if (usedRange) {
           // Get data from the spreadsheet into a 2D array
-          const extractedData: (string | number)[][] = usedRange.value()
+          const extractedData: (number | string)[][] = usedRange.value()
           // Map the data into an object array
           const headers = extractedData[0]
           const mappedRecords = extractedData.slice(1).map(record => {

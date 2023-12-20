@@ -1,26 +1,27 @@
 import {Command, Flags} from '@oclif/core'
+import {expect} from 'chai'
 import flat from 'flat'
-import YAML from 'yaml'
 import fs from 'fs'
 import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import _ from 'lodash'
+import YAML from 'yaml'
+
 import {ThresholdValues} from '../../types/threshold'
 import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject, statusSeverityPaths, totalMax, totalMin} from '../../utils/threshold'
-import {expect} from 'chai'
 
 export default class Threshold extends Command {
-  static usage = 'validate threshold -i <hdf-json> [-h] [-T <flattened-threshold-json> | -F <template-file>]'
-
   static description = 'Validate the compliance and status counts of an HDF file'
 
   static examples = ['saf validate threshold -i rhel7-results.json -F output.yaml']
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Input HDF JSON File'}),
-    templateInline: Flags.string({char: 'T', required: false, exclusive: ['templateFile'], description: 'Flattened JSON containing your validation thresholds (Intended for backwards compatibility with InSpec Tools)'}),
-    templateFile: Flags.string({char: 'F', required: false, exclusive: ['templateInline'], description: 'Expected data template, generate one with "saf generate threshold"'}),
+    input: Flags.string({char: 'i', description: 'Input HDF JSON File', required: true}),
+    templateFile: Flags.string({char: 'F', description: 'Expected data template, generate one with "saf generate threshold"', exclusive: ['templateInline'], required: false}),
+    templateInline: Flags.string({char: 'T', description: 'Flattened JSON containing your validation thresholds (Intended for backwards compatibility with InSpec Tools)', exclusive: ['templateFile'], required: false}),
   }
+
+  static usage = 'validate threshold -i <hdf-json> [-h] [-T <flattened-threshold-json> | -F <template-file>]'
 
   async run() {
     const {flags} = await this.parse(Threshold)

@@ -1,16 +1,14 @@
-import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
 import {ArtifactsApi} from '@mitre/emass_client'
-import {ArtifactsResponsePutPost} from '@mitre/emass_client/dist/api' // skipcq: JS-R1000
+import {ArtifactsResponsePutPost} from '@mitre/emass_client/dist/api'
+import {Command, Flags} from '@oclif/core'
+import colorize from 'json-colorizer' // skipcq: JS-R1000
 import {ArtifactsGet as Artifacts} from '@mitre/emass_client/dist/api' // skipcq: JS-R1000
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputError} from '../../../utils/emasser/outputError'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
-import {outputError} from '../../../utils/emasser/outputError'
 
 export default class EmasserPutArtifacts extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Updates artifacts for a system with provided entries'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--filename] [--isTemplate,--no-isTemplate] [-t,--type] [-g--category] [options]']
@@ -20,6 +18,8 @@ export default class EmasserPutArtifacts extends Command {
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
+  static usage = '<%= command.id %> [options]'
+
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserPutArtifacts)
     const apiCxn = new ApiConnection()
@@ -27,17 +27,17 @@ export default class EmasserPutArtifacts extends Command {
 
     const requestBodyArray: Artifacts[] = []
     requestBodyArray.push({
-      filename: flags.filename,
-      isTemplate: flags.isTemplate,
-      type: flags.type,
       category: flags.category,
-      // Optional arguments
-      description: flags.description,
-      referencePageNumber: flags.referencePageNumber,
       ccis: flags.ccis,
       controls: flags.controls,
+      // Optional arguments
+      description: flags.description,
       expirationDate: Number.parseFloat(flags.expirationDate),
+      filename: flags.filename,
+      isTemplate: flags.isTemplate,
       lastReviewedDate: Number.parseFloat(flags.lastReviewDate),
+      referencePageNumber: flags.referencePageNumber,
+      type: flags.type,
     })
 
     artifactApi.updateArtifactBySystemId(flags.systemId, requestBodyArray).then((response: ArtifactsResponsePutPost) => {

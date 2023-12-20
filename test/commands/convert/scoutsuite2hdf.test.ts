@@ -1,7 +1,8 @@
 import {expect, test} from '@oclif/test'
-import tmp from 'tmp'
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
+import tmp from 'tmp'
+
 import {omitHDFChangingFields} from '../utils'
 
 describe('Test scoutsuite', () => {

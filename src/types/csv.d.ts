@@ -1,19 +1,19 @@
 export interface CSVControl {
-  V_ID: string;
-  Severity: string;
+  '': string;
   CCI: string;
-  Version: string;
-  Title: string;
   Description: string;
-  Service: string;
   'IA Controls': string;
-  ruleID: string;
-  fixid: string;
-  fixtext: string;
+  Response: string;
+  Service: string;
+  Severity: string;
+  Title: string;
+  V_ID: string;
+  Version: string;
   checkid: string;
   checktext: string;
-  '': string;
-  Response: string;
+  fixid: string;
+  fixtext: string;
+  ruleID: string;
 }
 
 export type ControlSetRow = {

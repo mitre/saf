@@ -1,10 +1,11 @@
-import colorize from 'json-colorizer'
-import {Args, Command, Flags} from '@oclif/core'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {MilestonesApi} from '@mitre/emass_client'
 import {MilestoneResponseGet, MilestoneResponseGetMilestone} from '@mitre/emass_client/dist/api'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
+import {Args, Command, Flags} from '@oclif/core'
+import colorize from 'json-colorizer'
+
+import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputError} from '../../../utils/emasser/outputError'
+import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions,
   getDescriptionForEndpoint,
   getExamplesForEndpoint,
@@ -13,11 +14,16 @@ import {FlagOptions,
 const endpoint = 'milestones'
 
 export default class EmasserGetMilestones extends Command {
-  static usage = '<%= command.id %> [ARGUMENT] \n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m';
+  // Example: If the user uses the command (saf emasser get milestones byPoamId), args.name is set to byPoamId
+  static args = {
+    byMilestoneId: Args.string({description: 'Retrieves milestone(s) for specified system, poam, and milestone Id', name: 'byMilestoneId', required: false}),
+    byPoamId: Args.string({description: 'Retrieves milestone(s) for specified system and poam Id', name: 'byPoamId', required: false}),
+    name: Args.string({hidden: true, name: 'name', required: false}),
+  }
 
-  static description = getDescriptionForEndpoint(process.argv, endpoint);
+  static description = getDescriptionForEndpoint(process.argv, endpoint)
 
-  static examples = getExamplesForEndpoint(process.argv, endpoint);
+  static examples = getExamplesForEndpoint(process.argv, endpoint)
 
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Milestones endpoint'}),
@@ -27,11 +33,15 @@ export default class EmasserGetMilestones extends Command {
   // NOTE: The way args are being implemented are mainly for the purposes of help clarity, there is, displays
   //       the available arguments with associate description.
   // Only args.name is used, there is, it contains the argument listed by the user.
-  // Example: If the user uses the command (saf emasser get milestones byPoamId), args.name is set to byPoamId
-  static args = {
-    name: Args.string({name: 'name', required: false, hidden: true}),
-    byPoamId: Args.string({name: 'byPoamId', description: 'Retrieves milestone(s) for specified system and poam Id', required: false}),
-    byMilestoneId: Args.string({name: 'byMilestoneId', description: 'Retrieves milestone(s) for specified system, poam, and milestone Id', required: false}),
+  static usage = '<%= command.id %> [ARGUMENT] \n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m'
+
+  async catch(error: any) { // skipcq: JS-0116
+    if (error.message) {
+      this.error(error)
+    } else {
+      const suggestions = 'get milestones [-h or --help]\n\tget milestones byPoamId\n\tget milestones byMilestoneId'
+      this.warn('Invalid arguments\nTry this:\n\t' + suggestions)
+    }
   }
 
   async run(): Promise<void> {
@@ -51,15 +61,6 @@ export default class EmasserGetMilestones extends Command {
       }).catch((error:any) => console.error(colorize(outputError(error))))
     } else {
       throw this.error
-    }
-  }
-
-  async catch(error: any) { // skipcq: JS-0116
-    if (error.message) {
-      this.error(error)
-    } else {
-      const suggestions = 'get milestones [-h or --help]\n\tget milestones byPoamId\n\tget milestones byMilestoneId'
-      this.warn('Invalid arguments\nTry this:\n\t' + suggestions)
     }
   }
 }

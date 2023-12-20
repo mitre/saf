@@ -1,26 +1,27 @@
+import {AwsConfigMapper as Mapper} from '@mitre/hdf-converters'
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import {AwsConfigMapper as Mapper} from '@mitre/hdf-converters'
 import {ExecJSON} from 'inspecjs'
+
 import {checkSuffix} from '../../utils/global'
 
 export default class AWSConfig2HDF extends Command {
-  static usage = 'convert aws_config2hdf -r <region> -o <hdf-scan-results-json> [-h] [-a <access-key-id>] [-s <secret-access-key>] [-t <session-token>] [-i]'
-
   static description = 'Pull Configuration findings from AWS Config and convert into a Heimdall Data Format JSON file'
 
   static examples = ['saf convert aws_config2hdf -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json']
 
   static flags = {
+    accessKeyId: Flags.string({char: 'a', description: 'Access key ID', required: false}),
+    certificate: Flags.string({char: 'C', description: 'Trusted signing certificate file', exclusive: ['insecure'], required: false}),
     help: Flags.help({char: 'h'}),
-    accessKeyId: Flags.string({char: 'a', required: false, description: 'Access key ID'}),
-    secretAccessKey: Flags.string({char: 's', required: false, description: 'Secret access key'}),
-    sessionToken: Flags.string({char: 't', required: false, description: 'Session token'}),
-    region: Flags.string({char: 'r', required: true, description: 'Region to pull findings from'}),
-    insecure: Flags.boolean({char: 'i', required: false, default: false, description: 'Disable SSL verification, this is insecure.', exclusive: ['certificate']}),
-    certificate: Flags.string({char: 'C', required: false, description: 'Trusted signing certificate file', exclusive: ['insecure']}),
-    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
+    insecure: Flags.boolean({char: 'i', default: false, description: 'Disable SSL verification, this is insecure.', exclusive: ['certificate'], required: false}),
+    output: Flags.string({char: 'o', description: 'Output HDF JSON File', required: true}),
+    region: Flags.string({char: 'r', description: 'Region to pull findings from', required: true}),
+    secretAccessKey: Flags.string({char: 's', description: 'Secret access key', required: false}),
+    sessionToken: Flags.string({char: 't', description: 'Session token', required: false}),
   }
+
+  static usage = 'convert aws_config2hdf -r <region> -o <hdf-scan-results-json> [-h] [-a <access-key-id>] [-s <secret-access-key>] [-t <session-token>] [-i]'
 
   // Refs may not be defined if no resources were found
   ensureRefs(output: ExecJSON.Execution): ExecJSON.Execution {

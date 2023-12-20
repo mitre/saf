@@ -1,33 +1,34 @@
+import {UpdatedProfileReturn, processInSpecProfile, processOVAL, updateProfileUsingXCCDF} from '@mitre/inspec-objects'
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import {processInSpecProfile, processOVAL, UpdatedProfileReturn, updateProfileUsingXCCDF} from '@mitre/inspec-objects'
-import path from 'path'
-import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
+import path from 'path'
+
+import {createWinstonLogger} from '../../utils/logging'
 
 export default class GenerateDelta extends Command {
   static description = 'Update an existing InSpec profile with updated XCCDF guidance'
 
-  static flags = {
-    help: Flags.help({char: 'h'}),
-    inspecJsonFile: Flags.string({char: 'J', required: true, description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command'}),
-    xccdfXmlFile: Flags.string({char: 'X', required: true, description: 'The XCCDF XML file containing the new guidance - in the form of .xml file'}),
-    ovalXmlFile: Flags.string({char: 'O', required: false, description: 'The OVAL XML file containing definitions used in the new guidance - in the form of .xml file'}),
-    output: Flags.string({char: 'o', required: true, description: 'The output folder for the updated profile - if it is not empty, it will be overwritten'}),
-    report: Flags.string({char: 'r', required: false, description: 'Output markdown report file - must have an extension of .md'}),
-    idType: Flags.string({
-      char: 'T',
-      required: false,
-      default: 'rule',
-      options: ['rule', 'group', 'cis', 'version'],
-      description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
-    }),
-    logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
-  }
-
   static examples = [
     'saf generate delta -J ./the_profile_json_file.json -X ./the_xccdf_guidance_file.xml  -o the_output_directory -O ./the_oval_file.xml -T group -r the_update_report_file.md -L debug',
   ]
+
+  static flags = {
+    help: Flags.help({char: 'h'}),
+    idType: Flags.string({
+      char: 'T',
+      default: 'rule',
+      description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
+      options: ['rule', 'group', 'cis', 'version'],
+      required: false,
+    }),
+    inspecJsonFile: Flags.string({char: 'J', description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command', required: true}),
+    logLevel: Flags.string({char: 'L', default: 'info', options: ['info', 'warn', 'debug', 'verbose'], required: false}),
+    output: Flags.string({char: 'o', description: 'The output folder for the updated profile - if it is not empty, it will be overwritten', required: true}),
+    ovalXmlFile: Flags.string({char: 'O', description: 'The OVAL XML file containing definitions used in the new guidance - in the form of .xml file', required: false}),
+    report: Flags.string({char: 'r', description: 'Output markdown report file - must have an extension of .md', required: false}),
+    xccdfXmlFile: Flags.string({char: 'X', description: 'The XCCDF XML file containing the new guidance - in the form of .xml file', required: true}),
+  }
 
   async run() { // skipcq: JS-0044
     const {flags} = await this.parse(GenerateDelta)
@@ -169,7 +170,7 @@ export default class GenerateDelta extends Command {
       logger.debug(`Processing XCCDF Benchmark file: ${flags.input} using ${flags.idType} id.`)
       const idTypes = ['rule', 'group', 'cis', 'version']
       if (idTypes.includes(flags.idType)) {
-        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, flags.idType as 'cis' | 'version' | 'rule' | 'group', logger, ovalDefinitions)
+        updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, flags.idType as 'cis' | 'group' | 'rule' | 'version', logger, ovalDefinitions)
       } else {
         logger.error(`ERROR: Invalid ID Type: ${flags.idType}. Check the --help command for the available ID Type options.`)
         throw new Error('Invalid ID Type')

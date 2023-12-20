@@ -1,7 +1,7 @@
-import {expect, test} from '@oclif/test'
-import tmp from 'tmp'
-import path from 'path'
 import * as XLSX from '@e965/xlsx'
+import {expect, test} from '@oclif/test'
+import path from 'path'
+import tmp from 'tmp'
 
 describe('Test hdf2caat two RHEL HDF and a RHEL triple overlay HDF', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})

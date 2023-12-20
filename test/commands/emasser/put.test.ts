@@ -1,8 +1,9 @@
-import {expect, test} from '@oclif/test'
-import {InitMockServer} from './mock.server'
 import {ArtifactsApi, ControlsApi, MilestonesApi, POAMApi} from '@mitre/emass_client'
 import {ArtifactsResponsePutPost, ControlsResponsePut,
   MilestoneResponsePut, PoamResponsePut} from '@mitre/emass_client/dist/api'
+import {expect, test} from '@oclif/test'
+
+import {InitMockServer} from './mock.server'
 
 describe('Test eMASS API CLI (put) commands', () => {
   const mocSer = new InitMockServer()

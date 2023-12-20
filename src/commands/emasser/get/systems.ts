@@ -1,15 +1,14 @@
-import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {SystemsApi} from '@mitre/emass_client'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
-import {getFlagsForEndpoint, FlagOptions} from '../../../utils/emasser/utilities'
 import {SystemsResponse} from '@mitre/emass_client/dist/api'
+import {Command, Flags} from '@oclif/core'
+import colorize from 'json-colorizer'
+
+import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputError} from '../../../utils/emasser/outputError'
+import {outputFormat} from '../../../utils/emasser/outputFormatter'
+import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetSystems extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Get available systems filter on provided options'
 
   static examples = ['<%= config.bin %> <%= command.id %> [options]']
@@ -18,6 +17,8 @@ export default class EmasserGetSystems extends Command {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Systems endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
+
+  static usage = '<%= command.id %> [options]'
 
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserGetSystems)

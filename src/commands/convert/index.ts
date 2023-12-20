@@ -1,10 +1,11 @@
-import {ASFFResults, ChecklistResults, BurpSuiteMapper, ConveyorResults, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockResults, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
+import {ASFFResults, BurpSuiteMapper, ChecklistResults, ConveyorResults, DBProtectMapper, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockResults, XCCDFResultsMapper, ZapMapper, fingerprint} from '@mitre/hdf-converters'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import _ from 'lodash'
-import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import path from 'path'
+
+import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import ASFF2HDF from './asff2hdf'
-import {Command, Flags} from '@oclif/core'
 import Zap2HDF from './zap2hdf'
 
 function getInputFilename(): string {
@@ -19,11 +20,13 @@ function getInputFilename(): string {
 export default class Convert extends Command {
   static description = 'The generic convert command translates any supported file-based security results set into the Heimdall Data Format'
 
+  static detectedType: string
+
   static examples = ['saf convert -i input -o output']
 
   static flags = {
-    input: Flags.string({char: 'i', required: true, description: 'Input results set file'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output results sets'}),
+    input: Flags.string({char: 'i', description: 'Input results set file', required: true}),
+    output: Flags.string({char: 'o', description: 'Output results sets', required: true}),
     ...Convert.getFlagsForInputFile(getInputFilename()),
   }
 
@@ -61,8 +64,6 @@ export default class Convert extends Command {
 
     return {}
   }
-
-  static detectedType: string;
 
   async run() { // skipcq: JS-0044
     const {flags} = await this.parse(Convert)

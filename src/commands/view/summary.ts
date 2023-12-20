@@ -1,27 +1,28 @@
 import {Command, Flags} from '@oclif/core'
-import {ContextualizedEvaluation, ContextualizedProfile, convertFileContextual} from 'inspecjs'
-import fs from 'fs'
-import YAML from 'yaml'
-import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
-import _ from 'lodash'
 import flat from 'flat'
+import fs from 'fs'
+import {ContextualizedEvaluation, ContextualizedProfile, convertFileContextual} from 'inspecjs'
+import _ from 'lodash'
+import YAML from 'yaml'
+
 import {convertFullPathToFilename} from '../../utils/global'
+import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 
 export default class Summary extends Command {
   static aliases = ['summary']
 
-  static usage = 'view summary -i <hdf-file> [-h] [-j] [-o <output>]'
-
   static description = 'Get a quick compliance overview of an HDF file '
+
+  static examples = ['saf view summary -i rhel7-results.json', 'saf view summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json']
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, multiple: true, description: 'Input HDF files'}),
-    json: Flags.boolean({char: 'j', required: false, description: 'Output results as JSON'}),
+    input: Flags.string({char: 'i', description: 'Input HDF files', multiple: true, required: true}),
+    json: Flags.boolean({char: 'j', description: 'Output results as JSON', required: false}),
     output: Flags.string({char: 'o', required: false}),
   }
 
-  static examples = ['saf view summary -i rhel7-results.json', 'saf view summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json']
+  static usage = 'view summary -i <hdf-file> [-h] [-j] [-o <output>]'
 
   async run() {
     const {flags} = await this.parse(Summary)
@@ -83,6 +84,7 @@ export default class Summary extends Command {
     const printableSummaries: Record<string, unknown>[] = []
     Object.entries(totals).forEach(([profileName, profileValues]: any) => {
       printableSummaries.push({
+        compliance: _.mean(complianceScores[profileName]),
         profileName: profileName,
         // Extract filename from execJSONs
         resultSets: Object.entries(execJSONs).filter(([, execJSON]) => {
@@ -90,7 +92,6 @@ export default class Summary extends Command {
         }).map(([filePath]) => {
           return convertFullPathToFilename(filePath)
         }),
-        compliance: _.mean(complianceScores[profileName]),
         ...profileValues,
       })
     })

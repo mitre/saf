@@ -1,23 +1,24 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import path from 'path'
 import _ from 'lodash'
-import {createLogger, format, transports} from 'winston'
-import xml2js from 'xml2js'
-import {STIG, Vulnerability, STIGHolder} from '../../types/STIG'
-import promptSync from 'prompt-sync'
-import XlsxPopulate from 'xlsx-populate'
 import moment from 'moment'
-import {cci2nist, cklSeverityToImpact, cklSeverityToLikelihood, cklSeverityToPOAMSeverity, cklSeverityToRelevanceOfThreat, cklSeverityToResidualRiskLevel, cleanStatus, combineComments, convertToRawSeverity, createCVD, extractSolution, extractSTIGUrl, replaceSpecialCharacters} from '../../utils/ckl2poam'
+import path from 'path'
+import promptSync from 'prompt-sync'
+import {createLogger, format, transports} from 'winston'
+import XlsxPopulate from 'xlsx-populate'
+import xml2js from 'xml2js'
+
 import {default as files} from '../../resources/files.json'
+import {STIG, STIGHolder, Vulnerability} from '../../types/STIG'
+import {cci2nist, cklSeverityToImpact, cklSeverityToLikelihood, cklSeverityToPOAMSeverity, cklSeverityToRelevanceOfThreat, cklSeverityToResidualRiskLevel, cleanStatus, combineComments, convertToRawSeverity, createCVD, extractSTIGUrl, extractSolution, replaceSpecialCharacters} from '../../utils/ckl2poam'
 import {convertFullPathToFilename, dataURLtoU8Array} from '../../utils/global'
 
 const prompt = promptSync()
 const {printf} = format
 
 const fmt = printf(({
-  level,
   file,
+  level,
   message,
 }) => {
   return `${level.toUpperCase()}: ${file}: ${message}`
@@ -33,22 +34,22 @@ const logger = createLogger({
 const STARTING_ROW = 8 // The row we start inserting controls into
 
 export default class CKL2POAM extends Command {
-  static usage = 'convert ckl2POAM -i <disa-checklist>... -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]'
+  static aliases = ['convert:ckl2poam']
 
   static description = 'Translate DISA Checklist CKL file(s) to POA&M files'
-
-  static aliases = ['convert:ckl2poam']
 
   static examples = ['saf convert ckl2POAM -i checklist_file.ckl -o output-folder -d abcdefg -s 2']
 
   static flags = {
+    deviceName: Flags.string({char: 'd', default: '', description: 'Name of target device (prompts for each file if not set)', required: false}),
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, multiple: true, description: 'Path to the DISA Checklist File(s)'}),
-    officeOrg: Flags.string({char: 'O', required: false, default: '', description: 'Default value for Office/org (prompts for each file if not set)'}),
-    deviceName: Flags.string({char: 'd', required: false, default: '', description: 'Name of target device (prompts for each file if not set)'}),
-    rowsToSkip: Flags.integer({char: 's', required: false, default: 4, description: 'Rows to leave between POA&M Items for milestones'}),
-    output: Flags.string({char: 'o', required: true, description: 'Path to output PO&M File(s)'}),
+    input: Flags.string({char: 'i', description: 'Path to the DISA Checklist File(s)', multiple: true, required: true}),
+    officeOrg: Flags.string({char: 'O', default: '', description: 'Default value for Office/org (prompts for each file if not set)', required: false}),
+    output: Flags.string({char: 'o', description: 'Path to output PO&M File(s)', required: true}),
+    rowsToSkip: Flags.integer({char: 's', default: 4, description: 'Rows to leave between POA&M Items for milestones', required: false}),
   }
+
+  static usage = 'convert ckl2POAM -i <disa-checklist>... -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]'
 
   async run() {
     const {flags} = await this.parse(CKL2POAM)
@@ -64,16 +65,16 @@ export default class CKL2POAM extends Command {
       }
 
       logger.log({
-        level: 'info',
         file: fileName,
+        level: 'info',
         message: 'Opening file',
       })
       const parser = new xml2js.Parser()
       fs.readFile(fileName, function (readFileError, data) {
         if (readFileError) {
           logger.log({
-            level: 'error',
             file: fileName,
+            level: 'error',
             message: `An error occurred opening the file ${fileName}: ${readFileError}`,
           })
         }
@@ -82,8 +83,8 @@ export default class CKL2POAM extends Command {
         parser.parseString(data, function (parseFileError: any, result: STIG) {
           if (parseFileError) {
             logger.log({
-              level: 'error',
               file: fileName,
+              level: 'error',
               message: `An error occurred parsing the file: ${readFileError}`,
             })
           } else {
@@ -92,8 +93,8 @@ export default class CKL2POAM extends Command {
             const iStigs: STIGHolder[] = []
             const stigs = result.CHECKLIST.STIGS
             logger.log({
-              level: 'info',
               file: fileName,
+              level: 'info',
               message: `Found ${stigs?.length} STIGs`,
             })
             // Get nested iSTIGs
@@ -103,8 +104,8 @@ export default class CKL2POAM extends Command {
               })
             })
             logger.log({
-              level: 'info',
               file: fileName,
+              level: 'info',
               message: `Found ${iStigs.length} iSTIGs`,
             })
             // Get the controls/vulnerabilities from each stig
@@ -135,8 +136,8 @@ export default class CKL2POAM extends Command {
               }
             })
             logger.log({
-              level: 'info',
               file: fileName,
+              level: 'info',
               message: `Found ${vulnerabilities.length} vulnerabilities`,
             })
             const officeOrg = flags.officeOrg || prompt('What should the default value be for Office/org? ')

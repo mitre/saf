@@ -2,12 +2,12 @@ import {ControlStatus} from 'inspecjs'
 
 // The hash that we will generally be working with herein
 export type ControlStatusHash = {
-    [key in ControlStatus | 'Waived']: number;
+    [key in 'Waived' | ControlStatus]: number;
   };
 
 export type StatusHash = ControlStatusHash & {
-    PassedTests: number; // from passed controls
     FailedTests: number;
+    PassedTests: number; // from passed controls
     PassingTestsFailedControl: number; // number of passing tests from failed controls
     Waived: number;
   };
@@ -15,40 +15,40 @@ export type StatusHash = ControlStatusHash & {
 export type ControlIDThresholdValues = Record<string, Record<string, string[]>>
 
 export type ThresholdValues = {
-    compliance?: {min?: number; max?: number};
-    passed?: {
-      total: {controls?: string[]; min?: number; max?: number};
-      critical: {controls?: string[]; min?: number; max?: number};
-      high: {controls?: string[]; min?: number; max?: number};
-      medium: {controls?: string[]; min?: number; max?: number};
-      low: {controls?: string[]; min?: number; max?: number};
+    compliance?: {max?: number; min?: number};
+    error?: {
+      critical: {controls?: string[]; max?: number; min?: number};
+      high: {controls?: string[]; max?: number; min?: number};
+      low: {controls?: string[]; max?: number; min?: number};
+      medium: {controls?: string[]; max?: number; min?: number};
+      total: {controls?: string[]; max?: number; min?: number};
     };
     failed?: {
-      total: {controls?: string[]; min?: number; max?: number};
-      critical: {controls?: string[]; min?: number; max?: number};
-      high: {controls?: string[]; min?: number; max?: number};
-      medium: {controls?: string[]; min?: number; max?: number};
-      low: {controls?: string[]; min?: number; max?: number};
-    };
-    skipped?: {
-      total: {controls?: string[]; min?: number; max?: number};
-      critical: {controls?: string[]; min?: number; max?: number};
-      high: {controls?: string[]; min?: number; max?: number};
-      medium: {controls?: string[]; min?: number; max?: number};
-      low: {controls?: string[]; min?: number; max?: number};
+      critical: {controls?: string[]; max?: number; min?: number};
+      high: {controls?: string[]; max?: number; min?: number};
+      low: {controls?: string[]; max?: number; min?: number};
+      medium: {controls?: string[]; max?: number; min?: number};
+      total: {controls?: string[]; max?: number; min?: number};
     };
     no_impact?: {
-      total: {controls?: string[]; min?: number; max?: number};
-      critical: {controls?: string[]; min?: number; max?: number};
-      high: {controls?: string[]; min?: number; max?: number};
-      medium: {controls?: string[]; min?: number; max?: number};
-      low: {controls?: string[]; min?: number; max?: number};
+      critical: {controls?: string[]; max?: number; min?: number};
+      high: {controls?: string[]; max?: number; min?: number};
+      low: {controls?: string[]; max?: number; min?: number};
+      medium: {controls?: string[]; max?: number; min?: number};
+      total: {controls?: string[]; max?: number; min?: number};
     };
-    error?: {
-      total: {controls?: string[]; min?: number; max?: number};
-      critical: {controls?: string[]; min?: number; max?: number};
-      high: {controls?: string[]; min?: number; max?: number};
-      medium: {controls?: string[]; min?: number; max?: number};
-      low: {controls?: string[]; min?: number; max?: number};
+    passed?: {
+      critical: {controls?: string[]; max?: number; min?: number};
+      high: {controls?: string[]; max?: number; min?: number};
+      low: {controls?: string[]; max?: number; min?: number};
+      medium: {controls?: string[]; max?: number; min?: number};
+      total: {controls?: string[]; max?: number; min?: number};
+    };
+    skipped?: {
+      critical: {controls?: string[]; max?: number; min?: number};
+      high: {controls?: string[]; max?: number; min?: number};
+      low: {controls?: string[]; max?: number; min?: number};
+      medium: {controls?: string[]; max?: number; min?: number};
+      total: {controls?: string[]; max?: number; min?: number};
     };
   }

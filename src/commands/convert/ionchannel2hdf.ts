@@ -1,61 +1,62 @@
 import {IonChannelAPIMapper, IonChannelMapper} from '@mitre/hdf-converters'
 import {Command, Flags} from '@oclif/core'
-import {checkInput, checkSuffix, convertFullPathToFilename} from '../../utils/global'
-import {createWinstonLogger} from '../../utils/logging'
 import fs from 'fs'
 import path from 'path'
 
-export default class IonChannel2HDF extends Command {
-  static usage = 'convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json>... | -a <api-key> -t <team-name> [--raw ] [-p <project>...] [-A ]) [-L info|warn|debug|verbose]'
+import {checkInput, checkSuffix, convertFullPathToFilename} from '../../utils/global'
+import {createWinstonLogger} from '../../utils/logging'
 
+export default class IonChannel2HDF extends Command {
   static description =
-    'Pull and translate SBOM data from Ion Channel into Heimdall Data Format';
+    'Pull and translate SBOM data from Ion Channel into Heimdall Data Format'
 
   static flags = {
+    allProjects: Flags.boolean({
+      char: 'A',
+      dependsOn: ['apiKey'],
+      description: 'Pull all projects available within your team',
+    }),
+    apiKey: Flags.string({
+      char: 'a',
+      dependsOn: ['teamName'],
+      description: 'API Key from Ion Channel user settings',
+    }),
     help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       description: 'Input IonChannel JSON file',
-      multiple: true,
       exclusive: ['apiKey'],
-    }),
-    apiKey: Flags.string({
-      char: 'a',
-      description: 'API Key from Ion Channel user settings',
-      dependsOn: ['teamName'],
-    }),
-    teamName: Flags.string({
-      char: 't',
-      description:
-        'Your team name that contains the project(s) you would like to pull data from',
-      dependsOn: ['apiKey'],
-    }),
-    output: Flags.string({
-      char: 'o',
-      required: true,
-      description: 'Output JSON folder',
-    }),
-    raw: Flags.boolean({
-      description: 'Output Ion Channel raw data',
-      dependsOn: ['apiKey'],
-    }),
-    project: Flags.string({
-      char: 'p',
-      description: 'The name of the project(s) you would like to pull',
       multiple: true,
-      dependsOn: ['apiKey'],
-    }),
-    allProjects: Flags.boolean({
-      char: 'A',
-      description: 'Pull all projects available within your team',
-      dependsOn: ['apiKey'],
     }),
     logLevel: Flags.string({
       char: 'L',
       default: 'info',
       options: ['info', 'warn', 'debug', 'verbose'],
     }),
-  };
+    output: Flags.string({
+      char: 'o',
+      description: 'Output JSON folder',
+      required: true,
+    }),
+    project: Flags.string({
+      char: 'p',
+      dependsOn: ['apiKey'],
+      description: 'The name of the project(s) you would like to pull',
+      multiple: true,
+    }),
+    raw: Flags.boolean({
+      dependsOn: ['apiKey'],
+      description: 'Output Ion Channel raw data',
+    }),
+    teamName: Flags.string({
+      char: 't',
+      dependsOn: ['apiKey'],
+      description:
+        'Your team name that contains the project(s) you would like to pull data from',
+    }),
+  }
+
+  static usage = 'convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json>... | -a <api-key> -t <team-name> [--raw ] [-p <project>...] [-A ]) [-L info|warn|debug|verbose]'
 
   async run() {
     const {flags} = await this.parse(IonChannel2HDF)

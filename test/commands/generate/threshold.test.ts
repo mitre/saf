@@ -1,7 +1,7 @@
 import {expect, test} from '@oclif/test'
-import tmp from 'tmp'
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
+import tmp from 'tmp'
 import YAML from 'yaml'
 
 describe('Generate threshold', () => {

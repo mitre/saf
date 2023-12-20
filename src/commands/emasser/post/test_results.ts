@@ -1,18 +1,15 @@
-import colorize from 'json-colorizer'
+import {TestResultsApi} from '@mitre/emass_client'
+import {TestResultsGet as TestResult,
+  TestResultsResponsePost} from '@mitre/emass_client/dist/api'
 import {Command, Flags} from '@oclif/core'
+import colorize from 'json-colorizer'
 
-import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputError} from '../../../utils/emasser/outputError'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
-import {TestResultsApi} from '@mitre/emass_client'
-import {TestResultsResponsePost,
-  TestResultsGet as TestResult} from '@mitre/emass_client/dist/api'
-
 export default class EmasserPostTestResults extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = "Add test results for a system's Assessment Procedures (CCIs) which determine Security Control compliance"
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-c,--cci] [-b,--testedBy] [-t,--testDate] [-d,--description] [-S,--complianceStatus]']
@@ -22,6 +19,8 @@ export default class EmasserPostTestResults extends Command {
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
+  static usage = '<%= command.id %> [options]'
+
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserPostTestResults)
     const apiCxn = new ApiConnection()
@@ -30,10 +29,10 @@ export default class EmasserPostTestResults extends Command {
     const requestBodyArray: TestResult[] = []
     requestBodyArray.push({
       cci: flags.cci,
-      testedBy: flags.testedBy,
-      testDate: Number.parseFloat(flags.testDate),
-      description: flags.description,
       complianceStatus: flags.complianceStatus,
+      description: flags.description,
+      testDate: Number.parseFloat(flags.testDate),
+      testedBy: flags.testedBy,
     })
 
     addTestResults.addTestResultsBySystemId(flags.systemId, requestBodyArray).then((response: TestResultsResponsePost) => {

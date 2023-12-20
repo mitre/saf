@@ -1,17 +1,16 @@
+import {ControlsApi} from '@mitre/emass_client'
+import {ControlsGet as Controls,
+  ControlsResponsePut} from '@mitre/emass_client/dist/api'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import _ from 'lodash'
 import {readFile} from 'fs/promises'
 import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
+import _ from 'lodash'
 
-import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputError} from '../../../utils/emasser/outputError'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
-
-import {ControlsApi} from '@mitre/emass_client'
-import {ControlsResponsePut,
-  ControlsGet as Controls} from '@mitre/emass_client/dist/api'
 
 function printHelpMsg() {
   console.log('\x1B[93m', '\nInvoke saf emasser put controls [-h, --help] for additional help', '\x1B[0m')
@@ -21,7 +20,7 @@ function printRedMsg(msg: string) {
   console.log('\x1B[91m', msg, '\x1B[0m')
 }
 
-function assertParamExists(object: string, value: string|number|undefined|null): void {
+function assertParamExists(object: string, value: null|number|string|undefined): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')
@@ -252,8 +251,6 @@ function generateBodyObj(dataObject: Controls): Controls {
 }
 
 export default class EmasserPutControls extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Update Security Control information of a system for both the Implementation Plan and Risk Assessment.'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--controlsFile]',
@@ -269,6 +266,8 @@ export default class EmasserPutControls extends Command {
     help: Flags.help({char: 'h', description: 'Put (update) control information in a system for one or many controls. See emasser Features (emasserFeatures.md) for additional information.'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
+
+  static usage = '<%= command.id %> [options]'
 
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserPutControls)

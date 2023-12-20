@@ -1,44 +1,44 @@
 import {ContextualizedEvaluation} from 'inspecjs'
 
 export interface ChecklistControl {
-  vid: string;
+  ccis: string[];
+  checkText: string;
+  description: string;
+  fixText: string;
+  gtitle: string;
+  profileName: string;
+  results: string;
   rid: string;
   ruleVersion: string;
-  gtitle: string;
   severity: string;
-  title: string;
-  description: string;
-  checkText: string;
-  fixText: string;
-  profileName: string;
   startTime: string;
-  targetKey: number;
-  uuidV4: string;
-  ccis: string[];
   status: string;
-  results: string;
+  targetKey: number;
+  title: string;
+  uuidV4: string;
+  vid: string;
 }
 
 export interface CKLMetadata {
-    fileName: string;
+    [key: string]: Record<string, null | string> | null | string;
     benchmark: {
-      title: string | null;
-      version: string | null;
-      plaintext: string | null;
+      plaintext: null | string;
+      title: null | string;
+      version: null | string;
     };
-    stigid: string | null;
-    role: string | null;
-    type: string | null;
-    hostname: string | null;
-    ip: string | null;
-    mac: string | null;
-    fqdn: string | null;
-    tech_area: string | null;
-    target_key: string | null;
-    web_or_database: string | null;
-    web_db_site: string | null;
-    web_db_instance: string | null;
-    [key: string]: string | null | Record<string, string | null>;
+    fileName: string;
+    fqdn: null | string;
+    hostname: null | string;
+    ip: null | string;
+    mac: null | string;
+    role: null | string;
+    stigid: null | string;
+    target_key: null | string;
+    tech_area: null | string;
+    type: null | string;
+    web_db_instance: null | string;
+    web_db_site: null | string;
+    web_or_database: null | string;
 }
 
 type ExtendedEvaluationFile = {

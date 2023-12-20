@@ -1,22 +1,23 @@
+import {ASFFResults as Mapper} from '@mitre/hdf-converters'
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import {ASFFResults as Mapper} from '@mitre/hdf-converters'
-import {checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
 
-export default class Trivy2HDF extends Command {
-  static usage = 'convert trivy2hdf -i <trivy-finding-json> -o <hdf-output-folder>'
+import {checkInput, checkSuffix} from '../../utils/global'
 
+export default class Trivy2HDF extends Command {
   static description = 'Translate a Trivy-derived AWS Security Finding Format results from JSONL into a Heimdall Data Format JSON file'
 
   static examples = ['saf convert trivy2hdf -i trivy-asff.json -o output-folder']
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Input Trivy ASFF JSON File'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON Folder'}),
+    input: Flags.string({char: 'i', description: 'Input Trivy ASFF JSON File', required: true}),
+    output: Flags.string({char: 'o', description: 'Output HDF JSON Folder', required: true}),
   }
+
+  static usage = 'convert trivy2hdf -i <trivy-finding-json> -o <hdf-output-folder>'
 
   async run() {
     const {flags} = await this.parse(Trivy2HDF)

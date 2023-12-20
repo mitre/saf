@@ -6,17 +6,17 @@ export interface CHECKLIST {
   STIGS?: STIGs[] | null;
 }
 export interface Asset {
-  ROLE?: string[] | null;
-  ASSET_TYPE?: string[] | null;
-  HOST_NAME?: string[] | null;
-  HOST_IP?: string[] | null;
-  HOST_MAC?: string[] | null;
-  HOST_FQDN?: string[] | null;
-  TECH_AREA?: string[] | null;
-  TARGET_KEY?: string[] | null;
+  ASSET_TYPE?: null | string[];
+  HOST_FQDN?: null | string[];
+  HOST_IP?: null | string[];
+  HOST_MAC?: null | string[];
+  HOST_NAME?: null | string[];
+  ROLE?: null | string[];
+  TARGET_KEY?: null | string[];
+  TECH_AREA?: null | string[];
+  WEB_DB_INSTANCE?: null | string[];
+  WEB_DB_SITE?: null | string[];
   WEB_OR_DATABASE: boolean;
-  WEB_DB_SITE?: string[] | null;
-  WEB_DB_INSTANCE?: string[] | null;
 }
 export interface STIGs {
   iSTIG?: STIGHolder[] | null;
@@ -29,45 +29,45 @@ export interface STIGInfo {
   SI_DATA?: SIData[] | null;
 }
 export interface SIData {
-  SID_NAME: string[];
   SID_DATA: string[];
+  SID_NAME: string[];
 }
 
 export interface Vulnerability {
-  Vuln_Num?: string;
-  Severity?: string;
-  Group_Title?: string;
-  Rule_ID?: string;
-  Rule_Ver?: string;
-  Rule_Title?: string;
-  Vuln_Discuss?: string;
-  IA_Controls?: string;
+  CCI_REF?: string;
+  COMMENTS?: string;
   Check_Content?: string;
-  Fix_Text?: string;
-  False_Positives?: string;
-  False_Negatives?: string;
+  Check_Content_Ref?: string;
+  Class?: string;
   Documentable?: string;
+  FINDING_DETAILS?: string;
+  False_Negatives?: string;
+  False_Positives?: string;
+  Fix_Text?: string;
+  Group_Title?: string;
+  IA_Controls?: string;
+  Mitigation_Control?: string;
   Mitigations?: string;
   Potential_Impact?: string;
-  Third_Party_Tools?: string;
-  Mitigation_Control?: string;
   Responsibility?: string;
-  Security_Override_Guidance?: string;
-  Check_Content_Ref?: string;
-  Weight?: string;
-  Class?: string;
-  STIGRef?: string;
-  TargetKey?: string;
-  STIG_UUID?: string;
-  CCI_REF?: string;
-  STIG_DATA?: STIGAttributes[] | null;
-  STATUS?: 'Open' | 'NotAFinding' | 'Not_Applicable' | 'Not_Reviewed';
-  FINDING_DETAILS?: string;
-  COMMENTS?: string;
-  SEVERITY_OVERRIDE?: string;
+  Rule_ID?: string;
+  Rule_Title?: string;
+  Rule_Ver?: string;
   SEVERITY_JUSTIFICATION?: string;
+  SEVERITY_OVERRIDE?: string;
+  STATUS?: 'Not_Applicable' | 'Not_Reviewed' | 'NotAFinding' | 'Open';
+  STIG_DATA?: STIGAttributes[] | null;
+  STIG_UUID?: string;
+  STIGRef?: string;
+  Security_Override_Guidance?: string;
+  Severity?: string;
+  TargetKey?: string;
+  Third_Party_Tools?: string;
+  Vuln_Discuss?: string;
+  Vuln_Num?: string;
+  Weight?: string;
 }
 export interface STIGAttributes {
-  VULN_ATTRIBUTE: string[];
   ATTRIBUTE_DATA: string[];
+  VULN_ATTRIBUTE: string[];
 }

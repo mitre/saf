@@ -1,24 +1,25 @@
-import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
 import {ContainersApi} from '@mitre/emass_client'
 import {ContainersResponsePost} from '@mitre/emass_client/dist/api'
+import {Command, Flags} from '@oclif/core'
+import fs from 'fs'
+import {readFile} from 'fs/promises'
+import colorize from 'json-colorizer'
+import _ from 'lodash'
+
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputError} from '../../../utils/emasser/outputError'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
-import {outputError} from '../../../utils/emasser/outputError'
-import {readFile} from 'fs/promises'
-import _ from 'lodash'
-import fs from 'fs'
 
 interface ContainerResource {
+  benchmarks: Benchmarks[]
   containerId: string,
   containerName: string,
-  podName?: string,
-  podIp?: string,
   namespace?: string,
-  time: number,
+  podIp?: string,
+  podName?: string,
   tags?: Tags|any,
-  benchmarks: Benchmarks[]
+  time: number,
 }
 
 interface Tags {
@@ -32,19 +33,19 @@ interface Benchmarks {
 }
 
 interface Results {
-  ruleId: string,
-  status: StatusEnum,
   lastSeen: number,
   message?: string,
+  ruleId: string,
+  status: StatusEnum,
 }
 
 export declare const StatusEnum: {
-  readonly Pass: 'Pass';
   readonly Fail: 'Fail';
-  readonly Other: 'Other';
-  readonly NotReviewed: 'Not Reviewed';
-  readonly NotChecked: 'Not Checked';
   readonly NotApplicable: 'Not Applicable';
+  readonly NotChecked: 'Not Checked';
+  readonly NotReviewed: 'Not Reviewed';
+  readonly Other: 'Other';
+  readonly Pass: 'Pass';
 }
 export declare type StatusEnum = typeof StatusEnum[keyof typeof StatusEnum];
 
@@ -52,7 +53,7 @@ function printRedMsg(msg: string) {
   console.log('\x1B[91m', msg, '\x1B[0m')
 }
 
-function assertParamExists(object: string, value: string|boolean|number|undefined|null): void {
+function assertParamExists(object: string, value: boolean|null|number|string|undefined): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')
@@ -61,10 +62,10 @@ function assertParamExists(object: string, value: string|boolean|number|undefine
 
 function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerResource {
   const bodyObj: ContainerResource = {
+    benchmarks: [],
     containerId: '',
     containerName: '',
     time: 0,
-    benchmarks: [],
   }
   const benchmarksArray: Benchmarks[] = []
   const resultsArray: Results[] = []
@@ -85,9 +86,9 @@ function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerRe
         j++
 
         const resultsObj: Results = {
+          lastSeen: 0,
           ruleId: '',
           status: 'Pass',
-          lastSeen: 0,
         }
         resultsObj.ruleId = resultObj.ruleId
         resultsObj.lastSeen = resultObj.lastSeen
@@ -159,9 +160,9 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
     // Add the optional results entries
     entryObject.results.forEach((resultObj: Results) => {
       const resultsObj: Results = {
+        lastSeen: 0,
         ruleId: '',
         status: 'Pass',
-        lastSeen: 0,
       }
       // These are required
       resultsObj.ruleId = resultObj.ruleId
@@ -182,8 +183,6 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
 }
 
 export default class EmasserContainerScans extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Upload containers and their scan results in the assets module for a system'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--containerCodeScanFile]',
@@ -197,6 +196,8 @@ export default class EmasserContainerScans extends Command {
     help: Flags.help({char: 'h', description: 'Post (upload) one or many containers and their scan results for a system'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
+
+  static usage = '<%= command.id %> [options]'
 
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserContainerScans)
@@ -225,10 +226,10 @@ export default class EmasserContainerScans extends Command {
       if (Array.isArray(data)) {
         data.forEach((dataObject: ContainerResource) => {
           let bodyObj: ContainerResource = {
+            benchmarks: [],
             containerId: '',
             containerName: '',
             time: 0,
-            benchmarks: [],
           }
           // Add required fields to request array object based on business logic
           try {
@@ -242,10 +243,10 @@ export default class EmasserContainerScans extends Command {
       } else if (typeof data === 'object') {
         const dataObject: ContainerResource = data
         let bodyObj: ContainerResource = {
+          benchmarks: [],
           containerId: '',
           containerName: '',
           time: 0,
-          benchmarks: [],
         }
         // Add required fields to request array object based on business logic
         try {
