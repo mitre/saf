@@ -12,7 +12,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 18.18
           check-latest: true
           registry-url: "https://registry.npmjs.org"
           cache: 'npm'
@@ -34,7 +34,7 @@ jobs:
       # Setup .npmrc file to publish to GitHub Package Registry
       - uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: 18.18
           registry-url: 'https://npm.pkg.github.com'
           cache: 'npm'
 
