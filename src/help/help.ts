@@ -26,7 +26,7 @@ import {Command, Help} from '@oclif/core'
   For additional information, reference the oclif Help Classes (https://oclif.io/docs/help_classes)
 */
 export default class MyHelpClass extends Help {
-  public async showCommandHelp(command: Command.Class | Command.Loadable | Command.Cached): Promise<void> { // skipcq: JS-0116
+  public async showCommandHelp(command: Command.Loadable): Promise<void> { // skipcq: JS-0116
     const name = command.id
     const depth = name.split(':').length
 
