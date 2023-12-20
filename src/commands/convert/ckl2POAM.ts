@@ -6,7 +6,7 @@ import path from 'path'
 import promptSync from 'prompt-sync'
 import {createLogger, format, transports} from 'winston'
 import XlsxPopulate from 'xlsx-populate'
-import xml2js from 'xml2js'
+import {Parser} from 'xml2js'
 
 import {default as files} from '../../resources/files.json'
 import {STIG, STIGHolder, Vulnerability} from '../../types/STIG'
@@ -69,7 +69,7 @@ export default class CKL2POAM extends Command {
         level: 'info',
         message: 'Opening file',
       })
-      const parser = new xml2js.Parser()
+      const parser = new Parser()
       fs.readFile(fileName, function (readFileError, data) {
         if (readFileError) {
           logger.log({
@@ -80,7 +80,7 @@ export default class CKL2POAM extends Command {
         }
 
         // Parse the XML to a javascript object
-        parser.parseString(data, function (parseFileError: any, result: STIG) {
+        parser.parseString(data, function (parseFileError, result: STIG) {
           if (parseFileError) {
             logger.log({
               file: fileName,
@@ -143,7 +143,7 @@ export default class CKL2POAM extends Command {
             const officeOrg = flags.officeOrg || prompt('What should the default value be for Office/org? ')
             const host = flags.deviceName || prompt('What is the device name? ')
             // Read our template
-            XlsxPopulate.fromDataAsync(dataURLtoU8Array(files.POAMTemplate.data)).then((workBook: any) => {
+            XlsxPopulate.fromDataAsync(dataURLtoU8Array(files.POAMTemplate.data)).then(workBook => {
               // eMASS reads the first sheet in the notebook
               const sheet = workBook.sheet(0)
               // The current row we are on
