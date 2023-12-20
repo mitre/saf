@@ -14,7 +14,7 @@
     "@mitre/inspec-objects": "^1.0.1",
     "@oclif/core": "^3.0.0",
     "@oclif/plugin-help": "^6",
-    "@oclif/plugin-plugins": "^3.3.2",
+    "@oclif/plugin-plugins": "^4.1.10",
     "@oclif/plugin-version": "^2",
     "@oclif/plugin-warn-if-update-available": "^3.0.7",
     "@smithy/node-http-handler": "^2.2.1",
