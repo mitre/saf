@@ -113,7 +113,7 @@ export default class CreateAttestations extends Command {
       }
 
       case 'xlsx': {
-        XlsxPopulate.fromDataAsync(dataURLtoU8Array(files.AttestationTemplate.data)).then((workBook: any) => {
+        XlsxPopulate.fromDataAsync(dataURLtoU8Array(files.AttestationTemplate.data)).then(workBook => {
           const sheet = workBook.sheet(0) // Attestations worksheet
           let currentRow = 2
           for (const attestation of attestations) {
