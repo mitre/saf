@@ -1,26 +1,27 @@
-import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
 import {CloudResourceResultsApi} from '@mitre/emass_client'
 import {CloudResourcesResponsePost} from '@mitre/emass_client/dist/api'
+import {Command, Flags} from '@oclif/core'
+import fs from 'fs'
+import {readFile} from 'fs/promises'
+import colorize from 'json-colorizer'
+import _ from 'lodash'
+
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputError} from '../../../utils/emasser/outputError'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
-import {outputError} from '../../../utils/emasser/outputError'
-import {readFile} from 'fs/promises'
-import _ from 'lodash'
-import fs from 'fs'
 
 interface CloudResource {
-  provider: string,
-  resourceId: string,
-  resourceName: string,
-  resourceType: string,
+  complianceResults: ComplianceResults[]
   cspAccountId?: string,
   cspRegion?: string,
   initiatedBy?: string,
   isBaseline?: boolean,
+  provider: string,
+  resourceId: string,
+  resourceName: string,
+  resourceType: string,
   tags?: Tags|any,
-  complianceResults: ComplianceResults[]
 }
 
 interface Tags {
@@ -28,13 +29,13 @@ interface Tags {
 }
 
 interface ComplianceResults {
-  cspPolicyDefinitionId: string,
-  isCompliant: boolean,
-  policyDefinitionTitle: string,
   assessmentProcedure?: string,
   complianceCheckTimestamp?: string,
   complianceReason?: string,
   control?: string,
+  cspPolicyDefinitionId: string,
+  isCompliant: boolean,
+  policyDefinitionTitle: string,
   policyDeploymentName?: string,
   policyDeploymentVersion?: string,
   severity?: string
@@ -44,7 +45,7 @@ function printRedMsg(msg: string) {
   console.log('\x1B[91m', msg, '\x1B[0m')
 }
 
-function assertParamExists(object: string, value: string|boolean|undefined|null): void {
+function assertParamExists(object: string, value: boolean|null|string|undefined): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')
@@ -53,11 +54,11 @@ function assertParamExists(object: string, value: string|boolean|undefined|null)
 
 function addRequiredFieldsToRequestBody(dataObj: CloudResource): CloudResource {
   const bodyObj: CloudResource = {
+    complianceResults: [],
     provider: '',
     resourceId: '',
     resourceName: '',
     resourceType: '',
-    complianceResults: [],
   }
 
   const complianceResultsArray: ComplianceResults[] = []
@@ -173,8 +174,6 @@ function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): v
 }
 
 export default class EmasserPostCloudResources extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Add a cloud resource and their scan results in the assets module for a system'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--cloudResourceFile]',
@@ -188,6 +187,8 @@ export default class EmasserPostCloudResources extends Command {
     help: Flags.help({char: 'h', description: 'Post (add) cloud resources and their scan results in the assets module for a system'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
+
+  static usage = '<%= command.id %> [options]'
 
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserPostCloudResources)
@@ -216,11 +217,11 @@ export default class EmasserPostCloudResources extends Command {
       if (Array.isArray(data)) {
         data.forEach((dataObject: CloudResource) => {
           let bodyObj: CloudResource = {
+            complianceResults: [],
             provider: '',
             resourceId: '',
             resourceName: '',
             resourceType: '',
-            complianceResults: [],
           }
           // Add required fields to request array object based on business logic
           try {
@@ -234,11 +235,11 @@ export default class EmasserPostCloudResources extends Command {
       } else if (typeof data === 'object') {
         const dataObject: CloudResource = data
         let bodyObj: CloudResource = {
+          complianceResults: [],
           provider: '',
           resourceId: '',
           resourceName: '',
           resourceType: '',
-          complianceResults: [],
         }
         // Add required fields to request array object based on business logic
         try {

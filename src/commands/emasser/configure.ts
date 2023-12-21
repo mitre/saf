@@ -1,12 +1,11 @@
 import colors from 'colors' // eslint-disable-line no-restricted-imports
 import {Command} from '@oclif/core'
+
 import {generateConfig} from '../../utils/emasser/generateConfig'
 
 export default class EmasserBuildConfig extends Command {
-  static summary = 'Generate a configuration file (.env) for accessing an eMASS instances.'
-
   static description =
-  `
+    `
    ${colors.yellow('The following variables are required:')}
    ${colors.blue('\tEMASSER_API_KEY') + colors.green('           <The eMASS API key (api-key) - valid key is > 30 alpha numeric characters>\b')}
    ${colors.blue('\tEMASSER_USER_UID') + colors.green('          <The eMASS User Unique Identifier (user-uid)>\b')}
@@ -24,6 +23,8 @@ export default class EmasserBuildConfig extends Command {
   `
 
   static examples = ['<%= config.bin %> <%= command.id %>']
+
+  static summary = 'Generate a configuration file (.env) for accessing an eMASS instances.'
 
   async run(): Promise<void> { // skipcq: JS-0116, JS-0105
     generateConfig()

@@ -1,8 +1,8 @@
-import {expect, test} from '@oclif/test'
-import tmp from 'tmp'
-import path from 'path'
-import fs from 'fs'
 import {processXCCDF} from '@mitre/inspec-objects'
+import {expect, test} from '@oclif/test'
+import fs from 'fs'
+import path from 'path'
+import tmp from 'tmp'
 
 describe('Test xccdf_benchmark2inspec', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})

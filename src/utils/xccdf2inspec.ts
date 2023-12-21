@@ -1,4 +1,5 @@
 import {XMLParser} from 'fast-xml-parser'
+
 import {InSpecControl} from '../types/inspec'
 
 // Breaks lines down to lineLength number of characters
@@ -26,8 +27,8 @@ export function convertEncodedXmlIntoJson(
   encodedXml: string,
 ): any {
   const options = {
-    ignoreAttributes: false,
     attributeNamePrefix: '@_',
+    ignoreAttributes: false,
   }
   const parser = new XMLParser(options)
   return parser.parse(encodedXml)

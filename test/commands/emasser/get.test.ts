@@ -1,11 +1,12 @@
+import {CACApi, ControlsApi, DashboardsApi,
+  MilestonesApi, PACApi, POAMApi, SystemRolesApi, SystemsApi,
+  TestApi} from '@mitre/emass_client'
+import {CacResponseGet, MilestoneResponseGetMilestone,
+  PacResponseGet, PoamResponseGetPoams, SystemResponse,
+  SystemRolesResponse, SystemsResponse} from '@mitre/emass_client/dist/api'
 import {expect, test} from '@oclif/test'
+
 import {InitMockServer} from './mock.server'
-import {SystemsApi, SystemRolesApi, TestApi,
-  POAMApi, CACApi, PACApi, MilestonesApi, ControlsApi,
-  DashboardsApi} from '@mitre/emass_client'
-import {PoamResponseGetPoams, SystemResponse,
-  SystemRolesResponse, SystemsResponse, CacResponseGet,
-  PacResponseGet, MilestoneResponseGetMilestone} from '@mitre/emass_client/dist/api'
 
 describe('Test eMASS API CLI (get) commands', () => {
   const mocSer = new InitMockServer()

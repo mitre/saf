@@ -1,22 +1,23 @@
+import {ZapMapper as Mapper} from '@mitre/hdf-converters'
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import {ZapMapper as Mapper} from '@mitre/hdf-converters'
+
 import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class Zap2HDF extends Command {
-  static usage = 'convert zap2hdf -i <zap-json> -n <target-site-name> -o <hdf-scan-results-json> [-h] [-w]'
-
   static description = 'Translate a OWASP ZAP results JSON to a Heimdall Data Format JSON file'
 
   static examples = ['saf convert zap2hdf -i zap_results.json -n mitre.org -o scan_results.json']
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Input OWASP Zap Results JSON File'}),
-    name: Flags.string({char: 'n', required: true, description: 'Target Site Name'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
-    'with-raw': Flags.boolean({char: 'w', required: false, description: 'Include raw input file in HDF JSON file'}),
+    input: Flags.string({char: 'i', description: 'Input OWASP Zap Results JSON File', required: true}),
+    name: Flags.string({char: 'n', description: 'Target Site Name', required: true}),
+    output: Flags.string({char: 'o', description: 'Output HDF JSON File', required: true}),
+    'with-raw': Flags.boolean({char: 'w', description: 'Include raw input file in HDF JSON file', required: false}),
   }
+
+  static usage = 'convert zap2hdf -i <zap-json> -n <target-site-name> -o <hdf-scan-results-json> [-h] [-w]'
 
   async run() {
     const {flags} = await this.parse(Zap2HDF)

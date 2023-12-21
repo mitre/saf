@@ -1,15 +1,14 @@
-import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {PACApi} from '@mitre/emass_client'
 import {PacResponseGet} from '@mitre/emass_client/dist/api'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
+import {Command, Flags} from '@oclif/core'
+import colorize from 'json-colorizer'
+
+import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputError} from '../../../utils/emasser/outputError'
+import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetPac extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'View one or many Package Approval Chain (PAC) in a system specified system ID'
 
   static examples = ['<%= config.bin %> <%= command.id %> --systemId <value>']
@@ -18,6 +17,8 @@ export default class EmasserGetPac extends Command {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET PAC endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
+
+  static usage = '<%= command.id %> [options]'
 
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserGetPac)

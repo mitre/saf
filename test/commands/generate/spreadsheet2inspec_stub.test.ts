@@ -1,7 +1,7 @@
 import {expect, test} from '@oclif/test'
-import tmp from 'tmp'
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
+import tmp from 'tmp'
 
 describe('Test spreadsheet2inspec_stub', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})

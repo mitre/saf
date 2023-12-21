@@ -1,9 +1,9 @@
-import path from 'path'
-import colors from 'colors' // eslint-disable-line no-restricted-imports
-import fse from 'fs-extra'
+import colors from 'colors'
 import dotenv from 'dotenv'
+import fse from 'fs-extra'
 import inquirer from 'inquirer'
 import inquirerFileTreeSelection from 'inquirer-file-tree-selection-prompt'
+import path from 'path'
 
 const PROMPT_MESSAGE = [
   'Provide the eMASS API key (EMASSER_API_KEY) - valid key is > 30 alpha numeric characters:',
@@ -66,12 +66,12 @@ function processPrompt() {
 
   const questions = [
     {
-      type: 'input',
-      name: PROMPT_NAMES_REQUIRED[0],
-      message: PROMPT_MESSAGE[0],
       default() {
         return envConfig.EMASSER_API_KEY
       },
+      message: PROMPT_MESSAGE[0],
+      name: PROMPT_NAMES_REQUIRED[0],
+      type: 'input',
       validate(input: string) {
         if (/([a-zA-Z0-9-]{30,})/g.test(input)) { // skipcq: JS-0113
           return true
@@ -81,20 +81,20 @@ function processPrompt() {
       },
     },
     {
-      type: 'input',
-      name: PROMPT_NAMES_REQUIRED[1],
-      message: PROMPT_MESSAGE[1],
       default() {
         return envConfig.EMASSER_USER_UID
       },
+      message: PROMPT_MESSAGE[1],
+      name: PROMPT_NAMES_REQUIRED[1],
+      type: 'input',
     },
     {
-      type: 'input',
-      name: PROMPT_NAMES_REQUIRED[2],
-      message: PROMPT_MESSAGE[2],
       default() {
         return envConfig.EMASSER_HOST_URL
       },
+      message: PROMPT_MESSAGE[2],
+      name: PROMPT_NAMES_REQUIRED[2],
+      type: 'input',
       validate(input: string) {
         // eslint-disable-next-line no-useless-escape
         if (/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/g.test(input)) { // skipcq: JS-0113, JS-0097
@@ -105,15 +105,14 @@ function processPrompt() {
       },
     },
     {
-      type: 'file-tree-selection',
-      name: PROMPT_NAMES_REQUIRED[3],
-      message: PROMPT_MESSAGE[3],
-      filters: 'pem',
-      pageSize: 15,
       default() {
         return envConfig.EMASSER_KEY_FILE_PATH
       },
       enableGoUpperDirectory: true,
+      filters: 'pem',
+      message: PROMPT_MESSAGE[3],
+      name: PROMPT_NAMES_REQUIRED[3],
+      pageSize: 15,
       transformer: (input: any) => {
         const name = input.split(path.sep).pop()
         const fileExtension =  name.split('.').slice(1).pop()
@@ -127,6 +126,7 @@ function processPrompt() {
 
         return name
       },
+      type: 'file-tree-selection',
       validate: (input: any) => {
         const name = input.split(path.sep).pop()
         const fileExtension =  name.split('.').slice(1).pop()
@@ -138,15 +138,14 @@ function processPrompt() {
       },
     },
     {
-      type: 'file-tree-selection',
-      name: PROMPT_NAMES_REQUIRED[4],
-      message: PROMPT_MESSAGE[4],
-      filters: 'pem',
-      pageSize: 15,
       default() {
         return envConfig.EMASSER_CERT_FILE_PATH
       },
       enableGoUpperDirectory: true,
+      filters: 'pem',
+      message: PROMPT_MESSAGE[4],
+      name: PROMPT_NAMES_REQUIRED[4],
+      pageSize: 15,
       transformer: (input: any) => {
         const name = input.split(path.sep).pop()
         const fileExtension =  name.split('.').slice(1).pop()
@@ -160,6 +159,7 @@ function processPrompt() {
 
         return name
       },
+      type: 'file-tree-selection',
       validate: (input: any) => {
         const name = input.split(path.sep).pop()
         const fileExtension = name.split('.').slice(1).pop()
@@ -171,20 +171,20 @@ function processPrompt() {
       },
     },
     {
-      type: 'password',
-      name: PROMPT_NAMES_REQUIRED[5],
-      message: PROMPT_MESSAGE[5],
       default() {
         return envConfig.EMASSER_KEY_FILE_PASSWORD
       },
+      message: PROMPT_MESSAGE[5],
+      name: PROMPT_NAMES_REQUIRED[5],
+      type: 'password',
     },
     {
-      type: 'input',
-      name: PROMPT_NAMES_OPTIONAL[0],
-      message: PROMPT_MESSAGE[6],
       default() {
         return envConfig.EMASSER_PORT
       },
+      message: PROMPT_MESSAGE[6],
+      name: PROMPT_NAMES_OPTIONAL[0],
+      type: 'input',
       validate(input: string) {
         if (/(^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$)/g.test(input)) { // skipcq: JS-0113
           return true
@@ -194,54 +194,54 @@ function processPrompt() {
       },
     },
     {
-      type: 'list',
-      name: PROMPT_NAMES_OPTIONAL[1],
+      choices: ['true', 'false'],
+      default: true,
+      filter(val: string) {
+        return (val === 'true')
+      },
       message: PROMPT_MESSAGE[7],
+      name: PROMPT_NAMES_OPTIONAL[1],
+      type: 'list',
+    },
+    {
       choices: ['true', 'false'],
       default: true,
       filter(val: string) {
         return (val === 'true')
       },
-    },
-    {
-      type: 'list',
-      name: PROMPT_NAMES_OPTIONAL[2],
       message: PROMPT_MESSAGE[8],
+      name: PROMPT_NAMES_OPTIONAL[2],
+      type: 'list',
+    },
+    {
       choices: ['true', 'false'],
       default: true,
       filter(val: string) {
         return (val === 'true')
       },
-    },
-    {
-      type: 'list',
-      name: PROMPT_NAMES_OPTIONAL[3],
       message: PROMPT_MESSAGE[9],
+      name: PROMPT_NAMES_OPTIONAL[3],
+      type: 'list',
+    },
+    {
       choices: ['true', 'false'],
       default: true,
       filter(val: string) {
         return (val === 'true')
       },
-    },
-    {
-      type: 'list',
-      name: PROMPT_NAMES_OPTIONAL[4],
       message: PROMPT_MESSAGE[10],
-      choices: ['true', 'false'],
-      default: true,
-      filter(val: string) {
-        return (val === 'true')
-      },
+      name: PROMPT_NAMES_OPTIONAL[4],
+      type: 'list',
     },
     {
-      type: 'list',
-      name: PROMPT_NAMES_OPTIONAL[5],
-      message: PROMPT_MESSAGE[11],
       choices: ['true', 'false'],
       default: true,
       filter(val: string) {
         return (val === 'true')
       },
+      message: PROMPT_MESSAGE[11],
+      name: PROMPT_NAMES_OPTIONAL[5],
+      type: 'list',
     },
   ]
 

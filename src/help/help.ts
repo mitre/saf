@@ -26,6 +26,20 @@ import {Command, Help} from '@oclif/core'
   For additional information, reference the oclif Help Classes (https://oclif.io/docs/help_classes)
 */
 export default class MyHelpClass extends Help {
+  protected log(...args: string[]): void {
+    stdout.write(util.format.apply(this, args) + '\n') // skipcq: JS-0357
+  }
+
+  protected logModify(argNamesMap: Map<string, string>, ...args: string[]): void {
+    // Iterate over the argNamesMap using object destructuring
+    // Replace the uppercase values with its natural format value
+    for (const [key, value] of argNamesMap) {
+      args[0] = args[0].replace(key, value)
+    }
+
+    stdout.write(util.format.apply(this, args) + '\n') // skipcq: JS-0357
+  }
+
   public async showCommandHelp(command: Command.Loadable): Promise<void> { // skipcq: JS-0116
     const name = command.id
     const depth = name.split(':').length
@@ -69,29 +83,15 @@ export default class MyHelpClass extends Help {
       this.log('')
     }
   }
-
-  protected logModify(argNamesMap: Map<string, string>, ...args: string[]): void {
-    // Iterate over the argNamesMap using object destructuring
-    // Replace the uppercase values with its natural format value
-    for (const [key, value] of argNamesMap) {
-      args[0] = args[0].replace(key, value)
-    }
-
-    stdout.write(util.format.apply(this, args) + '\n') // skipcq: JS-0357
-  }
-
-  protected log(...args: string[]): void {
-    stdout.write(util.format.apply(this, args) + '\n') // skipcq: JS-0357
-  }
 }
 
 /**
  * A wrapper around process.stdout and process.stderr that allows us to mock out the streams for testing.
  */
 class Stream {
-  public channel: 'stdout' | 'stderr'
+  public channel: 'stderr' | 'stdout'
 
-  constructor(channel: 'stdout' | 'stderr') {
+  constructor(channel: 'stderr' | 'stdout') {
     this.channel = channel
   }
 

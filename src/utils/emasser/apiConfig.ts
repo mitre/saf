@@ -1,5 +1,5 @@
-import fs from 'fs'
 import dotenv from 'dotenv'
+import fs from 'fs'
 
 function printYellowMsg(msg: string) {
   console.log('\x1B[93m', msg, '\x1B[0m')
@@ -15,20 +15,20 @@ function printHelpMessage() {
 }
 
 export class ApiConfig {
-  private envConfig: {[key: string]: string | undefined};
+  public apiKey: string
 
-  public url: string;
-  public port: number|any;
-  public keyCert: string;
-  public clientCert: string;
-  public apiPassPhrase: string;
-  public apiKey: string;
-  public userUid: string;
-  public sslVerify: boolean;
-  public reqCert: boolean;
-  public debugging: string;
-  public displayNulls: string;
-  public displayDateTime: string;
+  public apiPassPhrase: string
+  public clientCert: string
+  public debugging: string
+  public displayDateTime: string
+  public displayNulls: string
+  public keyCert: string
+  public port: any|number
+  public reqCert: boolean
+  public sslVerify: boolean
+  public url: string
+  public userUid: string
+  private envConfig: {[key: string]: string | undefined}
 
   constructor() {
     try {
@@ -72,7 +72,15 @@ export class ApiConfig {
     }
   }
 
-  getRequiredEnv(key: string): string | any {
+  getOptionalEnv(key: string, defaultValue: any): any | string {
+    if (Object.prototype.hasOwnProperty.call(this.envConfig, key)) {
+      return this.envConfig[key]
+    }  // skipcq: JS-0056
+
+    return defaultValue
+  }
+
+  getRequiredEnv(key: string): any | string {
     if (Object.prototype.hasOwnProperty.call(this.envConfig, key)) {
       return this.envConfig[key]
     }  // skipcq: JS-0056
@@ -81,13 +89,5 @@ export class ApiConfig {
     const err = new Error('Environment variable not found')
     err.name = 'EVNF'
     throw err
-  }
-
-  getOptionalEnv(key: string, defaultValue: any): string | any {
-    if (Object.prototype.hasOwnProperty.call(this.envConfig, key)) {
-      return this.envConfig[key]
-    }  // skipcq: JS-0056
-
-    return defaultValue
   }
 }

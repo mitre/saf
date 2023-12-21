@@ -1,8 +1,9 @@
+import {ArtifactsApi, MilestonesApi, POAMApi} from '@mitre/emass_client'
+import {ArtifactsResponseDel, MilestonesPutPostDelete,
+  PoamResponseDelete} from '@mitre/emass_client/dist/api'
 import {expect, test} from '@oclif/test'
+
 import {InitMockServer} from './mock.server'
-import {ArtifactsApi, POAMApi, MilestonesApi} from '@mitre/emass_client'
-import {ArtifactsResponseDel, PoamResponseDelete,
-  MilestonesPutPostDelete} from '@mitre/emass_client/dist/api'
 
 describe('Test eMASS API CLI (delete) commands', () => {
   const mocSer = new InitMockServer()

@@ -1,28 +1,16 @@
-import fs from 'fs'
-import path from 'path'
-import {readdir} from 'fs/promises'
-import {execSync} from 'child_process'
-import {Command, Flags} from '@oclif/core'
-import {createWinstonLogger} from '../../utils/logging'
-import Profile from '@mitre/inspec-objects/lib/objects/profile'
 import {processInSpecProfile, processXCCDF} from '@mitre/inspec-objects'
-import colors from 'colors' // eslint-disable-line no-restricted-imports
+import Profile from '@mitre/inspec-objects/lib/objects/profile'
+import {Command, Flags} from '@oclif/core'
+import {execSync} from 'child_process'
+import colors from 'colors'
+import fs from 'fs'
+import {readdir} from 'fs/promises'
+import path from 'path'
+
+import {createWinstonLogger} from '../../utils/logging'
 
 export default class GenerateUpdateControls extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]'
-
   static description = 'Update the control names and/or format for an existing InSpec profile with updated XCCDF guidance, old controls are saved by default'
-
-  static flags = {
-    help: Flags.help({char: 'h'}),
-    xccdfXmlFile: Flags.string({char: 'X', required: true, description: 'The XCCDF XML file containing the new guidance - in the form of .xml file'}),
-    inspecJsonFile: Flags.string({char: 'J', required: false, description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> > profile.json" command'}),
-    controlsDir: Flags.string({char: 'c', required: true, description: 'The InSpec profile controls directory containing the profiles to be updated'}),
-    controlPrefix: Flags.string({char: 'P', required: false, default: 'V', options: ['V', 'SV'], description: 'Old control number prefix V or SV, default V'}),
-    formatControls: Flags.boolean({char: 'f', required: false, default: true, allowNo: true, description: 'Format control contents in the same way `generate delta` will write controls\n[default: true]'}),
-    backupControls: Flags.boolean({char: 'b', required: false, default: true, allowNo: true, description: 'Preserve modified controls in a backup directory (oldControls) inside the controls directory\n[default: true]'}),
-    logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
-  }
 
   static examples = [
     'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml  -c the_controls_directory -L debug',
@@ -30,6 +18,19 @@ export default class GenerateUpdateControls extends Command {
     'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml  -c the_controls_directory --no-formatControls -P SV -L debug',
     'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml  -c the_controls_directory --no-backupControls --no-formatControls -P SV -L debug',
   ]
+
+  static flags = {
+    backupControls: Flags.boolean({allowNo: true, char: 'b', default: true, description: 'Preserve modified controls in a backup directory (oldControls) inside the controls directory\n[default: true]', required: false}),
+    controlPrefix: Flags.string({char: 'P', default: 'V', description: 'Old control number prefix V or SV, default V', options: ['V', 'SV'], required: false}),
+    controlsDir: Flags.string({char: 'c', description: 'The InSpec profile controls directory containing the profiles to be updated', required: true}),
+    formatControls: Flags.boolean({allowNo: true, char: 'f', default: true, description: 'Format control contents in the same way `generate delta` will write controls\n[default: true]', required: false}),
+    help: Flags.help({char: 'h'}),
+    inspecJsonFile: Flags.string({char: 'J', description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> > profile.json" command', required: false}),
+    logLevel: Flags.string({char: 'L', default: 'info', options: ['info', 'warn', 'debug', 'verbose'], required: false}),
+    xccdfXmlFile: Flags.string({char: 'X', description: 'The XCCDF XML file containing the new guidance - in the form of .xml file', required: true}),
+  }
+
+  static usage = '<%= command.id %> [ARGUMENTS]'
 
   async run(): Promise<any> { // skipcq: JS-0044
     const {flags} = await this.parse(GenerateUpdateControls)
@@ -81,7 +82,7 @@ export default class GenerateUpdateControls extends Command {
           if (flags.backupControls) {
             const oldControlsDir = path.join(flags.controlsDir, 'oldControls')
             if (fs.existsSync(oldControlsDir)) {
-              fs.rmSync(oldControlsDir, {recursive: true, force: true})
+              fs.rmSync(oldControlsDir, {force: true, recursive: true})
             }
 
             fs.mkdirSync(oldControlsDir)

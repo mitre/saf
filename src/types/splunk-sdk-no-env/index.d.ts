@@ -1,25 +1,25 @@
 declare module '@mitre/splunk-sdk-no-env' {
     export type SplunkConfig = {
-      scheme: string;
-      host: string;
-      port?: number;
-      username?: string;
-      password?: string;
-      index: string;
-      owner?: string;
       app?: string;
-      sessionKey?: string;
       autologin?: boolean;
-      version?: string;
+      host: string;
+      index: string;
       insecure?: boolean;
+      owner?: string;
+      password?: string;
+      port?: number;
+      scheme: string;
+      sessionKey?: string;
+      username?: string;
+      version?: string;
     };
 
     export type jobTrackCallbacks = {
       done?: (job: Job) => void;
-      ready?: (job: Job) => void;
-      progress?: (job: Job) => void;
-      failed?: (job: Job) => void;
       error?: (err: any) => void;
+      failed?: (job: Job) => void;
+      progress?: (job: Job) => void;
+      ready?: (job: Job) => void;
     };
 
     class Http {
@@ -35,31 +35,26 @@ declare module '@mitre/splunk-sdk-no-env' {
     }
 
     class Index {
-      name: string;
+      name: string
 
       submitEvent(
         event: string,
-        config: {sourcetype: string; index: string},
+        config: {index: string; sourcetype: string},
         callback: (error: any) => void
       ): void;
     }
 
     class Jobs {
-      fetch(callback: (error: any, success: any, jobs: Job[]) => void): void;
-
       create(
         query: string,
         params: unknown,
         callback: (error: any, createdJob: Job) => void
       ): void;
+
+      fetch(callback: (error: any, success: any, jobs: Job[]) => void): void;
     }
 
     class Job {
-      track(
-        options: {period?: number},
-        callbacks: jobTrackCallbacks | ((readyStatus: any) => void)
-      ): void;
-
       results(
         params: {count: number},
         callback: (
@@ -68,19 +63,25 @@ declare module '@mitre/splunk-sdk-no-env' {
           job: Job
         ) => void
       ): void;
+
+      track(
+        options: {period?: number},
+        callbacks: ((readyStatus: any) => void) | jobTrackCallbacks
+      ): void;
     }
 
     class Service {
-      constructor(config: SplunkConfig);
-      constructor(httpInstance: any, config: SplunkConfig);
+      requestOptions: {
+        strictSSL: boolean;
+      }
 
-      login(callback: (error: any, success: any) => void): boolean;
+      constructor(config: SplunkConfig);
+
+      constructor(httpInstance: any, config: SplunkConfig);
       indexes(): Indexs;
       jobs(): Jobs;
 
-      requestOptions: {
-        strictSSL: boolean;
-      };
+      login(callback: (error: any, success: any) => void): boolean;
     }
   }
 

@@ -1,26 +1,25 @@
-import colorize from 'json-colorizer'
+import {POAMApi} from '@mitre/emass_client'
+import {PoamRequestDeleteBodyInner as PoamDeleteBody,
+  PoamResponseDelete} from '@mitre/emass_client/dist/api'
 import {Command, Flags} from '@oclif/core'
+import colorize from 'json-colorizer'
 
-import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputError} from '../../../utils/emasser/outputError'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
-import {POAMApi} from '@mitre/emass_client'
-import {PoamResponseDelete,
-  PoamRequestDeleteBodyInner as PoamDeleteBody} from '@mitre/emass_client/dist/api'
-
 export default class EmasserDeletePoams extends Command {
-  static usage = '<%= command.id %> [options]';
+  static description = 'Remove one or many POA&M items in a system identified by system and poam Id'
 
-  static description = 'Remove one or many POA&M items in a system identified by system and poam Id';
-
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-P,--poamsId]'];
+  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-P,--poamsId]']
 
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the DELETE POA&M endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
+
+  static usage = '<%= command.id %> [options]'
 
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserDeletePoams)

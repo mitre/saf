@@ -3,23 +3,24 @@ import express from 'express'
 import fs from 'fs'
 import path from 'path'
 import {dynamicImport} from 'tsimportlib'
+
 import {getInstalledPath} from '../../utils/global'
 
 export default class Heimdall extends Command {
   static aliases = ['heimdall']
-
-  static usage = 'view heimdall [-h] [-p <port>] [-f <file>] [-n]'
 
   static description = 'Run an instance of Heimdall Lite to visualize your data'
 
   static examples = ['saf view heimdall -p 8080']
 
   static flags = {
+    files: Flags.string({char: 'f', description: 'File(s) to display in Heimdall', multiple: true, required: false}),
     help: Flags.help({char: 'h'}),
-    port: Flags.integer({char: 'p', required: false, default: 3000, description: 'Port To Expose Heimdall On (Default 3000)'}),
-    files: Flags.string({char: 'f', required: false, multiple: true, description: 'File(s) to display in Heimdall'}),
-    noOpenBrowser: Flags.boolean({char: 'n', required: false, default: false, description: "Don't open the default browser automatically"}),
+    noOpenBrowser: Flags.boolean({char: 'n', default: false, description: "Don't open the default browser automatically", required: false}),
+    port: Flags.integer({char: 'p', default: 3000, description: 'Port To Expose Heimdall On (Default 3000)', required: false}),
   }
+
+  static usage = 'view heimdall [-h] [-p <port>] [-f <file>] [-n]'
 
   async run() {
     // NOTE: The npm open package is native ESM and no longer provides a CommonJS export
@@ -45,7 +46,7 @@ export default class Heimdall extends Command {
       }
 
       parsedJSONs = flags.files.map((file: string) => {
-        return {filename: path.parse(file).base, data: fs.readFileSync(file, 'utf8')}
+        return {data: fs.readFileSync(file, 'utf8'), filename: path.parse(file).base}
       })
     }
 

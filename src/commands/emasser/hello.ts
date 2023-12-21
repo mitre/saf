@@ -1,5 +1,5 @@
-import {Command} from '@oclif/core'
 import {name, version} from '@mitre/emass_client/package.json'
+import {Command} from '@oclif/core'
 import os from 'os'
 
 export default class EmasserSayHello extends Command {

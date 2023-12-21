@@ -1,7 +1,7 @@
 import {expect, test} from '@oclif/test'
-import tmp from 'tmp'
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
+import tmp from 'tmp'
 
 describe('The generate delta command', () => {
   // should process delta request with rule id type

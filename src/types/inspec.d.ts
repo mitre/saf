@@ -1,44 +1,44 @@
 export interface InSpecControl {
-    id: string;
-    title: string;
     desc: string;
     descs: {[key: string]: string};
+    id: string;
+    impact: number;
+    rationale?: string;
     ref?: string;
     refs?: string[];
-    rationale?: string;
-    impact: number;
     tags: {
-        check?: string;
-        fix?: string;
-        severity?: string;
-        gtitle?: string;
-        gid?: string;
-        satisfies?: string[];
-        rid?: string;
-        stig_id?: string;
-        fix_id?: string;
+        [key: string]: Record<string, string[]>[] | boolean | string | string[] | undefined;
         cci?: string[];
+        check?: string;
         cis_controls?: Record<string, string[]>[];
-        nist?: string[];
-        legacy?: string[];
+        documentable?: boolean;
         false_negatives?: string;
         false_positives?: string;
-        documentable?: boolean;
-        mitigations?: string;
-        severity_override_guidance?: string;
-        potential_impacts?: string;
-        third_party_tools?: string;
-        mitigation_controls?: string;
-        responsibility?: string;
+        fix?: string;
+        fix_id?: string;
+        gid?: string;
+        gtitle?: string;
         ia_controls?: string;
-        [key: string]: string | string[] | Record<string, string[]>[] | boolean | undefined;
+        legacy?: string[];
+        mitigation_controls?: string;
+        mitigations?: string;
+        nist?: string[];
+        potential_impacts?: string;
+        responsibility?: string;
+        rid?: string;
+        satisfies?: string[];
+        severity?: string;
+        severity_override_guidance?: string;
+        stig_id?: string;
+        third_party_tools?: string;
     };
+    title: string;
 }
 
 export interface InSpecMetaData {
-    maintainer?: string;
     copyright?: string;
     copyright_email?: string;
     license?: string;
+    maintainer?: string;
     version?: string;
 }

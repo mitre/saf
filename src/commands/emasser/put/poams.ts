@@ -1,17 +1,16 @@
-import fs from 'fs'
-import _ from 'lodash'
-import {readFile} from 'fs/promises'
-import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
-
-import {outputError} from '../../../utils/emasser/outputError'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
-
 import {POAMApi} from '@mitre/emass_client'
 import {MilestonesGet, PoamResponsePut,
   PoamGet as Poams} from '@mitre/emass_client/dist/api'
+import {Command, Flags} from '@oclif/core'
+import fs from 'fs'
+import {readFile} from 'fs/promises'
+import colorize from 'json-colorizer'
+import _ from 'lodash'
+
+import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputError} from '../../../utils/emasser/outputError'
+import {outputFormat} from '../../../utils/emasser/outputFormatter'
+import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
 
 function printRedMsg(msg: string) {
   console.log('\x1B[91m', msg, '\x1B[0m')
@@ -21,7 +20,7 @@ function printHelpMsg(msg: string) {
   console.log('\x1B[93m', msg, '\x1B[0m')
 }
 
-function assertParamExists(object: string, value: string|number|undefined|null): void {
+function assertParamExists(object: string, value: null|number|string|undefined): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')
@@ -259,8 +258,6 @@ function generateBodyObj(dataObject: Poams): Poams {
 }
 
 export default class EmasserPutPoams extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Update a Plan of Action and Milestones (POA&M) into a systems.'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--poamFile]',
@@ -276,6 +273,8 @@ export default class EmasserPutPoams extends Command {
     help: Flags.help({char: 'h', description: 'Put (update) a Plan of Action and Milestones (POA&M) item(s) in a system. See emasser Features (emasserFeatures.md) for additional information.'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
+
+  static usage = '<%= command.id %> [options]'
 
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserPutPoams)

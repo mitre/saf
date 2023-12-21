@@ -1,13 +1,14 @@
 import {ContextualizedControl, ContextualizedProfile, ControlStatus, Severity} from 'inspecjs'
-import {StatusHash, ThresholdValues} from '../types/threshold'
-import _ from 'lodash'
 import {ControlDescription} from 'inspecjs/lib/generated_parsers/v_1_0/exec-json'
+import _ from 'lodash'
+
+import {StatusHash, ThresholdValues} from '../types/threshold'
 
 export const severityTargetsObject = {
   critical: ['passed.critical.min', 'passed.critical.max', 'failed.critical.min', 'failed.critical.max', 'skipped.critical.min', 'skipped.critical.max', 'error.critical.min', 'error.critical.max'],
   high: ['passed.high.min', 'passed.high.max', 'failed.high.min', 'failed.high.max', 'skipped.high.min', 'skipped.high.max', 'error.high.min',  'error.high.max'],
-  medium: ['passed.medium.min', 'passed.medium.max', 'failed.medium.min', 'failed.medium.max', 'skipped.medium.min', 'skipped.medium.max', 'error.medium.min', 'error.medium.max'],
   low: ['passed.low.min', 'passed.low.max', 'failed.low.min', 'failed.low.max', 'skipped.low.min', 'skipped.low.max', 'error.low.min', 'error.low.max'],
+  medium: ['passed.medium.min', 'passed.medium.max', 'failed.medium.min', 'failed.medium.max', 'skipped.medium.min', 'skipped.medium.max', 'error.medium.min', 'error.medium.max'],
   none: ['no_impact.none.min', 'no_impact.none.max'],
 }
 
@@ -17,52 +18,52 @@ export const totalMax = ['passed.total.max', 'failed.total.max', 'skipped.total.
 export const statusSeverityPaths = {
   critical: ['passed.critical.controls', 'failed.critical.controls', 'skipped.critical.controls', 'error.critical.controls'],
   high: ['passed.high.controls', 'failed.high.controls', 'skipped.high.controls', 'error.high.controls'],
-  medium: ['passed.medium.controls', 'failed.medium.controls', 'skipped.medium.controls', 'error.medium.controls'],
   low: ['passed.low.controls', 'failed.low.controls', 'skipped.low.controls', 'error.low.controls'],
+  medium: ['passed.medium.controls', 'failed.medium.controls', 'skipped.medium.controls', 'error.medium.controls'],
   none: ['no_impact.none.controls'],
 }
 
 export const emptyStatusAndSeverityCounts = {
-  passed: {
+  error: {
     critical: [],
     high: [],
-    medium: [],
     low: [],
+    medium: [],
   },
   failed: {
     critical: [],
     high: [],
-    medium: [],
     low: [],
-  },
-  skipped: {
-    critical: [],
-    high: [],
     medium: [],
-    low: [],
   },
   no_impact: {
     none: [],
   },
-  error: {
+  passed: {
     critical: [],
     high: [],
-    medium: [],
     low: [],
+    medium: [],
+  },
+  skipped: {
+    critical: [],
+    high: [],
+    low: [],
+    medium: [],
   },
 }
 
 export function extractStatusCounts(profile: ContextualizedProfile, severity?: string) {
   const hash: StatusHash = {
     Failed: 0,
+    FailedTests: 0,
     'From Profile': 0,
     'Not Applicable': 0,
     'Not Reviewed': 0,
     Passed: 0,
-    'Profile Error': 0,
     PassedTests: 0,
-    FailedTests: 0,
     PassingTestsFailedControl: 0,
+    'Profile Error': 0,
     Waived: 0,
   }
 
@@ -133,7 +134,7 @@ export function renameStatusName(statusName: string): string {
   }
 }
 
-export function reverseStatusName(statusName: string): 'passed' | 'failed' | 'skipped' | 'no_impact' | 'error' {
+export function reverseStatusName(statusName: string): 'error' | 'failed' | 'no_impact' | 'passed' | 'skipped' {
   switch (statusName) {
     case 'Passed': {
       return 'passed'
@@ -177,7 +178,7 @@ export function getControlIdMap(profile: ContextualizedProfile, thresholds?: Thr
   return thresholds
 }
 
-function getDescriptionContentsOrUndefined(label: string, descriptions?: ControlDescription[] | {[key: string]: any} | null) {
+function getDescriptionContentsOrUndefined(label: string, descriptions?: {[key: string]: any} | ControlDescription[] | null) {
   let found
   if (descriptions) {
     descriptions.forEach((description: any) => {
@@ -190,7 +191,7 @@ function getDescriptionContentsOrUndefined(label: string, descriptions?: Control
   return found
 }
 
-function cklControlStatus(control: ContextualizedControl, for_summary?: boolean): 'Not_Applicable' | 'Profile_Error' | 'Open' | 'NotAFinding' | 'Not_Reviewed' {
+function cklControlStatus(control: ContextualizedControl, for_summary?: boolean): 'Not_Applicable' | 'Not_Reviewed' | 'NotAFinding' | 'Open' | 'Profile_Error' {
   const statuses = control.hdf.segments?.map(segment => segment.status)
   if (control.data.impact === 0) {
     return 'Not_Applicable'
@@ -211,7 +212,7 @@ function cklControlStatus(control: ContextualizedControl, for_summary?: boolean)
   return 'Not_Reviewed'
 }
 
-function controlFindingDetails(control: {message: string[]}, controlCKLStatus: 'Not_Applicable' | 'Profile_Error' | 'Open' | 'NotAFinding' | 'Not_Reviewed') {
+function controlFindingDetails(control: {message: string[]}, controlCKLStatus: 'Not_Applicable' | 'Not_Reviewed' | 'NotAFinding' | 'Open' | 'Profile_Error') {
   control.message.sort()
   switch (controlCKLStatus) {
     case 'Open': {
@@ -236,36 +237,36 @@ function controlFindingDetails(control: {message: string[]}, controlCKLStatus: '
   }
 }
 
-export function extractControlSummariesBySeverity(profile: ContextualizedProfile): Record<string, Record<string, Record<string, string | string[] | number | undefined>>> {
-  const result: Record<string, Record<string, Record<string, string | string[] | number | undefined>>>  = {
-    failed: {},
-    passed: {},
-    no_impact: {},
-    skipped: {},
+export function extractControlSummariesBySeverity(profile: ContextualizedProfile): Record<string, Record<string, Record<string, number | string | string[] | undefined>>> {
+  const result: Record<string, Record<string, Record<string, number | string | string[] | undefined>>>  = {
     error: {},
+    failed: {},
+    no_impact: {},
+    passed: {},
+    skipped: {},
   }
   for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
     const control = c.root
     const status: ControlStatus = control.hdf.status
     const extracted: Record<string, string | string[] | undefined> & {message: string[]}  = {
-      vuln_num: control.data.id,
-      rule_title: control.data.title || undefined,
-      vuln_discuss: control.data.desc || undefined,
-      severity: control.hdf.severity,
+      cci_ref: control.data.tags.cci,
+      check_content: getDescriptionContentsOrUndefined('check', control.data.descriptions),
+      control_status: cklControlStatus(control, true),
+      fix_text: getDescriptionContentsOrUndefined('fix', control.data.descriptions),
       gid: control.data.tags.gid,
       group_title: control.data.tags.gtitle,
-      rule_id: control.data.tags.rid,
-      rule_ver: control.data.tags.stig_id,
-      cci_ref: control.data.tags.cci,
-      nist: (control.data.tags.nist || []).join(' '),
-      check_content: getDescriptionContentsOrUndefined('check', control.data.descriptions),
-      fix_text: getDescriptionContentsOrUndefined('fix', control.data.descriptions),
       impact: control.data.impact.toString() || undefined,
+      message: [],
+      nist: (control.data.tags.nist || []).join(' '),
       profile_name: profile.data.name,
       profile_shasum: profile.data.sha256,
+      rule_id: control.data.tags.rid,
+      rule_title: control.data.title || undefined,
+      rule_ver: control.data.tags.stig_id,
+      severity: control.hdf.severity,
       status: control.hdf.segments?.map(segment => segment.status),
-      message: [],
-      control_status: cklControlStatus(control, true),
+      vuln_discuss: control.data.desc || undefined,
+      vuln_num: control.data.id,
     }
     control.hdf.segments?.forEach(segment => {
       switch (segment.status) {

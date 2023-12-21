@@ -1,20 +1,20 @@
+import {FromHDFToCAATMapper as Mapper} from '@mitre/hdf-converters'
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
-import {FromHDFToCAATMapper as Mapper} from '@mitre/hdf-converters'
 
 export default class HDF2CAAT extends Command {
-  static usage = 'convert hdf2caat -i <hdf-scan-results-json>... -o <output-caat-xlsx> [-h]'
-
   static description = 'Translate an HDF file into a Compliance Assessment and Audit Tracking (CAAT) XLSX file'
 
   static examples = ['saf convert hdf2caat -i hdf_input.json -o caat-results.xlsx']
 
   static flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, multiple: true, description: 'Input HDF JSON file'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output CAAT XLSX file'}),
+    input: Flags.string({char: 'i', description: 'Input HDF JSON file', multiple: true, required: true}),
+    output: Flags.string({char: 'o', description: 'Output CAAT XLSX file', required: true}),
   }
+
+  static usage = 'convert hdf2caat -i <hdf-scan-results-json>... -o <output-caat-xlsx> [-h]'
 
   async run() {
     const {flags} = await this.parse(HDF2CAAT)

@@ -1,26 +1,25 @@
-import colorize from 'json-colorizer'
+import {ArtifactsApi} from '@mitre/emass_client'
+import {ArtifactsRequestDeleteBodyInner as ArtifactDeleteBody,
+  ArtifactsResponseDel} from '@mitre/emass_client/dist/api'
 import {Command, Flags} from '@oclif/core'
+import colorize from 'json-colorizer'
 
-import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputError} from '../../../utils/emasser/outputError'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
-import {ArtifactsApi} from '@mitre/emass_client'
-import {ArtifactsResponseDel,
-  ArtifactsRequestDeleteBodyInner as ArtifactDeleteBody} from '@mitre/emass_client/dist/api'
-
 export default class EmasserDeleteArtifacts extends Command {
-  static usage = '<%= command.id %> [options]';
+  static description = 'Remove one or many artifacts in a system identified by system Id'
 
-  static description = 'Remove one or many artifacts in a system identified by system Id';
-
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-F,--fileName]'];
+  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-F,--fileName]']
 
   static flags = {
     help: Flags.help({char: 'h', description: 'Show emasser CLI help for the DELETE POA&M endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
+
+  static usage = '<%= command.id %> [options]'
 
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserDeleteArtifacts)

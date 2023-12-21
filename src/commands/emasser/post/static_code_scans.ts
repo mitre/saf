@@ -1,24 +1,23 @@
+import {StaticCodeScansApi} from '@mitre/emass_client'
+import {StaticCodeRequestPostBodyApplication as ApplicationRequestBody, StaticCodeApplication,
+  StaticCodeRequestPostBody as StaticCodeRequest,
+  StaticCodeResponsePost} from '@mitre/emass_client/dist/api'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import _ from 'lodash'
 import {readFile} from 'fs/promises'
 import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
+import _ from 'lodash'
 
-import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputError} from '../../../utils/emasser/outputError'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
-
-import {StaticCodeScansApi} from '@mitre/emass_client'
-import {StaticCodeApplication, StaticCodeResponsePost,
-  StaticCodeRequestPostBody as StaticCodeRequest,
-  StaticCodeRequestPostBodyApplication as ApplicationRequestBody} from '@mitre/emass_client/dist/api'
 
 function printRedMsg(msg: string) {
   console.log('\x1B[91m', msg, '\x1B[0m')
 }
 
-function assertParamExists(object: string, value: string|boolean|number|undefined|null): void {
+function assertParamExists(object: string, value: boolean|null|number|string|undefined): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')
@@ -90,8 +89,6 @@ function addApplicationFindingsFields(bodyObject: StaticCodeRequest, dataObj: St
 }
 
 export default class EmasserPostStaticCodeScans extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = "upload application scan findings into a system's assets module"
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--cloudResourceFile]',
@@ -107,6 +104,8 @@ export default class EmasserPostStaticCodeScans extends Command {
     help: Flags.help({char: 'h', description: 'Post (upload) static code scans, can also clear application\'s findings'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
+
+  static usage = '<%= command.id %> [options]'
 
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserPostStaticCodeScans)

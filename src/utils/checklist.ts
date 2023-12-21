@@ -1,9 +1,10 @@
 import {ContextualizedControl, ControlStatus, HDFControlSegment, Severity} from 'inspecjs'
-import {ChecklistControl} from '../types/checklist'
-import {v4} from 'uuid'
 import _ from 'lodash'
+import {v4} from 'uuid'
 
-export function cklSeverity(severity: Severity): 'low' | 'medium' | 'high' {
+import {ChecklistControl} from '../types/checklist'
+
+export function cklSeverity(severity: Severity): 'high' | 'low' | 'medium' {
   switch (severity) {
     case 'critical':
     case 'high': {
@@ -70,21 +71,21 @@ export function cklResults(segments?: HDFControlSegment[]): string {
 
 export function getDetails(control: ContextualizedControl, profileName: string): ChecklistControl {
   return {
-    vid: control.data.tags.gid || control.data.id,
+    ccis: control.data.tags.cci,
+    checkText: control.hdf.descriptions.check || control.data.tags.check,
+    description: control.data.desc || '',
+    fixText: control.hdf.descriptions.fix || control.data.tags.fix,
+    gtitle: control.data.tags.gtitle || control.data.id,
+    profileName,
+    results: cklResults(control.hdf.segments),
     rid: control.data.tags.rid || control.data.id,
     ruleVersion: control.data.tags.stig_id || control.data.id,
-    gtitle: control.data.tags.gtitle || control.data.id,
     severity: cklSeverity(control.root.hdf.severity),
-    title: control.data.title || '',
-    description: control.data.desc || '',
-    checkText: control.hdf.descriptions.check || control.data.tags.check,
-    fixText: control.hdf.descriptions.fix || control.data.tags.fix,
-    profileName,
     startTime: _.get(control, 'hdf.segments![0].start_time', ''),
-    targetKey: 0,
-    uuidV4: v4(),
-    ccis: control.data.tags.cci,
     status: cklStatus(control.hdf.status),
-    results: cklResults(control.hdf.segments),
+    targetKey: 0,
+    title: control.data.title || '',
+    uuidV4: v4(),
+    vid: control.data.tags.gid || control.data.id,
   }
 }

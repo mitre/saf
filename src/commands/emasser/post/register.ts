@@ -1,14 +1,13 @@
-import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
 import {RegistrationApi} from '@mitre/emass_client'
 import {Register} from '@mitre/emass_client/dist/api'
+import {Command, Flags} from '@oclif/core'
+import colorize from 'json-colorizer'
+
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {outputError} from '../../../utils/emasser/outputError'
+import {outputFormat} from '../../../utils/emasser/outputFormatter'
 
 export default class EmasserPostRegister extends Command {
-  static usage = '<%= command.id %>'
-
   static description = 'The Registration endpoint provides the ability to register a certificate & obtain an API-key'
 
   static examples = ['<%= config.bin %> <%= command.id %>']
@@ -16,6 +15,8 @@ export default class EmasserPostRegister extends Command {
   static flags = {
     help: Flags.help({char: 'h', description: 'Register a certificate & obtain the API-key - The certificate is provided in the environment configuration file (.env)'}),
   }
+
+  static usage = '<%= command.id %>'
 
   async run(): Promise<void> { // skipcq: JS-0116, JS-0105
     const apiCxn = new ApiConnection()

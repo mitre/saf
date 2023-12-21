@@ -1,31 +1,32 @@
 import {Command, Flags} from '@oclif/core'
+import fs from 'fs'
 import {contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
-import fs from 'fs'
-import {v4} from 'uuid'
-import {default as files} from '../../resources/files.json'
 import Mustache from 'mustache'
+import {v4} from 'uuid'
+
+import {default as files} from '../../resources/files.json'
 import {CKLMetadata} from '../../types/checklist'
-import {convertFullPathToFilename, getProfileInfo} from '../../utils/global'
 import {getDetails} from '../../utils/checklist'
+import {convertFullPathToFilename, getProfileInfo} from '../../utils/global'
 
 export default class HDF2CKL extends Command {
-  static usage = 'convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [-H <hostname>] [-F <fqdn>] [-M <mac-address>] [-I <ip-address>]'
-
   static description = 'Translate a Heimdall Data Format JSON file into a DISA checklist file'
 
+  static examples = ['saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90']
+
   static flags = {
+    fqdn: Flags.string({char: 'F', description: 'FQDN for CKL metadata', required: false}),
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Input HDF file'}),
-    metadata: Flags.string({char: 'm', required: false, description: 'Metadata JSON file, generate one with "saf generate ckl_metadata"'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output CKL file'}),
-    hostname: Flags.string({char: 'H', required: false, description: 'Hostname for CKL metadata'}),
-    fqdn: Flags.string({char: 'F', required: false, description: 'FQDN for CKL metadata'}),
-    mac: Flags.string({char: 'M', required: false, description: 'MAC address for CKL metadata'}),
-    ip: Flags.string({char: 'I', required: false, description: 'IP address for CKL metadata'}),
+    hostname: Flags.string({char: 'H', description: 'Hostname for CKL metadata', required: false}),
+    input: Flags.string({char: 'i', description: 'Input HDF file', required: true}),
+    ip: Flags.string({char: 'I', description: 'IP address for CKL metadata', required: false}),
+    mac: Flags.string({char: 'M', description: 'MAC address for CKL metadata', required: false}),
+    metadata: Flags.string({char: 'm', description: 'Metadata JSON file, generate one with "saf generate ckl_metadata"', required: false}),
+    output: Flags.string({char: 'o', description: 'Output CKL file', required: true}),
   }
 
-  static examples = ['saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90']
+  static usage = 'convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [-H <hostname>] [-F <fqdn>] [-M <mac-address>] [-I <ip-address>]'
 
   async run() {
     const {flags} = await this.parse(HDF2CKL)
@@ -37,24 +38,24 @@ export default class HDF2CKL extends Command {
     ).map(({root}) => root)
     let cklData = {}
     const cklMetadata: CKLMetadata = {
-      fileName: convertFullPathToFilename(flags.input),
       benchmark: {
+        plaintext: null,
         title: profileName || null,
         version: '1',
-        plaintext: null,
       },
-      stigid: profileName || null,
-      role: 'None',
-      type: 'Computing',
+      fileName: convertFullPathToFilename(flags.input),
+      fqdn: flags.fqdn || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.fqdn') || null,
       hostname: flags.hostname || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.hostname') || null,
       ip: flags.ip || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.ip') || null,
       mac: flags.mac || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.mac') || null,
-      fqdn: flags.fqdn || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.fqdn') || null,
-      tech_area: null,
+      role: 'None',
+      stigid: profileName || null,
       target_key: '0',
-      web_or_database: 'false',
-      web_db_site: null,
+      tech_area: null,
+      type: 'Computing',
       web_db_instance: null,
+      web_db_site: null,
+      web_or_database: 'false',
     }
 
     if (flags.metadata) {
@@ -69,9 +70,9 @@ export default class HDF2CKL extends Command {
     cklData = {
       releaseInfo: cklMetadata.benchmark.plaintext,
       ...cklMetadata,
+      controls: rootControls.map(control => getDetails(control, profileName)),
       profileInfo: getProfileInfo(contextualizedEvaluation, cklMetadata.fileName),
       uuid: v4(),
-      controls: rootControls.map(control => getDetails(control, profileName)),
     }
     fs.writeFileSync(flags.output, Mustache.render(files['cklExport.ckl'].data, cklData).replaceAll(/[^\x00-\x7F]/g, ''))
   }

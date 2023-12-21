@@ -1,18 +1,15 @@
-import colorize from 'json-colorizer'
+import {PACApi} from '@mitre/emass_client'
+import {PacGet as PAC,
+  PacResponsePost} from '@mitre/emass_client/dist/api'
 import {Command, Flags} from '@oclif/core'
+import colorize from 'json-colorizer'
 
-import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
+import {outputError} from '../../../utils/emasser/outputError'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
-import {PACApi} from '@mitre/emass_client'
-import {PacResponsePost,
-  PacGet as PAC} from '@mitre/emass_client/dist/api'
-
 export default class EmasserPostPac extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Add new Package Approval Chain (PAC) workflow(s) for a system'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-w,--workflow] [-n,--name] [-c,--comments]']
@@ -22,6 +19,8 @@ export default class EmasserPostPac extends Command {
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
+  static usage = '<%= command.id %> [options]'
+
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserPostPac)
     const apiCxn = new ApiConnection()
@@ -29,9 +28,9 @@ export default class EmasserPostPac extends Command {
 
     const requestBodyArray: PAC[] = []
     requestBodyArray.push({
-      workflow: flags.workflow,
-      name: flags.name,
       comments: flags.comments,
+      name: flags.name,
+      workflow: flags.workflow,
     })
 
     addPac.addSystemPac(flags.systemId, requestBodyArray).then((response: PacResponsePost) => {

@@ -1,20 +1,21 @@
-import fs from 'fs'
-import https from 'https'
-import FormData from 'form-data'
-import {ApiConfig} from './apiConfig'
 import {Configuration} from '@mitre/emass_client/dist/configuration'
 import globalAxios, {AxiosInstance, AxiosRequestConfig} from '@mitre/emass_client/node_modules/axios'
+import FormData from 'form-data'
+import fs from 'fs'
+import https from 'https'
+
+import {ApiConfig} from './apiConfig'
 
 export class InitConnections {
-  private axiosRequestConfig: AxiosRequestConfig;
-  public configuration: Configuration;
   public axiosInstances: AxiosInstance
+  public configuration: Configuration
+  private axiosRequestConfig: AxiosRequestConfig
 
   constructor(conf: ApiConfig) {
     this.configuration = new Configuration({
+      baseOptions: {},
       basePath: conf.url,
       formDataCtor: FormData,
-      baseOptions: {},
     })
 
     // keepAlive <boolean> Keep sockets around even when there are no outstanding requests,
@@ -27,13 +28,13 @@ export class InitConnections {
     // rejectUnauthorized <boolean> If not false a server automatically reject clients with invalid certificates. Only applies when isServer is true.
     this.axiosRequestConfig = {
       httpsAgent: new https.Agent({
-        keepAlive: true,
-        requestCert: conf.reqCert,
-        rejectUnauthorized: conf.sslVerify,
-        key: fs.readFileSync(conf.keyCert),
         cert: fs.readFileSync(conf.clientCert),
+        keepAlive: true,
+        key: fs.readFileSync(conf.keyCert),
         passphrase: conf.apiPassPhrase,
         port: conf.port,
+        rejectUnauthorized: conf.sslVerify,
+        requestCert: conf.reqCert,
       }),
     }
 

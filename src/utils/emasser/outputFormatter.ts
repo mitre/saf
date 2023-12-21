@@ -1,5 +1,6 @@
-import {ApiConfig} from './apiConfig'
 import _ from 'lodash'
+
+import {ApiConfig} from './apiConfig'
 
 function removeNullsFromObject(dataObject: object): object {
   const jsonData: {[key: string]: any} = {};
