@@ -26,6 +26,7 @@ jobs:
           node-version: 18.18
           check-latest: true
           cache: 'npm'
+          cache-dependency-path: ./saf/package-lock.json
 
       - name: Install Nullsoft Scriptable Install System and p7zip
         run: sudo apt install nsis p7zip-full
