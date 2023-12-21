@@ -11,6 +11,14 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: saf
+
+      - name: Download oclif CLI repo since `npx oclif pack win` isn't working
+        uses: actions/checkout@v4
+        with:
+          repository: oclif/oclif
+          path: oclif
 
       - name: setup node
         uses: actions/setup-node@v4
@@ -22,33 +30,41 @@ jobs:
       - name: Install Nullsoft Scriptable Install System and p7zip
         run: sudo apt install nsis p7zip-full
 
-      - name: Remove testing resources
-        run: rm -rf test
+      - name: setup oclif
+        working-directory: ./oclif
+        run: |
+          yarn install --frozen-lockfile
+          yarn build
 
-      - name: Install project dependencies
-        run: npm ci
+      - name: setup saf cli
+        working-directory: ./saf
+        run: |
+          rm -rf test
+          npm ci
 
       - name: Pack Windows Installer
-        run: npx oclif pack win
+        working-directory: ./saf
+        run: ../oclif/bin/run.js pack win
 
       - name: Pack Debian Package
+        working-directory: ./saf
         run: sudo npx oclif pack deb
 
       - name: Upload SAF-CLI Windows Build x64 Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SAF-CLI Windows Build x64
-          path: dist/win32/saf-*-x64.exe
+          path: saf/dist/win32/saf-*-x64.exe
 
       - name: Upload SAF-CLI Windows Build x86 Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SAF-CLI Windows Build x86
-          path: dist/win32/saf-*-x86.exe
+          path: saf/dist/win32/saf-*-x86.exe
 
       # underscore here since that's how the file is named
       - name: Upload SAF-CLI Debian x64 Artifact
         uses: actions/upload-artifact@v4
         with:
           name: SAF-CLI Debian Build x64
-          path: dist/deb/saf_*.deb
+          path: saf/dist/deb/saf_*.deb
