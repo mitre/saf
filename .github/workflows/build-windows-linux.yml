@@ -14,12 +14,6 @@ jobs:
         with:
           path: saf
 
-      - name: Download oclif CLI repo since `npx oclif pack win` isn't working
-        uses: actions/checkout@v4
-        with:
-          repository: oclif/oclif
-          path: oclif
-
       - name: setup node
         uses: actions/setup-node@v4
         with:
@@ -31,12 +25,6 @@ jobs:
       - name: Install Nullsoft Scriptable Install System and p7zip
         run: sudo apt install nsis p7zip-full
 
-      - name: setup oclif
-        working-directory: ./oclif
-        run: |
-          yarn install --frozen-lockfile
-          yarn build
-
       - name: setup saf cli
         working-directory: ./saf
         run: |
@@ -45,7 +33,7 @@ jobs:
 
       - name: Pack Windows Installer
         working-directory: ./saf
-        run: ../oclif/bin/run.js pack win
+        run: npx oclif pack win
 
       - name: Pack Debian Package
         working-directory: ./saf
