@@ -7,9 +7,32 @@ import _ from 'lodash'
 import flat from 'flat'
 import { convertFullPathToFilename } from '../../utils/global'
 import { createWinstonLogger } from '../../utils/logging'
-
+import markdownTable from 'markdown-table'
 // Constants
 const UTF8_ENCODING = 'utf8'
+
+interface Flags {
+  logLevel?: string;
+  input: string[];
+  format: string;
+  stdout: boolean;
+  output?: string;
+}
+interface Data {
+  compliance: number;
+  passed: Record<string, number>;
+  failed: Record<string, number>;
+  skipped: Record<string, number>;
+  no_impact: Record<string, number>;
+  error: Record<string, number>;
+}
+
+interface PrintableSummary {
+  profileName: string;
+  resultSets: string[];
+  compliance: number;
+  [key: string]: unknown; // This is to allow for the spread operator in the `createPrintableSummary` method
+}
 
 /**
  * Summary Class
@@ -76,8 +99,8 @@ export default class Summary extends Command {
     input: Flags.string({ char: 'i', required: true, multiple: true, description: 'Input HDF files' }),
     output: Flags.string({ char: 'o', required: false }),
     format: Flags.string({ char: 'f', description: 'output format', options: ['json', 'yaml', 'markdown'], default: 'yaml' }),
-    stdout: Flags.boolean({ char: 's', description: 'Print to console', default: true }),
-
+    stdout: Flags.boolean({ char: 's', description: 'Print to console', default: true, allowNo: true }),
+    logLevel: Flags.string({ char: 'l', description: 'Log level', default: 'info' }),
   }
 
   // eslint-disable-next-line valid-jsdoc
@@ -92,16 +115,21 @@ export default class Summary extends Command {
    * 6. Prints the printable summaries to the console and optionally writes them to an output file.
    */
   async run() {
-    const { flags } = await this.parse(Summary)
-    this.logger = createWinstonLogger('view summary:', flags.logLevel)
-    const execJSONs = this.loadExecJSONs(flags.input)
-    const summaries = this.calculateSummariesForExecJSONs(execJSONs)
-    const totals = this.calculateTotalCountsForSummaries(summaries)
-    const complianceScores = this.calculateComplianceScoresForExecJSONs(execJSONs)
-    const printableSummaries = Object.entries(totals).map(([profileName, profileMetrics]) =>
-      this.createPrintableSummary(profileName, profileMetrics, execJSONs, complianceScores),
-    )
-    this.printAndWriteOutput(flags, printableSummaries)
+    try {
+      const { flags } = await this.parse(Summary)
+      this.logger = createWinstonLogger('view summary:', flags.logLevel)
+      const execJSONs = this.loadExecJSONs(flags.input)
+      const summaries = this.calculateSummariesForExecJSONs(execJSONs)
+      const totals = this.calculateTotalCountsForSummaries(summaries)
+      const complianceScores = this.calculateComplianceScoresForExecJSONs(execJSONs)
+      const printableSummaries = Object.entries(totals).map(([profileName, profileMetrics]) =>
+        this.createPrintableSummary(profileName, profileMetrics, execJSONs, complianceScores),
+      )
+      this.printAndWriteOutput(flags, printableSummaries)
+    } catch (error) {
+      this.logger.error(error)
+      // Handle the error appropriately
+    }
   }
 
   /**
@@ -222,7 +250,12 @@ export default class Summary extends Command {
    * @param complianceScores - The compliance scores to use for creating the printable summary.
    * @returns A printable summary.
    */
-  private createPrintableSummary(profileName: string, profileMetrics: Record<string, number>, execJSONs: Record<string, ContextualizedEvaluation>, complianceScores: Record<string, number[]>): Record<string, unknown> {
+  private createPrintableSummary(
+    profileName: string,
+    profileMetrics: Record<string, number>,
+    execJSONs: Record<string, ContextualizedEvaluation>,
+    complianceScores: Record<string, number[]>,
+  ): PrintableSummary {
     return {
       profileName: profileName,
       resultSets: this.extractResultSets(execJSONs, profileName),
@@ -312,7 +345,7 @@ export default class Summary extends Command {
    * @param printableSummaries - The printable summaries to print and write to the output file.
    * @returns void - this method does not return anything.
    */
-  private printAndWriteOutput(flags: any, printableSummaries: Record<string, unknown>[]) {
+  private printAndWriteOutput(flags: Flags, printableSummaries: PrintableSummary[]) {
     let output = '' // Initialize output to an empty string
 
     switch (flags.format) {
@@ -327,7 +360,7 @@ export default class Summary extends Command {
       }
 
       case 'markdown': {
-        output = this.convertToMarkdown(JSON.stringify(printableSummaries, null, 2))
+        output = this.convertToMarkdown(printableSummaries)
         break
       }
 
@@ -343,7 +376,7 @@ export default class Summary extends Command {
     if (flags.output) {
       try {
         fs.writeFileSync(flags.output, output)
-        this.logger.warn(`Output written to ${flags.output}`)
+        this.logger.info(`Output written to ${flags.output}`)
       } catch (error) {
         this.logger.error(`Failed to write output to ${flags.output}: ${(error as Error).message}`)
       }
