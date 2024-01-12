@@ -10,7 +10,7 @@ import {convertFullPathToFilename} from '../../utils/global'
 export default class Summary extends Command {
   static aliases = ['summary']
 
-  static usage = 'view -i, --input=FILE -j, --json'
+  static usage = 'view summary -i <hdf-file> [-h] [-j] [-o <output>]'
 
   static description = 'Get a quick compliance overview of an HDF file '
 
@@ -21,7 +21,7 @@ export default class Summary extends Command {
     output: Flags.string({char: 'o', required: false}),
   }
 
-  static examples = ['saf view summary -i rhel7-results.json']
+  static examples = ['saf view summary -i rhel7-results.json', 'saf view summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json']
 
   async run() {
     const {flags} = await this.parse(Summary)
@@ -29,7 +29,7 @@ export default class Summary extends Command {
     const complianceScores: Record<string, number[]> = {}
 
     const execJSONs: Record<string, ContextualizedEvaluation> = {}
-    flags.input.forEach(file => {
+    flags.input.forEach((file: string) => {
       execJSONs[file] = convertFileContextual(fs.readFileSync(file, 'utf8')) as ContextualizedEvaluation
     })
     Object.entries(execJSONs).forEach(([, parsedExecJSON]) => {
@@ -41,7 +41,7 @@ export default class Summary extends Command {
 
       const existingCompliance = _.get(complianceScores, profileName) || []
       existingCompliance.push(overallCompliance)
-      _.set(complianceScores, `["${profileName.replace(/"/g, '\\"')}"]`, existingCompliance)
+      _.set(complianceScores, `["${profileName.replaceAll('"', '\\"')}"]`, existingCompliance)
 
       // Severity counts
       for (const [severity, severityTargets] of Object.entries(severityTargetsObject)) {
@@ -73,9 +73,9 @@ export default class Summary extends Command {
         Object.entries(flattened).forEach(([key, value]) => {
           const existingValue = _.get(totals, `${profileName}.${key}`)
           if (existingValue) {
-            _.set(totals, `["${profileName.replace(/"/g, '\\"')}"].${key}`, existingValue + value)
+            _.set(totals, `["${profileName.replaceAll('"', '\\"')}"].${key}`, existingValue + value)
           } else {
-            _.set(totals, `["${profileName.replace(/"/g, '\\"')}"].${key}`, value)
+            _.set(totals, `["${profileName.replaceAll('"', '\\"')}"].${key}`, value)
           }
         })
       })
