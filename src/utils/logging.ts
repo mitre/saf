@@ -1,23 +1,26 @@
-import {ContextualizedControl, contextualizeEvaluation, ExecJSON} from 'inspecjs'
+import { ContextualizedControl, contextualizeEvaluation, ExecJSON } from 'inspecjs'
 import winston from 'winston'
 
 export type Summary = {
-    profileNames: string[];
-    controlCount: number;
-    passedCount: number;
-    failedCount: number;
-    notApplicableCount: number;
-    notReviewedCount: number;
-    errorCount: number;
+  profileNames: string[];
+  controlCount: number;
+  passedCount: number;
+  failedCount: number;
+  notApplicableCount: number;
+  notReviewedCount: number;
+  errorCount: number;
 }
 
-export function createWinstonLogger(
-  mapperName: string,
-  level = 'debug',
-): winston.Logger {
+export function createWinstonLogger(mapperName: string, debug: boolean) {
+  const transports = [
+    new winston.transports.File({ filename: 'saf-cli.log' })
+  ];
+
+  if (debug) {
+    transports.push(new winston.transports.Console());
+  }
+
   return winston.createLogger({
-    transports: [new winston.transports.Console()],
-    level: level, // skipcq: JS-0240
     format: winston.format.combine(
       winston.format.timestamp({
         format: 'MMM-DD-YYYY HH:mm:ss Z',
@@ -26,7 +29,8 @@ export function createWinstonLogger(
         info => `[${[info.timestamp]}] ${mapperName} ${info.message}`,
       ),
     ),
-  })
+    transports: transports
+  });
 }
 
 export function getHDFSummary(hdf: ExecJSON.Execution): string {
