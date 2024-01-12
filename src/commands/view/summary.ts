@@ -35,14 +35,14 @@ export default class Summary extends Command {
  * It uses a Winston logger with the label 'view summary:'.
  * @property {ReturnType<typeof createWinstonLogger>} logger - The logger for this command. It uses a Winston logger with the label 'view summary:'.
  */
-  private logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('view summary:');
+  private logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View Summary:');
 
   /**
  * The usage information for this command.
  * Users should invoke this command by typing 'view summary -i <hdf-file> [-h] [-j] [-o <output>]'.
  * @property {string} usage - The usage information for this command. Users should invoke this command by typing 'view summary -i <hdf-file> [-h] [-j] [-o <output>]'.
  */
-  static usage = 'view summary -i <hdf-file> [-h] [-j] [-o <output>]'
+  // static usage = 'view summary -i <hdf-file> [-h] [-j] [-o <output>]'
 
   /**
  * The description of this command.

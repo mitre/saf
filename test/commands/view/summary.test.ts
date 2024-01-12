@@ -10,7 +10,7 @@ describe('Summary command', () => {
 
   test
     .stdout()
-    .command(['summary', '-i', hdfFilePath, '-j', '-o', JSON_outputFilePath])
+    .command(['summary', '-i', hdfFilePath, '--format=json', '-o', JSON_outputFilePath])
     .it('runs summary with JSON output and writes to output file', ctx => {
       const expectedOutput = JSON.parse(fs.readFileSync(JSON_outputFilePath, 'utf8'))
       expect(JSON.parse(ctx.stdout)).to.deep.equal(expectedOutput)
@@ -18,7 +18,7 @@ describe('Summary command', () => {
 
   test
     .stdout()
-    .command(['summary', '-i', hdfFilePath, '-o', YAML_outputFilePath])
+    .command(['summary', '-i', hdfFilePath, '--format=yaml', '-o', YAML_outputFilePath])
     .it('runs summary with YAML output and writes to output file', ctx => {
       const expectedOutputYaml = fs.readFileSync(YAML_outputFilePath, 'utf8')
       const expectedOutput = yaml.load(expectedOutputYaml)
