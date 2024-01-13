@@ -1,4 +1,4 @@
-ARG BASE_CONTAINER=node:18-alpine
+ARG BASE_CONTAINER=node:18.18-alpine
 
 FROM $BASE_CONTAINER AS builder
 

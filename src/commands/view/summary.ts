@@ -1,32 +1,35 @@
-import {Command, Flags} from '@oclif/core'
-import {ContextualizedEvaluation, ContextualizedProfile, convertFileContextual} from 'inspecjs'
+import { Command, Flags } from '@oclif/core'
+import { ContextualizedEvaluation, ContextualizedProfile, convertFileContextual } from 'inspecjs'
 import fs from 'fs'
 import YAML from 'yaml'
-import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
+import { calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject } from '../../utils/threshold'
 import _ from 'lodash'
 import flat from 'flat'
-import {convertFullPathToFilename} from '../../utils/global'
-import {createWinstonLogger} from '../../utils/logging'
-import {Align, Table, getMarkdownTable} from 'markdown-table-ts'
+import { convertFullPathToFilename } from '../../utils/global'
+import { createWinstonLogger } from '../../utils/logging'
+import { Align, Table, getMarkdownTable } from 'markdown-table-ts'
 
 const UTF8_ENCODING = 'utf8'
 
-interface Flags {
-  logLevel?: string;
+interface CommandFlags {
   input: string[];
+  output?: string;
   format: string;
   stdout: boolean;
   'print-pretty': boolean;
-  output?: string;
   'title-table'?: boolean;
+  logLevel?: string;
+  help: void;
 }
 interface Data {
-  compliance: number;
+  [key: string]: Record<string, number> | number;
   passed: Record<string, number>;
   failed: Record<string, number>;
   skipped: Record<string, number>;
   no_impact: Record<string, number>;
   error: Record<string, number>;
+  total: number;
+  default: number;
 }
 
 interface PrintableSummary {
@@ -35,6 +38,9 @@ interface PrintableSummary {
   compliance: number;
   [key: string]: unknown; // This is to allow for the spread operator in the `createPrintableSummary` method
 }
+type DataOrArray = Data | Data[] | PrintableSummary | PrintableSummary[];
+
+type RowType = 'Total' | 'Critical' | 'High' | 'Medium' | 'Low' | 'Not Applicable'
 
 /**
  * Summary Class
@@ -55,6 +61,14 @@ export default class Summary extends Command {
  */
   static aliases = ['summary']
 
+
+  /**
+ * A static readonly property that defines the types of rows that can be used in the table.
+ * It is an array of string literals, and the 'as const' assertion ensures that TypeScript treats it as a readonly tuple, not a mutable array.
+ * This means that you cannot add or remove elements from ROW_TYPES, and each element in ROW_TYPES is treated as a unique string literal type (not just a string).
+ * This is useful when you want to create a type based on the values in ROW_TYPES (for example, type RowType = typeof YourClass.ROW_TYPES[number];).
+ */
+  static readonly ROW_TYPES = ['Total', 'Critical', 'High', 'Medium', 'Low', 'Not Applicable'] as const;
   /**
  * The logger for this command.
  * It uses a Winston logger with the label 'view summary:'.
@@ -75,12 +89,12 @@ export default class Summary extends Command {
  * @property {string} description - The description of this command. This is displayed to the user in the help message.
  */
   static description = 'Generate a comprehensive summary of compliance data, including totals and counts, from your HDF files. The output can be displayed in the console, or exported as YAML, JSON, or a GitHub-flavored Markdown table.';  /**
- * The order of the rows in the summary table.
+
+  * The order of the rows in the summary table.
  * The table includes a row for each of these values.
  * @property {string[]} ROW_ORDER - The order of the rows in the summary table. The table includes a row for each of these values.
  */
-  private readonly ROW_ORDER = ['Total', 'Critical', 'High', 'Medium', 'Low', 'Not Applicable'];
-
+  private readonly ROW_ORDER: RowType[] = ['Total', 'Critical', 'High', 'Medium', 'Low', 'Not Applicable'];
   /**
  * The order of the columns in the summary table.
  * The table includes a column for each of these values.
@@ -95,15 +109,23 @@ export default class Summary extends Command {
   ];
 
   static flags = {
-    input: Flags.string({char: 'i', required: true, multiple: true, description: 'Specify input HDF file(s)', helpGroup: 'I/O'}),
-    output: Flags.string({char: 'o', description: 'Specify output file(s)', helpGroup: 'I/O'}),
-    format: Flags.string({char: 'f', description: 'Specify output format', helpGroup: 'formatting', options: ['json', 'yaml', 'markdown'], default: 'yaml'}),
-    stdout: Flags.boolean({char: 's', description: 'Enable printing to console', default: true, allowNo: true, helpGroup: 'I/O'}),
-    'print-pretty': Flags.boolean({char: 'r', description: 'Enable human-readable data output', helpGroup: 'formatting', default: true, allowNo: true}),
-    'title-table': Flags.boolean({char: 't', description: 'Add titles to the markdown table(s)', helpGroup: 'formatting', default: true, allowNo: true}),
-    logLevel: Flags.string({char: 'l', description: 'Set log level', helpGroup: 'debugging', default: 'info'}),
-    help: Flags.help({char: 'h', description: 'Show help information'}),
+    input: Flags.string({ char: 'i', required: true, multiple: true, description: 'Specify input HDF file(s)', helpGroup: 'I/O' }),
+    output: Flags.string({ char: 'o', description: 'Specify output file(s)', helpGroup: 'I/O' }),
+    format: Flags.string({ char: 'f', description: 'Specify output format', helpGroup: 'formatting', options: ['json', 'yaml', 'markdown'], default: 'yaml' }),
+    stdout: Flags.boolean({ char: 's', description: 'Enable printing to console', default: true, allowNo: true, helpGroup: 'I/O' }),
+    'print-pretty': Flags.boolean({ char: 'r', description: 'Enable human-readable data output', helpGroup: 'formatting', default: true, allowNo: true }),
+    'title-table': Flags.boolean({ char: 't', description: 'Add titles to the markdown table(s)', helpGroup: 'formatting', default: true, allowNo: true }),
+    logLevel: Flags.string({ char: 'l', description: 'Set log level', helpGroup: 'debugging', default: 'info' }),
+    help: Flags.help({ char: 'h', description: 'Show help information' }),
   }
+
+  /**
+ * An object to hold the parsed command line flags.
+ * It is of type Partial<CommandFlags>, which means it is an object that has all the properties of CommandFlags, but all of them are optional.
+ * This is useful when you don't know at the time of object creation which properties will be provided.
+ * It is initialized as an empty object, and the actual values will be assigned later when the flags are parsed.
+ */
+  private parsedFlags!: CommandFlags
 
   // helpGroup: 'THE BEST FLAGS',
   // eslint-disable-next-line valid-jsdoc
@@ -119,9 +141,10 @@ export default class Summary extends Command {
    */
   async run() {
     try {
-      const {flags} = await this.parse(Summary)
-      this.logger = createWinstonLogger('view summary:', flags.logLevel)
-      const execJSONs = this.loadExecJSONs(flags.input)
+      const { flags } = await this.parse(Summary)
+      this.parsedFlags = flags
+      this.logger = createWinstonLogger('view summary:', this.parsedFlags.logLevel)
+      const execJSONs = this.loadExecJSONs(this.parsedFlags.input)
       this.logger.verbose('got the exec JSONs')
       const summaries = this.calculateSummariesForExecJSONs(execJSONs)
       this.logger.verbose('calulated the summaries')
@@ -134,12 +157,22 @@ export default class Summary extends Command {
         return this.createPrintableSummary(profileName, profileMetrics, execJSONs, complianceScores)
       })
       this.logger.verbose('generated the printable summmaries')
-      this.printAndWriteOutput(flags, printableSummaries)
+      this.printAndWriteOutput(printableSummaries)
       this.logger.verbose('printed and wrote the output')
     } catch (error) {
       this.logger.error(error)
       // Handle the error appropriately
     }
+  }
+
+  /**
+ * The function `validateFlags` checks if all the required properties are present in the `parsedFlags`
+ * object.
+ * @returns a boolean value.
+ */
+  private validateFlags(): boolean {
+    const requiredProperties = ['input', 'format', 'stdout', 'print-pretty', 'title-table', 'logLevel', 'help']
+    return requiredProperties.every(prop => Object.prototype.hasOwnProperty.call(this.parsedFlags, prop))
   }
 
   /**
@@ -274,7 +307,7 @@ export default class Summary extends Command {
   ): PrintableSummary {
     this.logger.verbose('In createPrintableSummary')
     return {
-      profileName: profileName,
+      profileName,
       resultSets: this.extractResultSets(execJSONs, profileName),
       compliance: _.mean(complianceScores[profileName]),
       ...profileMetrics,
@@ -296,6 +329,10 @@ export default class Summary extends Command {
     })
   }
 
+  /* The above code is a TypeScript function that generates a Markdown table row based on the provided
+  row name and data. It takes in three parameters: `row` (the name of the row), `data` (the data
+  object containing the values for the row), and `columnWidths` (the maximum width of each column in
+  the table). */
   /**
  * Generates a Markdown table row based on the provided row name and data.
  * @param row - The name of the row. This should be one of the values in ROW_ORDER.
@@ -303,69 +340,94 @@ export default class Summary extends Command {
  * @param columnWidths - The maximum width of each column in the table.
  * @returns A string representing a row in a Markdown table.
  */
-  private generateMarkdownTableRow(row: string, data: any): string[] {
+  private generateMarkdownTableRow(row: RowType, item: Data | PrintableSummary): string[] {
     this.logger.verbose('In generateMarkdownTableRow')
-    let values: string[]
-    if (row === 'Total') {
-      values = [
-        data.passed.total.toString(),
-        data.failed.total.toString(),
-        data.skipped.total.toString(),
-        data.no_impact.total.toString(),
-        data.error.total.toString(),
-      ]
-    } else if (row === 'Not Applicable') {
-      values = ['-', '-', '-', data.no_impact.total.toString(), '-']
-    } else {
-      values = [
-        data.passed[row.toLowerCase()].toString(),
-        data.failed[row.toLowerCase()].toString(),
-        data.skipped[row.toLowerCase()].toString(),
-        '-',
-        data.error[row.toLowerCase()].toString(),
-      ]
-    }
+
+    const fields: (keyof Data)[] = ['passed', 'failed', 'skipped', 'no_impact', 'error']
+    const values = fields.map(field => this.generateValue(row, field, item))
 
     return [row, ...values]
+  }
+
+  /**
+   * Generates a string value for a given row and field based on the provided data.
+   *
+   * @param row - The name of the row. This should be 'Total', 'Not Applicable', or the name of a specific row.
+   * @param field - The name of the field. This should be one of the keys of the Data interface.
+   * @param data - The data object, which should match the shape of the Data interface.
+   * @returns The generated value.
+   *
+   * The method works as follows:
+   * - If the row is 'Total' or 'Not Applicable' and the field is 'no_impact', it will return the total for the given field.
+   * - If the row is 'Not Applicable' and the field is not 'no_impact', or if the value is undefined, it will return '-'.
+   * - In all other cases, it will return the value for the given row and field.
+   *
+   * The method uses a keyMap object to map row names to keys in the data object.
+   * The key for the 'Total' row is 'total', and the key for the 'Not Applicable' row depends on the field name.
+   * If the field is 'no_impact', the key is 'total'; otherwise, the key is the lowercase version of the row name.
+   * For all other rows, the key is the lowercase version of the row name if the field is not 'no_impact', and 'default' otherwise.
+   */
+  private generateValue(row: string, field: keyof Data, data: Data | PrintableSummary): string {
+    const keyMap: Record<string, string> = {
+      Total: 'total',
+      'Not Applicable': field === 'no_impact' ? 'total' : row.toLowerCase(),
+      default: field === 'no_impact' ? 'default' : row.toLowerCase(),
+    }
+
+    const key = keyMap[row] || keyMap.default
+    return (data[field] as Record<string, number>)[key]?.toString() ?? '-'
   }
 
   /**
    * Converts the provided data to a Markdown table.
    * The table has a row for each value in ROW_ORDER and a column for each value in COLUMN_ORDER.
    * The values in the table are extracted from the data object.
-   * @param data - The data object containing the values for the table.
-   * @param titleTables - Boolean to either enable or diable adding titles to the produced markdown tables.
-   * @returns A string representing a Markdown table.
+   * @param data - The data object or array of data objects containing the values for the table.
+   * @param titleTables - Boolean to either enable or disable adding titles to the produced markdown tables.
+   * @returns An array of strings, each representing a Markdown table.
    */
-  private async convertToMarkdown(data: any[], titleTables: boolean): Promise<string[]> {
+  private convertToMarkdown(data: DataOrArray, titleTables: boolean): string[] {
     this.logger.verbose('In convertTomarkdown')
 
-    // Generate a Markdown table for each item in the data array
-    const tables = data.map(item => {
-      const table: string[][] = [
-        ['Compliance: ' + item.compliance + '% :test_tube:', ...this.COLUMN_ORDER],
-        ...this.ROW_ORDER.map(row => this.generateMarkdownTableRow(row, item)),
-      ]
+    let tables: string[] = []
 
-      const myTable: Table = {
-        head: this.ROW_ORDER,
-        body: table,
-      }
-
-      const myAlignment: Align[] = [Align.Left, Align.Center, Align.Center, Align.Center, Align.Center, Align.Center]
-
-      this.logger.verbose(item)
-
-      // Include the profileName as a Markdown header before the table if titleTables is true
-      const title = titleTables ? `# ${item.profileName}\n\n` : ''
-      return title + getMarkdownTable({
-        table: myTable,
-        alignment: myAlignment,
-        alignColumns: true,
-      })
-    })
+    tables = Array.isArray(data) ? data.map(item => this.generateMarkdownTable(item, titleTables)) : [this.generateMarkdownTable(data, titleTables)]
 
     return tables
+  }
+
+  /**
+   * Generates a Markdown table from a data object.
+   * The table has a row for each value in ROW_ORDER and a column for each value in COLUMN_ORDER.
+   * The values in the table are extracted from the data object.
+   * @param item - The data object containing the values for the table.
+   * @param titleTables - Boolean to either enable or disable adding titles to the produced markdown tables.
+   * @returns A string representing a Markdown table.
+   */
+  private generateMarkdownTable(item: Data | PrintableSummary, titleTables: boolean): string {
+    const table: string[][] = [
+      ['Compliance: ' + item.compliance + '% :test_tube:', ...this.COLUMN_ORDER],
+      ...this.ROW_ORDER.map(row => this.generateMarkdownTableRow(row, item)),
+    ]
+
+    const myTable: Table = {
+      head: this.ROW_ORDER,
+      body: table,
+    }
+
+    const myAlignment: Align[] = [Align.Left, Align.Center, Align.Center, Align.Center, Align.Center, Align.Center]
+
+    if (this.parsedFlags.logLevel === 'verbose') {
+      console.log(item)
+    }
+
+    // Include the profileName as a Markdown header before the table if titleTables is true
+    const title = titleTables ? `# ${item.profileName}\n\n` : ''
+    return title + getMarkdownTable({
+      table: myTable,
+      alignment: myAlignment,
+      alignColumns: true,
+    })
   }
 
   /**
@@ -374,27 +436,21 @@ export default class Summary extends Command {
    * If the 'format' flag is not provided, the output is formatted as 'yaml' by default.
    * If the 'stdout' flag is provided, the output is printed to the console.
    * If the 'output' flag is provided, the output is written to the specified file.
-   * @param flags - The flags provided when the command was invoked. This includes a 'format' flag to specify the output format, a 'stdout' flag to specify whether to print the output to the console, and an 'output' flag to specify the output file.
    * @param printableSummaries - The printable summaries to print and write to the output file.
    * @returns void - this method does not return anything.
    */
-  private async printAndWriteOutput(flags: Flags, printableSummaries: PrintableSummary[]) {
+  private printAndWriteOutput(printableSummaries: PrintableSummary[]) {
     this.logger.verbose('In printAndWriteOutput')
     let output = '' // Initialize output to an empty string
 
-    switch (flags.format) {
+    switch (this.parsedFlags.format) {
       case 'json': {
-        output = flags['print-pretty'] ? JSON.stringify(printableSummaries, null, 2) : JSON.stringify(printableSummaries)
-        break
-      }
-
-      case 'yaml': {
-        output = YAML.stringify(printableSummaries)
+        output = this.parsedFlags['print-pretty'] ? JSON.stringify(printableSummaries, null, 2) : JSON.stringify(printableSummaries)
         break
       }
 
       case 'markdown': {
-        const markdownTables = await this.convertToMarkdown(printableSummaries, flags['title-table'] ?? true)
+        const markdownTables = this.convertToMarkdown(printableSummaries, this.parsedFlags['title-table'] ?? true)
         output = markdownTables.join('\n\n') // Join the tables with two newlines between each table
         break
       }
@@ -404,16 +460,16 @@ export default class Summary extends Command {
       }
     }
 
-    if (flags.stdout) {
+    if (this.parsedFlags.stdout) {
       console.log(output)
     }
 
-    if (flags.output) {
+    if (this.parsedFlags.output) {
       try {
-        fs.writeFileSync(flags.output, output)
-        this.logger.info(`Output written to ${flags.output}`)
+        fs.writeFileSync(this.parsedFlags.output, output)
+        this.logger.info(`Output written to ${this.parsedFlags.output}`)
       } catch (error) {
-        this.logger.error(`Failed to write output to ${flags.output}: ${(error as Error).message}`)
+        this.logger.error(`Failed to write output to ${this.parsedFlags.output}: ${(error as Error).message}`)
       }
     }
   }

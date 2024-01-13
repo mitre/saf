@@ -12,7 +12,7 @@ export function createWinstonLogger(mapperName: string, level = 'info'): Logger 
 
   return createLogger({
     transports: transportList,
-    level: level,
+    level,
     format: format.combine(
       format.timestamp({
         format: 'MMM-DD-YYYY HH:mm:ss Z',

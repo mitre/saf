@@ -1,4 +1,4 @@
-import {expect, test} from '@oclif/test'
+import { expect, test } from '@oclif/test'
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
@@ -22,7 +22,7 @@ describe('Summary command', () => {
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=markdown', '--no-title-table', '-o', generatedMD])
-    .it('runs summary with Markdown output and matches the markdown refernce file', ctx => {
+    .it('runs summary with Markdown output and matches the markdown refernce file', () => {
       const expectedOutput = fs.readFileSync(MD_reference, 'utf8').trim()
       const actualOutput = fs.readFileSync(generatedMD, 'utf8').trim()
       expect(actualOutput).to.equal(expectedOutput)
@@ -84,12 +84,4 @@ describe('Summary command', () => {
       expect(actualOutput).to.not.be.empty
     })
 
-  // test
-  //   .stdout()
-  //   .command(['summary', '-i', hdfFilePath, '--format=json', '--logLevel=error'])
-  //   .it('runs summary with --logLevel=error flag and sets log level to error', ctx => {
-  //     // Check that the log level is set to error
-  //     const errorLogs = memoryTransport.logs.filter((log: { level: string }) => log.level === 'error')
-  //     expect(errorLogs).to.not.be.empty
-  //   })
 })

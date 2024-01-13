@@ -12,3 +12,4 @@ node_modules
 out
 .env
 *.tgz
+**/saf-cli.log
