@@ -1,4 +1,4 @@
-import { expect, test } from '@oclif/test'
+import {expect, test} from '@oclif/test'
 import fs from 'fs'
 import path from 'path'
 import yaml from 'js-yaml'
@@ -83,5 +83,4 @@ describe('Summary command', () => {
       // Check that the actual output is not empty
       expect(actualOutput).to.not.be.empty
     })
-
 })

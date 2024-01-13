@@ -1,13 +1,13 @@
-import { Command, Flags } from '@oclif/core'
-import { ContextualizedEvaluation, ContextualizedProfile, convertFileContextual } from 'inspecjs'
+import {Command, Flags} from '@oclif/core'
+import {ContextualizedEvaluation, ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import fs from 'fs'
 import YAML from 'yaml'
-import { calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject } from '../../utils/threshold'
+import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 import _ from 'lodash'
 import flat from 'flat'
-import { convertFullPathToFilename } from '../../utils/global'
-import { createWinstonLogger } from '../../utils/logging'
-import { Align, Table, getMarkdownTable } from 'markdown-table-ts'
+import {convertFullPathToFilename} from '../../utils/global'
+import {createWinstonLogger} from '../../utils/logging'
+import {Align, Table, getMarkdownTable} from 'markdown-table-ts'
 
 const UTF8_ENCODING = 'utf8'
 
@@ -61,7 +61,6 @@ export default class Summary extends Command {
  */
   static aliases = ['summary']
 
-
   /**
  * A static readonly property that defines the types of rows that can be used in the table.
  * It is an array of string literals, and the 'as const' assertion ensures that TypeScript treats it as a readonly tuple, not a mutable array.
@@ -109,14 +108,14 @@ export default class Summary extends Command {
   ];
 
   static flags = {
-    input: Flags.string({ char: 'i', required: true, multiple: true, description: 'Specify input HDF file(s)', helpGroup: 'I/O' }),
-    output: Flags.string({ char: 'o', description: 'Specify output file(s)', helpGroup: 'I/O' }),
-    format: Flags.string({ char: 'f', description: 'Specify output format', helpGroup: 'formatting', options: ['json', 'yaml', 'markdown'], default: 'yaml' }),
-    stdout: Flags.boolean({ char: 's', description: 'Enable printing to console', default: true, allowNo: true, helpGroup: 'I/O' }),
-    'print-pretty': Flags.boolean({ char: 'r', description: 'Enable human-readable data output', helpGroup: 'formatting', default: true, allowNo: true }),
-    'title-table': Flags.boolean({ char: 't', description: 'Add titles to the markdown table(s)', helpGroup: 'formatting', default: true, allowNo: true }),
-    logLevel: Flags.string({ char: 'l', description: 'Set log level', helpGroup: 'debugging', default: 'info' }),
-    help: Flags.help({ char: 'h', description: 'Show help information' }),
+    input: Flags.string({char: 'i', required: true, multiple: true, description: 'Specify input HDF file(s)', helpGroup: 'I/O'}),
+    output: Flags.string({char: 'o', description: 'Specify output file(s)', helpGroup: 'I/O'}),
+    format: Flags.string({char: 'f', description: 'Specify output format', helpGroup: 'formatting', options: ['json', 'yaml', 'markdown'], default: 'yaml'}),
+    stdout: Flags.boolean({char: 's', description: 'Enable printing to console', default: true, allowNo: true, helpGroup: 'I/O'}),
+    'print-pretty': Flags.boolean({char: 'r', description: 'Enable human-readable data output', helpGroup: 'formatting', default: true, allowNo: true}),
+    'title-table': Flags.boolean({char: 't', description: 'Add titles to the markdown table(s)', helpGroup: 'formatting', default: true, allowNo: true}),
+    logLevel: Flags.string({char: 'l', description: 'Set log level', helpGroup: 'debugging', default: 'info'}),
+    help: Flags.help({char: 'h', description: 'Show help information'}),
   }
 
   /**
@@ -141,7 +140,7 @@ export default class Summary extends Command {
    */
   async run() {
     try {
-      const { flags } = await this.parse(Summary)
+      const {flags} = await this.parse(Summary)
       this.parsedFlags = flags
       this.logger = createWinstonLogger('view summary:', this.parsedFlags.logLevel)
       const execJSONs = this.loadExecJSONs(this.parsedFlags.input)
@@ -336,7 +335,7 @@ export default class Summary extends Command {
   /**
  * Generates a Markdown table row based on the provided row name and data.
  * @param row - The name of the row. This should be one of the values in ROW_ORDER.
- * @param data - The data object containing the values for the row.
+ * @param item - The data object containing the values for the row.
  * @param columnWidths - The maximum width of each column in the table.
  * @returns A string representing a row in a Markdown table.
  */
