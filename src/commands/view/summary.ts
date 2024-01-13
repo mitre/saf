@@ -7,8 +7,8 @@ import _ from 'lodash'
 import flat from 'flat'
 import { convertFullPathToFilename } from '../../utils/global'
 import { createWinstonLogger } from '../../utils/logging'
-import markdownTable from 'markdown-table'
-// Constants
+import { Align, Table, getMarkdownTable } from 'markdown-table-ts'
+
 const UTF8_ENCODING = 'utf8'
 
 interface Flags {
@@ -16,7 +16,9 @@ interface Flags {
   input: string[];
   format: string;
   stdout: boolean;
+  'print-pretty': boolean;
   output?: string;
+  'title-table'?: boolean;
 }
 interface Data {
   compliance: number;
@@ -72,9 +74,7 @@ export default class Summary extends Command {
  * This is displayed to the user in the help message.
  * @property {string} description - The description of this command. This is displayed to the user in the help message.
  */
-  static description = 'Get a quick compliance overview of an HDF file '
-
-  /**
+  static description = 'Generate a comprehensive summary of compliance data, including totals and counts, from your HDF files. The output can be displayed in the console, or exported as YAML, JSON, or a GitHub-flavored Markdown table.';  /**
  * The order of the rows in the summary table.
  * The table includes a row for each of these values.
  * @property {string[]} ROW_ORDER - The order of the rows in the summary table. The table includes a row for each of these values.
@@ -95,14 +95,18 @@ export default class Summary extends Command {
   ];
 
   static flags = {
-    help: Flags.help({ char: 'h' }),
-    input: Flags.string({ char: 'i', required: true, multiple: true, description: 'Input HDF files' }),
-    output: Flags.string({ char: 'o', required: false }),
-    format: Flags.string({ char: 'f', description: 'output format', options: ['json', 'yaml', 'markdown'], default: 'yaml' }),
-    stdout: Flags.boolean({ char: 's', description: 'Print to console', default: true, allowNo: true }),
-    logLevel: Flags.string({ char: 'l', description: 'Log level', default: 'info' }),
+    input: Flags.string({ char: 'i', required: true, multiple: true, description: 'Specify input HDF file(s)', helpGroup: 'I/O' }),
+    output: Flags.string({ char: 'o', description: 'Specify output file(s)', helpGroup: 'I/O' }),
+    format: Flags.string({ char: 'f', description: 'Specify output format', helpGroup: 'formatting', options: ['json', 'yaml', 'markdown'], default: 'yaml' }),
+    stdout: Flags.boolean({ char: 's', description: 'Enable printing to console', default: true, allowNo: true, helpGroup: 'I/O' }),
+    'print-pretty': Flags.boolean({ char: 'r', description: 'Enable human-readable data output', helpGroup: 'formatting', default: true, allowNo: true }),
+    'title-table': Flags.boolean({ char: 't', description: 'Add titles to the markdown table(s)', helpGroup: 'formatting', default: true, allowNo: true }),
+    logLevel: Flags.string({ char: 'l', description: 'Set log level', helpGroup: 'debugging', default: 'info' }),
+    help: Flags.help({ char: 'h', description: 'Show help information' }),
   }
 
+
+  // helpGroup: 'THE BEST FLAGS',
   // eslint-disable-next-line valid-jsdoc
   /**
    * The main function that runs when the command is invoked.
@@ -119,13 +123,20 @@ export default class Summary extends Command {
       const { flags } = await this.parse(Summary)
       this.logger = createWinstonLogger('view summary:', flags.logLevel)
       const execJSONs = this.loadExecJSONs(flags.input)
+      this.logger.verbose('got the exec JSONs')
       const summaries = this.calculateSummariesForExecJSONs(execJSONs)
+      this.logger.verbose('calulated the summaries')
       const totals = this.calculateTotalCountsForSummaries(summaries)
+      this.logger.verbose('calulated the total counts for the summaries')
       const complianceScores = this.calculateComplianceScoresForExecJSONs(execJSONs)
-      const printableSummaries = Object.entries(totals).map(([profileName, profileMetrics]) =>
-        this.createPrintableSummary(profileName, profileMetrics, execJSONs, complianceScores),
-      )
+      this.logger.verbose('calulated the compliance scores')
+      const printableSummaries = Object.entries(totals).map(([profileName, profileMetrics]) => {
+        this.logger.verbose(`build the printable summaries for: ${profileName}`)
+        return this.createPrintableSummary(profileName, profileMetrics, execJSONs, complianceScores)
+      })
+      this.logger.verbose('generated the printable summmaries')
       this.printAndWriteOutput(flags, printableSummaries)
+      this.logger.verbose('printed and wrote the output')
     } catch (error) {
       this.logger.error(error)
       // Handle the error appropriately
@@ -138,6 +149,7 @@ export default class Summary extends Command {
    * @returns An object mapping file paths to their corresponding execution JSONs.
    */
   private loadExecJSONs(files: string[]): Record<string, ContextualizedEvaluation> {
+    this.logger.verbose('In loadExecJSONs')
     const execJSONs: Record<string, ContextualizedEvaluation> = {}
     files.forEach((file: string) => {
       execJSONs[file] = convertFileContextual(fs.readFileSync(file, UTF8_ENCODING)) as ContextualizedEvaluation
@@ -151,6 +163,7 @@ export default class Summary extends Command {
    * @returns An object containing the calculated summaries.
    */
   private calculateSummariesForExecJSONs(execJSONs: Record<string, ContextualizedEvaluation>): Record<string, Record<string, Record<string, number>>[]> {
+    this.logger.verbose('In calculateSummariesForExecJSONs')
     const summaries: Record<string, Record<string, Record<string, number>>[]> = {}
 
     Object.values(execJSONs).forEach(parsedExecJSON => {
@@ -174,6 +187,7 @@ export default class Summary extends Command {
    * @returns An object containing the calculated compliance scores.
    */
   private calculateComplianceScoresForExecJSONs(execJSONs: Record<string, ContextualizedEvaluation>): Record<string, number[]> {
+    this.logger.verbose('In calculateComplianceScoresForExecJSONs')
     const complianceScores: Record<string, number[]> = {}
 
     Object.values(execJSONs).forEach(parsedExecJSON => {
@@ -197,6 +211,7 @@ export default class Summary extends Command {
    * @returns void - This method does not return anything, it modifies the 'summary' object passed as a parameter.
    */
   private calculateSeverityCounts(summary: Record<string, Record<string, number>>, parsedProfile: ContextualizedProfile) {
+    this.logger.verbose('In calculateComplianceScoresForExecJSONs')
     for (const [severity, severityTargets] of Object.entries(severityTargetsObject)) {
       const severityStatusCounts = extractStatusCounts(parsedProfile, severity)
       for (const severityTarget of severityTargets) {
@@ -212,6 +227,7 @@ export default class Summary extends Command {
    * @returns void - This method does not return anything, it modifies the 'summary' object passed as a parameter.
    */
   private calculateTotalCounts(summary: Record<string, Record<string, number>>) {
+    this.logger.verbose('In calculateTotalCounts')
     for (const [type, counts] of Object.entries(summary)) {
       const total = Object.values(counts).reduce((a, b) => a + b, 0)
       _.set(summary, `${type}.total`, total)
@@ -224,6 +240,7 @@ export default class Summary extends Command {
    * @returns An object containing the calculated totals.
    */
   private calculateTotalCountsForSummaries(summaries: Record<string, Record<string, Record<string, number>>[]>): Record<string, Record<string, number>> {
+    this.logger.verbose('In calculateTotalCountsForSummaries')
     const totals: Record<string, Record<string, number>> = {}
     Object.entries(summaries).forEach(([profileName, profileSummaries]) => {
       profileSummaries.forEach(profileSummary => {
@@ -256,6 +273,7 @@ export default class Summary extends Command {
     execJSONs: Record<string, ContextualizedEvaluation>,
     complianceScores: Record<string, number[]>,
   ): PrintableSummary {
+    this.logger.verbose('In createPrintableSummary')
     return {
       profileName: profileName,
       resultSets: this.extractResultSets(execJSONs, profileName),
@@ -271,6 +289,7 @@ export default class Summary extends Command {
    * @returns An array of result sets.
    */
   private extractResultSets(execJSONs: Record<string, ContextualizedEvaluation>, profileName: string): string[] {
+    this.logger.verbose('In extractResultSets')
     return Object.entries(execJSONs).filter(([, execJSON]) => {
       return execJSON.data.profiles[0].name === profileName
     }).map(([filePath]) => {
@@ -285,7 +304,8 @@ export default class Summary extends Command {
  * @param columnWidths - The maximum width of each column in the table.
  * @returns A string representing a row in a Markdown table.
  */
-  private generateMarkdownTableRow(row: string, data: any, columnWidths: number): string {
+  private generateMarkdownTableRow(row: string, data: any): string[] {
+    this.logger.verbose('In generateMarkdownTableRow')
     let values: string[]
     if (row === 'Total') {
       values = [
@@ -307,32 +327,46 @@ export default class Summary extends Command {
       ]
     }
 
-    return `| ${row.padEnd(columnWidths)} | ${values.map(val => val.padEnd(columnWidths)).join(' | ')} |\n`
+    return [row, ...values]
   }
 
   /**
- * Converts the provided data to a Markdown table.
- * The table has a row for each value in ROW_ORDER and a column for each value in COLUMN_ORDER.
- * The values in the table are extracted from the data object.
- * @param data - The data object containing the values for the table.
- * @returns A string representing a Markdown table.
- */
-  private convertToMarkdown(data: any): string {
-    // Extract the first item from the list (assuming there's only one item)
-    data = data[0]
+   * Converts the provided data to a Markdown table.
+   * The table has a row for each value in ROW_ORDER and a column for each value in COLUMN_ORDER.
+   * The values in the table are extracted from the data object.
+   * @param data - The data object containing the values for the table.
+   * @param titleTables - Boolean to either enable or diable adding titles to the produced markdown tables.
+   * @returns A string representing a Markdown table.
+   */
+  private async convertToMarkdown(data: any[], titleTables: boolean): Promise<string[]> {
+    this.logger.verbose('In convertTomarkdown')
 
-    // Calculate the maximum width of each column
-    const columnWidths = Math.max(...this.ROW_ORDER.map((row, i) => Math.max(row.length, (this.COLUMN_ORDER[i] ? this.COLUMN_ORDER[i].length : 0))))
+    // Generate a Markdown table for each item in the data array
+    const tables = data.map(item => {
+      const table: string[][] = [
+        ['Compliance: ' + item.compliance + '% :test_tube:', ...this.COLUMN_ORDER],
+        ...this.ROW_ORDER.map(row => this.generateMarkdownTableRow(row, item)),
+      ]
 
-    // Generate the Markdown table
-    let table = `| Compliance: ${data.compliance}% :test_tube: | ${this.COLUMN_ORDER.map(col => col.padEnd(columnWidths)).join(' | ')} |\n`
-    table += `| ${'-'.padEnd(columnWidths, '-')} | ${this.COLUMN_ORDER.map(() => '-'.padEnd(columnWidths, '-')).join(' | ')} |\n`
+      const myTable: Table = {
+        head: this.ROW_ORDER,
+        body: table,
+      }
 
-    for (const row of this.ROW_ORDER) {
-      table += this.generateMarkdownTableRow(row, data, columnWidths)
-    }
+      const myAlignment: Align[] = [Align.Left, Align.Center, Align.Center, Align.Center, Align.Center, Align.Center]
 
-    return table
+      this.logger.verbose(item)
+
+      // Include the profileName as a Markdown header before the table if titleTables is true
+      const title = titleTables ? `# ${item.profileName}\n\n` : ''
+      return title + getMarkdownTable({
+        table: myTable,
+        alignment: myAlignment,
+        alignColumns: true,
+      })
+    })
+
+    return tables
   }
 
   /**
@@ -345,12 +379,13 @@ export default class Summary extends Command {
    * @param printableSummaries - The printable summaries to print and write to the output file.
    * @returns void - this method does not return anything.
    */
-  private printAndWriteOutput(flags: Flags, printableSummaries: PrintableSummary[]) {
+  private async printAndWriteOutput(flags: Flags, printableSummaries: PrintableSummary[]) {
+    this.logger.verbose('In printAndWriteOutput')
     let output = '' // Initialize output to an empty string
 
     switch (flags.format) {
       case 'json': {
-        output = JSON.stringify(printableSummaries, null, 2)
+        output = flags['print-pretty'] ? JSON.stringify(printableSummaries, null, 2) : JSON.stringify(printableSummaries)
         break
       }
 
@@ -360,7 +395,8 @@ export default class Summary extends Command {
       }
 
       case 'markdown': {
-        output = this.convertToMarkdown(printableSummaries)
+        const markdownTables = await this.convertToMarkdown(printableSummaries, flags['title-table'] ?? true)
+        output = markdownTables.join('\n\n') // Join the tables with two newlines between each table
         break
       }
 

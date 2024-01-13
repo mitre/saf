@@ -1,11 +1,17 @@
-import { ContextualizedControl, contextualizeEvaluation, ExecJSON } from 'inspecjs';
-import { createLogger, format, transports, Logger } from 'winston';
+import {ContextualizedControl, contextualizeEvaluation, ExecJSON} from 'inspecjs'
+import {createLogger, format, transports, transport, Logger} from 'winston'
 
-export function createWinstonLogger(mapperName: string, level = 'debug'): Logger {
+export function createWinstonLogger(mapperName: string, level = 'info'): Logger {
+  const transportList: transport[] = [
+    new transports.File({filename: 'saf-cli.log'}),
+  ]
+
+  if (level === 'verbose') {
+    transportList.push(new transports.Console())
+  }
+
   return createLogger({
-    transports: [
-      new transports.File({ filename: 'saf-cli.log' }),
-    ],
+    transports: transportList,
     level: level,
     format: format.combine(
       format.timestamp({
@@ -15,7 +21,7 @@ export function createWinstonLogger(mapperName: string, level = 'debug'): Logger
         info => `[${[info.timestamp]}] ${mapperName} ${info.message}`,
       ),
     ),
-  });
+  })
 }
 
 export type Summary = {
