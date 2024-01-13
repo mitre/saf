@@ -1,13 +1,13 @@
-import { Command, Flags } from '@oclif/core'
-import { ContextualizedEvaluation, ContextualizedProfile, convertFileContextual } from 'inspecjs'
+import {Command, Flags} from '@oclif/core'
+import {ContextualizedEvaluation, ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import fs from 'fs'
 import YAML from 'yaml'
-import { calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject } from '../../utils/threshold'
+import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 import _ from 'lodash'
 import flat from 'flat'
-import { convertFullPathToFilename } from '../../utils/global'
-import { createWinstonLogger } from '../../utils/logging'
-import { Align, Table, getMarkdownTable } from 'markdown-table-ts'
+import {convertFullPathToFilename} from '../../utils/global'
+import {createWinstonLogger} from '../../utils/logging'
+import {Align, Table, getMarkdownTable} from 'markdown-table-ts'
 
 const UTF8_ENCODING = 'utf8'
 
@@ -95,16 +95,15 @@ export default class Summary extends Command {
   ];
 
   static flags = {
-    input: Flags.string({ char: 'i', required: true, multiple: true, description: 'Specify input HDF file(s)', helpGroup: 'I/O' }),
-    output: Flags.string({ char: 'o', description: 'Specify output file(s)', helpGroup: 'I/O' }),
-    format: Flags.string({ char: 'f', description: 'Specify output format', helpGroup: 'formatting', options: ['json', 'yaml', 'markdown'], default: 'yaml' }),
-    stdout: Flags.boolean({ char: 's', description: 'Enable printing to console', default: true, allowNo: true, helpGroup: 'I/O' }),
-    'print-pretty': Flags.boolean({ char: 'r', description: 'Enable human-readable data output', helpGroup: 'formatting', default: true, allowNo: true }),
-    'title-table': Flags.boolean({ char: 't', description: 'Add titles to the markdown table(s)', helpGroup: 'formatting', default: true, allowNo: true }),
-    logLevel: Flags.string({ char: 'l', description: 'Set log level', helpGroup: 'debugging', default: 'info' }),
-    help: Flags.help({ char: 'h', description: 'Show help information' }),
+    input: Flags.string({char: 'i', required: true, multiple: true, description: 'Specify input HDF file(s)', helpGroup: 'I/O'}),
+    output: Flags.string({char: 'o', description: 'Specify output file(s)', helpGroup: 'I/O'}),
+    format: Flags.string({char: 'f', description: 'Specify output format', helpGroup: 'formatting', options: ['json', 'yaml', 'markdown'], default: 'yaml'}),
+    stdout: Flags.boolean({char: 's', description: 'Enable printing to console', default: true, allowNo: true, helpGroup: 'I/O'}),
+    'print-pretty': Flags.boolean({char: 'r', description: 'Enable human-readable data output', helpGroup: 'formatting', default: true, allowNo: true}),
+    'title-table': Flags.boolean({char: 't', description: 'Add titles to the markdown table(s)', helpGroup: 'formatting', default: true, allowNo: true}),
+    logLevel: Flags.string({char: 'l', description: 'Set log level', helpGroup: 'debugging', default: 'info'}),
+    help: Flags.help({char: 'h', description: 'Show help information'}),
   }
-
 
   // helpGroup: 'THE BEST FLAGS',
   // eslint-disable-next-line valid-jsdoc
@@ -120,7 +119,7 @@ export default class Summary extends Command {
    */
   async run() {
     try {
-      const { flags } = await this.parse(Summary)
+      const {flags} = await this.parse(Summary)
       this.logger = createWinstonLogger('view summary:', flags.logLevel)
       const execJSONs = this.loadExecJSONs(flags.input)
       this.logger.verbose('got the exec JSONs')

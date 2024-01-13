@@ -21,7 +21,7 @@ describe('Summary command', () => {
 
   test
     .stdout()
-    .command(['summary', '-i', hdfFilePath, '--format=markdown','--no-title-table', '-o', generatedMD])
+    .command(['summary', '-i', hdfFilePath, '--format=markdown', '--no-title-table', '-o', generatedMD])
     .it('runs summary with Markdown output and matches the markdown refernce file', ctx => {
       const expectedOutput = fs.readFileSync(MD_reference, 'utf8').trim()
       const actualOutput = fs.readFileSync(generatedMD, 'utf8').trim()
