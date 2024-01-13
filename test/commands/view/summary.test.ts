@@ -40,13 +40,6 @@ describe('Summary command', () => {
 
   test
     .stdout()
-    .command(['summary', '-i', hdfFilePath, '--format=json', '--no-stdout'])
-    .it('runs summary with no-stdout flag and does not write to stdout', ctx => {
-      expect(ctx.stdout).to.be.empty
-    })
-
-  test
-    .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=json', '--no-print-pretty'])
     .it('runs summary with --no-pretty flag and produces flat JSON output', ctx => {
       // Parse the actual output
@@ -81,6 +74,14 @@ describe('Summary command', () => {
       const actualOutput = JSON.parse(ctx.stdout)
 
       // Check that the actual output is not empty
+
       expect(actualOutput).to.not.be.empty
+    })
+
+  test
+    .stdout()
+    .command(['summary', '-i', hdfFilePath, '--format=json', '--no-stdout'])
+    .it('runs summary with no-stdout flag and does not write to stdout', ctx => {
+      expect(ctx.stdout).to.be.empty
     })
 })

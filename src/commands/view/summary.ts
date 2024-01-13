@@ -1,47 +1,17 @@
-import {Command, Flags} from '@oclif/core'
-import {ContextualizedEvaluation, ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import fs from 'fs'
-import YAML from 'yaml'
-import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 import _ from 'lodash'
+import YAML from 'yaml'
 import flat from 'flat'
-import {convertFullPathToFilename} from '../../utils/global'
+import {Command, Flags} from '@oclif/core'
 import {createWinstonLogger} from '../../utils/logging'
+import {convertFullPathToFilename} from '../../utils/global'
 import {Align, Table, getMarkdownTable} from 'markdown-table-ts'
+import {ContextualizedEvaluation, ContextualizedProfile, convertFileContextual} from 'inspecjs'
+import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
 
-const UTF8_ENCODING = 'utf8'
-
-interface CommandFlags {
-  input: string[];
-  output?: string;
-  format: string;
-  stdout: boolean;
-  'print-pretty': boolean;
-  'title-table'?: boolean;
-  logLevel?: string;
-  help: void;
-}
-interface Data {
-  [key: string]: Record<string, number> | number;
-  passed: Record<string, number>;
-  failed: Record<string, number>;
-  skipped: Record<string, number>;
-  no_impact: Record<string, number>;
-  error: Record<string, number>;
-  total: number;
-  default: number;
-}
-
-interface PrintableSummary {
-  profileName: string;
-  resultSets: string[];
-  compliance: number;
-  [key: string]: unknown; // This is to allow for the spread operator in the `createPrintableSummary` method
-}
 type DataOrArray = Data | Data[] | PrintableSummary | PrintableSummary[];
 
 type RowType = 'Total' | 'Critical' | 'High' | 'Medium' | 'Low' | 'Not Applicable'
-
 /**
  * Summary Class
  *
@@ -51,7 +21,6 @@ type RowType = 'Total' | 'Critical' | 'High' | 'Medium' | 'Low' | 'Not Applicabl
  * @class
  * @public
  * @property {string[]} aliases - The aliases for this command. Users can invoke this command by typing 'summary'.
-
  */
 export default class Summary extends Command {
   /**
@@ -60,7 +29,6 @@ export default class Summary extends Command {
  * @property {string[]} aliases - The aliases for this command. Users can invoke this command by typing 'summary'.
  */
   static aliases = ['summary']
-
   /**
  * A static readonly property that defines the types of rows that can be used in the table.
  * It is an array of string literals, and the 'as const' assertion ensures that TypeScript treats it as a readonly tuple, not a mutable array.
@@ -74,21 +42,18 @@ export default class Summary extends Command {
  * @property {ReturnType<typeof createWinstonLogger>} logger - The logger for this command. It uses a Winston logger with the label 'view summary:'.
  */
   private logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View Summary:');
-
   /**
  * The usage information for this command.
  * Users should invoke this command by typing 'view summary -i <hdf-file> [-h] [-j] [-o <output>]'.
  * @property {string} usage - The usage information for this command. Users should invoke this command by typing 'view summary -i <hdf-file> [-h] [-j] [-o <output>]'.
  */
   // static usage = 'view summary -i <hdf-file> [-h] [-j] [-o <output>]'
-
   /**
  * The description of this command.
  * This is displayed to the user in the help message.
  * @property {string} description - The description of this command. This is displayed to the user in the help message.
  */
   static description = 'Generate a comprehensive summary of compliance data, including totals and counts, from your HDF files. The output can be displayed in the console, or exported as YAML, JSON, or a GitHub-flavored Markdown table.';  /**
-
   * The order of the rows in the summary table.
  * The table includes a row for each of these values.
  * @property {string[]} ROW_ORDER - The order of the rows in the summary table. The table includes a row for each of these values.
@@ -126,7 +91,6 @@ export default class Summary extends Command {
  */
   private parsedFlags!: CommandFlags
 
-  // helpGroup: 'THE BEST FLAGS',
   // eslint-disable-next-line valid-jsdoc
   /**
    * The main function that runs when the command is invoked.
@@ -196,19 +160,15 @@ export default class Summary extends Command {
   private calculateSummariesForExecJSONs(execJSONs: Record<string, ContextualizedEvaluation>): Record<string, Record<string, Record<string, number>>[]> {
     this.logger.verbose('In calculateSummariesForExecJSONs')
     const summaries: Record<string, Record<string, Record<string, number>>[]> = {}
-
     Object.values(execJSONs).forEach(parsedExecJSON => {
       const summary: Record<string, Record<string, number>> = {}
       const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
       const profileName = parsedProfile.data.name
-
       this.calculateSeverityCounts(summary, parsedProfile)
       this.calculateTotalCounts(summary)
-
       summaries[profileName] = (_.get(summaries, profileName) || [])
       summaries[profileName].push(summary)
     })
-
     return summaries
   }
 
@@ -220,18 +180,15 @@ export default class Summary extends Command {
   private calculateComplianceScoresForExecJSONs(execJSONs: Record<string, ContextualizedEvaluation>): Record<string, number[]> {
     this.logger.verbose('In calculateComplianceScoresForExecJSONs')
     const complianceScores: Record<string, number[]> = {}
-
     Object.values(execJSONs).forEach(parsedExecJSON => {
       const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
       const profileName = parsedProfile.data.name
       const overallStatusCounts = extractStatusCounts(parsedProfile)
       const overallCompliance = calculateCompliance(overallStatusCounts)
-
       const existingCompliance = _.get(complianceScores, profileName) || []
       existingCompliance.push(overallCompliance)
       _.set(complianceScores, `["${profileName.replaceAll('"', '\\"')}"]`, existingCompliance)
     })
-
     return complianceScores
   }
 
@@ -341,10 +298,8 @@ export default class Summary extends Command {
  */
   private generateMarkdownTableRow(row: RowType, item: Data | PrintableSummary): string[] {
     this.logger.verbose('In generateMarkdownTableRow')
-
     const fields: (keyof Data)[] = ['passed', 'failed', 'skipped', 'no_impact', 'error']
     const values = fields.map(field => this.generateValue(row, field, item))
-
     return [row, ...values]
   }
 
@@ -372,7 +327,6 @@ export default class Summary extends Command {
       'Not Applicable': field === 'no_impact' ? 'total' : row.toLowerCase(),
       default: field === 'no_impact' ? 'default' : row.toLowerCase(),
     }
-
     const key = keyMap[row] || keyMap.default
     return (data[field] as Record<string, number>)[key]?.toString() ?? '-'
   }
@@ -387,11 +341,8 @@ export default class Summary extends Command {
    */
   private convertToMarkdown(data: DataOrArray, titleTables: boolean): string[] {
     this.logger.verbose('In convertTomarkdown')
-
     let tables: string[] = []
-
     tables = Array.isArray(data) ? data.map(item => this.generateMarkdownTable(item, titleTables)) : [this.generateMarkdownTable(data, titleTables)]
-
     return tables
   }
 
@@ -405,17 +356,14 @@ export default class Summary extends Command {
    */
   private generateMarkdownTable(item: Data | PrintableSummary, titleTables: boolean): string {
     const table: string[][] = [
-      ['Compliance: ' + item.compliance + '% :test_tube:', ...this.COLUMN_ORDER],
+      ['Compliance: ' + item.compliance.toString() + '% :test_tube:', ...this.COLUMN_ORDER],
       ...this.ROW_ORDER.map(row => this.generateMarkdownTableRow(row, item)),
     ]
-
     const myTable: Table = {
       head: this.ROW_ORDER,
       body: table,
     }
-
     const myAlignment: Align[] = [Align.Left, Align.Center, Align.Center, Align.Center, Align.Center, Align.Center]
-
     if (this.parsedFlags.logLevel === 'verbose') {
       console.log(item)
     }
@@ -441,7 +389,6 @@ export default class Summary extends Command {
   private printAndWriteOutput(printableSummaries: PrintableSummary[]) {
     this.logger.verbose('In printAndWriteOutput')
     let output = '' // Initialize output to an empty string
-
     switch (this.parsedFlags.format) {
       case 'json': {
         output = this.parsedFlags['print-pretty'] ? JSON.stringify(printableSummaries, null, 2) : JSON.stringify(printableSummaries)
@@ -473,3 +420,34 @@ export default class Summary extends Command {
     }
   }
 }
+
+interface CommandFlags {
+  input: string[];
+  output?: string;
+  format: string;
+  stdout: boolean;
+  'print-pretty': boolean;
+  'title-table'?: boolean;
+  logLevel?: string;
+  help: unknown;
+}
+
+interface PrintableSummary {
+  profileName: string;
+  resultSets: string[];
+  compliance: number;
+  [key: string]: unknown; // This is to allow for the spread operator in the `createPrintableSummary` method
+}
+
+interface Data {
+  [key: string]: Record<string, number> | number;
+  passed: Record<string, number>;
+  failed: Record<string, number>;
+  skipped: Record<string, number>;
+  no_impact: Record<string, number>;
+  error: Record<string, number>;
+  total: number;
+  default: number;
+}
+
+const UTF8_ENCODING = 'utf8'
