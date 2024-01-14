@@ -1038,7 +1038,7 @@ ___
 
 You can start a local Heimdall Lite instance to visualize your findings with the SAF CLI. To start an instance use the `saf view heimdall` command:
 
-```
+```shell
 view heimdall                 Run an instance of Heimdall Lite to
                               visualize your data
   USAGE
@@ -1060,26 +1060,78 @@ view heimdall                 Run an instance of Heimdall Lite to
 
 #### Summary
 
-To get a quick compliance summary from an HDF file (grouped by profile name) use the `saf view summary` command:
+Generate a comprehensive summary of compliance data, including totals and counts, from your HDF files.
 
-```
-view summary                  Get a quick compliance overview of an HDF file
+The output can be displayed in the console, or exported as YAML, JSON, or a GitHub-flavored Markdown table.
 
-  USAGE
-    $ saf view summary -i <hdf-file> [-h] [-j] [-o <output>]
+```powershell
+USAGE
+  $ saf view summary -i <value> [-o <value>] [-f json|yaml|markdown] [-s]
+    [-r] [-t] [-l <value>] [-h]
 
-  FLAGS
-    -h, --help                  Show CLI help.
-    -i, --input=<hdf-file>...   (required) Input HDF files
-    -j, --json                  Output results as JSON
-    -o, --output=<output>
+FLAGS
+  -h, --help  Show help information
 
-  ALIASES
-    $ saf summary
+FORMATTING FLAGS
+  -f, --format=<option>    [default: yaml] Specify output format
+                           <options: json|yaml|markdown>
+  -r, --[no-]print-pretty  Enable human-readable data output
+  -t, --[no-]title-table   Add titles to the markdown table(s)
 
-  EXAMPLES
-    $ saf view summary -i rhel7-results.json
-    $ saf view summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json
+I/O FLAGS
+  -i, --input=<value>...  (required) Specify input HDF file(s)
+  -o, --output=<value>    Specify output file(s)
+  -s, --[no-]stdout       Enable printing to console
+
+DEBUGGING FLAGS
+  -l, --logLevel=<value>  [default: info] Set log level
+
+DESCRIPTION
+  Generate a comprehensive summary of compliance data, including totals and
+  counts, from your HDF files. The output can be displayed in the console, or
+  exported as YAML, JSON, or a GitHub-flavored Markdown table.
+
+ALIASES
+  $ saf summary
+
+EXAMPLES
+  Basic Usage:
+
+  Summarize 'input.hdf' single HDF file:
+
+  $ mycli summary -i input.hdf
+
+  Specify Formats:
+
+  $ mycli summary -i input.json --format=json
+
+  Output GitHub Flavored Markdown Table, skip the console, and save to 'output.md':
+
+  $ mycli summary -i input.json --format=markdown --no-stdout -o output.md
+
+  Summarize multiple HDF files:
+
+  $ mycli summary --input input1.hdf --input input2.hdf
+
+  The input (`-i`) flag also accepts a space delimited list of files:
+
+  $ mycli summary --input input1.hdf input2.hdf
+
+  Save summary to 'output.json' and the print to the console:
+
+  $ mycli summary -i input.hdf --output output.json
+
+  Use short or long flag(s):
+
+  $ mycli summary --input input.hdf --format json
+
+  $ mycli summary -i input.hdf -f yaml
+
+    Formmated or RAW output:
+
+  $ mycli summary --input input.hdf --pretty-print # enable human-readable output
+
+  $ mycli summary -i input.hdf --no-pretty-print  # for scripts or data-processing (RAW yaml/json/etc.)
 ```
 [top](#view-hdf-summaries-and-data)
 

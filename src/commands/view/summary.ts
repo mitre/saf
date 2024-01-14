@@ -56,7 +56,7 @@ export default class Summary extends Command {
  * This is displayed to the user in the help message.
  * @property {string} description - The description of this command. This is displayed to the user in the help message.
  */
-  static description = 'Generate a comprehensive summary of compliance data, including totals and counts, from your HDF files. The output can be displayed in the console, or exported as YAML, JSON, or a GitHub-flavored Markdown table.';  /**
+  static description = 'Generate a comprehensive summary of compliance data, including totals and counts, from your HDF files.\n The output can be displayed in the console, or exported as YAML, JSON, or a GitHub-flavored Markdown table.';  /**
   * The order of the rows in the summary table.
  * The table includes a row for each of these values.
  * @property {string[]} ROW_ORDER - The order of the rows in the summary table. The table includes a row for each of these values.
@@ -85,6 +85,41 @@ export default class Summary extends Command {
     logLevel: Flags.string({char: 'l', description: 'Set log level', helpGroup: 'debugging', default: 'info'}),
     help: Flags.help({char: 'h', description: 'Show help information'}),
   }
+
+  static examples = [
+    // Basic usage
+    'Basic Usage:',
+    // eslint-disable-next-line quotes
+    `Summarize 'input.hdf' single HDF file:`,
+    '$ mycli summary -i input.hdf',
+
+    // Specify output format
+    'Specify Formats:',
+    '$ mycli summary -i input.json --format=json',
+    'Output GitHub Flavored Markdown Table, skip the console, and save to \'output.md\':',
+    '$ mycli summary -i input.json --format=markdown --no-stdout -o output.md',
+
+    // Multiple input files
+    'Summarize multiple HDF files:',
+    '$ mycli summary --input input1.hdf --input input2.hdf',
+    'The input (`-i`) flag also accepts a space delimited list of files:',
+    '$ mycli summary --input input1.hdf input2.hdf',
+
+    // Specify output file
+    // eslint-disable-next-line quotes
+    `Save summary to 'output.json' and the print to the console:`,
+    '$ mycli summary -i input.hdf --output output.json',
+
+    // Short and long form flags
+    'Use short or long flag(s):',
+    '$ mycli summary --input input.hdf --format json',
+    '$ mycli summary -i input.hdf -f yaml',
+
+    // Enable and disable flags
+    '  Formmated or RAW output:',
+    '$ mycli summary --input input.hdf --pretty-print # enable human-readable output',
+    '$ mycli summary -i input.hdf --no-pretty-print  # for scripts or data-processing (RAW yaml/json/etc.)',
+  ]
 
   /**
  * An object to hold the parsed command line flags.
