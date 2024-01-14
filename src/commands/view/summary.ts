@@ -92,12 +92,11 @@ export default class Summary extends Command {
  * This is useful when you don't know at the time of object creation which properties will be provided.
  * It is initialized as an empty object, and the actual values will be assigned later when the flags are parsed.
  */
-/* The above code is defining a TypeScript class method called `run()`. This method is an asynchronous
+  /* The above code is defining a TypeScript class method called `run()`. This method is an asynchronous
 function that runs when a command is invoked. It performs the following steps: */
   private parsedFlags!: CommandFlags
 
-  // eslint-disable-next-line valid-jsdoc
-/**
+  /**
  * This is the main function that runs when the 'summary' command is invoked.
  * It performs the following steps:
  * 1. Parses the command line flags.
