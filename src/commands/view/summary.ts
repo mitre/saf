@@ -368,7 +368,7 @@ function that runs when a command is invoked. It performs the following steps: *
     }
 
     // Include the profileName as a Markdown header before the table if titleTables is true
-    const profile_name = item.profileName.toString()
+    const profile_name = typeof item.profileName === 'string' ? item.profileName : 'Evalueated Profile'
     const title = titleTables ? `# ${profile_name}\n\n` : ''
     return title + getMarkdownTable({
       table: myTable,

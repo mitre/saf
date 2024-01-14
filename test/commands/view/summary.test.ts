@@ -44,10 +44,8 @@ describe('Summary command', () => {
     .it('runs summary with --no-pretty flag and produces flat JSON output', ctx => {
       // Parse the actual output
       const actualOutput = JSON.parse(ctx.stdout)
-
       // Stringify and parse the actual output without indentation to get flat JSON
       const flatOutput = JSON.parse(JSON.stringify(actualOutput))
-
       // Check that the actual output equals the flat output
       expect(actualOutput).to.deep.equal(flatOutput)
     })
@@ -58,10 +56,8 @@ describe('Summary command', () => {
     .it('runs summary with --pretty flag and produces formatted JSON output', ctx => {
       // Parse the actual output
       const actualOutput = JSON.parse(ctx.stdout)
-
       // Stringify and parse the actual output with 2 spaces of indentation to get formatted JSON
       const prettyOutput = JSON.parse(JSON.stringify(actualOutput, null, 2))
-
       // Check that the actual output equals the pretty output
       expect(actualOutput).to.deep.equal(prettyOutput)
     })
@@ -70,18 +66,14 @@ describe('Summary command', () => {
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=json', '--stdout'])
     .it('runs summary with --stdout flag and prints output to console', ctx => {
-      // Parse the actual output
       const actualOutput = JSON.parse(ctx.stdout)
-
-      // Check that the actual output is not empty
-
-      expect(actualOutput).to.not.be.empty
+      expect(actualOutput).to.not.be.empty.equal(true)
     })
 
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=json', '--no-stdout'])
     .it('runs summary with no-stdout flag and does not write to stdout', ctx => {
-      expect(ctx.stdout).to.be.empty
+      expect(ctx.stdout).to.be.empty.equal('')
     })
 })
