@@ -119,30 +119,25 @@ export default class Summary extends Command {
     '$ mycli summary -i input.hdf --no-pretty-print  # for scripts or data-processing (RAW yaml/json/etc.)',
   ]
 
-  /**
- * An object to hold the parsed command line flags.
- * It is of type Partial<CommandFlags>, which means it is an object that has all the properties of CommandFlags, but all of them are optional.
- * This is useful when you don't know at the time of object creation which properties will be provided.
- * It is initialized as an empty object, and the actual values will be assigned later when the flags are parsed.
- */
-  /* The above code is defining a TypeScript class method called `run()`. This method is an asynchronous
-function that runs when a command is invoked. It performs the following steps: */
   private parsedFlags!: CommandFlags
 
   /**
- * This is the main function that runs when the 'summary' command is invoked.
- * It performs the following steps:
- * 1. Parses the command line flags.
- * 2. Loads the execution JSONs from the provided input files.
- * 3. Calculates the summaries for each execution JSON.
- * 4. Calculates the total counts for each summary.
- * 5. Calculates the compliance scores for each execution JSON.
- * 6. Creates a printable summary for each profile using the total counts and compliance scores.
- * 7. Prints the printable summaries to the console and optionally writes them to an output file.
- *
- * @throws {Error} If there's an error during the execution, it will be logged and the process will exit.
- * @returns {Promise<void>} A promise that resolves when the command has finished executing.
- */
+  * The above code is defining a TypeScript function called `run()`. This function is the main function
+  that runs when the 'summary' command is invoked.
+  *
+  * This is the main function that runs when the 'summary' command is invoked.
+  * It performs the following steps:
+  * 1. Parses the command line flags.
+  * 2. Loads the execution JSONs from the provided input files.
+  * 3. Calculates the summaries for each execution JSON.
+  * 4. Calculates the total counts for each summary.
+  * 5. Calculates the compliance scores for each execution JSON.
+  * 6. Creates a printable summary for each profile using the total counts and compliance scores.
+  * 7. Prints the printable summaries to the console and optionally writes them to an output file.
+  *
+  * @throws {Error} If there's an error during the execution, it will be logged and the process will exit.
+  * @returns {Promise<void>} A promise that resolves when the command has finished executing.
+  */
   async run() {
     try {
       const {flags} = await this.parse(Summary)
@@ -165,7 +160,6 @@ function that runs when a command is invoked. It performs the following steps: *
       this.logger.verbose('printed and wrote the output')
     } catch (error) {
       this.logger.error(error)
-      // Handle the error appropriately
     }
   }
 
@@ -316,17 +310,18 @@ function that runs when a command is invoked. It performs the following steps: *
     })
   }
 
-  /* The above code is a TypeScript function that generates a Markdown table row based on the provided
-  row name and data. It takes in three parameters: `row` (the name of the row), `data` (the data
-  object containing the values for the row), and `columnWidths` (the maximum width of each column in
-  the table). */
   /**
- * Generates a Markdown table row based on the provided row name and data.
- * @param row - The name of the row. This should be one of the values in ROW_ORDER.
- * @param item - The data object containing the values for the row.
- * @param columnWidths - The maximum width of each column in the table.
- * @returns A string representing a row in a Markdown table.
- */
+  * The above code is a TypeScript function that generates a Markdown table row based on the provided
+  * row name and data. It takes in three parameters: `row` (the name of the row), `data` (the data
+  * object containing the values for the row), and `columnWidths` (the maximum width of each column in
+  * the table).
+  *
+  * Generates a Markdown table row based on the provided row name and data.
+  * @param row - The name of the row. This should be one of the values in ROW_ORDER.
+  * @param item - The data object containing the values for the row.
+  * @param columnWidths - The maximum width of each column in the table.
+  * @returns A string representing a row in a Markdown table.
+  */
   private generateMarkdownTableRow(row: RowType, item: Data | PrintableSummary): string[] {
     this.logger.verbose('In generateMarkdownTableRow')
     const fields: (keyof Data)[] = ['passed', 'failed', 'skipped', 'no_impact', 'error']
@@ -454,6 +449,17 @@ function that runs when a command is invoked. It performs the following steps: *
   }
 }
 
+/**
+ * CommandFlags interface represents the flags that can be passed to the command.
+ * @property {string[]} input - An array of input file paths.
+ * @property {string} [output] - The output file path. This is optional.
+ * @property {string} format - The format of the output (e.g., 'json', 'yaml').
+ * @property {boolean} stdout - If true, the output will be printed to the console.
+ * @property {boolean} 'print-pretty' - If true, the output will be formatted for human readability.
+ * @property {boolean} [title-table] - If true, the output will include a title table. This is optional.
+ * @property {string} [logLevel] - The level of logging to use (e.g., 'info', 'debug'). This is optional.
+ * @property {unknown} help - The help flag. The type is unknown because it can be a boolean or a string depending on the command line library used.
+ */
 interface CommandFlags {
   input: string[];
   output?: string;
@@ -465,13 +471,32 @@ interface CommandFlags {
   help: unknown;
 }
 
+/**
+ * PrintableSummary interface represents a summary that can be printed to the console or written to a file.
+ * @property {string} profileName - The name of the profile.
+ * @property {string[]} resultSets - An array of result sets.
+ * @property {number} compliance - The compliance score.
+ * @property {[key: string]: unknown} - This is to allow for the spread operator in the `createPrintableSummary` method.
+ */
 interface PrintableSummary {
   profileName: string;
   resultSets: string[];
   compliance: number;
-  [key: string]: unknown; // This is to allow for the spread operator in the `createPrintableSummary` method
+  [key: string]: unknown;
 }
 
+/**
+ * Data interface represents the data structure used in the application.
+ * @property {[key: string]: Record<string, number> | number} - This property can be a record of string to number or a number. It's used to store various data.
+ * @property {number} compliance - The compliance score.
+ * @property {Record<string, number>} passed - A record of passed tests.
+ * @property {Record<string, number>} failed - A record of failed tests.
+ * @property {Record<string, number>} skipped - A record of skipped tests.
+ * @property {Record<string, number>} no_impact - A record of tests with no impact.
+ * @property {Record<string, number>} error - A record of tests with errors.
+ * @property {number} total - The total number of tests.
+ * @property {number} default - The default value.
+ */
 interface Data {
   [key: string]: Record<string, number> | number;
   compliance: number;

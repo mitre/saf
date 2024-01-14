@@ -11,6 +11,7 @@ describe('Summary command', () => {
   const generatedMD = 'generatedMD.md'
   const UTF8_ENCODING = 'utf8'
 
+  // This test checks if the 'summary' command with JSON output matches the JSON reference file.
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=json'])
@@ -19,49 +20,48 @@ describe('Summary command', () => {
       expect(JSON.parse(ctx.stdout)).to.deep.equal(expectedOutput)
     })
 
+  // This test checks if the 'summary' command with Markdown output matches the markdown reference file.
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=markdown', '--no-title-table', '-o', generatedMD])
-    .it('runs summary with Markdown output and matches the markdown refernce file', () => {
+    .it('runs summary with Markdown output and matches the markdown reference file', () => {
       const expectedOutput = fs.readFileSync(MD_reference, 'utf8').trim()
       const actualOutput = fs.readFileSync(generatedMD, 'utf8').trim()
       expect(actualOutput).to.equal(expectedOutput)
     })
 
+  // This test checks if the 'summary' command with YAML output matches the YAML reference file.
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=yaml'])
-    .it('runs summary with YAML output and matches the YAML refrence file', ctx => {
+    .it('runs summary with YAML output and matches the YAML reference file', ctx => {
       const expectedOutputYaml = fs.readFileSync(YAML_reference, UTF8_ENCODING)
       const expectedOutput = yaml.load(expectedOutputYaml)
       const actualOutput = yaml.load(ctx.stdout)
       expect(actualOutput).to.deep.equal(expectedOutput)
     })
 
+  // This test checks if the 'summary' command with the '--no-pretty' flag produces flat JSON output.
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=json', '--no-print-pretty'])
     .it('runs summary with --no-pretty flag and produces flat JSON output', ctx => {
-      // Parse the actual output
       const actualOutput = JSON.parse(ctx.stdout)
-      // Stringify and parse the actual output without indentation to get flat JSON
       const flatOutput = JSON.parse(JSON.stringify(actualOutput))
-      // Check that the actual output equals the flat output
       expect(actualOutput).to.deep.equal(flatOutput)
     })
 
+  // This test checks if the 'summary' command with the '--pretty' flag produces formatted JSON output.
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=json', '--print-pretty'])
     .it('runs summary with --pretty flag and produces formatted JSON output', ctx => {
-      // Parse the actual output
       const actualOutput = JSON.parse(ctx.stdout)
-      // Stringify and parse the actual output with 2 spaces of indentation to get formatted JSON
       const prettyOutput = JSON.parse(JSON.stringify(actualOutput, null, 2))
-      // Check that the actual output equals the pretty output
       expect(actualOutput).to.deep.equal(prettyOutput)
     })
 
+  // This test checks if the 'summary' command with the '--stdout' flag prints output to the console.
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=json', '--stdout'])
@@ -70,6 +70,7 @@ describe('Summary command', () => {
       expect(actualOutput).to.not.be.empty.equal(true)
     })
 
+  // This test checks if the 'summary' command with the '--no-stdout' flag does not write to stdout.
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=json', '--no-stdout'])
