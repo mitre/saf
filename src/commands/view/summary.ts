@@ -89,8 +89,7 @@ export default class Summary extends Command {
   static examples = [
     // Basic usage
     'Basic Usage:',
-    // eslint-disable-next-line quotes
-    `Summarize 'input.hdf' single HDF file:`,
+    "Summarize 'input.hdf' single HDF file:",
     '$ mycli summary -i input.hdf',
 
     // Specify output format
@@ -106,8 +105,7 @@ export default class Summary extends Command {
     '$ mycli summary --input input1.hdf input2.hdf',
 
     // Specify output file
-    // eslint-disable-next-line quotes
-    `Save summary to 'output.json' and the print to the console:`,
+    "Save summary to 'output.json' and the print to the console:",
     '$ mycli summary -i input.hdf --output output.json',
 
     // Short and long form flags
