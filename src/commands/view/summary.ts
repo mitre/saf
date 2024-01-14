@@ -12,6 +12,9 @@ import {calculateCompliance, extractStatusCounts, renameStatusName, severityTarg
 type DataOrArray = Data | Data[] | PrintableSummary | PrintableSummary[];
 
 type RowType = 'Total' | 'Critical' | 'High' | 'Medium' | 'Low' | 'Not Applicable'
+
+const UTF8_ENCODING = 'utf8'
+
 /**
  * Summary Class
  *
@@ -89,19 +92,25 @@ export default class Summary extends Command {
  * This is useful when you don't know at the time of object creation which properties will be provided.
  * It is initialized as an empty object, and the actual values will be assigned later when the flags are parsed.
  */
+/* The above code is defining a TypeScript class method called `run()`. This method is an asynchronous
+function that runs when a command is invoked. It performs the following steps: */
   private parsedFlags!: CommandFlags
 
   // eslint-disable-next-line valid-jsdoc
-  /**
-   * The main function that runs when the command is invoked.
-   * It performs the following steps:
-   * 1. Loads the execution JSONs from the provided input files.
-   * 2. Calculates the summaries for each execution JSON.
-   * 3. Calculates the total counts for each summary.
-   * 4. Calculates the compliance scores for each execution JSON.
-   * 5. Creates a printable summary for each profile using the total counts and compliance scores.
-   * 6. Prints the printable summaries to the console and optionally writes them to an output file.
-   */
+/**
+ * This is the main function that runs when the 'summary' command is invoked.
+ * It performs the following steps:
+ * 1. Parses the command line flags.
+ * 2. Loads the execution JSONs from the provided input files.
+ * 3. Calculates the summaries for each execution JSON.
+ * 4. Calculates the total counts for each summary.
+ * 5. Calculates the compliance scores for each execution JSON.
+ * 6. Creates a printable summary for each profile using the total counts and compliance scores.
+ * 7. Prints the printable summaries to the console and optionally writes them to an output file.
+ *
+ * @throws {Error} If there's an error during the execution, it will be logged and the process will exit.
+ * @returns {Promise<void>} A promise that resolves when the command has finished executing.
+ */
   async run() {
     try {
       const {flags} = await this.parse(Summary)
@@ -126,16 +135,6 @@ export default class Summary extends Command {
       this.logger.error(error)
       // Handle the error appropriately
     }
-  }
-
-  /**
- * The function `validateFlags` checks if all the required properties are present in the `parsedFlags`
- * object.
- * @returns a boolean value.
- */
-  private validateFlags(): boolean {
-    const requiredProperties = ['input', 'format', 'stdout', 'print-pretty', 'title-table', 'logLevel', 'help']
-    return requiredProperties.every(prop => Object.prototype.hasOwnProperty.call(this.parsedFlags, prop))
   }
 
   /**
@@ -299,7 +298,7 @@ export default class Summary extends Command {
   private generateMarkdownTableRow(row: RowType, item: Data | PrintableSummary): string[] {
     this.logger.verbose('In generateMarkdownTableRow')
     const fields: (keyof Data)[] = ['passed', 'failed', 'skipped', 'no_impact', 'error']
-    const values = fields.map(field => this.generateValue(row, field, item))
+    const values = fields.map(field => Summary.generateValue(row, field, item))
     return [row, ...values]
   }
 
@@ -321,7 +320,7 @@ export default class Summary extends Command {
    * If the field is 'no_impact', the key is 'total'; otherwise, the key is the lowercase version of the row name.
    * For all other rows, the key is the lowercase version of the row name if the field is not 'no_impact', and 'default' otherwise.
    */
-  private generateValue(row: string, field: keyof Data, data: Data | PrintableSummary): string {
+  private static generateValue(row: string, field: keyof Data, data: Data | PrintableSummary): string {
     const keyMap: Record<string, string> = {
       Total: 'total',
       'Not Applicable': field === 'no_impact' ? 'total' : row.toLowerCase(),
@@ -355,8 +354,9 @@ export default class Summary extends Command {
    * @returns A string representing a Markdown table.
    */
   private generateMarkdownTable(item: Data | PrintableSummary, titleTables: boolean): string {
+    const score = item.compliance.toString()
     const table: string[][] = [
-      ['Compliance: ' + item.compliance.toString() + '% :test_tube:', ...this.COLUMN_ORDER],
+      ['Compliance: ' + score + '% :test_tube:', ...this.COLUMN_ORDER],
       ...this.ROW_ORDER.map(row => this.generateMarkdownTableRow(row, item)),
     ]
     const myTable: Table = {
@@ -369,7 +369,8 @@ export default class Summary extends Command {
     }
 
     // Include the profileName as a Markdown header before the table if titleTables is true
-    const title = titleTables ? `# ${item.profileName}\n\n` : ''
+    const profile_name = item.profileName.toString()
+    const title = titleTables ? `# ${profile_name}\n\n` : ''
     return title + getMarkdownTable({
       table: myTable,
       alignment: myAlignment,
@@ -441,6 +442,7 @@ interface PrintableSummary {
 
 interface Data {
   [key: string]: Record<string, number> | number;
+  compliance: number;
   passed: Record<string, number>;
   failed: Record<string, number>;
   skipped: Record<string, number>;
@@ -449,5 +451,3 @@ interface Data {
   total: number;
   default: number;
 }
-
-const UTF8_ENCODING = 'utf8'
