@@ -2,7 +2,7 @@
 
 import fs from 'fs'
 import {ContextualizedEvaluation, convertFileContextual} from 'inspecjs'
-import {createWinstonLogger} from '../../utils/logging'
+import {createWinstonLogger} from '../logging'
 
 const UTF8_ENCODING = 'utf8'
 

@@ -3,10 +3,8 @@
 import _ from 'lodash'
 import flat from 'flat'
 import {ContextualizedEvaluation, ContextualizedProfile} from 'inspecjs'
-import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../../utils/threshold'
-import {createWinstonLogger} from '../../utils/logging'
-
-const UTF8_ENCODING = 'utf8'
+import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../threshold'
+import {createWinstonLogger} from '../logging'
 
 /**
 * The logger for this command.

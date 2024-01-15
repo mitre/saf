@@ -139,7 +139,7 @@ export default class Summary extends Command {
       const {format, 'print-pretty': printPretty, stdout, output, 'title-table': titleTable, logLevel} = flags
       this.logger = createWinstonLogger(VIEW_SUMMARY, this.parsedFlags.logLevel)
       this.logger.verbose('Parsed command line flags')
-      const executionData = await loadExecJSONs(this.parsedFlags.input)
+      const executionData = loadExecJSONs(this.parsedFlags.input)
       this.logger.verbose(`Loaded execution data from ${this.parsedFlags.input.length} file(s)`)
       const summaries = calculateSummariesForExecJSONs(executionData)
       this.logger.verbose(`Calculated summaries for ${executionData.length} execution data`)

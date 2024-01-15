@@ -1,5 +1,4 @@
-import {expect, util} from 'chai'
-import fs from 'fs'
+import {expect} from 'chai'
 import path from 'path'
 import {ContextualizedEvaluation} from 'inspecjs'
 import {loadExecJSONs} from '../../../src/utils/ohdf/dataLoader'

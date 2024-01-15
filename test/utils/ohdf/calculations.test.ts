@@ -5,9 +5,8 @@ import {
   calculateComplianceScoresForExecJSONs,
   calculateTotalCountsForSummaries,
   calculateSeverityCounts,
-  calculateTotalCounts,
 } from '../../../src/utils/ohdf/calculations'
-import {ContextualizedEvaluation} from 'inspecjs'
+import {ContextualizedEvaluation, ContextualizedProfile} from 'inspecjs'
 import path from 'path'
 import fs from 'fs'
 import {expect} from 'chai'
@@ -24,13 +23,13 @@ function loadExpectedData(samplePath: string) {
 describe('calculations.ts utils', () => {
   let execJSONs: Record<string, ContextualizedEvaluation>
 
-  beforeEach(async () => {
+  beforeEach(() => {
     // Arrange
     execJSONs = loadExecJSONs([hdfFilePath])
   })
 
-  it('calculateSummariesForExecJSONs returns the expected summaries', async () => {
-    const summaries = await calculateSummariesForExecJSONs(execJSONs)
+  it('calculateSummariesForExecJSONs returns the expected summaries', () => {
+    const summaries = calculateSummariesForExecJSONs(execJSONs)
     if (process.env.VERBOSE_TESTING === 'true') {
       console.log(JSON.stringify(summaries))
     }
@@ -39,8 +38,8 @@ describe('calculations.ts utils', () => {
     expect(summaries).to.deep.equal(expectedSummaries)
   })
 
-  it('calculateComplianceScoresForExecJSONs returns correct compliance scores', async () => {
-    const complianceScores = await calculateComplianceScoresForExecJSONs(execJSONs)
+  it('calculateComplianceScoresForExecJSONs returns correct compliance scores', () => {
+    const complianceScores = calculateComplianceScoresForExecJSONs(execJSONs)
     if (process.env.VERBOSE_TESTING === 'true') {
       console.log(JSON.stringify(complianceScores))
     }
@@ -60,7 +59,7 @@ describe('calculations.ts utils', () => {
     expect(totalCounts).to.deep.equal(expectedTotalCounts)
   })
 
-  it('calculateSeverityCounts modifies the summary correctly', async () => {
+  it('calculateSeverityCounts modifies the summary correctly', () => {
     Object.values(execJSONs).forEach(parsedExecJSON => {
       const summary: Record<string, Record<string, number>> = {}
       const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
@@ -76,7 +75,7 @@ describe('calculations.ts utils', () => {
     })
   })
 
-  it('calculateTotalCountsForSummaries calculates the totals correctly', async () => {
+  it('calculateTotalCountsForSummaries calculates the totals correctly', () => {
     const summaries = calculateSummariesForExecJSONs(execJSONs)
 
     const totals = calculateTotalCountsForSummaries(summaries)

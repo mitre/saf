@@ -3,12 +3,10 @@ import fs from 'fs'
 import _ from 'lodash'
 import YAML from 'yaml'
 import {Align, Table, getMarkdownTable} from 'markdown-table-ts'
-import {convertFullPathToFilename} from '../../utils/global'
+import {convertFullPathToFilename} from '../global'
 import {ContextualizedEvaluation} from 'inspecjs'
-import {createWinstonLogger} from '../../utils/logging'
+import {createWinstonLogger} from '../logging'
 import {PrintableSummary, Data, DataOrArray, RowType} from './types'
-
-const UTF8_ENCODING = 'utf8'
 
 /**
 * The logger for command.
