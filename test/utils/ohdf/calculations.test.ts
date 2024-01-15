@@ -48,7 +48,7 @@ describe('calculations.ts utils', () => {
     expect(complianceScores).to.deep.equal(expectedComplianceScores)
   })
 
-  it('calculateTotalCounts returns the correct totals', async () => {
+  it('calculateTotalCounts returns the correct totals', () => {
     const summaries = calculateSummariesForExecJSONs(execJSONs)
     const totalCounts = calculateTotalCountsForSummaries(summaries)
     if (process.env.VERBOSE_TESTING === 'true') {
