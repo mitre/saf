@@ -205,7 +205,12 @@
     "preset": "ts-jest",
     "testEnvironment": "node",
     "testMatch": [
-      "**/test/utils/**/**/__tests__/**/*.ts"
+      "**/test/**/**/**/__tests__/**/*.ts"
     ]
-  }
+  },
+    "mocha": {
+      "exclude": [
+        "**/test/**/**/__tests__/**/*.ts"
+      ]
+    }
 }

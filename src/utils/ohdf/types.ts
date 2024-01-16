@@ -50,3 +50,13 @@ export type DataOrArray = Data | Data[] | PrintableSummary | PrintableSummary[];
 export type RowType = 'total' | 'critical' | 'high' | 'medium' | 'low' | 'Not Applicable';
 export type ColumnType = 'compliance' | 'passed' | 'failed' | 'skipped' | 'no_impact' | 'error';
 
+
+export interface PrintAndWriteOutputArgs {
+  printableSummaries: PrintableSummary[];
+  titleTable: boolean;
+  format: string;
+  printPretty: boolean;
+  stdout: boolean;
+  logLevel: string;
+  output?: string;
+}

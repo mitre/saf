@@ -6,7 +6,7 @@ import {Align, Table, getMarkdownTable} from 'markdown-table-ts'
 import {convertFullPathToFilename} from '../global'
 import {ContextualizedEvaluation} from 'inspecjs'
 import {createWinstonLogger} from '../logging'
-import {PrintableSummary, Data, DataOrArray, RowType, ColumnType} from './types'
+import {PrintableSummary, Data, DataOrArray, RowType, ColumnType, PrintAndWriteOutputArgs} from './types'
 
 /**
 * The logger for command.
@@ -32,56 +32,55 @@ export const COLUMN_EMOJI: Record<ColumnType, string> = {
  *
  * The function works as follows:
  * - It initializes an empty string to hold the output.
- * - It checks the format flag to determine how to format the output.
- * - If the format is 'json', it converts the printable summaries to a JSON string.
- * - If the format is 'markdown', it converts the printable summaries to Markdown tables and joins them with two newlines between each table.
- * - If the format is not provided or is not 'json' or 'markdown', it converts the printable summaries to a YAML string.
- * - If the stdout flag is provided, it prints the output to the console.
- * - If the output flag is provided, it writes the output to the specified file.
+ * - It checks the `format` property of the `args` object to determine how to format the output.
+ * - If the `format` is 'json', it converts the printable summaries to a JSON string.
+ * - If the `format` is 'markdown', it converts the printable summaries to Markdown tables and joins them with two newlines between each table.
+ * - If the `format` is not provided or is not 'json' or 'markdown', it converts the printable summaries to a YAML string.
+ * - If the `stdout` property of the `args` object is true, it prints the output to the console.
+ * - If the `output` property of the `args` object is provided, it writes the output to the specified file.
  *
  * @remarks
  * This function is part of the `outputGenerator.ts` module.
  *
- * @param printableSummaries - The printable summaries to print and write to the output file.
- * @param titleTable - Boolean to either enable or disable adding titles to the produced markdown tables.
- * @param format - The format to use for the output. This should be 'json', 'yaml', or 'markdown'.
- * @param printPretty - Boolean to either enable or disable pretty printing of the output.
- * @param stdout - Boolean to either enable or disable printing the output to the console.
- * @param output - The path of the file to write the output to. If this is not provided, the output is not written to a file.
+ * @param args - An object containing the following properties:
+ *   - `printableSummaries`: The printable summaries to print and write to the output file.
+ *   - `titleTable`: Boolean to either enable or disable adding titles to the produced markdown tables.
+ *   - `format`: The format to use for the output. This should be 'json', 'yaml', or 'markdown'.
+ *   - `printPretty`: Boolean to either enable or disable pretty printing of the output.
+ *   - `stdout`: Boolean to either enable or disable printing the output to the console.
+ *   - `output`: The path of the file to write the output to. If this is not provided, the output is not written to a file.
  * @returns void - This method does not return anything.
  */
-export function printAndWriteOutput(
-  {printableSummaries, titleTable, format, printPretty, stdout, output}: { printableSummaries: PrintableSummary[]; titleTable: boolean; format: string; printPretty: boolean; stdout: boolean; output?: string },
-): void {
+export function printAndWriteOutput(args: PrintAndWriteOutputArgs): void {
   logger.verbose('In printAndWriteOutput')
   let outputStr = '' // Initialize output to an empty string
-  switch (format) {
+  switch (args.format) {
     case 'json': {
-      outputStr = printPretty ? JSON.stringify(printableSummaries, null, 2) : JSON.stringify(printableSummaries)
+      outputStr = args.printPretty ? JSON.stringify(args.printableSummaries, null, 2) : JSON.stringify(args.printableSummaries)
       break
     }
 
     case 'markdown': {
-      const markdownTables = convertToMarkdown(printableSummaries, titleTable ?? true)
+      const markdownTables = convertToMarkdown(args.printableSummaries, args.titleTable ?? true)
       outputStr = markdownTables.join('\n\n') // Join the tables with two newlines between each table
       break
     }
 
     default: { // Default to 'yaml'
-      outputStr = YAML.stringify(printableSummaries)
+      outputStr = YAML.stringify(args.printableSummaries)
     }
   }
 
-  if (stdout) {
+  if (args.stdout) {
     console.log(outputStr)
   }
 
-  if (output) {
+  if (args.output) {
     try {
-      fs.writeFileSync(output, outputStr)
-      logger.info(`Output written to ${output}`)
+      fs.writeFileSync(args.output, outputStr)
+      logger.info(`Output written to ${args.output}`)
     } catch (error) {
-      logger.error(`Failed to write output to ${output}: ${(error as Error).message}`)
+      logger.error(`Failed to write output to ${args.output}: ${(error as Error).message}`)
     }
   }
 }
