@@ -1060,7 +1060,7 @@ view heimdall                 Run an instance of Heimdall Lite to
 
 #### Summary
 
-Generate a comprehensive summary of compliance data, including totals and counts, from your HDF files.
+Generate a comprehensive summary of compliance data, including totals and counts, from your OHDF files.
 
 The output can be displayed in the console, or exported as YAML, JSON, or a GitHub-flavored Markdown table.
 
