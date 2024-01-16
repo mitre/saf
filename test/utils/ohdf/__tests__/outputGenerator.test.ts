@@ -66,7 +66,7 @@ describe('outputGenerator', () => {
 
 describe('generateMarkdownTable', () => {
   it('generates a table with both columns and rows', () => {
-    const result = generateMarkdownTable(item, titleTables, logLevel)
+    const result = generateMarkdownTable(item, titleTables)
     const tokens = marked.lexer(result)
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table
 
@@ -79,7 +79,7 @@ describe('generateMarkdownTable', () => {
   })
 
   it('each row matches a row in `testTableRows`', () => {
-    const result = generateMarkdownTable(item, titleTables, logLevel)
+    const result = generateMarkdownTable(item, titleTables)
     const tokens = marked.lexer(result)
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table
 
@@ -95,7 +95,7 @@ describe('generateMarkdownTable', () => {
   })
 
   it(`rows are in the expected order: ${expectedRowOrder}`, () => {
-    const result = generateMarkdownTable(item, titleTables, logLevel)
+    const result = generateMarkdownTable(item, titleTables)
     const tokens = marked.lexer(result)
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table
 
@@ -108,7 +108,7 @@ describe('generateMarkdownTable', () => {
     }
   })
   it(`columns are in the expected order: ${expectedColumnOrder}`, () => {
-    const result = generateMarkdownTable(item, titleTables, logLevel)
+    const result = generateMarkdownTable(item, titleTables)
     const tokens = marked.lexer(result)
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table
 
@@ -130,7 +130,7 @@ describe('generateMarkdownTable', () => {
     }
   })
   it(`each column matches a column in ${expectedColumnOrder}`, () => {
-    const result = generateMarkdownTable(item, titleTables, logLevel)
+    const result = generateMarkdownTable(item, titleTables)
     const tokens = marked.lexer(result)
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table
 
