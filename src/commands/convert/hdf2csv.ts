@@ -17,7 +17,7 @@ export default class HDF2CSV extends Command {
     input: Flags.string({char: 'i', required: true, description: 'Input HDF file'}),
     output: Flags.string({char: 'o', required: true, description: 'Output CSV file'}),
     fields: Flags.string({char: 'f', required: false, default: csvExportFields.join(','), description: 'Fields to include in output CSV, separated by commas'}),
-    noTruncate: Flags.boolean({char: 't', required: false, default: false, description: "Don't truncate fields longer than 32,767 characters (the cell limit in Excel)"}),
+    noTruncate: Flags.boolean({char: 't', required: false, default: false, description: "Do not truncate fields longer than 32,767 characters (the cell limit in Excel)"}),
   }
 
   static examples = ['saf convert hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"']

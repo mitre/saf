@@ -13,3 +13,4 @@ out
 .env
 *.tgz
 **/saf-cli.log
+*.html

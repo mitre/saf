@@ -80,35 +80,22 @@ export default class Summary extends Command {
 
   static examples = [
     // Basic usage
-    'Basic Usage:',
-    "Summarize 'input.hdf' single HDF file:",
-    '$ mycli summary -i input.hdf',
+    "$ saf summary -i input.hdf                                              # Summarize 'input.hdf' single HDF file",
 
     // Specify output format
-    'Specify Formats:',
-    '$ mycli summary -i input.json --format=json',
-    'Output GitHub Flavored Markdown Table, skip the console, and save to \'output.md\':',
-    '$ mycli summary -i input.json --format=markdown --no-stdout -o output.md',
+    '$ saf summary -i input.json --format=json                               # Specify Formats',
+    '$ saf summary -i input.json --format=markdown --no-stdout -o output.md  # Output GitHub Flavored Markdown Table, skip the console, and save to \'output.md\'',
 
     // Multiple input files
-    'Summarize multiple HDF files:',
-    '$ mycli summary --input input1.hdf --input input2.hdf',
-    'The input (`-i`) flag also accepts a space delimited list of files:',
-    '$ mycli summary --input input1.hdf input2.hdf',
+    '$ saf summary --input input1.hdf --input input2.hdf                     # Summarize multiple HDF files',
+    '$ saf summary --input input1.hdf input2.hdf',
 
     // Specify output file
-    "Save summary to 'output.json' and the print to the console:",
-    '$ mycli summary -i input.hdf --output output.json',
-
-    // Short and long form flags
-    'Use short or long flag(s):',
-    '$ mycli summary --input input.hdf --format json',
-    '$ mycli summary -i input.hdf -f yaml',
+    "$ saf summary -i input.hdf --output output.json                         # Save summary to 'output.json' and print to the console",
 
     // Enable and disable flags
-    '  Formmated or RAW output:',
-    '$ mycli summary --input input.hdf --pretty-print # enable human-readable output',
-    '$ mycli summary -i input.hdf --no-pretty-print  # for scripts or data-processing (RAW yaml/json/etc.)',
+    '$ saf summary --input input.hdf --pretty-print                          # Enable human-readable output',
+    '$ saf summary -i input.hdf --no-pretty-print                            # Useful for scripts or data-processing (RAW yaml/json/etc.)',
   ]
 
   /**
