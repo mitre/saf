@@ -418,7 +418,7 @@ convert hdf2csv               Translate a Heimdall Data Format JSON file into a
     -h, --help                              Show CLI help.
     -i, --input=<hdf-scan-results-json>     (required) Input HDF file
     -o, --output=<output-csv>               (required) Output CSV file
-    -t, --noTruncate                        Don't truncate fields longer than 32,767 characters (the cell limit in Excel)
+    -t, --noTruncate                        Do not truncate fields longer than 32,767 characters (the cell limit in Excel)
 
   EXAMPLES
     $ saf convert hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"
@@ -1047,7 +1047,7 @@ view heimdall                 Run an instance of Heimdall Lite to
   FLAGS
     -f, --files=<file>...   File(s) to display in Heimdall
     -h, --help              Show CLI help.
-    -n, --noOpenBrowser     Don't open the default browser automatically
+    -n, --noOpenBrowser     Do not open the default browser automatically
     -p, --port=<port>       [default: 3000] Port To Expose Heimdall On (Default 3000)
 
   ALIASES
