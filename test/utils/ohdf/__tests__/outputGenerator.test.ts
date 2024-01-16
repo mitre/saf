@@ -4,7 +4,6 @@ import {PrintableSummary} from '../../../../src/utils/ohdf/types'
 
 let item: PrintableSummary
 const titleTables = true
-const logLevel = 'verbose'
 
 beforeEach(() => {
   item = {

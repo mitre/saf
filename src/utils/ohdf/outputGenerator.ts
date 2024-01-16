@@ -263,7 +263,6 @@ export function prettyPrintColumnTitle(title: string): string {
  * - It starts by converting the compliance score to a string and creating the header row of the table.
  * - It then generates the body of the table by mapping over the `ROW_ORDER` array and generating a row for each item using the `generateMarkdownTableRow` function.
  * - It creates a `Table` object from the header row and the body of the table.
- * - If the `logLevel` is 'verbose', it logs the item to the console.
  * - It then determines the title of the table based on the `titleTables` parameter and the `profileName` property of the item.
  * - Finally, it returns the title and the Markdown table as a string.
  *
@@ -272,10 +271,9 @@ export function prettyPrintColumnTitle(title: string): string {
  *
  * @param item - The data to generate the table from. This can be either a `Data` object or a `PrintableSummary` object.
  * @param titleTables - A boolean indicating whether to include the profile name as a Markdown header before the table.
- * @param logLevel - The log level. If this is 'verbose', the function logs the item to the console.
  * @returns A string representing the Markdown table.
  */
-export function generateMarkdownTable(item: Data | PrintableSummary, titleTables: boolean, logLevel: string): string {
+export function generateMarkdownTable(item: Data | PrintableSummary, titleTables: boolean): string {
   const score = item.compliance.toString()
   const headerRow = ['Compliance: ' + score + '<br>:test_tube:', ...COLUMN_ORDER.map(column => `${prettyPrintColumnTitle(column)}<br>${COLUMN_EMOJI[column]}`)]
   const table: string[][] =
