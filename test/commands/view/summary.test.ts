@@ -11,7 +11,6 @@ describe('Summary command', () => {
   const generatedMD = 'generatedMD.md'
   const UTF8_ENCODING = 'utf8'
 
-  // This test checks if the 'summary' command with JSON output matches the JSON reference file.
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=json'])
@@ -20,7 +19,6 @@ describe('Summary command', () => {
       expect(JSON.parse(ctx.stdout)).to.deep.equal(expectedOutput)
     })
 
-  // This test checks if the 'summary' command with Markdown output matches the markdown reference file.
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=markdown', '--no-title-table', '-o', generatedMD])
@@ -30,7 +28,6 @@ describe('Summary command', () => {
       expect(actualOutput).to.equal(expectedOutput)
     })
 
-  // This test checks if the 'summary' command with YAML output matches the YAML reference file.
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=yaml'])
@@ -41,7 +38,6 @@ describe('Summary command', () => {
       expect(actualOutput).to.deep.equal(expectedOutput)
     })
 
-  // This test checks if the 'summary' command with the '--no-pretty' flag produces flat JSON output.
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=json', '--no-print-pretty'])
@@ -51,7 +47,6 @@ describe('Summary command', () => {
       expect(actualOutput).to.deep.equal(flatOutput)
     })
 
-  // This test checks if the 'summary' command with the '--pretty' flag produces formatted JSON output.
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=json', '--print-pretty'])
@@ -61,7 +56,6 @@ describe('Summary command', () => {
       expect(actualOutput).to.deep.equal(prettyOutput)
     })
 
-  // This test checks if the 'summary' command with the '--stdout' flag prints output to the console.
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=json', '--stdout'])
@@ -70,7 +64,6 @@ describe('Summary command', () => {
       expect(actualOutput).to.not.be.empty.equal(true)
     })
 
-  // This test checks if the 'summary' command with the '--no-stdout' flag does not write to stdout.
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=json', '--no-stdout'])
