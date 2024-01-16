@@ -75,7 +75,7 @@ export default class Summary extends Command {
     'print-pretty': Flags.boolean({char: 'r', description: 'Enable human-readable data output', helpGroup: FORMATTING_GROUP, default: true, allowNo: true}),
     'title-table': Flags.boolean({char: 't', description: 'Add titles to the markdown table(s)', helpGroup: FORMATTING_GROUP, default: true, allowNo: true}),
     logLevel: Flags.string({char: 'l', description: 'Set log level', helpGroup: 'debugging', default: DEFAULT_LOG_LEVEL}),
-    help: Flags.help({char: 'h', description: 'Show help information'}),
+    help: Flags.help({char: 'h', description: 'Show help information', helpGroup: 'help'}),
   };
 
   static examples = [
