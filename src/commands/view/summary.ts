@@ -137,7 +137,8 @@ export default class Summary extends Command {
       const {flags} = await this.parse(Summary)
       this.parsedFlags = flags as CommandFlags
       const {format, 'print-pretty': printPretty, stdout, output, 'title-table': titleTable, logLevel} = flags
-      this.logger = createWinstonLogger(VIEW_SUMMARY, this.parsedFlags.logLevel)
+      const loglevel = this.parsedFlags.logLevel || process.env.LOG_LEVEL || 'info'
+      this.logger = createWinstonLogger(VIEW_SUMMARY, loglevel)
       this.logger.verbose('Parsed command line flags')
       const executionData = loadExecJSONs(this.parsedFlags.input)
       this.logger.verbose(`Loaded execution data from ${this.parsedFlags.input.length} file(s)`)

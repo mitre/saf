@@ -4,17 +4,24 @@
     {
       "type": "node",
       "request": "launch",
-      "name": "Mocha Tests",
-      "program": "${workspaceFolder}/node_modules/ts-mocha/bin/ts-mocha",
+      "name": "Debug MarkdownTable",
+      "runtimeExecutable": "node --inspect", // replace with your actual path
+      "program": "${workspaceFolder}/bin/run",
       "args": [
-        "${workspaceFolder}/test/utils/ohdf/*.test.ts",
-        "--no-timeouts"
+        "view",
+        "summary",
+        "-i",
+        "test/sample_data/HDF/input/rhel-8_hardened.json",
+        "--format",
+        "markdown",
+        "--logLevel",
+        "verbose"
       ],
-      "env": {
-        "VERBOSE_TESTING": "true"
-      },
       "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
+      "internalConsoleOptions": "neverOpen",
+      "outFiles": ["${workspaceFolder}/dist/**/*.js"],
+      "preLaunchTask": "tsc: build - tsconfig.json",
+      "sourceMaps": true
     }
   ]
 }

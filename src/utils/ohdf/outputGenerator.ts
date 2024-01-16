@@ -6,7 +6,7 @@ import {Align, Table, getMarkdownTable} from 'markdown-table-ts'
 import {convertFullPathToFilename} from '../global'
 import {ContextualizedEvaluation} from 'inspecjs'
 import {createWinstonLogger} from '../logging'
-import {PrintableSummary, Data, DataOrArray, RowType} from './types'
+import {PrintableSummary, Data, DataOrArray, RowType, ColumnType} from './types'
 
 /**
 * The logger for command.
@@ -15,25 +15,17 @@ import {PrintableSummary, Data, DataOrArray, RowType} from './types'
 */
 const logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View Summary:')
 
-/**
-* The order of the rows in the summary table.
-* The table includes a row for each of these values.
-* @property {string[]} ROW_ORDER - The order of the rows in the summary table. The table includes a row for each of these values.
-*/
-const ROW_ORDER: RowType[] = ['Total', 'Critical', 'High', 'Medium', 'Low', 'Not Applicable']
+export const ROW_ORDER: RowType[] = ['total', 'critical', 'high', 'medium', 'low']
+export const COLUMN_ORDER: ColumnType[] = ['passed', 'failed', 'skipped', 'no_impact', 'error']
 
-/**
- * The order of the columns in the summary table.
- * The table includes a column for each of these values.
- * @property {string[]} COLUMN_ORDER - The order of the columns in the summary table. The table includes a column for each of these values.
- */
-const COLUMN_ORDER = [
-  'Passed :white_check_mark:',
-  'Failed :x:',
-  'Not Reviewed :leftwards_arrow_with_hook:',
-  'Not Applicable :heavy_minus_sign:',
-  'Error :warning:',
-]
+export const COLUMN_EMOJI: Record<ColumnType, string> = {
+  compliance: ':test_tube:',
+  passed: ':white_check_mark:',
+  failed: ':x:',
+  skipped: ':leftwards_arrow_with_hook:',
+  no_impact: ':heavy_minus_sign:',
+  error: ':warning:',
+}
 
 /**
  * Prints the provided printable summaries to the console and optionally writes them to an output file.
@@ -152,56 +144,52 @@ export function extractResultSets(execJSONs: Record<string, ContextualizedEvalua
 }
 
 /**
- * Generates a Markdown table row based on the provided row name and data.
+ * Generates a value for a specific cell in the Markdown table.
  *
  * The function works as follows:
- * - It defines an array of field names.
- * - It maps over the array of field names, generating a value for each field using the `generateValue` function.
- * - It returns an array containing the row name and the generated values.
+ * - It retrieves the data for the specified column from the item.
+ * - If the data exists and contains the specified key, it returns the value as a string.
+ * - If the data does not exist or does not contain the specified key, it returns '0'.
  *
  * @remarks
  * This function is part of the `outputGenerator.ts` module.
  *
- * @param row - The name of the row. This should be one of the values in ROW_ORDER.
- * @param item - The data object containing the values for the row.
- * @returns An array representing a row in a Markdown table.
+ * @param item - The PrintableSummary object containing the data for the table.
+ * @param column - The name of the column to retrieve the data for.
+ * @param key - The key to retrieve the value for from the column data.
+ * @returns A string representing the value for the cell.
  */
-export function generateMarkdownTableRow(row: RowType, item: Data | PrintableSummary): string[] {
-  logger.verbose('In generateMarkdownTableRow')
-  const fields: (keyof Data)[] = ['passed', 'failed', 'skipped', 'no_impact', 'error']
-  const values = fields.map(field => generateValue(row, field, item))
-  return [row, ...values]
+export function generateValue(item: PrintableSummary, column: string, key: string): string {
+  logger.debug('item:', item)
+  logger.debug('column:', column)
+  logger.debug('key:', key)
+
+  const columnData = item[column] as Record<string, number>
+
+  logger.debug('columnData:', columnData)
+
+  if (columnData && key in columnData) {
+    return columnData[key].toString()
+  }
+
+  return '0'
 }
 
 /**
- * Generates a string value for a given row and field based on the provided data.
+ * Generates a row for the Markdown table.
  *
- * The method works as follows:
- * - If the row is 'Total' or 'Not Applicable' and the field is 'no_impact', it will return the total for the given field.
- * - If the row is 'Not Applicable' and the field is not 'no_impact', or if the value is undefined, it will return '-'.
- * - In all other cases, it will return the value for the given row and field.
- *
- * The method uses a keyMap object to map row names to keys in the data object.
- * The key for the 'Total' row is 'total', and the key for the 'Not Applicable' row depends on the field name.
- * If the field is 'no_impact', the key is 'total'; otherwise, the key is the lowercase version of the row name.
- * For all other rows, the key is the lowercase version of the row name if the field is not 'no_impact', and 'default' otherwise.
+ * The function works as follows:
+ * - It maps over the `COLUMN_ORDER` array, generating a value for each cell in the row using the `generateValue` function.
  *
  * @remarks
  * This function is part of the `outputGenerator.ts` module.
  *
- * @param row - The name of the row. This should be 'Total', 'Not Applicable', or the name of a specific row.
- * @param field - The name of the field. This should be one of the keys of the Data interface.
- * @param data - The data object, which should match the shape of the Data interface.
- * @returns The generated value.
+ * @param row - The name of the row to generate the data for.
+ * @param item - The PrintableSummary object containing the data for the table.
+ * @returns An array of strings, each representing a cell in the row.
  */
-export function generateValue(row: string, field: keyof Data, data: Data | PrintableSummary): string {
-  const keyMap: Record<string, string> = {
-    Total: 'total',
-    'Not Applicable': field === 'no_impact' ? 'total' : row.toLowerCase(),
-    default: field === 'no_impact' ? 'default' : row.toLowerCase(),
-  }
-  const key = keyMap[row] || keyMap.default
-  return (data[field] as Record<string, number>)[key]?.toString() ?? '-'
+export function generateMarkdownTableRow(row: string, item: PrintableSummary): string[] {
+  return COLUMN_ORDER.map(column => generateValue(item, column, row))
 }
 
 /**
@@ -226,27 +214,75 @@ export function convertToMarkdown(data: DataOrArray, titleTables: boolean, logLe
 }
 
 /**
- * Generates a Markdown table from a data object.
+ * Converts a row title to a pretty-printed version.
  *
- * The table has a row for each value in `ROW_ORDER` and a column for each value in `COLUMN_ORDER`.
- * The values in the table are extracted from the data object.
+ * The function works as follows:
+ * - It capitalizes the first letter of the title.
  *
  * @remarks
  * This function is part of the `outputGenerator.ts` module.
  *
- * @param item - The data object containing the values for the table.
- * @param titleTables - Boolean to either enable or disable adding titles to the produced markdown tables.
- * @param logLevel - The log level to control the verbosity of the logs.
- * @returns A string representing a Markdown table.
+ * @param title - The original row title.
+ * @returns The pretty-printed row title.
+ */
+export function prettyPrintRowTitle(title: string): string {
+  return title.charAt(0).toUpperCase() + title.slice(1)
+}
+
+/**
+ * Converts a column title to a pretty-printed version.
+ *
+ * The function works as follows:
+ * - It capitalizes the first letter of the title.
+ * - If the title is 'Skipped', it changes it to 'Not Reviewed'.
+ * - If the title is 'No_impact', it changes it to 'Not Applicable'.
+ *
+ * @remarks
+ * This function is part of the `outputGenerator.ts` module.
+ *
+ * @param title - The original column title.
+ * @returns The pretty-printed column title.
+ */
+export function prettyPrintColumnTitle(title: string): string {
+  title = title.charAt(0).toUpperCase() + title.slice(1)
+  if (title === 'Skipped') {
+    return 'Not Reviewed'
+  }
+
+  if (title === 'No_impact') {
+    return 'Not Applicable'
+  }
+
+  return title
+}
+
+/**
+ * Generates a Markdown table from the given data.
+ *
+ * The function works as follows:
+ * - It starts by converting the compliance score to a string and creating the header row of the table.
+ * - It then generates the body of the table by mapping over the `ROW_ORDER` array and generating a row for each item using the `generateMarkdownTableRow` function.
+ * - It creates a `Table` object from the header row and the body of the table.
+ * - If the `logLevel` is 'verbose', it logs the item to the console.
+ * - It then determines the title of the table based on the `titleTables` parameter and the `profileName` property of the item.
+ * - Finally, it returns the title and the Markdown table as a string.
+ *
+ * @remarks
+ * This function is part of the `outputGenerator.ts` module.
+ *
+ * @param item - The data to generate the table from. This can be either a `Data` object or a `PrintableSummary` object.
+ * @param titleTables - A boolean indicating whether to include the profile name as a Markdown header before the table.
+ * @param logLevel - The log level. If this is 'verbose', the function logs the item to the console.
+ * @returns A string representing the Markdown table.
  */
 export function generateMarkdownTable(item: Data | PrintableSummary, titleTables: boolean, logLevel: string): string {
   const score = item.compliance.toString()
-  const table: string[][] = [
-    ['Compliance: ' + score + '% :test_tube:', ...COLUMN_ORDER],
-    ...ROW_ORDER.map(row => generateMarkdownTableRow(row, item)),
-  ]
+  const headerRow = ['Compliance: ' + score + '<br>:test_tube:', ...COLUMN_ORDER.map(column => `${prettyPrintColumnTitle(column)}<br>${COLUMN_EMOJI[column]}`)]
+  const table: string[][] =
+    ROW_ORDER.map(row => [prettyPrintRowTitle(row), ...generateMarkdownTableRow(row, item as PrintableSummary)])
+
   const myTable: Table = {
-    head: ROW_ORDER,
+    head: headerRow,
     body: table,
   }
   const myAlignment: Align[] = [Align.Left, Align.Center, Align.Center, Align.Center, Align.Center, Align.Center]

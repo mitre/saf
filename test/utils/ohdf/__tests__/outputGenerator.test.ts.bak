@@ -1,0 +1,191 @@
+import {PrintableSummary} from './../../../../src/utils/ohdf/types'
+import {generateMarkdownTableRow, prettyPrintRowTitle, prettyPrintColumnTitle, generateMarkdownTable, convertToMarkdown} from '../../../../src/utils/ohdf/outputGenerator'
+import marked from 'marked'
+import { mocked } from 'ts-jest/utils';
+
+jest.mock('../../../../src/utils/ohdf/outputGenerator')
+
+describe('outputGenerator', () => {
+  let item: PrintableSummary;
+  const titleTables = true;
+  const logLevel = 'verbose';
+
+  beforeEach(() => {
+    item = {
+      profileName: 'redhat-enterprise-linux-8-stig-baseline',
+      resultSets: ['rhel-8_hardened.json'],
+      compliance: 66,
+      passed: {critical: 0, high: 11, medium: 208, low: 8, total: 227},
+      failed: {critical: 0, high: 6, medium: 87, low: 19, total: 112},
+      skipped: {critical: 0, high: 1, medium: 1, low: 1, total: 3},
+      error: {critical: 0, high: 0, medium: 0, low: 0, total: 0},
+      no_impact: {none: 33, total: 33},
+    };
+
+    // Mock the functions
+    mocked(prettyPrintRowTitle).mockReturnValue('mocked title');
+    mocked(generateMarkdownTableRow).mockReturnValue(['mocked', 'row']);
+  });
+
+  describe('generateMarkdownTableRow', () => {
+    it('should generate a row for the Markdown table', () => {
+      const row = 'high'
+      const result = generateMarkdownTableRow(row, item)
+      expect(result).toEqual(['11', '6', '1', '0', '0'])
+    })
+  })
+  describe('prettyPrintRowTitle', () => {
+    it.each([
+      ['total', 'Total'],
+      ['test title', 'Test title'],
+      ['Test Title', 'Test Title'],
+      ['title', 'Title'],
+      ['', ''],
+    ])('should correctly format row title "%s"', (title: string, expected: string) => {
+      const result = prettyPrintRowTitle(title)
+      expect(result).toBe(expected)
+    })
+  })
+
+  describe('prettyPrintColumnTitle', () => {
+    it.each([
+      ['skipped', 'Not Reviewed'],
+      ['no_impact', 'Not Applicable'],
+      ['passed', 'Passed'],
+    ])('should correctly format column title "%s"', (title: string, expected: string) => {
+      const result = prettyPrintColumnTitle(title)
+      expect(result).toBe(expected)
+    })
+  })
+
+  describe('outputGenerator', () => {
+    // your other tests here
+
+    describe('generateMarkdownTable', () => {
+      it('generates a table with the correct structure', () => {
+        // Arrange
+        const titleTables = true;
+        const logLevel = 'verbose';
+
+        // Mock the functions
+        mocked(prettyPrintRowTitle).mockReturnValue('mocked title');
+        mocked(generateMarkdownTableRow).mockReturnValue(['mocked', 'row']);
+
+        // Act
+        const result = generateMarkdownTable(item, titleTables, logLevel);
+
+        // Parse the markdown document
+        const tokens = marked.lexer(result);
+
+        // Find the table token
+        const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
+
+        if (tableToken && tableToken.type === 'table') {
+          const headers = tableToken.header;
+          const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
+
+          // Assert
+          expect(Array.isArray(headers)).toBe(true);
+          expect(Array.isArray(rows)).toBe(true);
+          rows.forEach(row => {
+            expect(Array.isArray(row)).toBe(true);
+            expect(row.length).toBe(/* number of columns */);
+          });
+        }
+      });
+      it('generates a table with the correct order of columns and rows', () => {
+        // Arrange
+        const item: PrintableSummary = {
+          // your test data here
+        };
+        const titleTables = true;
+        const logLevel = 'verbose';
+
+        // Mock the functions
+        mocked(prettyPrintRowTitle).mockReturnValue('mocked title');
+        mocked(generateMarkdownTableRow).mockReturnValue(['mocked', 'row']);
+
+        // Act
+        const result = generateMarkdownTable(item, titleTables, logLevel);
+
+        // Parse the markdown document
+        const tokens = marked.lexer(result);
+
+        // Find the table token
+        const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
+
+        if (tableToken && tableToken.type === 'table') {
+          const headers = tableToken.header;
+          const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
+
+          // Assert
+          expect(headers[0]).toBe('mocked title');
+          expect(rows[0][0]).toBe('mocked');
+          // Repeat for other columns and rows
+        }
+      });
+      it('generates the correct table given the mocked functions', () => {
+        // Arrange
+        mocked(prettyPrintRowTitle).mockReturnValue('mocked title');
+        mocked(generateMarkdownTableRow).mockReturnValue(['mocked', 'row']);
+
+        // Act
+        const result = generateMarkdownTable(item, titleTables, logLevel);
+
+        // Parse the markdown document
+        const tokens = marked.lexer(result);
+
+        // Find the table token
+        const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
+
+        if (tableToken && tableToken.type === 'table') {
+          const headers = tableToken.header;
+          const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
+
+          // Assert
+          expect(headers).toEqual(['mocked title', /* other expected headers */]);
+          expect(rows).toEqual([['mocked', 'row'], /* other expected rows */]);
+        }
+      });
+    });
+
+    // describe('generateMarkdownTable', () => {
+    //   it('should generate a Markdown table from the provided data', () => {
+    //     const titleTable = true
+    //     const loglevel = 'info'
+    //     const result = generateMarkdownTable(item, titleTable, loglevel)
+
+    //     // Parse the markdown document
+    //     const tokens = marked.lexer(result)
+
+    //     // Find the table token
+    //     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table
+
+    //     if (tableToken && tableToken.type === 'table') {
+    //       const headers = tableToken.header
+    //       console.log(headers)
+    //       console.log(headers[0].tokens.map(test => test.raw.toString()))
+    //       const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text))
+    //       console.log(rows)
+    //         // tokens.map(rowToken => rowToken.map(cellToken => cellToken.text));
+
+    //       const body = rows.entries
+    //       console.log(body)
+    //       // Now you can add assertions to check the contents of the table
+    //       //expect(headers).toEqual(expectedHeaders)
+    //       //expect(rows.length).toBe(expectedRowCount)
+    //       //
+    //     }
+    //   })
+    // })
+
+    // describe('convertToMarkdown', () => {
+    //   it('should convert the provided data to Markdown format', () => {
+    //     const titleTable = true
+    //     const loglevel = 'info'
+    //     const result = convertToMarkdown(item, titleTable, loglevel)
+    //     // Add some assertions here to check that the result is correctly converted to Markdown...
+    //   })
+    // })
+  })
+})

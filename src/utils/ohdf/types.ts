@@ -47,4 +47,6 @@ export type DataOrArray = Data | Data[] | PrintableSummary | PrintableSummary[];
  * RowType is a type that represents the possible values for the row names in the generated Markdown table.
  * The possible values are 'Total', 'Critical', 'High', 'Medium', 'Low', and 'Not Applicable'.
  */
-export type RowType = 'Total' | 'Critical' | 'High' | 'Medium' | 'Low' | 'Not Applicable'
+export type RowType = 'total' | 'critical' | 'high' | 'medium' | 'low' | 'Not Applicable';
+export type ColumnType = 'compliance' | 'passed' | 'failed' | 'skipped' | 'no_impact' | 'error';
+
