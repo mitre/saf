@@ -1,9 +1,6 @@
-import {PrintableSummary} from './../../../../src/utils/ohdf/types'
-import {generateMarkdownTableRow, prettyPrintRowTitle, prettyPrintColumnTitle, generateMarkdownTable, convertToMarkdown} from '../../../../src/utils/ohdf/outputGenerator'
 import marked from 'marked'
-import {mocked} from 'jest-mock'
-
-// jest.mock('../../../../src/utils/ohdf/outputGenerator')
+import {generateMarkdownTable, generateMarkdownTableRow, prettyPrintColumnTitle, prettyPrintRowTitle} from '../../../../src/utils/ohdf/outputGenerator'
+import {PrintableSummary} from '../../../../src/utils/ohdf/types'
 
 let item: PrintableSummary
 const titleTables = true
@@ -32,10 +29,6 @@ const testTableRows = [
 
 const expectedColumnOrder = ['Compliance', 'Passed', 'Failed', 'Not Reviewed', 'Not Applicable', 'Error']
 const expectedRowOrder = ['Total', 'Critical', 'High', 'Medium', 'Low']
-
-// Mock the functions
-// mocked(prettyPrintRowTitle).mockReturnValue('mocked title')
-// mocked(generateMarkdownTableRow).mockReturnValue(['mocked', 'row'])
 
 describe('outputGenerator', () => {
   describe('generateMarkdownTableRow', () => {
@@ -93,7 +86,7 @@ describe('generateMarkdownTable', () => {
     if (tableToken && tableToken.type === 'table') {
       const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text))
 
-      rows.forEach((row, index) => {
+      rows.forEach((row, _index) => {
         expect(Array.isArray(row)).toBe(true)
         const matchedRowIndex = testTableRows.findIndex(testRow => JSON.stringify(testRow) === JSON.stringify(row))
         expect(matchedRowIndex).not.toBe(-1)
@@ -153,7 +146,7 @@ describe('generateMarkdownTable', () => {
         return header.text.split('<br>')[0]
       })
 
-      headerTexts.forEach((headerText, index) => {
+      headerTexts.forEach((headerText, _index) => {
         const matchedColumnIndex = expectedColumnOrder.indexOf(headerText)
         expect(matchedColumnIndex).not.toBe(-1)
       })

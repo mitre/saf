@@ -286,9 +286,6 @@ export function generateMarkdownTable(item: Data | PrintableSummary, titleTables
     body: table,
   }
   const myAlignment: Align[] = [Align.Left, Align.Center, Align.Center, Align.Center, Align.Center, Align.Center]
-  if (logLevel === 'verbose') {
-    console.log(item)
-  }
 
   // Include the profileName as a Markdown header before the table if titleTables is true
   const profile_name = typeof item.profileName === 'string' ? item.profileName : 'Evalueated Profile'
