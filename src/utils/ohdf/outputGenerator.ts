@@ -47,12 +47,11 @@ export const COLUMN_EMOJI: Record<ColumnType, string> = {
  * @param format - The format to use for the output. This should be 'json', 'yaml', or 'markdown'.
  * @param printPretty - Boolean to either enable or disable pretty printing of the output.
  * @param stdout - Boolean to either enable or disable printing the output to the console.
- * @param logLevel - The log level to use when converting the printable summaries to Markdown.
  * @param output - The path of the file to write the output to. If this is not provided, the output is not written to a file.
  * @returns void - This method does not return anything.
  */
 export function printAndWriteOutput(
-  {printableSummaries, titleTable, format, printPretty, stdout, logLevel, output}: { printableSummaries: PrintableSummary[]; titleTable: boolean; format: string; printPretty: boolean; stdout: boolean; logLevel: string; output?: string },
+  {printableSummaries, titleTable, format, printPretty, stdout, output}: { printableSummaries: PrintableSummary[]; titleTable: boolean; format: string; printPretty: boolean; stdout: boolean; output?: string },
 ): void {
   logger.verbose('In printAndWriteOutput')
   let outputStr = '' // Initialize output to an empty string
@@ -63,7 +62,7 @@ export function printAndWriteOutput(
     }
 
     case 'markdown': {
-      const markdownTables = convertToMarkdown(printableSummaries, titleTable ?? true, logLevel)
+      const markdownTables = convertToMarkdown(printableSummaries, titleTable ?? true)
       outputStr = markdownTables.join('\n\n') // Join the tables with two newlines between each table
       break
     }
@@ -203,10 +202,9 @@ export function generateMarkdownTableRow(row: string, item: PrintableSummary): s
  *
  * @param data - The data object or array of data objects containing the values for the table.
  * @param titleTables - Boolean to either enable or disable adding titles to the produced markdown tables.
- * @param logLevel - The log level to control the verbosity of the logs.
  * @returns An array of strings, each representing a Markdown table.
  */
-export function convertToMarkdown(data: DataOrArray, titleTables: boolean, logLevel: string): string[] {
+export function convertToMarkdown(data: DataOrArray, titleTables: boolean): string[] {
   logger.verbose('In convertTomarkdown')
   let tables: string[] = []
   tables = Array.isArray(data) ? data.map(item => generateMarkdownTable(item, titleTables)) : [generateMarkdownTable(data, titleTables)]

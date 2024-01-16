@@ -140,7 +140,7 @@ export default class Summary extends Command {
         return createPrintableSummary(profileName, profileMetrics, executionData, complianceScores)
       })
       this.logger.verbose(`Generated ${printableSummaries.length} printable summaries`)
-      printAndWriteOutput({printableSummaries, titleTable, format, printPretty, stdout, output, logLevel})
+      printAndWriteOutput({printableSummaries, titleTable, format, printPretty, stdout, output})
       this.logger.verbose('Printed and wrote the output')
     } catch (error) {
       if (error instanceof Error) {
