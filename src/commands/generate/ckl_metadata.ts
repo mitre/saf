@@ -19,7 +19,7 @@ export default class GenerateCKLMetadata extends Command {
 
   async run() {
     const {flags} = await this.parse(GenerateCKLMetadata)
-    console.log("Please fill in the following fields to the best of your ability, if you do not have a value, please leave the field empty.")
+    console.log('Please fill in the following fields to the best of your ability, if you do not have a value, please leave the field empty.')
     const cklMetadata = {
       benchmark: {
         title: prompt({ask: 'What is the benchmark title? '}) || null,

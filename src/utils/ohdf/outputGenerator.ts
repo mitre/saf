@@ -209,7 +209,7 @@ export function generateMarkdownTableRow(row: string, item: PrintableSummary): s
 export function convertToMarkdown(data: DataOrArray, titleTables: boolean, logLevel: string): string[] {
   logger.verbose('In convertTomarkdown')
   let tables: string[] = []
-  tables = Array.isArray(data) ? data.map(item => generateMarkdownTable(item, titleTables, logLevel)) : [generateMarkdownTable(data, titleTables, logLevel)]
+  tables = Array.isArray(data) ? data.map(item => generateMarkdownTable(item, titleTables)) : [generateMarkdownTable(data, titleTables)]
   return tables
 }
 

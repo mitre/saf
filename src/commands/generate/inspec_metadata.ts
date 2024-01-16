@@ -18,7 +18,7 @@ export default class GenerateInSpecMetadata extends Command {
 
   async run() {
     const {flags} = await this.parse(GenerateInSpecMetadata)
-    console.log("Please fill in the following fields to the best of your ability, if you do not have a value, please leave the field empty.")
+    console.log('Please fill in the following fields to the best of your ability, if you do not have a value, please leave the field empty.')
     const inspecMetadata = {
       maintainer: prompt({ask: 'Who is the maintainer? '}) || null,
       copyright: prompt({ask: 'Who is the copyright holder? '}) || null,
