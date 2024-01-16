@@ -62,7 +62,6 @@ export type ColumnType = 'compliance' | 'passed' | 'failed' | 'skipped' | 'no_im
  * @property {string} format - The format to use for the output. Should be 'json', 'yaml', or 'markdown'.
  * @property {boolean} printPretty - Whether to pretty print the output.
  * @property {boolean} stdout - Whether to print the output to the console.
- * @property {string} logLevel - The log level to use when converting the printable summaries to Markdown.
  * @property {string} [output] - The path of the file to write the output to. If not provided, the output is not written to a file.
  */
 export interface PrintAndWriteOutputArgs {
@@ -71,6 +70,5 @@ export interface PrintAndWriteOutputArgs {
   format: string;
   printPretty: boolean;
   stdout: boolean;
-  logLevel: string;
   output?: string;
 }
