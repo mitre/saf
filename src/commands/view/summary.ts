@@ -60,7 +60,7 @@ export default class Summary extends Command {
   /**
    * @property {ReturnType<typeof createWinstonLogger>} logger - Winston logger for this command.
    */
-  private logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('view summary:');
+  private logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View Summary:');
 
   /**
    * @property {string} description - Command description displayed in the help message.
@@ -80,18 +80,22 @@ export default class Summary extends Command {
 
   static examples = [
     // Basic usage
-    '$ saf summary -i input.hdf',
+    "$ saf summary -i input.hdf                                              # Summarize 'input.hdf' single HDF file",
+
     // Specify output format
-    '$ saf summary -i input.json --format=json',
-    '$ saf summary -i input.json --format=markdown --no-stdout -o output.md',
+    '$ saf summary -i input.json --format=json                               # Specify Formats',
+    '$ saf summary -i input.json --format=markdown --no-stdout -o output.md  # Output GitHub Flavored Markdown Table, skip the console, and save to \'output.md\'',
+
     // Multiple input files
-    '$ saf summary --input input1.hdf --input input2.hdf',
+    '$ saf summary --input input1.hdf --input input2.hdf                     # Summarize multiple HDF files',
     '$ saf summary --input input1.hdf input2.hdf',
+
     // Specify output file
-    '$ saf summary -i input.hdf --output output.json',
+    "$ saf summary -i input.hdf --output output.json                         # Save summary to 'output.json' and print to the console",
+
     // Enable and disable flags
-    '$ saf summary --input input.hdf --pretty-print',
-    '$ saf summary -i input.hdf --no-pretty-print',
+    '$ saf summary --input input.hdf --pretty-print                          # Enable human-readable output',
+    '$ saf summary -i input.hdf --no-pretty-print                            # Useful for scripts or data-processing (RAW yaml/json/etc.)',
   ]
 
   /**
@@ -123,18 +127,18 @@ export default class Summary extends Command {
       this.logger = createWinstonLogger(VIEW_SUMMARY, (logLevel ?? process.env.LOG_LEVEL ?? 'info'))
       this.logger.verbose('Parsed command line flags')
       const executionData = loadExecJSONs(this.parsedFlags.input)
-      this.logger.verbose(`Loaded execution data from ${this.parsedFlags.input.length.toString()} file(s)`)
+      this.logger.verbose(`Loaded execution data from ${this.parsedFlags.input.length} file(s)`)
       const summaries = calculateSummariesForExecJSONs(executionData)
-      this.logger.verbose(`Calculated summaries for ${executionData.length.toString()} execution data`)
+      this.logger.verbose(`Calculated summaries for ${executionData.length} execution data`)
       const totals = calculateTotalCountsForSummaries(summaries)
-      this.logger.verbose(`Calculated total counts for ${summaries.length.toString()} summaries`)
+      this.logger.verbose(`Calculated total counts for ${summaries.length} summaries`)
       const complianceScores = calculateComplianceScoresForExecJSONs(executionData)
-      this.logger.verbose(`Calculated compliance scores for ${executionData.length.toString()} execution data`)
+      this.logger.verbose(`Calculated compliance scores for ${executionData.length} execution data`)
       const printableSummaries = Object.entries(totals).map(([profileName, profileMetrics]) => {
         this.logger.verbose(`Building printable summary for profile: ${profileName}`)
         return createPrintableSummary(profileName, profileMetrics, executionData, complianceScores)
       })
-      this.logger.verbose(`Generated ${printableSummaries.length.toString()} printable summaries`)
+      this.logger.verbose(`Generated ${printableSummaries.length} printable summaries`)
       printAndWriteOutput({printableSummaries, titleTable, format, printPretty, stdout, output})
       this.logger.verbose('Printed and wrote the output')
     } catch (error) {
