@@ -190,6 +190,7 @@
   "dev": "rm -rf lib && tsc && node bin/run",
   "prepack": "rm -rf lib && tsc",
   "test": "npm run test:mocha && npm run test:jest",
+  "tests": "npm run test",
   "test:mocha": "NODE_ENV=test ts-mocha --timeout 8500 --forbid-only \"test/**/*.test.ts\"",
   "test:mocha:one": "NODE_ENV=test ts-mocha --timeout 8500 --forbid-only",
   "test:jest": "NODE_ENV=test jest",

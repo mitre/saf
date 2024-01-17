@@ -12,7 +12,7 @@ The MITRE saf-cli is an OCLIF application developed with TypeScript.
 To install the project, clone the repository and install the dependencies:
 
 ```bash
-git clone https://github.com/username/project.git
+git clone https://github.com/mitre/saf.git
 cd project
 npm install
 ```
@@ -22,7 +22,7 @@ npm install
 To start the development server, run:
 
 ```bash
-npm run dev
+npm run dev -- ${command you destire to run & its flags}
 ```
 
 This script will clean the `lib` directory, compile the TypeScript files, and start the application. You can pass arguments to the `dev` script using the `--` syntax. For example:
