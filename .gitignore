@@ -14,3 +14,4 @@ out
 *.tgz
 **/saf-cli.log
 *.html
+saf-cli.log

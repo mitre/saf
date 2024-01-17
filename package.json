@@ -184,22 +184,22 @@
     }
   },
   "repository": "mitre/saf",
-  "scripts": {
-    "lint": "eslint \"**/*.ts\" --fix",
-    "lint:ci": "eslint \"**/*.ts\" --max-warnings 0",
-    "pack-hdf-converters": "run-script-os",
-    "pack-hdf-converters:win32": "pack-hdf-converters.bat",
-    "pack-hdf-converters:darwin:linux": "./pack-hdf-converters.sh",
-    "dev": "run-script-os",
-    "dev:win32": "(IF EXIST lib rmdir /s /q lib) && node_modules\\.bin\\tsc -b && bin\\run",
-    "dev:darwin:linux": "rm -rf lib && node_modules/.bin/tsc -b && ./bin/run",
-    "prepack": "run-script-os",
-    "prepack:win32": "(IF EXIST lib rmdir /s /q lib) && node_modules\\.bin\\tsc -b",
-    "prepack:darwin:linux": "rm -rf lib && node_modules/.bin/tsc -b",
-    "test": "NODE_ENV=test ts-mocha --timeout 8500 --forbid-only \"test/**/*.test.ts\"",
-    "test-one": "NODE_ENV=test ts-mocha --timeout 8500 --forbid-only",
-    "test:jest": "NODE_ENV=test jest"
-  },
+"scripts": {
+  "lint": "eslint \"src/**/*.ts\" --fix",
+  "lint:ci": "eslint \"src/**/*.ts\" --max-warnings 0",
+  "dev": "rm -rf lib && tsc && node bin/run",
+  "prepack": "rm -rf lib && tsc",
+  "test": "npm run test:mocha && npm run test:jest",
+  "test:mocha": "NODE_ENV=test ts-mocha --timeout 8500 --forbid-only \"test/**/*.test.ts\"",
+  "test:mocha:one": "NODE_ENV=test ts-mocha --timeout 8500 --forbid-only",
+  "test:jest": "NODE_ENV=test jest",
+  "test:jest:one": "NODE_ENV=test jest --findRelatedTests",
+  "prepack:win32": "(IF EXIST lib rmdir /s /q lib) && tsc",
+  "prepack:darwin:linux": "rm -rf lib && tsc",
+  "pack-hdf-converters": "run-script-os",
+  "pack-hdf-converters:win32": "pack-hdf-converters.bat",
+  "pack-hdf-converters:darwin:linux": "./pack-hdf-converters.sh"
+},
   "types": "lib/index.d.ts",
   "jest": {
     "preset": "ts-jest",
