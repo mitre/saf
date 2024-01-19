@@ -4,12 +4,16 @@ The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) bring
 
 The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimdall_tools) and [InSpec Tools](https://github.com/mitre/inspec_tools).
 
-## Terminology:
+## Terminology
 
-- "[Heimdall](https://github.com/mitre/heimdall2)" - Our visualizer for all security result data
-- "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - Our common data format to preserve and transform security data
+- [Heimdall](https://github.com/mitre/heimdall2) - Our visualizer for all security result data
+- [Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize) - Our common data format to preserve and transform security data
 
-## Installation:
+## Development Testing & Contribution
+
+- [Development, Testing & Contribution Guide](#development-testing--contribution)
+
+## Installation
 
   * [Via NPM](#installation-via-npm)
       * [Update via NPM](#update-via-npm)
@@ -116,6 +120,10 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 * [License and Author](#license-and-author)
 
 ---
+
+## Development, Testing and Contributing
+
+See the [Contributor's Guide](./docs/contributors-guide.md) for more information
 
 ## Installation
 
@@ -418,7 +426,7 @@ convert hdf2csv               Translate a Heimdall Data Format JSON file into a
     -h, --help                              Show CLI help.
     -i, --input=<hdf-scan-results-json>     (required) Input HDF file
     -o, --output=<output-csv>               (required) Output CSV file
-    -t, --noTruncate                        Don't truncate fields longer than 32,767 characters (the cell limit in Excel)
+    -t, --noTruncate                        Do not truncate fields longer than 32,767 characters (the cell limit in Excel)
 
   EXAMPLES
     $ saf convert hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"
@@ -1038,7 +1046,7 @@ ___
 
 You can start a local Heimdall Lite instance to visualize your findings with the SAF CLI. To start an instance use the `saf view heimdall` command:
 
-```
+```shell
 view heimdall                 Run an instance of Heimdall Lite to
                               visualize your data
   USAGE
@@ -1047,7 +1055,7 @@ view heimdall                 Run an instance of Heimdall Lite to
   FLAGS
     -f, --files=<file>...   File(s) to display in Heimdall
     -h, --help              Show CLI help.
-    -n, --noOpenBrowser     Don't open the default browser automatically
+    -n, --noOpenBrowser     Do not open the default browser automatically
     -p, --port=<port>       [default: 3000] Port To Expose Heimdall On (Default 3000)
 
   ALIASES
@@ -1060,26 +1068,49 @@ view heimdall                 Run an instance of Heimdall Lite to
 
 #### Summary
 
-To get a quick compliance summary from an HDF file (grouped by profile name) use the `saf view summary` command:
+Generate a comprehensive summary of compliance data, including totals and counts, from your OHDF files.
 
-```
-view summary                  Get a quick compliance overview of an HDF file
+The output can be displayed in the console, or exported as YAML, JSON, or a GitHub-flavored Markdown table.
 
-  USAGE
-    $ saf view summary -i <hdf-file> [-h] [-j] [-o <output>]
+```powershell
+USAGE
+  $ saf view summary -i <value> [-o <value>] [-f json|yaml|markdown] [-s]
+    [-r] [-t] [-l <value>] [-h]
 
-  FLAGS
-    -h, --help                  Show CLI help.
-    -i, --input=<hdf-file>...   (required) Input HDF files
-    -j, --json                  Output results as JSON
-    -o, --output=<output>
+FLAGS
+  -h, --help  Show help information
 
-  ALIASES
-    $ saf summary
+FORMATTING FLAGS
+  -f, --format=<option>    [default: yaml] Specify output format
+                           <options: json|yaml|markdown>
+  -r, --[no-]print-pretty  Enable human-readable data output
+  -t, --[no-]title-table   Add titles to the markdown table(s)
 
-  EXAMPLES
-    $ saf view summary -i rhel7-results.json
-    $ saf view summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json
+I/O FLAGS
+  -i, --input=<value>...  (required) Specify input HDF file(s)
+  -o, --output=<value>    Specify output file(s)
+  -s, --[no-]stdout       Enable printing to console
+
+DEBUGGING FLAGS
+  -l, --logLevel=<value>  [default: info] Set log level
+
+DESCRIPTION
+  Generate a comprehensive summary of compliance data, including totals and
+  counts, from your HDF files. The output can be displayed in the console, or
+  exported as YAML, JSON, or a GitHub-flavored Markdown table.
+
+ALIASES
+  $ saf summary
+
+EXAMPLES
+  $ saf summary -i input.hdf                                              # Summarize 'input.hdf' single HDF file
+  $ saf summary -i input.json --format=json                               # Specify Formats
+  $ saf summary -i input.json --format=markdown --no-stdout -o output.md  # Output GitHub Flavored Markdown Table, skip the console, and save to 'output.md'
+  $ saf summary --input input1.hdf --input input2.hdf                     # Summarize multiple HDF files
+  $ saf summary --input input1.hdf input2.hdf
+  $ saf summary -i input.hdf --output output.json                         # Save summary to 'output.json' and print to the console
+  $ saf summary --input input.hdf --pretty-print                          # Enable human-readable output
+  $ saf summary -i input.hdf --no-pretty-print                            # Useful for scripts or data-processing (RAW yaml/json/etc.)
 ```
 [top](#view-hdf-summaries-and-data)
 
