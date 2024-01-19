@@ -11,7 +11,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
 ## Development Testing & Contribution
 
-- [Development, Testing & Contribution Guide](#development-testing--contribution)
+- [Development, Testing & Contribution Guide](./docs/contributors-guide.md)
 
 ## Installation
 
