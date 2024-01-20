@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1705780595550" clover="3.2.0">
-  <project timestamp="1705780595550" name="All files">
+<coverage generated="1705782255011" clover="3.2.0">
+  <project timestamp="1705782255011" name="All files">
     <metrics statements="163" coveredstatements="115" conditionals="62" coveredconditionals="42" methods="32" coveredmethods="21" elements="257" coveredelements="178" complexity="0" loc="163" ncloc="163" packages="2" files="3" classes="3"/>
     <package name="utils">
       <metrics statements="94" coveredstatements="72" conditionals="42" coveredconditionals="35" methods="17" coveredmethods="13"/>
       <file name="global.ts" path="/Users/alippold/github/mitre/saf/src/utils/global.ts">
         <metrics statements="64" coveredstatements="64" conditionals="31" coveredconditionals="31" methods="11" coveredmethods="11"/>
-        <line num="1" count="4" type="stmt"/>
-        <line num="2" count="4" type="stmt"/>
-        <line num="3" count="4" type="stmt"/>
-        <line num="5" count="4" type="stmt"/>
-        <line num="6" count="4" type="stmt"/>
-        <line num="26" count="4" type="stmt"/>
-        <line num="33" count="4" type="stmt"/>
-        <line num="45" count="4" type="stmt"/>
+        <line num="1" count="7" type="stmt"/>
+        <line num="2" count="7" type="stmt"/>
+        <line num="3" count="7" type="stmt"/>
+        <line num="5" count="7" type="stmt"/>
+        <line num="6" count="7" type="stmt"/>
+        <line num="26" count="7" type="stmt"/>
+        <line num="33" count="7" type="stmt"/>
+        <line num="45" count="7" type="stmt"/>
         <line num="46" count="2" type="cond" truecount="1" falsecount="0"/>
         <line num="47" count="1" type="stmt"/>
         <line num="50" count="1" type="stmt"/>
-        <line num="63" count="4" type="stmt"/>
-        <line num="64" count="5" type="stmt"/>
-        <line num="81" count="4" type="stmt"/>
+        <line num="63" count="7" type="stmt"/>
+        <line num="64" count="6" type="stmt"/>
+        <line num="81" count="7" type="stmt"/>
         <line num="82" count="1" type="stmt"/>
         <line num="83" count="1" type="stmt"/>
         <line num="84" count="1" type="stmt"/>
@@ -27,14 +27,14 @@
         <line num="87" count="1" type="stmt"/>
         <line num="89" count="13" type="stmt"/>
         <line num="92" count="1" type="stmt"/>
-        <line num="107" count="4" type="stmt"/>
+        <line num="107" count="7" type="stmt"/>
         <line num="109" count="2" type="stmt"/>
         <line num="110" count="2" type="stmt"/>
         <line num="112" count="1" type="stmt"/>
         <line num="115" count="2" type="stmt"/>
-        <line num="131" count="4" type="stmt"/>
+        <line num="131" count="7" type="stmt"/>
         <line num="132" count="5" type="cond" truecount="4" falsecount="0"/>
-        <line num="155" count="4" type="stmt"/>
+        <line num="155" count="7" type="stmt"/>
         <line num="157" count="4" type="cond" truecount="1" falsecount="0"/>
         <line num="158" count="1" type="stmt"/>
         <line num="161" count="3" type="cond" truecount="1" falsecount="0"/>
@@ -42,7 +42,7 @@
         <line num="163" count="2" type="stmt"/>
         <line num="166" count="1" type="cond" truecount="1" falsecount="0"/>
         <line num="167" count="1" type="stmt"/>
-        <line num="192" count="4" type="stmt"/>
+        <line num="192" count="7" type="stmt"/>
         <line num="193" count="5" type="stmt"/>
         <line num="195" count="5" type="cond" truecount="2" falsecount="0"/>
         <line num="197" count="5" type="cond" truecount="3" falsecount="0"/>
@@ -61,14 +61,14 @@
         <line num="223" count="3" type="cond" truecount="3" falsecount="0"/>
         <line num="224" count="3" type="stmt"/>
         <line num="227" count="3" type="stmt"/>
-        <line num="251" count="4" type="stmt"/>
+        <line num="251" count="7" type="stmt"/>
         <line num="255" count="6" type="cond" truecount="1" falsecount="0"/>
         <line num="256" count="4" type="stmt"/>
         <line num="257" count="3" type="cond" truecount="2" falsecount="0"/>
         <line num="260" count="3" type="cond" truecount="2" falsecount="0"/>
-        <line num="285" count="4" type="stmt"/>
-        <line num="286" count="2" type="stmt"/>
-        <line num="287" count="2" type="cond" truecount="1" falsecount="0"/>
+        <line num="285" count="7" type="stmt"/>
+        <line num="286" count="3" type="stmt"/>
+        <line num="287" count="3" type="cond" truecount="1" falsecount="0"/>
         <line num="288" count="2" type="cond" truecount="2" falsecount="0"/>
       </file>
       <file name="logging.ts" path="/Users/alippold/github/mitre/saf/src/utils/logging.ts">

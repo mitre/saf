@@ -321,9 +321,14 @@ describe('checkInput', () => {
   })
 
   it('should not throw an error when the detected type matches the desired type', () => {
-    // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
+    // eslint-disable-next-line unicorn/prefer-module
     const {fingerprint} = require('@mitre/hdf-converters')
     fingerprint.mockReturnValue('text')
+
+    // eslint-disable-next-line unicorn/prefer-module
+    const hdfConverters = require('@mitre/hdf-converters')
+    // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
+    const {checkInput} = require('../../../src/utils/global')
 
     const guessOptions = {data: 'file data', filename: 'file.txt'}
     const desiredType = 'text'
@@ -333,9 +338,14 @@ describe('checkInput', () => {
   })
 
   it('should throw an error when the detected type does not match the desired type', () => {
-    // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
+    // eslint-disable-next-line unicorn/prefer-module
     const {fingerprint} = require('@mitre/hdf-converters')
     fingerprint.mockReturnValue('image')
+
+    // eslint-disable-next-line unicorn/prefer-module
+    const hdfConverters = require('@mitre/hdf-converters')
+    // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
+    const {checkInput} = require('../../../src/utils/global')
 
     const guessOptions = {data: 'file data', filename: 'file.txt'}
     const desiredType = 'text'
@@ -343,6 +353,25 @@ describe('checkInput', () => {
 
     expect(() => checkInput(guessOptions, desiredType, desiredFormat)).toThrow(
       'Unable to process input file\nDetected input type: image\nPlease ensure the input is a valid txt',
+    )
+  })
+
+  it('should throw an error when the detected type is unknown', () => {
+    // eslint-disable-next-line unicorn/prefer-module
+    const {fingerprint} = require('@mitre/hdf-converters')
+    fingerprint.mockReturnValue(null)
+
+    // eslint-disable-next-line unicorn/prefer-module
+    const hdfConverters = require('@mitre/hdf-converters')
+    // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
+    const {checkInput} = require('../../../src/utils/global')
+
+    const guessOptions = {data: 'file data', filename: 'file.txt'}
+    const desiredType = 'text'
+    const desiredFormat = 'txt'
+
+    expect(() => checkInput(guessOptions, desiredType, desiredFormat)).toThrow(
+      'Unable to process input file\nDetected input type: unknown or none\nPlease ensure the input is a valid txt',
     )
   })
 })
