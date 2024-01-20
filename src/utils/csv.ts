@@ -82,13 +82,13 @@ export function convertRow(
   if (control.data.tags.check) {
     check = control.data.tags.check
   } else if (control.data.descriptions) {
-    check = getDescription(control.data.descriptions, 'check') || ''
+    check = getDescription(control.data.descriptions, 'check')
   }
 
   if (control.data.tags.fix) {
     fix = control.data.tags.fix
   } else if (control.data.descriptions) {
-    fix = getDescription(control.data.descriptions, 'fix') || ''
+    fix = getDescription(control.data.descriptions, 'fix')
   }
 
   fieldsToAdd.forEach(field => { // skipcq: JS-0044

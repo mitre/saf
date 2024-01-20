@@ -28,7 +28,17 @@ export function omitHDFChangingFields(
   }
 }
 
-export function omitChecklistChangingFields(input: string) {
-  // remove UUIDs
-  return input.replaceAll(/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/gm, '')
+export function removeUUIDs(obj: any) {
+  for (const key in obj) {
+    if (obj[key] && typeof obj[key] === 'object') {
+      removeUUIDs(obj[key])
+    } else if (typeof obj[key] === 'string' && isUUID(obj[key])) {
+      delete obj[key]
+    }
+  }
+}
+
+export function isUUID(str: string) {
+  const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/
+  return uuidRegex.test(str)
 }

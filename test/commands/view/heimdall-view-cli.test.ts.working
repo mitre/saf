@@ -1,0 +1,34 @@
+import {expect, test} from '@oclif/test'
+import fs from 'fs'
+import path from 'path'
+
+const hdfFilePath = path.resolve('./test/sample_data/HDF/input/rhel-8_hardened.json')
+const UTF8_ENCODING = 'utf8'
+
+describe('heimdall SAF CLI', () => {
+  // Test for the 'files' flag
+  // test
+  //   .stdout()
+  //   .command(['heimdall', '-p', '3000', '-n', '-f', hdfFilePath])
+  //   .it('runs heimdall -p 3000 -f test.json', ctx => {
+  //     const fileContent = fs.readFileSync(path.resolve(hdfFilePath), UTF8_ENCODING)
+  //     expect(ctx.stdout).to.contain(fileContent)
+  //   })
+
+  // test
+  //   .stdout()
+  //   .command(['heimdall', '-p', '3000', '-noOpenBrowser'])
+  //   .it('runs heimdall -p 3000 -n', ctx => {
+  //     expect(ctx.stdout).to.contain('Serving Heimdall at http://localhost:3000')
+  //   })
+
+  describe('heimdall SAF CLI', () => {
+    test
+      .stdout()
+      .command(['view', 'heimdall', '--help'])
+      .it('runs heimdall --help', ctx => {
+        console.log(ctx.stdout)
+        //expect(ctx.stdout).to.contain('Run an instance of Heimdall Lite to visualize your data')
+      })
+  })
+})
