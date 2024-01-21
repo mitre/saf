@@ -59,11 +59,11 @@ export default class Heimdall extends Command {
       }
 
       // Initialize parsedJSONs as an empty array if fileReadResult.parsedJSONs is undefined
-      parsedJSONs = fileReadResult.parsedJSONs || []
+      parsedJSONs = fileReadResult.parsedJSONs ?? []
     }
 
     // Pass an empty array if flags.files is undefined
-    const predefinedLoadJSON = this.getPredefinedLoadJSONFunction(flags.files || [], parsedJSONs)
+    const predefinedLoadJSON = this.getPredefinedLoadJSONFunction(flags.files ?? [], parsedJSONs)
 
     this.logServerAddress(flags)
     this.openBrowser(flags, open)

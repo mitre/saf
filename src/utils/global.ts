@@ -129,8 +129,16 @@ export function getInstalledPath(moduleName: string): string {
  * @returns {any | any[]} - If `typeOfPath` is in 'arrayedPaths', `values` is returned as an array.
  *                          Otherwise, `values` is returned as is.
  */
-export function arrayNeededPaths(typeOfPath: string, values: any): any | any[] {
-  return arrayedPaths.includes(typeOfPath.toLowerCase()) ? (Array.isArray(values) ? values : [values]) : values
+export function arrayNeededPaths(typeOfPath: string, values: string | string[]): string | string[] {
+  const isArray = Array.isArray(values)
+  let result
+  if (arrayedPaths.includes(typeOfPath.toLowerCase())) {
+    result = isArray ? values : [values]
+  } else {
+    result = values
+  }
+
+  return result
 }
 
 /**
@@ -160,7 +168,7 @@ export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNu
   }
 
   if (Array.isArray(pathOrNumber)) {
-    const foundPath = pathOrNumber.find(item => _.get(data, item)) || 'Field Not Defined'
+    const foundPath = pathOrNumber.find(item => _.get(data, item)) ?? 'Field Not Defined'
     return arrayNeededPaths(typeOfPathOrNumber, _.get(data, foundPath))
   }
 
@@ -195,10 +203,9 @@ interface ExtendedContextualizedEvaluation extends ContextualizedEvaluation {
  *                   If the evaluation data or profile data is not available, it returns an empty string.
  */
 export function getProfileInfo(evaluation: ExtendedContextualizedEvaluation, fileName: string): string {
-
   let result = ''
 
-  const profile: AnyProfile | undefined = evaluation?.profiles ? evaluation.profiles[0] : undefined;
+  const profile: AnyProfile | undefined = evaluation?.profiles ? evaluation.profiles[0] : undefined
 
   if (!evaluation || !profile) {
     return result

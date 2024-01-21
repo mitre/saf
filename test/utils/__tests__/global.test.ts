@@ -1,4 +1,4 @@
-import {checkSuffix, checkInput, getProfileInfo, extractValueViaPathOrNumber, convertFullPathToFilename, dataURLtoU8Array, getDescription, arrayNeededPaths} from '../../../src/utils/global'
+import {checkSuffix, getProfileInfo, extractValueViaPathOrNumber, convertFullPathToFilename, dataURLtoU8Array, getDescription, arrayNeededPaths} from '../../../src/utils/global'
 import {ExecJSON, ContextualizedEvaluation} from 'inspecjs'
 import path from 'path'
 import fs from 'fs'
@@ -157,8 +157,6 @@ describe('getInstalledPath', () => {
 })
 
 describe('arrayNeededPaths', () => {
-  const arrayedPaths = ['tags.cci', 'tags.nist']
-
   it('should return values as an array if typeOfPath is in arrayedPaths and values is not an array', () => {
     const typeOfPath = 'tags.cci'
     const values = 'test'
@@ -325,8 +323,6 @@ describe('checkInput', () => {
     const {fingerprint} = require('@mitre/hdf-converters')
     fingerprint.mockReturnValue('text')
 
-    // eslint-disable-next-line unicorn/prefer-module
-    const hdfConverters = require('@mitre/hdf-converters')
     // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
     const {checkInput} = require('../../../src/utils/global')
 
@@ -342,8 +338,6 @@ describe('checkInput', () => {
     const {fingerprint} = require('@mitre/hdf-converters')
     fingerprint.mockReturnValue('image')
 
-    // eslint-disable-next-line unicorn/prefer-module
-    const hdfConverters = require('@mitre/hdf-converters')
     // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
     const {checkInput} = require('../../../src/utils/global')
 
@@ -361,8 +355,6 @@ describe('checkInput', () => {
     const {fingerprint} = require('@mitre/hdf-converters')
     fingerprint.mockReturnValue(null)
 
-    // eslint-disable-next-line unicorn/prefer-module
-    const hdfConverters = require('@mitre/hdf-converters')
     // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
     const {checkInput} = require('../../../src/utils/global')
 
