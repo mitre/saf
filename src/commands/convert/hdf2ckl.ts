@@ -70,7 +70,7 @@ export default class HDF2CKL extends Command {
       releaseInfo: cklMetadata.benchmark.plaintext,
       ...cklMetadata,
       profileInfo: getProfileInfo(contextualizedEvaluation, cklMetadata.fileName),
-      uuid: v4(),
+      uuid: _.get(contextualizedEvaluation, 'evaluation.data.uuid') || v4(),
       controls: rootControls.map(control => getDetails(control, profileName)),
     }
     fs.writeFileSync(flags.output, Mustache.render(files['cklExport.ckl'].data, cklData).replaceAll(/[^\x00-\x7F]/g, ''))
