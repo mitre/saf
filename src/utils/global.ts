@@ -1,4 +1,5 @@
 import {fingerprint} from '@mitre/hdf-converters'
+import Profile from '@mitre/inspec-objects/lib/objects/profile'
 import appRootPath from 'app-root-path'
 import {getInstalledPathSync} from 'get-installed-path'
 import {AnyProfile, ContextualizedEvaluation, ExecJSON} from 'inspecjs'
@@ -168,6 +169,10 @@ export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNu
   }
 }
 
+interface ExtendedContextualizedEvaluation extends ContextualizedEvaluation {
+  profiles?: AnyProfile[]; // change this line
+}
+
 /**
  * The `getProfileInfo` function retrieves and formats profile information from a given evaluation.
  *
@@ -189,10 +194,11 @@ export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNu
  *                   If a piece of information is not available, it is not included in the string.
  *                   If the evaluation data or profile data is not available, it returns an empty string.
  */
-export function getProfileInfo(evaluation: ContextualizedEvaluation, fileName: string): string {
+export function getProfileInfo(evaluation: ExtendedContextualizedEvaluation, fileName: string): string {
+
   let result = ''
 
-  const profile: AnyProfile | undefined = evaluation?.profiles ? evaluation.profiles[0] : undefined
+  const profile: AnyProfile | undefined = evaluation?.profiles ? evaluation.profiles[0] : undefined;
 
   if (!evaluation || !profile) {
     return result
