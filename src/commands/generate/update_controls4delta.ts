@@ -33,6 +33,7 @@ export default class GenerateUpdateControls extends Command {
     'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory --no-backupControls --no-formatControls -P SV -L debug',
   ]
 
+  // skipcq: JS-R1005
   async run(): Promise<any> { // skipcq: JS-0044
     const {flags} = await this.parse(GenerateUpdateControls)
     const logger = createWinstonLogger('generate:update_controls', flags.logLevel)
@@ -197,7 +198,6 @@ export default class GenerateUpdateControls extends Command {
     const files = await readdir(controlsDir)
 
     // Iterate trough all files processing ony control files, have a .rb extension
-    let promises: any[] = []
     const skippedControls = []
     const skippedFormatting = []
     const isCorrectControlMap  = new Map()
