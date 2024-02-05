@@ -19,18 +19,21 @@ export default class GenerateUpdateControls extends Command {
     inspecJsonFile: Flags.string({char: 'J', required: false, description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> > profile.json" command'}),
     controlsDir: Flags.string({char: 'c', required: true, description: 'The InSpec profile controls directory containing the profiles to be updated'}),
     controlPrefix: Flags.string({char: 'P', required: false, default: 'V', options: ['V', 'SV'], description: 'Old control number prefix V or SV, default V'}),
+    useXccdfGroupId: Flags.boolean({char: 'g', required: false, default: false, allowNo: true, description: 'Use the XCCDF `Group Id` to rename the controls. Uses prefix V or SV based on controlPrefix option\n[default: false]'}),
     formatControls: Flags.boolean({char: 'f', required: false, default: true, allowNo: true, description: 'Format control contents in the same way `generate delta` will write controls\n[default: true]'}),
     backupControls: Flags.boolean({char: 'b', required: false, default: true, allowNo: true, description: 'Preserve modified controls in a backup directory (oldControls) inside the controls directory\n[default: true]'}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
 
   static examples = [
-    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml  -c the_controls_directory -L debug',
-    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml  -J ./the_profile_json -c the_controls_directory -L debug',
-    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml  -c the_controls_directory --no-formatControls -P SV -L debug',
-    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml  -c the_controls_directory --no-backupControls --no-formatControls -P SV -L debug',
+    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory -L debug',
+    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory -g -L debug',
+    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory -J ./the_profile_json-L debug',
+    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory --no-formatControls -P SV -L debug',
+    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory --no-backupControls --no-formatControls -P SV -L debug',
   ]
 
+  // skipcq: JS-R1005
   async run(): Promise<any> { // skipcq: JS-0044
     const {flags} = await this.parse(GenerateUpdateControls)
     const logger = createWinstonLogger('generate:update_controls', flags.logLevel)
@@ -77,7 +80,7 @@ export default class GenerateUpdateControls extends Command {
           logger.error(`ERROR: Checking in controls directory is empty, received: ${err.message}`)
           throw new Error(`Error checking controls directory, error: ${err.message}`)
         } else if (files.length) {
-          logger.debug(`Found ${files.length} InSpec Profiles in the controls directory`)
+          logger.debug(`Found ${files.length} Controls in the controls directory`)
           if (flags.backupControls) {
             const oldControlsDir = path.join(flags.controlsDir, 'oldControls')
             if (fs.existsSync(oldControlsDir)) {
@@ -137,28 +140,41 @@ export default class GenerateUpdateControls extends Command {
 
     // Process the XCCDF file and convert entries into a Profile object
     // The XCCDF contains the profiles metadata - it does not have the code descriptions
-    logger.debug(`Processing XCCDF Benchmark file: ${flags.xccdfXmlFile} using rule id.`)
+    logger.debug(`Processing XCCDF Benchmark file: ${flags.xccdfXmlFile} using rule id (SAF inspect objects - processXCCDF).`)
     const xccdf = fs.readFileSync(flags.xccdfXmlFile, 'utf8')
     /* eslint-disable prefer-const, max-depth */
     let xccdfProfile: Profile
     xccdfProfile = processXCCDF(xccdf, false, 'rule') // skipcq: JS-0242
 
-    // Create a map data type with: key = legacy Id (V or SV number) and value = new Id (SV number)
-    // Create a map data type to be used as a flag to identify new controls (key and value are the new control Id)
-    // Create a map data type to be used as a flag to identify legacy controls (key and value are the legacy control Id)
-    // The new and legacy controls Map is used used so we can invoke .has(key) method (test if map contains provide key)
+    // Create a map data type (xccdfLegacyToControlMap) with: key = legacy Id (V or SV number) and value = new Id (SV number)
+    // Create a map data type (xccdfLegacyControlsMap) to be used as a flag to identify new controls (key and value are the new control Id)
+    // Create a map data type (xccdfControlsMap) to be used as a flag to identify legacy controls (key and value are the legacy control Id)
+    // The xccdfLegacyControlsMap and xccdfControlsMap are used so we can invoke the .has(key) method (test if map contains provided key),
+    //   there is, did we processed the legacy tag and the new tag
+    logger.info('Mapping legacy control Ids')
     const xccdfLegacyToControlMap = new Map()
     const xccdfLegacyControlsMap = new Map()
     const xccdfControlsMap = new Map()
-    xccdfProfile.controls.forEach(control => {
-      const controlId = control.tags.legacy?.map(value => {
-        const control = flags.controlPrefix === 'V' ? value.match(/^V-\d+/)?.toString() : value.match(/^SV-\d+/)?.toString()
-        return (control === undefined) ? '' : control
-      }).find(Boolean)
-      xccdfLegacyToControlMap.set(controlId, control.id)
-      xccdfLegacyControlsMap.set(controlId, controlId)
-      xccdfControlsMap.set(control.id, control.id)
-    })
+    if (flags.useXccdfGroupId) {
+      logger.debug('Using Group Id for mapping')
+      xccdfProfile.controls.forEach(control => {
+        const controlId = flags.controlPrefix === 'V' ? control.tags.gid?.match(/^V-\d+/)?.toString() : control.tags.gid?.match(/^SV-\d+/)?.toString()
+        xccdfLegacyToControlMap.set(controlId, control.id)
+        xccdfLegacyControlsMap.set(controlId, controlId)
+        xccdfControlsMap.set(control.id, control.id)
+      })
+    } else {
+      logger.debug('Using tags to determine legacy Ids')
+      xccdfProfile.controls.forEach(control => {
+        const controlId = control.tags.legacy?.map(value => {
+          const control = flags.controlPrefix === 'V' ? value.match(/^V-\d+/)?.toString() : value.match(/^SV-\d+/)?.toString()
+          return (control === undefined) ? '' : control
+        }).find(Boolean)
+        xccdfLegacyToControlMap.set(controlId, control.id)
+        xccdfLegacyControlsMap.set(controlId, controlId)
+        xccdfControlsMap.set(control.id, control.id)
+      })
+    }
 
     // Create a map data type containing the controls found in the processed InSpec JSON file
     //   The InSpec JSON file contains the controls and associated code block (these are
@@ -166,7 +182,7 @@ export default class GenerateUpdateControls extends Command {
     // Lint the controls using the toRuby method provided by the Controls class
     const inspecProfileFormattedControls = new Map()
     if (flags.formatControls) {
-      logger.debug('Formatting the existing controls with no diff.')
+      logger.debug('Formatting control contents in the same way `generate delta` will write controls.')
       inspecProfile!.controls.forEach(control => { // skipcq: JS-0339
         inspecProfileFormattedControls.set(control.id, control.toRuby(false))
       })
@@ -186,9 +202,11 @@ export default class GenerateUpdateControls extends Command {
     const skippedFormatting = []
     const isCorrectControlMap  = new Map()
     const controlsProcessedMap = new Map()
+
     for (const file of files) {
       const fileExt = path.extname(file)
       if (fileExt === ext) {
+        logger.debug(`Processing file: ${file}`)
         const currentFileFullPath = path.join(controlsDir, file)
         const currentControlNumber = path.parse(file).name
         const newXCCDFControlNumber = xccdfLegacyToControlMap.get(currentControlNumber)
@@ -197,7 +215,7 @@ export default class GenerateUpdateControls extends Command {
         let updatedControl
         // FILE = XCCDF
         if (currentControlNumber === xccdfControlNumber) {
-          logger.debug(`Control Profile number is current: ${currentControlNumber} `)
+          logger.debug(`  The profile control number is current: ${currentControlNumber} `)
 
           isCorrectControl++
           isCorrectControlMap.set(currentControlNumber, currentControlNumber) // Map used to compute output statistics (value does not matter)
@@ -217,9 +235,9 @@ export default class GenerateUpdateControls extends Command {
           // Save file
           saveControl(currentFileFullPath, currentControlNumber, currentControlNumber, updatedControl, flags.backupControls, false)
 
-        // FILE = LEGACY NUMBER
+          // FILE = LEGACY NUMBER
         } else if (currentControlNumber === xccdfLegacyControlNumber) {
-          logger.debug(`Control Profile number is not current - changing: ${currentControlNumber} with: ${newXCCDFControlNumber}`)
+          logger.debug(`  Control number is not current - changing: ${currentControlNumber} with: ${newXCCDFControlNumber}`)
 
           // Change the V or SV Id to the SV Id based on format flag
           if (flags.formatControls) {
@@ -230,7 +248,7 @@ export default class GenerateUpdateControls extends Command {
               skippedFormatting.push(`(Profile: ${currentControlNumber} XCCDF: ${newXCCDFControlNumber})`)
               updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, 'undefined')
             }
-          // Don't format, just replace the control name (SV or V) and assign value to the updatedControl variable
+            // Don't format, just replace the control name (SV or V) and assign value to the updatedControl variable
           } else {
             updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, newXCCDFControlNumber)
           }
@@ -239,14 +257,14 @@ export default class GenerateUpdateControls extends Command {
           processed++
           controlsProcessedMap.set(newXCCDFControlNumber, 'processed')
 
-        // FILE ≠ XCCDF
+          // FILE ≠ XCCDF
         } else if (xccdfControlNumber === undefined) {
-          logger.debug(`Found a Control Profile not included in the XCCDF: ${currentControlNumber}`)
+          logger.debug(`  Control not included in the SAF inspect objects (processXCCDF) output: ${currentControlNumber}`)
           skipped++
           skippedControls.push(currentControlNumber)
-        // FILE ≠ XCCDF ≠ LEGACY NUMBER
+          // FILE ≠ XCCDF ≠ LEGACY NUMBER
         } else {
-          logger.debug(`No logic found processing Control Profile: ${currentControlNumber}`)
+          logger.debug(`  No logic found processing Control: ${currentControlNumber}`)
         }
       }
     }
@@ -259,6 +277,10 @@ export default class GenerateUpdateControls extends Command {
         newControlsFound.push(newControl)
       }
     }
+
+    await new Promise(resolve => {
+      setTimeout(resolve, Math.floor(Math.random() * 100))
+    })
 
     console.log(colors.yellow('\n     Total skipped files - no mapping to new control Id:'), colors.green(`${skipped.toString().padStart(4)}`))
     console.log(colors.yellow('Total processed files - found mapping to new control Id: '), colors.green(`${processed.toString().padStart(3)}`))
