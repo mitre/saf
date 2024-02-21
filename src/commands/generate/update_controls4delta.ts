@@ -278,7 +278,7 @@ export default class GenerateUpdateControls extends Command {
       }
     }
 
-    logger.on('finish', function () {
+    logger.on('finish', () => {
       console.log(colors.yellow('\n     Total skipped files - no mapping to new control Id:'), colors.green(`${skipped.toString().padStart(4)}`))
       console.log(colors.yellow('Total processed files - found mapping to new control Id: '), colors.green(`${processed.toString().padStart(3)}`))
 
