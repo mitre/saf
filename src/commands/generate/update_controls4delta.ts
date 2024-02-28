@@ -198,8 +198,8 @@ export default class GenerateUpdateControls extends Command {
     const files = await readdir(controlsDir)
 
     // Iterate trough all files processing ony control files, have a .rb extension
-    const skippedControls = []
-    const skippedFormatting = []
+    const skippedControls: string[] = []
+    const skippedFormatting: string[] = []
     const isCorrectControlMap  = new Map()
     const controlsProcessedMap = new Map()
 
@@ -270,7 +270,7 @@ export default class GenerateUpdateControls extends Command {
     }
 
     let newControls = 0
-    const newControlsFound = []
+    const newControlsFound: any[] = []
     for (const newControl of xccdfControlsMap.values()) {
       if (!controlsProcessedMap.has(newControl) && !isCorrectControlMap.has(newControl)) {
         newControls++
@@ -278,23 +278,23 @@ export default class GenerateUpdateControls extends Command {
       }
     }
 
-    await new Promise(resolve => {
-      setTimeout(resolve, Math.floor(Math.random() * 100))
+    logger.on('finish', () => {
+      console.log(colors.yellow('\n     Total skipped files - no mapping to new control Id:'), colors.green(`${skipped.toString().padStart(4)}`))
+      console.log(colors.yellow('Total processed files - found mapping to new control Id: '), colors.green(`${processed.toString().padStart(3)}`))
+
+      console.log(colors.yellow('\n    Total controls with correct identification: '), colors.green(`${isCorrectControl.toString().padStart(3)}`))
+      console.log(colors.yellow('Total new controls found in the XCCDF guidance: '), colors.green(`${newControls.toString().padStart(3)}`))
+
+      console.log(colors.yellow('\nSkipped control(s) - not included in XCCDF guidance: '), `${colors.green(skippedControls.toString())}`)
+      console.log(colors.yellow('\n  New control(s) found - included in XCCDF guidance: '), `${colors.green(newControlsFound.toString())}`)
+
+      if (flags.formatControls && notInProfileJSON > 0) {
+        console.log(colors.bold.red('\nTotal skipped formatting - not found in the profile json: '), colors.green(`${notInProfileJSON.toString().padStart(3)}`))
+        console.log(colors.bold.red('Control(s) skipped formatting: '), colors.green(`${skippedFormatting.toString()}`))
+      }
     })
 
-    console.log(colors.yellow('\n     Total skipped files - no mapping to new control Id:'), colors.green(`${skipped.toString().padStart(4)}`))
-    console.log(colors.yellow('Total processed files - found mapping to new control Id: '), colors.green(`${processed.toString().padStart(3)}`))
-
-    console.log(colors.yellow('\n    Total controls with correct identification: '), colors.green(`${isCorrectControl.toString().padStart(3)}`))
-    console.log(colors.yellow('Total new controls found in the XCCDF guidance: '), colors.green(`${newControls.toString().padStart(3)}`))
-
-    console.log(colors.yellow('\nSkipped control(s) - not included in XCCDF guidance: '), `${colors.green(skippedControls.toString())}`)
-    console.log(colors.yellow('\n  New control(s) found - included in XCCDF guidance: '), `${colors.green(newControlsFound.toString())}`)
-
-    if (flags.formatControls && notInProfileJSON > 0) {
-      console.log(colors.bold.red('\nTotal skipped formatting - not found in the profile json: '), colors.green(`${notInProfileJSON.toString().padStart(3)}`))
-      console.log(colors.bold.red('Control(s) skipped formatting: '), colors.green(`${skippedFormatting.toString()}`))
-    }
+    logger.end()
   }
 }
 
@@ -323,7 +323,7 @@ function saveControl(filePath: string, newXCCDFControlNumber: string, currentCon
       fs.copyFileSync(filePath, destFilePath)
     }
 
-  // Deleted processed (old) file
+  // Delete processed (old) file
   } else if (renamedControl) {
     fs.unlinkSync(filePath)
   }
