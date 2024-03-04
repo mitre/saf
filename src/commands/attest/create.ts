@@ -57,7 +57,7 @@ export default class CreateAttestations extends Command {
       return {
         control_id: id,
         explanation: this.promptForever('Attestation explanation: '),
-        frequency: this.promptForever('Frequency (Valid inputs: annually, semiannually, quarterly, monthly, every2weeks, fortnightly, weekly, every3days, daily, or custom (e.g., 1d, 3d, 1wk, 2wk, 1m, 3m, 6m, 1y, 1.5y, etc.)):'),
+        frequency: this.promptForever('Attestation valid for (1d/3d/1wk/2wk/1m/3m/6m/1yr/1.5yr/custom):'),
         status: this.getStatus(),
         updated: new Date().toISOString(),
         updated_by: this.promptForever('Updated By: '),
