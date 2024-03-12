@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # MITRE `saf-cli` Develpment, Testing and Contribution Guide
+=======
+# MITRE SAF Develpment, Testing and Contribution Guide
+>>>>>>> origin
 
 The MITRE saf-cli is an OCLIF application developed with TypeScript.
 

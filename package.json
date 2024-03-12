@@ -1,7 +1,7 @@
 {
   "name": "@mitre/saf",
   "description": "The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) brings together applications, techniques, libraries, and tools developed by MITRE and the security community to streamline security automation for systems and DevOps pipelines.",
-  "version": "1.3.2",
+  "version": "1.4.0",
   "author": "The MITRE Security Automation Framework",
   "bin": "./bin/run",
   "bugs": "https://github.com/mitre/saf/issues",
@@ -9,8 +9,8 @@
     "@aws-sdk/client-config-service": "^3.398.0",
     "@aws-sdk/client-securityhub": "^3.287.0",
     "@mitre/emass_client": "3.10.0",
-    "@mitre/hdf-converters": "^2.9.1",
-    "@mitre/heimdall-lite": "^2.9.2",
+    "@mitre/hdf-converters": "^2.10.1",
+    "@mitre/heimdall-lite": "^2.10.1",
     "@mitre/inspec-objects": "^1.0.1",
     "@oclif/core": "^3.16.0",
     "@oclif/plugin-help": "^6.0.9",
@@ -75,19 +75,19 @@
     "xlsx-populate": "^1.21.0",
     "xml2js": "^0.6.2",
     "yaml": "^2.3.2",
-    "zip-lib": "^0.7.3"
+    "zip-lib": "^1.0.0"
   },
   "devDependencies": {
     "@e965/xlsx": "^0.20.0",
     "@oclif/test": "^3.1.8",
     "@types/js-yaml": "^4.0.9",
     "@types/mock-fs": "^4.13.4",
-    "@typescript-eslint/eslint-plugin": "~6.19.0",
+    "@typescript-eslint/eslint-plugin": "~7.1.0",
     "eslint": "^8.48.0",
     "eslint-config-oclif": "^4.0",
     "eslint-config-oclif-typescript": "^1.0.3",
-    "eslint-plugin-unicorn": "^50.0.1",
-    "marked": "^11.1.1",
+    "eslint-plugin-unicorn": "^51.0.1",
+    "marked": "^12.0.0",
     "mocha": "^10",
     "mock-fs": "^5.2.0",
     "oclif": "^4.1.2",
@@ -95,7 +95,7 @@
     "ts-mocha": "^10.0.0"
   },
   "engines": {
-    "node": "^18.18.0"
+    "node": "^18.19.0"
   },
   "files": [
     "/bin",
@@ -184,23 +184,23 @@
     }
   },
   "repository": "mitre/saf",
-"scripts": {
-  "lint": "eslint \"src/**/*.ts\" --fix",
-  "lint:ci": "eslint \"src/**/*.ts\" --max-warnings 0",
-  "dev": "rm -rf lib && tsc && node bin/run",
-  "prepack": "rm -rf lib && tsc",
-  "test": "npm run test:mocha && npm run test:jest",
-  "tests": "npm run test",
-  "test:mocha": "NODE_ENV=test ts-mocha --timeout 8500 --forbid-only \"test/**/*.test.ts\"",
-  "test:mocha:one": "NODE_ENV=test ts-mocha --timeout 8500 --forbid-only",
-  "test:jest": "NODE_ENV=test jest",
-  "test:jest:one": "NODE_ENV=test jest --findRelatedTests",
-  "prepack:win32": "(IF EXIST lib rmdir /s /q lib) && tsc",
-  "prepack:darwin:linux": "rm -rf lib && tsc",
-  "pack-hdf-converters": "run-script-os",
-  "pack-hdf-converters:win32": "pack-hdf-converters.bat",
-  "pack-hdf-converters:darwin:linux": "./pack-hdf-converters.sh"
-},
+  "scripts": {
+    "lint": "eslint \"src/**/*.ts\" --fix",
+    "lint:ci": "eslint \"src/**/*.ts\" --max-warnings 0",
+    "dev": "rm -rf lib && tsc && node bin/run",
+    "prepack": "rm -rf lib && tsc",
+    "test": "npm run test:mocha && npm run test:jest",
+    "tests": "npm run test",
+    "test:mocha": "NODE_ENV=test ts-mocha --timeout 8500 --forbid-only \"test/**/*.test.ts\"",
+    "test:mocha:one": "NODE_ENV=test ts-mocha --timeout 8500 --forbid-only",
+    "test:jest": "NODE_ENV=test jest",
+    "test:jest:one": "NODE_ENV=test jest --findRelatedTests",
+    "prepack:win32": "(IF EXIST lib rmdir /s /q lib) && tsc",
+    "prepack:darwin:linux": "rm -rf lib && tsc",
+    "pack-hdf-converters": "run-script-os",
+    "pack-hdf-converters:win32": "pack-hdf-converters.bat",
+    "pack-hdf-converters:darwin:linux": "./pack-hdf-converters.sh"
+  },
   "types": "lib/index.d.ts",
   "jest": {
     "preset": "ts-jest",
@@ -209,9 +209,9 @@
       "**/test/**/**/**/__tests__/**/*.ts"
     ]
   },
-    "mocha": {
-      "exclude": [
-        "**/test/**/**/__tests__/**/*.ts"
-      ]
-    }
+  "mocha": {
+    "exclude": [
+      "**/test/**/**/__tests__/**/*.ts"
+    ]
+  }
 }

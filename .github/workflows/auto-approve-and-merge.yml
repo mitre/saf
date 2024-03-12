@@ -12,7 +12,7 @@ jobs:
     if: github.event.pull_request.user.login == 'dependabot[bot]' && contains(github.event.pull_request.labels.*.name, 'dependencies')
     runs-on: ubuntu-22.04
     steps:
-    - uses: hmarr/auto-approve-action@v3
+    - uses: hmarr/auto-approve-action@v4
       with:
         github-token: "${{ secrets.GITHUB_TOKEN }}"
     - name: Enable auto-merge for Dependabot PRs
