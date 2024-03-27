@@ -1,0 +1,6 @@
+- control_id: SV-230223
+  explanation: This control passes according to this attestation
+  frequency: 1d
+  status: passed
+  updated: 3000-01-01
+  updated_by: John Doe
