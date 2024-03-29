@@ -15,4 +15,3 @@ out
 **/saf-cli.log
 *.html
 saf-cli.log
-package-lock.json
