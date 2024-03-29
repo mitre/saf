@@ -19,12 +19,13 @@ describe('Summary command', () => {
       expect(JSON.parse(ctx.stdout)).to.deep.equal(expectedOutput)
     })
 
+  // NOTE: replacing the CR from both files to ensure proper comparison.
   test
     .stdout()
     .command(['summary', '-i', hdfFilePath, '--format=markdown', '--no-title-table', '-o', generatedMD])
     .it('runs summary with Markdown output and matches the markdown reference file', () => {
-      const expectedOutput = fs.readFileSync(MD_reference, 'utf8').trim()
-      const actualOutput = fs.readFileSync(generatedMD, 'utf8').trim()
+      const expectedOutput = fs.readFileSync(MD_reference, 'utf8').replaceAll(/\r/gi, '').trim()
+      const actualOutput = fs.readFileSync(generatedMD, 'utf8').replaceAll(/\r/gi, '').trim()
       expect(actualOutput).to.equal(expectedOutput)
     })
 
