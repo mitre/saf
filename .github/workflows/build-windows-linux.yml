@@ -1,0 +1,59 @@
+name: Build SAF-CLI Windows/Linux Installers
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: saf
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          check-latest: true
+          cache: 'npm'
+          cache-dependency-path: ./saf/package-lock.json
+
+      - name: Install Nullsoft Scriptable Install System and p7zip
+        run: sudo apt install nsis p7zip-full
+
+      - name: setup saf cli
+        working-directory: ./saf
+        run: |
+          rm -rf test
+          npm ci
+
+      - name: Pack Windows Installer
+        working-directory: ./saf
+        run: npx oclif pack win
+
+      - name: Pack Debian Package
+        working-directory: ./saf
+        run: sudo npx oclif pack deb
+
+      - name: Upload SAF-CLI Windows Build x64 Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SAF-CLI Windows Build x64
+          path: saf/dist/win32/saf-*-x64.exe
+
+      - name: Upload SAF-CLI Windows Build x86 Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SAF-CLI Windows Build x86
+          path: saf/dist/win32/saf-*-x86.exe
+
+      # underscore here since that's how the file is named
+      - name: Upload SAF-CLI Debian x64 Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SAF-CLI Debian Build x64
+          path: saf/dist/deb/saf_*.deb

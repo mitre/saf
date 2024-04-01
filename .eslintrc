@@ -21,6 +21,7 @@
     "unicorn/prefer-json-parse-buffer": "off",
     "camelcase": "off",
     "no-console": "off",
+    "no-unused-expressions": "off",
     "node/no-missing-import": "off",
     "complexity": "off",
     "no-constant-condition": "off",

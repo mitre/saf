@@ -1,3 +1,4 @@
+generatedMD.md
 *-debug.log
 *-error.log
 /.nyc_output
@@ -11,3 +12,6 @@ node_modules
 out
 .env
 *.tgz
+**/saf-cli.log
+*.html
+saf-cli.log

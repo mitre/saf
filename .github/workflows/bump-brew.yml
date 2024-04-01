@@ -11,13 +11,13 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Extract version
         id: extract-version
         run: echo "tag=$(git describe --abbrev=0 --tags)" >> $GITHUB_OUTPUT
-      - uses: mislav/bump-homebrew-formula-action@v2
+      - uses: mislav/bump-homebrew-formula-action@v3
         with:
           formula-name: saf-cli
           homebrew-tap: mitre/homebrew-saf
