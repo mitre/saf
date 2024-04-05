@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--DISA STIG Viewer :: 2.14-->
+<!--Heimdall Version :: 2.10.1-->
 <CHECKLIST>
 	<ASSET>
 		<ROLE>None</ROLE>
 		<ASSET_TYPE>Computing</ASSET_TYPE>
+		<MARKING>CUI</MARKING>
 		<HOST_NAME></HOST_NAME>
 		<HOST_IP></HOST_IP>
 		<HOST_MAC></HOST_MAC>
