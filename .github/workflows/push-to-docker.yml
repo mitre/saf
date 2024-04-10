@@ -4,6 +4,10 @@ on:
   release:
     types: [published]
   workflow_dispatch:
+    inputs:
+    version:
+      description: 'Version'     
+      required: true
 
 jobs:
   docker:
@@ -18,7 +22,7 @@ jobs:
         id: format-tag
         with:
           pattern: 'v'
-          string: "${{ github.event.release.tag_name }}"
+          string: "${{ github.event.release.tag_name || github.event.inputs.version }}"
           replace-with: ''
           flags: 'g'
       - name: Login to DockerHub
