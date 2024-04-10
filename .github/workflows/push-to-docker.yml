@@ -5,9 +5,9 @@ on:
     types: [published]
   workflow_dispatch:
     inputs:
-    version:
-      description: 'Version'     
-      required: true
+      version:
+        description: 'Version'     
+        required: true
 
 jobs:
   docker:
