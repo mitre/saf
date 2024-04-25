@@ -124,3 +124,63 @@ describe('Test Dependency-Track no vulnerabilities', () => {
     )
   })
 })
+
+describe('Test Dependency-Track with attributions', () => {
+  const tmpobj = tmp.dirSync({unsafeCleanup: true})
+
+  test
+  .stdout()
+  .command([
+    'convert dependency_track2hdf',
+    '-i',
+    path.resolve(
+      './test/sample_data/dependency_track/sample_input_report/fpf-with-attributions.json',
+    ),
+    '-o',
+    `${tmpobj.name}/dependencytracktest.json`,
+  ])
+  .it('hdf-converter output test', () => {
+    const converted = JSON.parse(
+      fs.readFileSync(`${tmpobj.name}/dependencytracktest.json`, 'utf8'),
+    )
+    const sample = JSON.parse(
+      fs.readFileSync(
+        path.resolve('./test/sample_data/dependency_track/hdf-with-attributions.json'),
+        'utf8',
+      ),
+    )
+    expect(omitHDFChangingFields(converted)).to.eql(
+      omitHDFChangingFields(sample),
+    )
+  })
+})
+
+describe('Test Dependency-Track info vulnerability', () => {
+  const tmpobj = tmp.dirSync({unsafeCleanup: true})
+
+  test
+  .stdout()
+  .command([
+    'convert dependency_track2hdf',
+    '-i',
+    path.resolve(
+      './test/sample_data/dependency_track/sample_input_report/fpf-info-vulnerability.json',
+    ),
+    '-o',
+    `${tmpobj.name}/dependencytracktest.json`,
+  ])
+  .it('hdf-converter output test', () => {
+    const converted = JSON.parse(
+      fs.readFileSync(`${tmpobj.name}/dependencytracktest.json`, 'utf8'),
+    )
+    const sample = JSON.parse(
+      fs.readFileSync(
+        path.resolve('./test/sample_data/dependency_track/hdf-info-vulnerability.json'),
+        'utf8',
+      ),
+    )
+    expect(omitHDFChangingFields(converted)).to.eql(
+      omitHDFChangingFields(sample),
+    )
+  })
+})
