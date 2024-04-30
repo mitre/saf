@@ -56,7 +56,7 @@
     "js-yaml": "^4.1.0",
     "json-colorizer": "^2.2.2",
     "lodash": "^4.17.21",
-    "markdown-diff": "^1.0.9",
+    "markdown-diff": "^2.0.0",
     "markdown-table-ts": "^1.0.3",
     "moment": "^2.29.4",
     "mustache": "^4.2.0",
