@@ -38,6 +38,22 @@ jobs:
       - name: Pack Debian Package
         working-directory: ./saf
         run: sudo npx oclif pack deb
+        
+      - name: Rename Windows x64 Installer
+        run: |
+          cd saf/dist/win32
+          for file in saf-*-x64.exe; do
+                  prefix=${file%-*-*} # This will get the prefix before the first '-'
+                  mv "$file" "$prefix-x64.exe"
+          done
+          
+      - name: Rename Windows x86 Installer
+        run: |
+          cd saf/dist/win32
+          for file in saf-*-x64.exe; do
+                  prefix=${file%-*-*} # This will get the prefix before the first '-'
+                  mv "$file" "$prefix-x86.exe"
+          done
 
       - name: Upload SAF-CLI Windows Build x64 Artifact
         uses: actions/upload-artifact@v4
