@@ -5,6 +5,8 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+  workflow_dispatch:
+  
 
 jobs:
   build-deploy:
@@ -42,17 +44,22 @@ jobs:
       - name: Rename Windows x64 Installer
         run: |
           cd saf/dist/win32
+          echo $SHELL
           for file in saf-*-x64.exe; do
                   prefix=${file%-*-*} # This will get the prefix before the first '-'
-                  mv "$file" "$prefix-x64.exe"
+                  suffix=${file#saf-*-*-}
+                  mv "$file" "$prefix-$suffix"
+                  echo $(ls)
           done
           
       - name: Rename Windows x86 Installer
         run: |
           cd saf/dist/win32
-          for file in saf-*-x64.exe; do
-                  prefix=${file%-*-*} # This will get the prefix before the first '-'
-                  mv "$file" "$prefix-x86.exe"
+          for file in saf-*-x86.exe; do
+                  prefix=${file%-*-*}
+                  suffix=${file#saf-*-*-}
+                  mv "$file" "$prefix-$suffix"
+                  echo $(ls)
           done
 
       - name: Upload SAF-CLI Windows Build x64 Artifact
