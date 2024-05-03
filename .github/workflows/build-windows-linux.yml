@@ -56,7 +56,7 @@ jobs:
                   prefix=${file%.*-*.deb}
                   prefix_ver=${prefix#saf_}
                   suffix=${file#*_*_}
-                  sudo mv "$file" "saf-$prefix_version-$suffix"
+                  sudo mv "$file" "saf-$prefix_ver-$suffix"
           done
 
       - name: Upload SAF-CLI Windows Build x64 Artifact
