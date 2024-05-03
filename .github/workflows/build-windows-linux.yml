@@ -54,8 +54,9 @@ jobs:
           cd saf/dist/deb
           for file in saf_*.deb; do
                   prefix=${file%.*-*.deb}
+                  prefix_ver=${prefix#saf_}
                   suffix=${file#*_*_}
-                  mv "$file" "$prefix-$suffix"
+                  sudo mv "$file" "saf-$prefix_version-$suffix"
           done
 
       - name: Upload SAF-CLI Windows Build x64 Artifact
@@ -75,4 +76,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SAF-CLI Debian Build x64
-          path: saf/dist/deb/saf_*.deb
+          path: saf/dist/deb/saf-*.deb
