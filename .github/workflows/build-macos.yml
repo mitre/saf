@@ -28,6 +28,15 @@ jobs:
       - name: npm pack
         run: npx oclif pack macos
 
+      - name: Rename Windows Installers
+        run: |
+          cd dist/macos
+          for file in saf-*.pkg; do
+                  prefix=${file%-*-*.pkg}
+                  suffix=${file#saf-*-*-*}
+                  mv "$file" "$prefix-$suffix"
+          done
+
       - name: Upload SAF-CLI macOS Installer Artifact
         uses: actions/upload-artifact@v4
         with:

@@ -40,25 +40,22 @@ jobs:
         working-directory: ./saf
         run: sudo npx oclif pack deb
         
-      - name: Rename Windows x64 Installer
+      - name: Rename Windows Installers
         run: |
           cd saf/dist/win32
-          echo $SHELL
-          for file in saf-*-x64.exe; do
-                  prefix=${file%-*-*} # This will get the prefix before the first '-'
-                  suffix=${file#saf-*-*-}
+          for file in saf-*.exe; do
+                  prefix=${file%-*-*} # get prefix by removing frome end
+                  suffix=${file#saf-*-*-} # get suffix by removing from start
                   mv "$file" "$prefix-$suffix"
-                  echo $(ls)
           done
-          
-      - name: Rename Windows x86 Installer
+
+      - name: Rename Windows debian Installers
         run: |
-          cd saf/dist/win32
-          for file in saf-*-x86.exe; do
-                  prefix=${file%-*-*}
-                  suffix=${file#saf-*-*-}
+          cd saf/dist/deb
+          for file in saf_*.deb; do
+                  prefix=${file%.*-*.deb}
+                  suffix=${file#*_*_}
                   mv "$file" "$prefix-$suffix"
-                  echo $(ls)
           done
 
       - name: Upload SAF-CLI Windows Build x64 Artifact
