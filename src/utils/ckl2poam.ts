@@ -170,7 +170,7 @@ export function replaceSpecialCharacters(text: string): string {
 }
 
 function cleanComments(comments: string): string {
-  return comments.replace(/Automated(.*?)project\.\n/, '').replaceAll(/Profile shasum.*/s, '').trim() // skipcq: JS-0113
+  return comments.replace(/Automated(.*?)project\.\n/, '').replaceAll(/Profile shasum.*/g, '').trim() // skipcq: JS-0113
 }
 
 export function combineComments(vulnerability: Vulnerability, host: string) {
