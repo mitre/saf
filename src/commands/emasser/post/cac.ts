@@ -11,8 +11,6 @@ import {CacResponsePost,
   CacGet as CAC} from '@mitre/emass_client/dist/api'
 
 export default class EmasserPostCac extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Add a Control Approval Chain (CAC) items in a system'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-a,--controlAcronym] [options]']

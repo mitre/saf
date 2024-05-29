@@ -90,8 +90,6 @@ function addApplicationFindingsFields(bodyObject: StaticCodeRequest, dataObj: St
 }
 
 export default class EmasserPostStaticCodeScans extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = "upload application scan findings into a system's assets module"
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--cloudResourceFile]',

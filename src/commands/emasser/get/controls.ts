@@ -8,8 +8,6 @@ import {outputError} from '../../../utils/emasser/outputError'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetControls extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Get system Security Control information for both the Implementation Plan and Risk Assessment'
 
   static examples = ['<%= config.bin %> <%= command.id %> --systemId <value> [option]']

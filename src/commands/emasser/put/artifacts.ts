@@ -9,8 +9,6 @@ import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities
 import {outputError} from '../../../utils/emasser/outputError'
 
 export default class EmasserPutArtifacts extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Updates artifacts for a system with provided entries'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--filename] [--isTemplate,--no-isTemplate] [-t,--type] [-g--category] [options]']

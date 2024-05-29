@@ -182,8 +182,6 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
 }
 
 export default class EmasserContainerScans extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Upload containers and their scan results in the assets module for a system'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--containerCodeScanFile]',

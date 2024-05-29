@@ -11,8 +11,6 @@ import {PacResponsePost,
   PacGet as PAC} from '@mitre/emass_client/dist/api'
 
 export default class EmasserPostPac extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Add new Package Approval Chain (PAC) workflow(s) for a system'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-w,--workflow] [-n,--name] [-c,--comments]']

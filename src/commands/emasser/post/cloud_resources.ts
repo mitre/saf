@@ -173,8 +173,6 @@ function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): v
 }
 
 export default class EmasserPostCloudResources extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Add a cloud resource and their scan results in the assets module for a system'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--cloudResourceFile]',

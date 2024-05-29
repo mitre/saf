@@ -11,8 +11,6 @@ import {ArtifactsResponseDel,
   ArtifactsRequestDeleteBodyInner as ArtifactDeleteBody} from '@mitre/emass_client/dist/api'
 
 export default class EmasserDeleteArtifacts extends Command {
-  static usage = '<%= command.id %> [options]';
-
   static description = 'Remove one or many artifacts in a system identified by system Id';
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-F,--fileName]'];

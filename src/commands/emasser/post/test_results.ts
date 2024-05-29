@@ -11,8 +11,6 @@ import {TestResultsResponsePost,
   TestResultsGet as TestResult} from '@mitre/emass_client/dist/api'
 
 export default class EmasserPostTestResults extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = "Add test results for a system's Assessment Procedures (CCIs) which determine Security Control compliance"
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-c,--cci] [-b,--testedBy] [-t,--testDate] [-d,--description] [-S,--complianceStatus]']

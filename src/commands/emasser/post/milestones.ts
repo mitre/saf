@@ -11,8 +11,6 @@ import {MilestoneResponsePost,
   MilestonesGet as Milestones} from '@mitre/emass_client/dist/api'
 
 export default class EmasserPostMilestones extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Add milestones to one or many POA&M items in a system'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-d,--description] [-c,--scheduledCompletionDate]']

@@ -252,8 +252,6 @@ function generateBodyObj(dataObject: Controls): Controls {
 }
 
 export default class EmasserPutControls extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Update Security Control information of a system for both the Implementation Plan and Risk Assessment.'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--controlsFile]',

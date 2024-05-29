@@ -11,8 +11,6 @@ import {PoamResponseDelete,
   PoamRequestDeleteBodyInner as PoamDeleteBody} from '@mitre/emass_client/dist/api'
 
 export default class EmasserDeletePoams extends Command {
-  static usage = '<%= command.id %> [options]';
-
   static description = 'Remove one or many POA&M items in a system identified by system and poam Id';
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-P,--poamsId]'];

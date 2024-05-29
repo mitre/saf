@@ -272,7 +272,7 @@ The `get system` command retrieves a single system defined by the ID (systemId).
 Get system information for a specific system defined by ID (systemId)
 
 USAGE
-  $ saf emasser get system [options]
+  $ saf emasser get system -s <value> [-h] [-I] [-p diacap|rmf|reporting]
 
 FLAGS
   -h, --help                 Show emasser CLI help for the GET System endpoint
@@ -312,7 +312,7 @@ The `get systems` command retrieves all available system defined by the ID (syst
 Get available systems filter on provided options
 
 USAGE
-  $ saf emasser get systems [options]
+  $ saf emasser get systems [-h] [-r assessAndAuthorize|assessOnly|guest|regular|functional|cloudServiceProvider|commonControlProvider] [-t <value>] [-c <value>] [-p diacap|rmf|reporting] [-I] [-M] [-D] [-S]
 
 FLAGS
   -h, --help                        Show emasser CLI help for the GET Systems endpoint
@@ -393,7 +393,7 @@ EXAMPLES
 Get system Security Control information for both the Implementation Plan and Risk Assessment
 ```
 USAGE
-  $ saf emasser get controls [options]
+  $ saf emasser get controls -s <value> [-h] [-A]
 
 FLAGS
   -h, --help              Show emasser CLI help for the GET Controls endpoint
@@ -425,7 +425,7 @@ EXAMPLES
 Get test results for a specific system defined by ID (systemId)
 ```
 USAGE
-  $ saf emasser get test_results [options]
+  $ saf emasser get test_results -s <value> [-h] [-a <value>] [-c <value>] [-L]
 
 FLAGS
   -h, --help                     Show emasser CLI help for the GET Test Results endpoint
@@ -687,7 +687,7 @@ There are two endpoints for artifacts `forSystem` and `export`
 To view one or many Control Approval Chain (CAC) in a system specified system ID use the following command:
   ```
   USAGE
-    $ saf emasser get cac [options]
+    $ saf emasser get cac -s <value> [-h] [-a <value>]
 
   FLAGS
     -h, --help                     Show emasser CLI help for the GET CAC endpoint
@@ -720,7 +720,7 @@ To view one or many Package Approval Chain (PAC) in a system specified system ID
 
   ```
   USAGE
-    $ saf emasser get pac [options]
+    $ saf emasser get pac -s <value> [-h]
 
   FLAGS
     -h, --help              Show emasser CLI help for the GET PAC endpoint
@@ -745,7 +745,7 @@ To view one or many Package Approval Chain (PAC) in a system specified system ID
 To view Cybersecurity Maturity Model Certification (CMMC) Assessments use the following command:
   ```
   USAGE
-    $ saf emasser get cmmc [options]
+    $ saf emasser get cmmc -d <value> [-h]
 
   FLAGS
     -h, --help               Show emasser CLI help for the GET CMMC endpoint  
@@ -770,7 +770,7 @@ To view Cybersecurity Maturity Model Certification (CMMC) Assessments use the fo
 To view Workflow Definitions use the following command:
   ```
   USAGE
-    $ saf emasser get workflow_definitions [options]
+    $ saf emasser get workflow_definitions [-h] [-i] [-r assessAndAuthorize|assessOnly|guest|regular|functional|cloudServiceProvider|commonControlProvider]
 
   FLAGS
     -h, --help                       Show emasser CLI help for the GET Workflow Definitions endpoint
@@ -1069,7 +1069,7 @@ Add (POST) test results CLI usage
 
   ```
   USAGE
-    $ saf emasser post test_results [options]
+    $ saf emasser post test_results -s <value> -c <value> -b <value> -t <value> -d <value> -S Compliant|Non-Compliant|Not Applicable [-h]
 
   FLAGS
     -h, --help                       Post (add) test results to a system's Assessment Procedures (CCIs)
@@ -1162,7 +1162,7 @@ fields are required within the request.
 ### Add (POST) POA&Ms CLI usages
 ```
 USAGE
-  $ saf emasser post poams [options]
+  $ saf emasser post poams -s <value> -f <value> [-h]
 
 FLAGS
   -h, --help              Post (add) a Plan of Action and Milestones (POA&M) item(s) in a system. See emasser Features (emasserFeatures.md) for additional information.
@@ -1281,7 +1281,7 @@ Add (POST) milestones to one or many POA&M items in a system
 
 ```
 USAGE
-  $ saf emasser post milestones [options]
+  $ saf emasser post milestones -s <value> -p <value> -d <value> -c <value> [-h]
 
 FLAGS
   -h, --help                             Post (add) milestones to one or many POA&M items in a system
@@ -1341,7 +1341,7 @@ Any values not specified below will be null.
 ### Add (POST) Artifacts CLI usages
 ```
 USAGE
-  $ saf emasser post artifacts [options]
+  $ saf emasser post artifacts -s <value> -i <value> [-h] [-T] [-t Procedure|Diagram|Policy|Labor|Document|Image|Other|Scan Result|Auditor Report] [-c Implementation Guidance|Evidence]
 
 FLAGS
   -h, --help               Post (add) artifact file(s) to a system
@@ -1388,7 +1388,7 @@ Add a Control Approval Chain (CAC) items in a system
 
  ```
 USAGE
-  $ saf emasser post cac [options]
+  $ saf emasser post cac -s <value> -a <value> [-h] [-c <value>]
 
 FLAGS
   -h, --help                    Post (add) control to second stage of CAC
@@ -1427,7 +1427,7 @@ Add new Package Approval Chain (PAC) workflow(s) for a system
 
 ```
 USAGE
-  $ saf emasser post pac [options]
+  $ saf emasser post pac -s <value> -w Assess and Authorize|Assess Only|Security Plan Approval -n <value> -c <value> [-h]
 
 FLAGS
   -h, --help               Post (add) a Package Approval Chain (PAC) item in a system
@@ -1461,7 +1461,7 @@ To add (POST) static code scans use the following command:
 
 ```
 USAGE
-  $ saf emasser post static_code_scans [options]
+  $ saf emasser post static_code_scans -s <value> -f <value> [-h]
 
 FLAGS
   -h, --help                       Post (upload) static code scans, can also clear application's findings
@@ -1579,7 +1579,7 @@ With the following JSON content:
 
 ```
 USAGE
-  $ saf emasser post cloud_resources [options]
+  $ saf emasser post cloud_resources -s <value> -f <value> [-h]
 
 FLAGS
   -h, --help                       Post (add) cloud resources and their scan results in the assets module for a system
@@ -1692,7 +1692,7 @@ EXAMPLES
 
 ```
 USAGE
-  $ saf emasser post container_scans [options]
+  $ saf emasser post container_scans -s <value> -f <value> [-h]
 
 FLAGS
   -h, --help                           Post (upload) one or many containers and their scan results for a system
@@ -1821,7 +1821,7 @@ Implementation Plan information cannot be updated if Security Control does not e
 
 ```
 USAGE
-  $ saf emasser put controls [options]
+  $ saf emasser put controls -s <value> -f <value> [-h]
 
 FLAGS
   -h, --help                 Put (update) control information in a system for one or many controls. See emasser Features (emasserFeatures.md) for additional information.
@@ -1988,7 +1988,7 @@ The following parameters/fields have the following character limitations:
 ### Updating (PUT) POA&Ms CLI usages
 ```
 USAGE
-  $ saf emasser put poams [options]
+  $ saf emasser put poams -s <value> -f <value> [-h]
 
 FLAGS
   -h, --help              Put (update) a Plan of Action and Milestones (POA&M) item(s) in a system. See emasser Features (emasserFeatures.md) for additional information.
@@ -2112,7 +2112,7 @@ Update (PUT) one or many milestones for a POA&M items in a system
 
 ```
 USAGE
-  $ saf emasser put milestones [options]
+  $ saf emasser put milestones -s <value> -p <value> -m <value> [-h] [-d <value>] [-c <value>]
 
 FLAGS
   -h, --help                             Show emasser CLI help for the PUT Milestones endpoint
@@ -2165,7 +2165,7 @@ EXAMPLES
 
 ```
 USAGE
-  $ saf emasser put artifacts [options]
+  $ saf emasser put artifacts -s <value> -f <value> -T -t Procedure|Diagram|Policy|Labor|Document|Image|Other|Scan Result|Auditor Report -g Implementation Guidance|Evidence [-h] [-d <value>] [-p <value>] [-c <value>] [-C <value>] [-D <value>] [-R <value>]
 
 FLAGS
   -h, --help                            Put (update) one or many artifacts in a system
@@ -2221,7 +2221,7 @@ EXAMPLES
 Remove (DELETE) POA&Ms CLI usages
 ```
 USAGE
-  $ saf emasser delete poams [options]
+  $ saf emasser delete poams -s <value> -P <value> [-h]
 
 FLAGS
   -h, --help                Show emasser CLI help for the DELETE POA&M endpoint
@@ -2248,7 +2248,7 @@ The last milestone can not be deleted, at-least on must exist.
 Remove (DELETE) Milestones CLI usages
 ```
 USAGE
-  $ saf emasser delete milestones [options]
+  $ saf emasser delete milestones -s <value> -p <value> -M <value> [-h]
 
 FLAGS
   -h, --help                     Show emasser CLI help for the DELETE Milestones endpoint
@@ -2275,7 +2275,7 @@ Remove one or many artifacts in a system
 Remove (DELETE) Artifact files CLI usages
 ```
 USAGE
-  $ saf emasser delete artifacts [options]
+  $ saf emasser delete artifacts -s <value> -F <value> [-h]
 
 FLAGS
   -h, --help                 Show emasser CLI help for the DELETE POA&M endpoint

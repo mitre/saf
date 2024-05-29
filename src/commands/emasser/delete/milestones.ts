@@ -11,8 +11,6 @@ import {MilestonesPutPostDelete,
   MilestonesRequestDeleteBodyInner as MilestoneDeleteBody} from '@mitre/emass_client/dist/api'
 
 export default class EmasserDeleteMilestones extends Command {
-  static usage = '<%= command.id %> [options]';
-
   static description = 'Remove milestones in a system for one or many POA&M items identified by system, poam, and milestone Id';
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-M,--milestonesId]'];

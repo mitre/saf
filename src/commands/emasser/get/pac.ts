@@ -8,8 +8,6 @@ import {outputError} from '../../../utils/emasser/outputError'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetPac extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'View one or many Package Approval Chain (PAC) in a system specified system ID'
 
   static examples = ['<%= config.bin %> <%= command.id %> --systemId <value>']

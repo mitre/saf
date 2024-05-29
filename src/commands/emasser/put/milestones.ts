@@ -11,8 +11,6 @@ import {MilestoneResponsePut,
   MilestonesGet as Milestones} from '@mitre/emass_client/dist/api'
 
 export default class EmasserPutMilestones extends Command {
-  static usage = '<%= command.id %> [options]';
-
   static description = 'Update milestone(s) for specified system, poam, and milestone Id';
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-m,--milestoneId] [-d,--description] [-c,--scheduledCompletionDate]'];

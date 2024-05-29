@@ -248,8 +248,6 @@ function generateBodyObj(dataObject: Poams): Poams {
 }
 
 export default class EmasserPostPoams extends Command {
-  static usage = '<%= command.id %> [options]'
-
   static description = 'Add a Plan of Action and Milestones (POA&M) into a systems.'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--poamFile]',
