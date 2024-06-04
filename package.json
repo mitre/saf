@@ -91,6 +91,7 @@
     "mocha": "^10",
     "mock-fs": "^5.2.0",
     "oclif": "^4.8.8",
+    "speculate": "^5.0.0",
     "tmp": "^0.2.1",
     "ts-mocha": "^10.0.0"
   },
@@ -100,9 +101,7 @@
   "files": [
     "/bin",
     "/lib",
-    "/help",
-    "/npm-shrinkwrap.json",
-    "/oclif.manifest.json"
+    "/docs"
   ],
   "homepage": "https://github.com/mitre/saf",
   "keywords": [
@@ -199,7 +198,15 @@
     "prepack:darwin:linux": "rm -rf lib && tsc",
     "pack-hdf-converters": "run-script-os",
     "pack-hdf-converters:win32": "pack-hdf-converters.bat",
-    "pack-hdf-converters:darwin:linux": "./pack-hdf-converters.sh"
+    "pack-hdf-converters:darwin:linux": "./pack-hdf-converters.sh",
+    "spec": "speculate --name=saf"
+  },
+  "spec": {
+    "environment": {
+      "NODE_ENV": "production"
+    },
+    "executable": ["./bin/run"],
+    "prune": false
   },
   "types": "lib/index.d.ts",
   "jest": {

@@ -1,0 +1,17 @@
+[Unit]
+Description=The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) brings together applications, techniques, libraries, and tools developed by MITRE and the security community to streamline security automation for systems and DevOps pipelines.
+After=network.target nss-lookup.target
+
+[Service]
+ExecStart=/usr/bin/npm start
+WorkingDirectory=/usr/lib/saf
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=saf
+User=saf
+Group=saf
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target
