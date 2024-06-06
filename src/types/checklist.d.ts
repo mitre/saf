@@ -30,9 +30,9 @@ export interface CKLMetadata {
     role: string | null;
     type: string | null;
     hostname: string | null;
-    ip: string | null;
-    mac: string | null;
-    fqdn: string | null;
+    hostip: string | null;
+    hostmac: string | null;
+    hostfqdn: string | null;
     tech_area: string | null;
     target_key: string | null;
     web_or_database: string | null;

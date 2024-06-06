@@ -8,6 +8,7 @@ import Mustache from 'mustache'
 import {CKLMetadata} from '../../types/checklist'
 import {convertFullPathToFilename, getProfileInfo} from '../../utils/global'
 import {getDetails} from '../../utils/checklist'
+import {validateChecklistMetadata} from '@mitre/hdf-converters'
 
 export default class HDF2CKL extends Command {
   static usage = 'convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [-H <hostname>] [-F <fqdn>] [-M <mac-address>] [-I <ip-address>]'
@@ -46,10 +47,14 @@ export default class HDF2CKL extends Command {
       stigid: profileName || null,
       role: 'None',
       type: 'Computing',
-      hostname: flags.hostname || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.hostname') || null,
-      ip: flags.ip || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.ip') || null,
-      mac: flags.mac || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.mac') || null,
-      fqdn: flags.fqdn || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.fqdn') || null,
+      hostname: flags.hostname || _.get(contextualizedEvaluation, 'data.passthrough.checklist.asset.hostname') ||
+        _.get(contextualizedEvaluation, 'data.passthrough.metadata.hostname') || null,
+      hostip: flags.ip || _.get(contextualizedEvaluation, 'data.passthrough.checklist.asset.hostip') ||
+        _.get(contextualizedEvaluation, 'data.passthrough.metadata.hostip') ||  null,
+      hostmac: flags.mac || _.get(contextualizedEvaluation, 'data.passthrough.checklist.asset.hostmac') ||
+        _.get(contextualizedEvaluation, 'data.passthrough.metadata.hostmac') ||  null,
+      hostfqdn: flags.fqdn || _.get(contextualizedEvaluation, 'data.passthrough.checklist.asset.hostfqdn') ||
+        _.get(contextualizedEvaluation, 'data.passthrough.metadata.hostfqdn') ||  null,
       tech_area: null,
       target_key: '0',
       web_or_database: 'false',
@@ -64,6 +69,12 @@ export default class HDF2CKL extends Command {
           cklMetadata[field] = cklMetadataInput[field]
         }
       }
+    }
+
+    const validationResults = validateChecklistMetadata(cklMetadata)
+    if (validationResults.isError) {
+      console.error(`Cannot create checklist file:\n${validationResults.message}`)
+      process.exit(1)
     }
 
     cklData = {
