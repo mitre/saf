@@ -21,21 +21,21 @@ export interface ChecklistControl {
 }
 
 export interface CKLMetadata {
-  assettype?: string;
-  hostfqdn?: string;
-  hostguid?: string;
-  hostip?: string;
-  hostmac?: string;
-  hostname?: string;
-  marking?: string;
-  role?: string;
-  stigguid?: string;
-  targetcomment?: string;
-  targetkey?: string;
-  techarea?: string;
-  webdbinstance?: string;
-  webdbsite?: string;
-  webordatabase?: boolean;
+  assettype: null | string;
+  hostfqdn: null | string;
+  hostguid: null | string;
+  hostip: null | string;
+  hostmac: null | string;
+  hostname: null | string;
+  marking: null | string;
+  role: null | string;
+  stigguid: null | string;
+  targetcomment: null | string;
+  targetkey: null | string;
+  techarea: null | string;
+  webdbinstance: null | string;
+  webdbsite: null | string;
+  webordatabase: null | boolean;
   profiles: StigMetadata[]
 }
 

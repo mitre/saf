@@ -31,15 +31,22 @@ export default class HDF2CKL extends Command {
       input hdf file passthrough.metadata
       input hdf file passthrough.checklist.asset */
 
-    const defaultMetadata: CKLMetadata = {role: 'None', assettype: 'Computing', targetkey: '0', webordatabase: false, profiles: []}
+    const defaultMetadata: CKLMetadata = {
+      role: 'None', assettype: 'Computing', targetkey: '0', webordatabase: false, profiles: [],
+      hostfqdn: '', hostip: '', hostmac: '', hostguid: '', marking: '', techarea: '',
+      hostname: '', stigguid: '', targetcomment: '', webdbinstance: '', webdbsite: '',
+    }
     const inputHDF = JSON.parse(fs.readFileSync(flags.input, 'utf8'))
     const flagMetadata = {hostname: flags.hostname, hostip: flags.ip, hostmac: flags.mac, hostfqdn: flags.fqdn}
     const fileMetadata = flags.metadata ? JSON.parse(fs.readFileSync(flags.metadata, 'utf8')) : {}
     const hdfMetadata = _.get(inputHDF, 'passthrough.metadata', _.get(inputHDF, 'passthrough.checklist.asset', {}))
     const metadata = _.merge(_.merge(defaultMetadata, hdfMetadata, fileMetadata, flagMetadata))
 
-    // use the input hdf's profiles by default since they cant be included elsewhere
-    metadata.profiles = _.get(hdfMetadata, 'profiles', [])
+    metadata.profiles = flags.metadata ? [{title: _.get(fileMetadata, 'benchmark.title'),
+      name: _.get(fileMetadata, 'benchmark.title'),
+      version: _.get(fileMetadata, 'benchmark.version'),
+      releasenumber: _.get(fileMetadata, 'benchmark.releasenumber'),
+      releasedate: _.get(fileMetadata, 'benchmark.releasedate')}] : _.get(hdfMetadata, 'profiles', [])
     _.set(inputHDF, 'passthrough.metadata', metadata)
 
     try {
