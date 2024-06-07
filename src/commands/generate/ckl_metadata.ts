@@ -27,18 +27,20 @@ export default class GenerateCKLMetadata extends Command {
         version: prompt({ask: 'What is the benchmark version? '}) || null,
         plaintext: prompt({ask: 'What is the notes for release info? '}) || null,
       },
-      stigid: prompt({ask: 'What is the STIG ID? '}) || null,
-      role: prompt({ask: 'What is the computing role? (None/Workstation/Member Server/Domain Controller) '}) || null,
-      type: _.capitalize(prompt({ask: 'What is the asset type? (Computing/Non-Computing) '})) || null,
+      marking: prompt({ask: 'What is the marking? '}) || null,
       hostname: prompt({ask: 'What is the asset hostname? '}) || null,
       hostip: prompt({ask: 'What is the asset IP address? '}) || null,
       hostmac: prompt({ask: 'What is the asset MAC address? '}) || null,
       hostfqdn: prompt({ask: 'What is the asset FQDN? '}) || null,
-      tech_area: prompt({ask: 'What is the tech area? (Application Review/Boundary Security/CDS Admin Review/CDS Technical Review/Database Review/Domain Name System (DNS)/Exchange Server/Host Based System Security (HBSS)/Internal Network/Mobility/Releasable Networks (REL)/Releaseable Networks (REL)/Traditional Security/UNIX OS/VVOIP Review/Web Review/Windows OS/Other Review) '}) || null, // Yes, these typos really are how the enumerations are defined in STIG viewer's source code
-      target_key: prompt({ask: 'What is the target key? '}) || null,
-      web_or_database: prompt({ask: 'Is the target a web or database? (y/n) '}).toLowerCase() === 'y',
-      web_db_site: prompt({ask: 'What is the Web or DB site? '}) || null,
-      web_db_instance: prompt({ask: 'What is the Web or DB instance? '}) || null,
+      targetcomment: prompt({ask: 'What are the target comments? '}) || null,
+      role: prompt({ask: 'What is the computing role? (None/Workstation/Member Server/Domain Controller) '}) || null,
+      assettype: _.capitalize(prompt({ask: 'What is the asset type? (Computing/Non-Computing) '})) || null,
+      techarea: prompt({ask: 'What is the tech area? (Application Review/Boundary Security/CDS Admin Review/CDS Technical Review/Database Review/Domain Name System (DNS)/Exchange Server/Host Based System Security (HBSS)/Internal Network/Mobility/Releasable Networks (REL)/Releaseable Networks (REL)/Traditional Security/UNIX OS/VVOIP Review/Web Review/Windows OS/Other Review) '}) || null, // Yes, these typos really are how the enumerations are defined in STIG viewer's source code
+      stigguid: prompt({ask: 'What is the STIG ID? '}) || null,
+      targetkey: prompt({ask: 'What is the target key? '}) || null,
+      webordatabase: prompt({ask: 'Is the target a web or database? (y/n) '}).toLowerCase() === 'y',
+      webdbsite: prompt({ask: 'What is the Web or DB site? '}) || null,
+      webdbinstance: prompt({ask: 'What is the Web or DB instance? '}) || null,
     }
     const validationResults = validateChecklistMetadata(cklMetadata)
     if (validationResults.isError) {

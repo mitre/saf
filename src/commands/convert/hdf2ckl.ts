@@ -1,14 +1,8 @@
 import {Command, Flags} from '@oclif/core'
-import {contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
 import fs from 'fs'
-import {v4} from 'uuid'
-import {default as files} from '../../resources/files.json'
-import Mustache from 'mustache'
 import {CKLMetadata} from '../../types/checklist'
-import {convertFullPathToFilename, getProfileInfo} from '../../utils/global'
-import {getDetails} from '../../utils/checklist'
-import {validateChecklistMetadata} from '@mitre/hdf-converters'
+import {ChecklistResults as Mapper} from '@mitre/hdf-converters'
 
 export default class HDF2CKL extends Command {
   static usage = 'convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [-H <hostname>] [-F <fqdn>] [-M <mac-address>] [-I <ip-address>]'
@@ -26,64 +20,33 @@ export default class HDF2CKL extends Command {
     ip: Flags.string({char: 'I', required: false, description: 'IP address for CKL metadata'}),
   }
 
-  static examples = ['saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90']
+  static examples = ['saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90:AB']
 
   async run() {
     const {flags} = await this.parse(HDF2CKL)
-    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf8')))
-    const profileName = contextualizedEvaluation.data.profiles[0].name
-    const controls = contextualizedEvaluation.contains.flatMap(profile => profile.contains) || []
-    const rootControls = _.uniqBy(controls, control =>
-      _.get(control, 'root.hdf.wraps.id'),
-    ).map(({root}) => root)
-    let cklData = {}
-    const cklMetadata: CKLMetadata = {
-      fileName: convertFullPathToFilename(flags.input),
-      benchmark: {
-        title: profileName || null,
-        version: '1',
-        plaintext: null,
-      },
-      stigid: profileName || null,
-      role: 'None',
-      type: 'Computing',
-      hostname: flags.hostname || _.get(contextualizedEvaluation, 'data.passthrough.checklist.asset.hostname') ||
-        _.get(contextualizedEvaluation, 'data.passthrough.metadata.hostname') || null,
-      hostip: flags.ip || _.get(contextualizedEvaluation, 'data.passthrough.checklist.asset.hostip') ||
-        _.get(contextualizedEvaluation, 'data.passthrough.metadata.hostip') ||  null,
-      hostmac: flags.mac || _.get(contextualizedEvaluation, 'data.passthrough.checklist.asset.hostmac') ||
-        _.get(contextualizedEvaluation, 'data.passthrough.metadata.hostmac') ||  null,
-      hostfqdn: flags.fqdn || _.get(contextualizedEvaluation, 'data.passthrough.checklist.asset.hostfqdn') ||
-        _.get(contextualizedEvaluation, 'data.passthrough.metadata.hostfqdn') ||  null,
-      tech_area: null,
-      target_key: '0',
-      web_or_database: 'false',
-      web_db_site: null,
-      web_db_instance: null,
-    }
 
-    if (flags.metadata) {
-      const cklMetadataInput: CKLMetadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf8'))
-      for (const field in cklMetadataInput) {
-        if (typeof cklMetadata[field] === 'string' || typeof cklMetadata[field] === 'object') {
-          cklMetadata[field] = cklMetadataInput[field]
-        }
-      }
-    }
+    /* Order of prescedece for checklist metadata:
+      command flags (hostname, ip, etc.)
+      metadata flag
+      input hdf file passthrough.metadata
+      input hdf file passthrough.checklist.asset */
 
-    const validationResults = validateChecklistMetadata(cklMetadata)
-    if (validationResults.isError) {
-      console.error(`Cannot create checklist file:\n${validationResults.message}`)
+    const defaultMetadata: CKLMetadata = {role: 'None', assettype: 'Computing', targetkey: '0', webordatabase: false, profiles: []}
+    const inputHDF = JSON.parse(fs.readFileSync(flags.input, 'utf8'))
+    const flagMetadata = {hostname: flags.hostname, hostip: flags.ip, hostmac: flags.mac, hostfqdn: flags.fqdn}
+    const fileMetadata = flags.metadata ? JSON.parse(fs.readFileSync(flags.metadata, 'utf8')) : {}
+    const hdfMetadata = _.get(inputHDF, 'passthrough.metadata', _.get(inputHDF, 'passthrough.checklist.asset', {}))
+    const metadata = _.merge(_.merge(defaultMetadata, hdfMetadata, fileMetadata, flagMetadata))
+
+    // use the input hdf's profiles by default since they cant be included elsewhere
+    metadata.profiles = _.get(hdfMetadata, 'profiles', [])
+    _.set(inputHDF, 'passthrough.metadata', metadata)
+
+    try {
+      fs.writeFileSync(flags.output, new Mapper(inputHDF).toCkl())
+    } catch (error) {
+      console.error(`Error creating checklist:\n${error}`)
       process.exit(1)
     }
-
-    cklData = {
-      releaseInfo: cklMetadata.benchmark.plaintext,
-      ...cklMetadata,
-      profileInfo: getProfileInfo(contextualizedEvaluation, cklMetadata.fileName),
-      uuid: v4(),
-      controls: rootControls.map(control => getDetails(control, profileName)),
-    }
-    fs.writeFileSync(flags.output, Mustache.render(files['cklExport.ckl'].data, cklData).replaceAll(/[^\x00-\x7F]/g, ''))
   }
 }

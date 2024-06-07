@@ -1,3 +1,4 @@
+import {StigMetadata} from '@mitre/hdf-converters'
 import {ContextualizedEvaluation} from 'inspecjs'
 
 export interface ChecklistControl {
@@ -20,25 +21,22 @@ export interface ChecklistControl {
 }
 
 export interface CKLMetadata {
-    fileName: string;
-    benchmark: {
-      title: string | null;
-      version: string | null;
-      plaintext: string | null;
-    };
-    stigid: string | null;
-    role: string | null;
-    type: string | null;
-    hostname: string | null;
-    hostip: string | null;
-    hostmac: string | null;
-    hostfqdn: string | null;
-    tech_area: string | null;
-    target_key: string | null;
-    web_or_database: string | null;
-    web_db_site: string | null;
-    web_db_instance: string | null;
-    [key: string]: string | null | Record<string, string | null>;
+  assettype?: string;
+  hostfqdn?: string;
+  hostguid?: string;
+  hostip?: string;
+  hostmac?: string;
+  hostname?: string;
+  marking?: string;
+  role?: string;
+  stigguid?: string;
+  targetcomment?: string;
+  targetkey?: string;
+  techarea?: string;
+  webdbinstance?: string;
+  webdbsite?: string;
+  webordatabase?: boolean;
+  profiles: StigMetadata[]
 }
 
 type ExtendedEvaluationFile = {
