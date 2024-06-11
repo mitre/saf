@@ -1,0 +1,15 @@
+# TODO
+ 
+# use oclif to build the tarball properly
+# ./node_modules/.bin/oclif pack tarballs -t linux-x64 --no-xz
+ 
+# need to insert the spec file into the tarball so that rpmbuild can use the generated tarball, this also resolves the commit sha in filepath issue
+# still need to figure out where we're gonna keep the spec file.  tempted to just heredoc it in the workflow.  regardless it needs to be under the saf directory once it's in the tarball.
+# gzip -dc dist/saf-v1.4.7-781ae09-linux-x64.tar.gz > dist/saf-v1.4.7-linux-x64.tar
+# tar -rf dist/saf-v1.4.7-linux-x64.tar --transform 's|^SPECS|saf|' SPECS/saf.spec
+# gzip dist/saf-v1.4.7-linux-x64.tar
+ 
+# spin up a rhel container and do the rpmbuild in there - need to templatize the define for the version number
+# need to get the rpm outta there and made into an artifact - but now it's a proper size (66mb! instead of the humongous sizes we were seeing before)
+# rpmbuild -ta dist/saf-v1.4.7-linux-x64.tar.gz -D "_rpmdir $(pwd)" -D "name saf" -D "version 1.4.7" -D "release 1"
+# yum install ./noarch/saf-1.4.7-1.noarch.rpm
