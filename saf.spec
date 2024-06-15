@@ -1,3 +1,6 @@
+%define name saf
+%define release 1
+
 Name: %{name}
 Version: %{version}
 Release: %{release}
