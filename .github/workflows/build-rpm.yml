@@ -1,15 +1,63 @@
-# TODO
- 
-# use oclif to build the tarball properly
-# ./node_modules/.bin/oclif pack tarballs -t linux-x64 --no-xz
- 
-# need to insert the spec file into the tarball so that rpmbuild can use the generated tarball, this also resolves the commit sha in filepath issue
-# still need to figure out where we're gonna keep the spec file.  tempted to just heredoc it in the workflow.  regardless it needs to be under the saf directory once it's in the tarball.
-# gzip -dc dist/saf-v1.4.7-781ae09-linux-x64.tar.gz > dist/saf-v1.4.7-linux-x64.tar
-# tar -rf dist/saf-v1.4.7-linux-x64.tar --transform 's|^SPECS|saf|' SPECS/saf.spec
-# gzip dist/saf-v1.4.7-linux-x64.tar
- 
-# spin up a rhel container and do the rpmbuild in there - need to templatize the define for the version number
-# need to get the rpm outta there and made into an artifact - but now it's a proper size (66mb! instead of the humongous sizes we were seeing before)
-# rpmbuild -ta dist/saf-v1.4.7-linux-x64.tar.gz -D "_rpmdir $(pwd)" -D "name saf" -D "version 1.4.7" -D "release 1"
-# yum install ./noarch/saf-1.4.7-1.noarch.rpm
+name: Build SAF-CLI Windows/Linux Installers
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-22.04
+    container: registry.access.redhat.com/ubi8/nodejs-18:latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: saf
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+          check-latest: true
+          cache: 'npm'
+          cache-dependency-path: ./saf/package-lock.json
+
+      - name: setup saf cli
+        working-directory: ./saf
+        run: |
+          rm -rf test
+          npm ci
+
+      - name: set filename envvar
+        working-directory: ./saf
+        run: |
+          echo "filename=saf-v$(cat VERSION)-linux-x64" >> "$GITHUB_ENV"
+
+      - name: pack into tarball # we are targetting x86-64 since oclif bundles a node binary, but the project is actually fully architecture independent so long as they have a node binary on it
+        working-directory: ./saf
+        run: npx oclif pack tarballs -t linux-x64 --no-xz
+
+      - name: repack tarball but include the spec file
+        working-directory: ./saf/dist
+        run: |
+          gzip -dc "$(ls)" > "$filename.tar"
+          tar -rf "$filename.tar" --transform 's|^\.\.|saf|' ../saf.spec
+          gzip "$filename.tar"
+
+      - name: install build dependencies
+        run: dnf install -y rpm-build
+
+      - name: build rpm
+        working-directory: ./saf
+        run: rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)"
+
+      - name: upload binary as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SAF-CLI RPM Build noarch
+          path: saf/noarch/saf-*.rpm
