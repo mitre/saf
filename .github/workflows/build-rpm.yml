@@ -27,6 +27,9 @@ jobs:
           cache: 'npm'
           cache-dependency-path: ./saf/package-lock.json
 
+      - name: install build dependencies
+        run: dnf install -y rpm-build perl-Digest-SHA # rpmbuild, shasum
+
       - name: setup saf cli
         working-directory: ./saf
         run: |
@@ -48,9 +51,6 @@ jobs:
           gzip -dc "$(ls)" > "$filename.tar"
           tar -rf "$filename.tar" --transform 's|^\.\.|saf|' ../saf.spec
           gzip "$filename.tar"
-
-      - name: install build dependencies
-        run: dnf install -y rpm-build
 
       - name: build rpm
         working-directory: ./saf
