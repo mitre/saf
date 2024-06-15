@@ -1,3 +1,5 @@
+%define _rpmfilename %%{ARCH}/%%{NAME}-v%%{VERSION}-%%{ARCH}.rpm
+
 %define name saf
 %define release 1
 
