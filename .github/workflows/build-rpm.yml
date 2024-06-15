@@ -1,4 +1,4 @@
-name: Build SAF-CLI Windows/Linux Installers
+name: Build SAF-CLI RPM Installers
 
 on:
   push:
