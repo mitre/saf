@@ -9,6 +9,7 @@ generatedMD.md
 node_modules
 **/.DS_Store
 *.*.un~
+*.*.swp
 out
 .env
 *.tgz
