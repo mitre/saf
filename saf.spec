@@ -16,7 +16,7 @@ BuildRoot: %{buildroot}
 BuildArch: noarch
 ExclusiveArch: %{nodejs_arches} noarch
 
-Requires: nodejs
+Requires: nodejs > 18.18.2
 
 AutoReqProv: no
 
@@ -44,8 +44,3 @@ rm -rf %{buildroot}
 /opt/saf
 %attr(755, -, -) /opt/saf/bin/saf
 /usr/bin/saf
-
-%post
-if { echo "$(node -v)"; echo "v18.18.2"; } | sort --version-sort --check > /dev/null 2>&1; then
-  echo "WARNING: MITRE SAF CLI requires Node version greater than 18.18.x" 1>&2
-fi
