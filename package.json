@@ -100,9 +100,7 @@
   "files": [
     "/bin",
     "/lib",
-    "/help",
-    "/npm-shrinkwrap.json",
-    "/oclif.manifest.json"
+    "/docs"
   ],
   "homepage": "https://github.com/mitre/saf",
   "keywords": [
