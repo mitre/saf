@@ -2,7 +2,7 @@ import {Command, Flags} from '@oclif/core'
 import _ from 'lodash'
 import fs from 'fs'
 import {CKLMetadata} from '../../types/checklist'
-import {ChecklistResults as Mapper} from '@mitre/hdf-converters'
+import {ChecklistResults as Mapper, validateChecklistMetadata} from '@mitre/hdf-converters'
 
 export default class HDF2CKL extends Command {
   static usage = 'convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [-H <hostname>] [-F <fqdn>] [-M <mac-address>] [-I <ip-address>]'
@@ -42,17 +42,14 @@ export default class HDF2CKL extends Command {
     const hdfMetadata = _.get(inputHDF, 'passthrough.metadata', _.get(inputHDF, 'passthrough.checklist.asset', {}))
     const metadata = _.merge(_.merge(defaultMetadata, hdfMetadata, fileMetadata, flagMetadata))
 
-    metadata.profiles = flags.metadata ? [{title: _.get(fileMetadata, 'benchmark.title'),
-      name: _.get(fileMetadata, 'benchmark.title'),
-      version: _.get(fileMetadata, 'benchmark.version'),
-      releasenumber: _.get(fileMetadata, 'benchmark.releasenumber'),
-      releasedate: _.get(fileMetadata, 'benchmark.releasedate')}] : _.get(hdfMetadata, 'profiles', [])
+    metadata.profiles = flags.metadata ? _.get(fileMetadata, 'profiles', []) : _.get(hdfMetadata, 'profiles', [])
     _.set(inputHDF, 'passthrough.metadata', metadata)
 
-    try {
+    const validationResults = validateChecklistMetadata(metadata)
+    if (validationResults.ok) {
       fs.writeFileSync(flags.output, new Mapper(inputHDF).toCkl())
-    } catch (error) {
-      console.error(`Error creating checklist:\n${error}`)
+    } else {
+      console.error(`Error creating checklist:\n${validationResults.error.message}`)
       process.exit(1)
     }
   }
