@@ -1,13 +1,8 @@
 import {Command, Flags} from '@oclif/core'
-import {contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
 import fs from 'fs'
-import {v4} from 'uuid'
-import {default as files} from '../../resources/files.json'
-import Mustache from 'mustache'
 import {CKLMetadata} from '../../types/checklist'
-import {convertFullPathToFilename, getProfileInfo} from '../../utils/global'
-import {getDetails} from '../../utils/checklist'
+import {ChecklistResults as Mapper} from '@mitre/hdf-converters'
 
 export default class HDF2CKL extends Command {
   static usage = 'convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [-H <hostname>] [-F <fqdn>] [-M <mac-address>] [-I <ip-address>]'
@@ -25,54 +20,31 @@ export default class HDF2CKL extends Command {
     ip: Flags.string({char: 'I', required: false, description: 'IP address for CKL metadata'}),
   }
 
-  static examples = ['saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90']
+  static examples = ['saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90:AB']
 
   async run() {
     const {flags} = await this.parse(HDF2CKL)
-    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf8')))
-    const profileName = contextualizedEvaluation.data.profiles[0].name
-    const controls = contextualizedEvaluation.contains.flatMap(profile => profile.contains) || []
-    const rootControls = _.uniqBy(controls, control =>
-      _.get(control, 'root.hdf.wraps.id'),
-    ).map(({root}) => root)
-    let cklData = {}
-    const cklMetadata: CKLMetadata = {
-      fileName: convertFullPathToFilename(flags.input),
-      benchmark: {
-        title: profileName || null,
-        version: '1',
-        plaintext: null,
-      },
-      stigid: profileName || null,
-      role: 'None',
-      type: 'Computing',
-      hostname: flags.hostname || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.hostname') || null,
-      ip: flags.ip || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.ip') || null,
-      mac: flags.mac || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.mac') || null,
-      fqdn: flags.fqdn || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.fqdn') || null,
-      tech_area: null,
-      target_key: '0',
-      web_or_database: 'false',
-      web_db_site: null,
-      web_db_instance: null,
-    }
 
-    if (flags.metadata) {
-      const cklMetadataInput: CKLMetadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf8'))
-      for (const field in cklMetadataInput) {
-        if (typeof cklMetadata[field] === 'string' || typeof cklMetadata[field] === 'object') {
-          cklMetadata[field] = cklMetadataInput[field]
-        }
-      }
-    }
+    /* Order of prescedece for checklist metadata:
+      command flags (hostname, ip, etc.)
+      metadata flag
+      input hdf file passthrough.metadata
+      input hdf file passthrough.checklist.asset */
 
-    cklData = {
-      releaseInfo: cklMetadata.benchmark.plaintext,
-      ...cklMetadata,
-      profileInfo: getProfileInfo(contextualizedEvaluation, cklMetadata.fileName),
-      uuid: v4(),
-      controls: rootControls.map(control => getDetails(control, profileName)),
+    const defaultMetadata: CKLMetadata = {
+      role: 'None', assettype: 'Computing', targetkey: '0', webordatabase: false, profiles: [],
+      hostfqdn: '', hostip: '', hostmac: '', hostguid: '', marking: '', techarea: '',
+      hostname: '', stigguid: '', targetcomment: '', webdbinstance: '', webdbsite: '',
     }
-    fs.writeFileSync(flags.output, Mustache.render(files['cklExport.ckl'].data, cklData).replaceAll(/[^\x00-\x7F]/g, ''))
+    const inputHDF = JSON.parse(fs.readFileSync(flags.input, 'utf8'))
+    const flagMetadata = {hostname: flags.hostname, hostip: flags.ip, hostmac: flags.mac, hostfqdn: flags.fqdn}
+    const fileMetadata = flags.metadata ? JSON.parse(fs.readFileSync(flags.metadata, 'utf8')) : {}
+    const hdfMetadata = _.get(inputHDF, 'passthrough.metadata', _.get(inputHDF, 'passthrough.checklist.asset', {}))
+    const metadata = _.merge(_.merge(defaultMetadata, hdfMetadata, fileMetadata, flagMetadata))
+
+    metadata.profiles = flags.metadata ? _.get(fileMetadata, 'profiles', []) : _.get(hdfMetadata, 'profiles', [])
+    _.set(inputHDF, 'passthrough.metadata', metadata)
+
+    fs.writeFileSync(flags.output, new Mapper(inputHDF).toCkl())
   }
 }

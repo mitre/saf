@@ -42,3 +42,16 @@ describe('Test ckl2hdf Three Stig Checklist example', () => {
       expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
     })
 })
+
+describe('Test ckl2hdf Small Checklist Overrides examples', () => {
+  const tmpobj = tmp.dirSync({unsafeCleanup: true})
+
+  test
+    .stdout()
+    .command(['convert ckl2hdf', '-i', path.resolve('./test/sample_data/checklist/sample_input_report/small_ckl_overrides.ckl'), '-o', `${tmpobj.name}/smallchecklistoverrides.json`])
+    .it('hdf-converter output test', () => {
+      const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/smallchecklistoverrides.json`, 'utf8'))
+      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/checklist/small_overrides_hdf.json'), 'utf8'))
+      expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
+    })
+})
