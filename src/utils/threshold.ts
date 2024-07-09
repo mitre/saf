@@ -69,7 +69,21 @@ export function extractStatusCounts(profile: ContextualizedProfile, severity?: s
   for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
     const control = c.root
     const status: ControlStatus = control.hdf.status
-    const controlSeverity: Severity = control.hdf.severity
+    const impact = control.data.impact
+
+    // using impact here is more reflective of how important these controls are
+    let controlSeverity: Severity
+    if (impact < 0.1)
+      controlSeverity = 'none'
+    else if (impact < 0.4)
+      controlSeverity = 'low'
+    else if (impact < 0.7)
+      controlSeverity = 'medium'
+    else if (impact < 0.9)
+      controlSeverity = 'high'
+    else
+      controlSeverity = 'critical'
+
     if (!severity || (controlSeverity === severity)) {
       ++hash[status]
       if (status === 'Passed') {
