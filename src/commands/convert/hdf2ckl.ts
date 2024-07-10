@@ -24,7 +24,7 @@ export default class HDF2CKL extends Command {
   async run() {
     const {flags} = await this.parse(HDF2CKL)
 
-    /* Order of prescedece for checklist metadata:
+    /* Order of precedence for checklist metadata:
       command flags (hostname, ip, etc.)
       metadata flag
       input hdf file passthrough.metadata
@@ -39,9 +39,7 @@ export default class HDF2CKL extends Command {
     const flagMetadata = {hostname: flags.hostname, hostip: flags.ip, hostmac: flags.mac, hostfqdn: flags.fqdn}
     const fileMetadata = flags.metadata ? JSON.parse(fs.readFileSync(flags.metadata, 'utf8')) : {}
     const hdfMetadata = _.get(inputHDF, 'passthrough.metadata', _.get(inputHDF, 'passthrough.checklist.asset', {}))
-    const metadata = _.merge(_.merge(defaultMetadata, hdfMetadata, fileMetadata, flagMetadata))
-
-    metadata.profiles = flags.metadata ? _.get(fileMetadata, 'profiles', []) : _.get(hdfMetadata, 'profiles', [])
+    const metadata = _.merge(defaultMetadata, hdfMetadata, fileMetadata, flagMetadata)
     _.set(inputHDF, 'passthrough.metadata', metadata)
 
     fs.writeFileSync(flags.output, new Mapper(inputHDF).toCkl())
