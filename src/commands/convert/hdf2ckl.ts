@@ -1,8 +1,7 @@
 import {Command, Flags} from '@oclif/core'
 import _ from 'lodash'
 import fs from 'fs'
-import {CKLMetadata} from '../../types/checklist'
-import {ChecklistResults as Mapper} from '@mitre/hdf-converters'
+import {Assettype, ChecklistMetadata, ChecklistResults as Mapper, Role, Techarea} from '@mitre/hdf-converters'
 
 export default class HDF2CKL extends Command {
   static usage = 'convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [-H <hostname>] [-F <fqdn>] [-M <mac-address>] [-I <ip-address>]'
@@ -31,10 +30,10 @@ export default class HDF2CKL extends Command {
       input hdf file passthrough.metadata
       input hdf file passthrough.checklist.asset */
 
-    const defaultMetadata: CKLMetadata = {
-      role: 'None', assettype: 'Computing', targetkey: '0', webordatabase: false, profiles: [],
-      hostfqdn: '', hostip: '', hostmac: '', hostguid: '', marking: '', techarea: '',
-      hostname: '', stigguid: '', targetcomment: '', webdbinstance: '', webdbsite: '',
+    const defaultMetadata: ChecklistMetadata = {
+      role: Role.None, assettype: Assettype.Computing, webordatabase: 'false', profiles: [],
+      hostfqdn: '', hostip: '', hostmac: '', marking: '', techarea: Techarea.Empty, vulidmapping: 'id',
+      hostname: '', targetcomment: '', webdbinstance: '', webdbsite: '',
     }
     const inputHDF = JSON.parse(fs.readFileSync(flags.input, 'utf8'))
     const flagMetadata = {hostname: flags.hostname, hostip: flags.ip, hostmac: flags.mac, hostfqdn: flags.fqdn}
