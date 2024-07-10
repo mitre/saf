@@ -50,7 +50,6 @@ export default class HDF2CKL extends Command {
       fs.writeFileSync(flags.output, new Mapper(inputHDF).toCkl())
     } else {
       console.error(`Error creating checklist:\n${validationResults.error.message}`)
-      process.exit(1)
     }
   }
 }

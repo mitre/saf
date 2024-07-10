@@ -28,7 +28,6 @@ export default class CKL2HDF extends Command {
       fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
     } catch (error) {
       console.error(`Error converting to hdf:\n${error}`)
-      process.exit(1)
     }
   }
 }

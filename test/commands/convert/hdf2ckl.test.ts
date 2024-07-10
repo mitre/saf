@@ -33,4 +33,15 @@ describe('Test hdf2checklist', () => {
       const sample = fs.readFileSync(path.resolve('./test/sample_data/checklist/red_hat_good_metadata.ckl'), 'utf8')
       expect(omitChecklistChangingFields(test)).to.eql(omitChecklistChangingFields(sample))
     })
+
+  test
+    .stdout()
+    .stderr()
+    .command(['convert hdf2ckl', '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'), '-o', `${tmpobj.name}/hdf2ckl_metadata_error_test.json`, '--ip', 'bad ip address', '-m', path.resolve('test/sample_data/checklist/sample_input_report/invalid_metadata.json')])
+    .it(
+      'hdf-converter output test - throws error when using invalid checklist metadata',
+      ctx => {
+        expect(ctx.stderr).to.equal('Error creating checklist:\nInvalid checklist metadata fields: Host IP (bad ip address), Asset Type (Not a real assettype)\n')
+      },
+    )
 })

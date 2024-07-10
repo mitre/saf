@@ -42,3 +42,20 @@ describe('Test ckl2hdf Three Stig Checklist example', () => {
       expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
     })
 })
+
+
+describe('Test invalid checklist metadata example', () => {
+  const tmpobj = tmp.dirSync({unsafeCleanup: true})
+
+  test
+    .stdout()
+    .stderr()
+    .command(['convert ckl2hdf', '-i', path.resolve('./test/sample_data/checklist/sample_input_report/ckl_with_invalid_metadata.ckl'), '-o', `${tmpobj.name}/invalid_output.json`])
+    .it(
+      'hdf-converter output test - throws error when using invalid checklist metadata',
+      ctx => {
+        expect(ctx.stderr).to.equal('Error converting to hdf:\nError: Invalid checklist metadata fields: Host FQDN (invalid), Host IP (invalid), Host MAC (invalid)\n')
+      },
+    )
+
+})
