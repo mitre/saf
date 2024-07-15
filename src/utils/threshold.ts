@@ -1,4 +1,4 @@
-import {ContextualizedControl, ContextualizedProfile, ControlStatus, Severity} from 'inspecjs'
+import {ContextualizedControl, ContextualizedProfile, ControlStatus, Severity, convertImpactToSeverity} from 'inspecjs'
 import {StatusHash, ThresholdValues} from '../types/threshold'
 import _ from 'lodash'
 import {ControlDescription} from 'inspecjs/lib/generated_parsers/v_1_0/exec-json'
@@ -69,7 +69,10 @@ export function extractStatusCounts(profile: ContextualizedProfile, severity?: s
   for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
     const control = c.root
     const status: ControlStatus = control.hdf.status
-    const controlSeverity: Severity = control.hdf.severity
+
+    // using impact here rather than control.hdf.severity is more reflective of how important these controls are
+    const controlSeverity: Severity = convertImpactToSeverity(control.data.impact)
+
     if (!severity || (controlSeverity === severity)) {
       ++hash[status]
       if (status === 'Passed') {

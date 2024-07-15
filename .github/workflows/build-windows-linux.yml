@@ -49,7 +49,7 @@ jobs:
                   mv "$file" "$prefix-$suffix"
           done
 
-      - name: Rename Windows debian Installers
+      - name: Rename Debian Installers
         run: |
           cd saf/dist/deb
           for file in saf_*.deb; do

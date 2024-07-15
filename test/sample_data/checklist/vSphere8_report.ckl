@@ -2954,7 +2954,7 @@ Note: "VMwareCertified" or "VMwareAccepted" may be substituted for "PartnerSuppo
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>Severity</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>low</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>medium</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>Group_Title</VULN_ATTRIBUTE>
@@ -7993,7 +7993,7 @@ Get-VMHost | Get-AdvancedSetting -Name UserVars.SuppressHyperthreadWarning | Set
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>Severity</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>low</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>medium</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>Group_Title</VULN_ATTRIBUTE>
@@ -10446,7 +10446,7 @@ expected: True
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>Severity</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>low</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>medium</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>Group_Title</VULN_ATTRIBUTE>
@@ -10585,7 +10585,7 @@ Click "Save".</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>Severity</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>low</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>medium</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>Group_Title</VULN_ATTRIBUTE>
@@ -16221,7 +16221,7 @@ passed :: TEST PowerCLI Command: (Get-VDPortgroup -Name "VD PG 4") | Get-VDSecur
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>Severity</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>low</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>medium</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>Group_Title</VULN_ATTRIBUTE>
@@ -16578,7 +16578,7 @@ passed :: TEST PowerCLI Command: (Get-VDPortgroup -Name "VD PG 4").ExtensionData
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>Severity</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>low</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>medium</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>Group_Title</VULN_ATTRIBUTE>
@@ -18590,7 +18590,7 @@ passed :: TEST vCLSAdmin is expected to be in "Admin", "NoTrustedAdmin", "vCLSAd
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>Severity</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>low</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>medium</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>Group_Title</VULN_ATTRIBUTE>
