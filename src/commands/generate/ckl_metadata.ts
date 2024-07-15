@@ -2,19 +2,21 @@ import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import promptSync from 'prompt-sync'
 import _ from 'lodash'
-import {ChecklistMetadata, validateChecklistMetadata} from '@mitre/hdf-converters'
+import {Assettype, ChecklistMetadata, Role, Techarea, validateChecklistMetadata} from '@mitre/hdf-converters'
+import path from 'path'
 
 const prompt = promptSync()
 
 // Ensures that no empty strings are passed into the metadata
-function noEmpty(ask: string) : string | undefined {
+// by returning undefined instead
+function enforceNonEmptyString(ask: string) : string | undefined {
   const response = prompt({ask})
   if (response)
     return response
   return undefined
 }
 
-function enforceInteger(ask: string) {
+function enforceInteger(ask: string): number {
   let response = prompt({ask})
   let intRep: number
   while (true) {
@@ -27,6 +29,22 @@ function enforceInteger(ask: string) {
   }
 
   return intRep
+}
+
+function enforceEnum(ask: string, options: string[]): string | undefined {
+  // format prompt to show valid options (removes empty string options)
+  ask = `${ask} (${options.filter(Boolean).join('/')}) `
+  let response = prompt({ask})
+  while (true) {
+    if (options.includes(response))
+      break
+    if (!response)
+      return
+    console.log(`${response} is not a valid option. Please try again.`)
+    response = prompt({ask})
+  }
+
+  return response
 }
 
 export default class GenerateCKLMetadata extends Command {
@@ -47,36 +65,37 @@ export default class GenerateCKLMetadata extends Command {
     const cklMetadata = {
       profiles: [
         {
-          name: noEmpty('What is the benchmark name? (Must match with profile name listed in HDF) '),
-          title: noEmpty('What is the benchmark title? '),
+          name: enforceNonEmptyString('What is the benchmark name? (Must match with profile name listed in HDF) '),
+          title: enforceNonEmptyString('What is the benchmark title? '),
           version: enforceInteger('What is the benchmark version? '),
           releasenumber: enforceInteger('What is the benchmark release number? '),
-          releasedate: noEmpty('What is the benchmark release date (YYYY/MM/DD)? '),
+          releasedate: enforceNonEmptyString('What is the benchmark release date (YYYY/MM/DD)? '),
           showCalendar: true,
         },
       ],
-      marking: noEmpty('What is the marking? '),
-      hostname: noEmpty('What is the asset hostname? '),
-      hostip: noEmpty('What is the asset IP address? '),
-      hostmac: noEmpty('What is the asset MAC address? '),
-      hostfqdn: noEmpty('What is the asset FQDN? '),
-      targetcomment: noEmpty('What are the target comments? '),
-      role: noEmpty('What is the computing role? (None/Workstation/Member Server/Domain Controller) '),
-      assettype: noEmpty('What is the asset type? (Computing/Non-Computing) '),
-      techarea: noEmpty('What is the tech area? (Application Review/Boundary Security/CDS Admin Review/CDS Technical Review/Database Review/Domain Name System (DNS)/Exchange Server/Host Based System Security (HBSS)/Internal Network/Mobility/Releasable Networks (REL)/Releaseable Networks (REL)/Traditional Security/UNIX OS/VVOIP Review/Web Review/Windows OS/Other Review) '), // Yes, these typos really are how the enumerations are defined in STIG viewer's source code
-      stigguid: noEmpty('What is the STIG ID? '),
-      targetkey: noEmpty('What is the target key? '),
-      webordatabase: String(prompt({ask: 'Is the target a web or database? (y/n) '}).toLowerCase() === 'y'),
-      webdbsite: noEmpty('What is the Web or DB site? '),
-      webdbinstance: noEmpty('What is the Web or DB instance? '),
-      vulidmapping: noEmpty('Use gid or id for vuln number? (gid/id) '),
+      marking: enforceNonEmptyString('What is the marking? '),
+      hostname: enforceNonEmptyString('What is the asset hostname? '),
+      hostip: enforceNonEmptyString('What is the asset IP address? '),
+      hostmac: enforceNonEmptyString('What is the asset MAC address? '),
+      hostfqdn: enforceNonEmptyString('What is the asset FQDN? '),
+      targetcomment: enforceNonEmptyString('What are the target comments? '),
+      role: enforceEnum('What is the computing role?', Object.values(Role)),
+      assettype: enforceEnum('What is the asset type?', Object.values(Assettype)),
+      // Resulting techarea options have typos. Yes, these typos really are how the enumerations are defined in STIG viewer's source code
+      techarea: enforceEnum('What is the tech area? ', Object.values(Techarea)),
+      stigguid: enforceNonEmptyString('What is the STIG ID? '),
+      targetkey: enforceNonEmptyString('What is the target key? '),
+      webordatabase: String(enforceEnum('Is the target a web or database?', ['y', 'n']) === 'y'),
+      webdbsite: enforceNonEmptyString('What is the Web or DB site? '),
+      webdbinstance: enforceNonEmptyString('What is the Web or DB instance? '),
+      vulidmapping: enforceEnum('Use gid or id for vuln number?', ['gid', 'id']),
     }
     const validationResults = validateChecklistMetadata(cklMetadata as ChecklistMetadata)
-    if (!validationResults.ok) {
+    if (validationResults.ok) {
+      fs.writeFileSync(flags.output, JSON.stringify(cklMetadata))
+      console.log(`Checklist metadata file written at: ${path.resolve(flags.output)}`)
+    } else {
       console.error(`Unable to generate checklist metadata:\n${validationResults.error.message}`)
-      process.exit(1)
     }
-
-    fs.writeFileSync(flags.output, JSON.stringify(cklMetadata))
   }
 }
