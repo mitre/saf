@@ -44,7 +44,7 @@
 				</SI_DATA>
 				<SI_DATA>
 					<SID_NAME>releaseinfo</SID_NAME>
-					<SID_DATA>Release: 6</SID_DATA>
+					<SID_DATA>Release: 6 Benchmark Date: 2024/06/08</SID_DATA>
 				</SI_DATA>
 				<SI_DATA>
 					<SID_NAME>title</SID_NAME>
@@ -208,7 +208,7 @@ check run" root@sysname.mil</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -360,7 +360,7 @@ following values:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -515,7 +515,7 @@ the "### BEGIN /etc/grub.d/01_users ###" section:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -652,7 +652,7 @@ variables to the SSH daemon.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -789,7 +789,7 @@ single-user and maintenance modes.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -924,7 +924,7 @@ and set the value to "yes":
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -1068,7 +1068,7 @@ successful/unsuccessful attempts to use the "finit_module" syscall occur.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -1214,7 +1214,7 @@ removing the rsh-server package from the system with the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -1344,7 +1344,7 @@ the ISSO, this is a finding.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -1499,7 +1499,7 @@ account access events occur.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -1649,7 +1649,7 @@ representations of passwords.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -1793,7 +1793,7 @@ delete
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -1951,7 +1951,7 @@ perm_mod
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -2117,7 +2117,7 @@ commands:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -2261,7 +2261,7 @@ by the ISSO and documented.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -2395,7 +2395,7 @@ file systems that are associated with removable media.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -2574,7 +2574,7 @@ staff.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -2703,7 +2703,7 @@ command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -2843,7 +2843,7 @@ auid!=4294967295 -k privileged-pam
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -2975,7 +2975,7 @@ following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -3116,7 +3116,7 @@ If the release is not supported by the vendor, this is a finding.</ATTRIBUTE_DAT
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -3257,7 +3257,7 @@ to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -3430,7 +3430,7 @@ functions.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -3572,7 +3572,7 @@ file systems that are being imported via NFS.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -3714,7 +3714,7 @@ vendor). The "Protocol" line must be as follows:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -3878,7 +3878,7 @@ the configurations listed in this requirement.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -4184,7 +4184,7 @@ GUI.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -4327,7 +4327,7 @@ to "10" for all accounts and/or account types.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -4471,7 +4471,7 @@ following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -4631,7 +4631,7 @@ privileged-mount
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -4780,7 +4780,7 @@ privileged-passwd
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -4921,7 +4921,7 @@ password lifetime:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -5069,7 +5069,7 @@ perm_mod
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -5211,7 +5211,7 @@ with the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -5346,7 +5346,7 @@ records are written to becomes full.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -5488,7 +5488,7 @@ location of the configuration file, with the ISSO.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -5639,7 +5639,7 @@ sending audit records to a remote system.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -5782,7 +5782,7 @@ following line to "/etc/sysctl.conf" or a configuration file in the
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -5927,7 +5927,7 @@ perm_mod
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -6131,7 +6131,7 @@ the configurations listed in this requirement.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -6322,7 +6322,7 @@ file should be created under the appropriate subdirectory.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -6480,7 +6480,7 @@ integrity of LDAP authentication sessions.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -6625,7 +6625,7 @@ with the ISSO.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -6759,7 +6759,7 @@ the configurations listed in this requirement.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -6993,7 +6993,7 @@ file should be created under the appropriate subdirectory.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -7134,7 +7134,7 @@ auid!=4294967295 -k privileged-priv_change
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -7273,7 +7273,7 @@ with the "chgrp" command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -7449,7 +7449,7 @@ should be created under the appropriate subdirectory.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -7594,7 +7594,7 @@ perm_mod
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -7751,7 +7751,7 @@ media or document the configuration to boot from removable media with the ISSO.<
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -7923,7 +7923,7 @@ auid!=4294967295 -k privileged-ssh
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -8076,7 +8076,7 @@ line to "/etc/xinetd.d/tftp" (or modify the line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -8216,7 +8216,7 @@ the line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -8358,7 +8358,7 @@ file systems that are being imported via NFS.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -8515,7 +8515,7 @@ authentication.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -8664,7 +8664,7 @@ successful/unsuccessful attempts to use the "postdrop" command occur.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -8838,7 +8838,7 @@ auid&gt;=1000 -F auid!=4294967295 -k access
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -9028,7 +9028,7 @@ integrity of LDAP remote access sessions.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -9169,7 +9169,7 @@ privileged-priv_change
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -9333,7 +9333,7 @@ successful/unsuccessful attempts to use the "lsetxattr" syscall occur.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -9481,7 +9481,7 @@ directory (or modify the line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -9638,7 +9638,7 @@ period of inactivity.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -9783,7 +9783,7 @@ file to "077":
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -9936,7 +9936,7 @@ uncommented file and directory selection lists.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -10076,7 +10076,7 @@ the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -10212,7 +10212,7 @@ documented with the ISSO.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -10362,7 +10362,7 @@ command line with the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -10510,7 +10510,7 @@ functions.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -10696,7 +10696,7 @@ auid!=4294967295 -k access
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -10863,7 +10863,7 @@ privileged-priv_change
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -11025,7 +11025,7 @@ creations, modifications, disabling, and termination events that affect
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -11180,7 +11180,7 @@ restrict client connections to the local network with the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -11329,7 +11329,7 @@ in the "/etc/sudoers.d/" directory.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -11503,7 +11503,7 @@ perm_mod
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -11669,7 +11669,7 @@ available from Red Hat within 30 days or sooner as local policy dictates.</ATTRI
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -11899,7 +11899,7 @@ uncommented file and directory selection lists.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -12128,7 +12128,7 @@ Agreement for details."</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -12286,7 +12286,7 @@ the /etc/sysctl.d/ directory (or modify the line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -12448,7 +12448,7 @@ integrity of LDAP remote access sessions.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -12593,7 +12593,7 @@ perm_mod
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -12752,7 +12752,7 @@ removing the telnet-server package from the system with the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -12894,7 +12894,7 @@ following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -13033,7 +13033,7 @@ of "/home/smithj".
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -13174,7 +13174,7 @@ line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -13364,7 +13364,7 @@ restarted:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -13505,7 +13505,7 @@ lifetime restriction.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -13631,7 +13631,7 @@ following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -13792,7 +13792,7 @@ with the Authorizing Official.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -13956,7 +13956,7 @@ effect.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -14098,7 +14098,7 @@ the line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -14232,7 +14232,7 @@ is a finding.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -14377,7 +14377,7 @@ creations, modifications, disabling, and termination events that affect
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -14543,7 +14543,7 @@ successful/unsuccessful attempts to use the "removexattr" syscall occur.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -14695,7 +14695,7 @@ between logon prompts following a failed console logon attempt.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -14831,7 +14831,7 @@ the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -14982,7 +14982,7 @@ auid!=4294967295 -k perm_mod
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -15119,7 +15119,7 @@ assign a UID of greater than "1000" that has not already been assigned.</ATTRIBU
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -15261,7 +15261,7 @@ location if using a version of SSH that is provided by a third-party vendor):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -15407,7 +15407,7 @@ environment variables.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -15570,7 +15570,7 @@ directory (or modify the line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -15701,7 +15701,7 @@ the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -15845,7 +15845,7 @@ of "/home/smithj", and has a primary group of users.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -15985,7 +15985,7 @@ successful/unsuccessful attempts to use the "crontab" command occur.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -16135,7 +16135,7 @@ IP address of the log aggregation server.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -16276,7 +16276,7 @@ effect.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -16411,7 +16411,7 @@ SSH logon to the system.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -16555,7 +16555,7 @@ directory (or modify the line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -16704,7 +16704,7 @@ local interactive user's files and directories, use the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -16848,7 +16848,7 @@ successful/unsuccessful attempts to use the "init_module" syscall occur.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -16994,7 +16994,7 @@ with security personnel.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -17138,7 +17138,7 @@ delete
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -17294,7 +17294,7 @@ directory owned by the application, it must be documented with the ISSO.</ATTRIB
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -17436,7 +17436,7 @@ the line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -17678,7 +17678,7 @@ Agreement for details."
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -17844,7 +17844,7 @@ list their modes:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -17988,7 +17988,7 @@ delete
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -18146,7 +18146,7 @@ system/partition.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -18300,7 +18300,7 @@ successful/unsuccessful attempts to use the "fsetxattr" syscall occur.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -18447,7 +18447,7 @@ directory (or modify the line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -18579,7 +18579,7 @@ interactive users by setting the "CREATE_HOME" parameter in
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -18720,7 +18720,7 @@ successful/unsuccessful attempts to use the "gpasswd" command occur.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -18875,7 +18875,7 @@ the configurations listed in this requirement.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -19008,7 +19008,7 @@ a finding.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -19172,7 +19172,7 @@ module if required.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -19340,7 +19340,7 @@ string value.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -19494,7 +19494,7 @@ either the directory owner or root with the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -19651,7 +19651,7 @@ following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -19827,7 +19827,7 @@ following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -19976,7 +19976,7 @@ directory with the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -20117,7 +20117,7 @@ privileged-passwd
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -20270,7 +20270,7 @@ creating or changing a password.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -20434,7 +20434,7 @@ configuration must be documented with the Information System Security Officer
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -20590,7 +20590,7 @@ line to "/etc/sysctl.conf" or a config file in the /etc/sysctl.d/ directory
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -20749,7 +20749,7 @@ kernel module.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -20888,7 +20888,7 @@ the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -21031,7 +21031,7 @@ the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -21169,7 +21169,7 @@ SSH that is provided by a third-party vendor):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -21308,7 +21308,7 @@ capacity is reached.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -21469,7 +21469,7 @@ commands:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -21623,7 +21623,7 @@ configuration files found under "/etc/sssd/conf.d" to include pam.</ATTRIBUTE_DA
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -21784,7 +21784,7 @@ third-party vendor).
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -21958,7 +21958,7 @@ auid!=4294967295 -k access
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -22128,7 +22128,7 @@ delete
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -22278,7 +22278,7 @@ If the "SSH server" package is not installed, this is a finding.</ATTRIBUTE_DATA
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -22430,7 +22430,7 @@ currently do not have a home directory assigned.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -22581,7 +22581,7 @@ the configurations listed in this requirement.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -22724,7 +22724,7 @@ privileged-priv_change
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -22881,7 +22881,7 @@ auid!=4294967295 -k privileged-passwd
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -23036,7 +23036,7 @@ creations, modifications, disabling, and termination events that affect
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -23195,7 +23195,7 @@ section of the "/etc/gdm/custom.conf" file to "false":
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -23336,7 +23336,7 @@ auid!=4294967295 -k privileged-passwd
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -23483,7 +23483,7 @@ updated versions have been installed.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -23627,7 +23627,7 @@ line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -23767,7 +23767,7 @@ and set it with the following line:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -23958,7 +23958,7 @@ effect.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -24096,7 +24096,7 @@ the internal queue is full:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -24240,7 +24240,7 @@ successful/unsuccessful attempts to use the "create_module" syscall occur.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -24395,7 +24395,7 @@ third-party vendor):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -24556,7 +24556,7 @@ following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -24708,7 +24708,7 @@ value to "delayed" or "no":
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -24851,7 +24851,7 @@ document the system as being used for log aggregation.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -25012,7 +25012,7 @@ and set the value to "no":
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -25179,7 +25179,7 @@ should be created under the appropriate subdirectory.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -25336,7 +25336,7 @@ perm_mod
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -25512,7 +25512,7 @@ auid!=4294967295 -k access
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -25683,7 +25683,7 @@ file systems that contain user home directories.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -25824,7 +25824,7 @@ Applicable.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -25953,7 +25953,7 @@ removing the "ypserv" package from the system with the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -26091,7 +26091,7 @@ command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -26230,7 +26230,7 @@ successful/unsuccessful attempts to use the "kmod" command occur.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -26376,7 +26376,7 @@ line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -26514,7 +26514,7 @@ or the line is commented out, this is a finding.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -26657,7 +26657,7 @@ following line to "/etc/rsyslog.conf" or a configuration file in the
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -26801,7 +26801,7 @@ information to establish when (date and time) the events occurred.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -26962,7 +26962,7 @@ comply with the PPSM CLSA for the site or program and the PPSM CAL.</ATTRIBUTE_D
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -27116,7 +27116,7 @@ following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -27257,7 +27257,7 @@ command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -27396,7 +27396,7 @@ account access events occur.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -27551,7 +27551,7 @@ with the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -27690,7 +27690,7 @@ and set the value to "yes":
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -27832,7 +27832,7 @@ have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -27975,7 +27975,7 @@ the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -28141,7 +28141,7 @@ to 25 percent of the partition size.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -28315,7 +28315,7 @@ specific hosts.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -28450,7 +28450,7 @@ setting.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -28627,7 +28627,7 @@ check run" root@sysname.mil</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -28791,7 +28791,7 @@ storage devices.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -28942,7 +28942,7 @@ successful/unsuccessful attempts to use the "semanage" command occur.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -29098,7 +29098,7 @@ directory (or modify the line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -29239,7 +29239,7 @@ directories, use the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -29394,7 +29394,7 @@ third-party vendor):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -29548,7 +29548,7 @@ functions.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -29687,7 +29687,7 @@ out, this is a finding.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -29818,7 +29818,7 @@ referenced in the "/etc/passwd" file to a group that exists in
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -29998,7 +29998,7 @@ directory (or modify the line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -30142,7 +30142,7 @@ successful/unsuccessful attempts to use the "delete_module" syscall occur.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -30291,7 +30291,7 @@ following line to "/etc/sysctl.conf" or a configuration file in the
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -30434,7 +30434,7 @@ the location of the configuration file, with the ISSO.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -30604,7 +30604,7 @@ privileged-mount
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -30752,7 +30752,7 @@ is a finding.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -30900,7 +30900,7 @@ allow for a normal user to perform administrative-level actions.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -31104,7 +31104,7 @@ file should be created under the appropriate subdirectory.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -31239,7 +31239,7 @@ vendor) and set the value to "sandbox" or "yes":
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -31382,7 +31382,7 @@ creations, modifications, disabling, and termination events that affect
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -31532,7 +31532,7 @@ the related packages with the following commands:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -31698,7 +31698,7 @@ auid!=4294967295 -k access
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -31862,7 +31862,7 @@ have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -31994,7 +31994,7 @@ finding.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -32141,7 +32141,7 @@ directory (or modify the line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -32278,7 +32278,7 @@ of SSH that is provided by a third-party vendor) and set the value to "yes":
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -32418,7 +32418,7 @@ in the fstab with a device and mount point.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -32574,7 +32574,7 @@ perm_mod
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -32721,7 +32721,7 @@ line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -32864,7 +32864,7 @@ command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -33032,7 +33032,7 @@ effect.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -33179,7 +33179,7 @@ command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -33321,7 +33321,7 @@ aggregation system:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -33480,7 +33480,7 @@ effect.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -33640,7 +33640,7 @@ effect.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -33794,7 +33794,7 @@ file and directory selection lists.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -33926,7 +33926,7 @@ system, this is a finding.</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -34082,7 +34082,7 @@ interactive user's home directory, use the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -34221,7 +34221,7 @@ section:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -34377,7 +34377,7 @@ lines in the "### BEGIN /etc/grub.d/01_users ###" section:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -34525,7 +34525,7 @@ auid!=4294967295 -k perm_mod
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -34674,7 +34674,7 @@ creations, modifications, disabling, and termination events that affect
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -34858,7 +34858,7 @@ auid!=4294967295 -k access
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -35025,7 +35025,7 @@ privileged-priv_change
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -35195,7 +35195,7 @@ user home directory assigned in "/etc/ passwd":
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -35342,7 +35342,7 @@ directory (or modify the line to have the required value):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -35483,7 +35483,7 @@ successful/unsuccessful attempts to use the "setfiles" command occur.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -35620,7 +35620,7 @@ command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -35772,7 +35772,7 @@ command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -35909,7 +35909,7 @@ provided by a third-party vendor):
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -36061,7 +36061,7 @@ prior to install by setting the following option in the "/etc/yum.conf" file:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -36237,7 +36237,7 @@ implemented security safeguards/countermeasures.
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -36400,7 +36400,7 @@ repository prior to install by setting the following option in the
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -36556,7 +36556,7 @@ following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -36693,7 +36693,7 @@ or remove it from the system with the following command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -36834,7 +36834,7 @@ auid!=4294967295 -k privileged-postfix
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -37060,7 +37060,7 @@ line:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -37233,7 +37233,7 @@ privileged-priv_change
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -37374,7 +37374,7 @@ account accesses last occurred by setting the required configuration options in
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -37510,7 +37510,7 @@ should prevent users from being able to assign themselves empty passwords.</ATTR
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -37641,7 +37641,7 @@ system with the "chown" command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -37799,7 +37799,7 @@ delete
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>
@@ -37960,7 +37960,7 @@ command:
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>STIGRef</VULN_ATTRIBUTE>
-					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6</ATTRIBUTE_DATA>
+					<ATTRIBUTE_DATA>Red Hat Enterprise Linux 7 Security Technical Implementation Guide - v2r6 :: Version 2, Release: 6 Benchmark Date: 2024/06/08</ATTRIBUTE_DATA>
 				</STIG_DATA>
 				<STIG_DATA>
 					<VULN_ATTRIBUTE>TargetKey</VULN_ATTRIBUTE>

@@ -21,6 +21,21 @@ export default class HDF2CKL extends Command {
 
   static examples = ['saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90:AB']
 
+  static oldMetadataFormatMapping = {
+    'profiles[0].name': 'benchmark.title',
+    'profiles[0].title': 'benchmark.title',
+    'stigguid': 'stigid',
+    'role': 'role',
+    'assettype': 'type',
+    'hostname': 'hostname',
+    'hostip': 'ip',
+    'hostmac': 'mac',
+    'techarea': 'tech_area',
+    'targetkey': 'target_key',
+    'webdbsite': 'web_db_site',
+    'webdbinstance': 'web_db_site'
+  }
+
   async run() {
     const {flags} = await this.parse(HDF2CKL)
 
@@ -37,7 +52,33 @@ export default class HDF2CKL extends Command {
     }
     const inputHDF = JSON.parse(fs.readFileSync(flags.input, 'utf8'))
     const flagMetadata = {hostname: flags.hostname, hostip: flags.ip, hostmac: flags.mac, hostfqdn: flags.fqdn}
-    const fileMetadata = flags.metadata ? JSON.parse(fs.readFileSync(flags.metadata, 'utf8')) : {}
+    let fileMetadata = flags.metadata ? JSON.parse(fs.readFileSync(flags.metadata, 'utf8')) : {}
+
+    // to preserve backwards compatibility with old metadata format
+    if (flags.metadata && _.has(fileMetadata, 'benchmark')) {
+      let profile;
+      if (_.has(fileMetadata, 'benchmark.version')) {
+        let version: string = _.get(fileMetadata, 'benchmark.version');
+
+        // get sections of numbers in version string
+        let parsedVersion = version.split(/[^0-9]+/)
+          .filter(s => s)
+          .map(s => parseInt(s, 10)); 
+        console.log(parsedVersion);
+        profile = {version: parsedVersion[0], releasenumber: parsedVersion[1]};
+      } else {
+        profile = {};
+      }
+      let newFileMetadata = {profiles: [profile]};
+
+      for (const [newKey, oldKey] of Object.entries(HDF2CKL.oldMetadataFormatMapping)) {
+        const oldValue = _.get(fileMetadata, oldKey);
+        if (oldValue) {
+          _.set(newFileMetadata, newKey, oldValue);
+        }
+      }
+      fileMetadata = newFileMetadata;
+    }
     const hdfMetadata = _.get(inputHDF, 'passthrough.metadata', _.get(inputHDF, 'passthrough.checklist.asset', {}))
     const metadata = _.merge(defaultMetadata, hdfMetadata, fileMetadata, flagMetadata)
     _.set(inputHDF, 'passthrough.metadata', metadata)
