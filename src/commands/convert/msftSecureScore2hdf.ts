@@ -12,15 +12,30 @@ import {
 } from '@microsoft/microsoft-graph-types'
 import {TokenCredentialAuthenticationProvider} from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials'
 
+function processInputs(scoreDoc:SecureScore, profiles: {value: SecureScoreControlProfile[]}, output: string): any {
+  const converter = new Mapper(
+    JSON.stringify({
+      secureScore: scoreDoc,
+      profiles: profiles,
+    }),
+  )
+  fs.writeFileSync(
+    checkSuffix(output),
+    JSON.stringify(converter.toHdf()),
+  )
+}
+
 export default class MsftSecureScore2HDF extends Command {
   static usage =
-    'convert msftsecure2hdf -i <gosec-json> -o <hdf-scan-results-json> [-h]';
+    ['convert msftsecure2hdf -p <secureScoreProfile-json> -r <secureScore-json> [-h]',
+      'convert msftsecure2hdf -t <azure-tenant-id> -a <app-id> -s <app-secret> [-h]',
+      'convert msftsecure2hdf -h'].join('\n');
 
   static description =
-    'Translate a GoSec (Golang Security Checker) results JSON to a Heimdall Data Format JSON file';
+    'Translate a Microsoft365 Secure Score results JSON to a Heimdall Data Format JSON file';
 
   static examples = [
-    'saf convert gosec2hdf -i gosec_results.json -o output-hdf-name.json',
+    'saf convert msftsecure2hdf -p secureScoreProfile.json -r secureScoreControlProfiles -o output-hdf-name.json',
   ];
 
   static flags = {
@@ -58,57 +73,52 @@ export default class MsftSecureScore2HDF extends Command {
   };
 
   async run() {
-    console.log('pre')
-
     const {flags} = await this.parse(MsftSecureScore2HDF)
-    // console.log(`post ${JSON.stringify(flags, null, 4)}`)
+    let scoreDoc: SecureScore
+    let profilesDoc: {value: SecureScoreControlProfile[]}
 
-    // Check for correct input type
-    // checkInput({data, filename: flags.input}, 'gosec', 'GoSec results JSON')
-
-    let scoreDoc:object
-    let profilesDoc:object
-
-    if (flags.inputProfiles !== undefined && flags.inputScoreDoc !== undefined) {
+    if (
+      flags.inputProfiles !== undefined &&
+      flags.inputScoreDoc !== undefined
+    ) {
+      // load from pre-downloaded files
       scoreDoc = JSON.parse(fs.readFileSync(flags.inputScoreDoc, 'utf8'))
       profilesDoc = JSON.parse(fs.readFileSync(flags.inputProfiles, 'utf8'))
-    } else if (flags.tenantId !== undefined && flags.tokenId !== undefined && flags.tokenSecret !== undefined) {
+      processInputs(scoreDoc, profilesDoc, flags.output)
+    } else if (
+      flags.tenantId !== undefined &&
+      flags.tokenId !== undefined &&
+      flags.tokenSecret !== undefined
+    ) {
+      // attempt to use the Graph API to pull files
       const tenantId = flags.tenantId
       const clientId = flags.tokenId
       const clientSecret = flags.tokenSecret
-      const creds = new ClientSecretCredential(tenantId, clientId, clientSecret)
+      const creds = new ClientSecretCredential(
+        tenantId,
+        clientId,
+        clientSecret,
+      )
       const graphClientOpts: ClientOptions = {
         authProvider: new TokenCredentialAuthenticationProvider(creds, {
           scopes: ['https://graph.microsoft.com/.default'],
         }),
-        fetchOptions: {
-          // agent: new NodeHttpHandler({
-          //   httpsAgent: new https.Agent({
-          //     // Disable HTTPS verification if requested
-          //     rejectUnauthorized: verifySSLCertificates,
-          //     // Pass an SSL certificate to trust
-          //     ca: certificate
-          //   })
-          // })
-        },
       }
-      const graphClient: Client = Client.initWithMiddleware(graphClientOpts)
+      const graphClient: Client = Client.initWithMiddleware(graphClientOpts);
 
-      scoreDoc = JSON.parse((await graphClient.api('/security/secureScores').get()).body) as SecureScore
-      profilesDoc = JSON.parse((await graphClient.api('/security/secureScores').get()).body).value as SecureScoreControlProfile[]
+      (async function () {
+        const results = await Promise.all([
+          graphClient.api('/security/secureScores').get(),
+          graphClient.api('/security/secureScoreControlProfiles').get(),
+        ])
+
+        scoreDoc = JSON.parse(results[0].body) as SecureScore
+        profilesDoc = JSON.parse(results[1].body)
+
+        processInputs(scoreDoc, profilesDoc, flags.output)
+      })()
     } else {
       this.exit(-1)
     }
-
-    const converter = new Mapper(
-      JSON.stringify({
-        secureScore: scoreDoc,
-        profiles: profilesDoc,
-      }),
-    )
-    fs.writeFileSync(
-      checkSuffix(flags.output),
-      JSON.stringify(converter.toHdf()),
-    )
   }
 }
