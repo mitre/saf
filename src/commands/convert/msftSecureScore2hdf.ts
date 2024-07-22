@@ -42,12 +42,12 @@ export default class MsftSecureScore2HDF extends Command {
     help: Flags.help({char: 'h'}),
     inputProfiles: Flags.string({
       char: 'p',
-      required: true,
+      required: false,
       description: 'Input GoSec Results JSON File',
     }),
     inputScoreDoc: Flags.string({
       char: 'r',
-      required: true,
+      required: false,
       description: 'Input GoSec Results JSON File',
     }),
     tenantId: Flags.string({
