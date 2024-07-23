@@ -1,7 +1,6 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import promptSync from 'prompt-sync'
-import _ from 'lodash'
 import {Assettype, ChecklistMetadata, Role, Techarea, validateChecklistMetadata} from '@mitre/hdf-converters'
 import path from 'path'
 

@@ -19,9 +19,9 @@ export default class HDF2CKL extends Command {
     ip: Flags.string({char: 'I', required: false, description: 'IP address for CKL metadata'}),
   }
 
-  static examples = ['saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90:AB']
+  static readonly examples = ['saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90:AB']
 
-  static oldMetadataFormatMapping = {
+  static readonly oldMetadataFormatMapping = {
     'profiles[0].name': 'benchmark.title',
     'profiles[0].title': 'benchmark.title',
     'stigguid': 'stigid',
@@ -61,7 +61,7 @@ export default class HDF2CKL extends Command {
         let version: string = _.get(fileMetadata, 'benchmark.version');
 
         // get sections of numbers in version string
-        let parsedVersion = version.split(/[^0-9]+/)
+        let parsedVersion = version.split(/\D+/)
           .filter(s => s)
           .map(s => parseInt(s, 10)); 
         profile = {version: parsedVersion[0], releasenumber: parsedVersion[1]};
