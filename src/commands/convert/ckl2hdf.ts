@@ -25,7 +25,7 @@ export default class CKL2HDF extends Command {
 
     try {
       const converter = new Mapper(data, flags['with-raw'])
-      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
     } catch (error) {
       console.error(`Error converting to hdf:\n${error}`)
     }

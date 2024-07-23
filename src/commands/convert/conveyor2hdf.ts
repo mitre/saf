@@ -29,7 +29,7 @@ export default class Conveyor2HDF extends Command {
     for (const [filename, result] of Object.entries(results)) {
       fs.writeFileSync(
         path.join(flags.output, checkSuffix(filename)),
-        JSON.stringify(result),
+        JSON.stringify(result, null, 2),
       )
     }
   }

@@ -26,6 +26,6 @@ export default class Zap2HDF extends Command {
     checkInput({data, filename: flags.input}, 'zap', 'OWASP ZAP results JSON')
 
     const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'), flags.name, flags['with-raw'])
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
   }
 }

@@ -32,7 +32,7 @@ export default class Prisma2HDF extends Command {
     _.forOwn(results, result => {
       fs.writeFileSync(
         path.join(flags.output, `${_.get(result, 'platform.target_id')}.json`),
-        JSON.stringify(result),
+        JSON.stringify(result, null, 2),
       )
     })
   }

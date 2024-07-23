@@ -25,7 +25,7 @@ export default class Twistlock2HDF extends Command {
     checkInput({data, filename: flags.input}, 'twistlock', 'Twistlock CLI output file')
 
     const converter = new Mapper(data, flags['with-raw'])
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
   }
 }
 

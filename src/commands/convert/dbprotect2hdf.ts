@@ -25,6 +25,6 @@ export default class DBProtect2HDF extends Command {
     checkInput({data, filename: flags.input}, 'dbProtect', 'DBProtect report in "Check Results Details" XML format')
 
     const converter = new Mapper(data, flags['with-raw'])
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
   }
 }

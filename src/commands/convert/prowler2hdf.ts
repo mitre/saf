@@ -33,7 +33,7 @@ export default class Prowler2HDF extends Command {
     _.forOwn(results, (result, filename) => {
       fs.writeFileSync(
         path.join(flags.output, checkSuffix(filename)),
-        JSON.stringify(result),
+        JSON.stringify(result, null, 2),
       )
     })
   }

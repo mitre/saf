@@ -91,7 +91,7 @@ export default class GenerateCKLMetadata extends Command {
     }
     const validationResults = validateChecklistMetadata(cklMetadata as ChecklistMetadata)
     if (validationResults.ok) {
-      fs.writeFileSync(flags.output, JSON.stringify(cklMetadata))
+      fs.writeFileSync(flags.output, JSON.stringify(cklMetadata, null, 2))
       console.log(`Checklist metadata file written at: ${path.resolve(flags.output)}`)
     } else {
       console.error(`Unable to generate checklist metadata:\n${validationResults.error.message}`)

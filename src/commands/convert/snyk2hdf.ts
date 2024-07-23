@@ -28,10 +28,10 @@ export default class Snyk2HDF extends Command {
     const result = converter.toHdf()
     if (Array.isArray(result)) {
       for (const element of result) {
-        fs.writeFileSync(`${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
+        fs.writeFileSync(`${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element, null, 2))
       }
     } else {
-      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(result))
+      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(result, null, 2))
     }
   }
 }

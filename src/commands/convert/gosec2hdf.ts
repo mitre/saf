@@ -24,6 +24,6 @@ export default class GoSec2HDF extends Command {
     checkInput({data, filename: flags.input}, 'gosec', 'GoSec results JSON')
 
     const converter = new Mapper(fs.readFileSync(flags.input, 'utf8'), flags.name)
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
   }
 }
