@@ -24,16 +24,16 @@ export default class HDF2CKL extends Command {
   static readonly oldMetadataFormatMapping = {
     'profiles[0].name': 'benchmark.title',
     'profiles[0].title': 'benchmark.title',
-    'stigguid': 'stigid',
-    'role': 'role',
-    'assettype': 'type',
-    'hostname': 'hostname',
-    'hostip': 'ip',
-    'hostmac': 'mac',
-    'techarea': 'tech_area',
-    'targetkey': 'target_key',
-    'webdbsite': 'web_db_site',
-    'webdbinstance': 'web_db_site'
+    stigguid: 'stigid',
+    role: 'role',
+    assettype: 'type',
+    hostname: 'hostname',
+    hostip: 'ip',
+    hostmac: 'mac',
+    techarea: 'tech_area',
+    targetkey: 'target_key',
+    webdbsite: 'web_db_site',
+    webdbinstance: 'web_db_site',
   }
 
   async run() {
@@ -56,28 +56,31 @@ export default class HDF2CKL extends Command {
 
     // to preserve backwards compatibility with old metadata format
     if (flags.metadata && _.has(fileMetadata, 'benchmark')) {
-      let profile;
+      let profile
       if (_.has(fileMetadata, 'benchmark.version')) {
-        let version: string = _.get(fileMetadata, 'benchmark.version');
+        const version: string = _.get(fileMetadata, 'benchmark.version')
 
         // get sections of numbers in version string
-        let parsedVersion = version.split(/\D+/)
-          .filter(s => s)
-          .map(s => parseInt(s, 10)); 
-        profile = {version: parsedVersion[0], releasenumber: parsedVersion[1]};
+        const parsedVersion = version.split(/\D+/)
+          .filter(Boolean)
+          .map(s => Number.parseInt(s, 10))
+        profile = {version: parsedVersion[0], releasenumber: parsedVersion[1]}
       } else {
-        profile = {};
+        profile = {}
       }
-      let newFileMetadata = {profiles: [profile]};
+
+      const newFileMetadata = {profiles: [profile]}
 
       for (const [newKey, oldKey] of Object.entries(HDF2CKL.oldMetadataFormatMapping)) {
-        const oldValue = _.get(fileMetadata, oldKey);
+        const oldValue = _.get(fileMetadata, oldKey)
         if (oldValue) {
-          _.set(newFileMetadata, newKey, oldValue);
+          _.set(newFileMetadata, newKey, oldValue)
         }
       }
-      fileMetadata = newFileMetadata;
+
+      fileMetadata = newFileMetadata
     }
+
     const hdfMetadata = _.get(inputHDF, 'passthrough.metadata', _.get(inputHDF, 'passthrough.checklist.asset', {}))
     const metadata = _.merge(defaultMetadata, hdfMetadata, fileMetadata, flagMetadata)
     _.set(inputHDF, 'passthrough.metadata', metadata)
