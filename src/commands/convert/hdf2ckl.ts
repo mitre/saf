@@ -64,7 +64,6 @@ export default class HDF2CKL extends Command {
         let parsedVersion = version.split(/[^0-9]+/)
           .filter(s => s)
           .map(s => parseInt(s, 10)); 
-        console.log(parsedVersion);
         profile = {version: parsedVersion[0], releasenumber: parsedVersion[1]};
       } else {
         profile = {};
