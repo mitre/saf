@@ -112,7 +112,7 @@ export default class MsftSecureScore2HDF extends Command {
           graphClient.api('/security/secureScoreControlProfiles').get(),
         ])
 
-        scoreDoc = results[0].value[0]
+        scoreDoc = results[0]
         profilesDoc = results[1]
 
         processInputs(scoreDoc, profilesDoc, flags.output)
