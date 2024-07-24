@@ -52,6 +52,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Ion Channel 2 HDF](#ion-channel-2-hdf)
       * [JFrog Xray to HDF](#jfrog-xray-to-hdf)
       * [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
+      * [Msft_Secure to HDF](#msft_secure-to-hdf)
       * [Netsparker to HDF](#netsparker-to-hdf)
       * [Nikto to HDF](#nikto-to-hdf)
       * [Prisma to HDF](#prisma-to-hdf)
@@ -646,6 +647,37 @@ convert nessus2hdf            Translate a Nessus XML results file into a Heimdal
 
   EXAMPLES
     $ saf convert nessus2hdf -i nessus_results.xml -o output-hdf-name.json
+```
+
+[top](#convert-other-formats-to-hdf)
+#### Msft_Secure to HDF
+```
+convert msft_secure2hdf    Translate Microsoft SecureScore report and SecureScoreControlProfiles 
+                              files into a Heimdall Data Format JSON file. Required inputs:
+                              * pre-downlaoded JSON files
+                              * Microsoft Graph API creds
+  USAGE
+    $ saf convert msft_secure2hdf -r <secure-score-json> -p <secure-score-control-profiles> -o <hdf-scan-results-json> [-h]
+    $ saf convert msft_secure2hdf -t <azure-tenant-id> -a <azure-app-id> -s <azure-app-secret> -o <hdf-scan-results-json> [-h]
+
+  FLAGS
+    -h, --help                                                  Show CLI help.
+
+    -r, --inputScoreDoc=<secure-score-json>                     (required - mode 1) Input response from Graph API secureScore File
+    -p, --inputProfiles=<secure-score-control-profiles-json>    (required - mode 1) Input response from Graph API secureScoreControlProfiles File
+
+    -t, --tenantId=<azure-tenant-id>                            (required - mode 2) Azure Tenant ID
+    -a, --appId=<azure-app-id>                                  (required - mode 2) Azure app ID
+    -s, --appSecreet=<azure-app-id>                             (required - mode 2) Azure app secret
+
+    -o, --output=<hdf-scan-results-json>                        (required) Output HDF JSON File
+
+  EXAMPLES
+    $ saf convert msft_secure2hdf -r secureScore.json -p secureScoreControlProfiles.json -o output-hdf-name.json
+    $ saf convert msft_secure2hdf -t "12345678-1234-1234-1234-1234567890abcd"   \
+                                  -p "12345678-1234-1234-1234-1234567890abcd"   \
+                                  -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" \
+                                  -o output-hdf-name.json
 ```
 
 [top](#convert-other-formats-to-hdf)

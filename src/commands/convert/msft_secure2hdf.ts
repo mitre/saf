@@ -53,15 +53,15 @@ export default class MsftSecure2HDF extends Command {
       required: false,
       description: 'Azure tenantID',
     }),
-    tokenId: Flags.string({
+    appId: Flags.string({
       char: 'a',
       required: false,
-      description: 'Azure appId',
+      description: 'Azure application ID',
     }),
-    tokenSecret: Flags.string({
+    appSecret: Flags.string({
       char: 's',
       required: false,
-      description: 'Azure appSecret',
+      description: 'Azure application Secret',
     }),
     output: Flags.string({
       char: 'o',
@@ -85,17 +85,17 @@ export default class MsftSecure2HDF extends Command {
       processInputs(scoreDoc, profilesDoc, flags.output)
     } else if (
       flags.tenantId !== undefined &&
-      flags.tokenId !== undefined &&
-      flags.tokenSecret !== undefined
+      flags.appId !== undefined &&
+      flags.appSecret !== undefined
     ) {
       // attempt to use the Graph API to pull files
       const tenantId = flags.tenantId
-      const clientId = flags.tokenId
-      const clientSecret = flags.tokenSecret
+      const appId = flags.appId
+      const appSecret = flags.appSecret
       const creds = new ClientSecretCredential(
         tenantId,
-        clientId,
-        clientSecret,
+        appId,
+        appSecret,
       )
       const graphClientOpts: ClientOptions = {
         authProvider: new TokenCredentialAuthenticationProvider(creds, {
