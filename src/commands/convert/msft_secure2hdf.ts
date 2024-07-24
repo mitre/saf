@@ -1,13 +1,11 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {MsftSecureScoreMapper as Mapper} from '@mitre/hdf-converters'
-import {checkInput, checkSuffix} from '../../utils/global'
-
+import {checkSuffix} from '../../utils/global'
 import {ClientSecretCredential} from '@azure/identity'
 import {Client, ClientOptions} from '@microsoft/microsoft-graph-client'
 import {
   SecureScore,
-  ControlScore,
   SecureScoreControlProfile,
 } from '@microsoft/microsoft-graph-types'
 import {TokenCredentialAuthenticationProvider} from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials'
