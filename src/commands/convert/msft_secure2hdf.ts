@@ -25,7 +25,7 @@ function processInputs(scoreDoc:SecureScore, profiles: {value: SecureScoreContro
   )
 }
 
-export default class MsftSecureScore2HDF extends Command {
+export default class MsftSecure2HDF extends Command {
   static usage =
     ['convert msftsecure2hdf -p <secureScoreProfile-json> -r <secureScore-json> [-h]',
       'convert msftsecure2hdf -t <azure-tenant-id> -a <app-id> -s <app-secret> [-h]',
@@ -43,12 +43,12 @@ export default class MsftSecureScore2HDF extends Command {
     inputProfiles: Flags.string({
       char: 'p',
       required: false,
-      description: 'Input GoSec Results JSON File',
+      description: 'Input Microsoft Graph API "GET /security/secureScoreControlProfiles" output JSON File',
     }),
     inputScoreDoc: Flags.string({
       char: 'r',
       required: false,
-      description: 'Input GoSec Results JSON File',
+      description: 'Input Microsoft Graph API "GET /security/secureScores" output JSON File',
     }),
     tenantId: Flags.string({
       char: 't',
@@ -73,7 +73,7 @@ export default class MsftSecureScore2HDF extends Command {
   };
 
   async run() {
-    const {flags} = await this.parse(MsftSecureScore2HDF)
+    const {flags} = await this.parse(MsftSecure2HDF)
     let scoreDoc: SecureScore
     let profilesDoc: {value: SecureScoreControlProfile[]}
 
@@ -118,7 +118,7 @@ export default class MsftSecureScore2HDF extends Command {
         processInputs(scoreDoc, profilesDoc, flags.output)
       })()
     } else {
-      this.exit(-1)
+      throw new Error('Invalid arguments provided.  Include (-a, -s, -t) or (-r, -p) or (-h)')
     }
   }
 }
