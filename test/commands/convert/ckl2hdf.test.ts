@@ -66,7 +66,7 @@ describe('Test invalid checklist metadata example', () => {
     .it(
       'hdf-converter output test - throws error when using invalid checklist metadata',
       ctx => {
-        expect(ctx.stderr).to.equal('Error converting to hdf:\nError: Invalid checklist metadata fields: Host FQDN (invalid), Host IP (invalid), Host MAC (invalid)\n')
+        expect(ctx.stderr).to.equal('Error converting to hdf:\nError: Invalid checklist metadata fields:\n\tHost FQDN (invalid)\n\tHost IP (invalid)\n\tHost MAC (invalid)\n')
       },
     )
 

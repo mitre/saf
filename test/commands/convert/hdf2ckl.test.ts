@@ -65,7 +65,7 @@ describe('Test hdf2checklist', () => {
     .it(
       'hdf-converter output test - throws error when using invalid checklist metadata',
       ctx => {
-        expect(ctx.stderr).to.equal('Error creating checklist:\nInvalid checklist metadata fields: Host IP (invalid), Asset Type (Not a real assettype)\n')
+        expect(ctx.stderr).to.equal('Error creating checklist:\nInvalid checklist metadata fields:\n\tHost IP (invalid)\n\tAsset Type (Not a real assettype)\n')
       },
     )
 
@@ -76,7 +76,7 @@ describe('Test hdf2checklist', () => {
     .it(
       'hdf-converter output test - throws error when using invalid checklist metadata',
       ctx => {
-        expect(ctx.stderr).to.equal('Error creating checklist:\nInvalid checklist metadata fields: Host IP (bad ip address)\n')
+        expect(ctx.stderr).to.equal('Error creating checklist:\nInvalid checklist metadata fields:\n\tHost IP (bad ip address)\n')
       },
     )
 })

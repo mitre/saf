@@ -24,7 +24,7 @@ function enforceInteger(ask: string): number | undefined {
     if (intRep === floatRep && intRep >= 0 && !Number.isNaN(intRep))
       break
     if (!response)
-      return;
+      return
     console.log(`${response} is not a valid non-negative integer. Please try again`)
     response = prompt({ask})
   }
