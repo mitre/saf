@@ -27,7 +27,7 @@ export default class MsftSecure2HDF extends Command {
   static usage =
     ['convert msftsecure2hdf -p <secureScoreProfile-json> -r <secureScore-json> [-h]',
       'convert msftsecure2hdf -t <azure-tenant-id> -a <app-id> -s <app-secret> [-h]',
-      'convert msftsecure2hdf -h'].join('\n');
+      'convert msftsecure2hdf -h'];
 
   static description =
     'Translate a Microsoft365 Secure Score results JSON to a Heimdall Data Format JSON file';
