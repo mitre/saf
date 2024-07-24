@@ -10,24 +10,28 @@ import {
 } from '@microsoft/microsoft-graph-types'
 import {TokenCredentialAuthenticationProvider} from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials'
 
-function processInputs(scoreDoc:SecureScore, profiles: {value: SecureScoreControlProfile[]}, output: string): any {
+function processInputs(
+  scoreDoc: SecureScore,
+  profiles: { value: SecureScoreControlProfile[] },
+  output: string,
+  withRaw: boolean,
+): any {
   const converter = new Mapper(
     JSON.stringify({
       secureScore: scoreDoc,
       profiles: profiles,
     }),
+    withRaw,
   )
-  fs.writeFileSync(
-    checkSuffix(output),
-    JSON.stringify(converter.toHdf()),
-  )
+  fs.writeFileSync(checkSuffix(output), JSON.stringify(converter.toHdf()))
 }
 
 export default class MsftSecure2HDF extends Command {
-  static usage =
-    ['convert msftsecure2hdf -p <secureScoreProfile-json> -r <secureScore-json> [-h]',
-      'convert msftsecure2hdf -t <azure-tenant-id> -a <app-id> -s <app-secret> [-h]',
-      'convert msftsecure2hdf -h'];
+  static usage = [
+    'convert msftsecure2hdf -p <secureScoreProfile-json> -r <secureScore-json> [-h]',
+    'convert msftsecure2hdf -t <azure-tenant-id> -a <app-id> -s <app-secret> [-h]',
+    'convert msftsecure2hdf -h',
+  ];
 
   static description =
     'Translate a Microsoft365 Secure Score results JSON to a Heimdall Data Format JSON file';
@@ -41,12 +45,14 @@ export default class MsftSecure2HDF extends Command {
     inputProfiles: Flags.string({
       char: 'p',
       required: false,
-      description: 'Input Microsoft Graph API "GET /security/secureScoreControlProfiles" output JSON File',
+      description:
+        'Input Microsoft Graph API "GET /security/secureScoreControlProfiles" output JSON File',
     }),
     inputScoreDoc: Flags.string({
       char: 'r',
       required: false,
-      description: 'Input Microsoft Graph API "GET /security/secureScores" output JSON File',
+      description:
+        'Input Microsoft Graph API "GET /security/secureScores" output JSON File',
     }),
     tenantId: Flags.string({
       char: 't',
@@ -68,12 +74,17 @@ export default class MsftSecure2HDF extends Command {
       required: true,
       description: 'Output HDF JSON File',
     }),
+    'with-raw': Flags.boolean({
+      char: 'w',
+      required: false,
+      description: 'Include raw input file in HDF JSON file',
+    }),
   };
 
   async run() {
     const {flags} = await this.parse(MsftSecure2HDF)
     let scoreDoc: SecureScore
-    let profilesDoc: {value: SecureScoreControlProfile[]}
+    let profilesDoc: { value: SecureScoreControlProfile[] }
 
     if (
       flags.inputProfiles !== undefined &&
@@ -82,7 +93,7 @@ export default class MsftSecure2HDF extends Command {
       // load from pre-downloaded files
       scoreDoc = JSON.parse(fs.readFileSync(flags.inputScoreDoc, 'utf8'))
       profilesDoc = JSON.parse(fs.readFileSync(flags.inputProfiles, 'utf8'))
-      processInputs(scoreDoc, profilesDoc, flags.output)
+      processInputs(scoreDoc, profilesDoc, flags.output, flags['with-raw'])
     } else if (
       flags.tenantId !== undefined &&
       flags.appId !== undefined &&
@@ -92,11 +103,7 @@ export default class MsftSecure2HDF extends Command {
       const tenantId = flags.tenantId
       const appId = flags.appId
       const appSecret = flags.appSecret
-      const creds = new ClientSecretCredential(
-        tenantId,
-        appId,
-        appSecret,
-      )
+      const creds = new ClientSecretCredential(tenantId, appId, appSecret)
       const graphClientOpts: ClientOptions = {
         authProvider: new TokenCredentialAuthenticationProvider(creds, {
           scopes: ['https://graph.microsoft.com/.default'],
@@ -113,10 +120,12 @@ export default class MsftSecure2HDF extends Command {
         scoreDoc = results[0]
         profilesDoc = results[1]
 
-        processInputs(scoreDoc, profilesDoc, flags.output)
+        processInputs(scoreDoc, profilesDoc, flags.output, flags['with-raw'])
       })()
     } else {
-      throw new Error('Invalid arguments provided.  Include (-a, -s, -t) or (-r, -p) or (-h)')
+      throw new Error(
+        'Invalid arguments provided.  Include (-a, -s, -t) or (-r, -p) or (-h)',
+      )
     }
   }
 }
