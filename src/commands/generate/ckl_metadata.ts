@@ -39,7 +39,7 @@ function enforceEnum(ask: string, options: string[]): string | undefined {
       break
     if (!response)
       return
-    console.log(`${response} is not a valid option. Please try again.`)
+    console.log(`${response} is not a valid option. Spelling and letter casing matters. Please try again.`)
     response = prompt({ask})
   }
 
