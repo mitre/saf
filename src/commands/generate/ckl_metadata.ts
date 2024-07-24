@@ -15,7 +15,7 @@ function enforceNonEmptyString(ask: string) : string | undefined {
   return undefined
 }
 
-function enforceInteger(ask: string): number {
+function enforceInteger(ask: string): number | undefined {
   let response = prompt({ask})
   let intRep: number
   while (true) {
@@ -23,6 +23,8 @@ function enforceInteger(ask: string): number {
     const floatRep = Number.parseFloat(response)
     if (intRep === floatRep && intRep >= 0 && !Number.isNaN(intRep))
       break
+    if (!response)
+      return;
     console.log(`${response} is not a valid non-negative integer. Please try again`)
     response = prompt({ask})
   }
