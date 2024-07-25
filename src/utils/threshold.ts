@@ -4,10 +4,10 @@ import _ from 'lodash'
 import {ControlDescription} from 'inspecjs/lib/generated_parsers/v_1_0/exec-json'
 
 export const severityTargetsObject = {
-  critical: ['passed.critical.min', 'passed.critical.max', 'failed.critical.min', 'failed.critical.max', 'skipped.critical.min', 'skipped.critical.max', 'error.critical.min', 'error.critical.max'],
-  high: ['passed.high.min', 'passed.high.max', 'failed.high.min', 'failed.high.max', 'skipped.high.min', 'skipped.high.max', 'error.high.min',  'error.high.max'],
-  medium: ['passed.medium.min', 'passed.medium.max', 'failed.medium.min', 'failed.medium.max', 'skipped.medium.min', 'skipped.medium.max', 'error.medium.min', 'error.medium.max'],
-  low: ['passed.low.min', 'passed.low.max', 'failed.low.min', 'failed.low.max', 'skipped.low.min', 'skipped.low.max', 'error.low.min', 'error.low.max'],
+  critical: ['passed.critical.min', 'passed.critical.max', 'failed.critical.min', 'failed.critical.max', 'skipped.critical.min', 'skipped.critical.max', 'error.critical.min', 'error.critical.max', 'no_impact.critical.min', 'no_impact.critical.max'],
+  high: ['passed.high.min', 'passed.high.max', 'failed.high.min', 'failed.high.max', 'skipped.high.min', 'skipped.high.max', 'error.high.min',  'error.high.max', 'no_impact.high.min', 'no_impact.high.max'],
+  medium: ['passed.medium.min', 'passed.medium.max', 'failed.medium.min', 'failed.medium.max', 'skipped.medium.min', 'skipped.medium.max', 'error.medium.min', 'error.medium.max', 'no_impact.medium.min', 'no_impact.medium.max'],
+  low: ['passed.low.min', 'passed.low.max', 'failed.low.min', 'failed.low.max', 'skipped.low.min', 'skipped.low.max', 'error.low.min', 'error.low.max', 'no_impact.low.min', 'no_impact.low.max'],
   none: ['no_impact.none.min', 'no_impact.none.max'],
 }
 
@@ -15,10 +15,10 @@ export const totalMin = ['passed.total.min', 'failed.total.min', 'skipped.total.
 export const totalMax = ['passed.total.max', 'failed.total.max', 'skipped.total.max', 'error.total.max']
 
 export const statusSeverityPaths = {
-  critical: ['passed.critical.controls', 'failed.critical.controls', 'skipped.critical.controls', 'error.critical.controls'],
-  high: ['passed.high.controls', 'failed.high.controls', 'skipped.high.controls', 'error.high.controls'],
-  medium: ['passed.medium.controls', 'failed.medium.controls', 'skipped.medium.controls', 'error.medium.controls'],
-  low: ['passed.low.controls', 'failed.low.controls', 'skipped.low.controls', 'error.low.controls'],
+  critical: ['passed.critical.controls', 'failed.critical.controls', 'skipped.critical.controls', 'error.critical.controls', 'no_impact.critical.controls'],
+  high: ['passed.high.controls', 'failed.high.controls', 'skipped.high.controls', 'error.high.controls', 'no_impact.high.controls'],
+  medium: ['passed.medium.controls', 'failed.medium.controls', 'skipped.medium.controls', 'error.medium.controls', 'no_impact.medium.controls'],
+  low: ['passed.low.controls', 'failed.low.controls', 'skipped.low.controls', 'error.low.controls', 'no_impact.low.controls'],
   none: ['no_impact.none.controls'],
 }
 
@@ -42,6 +42,10 @@ export const emptyStatusAndSeverityCounts = {
     low: [],
   },
   no_impact: {
+    critical: [],
+    high: [],
+    medium: [],
+    low: [],
     none: [],
   },
   error: {
@@ -69,9 +73,7 @@ export function extractStatusCounts(profile: ContextualizedProfile, severity?: s
   for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
     const control = c.root
     const status: ControlStatus = control.hdf.status
-
-    // using impact here rather than control.hdf.severity is more reflective of how important these controls are
-    const controlSeverity: Severity = convertImpactToSeverity(control.data.impact)
+    const controlSeverity: Severity = control.hdf.severity
 
     if (!severity || (controlSeverity === severity)) {
       ++hash[status]

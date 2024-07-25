@@ -1,59 +1,59 @@
 compliance:
-  min: 96
+  max: 66
 passed:
   critical:
-    min: 0
+    max: 0
   high:
-    min: 22
+    max: 11
   medium:
-    min: 177
+    max: 208
   low:
-    min: 14
+    max: 8
   total:
-    min: 213
+    min: 227
 failed:
   critical:
     max: 0
   high:
-    max: 0
+    max: 6
   medium:
-    max: 0
+    max: 87
   low:
-    max: 0
+    max: 19
   total:
-    max: 0
+    max: 112
 skipped:
   critical:
     max: 0
   high:
-    max: 2
+    max: 1
   medium:
-    max: 7
+    max: 1
   low:
-    max: 0
+    max: 1
   total:
-    max: 9
+    max: 3
 error:
   critical:
     max: 0
   high:
     max: 0
   medium:
-    max: 1
+    max: 0
   low:
     max: 0
   total:
-    max: 1
+    max: 0
 no_impact:
   critical:
     max: 0
   high:
-    max: 0
+    max: 2 # Expect to cause failure 
   medium:
-    max: 0
+    max: 30
   low:
     max: 0
   none:
-    max: 24
+    max: 1
   total:
-    max: 24
+    max: 33
