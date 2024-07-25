@@ -45,9 +45,9 @@ export type DataOrArray = Data | Data[] | PrintableSummary | PrintableSummary[];
 
 /**
  * Represents the possible values for the row names in the generated Markdown table.
- * The possible values are 'Total', 'Critical', 'High', 'Medium', 'Low', and 'Not Applicable'.
+ * The possible values are 'Total', 'Critical', 'High', 'Medium', 'Low', and 'None'.
  */
-export type RowType = 'total' | 'critical' | 'high' | 'medium' | 'low' | 'Not Applicable';
+export type RowType = 'total' | 'critical' | 'high' | 'medium' | 'low' | 'none';
 
 /**
  * Represents the possible values for the column names in the generated Markdown table.
