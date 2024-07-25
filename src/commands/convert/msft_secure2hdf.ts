@@ -28,16 +28,15 @@ function processInputs(
 
 export default class MsftSecure2HDF extends Command {
   static usage = [
-    'convert msftsecure2hdf -p <secureScoreProfile-json> -r <secureScore-json> [-h]',
-    'convert msftsecure2hdf -t <azure-tenant-id> -a <app-id> -s <app-secret> [-h]',
-    'convert msftsecure2hdf -h',
+    'convert msft_secure2hdf -p <secureScoreProfile-json> -r <secureScore-json> [-h]',
+    'convert msft_secure2hdf -t <azure-tenant-id> -a <app-id> -s <app-secret> [-h]',
   ];
 
   static description =
-    'Translate a Microsoft365 Secure Score results JSON to a Heimdall Data Format JSON file';
+    'Translate a Microsoft365 Secure Score report to a Heimdall Data Format JSON file';
 
   static examples = [
-    'saf convert msftsecure2hdf -p secureScoreProfile.json -r secureScoreControlProfiles -o output-hdf-name.json',
+    'saf convert msft_secure2hdf -p secureScoreProfile.json -r secureScoreControlProfiles -o output-hdf-name.json',
   ];
 
   static flags = {
@@ -57,7 +56,7 @@ export default class MsftSecure2HDF extends Command {
     tenantId: Flags.string({
       char: 't',
       required: false,
-      description: 'Azure tenantID',
+      description: 'Azure tenant ID',
     }),
     appId: Flags.string({
       char: 'a',
@@ -67,12 +66,12 @@ export default class MsftSecure2HDF extends Command {
     appSecret: Flags.string({
       char: 's',
       required: false,
-      description: 'Azure application Secret',
+      description: 'Azure application secret',
     }),
     output: Flags.string({
       char: 'o',
       required: true,
-      description: 'Output HDF JSON File',
+      description: 'Output HDF JSON file',
     }),
     'with-raw': Flags.boolean({
       char: 'w',
