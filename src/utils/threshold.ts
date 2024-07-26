@@ -1,4 +1,4 @@
-import {ContextualizedControl, ContextualizedProfile, ControlStatus, Severity, convertImpactToSeverity} from 'inspecjs'
+import {ContextualizedControl, ContextualizedProfile, ControlStatus, Severity} from 'inspecjs'
 import {StatusHash, ThresholdValues} from '../types/threshold'
 import _ from 'lodash'
 import {ControlDescription} from 'inspecjs/lib/generated_parsers/v_1_0/exec-json'
