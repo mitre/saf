@@ -79,7 +79,7 @@
   },
   "devDependencies": {
     "@e965/xlsx": "^0.20.0",
-    "@oclif/test": "^3.1.8",
+    "@oclif/test": "^4.0.6",
     "@types/js-yaml": "^4.0.9",
     "@types/mock-fs": "^4.13.4",
     "@typescript-eslint/eslint-plugin": "~7.17.0",
