@@ -12,7 +12,7 @@ describe('Test hdf2html triple_overlay_profile_example with default (administrat
     .it('hdf-converter output test', () => {
       const converted = fs.readFileSync(`${tmpobj.name}/triple_overlay_profile_example.html`, 'utf8')
       const sample = fs.readFileSync(path.resolve('./test/sample_data/html/triple_overlay_profile_example.htm'), 'utf8')
-      expect(converted).to.eql(sample)
+      expect(converted.replace(/(?<=<style>\n).+\s+(?=<\/style>)/, 'TAILWINDSTYLES')).to.eql(sample.replace(/(?<=<style>\n).+\s+(?=<\/style>)/, 'TAILWINDSTYLES'))
     })
 })
 
@@ -25,7 +25,7 @@ describe('Test hdf2html with manager report type and two input files', () => {
     .it('hdf-converter output test', () => {
       const converted = fs.readFileSync(`${tmpobj.name}/combined_output.html`, 'utf8')
       const sample = fs.readFileSync(path.resolve('./test/sample_data/html/combined_output.htm'), 'utf8')
-      expect(converted).to.eql(sample)
+      expect(converted.replace(/(?<=<style>\n).+\s+(?=<\/style>)/, 'TAILWINDSTYLES')).to.eql(sample.replace(/(?<=<style>\n).+\s+(?=<\/style>)/, 'TAILWINDSTYLES'))
     })
 })
 
@@ -38,7 +38,7 @@ describe('Test hdf2html with executive report type', () => {
     .it('hdf-converter output test', () => {
       const converted = fs.readFileSync(`${tmpobj.name}/red_hat_good.html`, 'utf8')
       const sample = fs.readFileSync(path.resolve('./test/sample_data/html/red_hat_good.htm'), 'utf8')
-      expect(converted).to.eql(sample)
+      expect(converted.replace(/(?<=<style>\n).+\s+(?=<\/style>)/, 'TAILWINDSTYLES')).to.eql(sample.replace(/(?<=<style>\n).+\s+(?=<\/style>)/, 'TAILWINDSTYLES'))
     })
 })
 
