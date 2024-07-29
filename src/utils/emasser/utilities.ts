@@ -1,6 +1,7 @@
 import _ from 'lodash'
 import {Flags} from '@oclif/core'
-import {BooleanFlag, OptionFlag} from '@oclif/core/lib/interfaces'
+import {BooleanFlag, OptionFlag} from '@oclif/core/interfaces'
+
 
 interface CliArgs {
   requestType: string;
