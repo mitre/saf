@@ -1,4 +1,4 @@
-import colorize from 'json-colorizer'
+import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 
 import {outputError} from '../../../utils/emasser/outputError'
