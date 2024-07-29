@@ -3,7 +3,7 @@ import fs from 'fs'
 import {MsftSecureScoreMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 import {ClientSecretCredential} from '@azure/identity'
-import {Client, ClientOptions} from '@microsoft/microsoft-graph-client'
+import {Client, ClientOptions, PageIterator, PageIteratorCallback} from '@microsoft/microsoft-graph-client'
 import {
   SecureScore,
   SecureScoreControlProfile,
@@ -109,19 +109,24 @@ export default class MsftSecure2HDF extends Command {
           scopes: ['https://graph.microsoft.com/.default'],
         }),
       }
-      const graphClient: Client = Client.initWithMiddleware(graphClientOpts);
+      const graphClient: Client = Client.initWithMiddleware(graphClientOpts)
 
-      (async function () {
-        const results = await Promise.all([
-          graphClient.api('/security/secureScores').get(),
-          graphClient.api('/security/secureScoreControlProfiles').get(),
-        ])
+      scoreDoc = await  graphClient.api('/security/secureScores').get()
+      profilesDoc = await graphClient.api('/security/secureScoreControlProfiles').get()
 
-        scoreDoc = results[0]
-        profilesDoc = results[1]
+      const allProfiles:  SecureScoreControlProfile[] = []
 
-        processInputs(scoreDoc, profilesDoc, flags.output, flags['with-raw'])
-      })()
+      const callback: PageIteratorCallback = (v: SecureScoreControlProfile) => {
+        allProfiles.push(v)
+        return true
+      }
+
+      const pagingIterator = new PageIterator(graphClient, profilesDoc, callback)
+
+      await pagingIterator.iterate()
+      profilesDoc.value = allProfiles
+
+      processInputs(scoreDoc, profilesDoc, flags.output, flags['with-raw'])
     } else {
       throw new Error(
         'Invalid arguments provided.  Include (-a, -s, -t) or (-r, -p) or (-h)',
