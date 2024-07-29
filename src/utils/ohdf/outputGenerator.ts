@@ -15,7 +15,7 @@ import {PrintableSummary, Data, DataOrArray, RowType, ColumnType, PrintAndWriteO
 */
 const logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View Summary:')
 
-export const ROW_ORDER: RowType[] = ['total', 'critical', 'high', 'medium', 'low', 'none']
+export const ROW_ORDER: RowType[] = ['total', 'critical', 'high', 'medium', 'low']
 export const COLUMN_ORDER: ColumnType[] = ['passed', 'failed', 'skipped', 'no_impact', 'error']
 
 export const COLUMN_EMOJI: Record<ColumnType, string> = {
