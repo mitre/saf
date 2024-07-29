@@ -55,7 +55,7 @@ export function getInstalledPath(): string {
     installedPath = getInstalledPathSync('@mitre/saf')
   } catch {
     // eslint-disable-next-line unicorn/prefer-module
-    installedPath = path.join(require.main?.path.replace('/bin', '').replace('\\bin', '') || '.')
+    installedPath = path.join(require.main?.path.replace('/bin', '').replace(String.raw`\bin`, '') || '.')
   }
 
   return installedPath
