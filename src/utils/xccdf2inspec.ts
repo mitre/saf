@@ -18,8 +18,8 @@ export function wrap(s: string, lineLength = 80): string {
   return finalString
 }
 
-export const escapeQuotes = (s: string) => s.replaceAll('\\', '\\\\').replaceAll("'", "\\'") // Escape backslashes and quotes
-export const escapeDoubleQuotes = (s: string) => s.replaceAll('\\', '\\\\').replaceAll('"', '\\"') // Escape backslashes and double quotes
+export const escapeQuotes = (s: string) => s.replaceAll('\\', '\\\\').replaceAll("'", String.raw`\'`) // Escape backslashes and quotes
+export const escapeDoubleQuotes = (s: string) => s.replaceAll('\\', '\\\\').replaceAll('"', String.raw`\"`) // Escape backslashes and double quotes
 export const wrapAndEscapeQuotes = (s: string, lineLength?: number) => escapeDoubleQuotes(wrap(s, lineLength)) // Escape backslashes and quotes, and wrap long lines
 
 export function convertEncodedXmlIntoJson(
