@@ -82,6 +82,9 @@ export default class Convert extends Command {
         case 'dbProtect':
         case 'fortify':
         case 'jfrog':
+        case 'msft_secure_score': {
+          return MsftSecure2HDF.flags
+        }
         case 'nessus':
         case 'netsparker':
         case 'nikto':
