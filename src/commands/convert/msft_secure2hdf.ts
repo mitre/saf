@@ -28,15 +28,16 @@ function processInputs(
 
 export default class MsftSecure2HDF extends Command {
   static usage = [
-    'convert msft_secure2hdf -p <secureScoreProfile-json> -r <secureScore-json> [-h]',
-    'convert msft_secure2hdf -t <azure-tenant-id> -a <app-id> -s <app-secret> [-h]',
+    'convert msft_secure2hdf -r <secureScore-json> -p <secure-score-control-profiles> -o <hdf-scan-results-json> [-h]',
+    'convert msft_secure2hdf -t <azure-tenant-id> -a <azure-app-id> -s <azure-app-secret> -o <hdf-scan-results-json> [-h]',
   ];
 
   static description =
-    'Translate a Microsoft365 Secure Score report to a Heimdall Data Format JSON file';
+    'Translate a Microsoft Secure Score report and Secure Score Control to a Heimdall Data Format JSON file.';
 
   static examples = [
     'saf convert msft_secure2hdf -p secureScoreProfile.json -r secureScoreControlProfiles -o output-hdf-name.json',
+    'saf convert msft_secure2hdf -t "12345678-1234-1234-1234-1234567890abcd" -a "12345678-1234-1234-1234-1234567890abcd" -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" -o output-hdf-name.json',
   ];
 
   static flags = {
