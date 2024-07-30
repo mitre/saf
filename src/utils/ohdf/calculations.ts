@@ -5,7 +5,8 @@ import {ContextualizedEvaluation, ContextualizedProfile} from 'inspecjs'
 import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../threshold'
 import {createWinstonLogger} from '../logging'
 
-let flat: any;
+let flat: any
+// eslint-disable-next-line unicorn/prefer-top-level-await -- node/ts versions don't support top level await
 (async () => {
   flat = await import('flat')
 })()
