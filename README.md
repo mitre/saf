@@ -674,7 +674,7 @@ convert msft_secure2hdf       Translate a Microsoft Secure Score report and Secu
   EXAMPLES
     $ saf convert msft_secure2hdf -r secureScore.json -p secureScoreControlProfile.json -o output-hdf-name.json
     $ saf convert msft_secure2hdf -t "12345678-1234-1234-1234-1234567890abcd"   \
-                                  -p "12345678-1234-1234-1234-1234567890abcd"   \
+                                  -a "12345678-1234-1234-1234-1234567890abcd"   \
                                   -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" \
                                   -o output-hdf-name.json
 ```
