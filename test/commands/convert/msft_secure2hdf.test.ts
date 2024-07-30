@@ -29,3 +29,4 @@ describe('Test msft_secure using withraw flag', () => {
       expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
     })
 })
+

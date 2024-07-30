@@ -26,7 +26,6 @@ import path from 'path'
 import ASFF2HDF from './asff2hdf'
 import {Command, Flags} from '@oclif/core'
 import Zap2HDF from './zap2hdf'
-import MsftSecure2HDF from './msft_secure2hdf'
 
 function getInputFilename(): string {
   const inputFileIndex = process.argv.findIndex(
@@ -85,6 +84,7 @@ export default class Convert extends Command {
         case 'msft_secure_score': {
           return MsftSecure2HDF.flags
         }
+
         case 'nessus':
         case 'netsparker':
         case 'nikto':

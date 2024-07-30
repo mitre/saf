@@ -651,26 +651,17 @@ convert nessus2hdf            Translate a Nessus XML results file into a Heimdal
 
 [top](#convert-other-formats-to-hdf)
 #### Microsoft Secure Score to HDF
+#### Microsoft Secure Score to HDF
 ```
 convert msft_secure2hdf       Translate a Microsoft Secure Score report and Secure Score Control
                               Profiles into a Heimdall Data Format JSON file. Required inputs:
                               * Pre-downloaded Microsoft Secure Score and Secure Score Control
-                              Profiles JSON files, or
+                              Profiles JSON files
                               * Microsoft Graph API credentials
-  USAGE:
-    $ saf convert msft_secure2hdf -r <secure-score-json> -p <secure-score-control-profiles> -o <hdf-scan-results-json> [-h]
+  USAGE
+    $ saf convert msft_secure2hdf -r <secureScore-json> -p <secure-score-control-profiles> -o <hdf-scan-results-json> [-h]
     $ saf convert msft_secure2hdf -t <azure-tenant-id> -a <azure-app-id> -s <azure-app-secret> -o <hdf-scan-results-json> [-h]
-"""
 
-[API Options]
-    --app-secret=<SECRET> -s  APP SECRET
-    --app-id=<APP_ID> -a      APP ID
-    --tenant=<TENANT> -t      The Azure Tenant ID
-[Downloaded Options]
-    --report=<SECURE_REPORT> -r   The output from Graph SecureScore    --profiles=<PROFILES> -p   The output from Graph SecureScoreControlProfiles
-[Options]
-    --passthrough -w          Pass raw data through
-"""
   FLAGS
     -h, --help                                                  Show CLI help.
     -r, --inputScoreDoc=<secure-score-json>                     Input secureScore File

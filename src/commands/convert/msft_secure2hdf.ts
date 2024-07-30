@@ -44,39 +44,39 @@ export default class MsftSecure2HDF extends Command {
     inputProfiles: Flags.string({
       char: 'p',
       required: false,
-      dependsOn: ['inputScoreDoc', 'inputProfiles'],
-      exclusive: ['tenantId'],
       description:
         'Input Microsoft Graph API "GET /security/secureScoreControlProfiles" output JSON File',
+      dependsOn: ['inputScoreDoc', 'inputProfiles'],
+      exclusive: ['tenantId'],
     }),
     inputScoreDoc: Flags.string({
       char: 'r',
       required: false,
-      dependsOn: ['inputScoreDoc', 'inputProfiles'],
-      exclusive: ['tenantId'],
       description:
         'Input Microsoft Graph API "GET /security/secureScores" output JSON File',
+      dependsOn: ['inputScoreDoc', 'inputProfiles'],
+      exclusive: ['tenantId'],
     }),
     tenantId: Flags.string({
       char: 't',
       required: false,
+      description: 'Azure tenant ID',
       dependsOn: ['tenantId', 'appId', 'appSecret'],
       exclusive: ['inputProfiles'],
-      description: 'Azure tenant ID',
     }),
     appId: Flags.string({
       char: 'a',
       required: false,
+      description: 'Azure application ID',
       dependsOn: ['tenantId', 'appId', 'appSecret'],
       exclusive: ['inputProfiles'],
-      description: 'Azure application ID',
     }),
     appSecret: Flags.string({
       char: 's',
       required: false,
+      description: 'Azure application secret',
       dependsOn: ['tenantId', 'appId', 'appSecret'],
       exclusive: ['inputProfiles'],
-      description: 'Azure application secret',
     }),
     output: Flags.string({
       char: 'o',
