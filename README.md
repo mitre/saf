@@ -660,9 +660,11 @@ convert msft_secure2hdf       Translate a Microsoft Secure Score report and Secu
   USAGE
     $ saf convert msft_secure2hdf -r <secureScore-json> -p <secure-score-control-profiles> -o <hdf-scan-results-json> [-h]
     $ saf convert msft_secure2hdf -t <azure-tenant-id> -a <azure-app-id> -s <azure-app-secret> -o <hdf-scan-results-json> [-h]
+    $ saf convert msft_secure2hdf -i <combined-inputs> -o <hdf-scan-results-json> [-h]
 
   FLAGS
     -h, --help                                                  Show CLI help.
+    -i, --combinedInputs                                        JSON incorporting {"secureScore": <-r>, "profiles": <-p>} File
     -r, --inputScoreDoc=<secure-score-json>                     Input secureScore File
     -p, --inputProfiles=<secure-score-control-profiles-json>    Input secureScoreControlProfile File
     -t, --tenantId=<azure-tenant-id>                            Azure Tenant ID
@@ -676,6 +678,7 @@ convert msft_secure2hdf       Translate a Microsoft Secure Score report and Secu
                                   -a "12345678-1234-1234-1234-1234567890abcd"   \
                                   -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" \
                                   -o output-hdf-name.json
+    $ saf convert msft_secure2hdf -i <(jq \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json) -o output-hdf-name.json
 ```
 
 [top](#convert-other-formats-to-hdf)
