@@ -1,7 +1,7 @@
 import fs from 'fs'
 import _ from 'lodash'
 import {readFile} from 'fs/promises'
-import colorize from 'json-colorizer'
+import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 
 import {outputError} from '../../../utils/emasser/outputError'

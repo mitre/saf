@@ -1,4 +1,4 @@
-import colorize from 'json-colorizer'
+import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 import {ContainersApi} from '@mitre/emass_client'
 import {ContainersResponsePost} from '@mitre/emass_client/dist/api'
