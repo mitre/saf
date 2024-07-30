@@ -1,10 +1,14 @@
 // utils/calculations.ts
 
 import _ from 'lodash'
-import flat from 'flat'
 import {ContextualizedEvaluation, ContextualizedProfile} from 'inspecjs'
 import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../threshold'
 import {createWinstonLogger} from '../logging'
+
+let flat: any;
+(async () => {
+  flat = await import('flat');
+})();
 
 /**
 * The logger for this command.
