@@ -9,8 +9,8 @@ import {expect} from 'chai'
 
 let flat: any;
 (async () => {
-  flat = await import('flat');
-})();
+  flat = await import('flat')
+})()
 
 export default class Threshold extends Command {
   static usage = 'validate threshold -i <hdf-json> [-h] [-T <flattened-threshold-json> | -F <template-file>]'

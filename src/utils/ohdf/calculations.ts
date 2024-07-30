@@ -7,8 +7,8 @@ import {createWinstonLogger} from '../logging'
 
 let flat: any;
 (async () => {
-  flat = await import('flat');
-})();
+  flat = await import('flat')
+})()
 
 /**
 * The logger for this command.
