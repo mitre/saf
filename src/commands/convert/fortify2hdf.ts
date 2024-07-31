@@ -25,6 +25,6 @@ export default class Fortify2HDF extends Command {
     checkInput({data, filename: flags.input}, 'fortify', 'Fortify results FVDL file')
 
     const converter = new Mapper(data, flags['with-raw'])
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
   }
 }

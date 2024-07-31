@@ -196,7 +196,10 @@
     "prepack:darwin:linux": "rm -rf lib && tsc",
     "pack-hdf-converters": "run-script-os",
     "pack-hdf-converters:win32": "pack-hdf-converters.bat",
-    "pack-hdf-converters:darwin:linux": "./pack-hdf-converters.sh"
+    "pack-hdf-converters:darwin:linux": "./pack-hdf-converters.sh",
+    "pack-inspecjs": "run-script-os",
+    "pack-inspecjs:win32": "pack-inspecjs.bat",
+    "pack-inspecjs:darwin:linux": "./pack-inspecjs.sh"
   },
   "types": "lib/index.d.ts",
   "jest": {

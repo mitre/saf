@@ -23,6 +23,6 @@ export default class Sonarqube2HDF extends Command {
   async run() {
     const {flags} = await this.parse(Sonarqube2HDF)
     const converter = new Mapper(flags.url, flags.projectKey, flags.auth, flags.branch, flags.pullRequestID)
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(await converter.toHdf()))
+    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(await converter.toHdf(), null, 2))
   }
 }
