@@ -1,4 +1,4 @@
-import colorize from 'json-colorizer'
+import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {CMMCAssessmentsApi} from '@mitre/emass_client'
