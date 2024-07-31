@@ -62,6 +62,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [SonarQube to HDF](#sonarqube-to-hdf)
       * [Splunk to HDF](#splunk-to-hdf)
       * [Trivy to HDF](#trivy-to-hdf)
+      * [Trufflehog to HDF](#trufflehog-to-hdf)
       * [Twistlock to HDF](#twistlock-to-hdf)
       * [Veracode to HDF](#veracode-to-hdf)
       * [XCCDF Results to HDF](#xccdf-results-to-hdf)
@@ -852,6 +853,23 @@ convert trivy2hdf             Translate a Trivy-derived AWS Security Finding
 
   EXAMPLES
     $ saf convert trivy2hdf -i trivy-asff.json -o output-folder
+```
+
+[top](#convert-other-formats-to-hdf)
+#### Trufflehog to HDF
+```
+convert trufflehog2hdf         Translate a Trufflehog CLI output file into an HDF results set
+
+  USAGE
+    $ saf convert trufflehog2hdf -i <trufflehog-json> -o <hdf-scan-results-json>
+
+  FLAGS
+    -h, --help                            Show CLI help.
+    -i, --input=<trufflehog-json>          (required) Input Trufflehog file
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+
+  EXAMPLES
+    $ saf convert trufflehog2hdf -i trufflehog.json -o output-hdf-name.json
 ```
 
 [top](#convert-other-formats-to-hdf)
