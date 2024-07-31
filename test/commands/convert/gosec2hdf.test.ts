@@ -20,7 +20,7 @@ describe('Test gosec', () => {
     .command(['convert gosec2hdf', '-i', path.resolve('./test/sample_data/gosec/sample_input_report/Go_Ethereum_gosec_results_external_suppressed.json'), '-o', `${tmpobj.name}/gosectest.json`])
     .it('hdf-converter output test - unsuppressed go ethereum', () => {
       const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/gosectest.json`, 'utf8'))
-      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/gosec/go-ethereum-external-suppressed-gosec-hdf.json'), 'utf8'))
+      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/gosec/go-ethereum-external-unsuppressed-gosec-hdf.json'), 'utf8'))
       expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
     })
   test
@@ -28,7 +28,7 @@ describe('Test gosec', () => {
     .command(['convert gosec2hdf', '-i', path.resolve('./test/sample_data/gosec/sample_input_report/Go_Ethereum_gosec_results_all_suppressed.json'), '-o', `${tmpobj.name}/gosectest.json`])
     .it('hdf-converter output test - suppressed go ethereum', () => {
       const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/gosectest.json`, 'utf8'))
-      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/gosec/go-ethereum-all-suppressed-gosec-hdf.json'), 'utf8'))
+      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/gosec/go-ethereum-all-unsuppressed-gosec-hdf.json'), 'utf8'))
       expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
     })
 })
@@ -49,7 +49,7 @@ describe('Test gosec using withraw flag', () => {
     .command(['convert gosec2hdf', '-i', path.resolve('./test/sample_data/gosec/sample_input_report/Go_Ethereum_gosec_results_external_suppressed.json'), '-o', `${tmpobj.name}/gosectest.json`, '-w'])
     .it('hdf-converter output test - unsuppressed go ethereum', () => {
       const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/gosectest.json`, 'utf8'))
-      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/gosec/go-ethereum-external-suppressed-gosec-hdf-withraw.json'), 'utf8'))
+      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/gosec/go-ethereum-external-unsuppressed-gosec-hdf-withraw.json'), 'utf8'))
       expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
     })
   test
@@ -57,7 +57,7 @@ describe('Test gosec using withraw flag', () => {
     .command(['convert gosec2hdf', '-i', path.resolve('./test/sample_data/gosec/sample_input_report/Go_Ethereum_gosec_results_all_suppressed.json'), '-o', `${tmpobj.name}/gosectest.json`, '-w'])
     .it('hdf-converter output test - suppressed go ethereum', () => {
       const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/gosectest.json`, 'utf8'))
-      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/gosec/go-ethereum-all-suppressed-gosec-hdf-withraw.json'), 'utf8'))
+      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/gosec/go-ethereum-all-unsuppressed-gosec-hdf-withraw.json'), 'utf8'))
       expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample))
     })
 })
