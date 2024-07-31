@@ -1,5 +1,6 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
+import https from 'https'
 import {MsftSecureScoreMapper as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 import {ClientSecretCredential} from '@azure/identity'
@@ -38,7 +39,7 @@ export default class MsftSecure2HDF extends Command {
 
   static examples = [
     'saf convert msft_secure2hdf -p secureScore.json -r secureScoreControlProfiles -o output-hdf-name.json',
-    'saf convert msft_secure2hdf -t "12345678-1234-1234-1234-1234567890abcd" -a "12345678-1234-1234-1234-1234567890abcd" -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" -o output-hdf-name.json',
+    'saf convert msft_secure2hdf -t "12345678-1234-1234-1234-1234567890abcd" -a "12345678-1234-1234-1234-1234567890abcd" -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" -o output-hdf-name.json [-I | -C <certificate>] [-t <target>...]',
     'saf convert msft_secure2hdf -i <(jq \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json) -o output-hdf-name.json',
   ];
 
@@ -52,6 +53,8 @@ export default class MsftSecure2HDF extends Command {
     appSecret: Flags.string({char: 's', required: false, description: 'Azure application secret', dependsOn: ['tenantId', 'appId', 'appSecret'], exclusive: ['inputProfiles', 'combinedInputs']}),
     output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON file'}),
     'with-raw': Flags.boolean({char: 'w', required: false, description: 'Include raw input file in HDF JSON file'}),
+    certificate: Flags.string({char: 'C', required: false, description: 'Trusted signing certificate file', exclusive: ['input', 'insecure']}),
+    insecure: Flags.boolean({char: 'I', required: false, default: false, description: 'Disable SSL verification, this is insecure.', exclusive: ['input', 'certificate']}),
   };
 
   async run() {
@@ -86,6 +89,14 @@ export default class MsftSecure2HDF extends Command {
         authProvider: new TokenCredentialAuthenticationProvider(creds, {
           scopes: ['https://graph.microsoft.com/.default'],
         }),
+        fetchOptions: {
+          agent: new https.Agent({
+            // Disable HTTPS verification if requested
+            rejectUnauthorized: !flags.insecure,
+            // Pass an SSL certificate to trust
+            ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf8') : undefined,
+          }),
+        },
       }
       const graphClient: Client = Client.initWithMiddleware(graphClientOpts)
 
