@@ -17,16 +17,15 @@ function enforceNonEmptyString(ask: string) : string | null {
 
 function enforceInteger(ask: string): number | null {
   let response = prompt({ask})
-  let intRep: number
-  while (true) {
-    intRep = Number.parseInt(response, 10)
-    const floatRep = Number.parseFloat(response)
-    if (intRep === floatRep && intRep >= 0 && !Number.isNaN(intRep))
-      break
+  let intRep = Number.parseInt(response, 10)
+  let floatRep = Number.parseFloat(response)
+  while (!(intRep === floatRep && intRep >= 0 && !Number.isNaN(intRep))) {
     if (!response)
       return null
     console.log(`${response} is not a valid non-negative integer. Please try again`)
     response = prompt({ask})
+    intRep = Number.parseInt(response, 10)
+    floatRep = Number.parseFloat(response)
   }
 
   return intRep
@@ -36,9 +35,7 @@ function enforceEnum(ask: string, options: string[]): string | null {
   // format prompt to show valid options (removes empty string options)
   ask = `${ask} (${options.filter(Boolean).join('/')}) `
   let response = prompt({ask})
-  while (true) {
-    if (options.includes(response))
-      break
+  while (!options.includes(response)) {
     if (!response)
       return null
     console.log(`${response} is not a valid option. Spelling and letter casing matters. Please try again.`)
