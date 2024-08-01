@@ -885,7 +885,7 @@ convert trivy2hdf             Translate a Trivy-derived AWS Security Finding
 [top](#convert-other-formats-to-hdf)
 #### Trufflehog to HDF
 ```
-convert trufflehog2hdf         Translate a Trufflehog CLI output file into an HDF results set
+convert trufflehog2hdf         Translate a Trufflehog output file into an HDF results set
 
   USAGE
     $ saf convert trufflehog2hdf -i <trufflehog-json> -o <hdf-scan-results-json>
