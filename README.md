@@ -892,7 +892,7 @@ convert trufflehog2hdf         Translate a Trufflehog CLI output file into an HD
 
   FLAGS
     -h, --help                            Show CLI help.
-    -i, --input=<trufflehog-json>          (required) Input Trufflehog file
+    -i, --input=<trufflehog-json>         (required) Input Trufflehog file
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   EXAMPLES
