@@ -83,7 +83,7 @@ describe('Test Trufflehog Docker Example', () => {
     ])
     .it('hdf-converter output test', () => {
       const converted = JSON.parse(
-        fs.readFileSync(`${tmpobj.name}/trufflehogdockertest.json`, 'utf8'),
+        fs.readFileSync(`${tmpobj.name}/trufflehogtest.json`, 'utf8'),
       )
       const sample = JSON.parse(
         fs.readFileSync(
