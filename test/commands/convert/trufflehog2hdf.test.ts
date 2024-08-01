@@ -13,18 +13,18 @@ describe('Test Trufflehog', () => {
       'convert trufflehog2hdf',
       '-i',
       path.resolve(
-        './test/sample_data/Trufflehog/sample_input_report/trufflehog.json',
+        './test/sample_data/trufflehog/sample_input_report/trufflehog.json',
       ),
       '-o',
-      `${tmpobj.name}/Trufflehogtest.json`,
+      `${tmpobj.name}/trufflehogtest.json`,
     ])
     .it('hdf-converter output test', () => {
       const converted = JSON.parse(
-        fs.readFileSync(`${tmpobj.name}/Trufflehogtest.json`, 'utf8'),
+        fs.readFileSync(`${tmpobj.name}/trufflehogtest.json`, 'utf8'),
       )
       const sample = JSON.parse(
         fs.readFileSync(
-          path.resolve('./test/sample_data/Trufflehog/trufflehog-hdf.json'),
+          path.resolve('./test/sample_data/trufflehog/trufflehog-hdf.json'),
           'utf8',
         ),
       )
@@ -43,20 +43,20 @@ describe('Test Trufflehog withraw flag', () => {
       'convert trufflehog2hdf',
       '-i',
       path.resolve(
-        './test/sample_data/Trufflehog/sample_input_report/trufflehog.json',
+        './test/sample_data/trufflehog/sample_input_report/trufflehog.json',
       ),
       '-o',
-      `${tmpobj.name}/Trufflehogtest.json`,
+      `${tmpobj.name}/trufflehogtest.json`,
       '-w',
     ])
     .it('hdf-converter withraw output test', () => {
       const converted = JSON.parse(
-        fs.readFileSync(`${tmpobj.name}/Trufflehogtest.json`, 'utf8'),
+        fs.readFileSync(`${tmpobj.name}/trufflehogtest.json`, 'utf8'),
       )
       const sample = JSON.parse(
         fs.readFileSync(
           path.resolve(
-            './test/sample_data/Trufflehog/trufflehog-hdf-withraw.json',
+            './test/sample_data/trufflehog/trufflehog-hdf-withraw.json',
           ),
           'utf8',
         ),
@@ -76,19 +76,19 @@ describe('Test Trufflehog Docker Example', () => {
       'convert trufflehog2hdf',
       '-i',
       path.resolve(
-        './test/sample_data/Trufflehog/sample_input_report/trufflehog_docker_example.json',
+        './test/sample_data/trufflehog/sample_input_report/trufflehog_docker_example.json',
       ),
       '-o',
-      `${tmpobj.name}/Trufflehogtest.json`,
+      `${tmpobj.name}/trufflehogtest.json`,
     ])
     .it('hdf-converter output test', () => {
       const converted = JSON.parse(
-        fs.readFileSync(`${tmpobj.name}/Trufflehogdockertest.json`, 'utf8'),
+        fs.readFileSync(`${tmpobj.name}/trufflehogdockertest.json`, 'utf8'),
       )
       const sample = JSON.parse(
         fs.readFileSync(
           path.resolve(
-            './test/sample_data/Trufflehog/trufflehog-docker-hdf.json',
+            './test/sample_data/trufflehog/trufflehog-docker-hdf.json',
           ),
           'utf8',
         ),
@@ -108,20 +108,20 @@ describe('Test Trufflehog docker example withraw flag', () => {
       'convert trufflehog2hdf',
       '-i',
       path.resolve(
-        './test/sample_data/Trufflehog/sample_input_report/trufflehog_docker_example.json',
+        './test/sample_data/trufflehog/sample_input_report/trufflehog_docker_example.json',
       ),
       '-o',
-      `${tmpobj.name}/Trufflehogtest.json`,
+      `${tmpobj.name}/trufflehogtest.json`,
       '-w',
     ])
     .it('hdf-converter withraw output test', () => {
       const converted = JSON.parse(
-        fs.readFileSync(`${tmpobj.name}/Trufflehogtest.json`, 'utf8'),
+        fs.readFileSync(`${tmpobj.name}/trufflehogtest.json`, 'utf8'),
       )
       const sample = JSON.parse(
         fs.readFileSync(
           path.resolve(
-            './test/sample_data/Trufflehog/trufflehog-docker-hdf-withraw.json',
+            './test/sample_data/trufflehog/trufflehog-docker-hdf-withraw.json',
           ),
           'utf8',
         ),
@@ -141,19 +141,19 @@ describe('Test Trufflehog json object', () => {
       'convert trufflehog2hdf',
       '-i',
       path.resolve(
-        './test/sample_data/Trufflehog/sample_input_report/trufflehog-report-example.json',
+        './test/sample_data/trufflehog/sample_input_report/trufflehog-report-example.json',
       ),
       '-o',
-      `${tmpobj.name}/Trufflehogtest.json`,
+      `${tmpobj.name}/trufflehogtest.json`,
     ])
     .it('hdf-converter output test', () => {
       const converted = JSON.parse(
-        fs.readFileSync(`${tmpobj.name}/Trufflehogtest.json`, 'utf8'),
+        fs.readFileSync(`${tmpobj.name}/trufflehogtest.json`, 'utf8'),
       )
       const sample = JSON.parse(
         fs.readFileSync(
           path.resolve(
-            './test/sample_data/Trufflehog/trufflehog-report-example-hdf.json',
+            './test/sample_data/trufflehog/trufflehog-report-example-hdf.json',
           ),
           'utf8',
         ),
@@ -173,20 +173,20 @@ describe('Test Trufflehog json object withraw flag', () => {
       'convert trufflehog2hdf',
       '-i',
       path.resolve(
-        './test/sample_data/Trufflehog/sample_input_report/trufflehog-report-example.json',
+        './test/sample_data/trufflehog/sample_input_report/trufflehog-report-example.json',
       ),
       '-o',
-      `${tmpobj.name}/Trufflehogtest.json`,
+      `${tmpobj.name}/trufflehogtest.json`,
       '-w',
     ])
     .it('hdf-converter withraw output test', () => {
       const converted = JSON.parse(
-        fs.readFileSync(`${tmpobj.name}/Trufflehogtest.json`, 'utf8'),
+        fs.readFileSync(`${tmpobj.name}/trufflehogtest.json`, 'utf8'),
       )
       const sample = JSON.parse(
         fs.readFileSync(
           path.resolve(
-            './test/sample_data/Trufflehog/trufflehog-report-example-hdf-withraw.json',
+            './test/sample_data/trufflehog/trufflehog-report-example-hdf-withraw.json',
           ),
           'utf8',
         ),
@@ -206,18 +206,18 @@ describe('Test Trufflehog saf example', () => {
       'convert trufflehog2hdf',
       '-i',
       path.resolve(
-        './test/sample_data/Trufflehog/sample_input_report/trufflehog_saf_example.json',
+        './test/sample_data/trufflehog/sample_input_report/trufflehog_saf_example.json',
       ),
       '-o',
-      `${tmpobj.name}/Trufflehogtest.json`,
+      `${tmpobj.name}/trufflehogtest.json`,
     ])
     .it('hdf-converter output test', () => {
       const converted = JSON.parse(
-        fs.readFileSync(`${tmpobj.name}/Trufflehogtest.json`, 'utf8'),
+        fs.readFileSync(`${tmpobj.name}/trufflehogtest.json`, 'utf8'),
       )
       const sample = JSON.parse(
         fs.readFileSync(
-          path.resolve('./test/sample_data/Trufflehog/trufflehog-saf-hdf.json'),
+          path.resolve('./test/sample_data/trufflehog/trufflehog-saf-hdf.json'),
           'utf8',
         ),
       )
@@ -236,20 +236,20 @@ describe('Test Trufflehog saf example withraw flag', () => {
       'convert trufflehog2hdf',
       '-i',
       path.resolve(
-        './test/sample_data/Trufflehog/sample_input_report/trufflehog_saf_example.json',
+        './test/sample_data/trufflehog/sample_input_report/trufflehog_saf_example.json',
       ),
       '-o',
-      `${tmpobj.name}/Trufflehogtest.json`,
+      `${tmpobj.name}/trufflehogtest.json`,
       '-w',
     ])
     .it('hdf-converter withraw output test', () => {
       const converted = JSON.parse(
-        fs.readFileSync(`${tmpobj.name}/Trufflehogtest.json`, 'utf8'),
+        fs.readFileSync(`${tmpobj.name}/trufflehogtest.json`, 'utf8'),
       )
       const sample = JSON.parse(
         fs.readFileSync(
           path.resolve(
-            './test/sample_data/Trufflehog/trufflehog-saf-hdf-withraw.json',
+            './test/sample_data/trufflehog/trufflehog-saf-hdf-withraw.json',
           ),
           'utf8',
         ),
