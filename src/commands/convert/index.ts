@@ -1,4 +1,4 @@
-import {ASFFResults, ChecklistResults, BurpSuiteMapper, ConveyorResults, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockResults, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
+import {ASFFResults, ChecklistResults, BurpSuiteMapper, ConveyorResults, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TrufflehogResults, TwistlockResults, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
 import fs from 'fs'
 import _ from 'lodash'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
@@ -52,6 +52,7 @@ export default class Convert extends Command {
         case 'sarif':
         case 'scoutsuite':
         case 'snyk':
+        case 'trufflehog':
         case 'twistlock':
         case 'xccdf': {
           return {}
@@ -202,6 +203,12 @@ export default class Convert extends Command {
           fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(result, null, 2))
         }
 
+        break
+      }
+
+      case 'trufflehog': {
+        converter = new TrufflehogResults(fs.readFileSync(flags.input, 'utf8'))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
 
