@@ -10,7 +10,7 @@ describe('Test Trufflehog', () => {
   test
     .stdout()
     .command([
-      'convert Trufflehog2hdf',
+      'convert trufflehog2hdf',
       '-i',
       path.resolve(
         './test/sample_data/Trufflehog/sample_input_report/trufflehog.json',
@@ -40,7 +40,7 @@ describe('Test Trufflehog withraw flag', () => {
   test
     .stdout()
     .command([
-      'convert Trufflehog2hdf',
+      'convert trufflehog2hdf',
       '-i',
       path.resolve(
         './test/sample_data/Trufflehog/sample_input_report/trufflehog.json',
@@ -73,7 +73,7 @@ describe('Test Trufflehog Docker Example', () => {
   test
     .stdout()
     .command([
-      'convert Trufflehog2hdf',
+      'convert trufflehog2hdf',
       '-i',
       path.resolve(
         './test/sample_data/Trufflehog/sample_input_report/trufflehog_docker_example.json',
@@ -105,7 +105,7 @@ describe('Test Trufflehog docker example withraw flag', () => {
   test
     .stdout()
     .command([
-      'convert Trufflehog2hdf',
+      'convert trufflehog2hdf',
       '-i',
       path.resolve(
         './test/sample_data/Trufflehog/sample_input_report/trufflehog_docker_example.json',
@@ -138,7 +138,7 @@ describe('Test Trufflehog json object', () => {
   test
     .stdout()
     .command([
-      'convert Trufflehog2hdf',
+      'convert trufflehog2hdf',
       '-i',
       path.resolve(
         './test/sample_data/Trufflehog/sample_input_report/trufflehog-report-example.json',
@@ -170,7 +170,7 @@ describe('Test Trufflehog json object withraw flag', () => {
   test
     .stdout()
     .command([
-      'convert Trufflehog2hdf',
+      'convert trufflehog2hdf',
       '-i',
       path.resolve(
         './test/sample_data/Trufflehog/sample_input_report/trufflehog-report-example.json',
@@ -203,7 +203,7 @@ describe('Test Trufflehog saf example', () => {
   test
     .stdout()
     .command([
-      'convert Trufflehog2hdf',
+      'convert trufflehog2hdf',
       '-i',
       path.resolve(
         './test/sample_data/Trufflehog/sample_input_report/trufflehog_saf_example.json',
@@ -233,7 +233,7 @@ describe('Test Trufflehog saf example withraw flag', () => {
   test
     .stdout()
     .command([
-      'convert Trufflehog2hdf',
+      'convert trufflehog2hdf',
       '-i',
       path.resolve(
         './test/sample_data/Trufflehog/sample_input_report/trufflehog_saf_example.json',
