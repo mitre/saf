@@ -1,5 +1,4 @@
 import {Command, Flags} from '@oclif/core'
-import flat from 'flat'
 import YAML from 'yaml'
 import fs from 'fs'
 import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
@@ -7,6 +6,12 @@ import _ from 'lodash'
 import {ThresholdValues} from '../../types/threshold'
 import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject, statusSeverityPaths, totalMax, totalMin} from '../../utils/threshold'
 import {expect} from 'chai'
+
+let flat: any
+// eslint-disable-next-line unicorn/prefer-top-level-await -- node/ts versions don't support top level await
+(async () => {
+  flat = await import('flat')
+})()
 
 export default class Threshold extends Command {
   static usage = 'validate threshold -i <hdf-json> [-h] [-T <flattened-threshold-json> | -F <template-file>]'

@@ -45,11 +45,11 @@ export default class HDF2ASFF extends Command {
       fs.mkdirSync(outputFolder)
       if (convertedSlices.length === 1) {
         const outfilePath = path.join(outputFolder, convertFullPathToFilename(checkSuffix(flags.output)))
-        fs.writeFileSync(outfilePath, JSON.stringify(convertedSlices[0]))
+        fs.writeFileSync(outfilePath, JSON.stringify(convertedSlices[0], null, 2))
       } else {
         convertedSlices.forEach((slice, index) => {
           const outfilePath = path.join(outputFolder, `${convertFullPathToFilename(checkSuffix(flags.output || '')).replace('.json', '')}.p${index}.json`)
-          fs.writeFileSync(outfilePath, JSON.stringify(slice))
+          fs.writeFileSync(outfilePath, JSON.stringify(slice, null, 2))
         })
       }
     }

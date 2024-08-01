@@ -26,6 +26,6 @@ export default class GenerateInSpecMetadata extends Command {
       license: prompt({ask: 'What is the license of the profile? '}),
       version: prompt({ask: 'What is the version of the profile? '}),
     }
-    fs.writeFileSync(flags.output, JSON.stringify(inspecMetadata))
+    fs.writeFileSync(flags.output, JSON.stringify(inspecMetadata, null, 2))
   }
 }

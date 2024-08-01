@@ -24,6 +24,6 @@ export default class Veracode2HDF extends Command {
     checkInput({data, filename: flags.input}, 'veracode', 'Veracode XML')
 
     const converter = new Mapper(data)
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
   }
 }

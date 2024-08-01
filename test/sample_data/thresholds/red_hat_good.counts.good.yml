@@ -45,6 +45,14 @@ error:
   total:
     max: 1
 no_impact:
+  critical:
+    max: 0
+  high:
+    max: 0
+  medium:
+    max: 0
+  low:
+    max: 0
   none:
     max: 24
   total:

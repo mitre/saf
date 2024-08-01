@@ -1,78 +1,139 @@
 import {Command, Flags} from '@oclif/core'
-import {contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
 import fs from 'fs'
-import {v4} from 'uuid'
-import {default as files} from '../../resources/files.json'
-import Mustache from 'mustache'
-import {CKLMetadata} from '../../types/checklist'
-import {convertFullPathToFilename, getProfileInfo} from '../../utils/global'
-import {getDetails} from '../../utils/checklist'
+import {Assettype, ChecklistMetadata, ChecklistResults as Mapper, Role, Techarea, validateChecklistMetadata} from '@mitre/hdf-converters'
 
 export default class HDF2CKL extends Command {
-  static usage = 'convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [-H <hostname>] [-F <fqdn>] [-M <mac-address>] [-I <ip-address>]'
+  static readonly usage = 'saf convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [--profilename <value>] [--profiletitle <value>] [--version <value>] [--releasenumber <value>] [--releasedate <value>] [--marking <value>] [-H <value>] [-I <value>] [-M <value>] [-F <value>] [--targetcomment <value>] [--role Domain Controller|Member Server|None|Workstation] [--assettype Computing|Non-Computing] [--techarea |Application Review|Boundary Security|CDS Admin Review|CDS Technical Review|Database Review|Domain Name System (DNS)|Exchange Server|Host Based System Security (HBSS)|Internal Network|Mobility|Other Review|Releasable Networks (REL)|Releaseable Networks (REL)|Traditional Security|UNIX OS|VVOIP Review|Web Review|Windows OS] [--stigguid <value>] [--targetkey <value>] [--webdbsite <value> --webordatabase] [--webdbinstance <value> ] [--vulidmapping gid|id]'
 
   static description = 'Translate a Heimdall Data Format JSON file into a DISA checklist file'
 
   static flags = {
     help: Flags.help({char: 'h'}),
     input: Flags.string({char: 'i', required: true, description: 'Input HDF file'}),
-    metadata: Flags.string({char: 'm', required: false, description: 'Metadata JSON file, generate one with "saf generate ckl_metadata"'}),
     output: Flags.string({char: 'o', required: true, description: 'Output CKL file'}),
-    hostname: Flags.string({char: 'H', required: false, description: 'Hostname for CKL metadata'}),
-    fqdn: Flags.string({char: 'F', required: false, description: 'FQDN for CKL metadata'}),
-    mac: Flags.string({char: 'M', required: false, description: 'MAC address for CKL metadata'}),
-    ip: Flags.string({char: 'I', required: false, description: 'IP address for CKL metadata'}),
+    metadata: Flags.string({char: 'm', required: false, description: 'Metadata JSON file, generate one with "saf generate ckl_metadata"',
+      // either a metadata file or a metadata flags can be passed in. Not both.
+      relationships: [
+        {type: 'none', flags: ['profilename', 'profiletitle', 'version', 'releasenumber', 'releasedate', 'marking', 'marking', 'hostname', 'ip', 'mac', 'fqdn', 'targetcomment', 'role', 'assettype', 'techarea', 'stigguid', 'targetkey', 'webordatabase', 'webdbsite', 'webdbinstance', 'vulidmapping']},
+      ], helpGroup: 'Checklist Metadata'}),
+    profilename: Flags.string({required: false, description: 'Profile name', helpGroup: 'Checklist Metadata'}),
+    profiletitle: Flags.string({required: false, description: 'Profile title', helpGroup: 'Checklist Metadata'}),
+    version: Flags.integer({required: false, description: 'Profile version number', min: 0, helpGroup: 'Checklist Metadata'}),
+    releasenumber: Flags.integer({required: false, description: 'Profile release number', min: 0, helpGroup: 'Checklist Metadata'}),
+    releasedate: Flags.string({required: false, description: 'Profile release date', helpGroup: 'Checklist Metadata'}),
+    marking: Flags.string({required: false, description: 'A security classification or designation of the asset, indicating its sensitivity level', helpGroup: 'Checklist Metadata'}),
+    hostname: Flags.string({char: 'H', required: false, description: 'The name assigned to the asset within the network', helpGroup: 'Checklist Metadata'}),
+    ip: Flags.string({char: 'I', required: false, description: 'IP address', helpGroup: 'Checklist Metadata'}),
+    mac: Flags.string({char: 'M', required: false, description: 'MAC address', helpGroup: 'Checklist Metadata'}),
+    fqdn: Flags.string({char: 'F', required: false, description: 'Fully Qualified Domain Name', helpGroup: 'Checklist Metadata'}),
+    targetcomment: Flags.string({required: false, description: 'Additional comments or notes about the asset', helpGroup: 'Checklist Metadata'}),
+    role: Flags.string({required: false, description: 'The primary function or role of the asset within the network or organization', options: Object.values(Role), helpGroup: 'Checklist Metadata'}),
+    assettype: Flags.string({required: false, description: 'The category or classification of the asset', options: Object.values(Assettype), helpGroup: 'Checklist Metadata'}),
+    techarea: Flags.string({required: false, description: 'The technical area or domain to which the asset belongs', options: Object.values(Techarea), helpGroup: 'Checklist Metadata'}),
+    stigguid: Flags.string({required: false, description: 'A unique identifier associated with the STIG for the asset', helpGroup: 'Checklist Metadata'}),
+    targetkey: Flags.string({required: false, description: 'A unique key or identifier for the asset within the checklist or inventory system', helpGroup: 'Checklist Metadata'}),
+    webordatabase: Flags.boolean({required: false, description: 'Indicates whether the STIG is primarily for either a web or database server', helpGroup: 'Checklist Metadata'}),
+    webdbsite: Flags.string({required: false, description: 'The specific site or application hosted on the web or database server', dependsOn: ['webordatabase'], helpGroup: 'Checklist Metadata'}),
+    webdbinstance: Flags.string({required: false, description: 'The specific instance of the web application or database running on the server', dependsOn: ['webordatabase'], helpGroup: 'Checklist Metadata'}),
+    vulidmapping: Flags.string({required: false, description: 'Which type of control identifier to map to the checklist ID', options: ['gid', 'id'], helpGroup: 'Checklist Metadata'}),
   }
 
-  static examples = ['saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90']
+  static readonly examples = ['saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90:AB',
+    'saf convert hdf2ckl -i rhel8-results.json -o rhel8.ckl -m rhel8-metadata.json']
+
+  static readonly oldMetadataFormatMapping = {
+    'profiles[0].name': 'benchmark.title',
+    'profiles[0].title': 'benchmark.title',
+    stigguid: 'stigid',
+    role: 'role',
+    assettype: 'type',
+    hostname: 'hostname',
+    hostip: 'ip',
+    hostmac: 'mac',
+    techarea: 'tech_area',
+    targetkey: 'target_key',
+    webdbsite: 'web_db_site',
+    webdbinstance: 'web_db_site',
+  }
 
   async run() {
     const {flags} = await this.parse(HDF2CKL)
-    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf8')))
-    const profileName = contextualizedEvaluation.data.profiles[0].name
-    const controls = contextualizedEvaluation.contains.flatMap(profile => profile.contains) || []
-    const rootControls = _.uniqBy(controls, control =>
-      _.get(control, 'root.hdf.wraps.id'),
-    ).map(({root}) => root)
-    let cklData = {}
-    const cklMetadata: CKLMetadata = {
-      fileName: convertFullPathToFilename(flags.input),
-      benchmark: {
-        title: profileName || null,
-        version: '1',
-        plaintext: null,
-      },
-      stigid: profileName || null,
-      role: 'None',
-      type: 'Computing',
-      hostname: flags.hostname || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.hostname') || null,
-      ip: flags.ip || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.ip') || null,
-      mac: flags.mac || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.mac') || null,
-      fqdn: flags.fqdn || _.get(contextualizedEvaluation, 'evaluation.data.passthrough.fqdn') || null,
-      tech_area: null,
-      target_key: '0',
-      web_or_database: 'false',
-      web_db_site: null,
-      web_db_instance: null,
-    }
 
-    if (flags.metadata) {
-      const cklMetadataInput: CKLMetadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf8'))
-      for (const field in cklMetadataInput) {
-        if (typeof cklMetadata[field] === 'string' || typeof cklMetadata[field] === 'object') {
-          cklMetadata[field] = cklMetadataInput[field]
+    /* Order of precedence for checklist metadata:
+      command flags (hostname, ip, etc.) or metadata file (-m flag)
+      input hdf file passthrough.metadata
+      input hdf file passthrough.checklist.asset */
+
+    const defaultMetadata: ChecklistMetadata = {
+      role: Role.None, assettype: Assettype.Computing, webordatabase: 'false', profiles: [],
+      hostfqdn: '', hostip: '', hostmac: '', marking: '', techarea: Techarea.Empty, vulidmapping: 'id',
+      hostname: '', targetcomment: '', webdbinstance: '', webdbsite: '',
+    }
+    const inputHDF = JSON.parse(fs.readFileSync(flags.input, 'utf8'))
+    let flagMetadata
+    flagMetadata = flags.metadata ?
+      JSON.parse(fs.readFileSync(flags.metadata, 'utf8')) :
+      {
+        profiles: [{
+          name: flags.profilename,
+          title: flags.profiletitle,
+          version: flags.version,
+          releasenumber: flags.releasenumber,
+          releasedate: flags.releasedate,
+        }],
+        marking: flags.marking,
+        hostname: flags.hostname,
+        hostip: flags.ip,
+        hostmac: flags.mac,
+        hostfqdn: flags.fqdn,
+        targetcomment: flags.targetcomment,
+        role: flags.role,
+        assettype: flags.assettype,
+        techarea: flags.techarea,
+        targetkey: flags.targetkey,
+        webordatabase: flags.webordatabase,
+        webdbsite: flags.webdbsite,
+        webdbinstance: flags.webdbinstance,
+        vulidmapping: flags.vulidmapping,
+      }
+
+    // to preserve backwards compatibility with old metadata format
+    if (flags.metadata && _.has(flagMetadata, 'benchmark')) {
+      let profile
+      if (_.has(flagMetadata, 'benchmark.version')) {
+        const version: string = _.get(flagMetadata, 'benchmark.version')
+
+        // get sections of numbers in version string
+        const parsedVersion = version.split(/\D+/)
+          .filter(Boolean)
+          .map(s => Number.parseInt(s, 10))
+        profile = {version: parsedVersion[0], releasenumber: parsedVersion[1]}
+      } else {
+        profile = {}
+      }
+
+      const newFlagMetadata = {profiles: [profile]}
+
+      for (const [newKey, oldKey] of Object.entries(HDF2CKL.oldMetadataFormatMapping)) {
+        const oldValue = _.get(flagMetadata, oldKey)
+        if (oldValue) {
+          _.set(newFlagMetadata, newKey, oldValue)
         }
       }
+
+      flagMetadata = newFlagMetadata
     }
 
-    cklData = {
-      releaseInfo: cklMetadata.benchmark.plaintext,
-      ...cklMetadata,
-      profileInfo: getProfileInfo(contextualizedEvaluation, cklMetadata.fileName),
-      uuid: v4(),
-      controls: rootControls.map(control => getDetails(control, profileName)),
+    const hdfMetadata = _.get(inputHDF, 'passthrough.metadata', _.get(inputHDF, 'passthrough.checklist.asset', {}))
+    const metadata = _.merge(defaultMetadata, hdfMetadata, flagMetadata)
+    _.set(inputHDF, 'passthrough.metadata', metadata)
+
+    const validationResults = validateChecklistMetadata(metadata)
+    if (validationResults.ok) {
+      fs.writeFileSync(flags.output, new Mapper(inputHDF).toCkl())
+    } else {
+      console.error(`Error creating checklist:\n${validationResults.error.message}`)
     }
-    fs.writeFileSync(flags.output, Mustache.render(files['cklExport.ckl'].data, cklData).replaceAll(/[^\x00-\x7F]/g, ''))
   }
 }

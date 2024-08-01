@@ -88,7 +88,7 @@ export default class IonChannel2HDF extends Command {
           json = await apiClient.toHdf()
         }
 
-        fs.writeFileSync(path.join(flags.output, filename), JSON.stringify(json))
+        fs.writeFileSync(path.join(flags.output, filename), JSON.stringify(json, null, 2))
       }
     } else if (flags.apiKey && flags.teamName && Array.isArray(flags.project)) {
       logger.debug('Creating Ion Channel API Client')
@@ -112,7 +112,7 @@ export default class IonChannel2HDF extends Command {
           json = await apiClient.toHdf()
         }
 
-        fs.writeFileSync(path.join(flags.output, filename), JSON.stringify(json))
+        fs.writeFileSync(path.join(flags.output, filename), JSON.stringify(json, null, 2))
       }
     } else if (Array.isArray(flags.input)) {
       logger.debug('Processing input files')

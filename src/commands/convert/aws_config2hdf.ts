@@ -57,6 +57,6 @@ export default class AWSConfig2HDF extends Command {
       region: flags.region,
     }, !flags.insecure, flags.certificate ? fs.readFileSync(flags.certificate, 'utf8') : undefined) : new Mapper({region: flags.region}, !flags.insecure, flags.certificate ? fs.readFileSync(flags.certificate, 'utf8') : undefined)
 
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(this.ensureRefs(await converter.toHdf())))
+    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(this.ensureRefs(await converter.toHdf()), null, 2))
   }
 }

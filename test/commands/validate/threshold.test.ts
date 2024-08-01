@@ -81,4 +81,47 @@ describe('Test validate threshold', () => {
       expect(error.message).to.equal('passed.total.max: Threshold not met. Number of received total passed controls (19) is greater than your set threshold for the number of passed controls (18)')
     })
     .it('Validate threshold minMaxTotal - Triple Overlay Compliance')
+
+    test
+      .stdout()
+      .stderr()
+      .command([
+        'validate threshold',
+        '-i',
+        path.resolve(
+          './test/sample_data/HDF/input/rhel-8_hardened.json',
+        ),
+        '--templateFile',
+        path.resolve(
+          './test/sample_data/thresholds/rhel-8_hardened.counts.good.exact.yml',
+        ),
+      ])
+      .it('Validate threshold test - RHEL-8 Hardened Valid Exact Counts', ctx => {
+        expect(ctx.stdout).to.equal('All validation tests passed\n')
+        expect(ctx.stderr).to.equal('')
+      })
+
+    test
+      .stdout()
+      .stderr()
+      .command([
+        'validate threshold',
+        '-i',
+        path.resolve(
+          './test/sample_data/HDF/input/rhel-8_hardened.json',
+        ),
+        '--templateFile',
+        path.resolve(
+          './test/sample_data/thresholds/rhel-8_hardened.counts.bad.noimpactHigh.yml',
+        ),
+      ])
+      .catch(error => {
+        expect(error.message).to.equal('no_impact.high.max: Threshold not met. Number of received total no_impact controls (3) is greater than your set threshold for the number of no_impact controls (2)')
+      })
+      .it(
+        'Validate threshold test - RHEL-8 Hardened Invalid Total Counts',
+        ctx => {
+          expect(ctx.stdout).to.equal('')
+        },
+      )
 })

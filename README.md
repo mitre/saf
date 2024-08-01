@@ -48,7 +48,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [CKL to POA&amp;M](#ckl-to-poam)
       * [DBProtect to HDF](#dbprotect-to-hdf)
       * [Fortify to HDF](#fortify-to-hdf)
-      * [GoSec to HDF](#gosec-to-hdf)
+      * [gosec to HDF](#gosec-to-hdf)
       * [Ion Channel 2 HDF](#ion-channel-2-hdf)
       * [JFrog Xray to HDF](#jfrog-xray-to-hdf)
       * [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
@@ -384,20 +384,47 @@ convert hdf2ckl               Translate a Heimdall Data Format JSON file into a
                               DISA checklist file
 
   USAGE
-    $ saf convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [-H <hostname>] [-F <fqdn>] [-M <mac-address>] [-I <ip-address>]
+    $ saf convert hdf2ckl saf convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [--profilename <value>] [--profiletitle <value>] [--version <value>] [--releasenumber <value>] [--releasedate <value>] [--marking <value>] [-H <value>] [-I <value>] [-M <value>] [-F <value>] [--targetcomment <value>] [--role Domain Controller|Member Server|None|Workstation] [--assettype Computing|Non-Computing] [--techarea |Application Review|Boundary Security|CDS Admin Review|CDS Technical Review|Database Review|Domain Name System (DNS)|Exchange Server|Host Based System Security (HBSS)|Internal Network|Mobility|Other Review|Releasable Networks (REL)|Releaseable Networks (REL)|Traditional Security|UNIX OS|VVOIP Review|Web Review|Windows OS] [--stigguid <value>] [--targetkey <value>] [--webdbsite <value> --webordatabase] [--webdbinstance <value> ] [--vulidmapping gid|id]
 
   FLAGS
-    -F, --fqdn=<fqdn>                       FQDN for CKL metadata
-    -H, --hostname=<hostname>               Hostname for CKL metadata
-    -I, --ip=<ip-address>                   IP address for CKL metadata
-    -M, --mac=<mac-address>                 MAC address for CKL metadata
-    -h, --help                              Show CLI help.
-    -i, --input=<hdf-scan-results-json>     (required) Input HDF file
-    -m, --metadata=<metadata>               Metadata JSON file, generate one with "saf generate ckl_metadata"
-    -o, --output=<output-ckl>               (required) Output CKL file
+    -h, --help            Show CLI help.
+    -i, --input=<value>   (required) Input HDF file
+    -o, --output=<value>  (required) Output CKL file
+
+  CHECKLIST METADATA FLAGS
+    -F, --fqdn=<value>           Fully Qualified Domain Name
+    -H, --hostname=<value>       The name assigned to the asset within the network
+    -I, --ip=<value>             IP address
+    -M, --mac=<value>            MAC address
+    -m, --metadata=<value>       Metadata JSON file, generate one with "saf generate ckl_metadata"
+        --assettype=<option>     The category or classification of the asset
+                                <options: Computing|Non-Computing>
+        --marking=<value>        A security classification or designation of the asset, indicating its sensitivity level
+        --profilename=<value>    Profile name
+        --profiletitle=<value>   Profile title
+        --releasedate=<value>    Profile release date
+        --releasenumber=<value>  Profile release number
+        --role=<option>          The primary function or role of the asset within the network or organization
+                                <options: Domain Controller|Member Server|None|Workstation>
+        --stigguid=<value>       A unique identifier associated with the STIG for the asset
+        --targetcomment=<value>  Additional comments or notes about the asset
+        --targetkey=<value>      A unique key or identifier for the asset within the checklist or inventory system
+        --techarea=<option>      The technical area or domain to which the asset belongs
+                                <options: |Application Review|Boundary Security|CDS Admin Review|CDS Technical Review|Database Review|Domain Name System (DNS)|Exchange Server|Host Based System Security (HBSS)|Internal Network|Mobility|Other Review|Releasable Networks (REL)|Releaseable Networks (REL)|Traditional Security|UNIX OS|VVOIP Review|Web Review|Windows OS>
+        --version=<value>        Profile version number
+        --vulidmapping=<option>  Which type of control identifier to map to the checklist ID
+                                <options: gid|id>
+        --webdbinstance=<value>  The specific instance of the web application or database running on the server
+        --webdbsite=<value>      The specific site or application hosted on the web or database server
+        --webordatabase          Indicates whether the STIG is primarily for either a web or database server
+
+  DESCRIPTION
+    Translate a Heimdall Data Format JSON file into a DISA checklist file
 
   EXAMPLES
-    $ saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90
+    $ saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90:AB
+
+    $ saf convert hdf2ckl -i rhel8-results.json -o rhel8.ckl -m rhel8-metadata.json
 ```
 [top](#convert-hdf-to-other-formats)
 #### HDF to CSV
@@ -576,16 +603,16 @@ convert fortify2hdf           Translate a Fortify results FVDL file into a Heimd
 ```
 
 [top](#convert-other-formats-to-hdf)
-#### GoSec to HDF
+#### gosec to HDF
 ```
-convert gosec2hdf             Translate a GoSec (Golang Security Checker) results file
+convert gosec2hdf             Translate a gosec (Golang Security Checker) results file
                               into a Heimdall Data Format JSON file
   USAGE
     $ saf convert gosec2hdf -i <gosec-json> -o <hdf-scan-results-json> [-h]
 
   FLAGS
     -h, --help            Show CLI help.
-    -i, --input=<value>   (required) Input GoSec Results JSON File
+    -i, --input=<value>   (required) Input gosec Results JSON File
     -o, --output=<value>  (required) Output HDF JSON File
 
   EXAMPLES
