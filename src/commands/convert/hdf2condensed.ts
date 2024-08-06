@@ -51,6 +51,6 @@ export default class HDF2Condensed extends Command {
       buckets: extractControlSummariesBySeverity(parsedProfile),
       status: thresholds,
     }
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(result))
+    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(result, null, 2))
   }
 }

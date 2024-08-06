@@ -1,4 +1,4 @@
-import {ASFFResults, ChecklistResults, BurpSuiteMapper, ConveyorResults, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, MsftSecureScoreMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TwistlockResults, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
+import {ASFFResults, ChecklistResults, BurpSuiteMapper, ConveyorResults, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, MsftSecureScoreMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TrufflehogResults, TwistlockResults, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
 import fs from 'fs'
 import _ from 'lodash'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
@@ -53,6 +53,7 @@ export default class Convert extends Command {
         case 'sarif':
         case 'scoutsuite':
         case 'snyk':
+        case 'trufflehog':
         case 'twistlock':
         case 'xccdf': {
           return {}
@@ -87,7 +88,7 @@ export default class Convert extends Command {
         _.forOwn(results, (result, filename) => {
           fs.writeFileSync(
             path.join(flags.output, checkSuffix(filename)),
-            JSON.stringify(result),
+            JSON.stringify(result, null, 2),
           )
         })
         break
@@ -95,7 +96,7 @@ export default class Convert extends Command {
 
       case 'burp': {
         converter = new BurpSuiteMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
 
@@ -107,7 +108,7 @@ export default class Convert extends Command {
         for (const [filename, result]  of Object.entries(results)) {
           fs.writeFileSync(
             path.join(flags.output, checkSuffix(filename as string)),
-            JSON.stringify(result),
+            JSON.stringify(result, null, 2),
           )
         }
 
@@ -116,25 +117,25 @@ export default class Convert extends Command {
 
       case 'checklist': {
         converter = new ChecklistResults(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
 
       case 'dbProtect': {
         converter = new DBProtectMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
 
       case 'fortify': {
         converter = new FortifyMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
 
       case 'jfrog': {
         converter = new JfrogXrayMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
 
@@ -149,10 +150,10 @@ export default class Convert extends Command {
         const result = converter.toHdf()
         if (Array.isArray(result)) {
           for (const element of result) {
-            fs.writeFileSync(`${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
+            fs.writeFileSync(`${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element, null, 2))
           }
         } else {
-          fs.writeFileSync(`${checkSuffix(flags.output)}`, JSON.stringify(result))
+          fs.writeFileSync(`${checkSuffix(flags.output)}`, JSON.stringify(result, null, 2))
         }
 
         break
@@ -160,13 +161,13 @@ export default class Convert extends Command {
 
       case 'netsparker': {
         converter = new NetsparkerMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
 
       case 'nikto': {
         converter = new NiktoMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
 
@@ -180,7 +181,7 @@ export default class Convert extends Command {
         _.forOwn(results, result => {
           fs.writeFileSync(
             path.join(flags.output, `${_.get(result, 'platform.target_id')}.json`),
-            JSON.stringify(result),
+            JSON.stringify(result, null, 2),
           )
         })
         break
@@ -188,13 +189,13 @@ export default class Convert extends Command {
 
       case 'sarif': {
         converter = new SarifMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
 
       case 'scoutsuite': {
         converter = new ScoutsuiteMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
 
@@ -203,30 +204,36 @@ export default class Convert extends Command {
         const result = converter.toHdf()
         if (Array.isArray(result)) {
           for (const element of result) {
-            fs.writeFileSync(`${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element))
+            fs.writeFileSync(`${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`, JSON.stringify(element, null, 2))
           }
         } else {
-          fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(result))
+          fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(result, null, 2))
         }
 
         break
       }
 
+      case 'trufflehog': {
+        converter = new TrufflehogResults(fs.readFileSync(flags.input, 'utf8'))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
+        break
+      }
+
       case 'twistlock': {
         converter = new TwistlockResults(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
 
       case 'xccdf': {
         converter = new XCCDFResultsMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
 
       case 'zap': {
         converter = new ZapMapper(fs.readFileSync(flags.input, 'utf8'), _.get(flags, 'name') as string)
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
 

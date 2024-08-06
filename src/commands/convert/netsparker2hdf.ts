@@ -25,6 +25,6 @@ export default class Netsparker2HDF extends Command {
     checkInput({data, filename: flags.input}, 'netsparker', 'Netsparker XML results file')
 
     const converter = new Mapper(data, flags['with-raw'])
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
   }
 }

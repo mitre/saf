@@ -23,7 +23,11 @@ export default class CKL2HDF extends Command {
     const data = fs.readFileSync(flags.input, 'utf8')
     checkInput({data, filename: flags.input}, 'checklist', 'DISA Checklist')
 
-    const converter = new Mapper(data, flags['with-raw'])
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+    try {
+      const converter = new Mapper(data, flags['with-raw'])
+      fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
+    } catch (error) {
+      console.error(`Error converting to hdf:\n${error}`)
+    }
   }
 }
