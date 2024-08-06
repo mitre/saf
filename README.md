@@ -682,7 +682,7 @@ convert nessus2hdf            Translate a Nessus XML results file into a Heimdal
 #### Microsoft Secure Score to HDF
 Output|Use|Command
 ---|---|---
-Msft Combined json|Combine the outputs from secureScore and secureScoreControlProfile | `convert msft_secure2hdf -i <(jq -s \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json) -o output-hdf-name.json`
+Microsoft Combined json|Combine the outputs from secureScore and secureScoreControlProfile | `convert msft_secure2hdf -i <(jq -s \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json) -o output-hdf-name.json`
 
 
 ```
