@@ -1,3 +1,4 @@
+import {ExecJSON} from 'inspecjs'
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import https from 'https'
@@ -17,7 +18,7 @@ function processInputs(
   profiles: { value: SecureScoreControlProfile[] },
   output: string,
   withRaw: boolean,
-): void {
+) {
   const converter = new Mapper(
     JSON.stringify({
       secureScore: scoreDoc,
@@ -27,7 +28,7 @@ function processInputs(
   )
 
   for (const hdfReport of converter.toHdf()) {
-    const auxData = (hdfReport as ExecJSON.Execution & {passthrough: Record<string, unknown>}).passthrough?.auxiliary_data.find((auxDat: Record<string, unknown>) => auxDat?.name === 'Microsoft Secure Score').data
+    const auxData = ((hdfReport as ExecJSON.Execution & {passthrough: Record<string, unknown>}).passthrough?.auxiliary_data as Record<string, unknown>[]).find(auxDat => auxDat?.name === 'Microsoft Secure Score')?.data as Record<string, unknown>
     const reportId = auxData?.reportId
     fs.writeFileSync(`${output.replaceAll(/\.json/gi, '')}-${reportId}.json`, JSON.stringify(hdfReport))
   }
