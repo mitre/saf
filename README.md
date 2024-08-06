@@ -477,6 +477,7 @@ AWS SecurityHub enabled standards json|Get all the enabled standards so you can 
 AWS SecurityHub standard controls json|Get all the controls for a standard that will be fed into the mapper|aws securityhub describe-standards-controls --standards-subscription-arn "arn:aws:securityhub:us-east-1:123456789123:subscription/cis-aws-foundations-benchmark/v/1.2.0" > asff_cis_standard.json
 
 
+
 ```
 convert asff2hdf              Translate a AWS Security Finding Format JSON into a
                               Heimdall Data Format JSON file(s)
@@ -679,12 +680,17 @@ convert nessus2hdf            Translate a Nessus XML results file into a Heimdal
 
 [top](#convert-other-formats-to-hdf)
 #### Microsoft Secure Score to HDF
-#### Microsoft Secure Score to HDF
+Output|Use|Command
+---|---|---
+Msft Combined json|Combine the outputs from secureScore and secureScoreControlProfile | `convert msft_secure2hdf -i <(jq -s \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json) -o output-hdf-name.json`
+
+
 ```
 convert msft_secure2hdf       Translate a Microsoft Secure Score report and Secure Score Control to a Heimdall Data Format JSON file. Required inputs:
                               * Pre-downloaded Microsoft Secure Score and Secure Score Control
                               Profiles JSON files
                               * Microsoft Graph API credentials
+
   USAGE
     $ saf convert msft_secure2hdf -r <secureScore-json> -p <secure-score-control-profiles> -o <hdf-scan-results-json> [-h]
     $ saf convert msft_secure2hdf -t <azure-tenant-id> -a <azure-app-id> -s <azure-app-secret> -o <hdf-scan-results-json> [-h]
@@ -706,7 +712,7 @@ convert msft_secure2hdf       Translate a Microsoft Secure Score report and Secu
                                   -a "12345678-1234-1234-1234-1234567890abcd"   \
                                   -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" \
                                   -o output-hdf-name.json
-    $ saf convert msft_secure2hdf -i <(jq \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json) -o output-hdf-name.json
+    $ saf convert msft_secure2hdf -i <(jq -s \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json) -o output-hdf-name.json
 ```
 
 [top](#convert-other-formats-to-hdf)

@@ -1,7 +1,7 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import https from 'https'
-import {MsftSecureScoreMapper as Mapper} from '@mitre/hdf-converters'
+import {MsftSecureScoreResults as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 import {ClientSecretCredential} from '@azure/identity'
 import {Client, ClientOptions, PageIterator, PageIteratorCallback} from '@microsoft/microsoft-graph-client'
@@ -10,6 +10,7 @@ import {
   SecureScoreControlProfile,
 } from '@microsoft/microsoft-graph-types'
 import {TokenCredentialAuthenticationProvider} from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials'
+import _ from 'lodash'
 
 function processInputs(
   scoreDoc: SecureScore,
@@ -24,7 +25,12 @@ function processInputs(
     }),
     withRaw,
   )
-  fs.writeFileSync(checkSuffix(output), JSON.stringify(converter.toHdf()))
+
+  for (const hdfReport of converter.toHdf()) {
+    const auxData = (hdfReport as any).passthrough.auxiliary_data.find((auxDat: any) => auxDat.name === 'Microsoft Secure Score').data
+    const reportId = auxData.reportId
+    fs.writeFileSync(`${output.replaceAll(/\.json/gi, '')}-${reportId}.json`, JSON.stringify(hdfReport))
+  }
 }
 
 export default class MsftSecure2HDF extends Command {

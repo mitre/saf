@@ -141,7 +141,7 @@ export default class Convert extends Command {
 
       case 'msft_secure_score': {
         converter = new MsftSecureScoreMapper(fs.readFileSync(flags.input, 'utf8'))
-        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
 
