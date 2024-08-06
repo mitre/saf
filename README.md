@@ -682,9 +682,9 @@ convert nessus2hdf            Translate a Nessus XML results file into a Heimdal
 #### Microsoft Secure Score to HDF
 Output|Use|Command
 ---|---|---
-Microsoft Secure Score json|This file contains the Graph API response listing SecureScore|PowerShell$ `Get-MgSecuritySecureScore -Top 500`
-Microsoft Secure Score Control Profiles json|This file contains the Graph API response listing SecureScoreControlProfile|PowerShell$ `Get-MgSecuritySecureScoreControlProfile -Top 500`
-Microsoft Combined json|Combine the outputs from secureScore and secureScoreControlProfile | `jq -s \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json`
+Microsoft Secure Score JSON|This file contains the Graph API response for the `security/secureScore` endpoint|PowerShell$ `Get-MgSecuritySecureScore -Top 500`
+Microsoft Secure Score Control Profiles JSON|This file contains the Graph API response for the `security/secureScoreControlProfiles` endpoint|PowerShell$ `Get-MgSecuritySecureScoreControlProfile -Top 500`
+Combined JSON|Combine the outputs from `security/secureScore` and `security/secureScoreControlProfiles` endpoints|`jq -s \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json`
 
 
 ```
