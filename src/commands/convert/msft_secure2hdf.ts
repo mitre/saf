@@ -17,7 +17,7 @@ function processInputs(
   profiles: { value: SecureScoreControlProfile[] },
   output: string,
   withRaw: boolean,
-): any {
+): void {
   const converter = new Mapper(
     JSON.stringify({
       secureScore: scoreDoc,
