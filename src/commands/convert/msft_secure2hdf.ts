@@ -27,7 +27,7 @@ function processInputs(
   )
 
   for (const hdfReport of converter.toHdf()) {
-    const auxData = (hdfReport as any).passthrough.auxiliary_data.find((auxDat: any) => auxDat.name === 'Microsoft Secure Score').data
+    const auxData = (hdfReport as ExecJSON.Execution & {passthrough: Record<string, unknown>}).passthrough?.auxiliary_data.find((auxDat: Record<string, unknown>) => auxDat?.name === 'Microsoft Secure Score').data
     const reportId = auxData?.reportId
     fs.writeFileSync(`${output.replaceAll(/\.json/gi, '')}-${reportId}.json`, JSON.stringify(hdfReport))
   }
