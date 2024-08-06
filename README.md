@@ -686,10 +686,7 @@ Microsoft Combined json|Combine the outputs from secureScore and secureScoreCont
 
 
 ```
-convert msft_secure2hdf       Translate a Microsoft Secure Score report and Secure Score Control to a Heimdall Data Format JSON file. Required inputs:
-                              * Pre-downloaded Microsoft Secure Score and Secure Score Control
-                              Profiles JSON files
-                              * Microsoft Graph API credentials
+convert msft_secure2hdf       Translate a Microsoft Secure Score report and Secure Score Control to a Heimdall Data Format JSON file
 
   USAGE
     $ saf convert msft_secure2hdf -r <secureScore-json> -p <secure-score-control-profiles> -o <hdf-scan-results-json> [-h]
