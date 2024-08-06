@@ -699,7 +699,7 @@ convert msft_secure2hdf       Translate a Microsoft Secure Score report and Secu
   FLAGS
     -h, --help                                                  Show CLI help.
     -i, --combinedInputs                                        JSON incorporting {"secureScore": <-r>, "profiles": <-p>} File
-    -r, --inputScoreDoc=<secure-score-json>                     Input secureScore File
+    -r, --inputScoreDoc=<secure-score-json>                     Input Secure Scores JSON File
     -p, --inputProfiles=<secure-score-control-profiles-json>    Input Secure Score Control Profiles JSON File
     -t, --tenantId=<azure-tenant-id>                            Azure Tenant ID
     -a, --appId=<azure-app-id>                                  Azure App ID
