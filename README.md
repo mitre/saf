@@ -46,6 +46,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [AWS Config to HDF](#aws-config-to-hdf)
       * [Burp Suite to HDF](#burp-suite-to-hdf)
       * [CKL to POA&amp;M](#ckl-to-poam)
+      * [CycloneDX SBOM to HDF](#cyclonedx-sbom-to-hdf)
       * [DBProtect to HDF](#dbprotect-to-hdf)
       * [Fortify to HDF](#fortify-to-hdf)
       * [gosec to HDF](#gosec-to-hdf)
@@ -566,6 +567,24 @@ convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M file
   EXAMPLES
     $ saf convert ckl2POAM -i checklist_file.ckl -o output-folder -d abcdefg -s 2
 ```
+
+[top](#convert-other-formats-to-hdf)
+#### CycloneDX SBOM to HDF
+```
+convert sbom2hdf              Translate a CycloneDX SBOM report into an HDF results set
+
+  USAGE
+    $ saf convert sbom2hdf -i <sbom-json> -o <hdf-scan-results-json> [-h]
+
+  FLAGS
+    -h, --help                            Show CLI help.
+    -i, --input=<sbom-json>               (required) Input SBOM File
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+
+  EXAMPLES
+    $ saf convert sbom2hdf -i sbom.json -o output-hdf-name.json
+```
+
 [top](#convert-other-formats-to-hdf)
 #### DBProtect to HDF
 ```
