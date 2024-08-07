@@ -1,4 +1,4 @@
-import {ASFFResults, ChecklistResults, BurpSuiteMapper, ConveyorResults, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, SBOMResults, ScoutsuiteMapper, SnykResults, TrufflehogResults, TwistlockResults, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
+import {ASFFResults, ChecklistResults, BurpSuiteMapper, ConveyorResults, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, MsftSecureScoreMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, SBOMResults, ScoutsuiteMapper, SnykResults, TrufflehogResults, TwistlockResults, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
 import fs from 'fs'
 import _ from 'lodash'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
@@ -45,6 +45,7 @@ export default class Convert extends Command {
         case 'dbProtect':
         case 'fortify':
         case 'jfrog':
+        case 'msft_secure_score':
         case 'nessus':
         case 'netsparker':
         case 'nikto':
@@ -135,6 +136,12 @@ export default class Convert extends Command {
 
       case 'jfrog': {
         converter = new JfrogXrayMapper(fs.readFileSync(flags.input, 'utf8'))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
+        break
+      }
+
+      case 'msft_secure_score': {
+        converter = new MsftSecureScoreMapper(fs.readFileSync(flags.input, 'utf8'))
         fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }

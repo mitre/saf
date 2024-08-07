@@ -53,6 +53,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Ion Channel 2 HDF](#ion-channel-2-hdf)
       * [JFrog Xray to HDF](#jfrog-xray-to-hdf)
       * [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
+      * [Microsoft Secure Score to HDF](#msft_secure-to-hdf)
       * [Netsparker to HDF](#netsparker-to-hdf)
       * [Nikto to HDF](#nikto-to-hdf)
       * [Prisma to HDF](#prisma-to-hdf)
@@ -477,6 +478,7 @@ AWS SecurityHub enabled standards json|Get all the enabled standards so you can 
 AWS SecurityHub standard controls json|Get all the controls for a standard that will be fed into the mapper|aws securityhub describe-standards-controls --standards-subscription-arn "arn:aws:securityhub:us-east-1:123456789123:subscription/cis-aws-foundations-benchmark/v/1.2.0" > asff_cis_standard.json
 
 
+
 ```
 convert asff2hdf              Translate a AWS Security Finding Format JSON into a
                               Heimdall Data Format JSON file(s)
@@ -693,6 +695,42 @@ convert nessus2hdf            Translate a Nessus XML results file into a Heimdal
 
   EXAMPLES
     $ saf convert nessus2hdf -i nessus_results.xml -o output-hdf-name.json
+```
+
+[top](#convert-other-formats-to-hdf)
+#### Microsoft Secure Score to HDF
+Output|Use|Command
+---|---|---
+Microsoft Secure Score JSON|This file contains the Graph API response for the `security/secureScore` endpoint|PowerShell$ `Get-MgSecuritySecureScore -Top 500`
+Microsoft Secure Score Control Profiles JSON|This file contains the Graph API response for the `security/secureScoreControlProfiles` endpoint|PowerShell$ `Get-MgSecuritySecureScoreControlProfile -Top 500`
+Combined JSON|Combine the outputs from `security/secureScore` and `security/secureScoreControlProfiles` endpoints|`jq -s \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json`
+
+
+```
+convert msft_secure2hdf       Translate a Microsoft Secure Score report and Secure Score Control to a Heimdall Data Format JSON file
+
+  USAGE
+    $ saf convert msft_secure2hdf -r <secureScore-json> -p <secure-score-control-profiles> -o <hdf-scan-results-json> [-h]
+    $ saf convert msft_secure2hdf -t <azure-tenant-id> -a <azure-app-id> -s <azure-app-secret> -o <hdf-scan-results-json> [-h]
+    $ saf convert msft_secure2hdf -i <combined-inputs> -o <hdf-scan-results-json> [-h]
+
+  FLAGS
+    -h, --help                                                  Show CLI help.
+    -i, --combinedInputs                                        JSON File combining the outputs from the Microsoft Graph API endpoints
+    -r, --inputScoreDoc=<secure-score-json>                     Input Secure Scores JSON File
+    -p, --inputProfiles=<secure-score-control-profiles-json>    Input Secure Score Control Profiles JSON File
+    -t, --tenantId=<azure-tenant-id>                            Azure Tenant ID
+    -a, --appId=<azure-app-id>                                  Azure App ID
+    -s, --appSecreet=<azure-app-id>                             Azure App Secret
+    -o, --output=<hdf-scan-results-json>                        Output HDF JSON File
+
+  EXAMPLES
+    $ saf convert msft_secure2hdf -r secureScore.json -p secureScoreControlProfile.json -o output-hdf-name.json
+    $ saf convert msft_secure2hdf -t "12345678-1234-1234-1234-1234567890abcd"   \
+                                  -a "12345678-1234-1234-1234-1234567890abcd"   \
+                                  -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" \
+                                  -o output-hdf-name.json
+    $ saf convert msft_secure2hdf -i <(jq -s \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json) -o output-hdf-name.json
 ```
 
 [top](#convert-other-formats-to-hdf)
