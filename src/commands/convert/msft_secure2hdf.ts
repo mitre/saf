@@ -3,7 +3,6 @@ import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import https from 'https'
 import {MsftSecureScoreResults as Mapper} from '@mitre/hdf-converters'
-import {checkSuffix} from '../../utils/global'
 import {ClientSecretCredential} from '@azure/identity'
 import {Client, ClientOptions, PageIterator, PageIteratorCallback} from '@microsoft/microsoft-graph-client'
 import {
@@ -22,14 +21,14 @@ function processInputs(
   const converter = new Mapper(
     JSON.stringify({
       secureScore: scoreDoc,
-      profiles: profiles,
+      profiles,
     }),
     withRaw,
   )
 
   for (const hdfReport of converter.toHdf()) {
     const auxData = ((hdfReport as ExecJSON.Execution & {passthrough: Record<string, unknown>}).passthrough?.auxiliary_data as Record<string, unknown>[]).find(auxDat => auxDat?.name === 'Microsoft Secure Score')?.data as Record<string, unknown>
-    const reportId = auxData?.reportId
+    const reportId = auxData?.reportId as string
     fs.writeFileSync(`${output.replaceAll(/\.json/gi, '')}-${reportId}.json`, JSON.stringify(hdfReport))
   }
 }
