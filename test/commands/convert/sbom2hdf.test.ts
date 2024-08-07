@@ -9,7 +9,7 @@ describe('Test sbom', () => {
 
   test
     .stdout()
-    .command(['convert sbom2hdf', '-i', path.resolve('./test/sample_data/sbom/sample_input_report/dropwizard-no-vuln.json'), '-o', `${tmpobj.name}/sbom.json`])
+    .command(['convert sbom2hdf', '-i', path.resolve('./test/sample_data/sbom/sample_input_report/dropwizard-no-vulns.json'), '-o', `${tmpobj.name}/sbom.json`])
     .it('hdf-converter output test - dropwizard no vulns', () => {
       const converted = JSON.parse(fs.readFileSync(`${tmpobj.name}/sbom.json`, 'utf8'))
       const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/sbom/sbom-dropwizard-no-vulns-hdf.json'), 'utf8'))
@@ -36,7 +36,7 @@ describe('Test sbom', () => {
     .command(['convert sbom2hdf', '-i', path.resolve('./test/sample_data/sbom/sample_input_report/generated-saf-sbom.json'), '-o', `${tmpobj.name}/sbom.json`])
     .it('hdf-converter output test - saf', () => {
       const converted = JSON.parse(fs.readFileSync(`${tmpobj.name}/sbom.json`, 'utf8'))
-      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/sbom/sbom-saf.json'), 'utf8'))
+      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/sbom/sbom-saf-hdf.json'), 'utf8'))
       expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
     })
   test
@@ -54,7 +54,7 @@ describe('Test sbom using withraw flag', () => {
 
   test
     .stdout()
-    .command(['convert sbom2hdf', '-i', path.resolve('./test/sample_data/sbom/sample_input_report/dropwizard-no-vuln.json'), '-o', `${tmpobj.name}/sbom.json`, '-w'])
+    .command(['convert sbom2hdf', '-i', path.resolve('./test/sample_data/sbom/sample_input_report/dropwizard-no-vulns.json'), '-o', `${tmpobj.name}/sbom.json`, '-w'])
     .it('hdf-converter withraw output test - dropwizard no vulns', () => {
       const converted = JSON.parse(fs.readFileSync(`${tmpobj.name}/sbom.json`, 'utf8'))
       const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/sbom/sbom-dropwizard-no-vulns-hdf-withraw.json'), 'utf8'))
@@ -81,7 +81,7 @@ describe('Test sbom using withraw flag', () => {
     .command(['convert sbom2hdf', '-i', path.resolve('./test/sample_data/sbom/sample_input_report/generated-saf-sbom.json'), '-o', `${tmpobj.name}/sbom.json`, '-w'])
     .it('hdf-converter withraw output test - saf', () => {
       const converted = JSON.parse(fs.readFileSync(`${tmpobj.name}/sbom.json`, 'utf8'))
-      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/sbom/sbom-saf-withraw.json'), 'utf8'))
+      const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/sbom/sbom-saf-hdf-withraw.json'), 'utf8'))
       expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
     })
   test
