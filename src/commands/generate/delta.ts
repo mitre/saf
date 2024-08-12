@@ -1,9 +1,16 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import {processInSpecProfile, processOVAL, UpdatedProfileReturn, updateProfileUsingXCCDF} from '@mitre/inspec-objects'
+import { processInSpecProfile, processOVAL, UpdatedProfileReturn, updateProfileUsingXCCDF, processXCCDF} from '@mitre/inspec-objects'
+
+// TODO: We shouldn't have to import like this, open issue to clean library up for inspec-objects
+// test failed in updating inspec-objects to address high lvl vuln
+import Profile from '@mitre/inspec-objects/lib/objects/profile'
+import Control from '@mitre/inspec-objects/lib/objects/control'
+
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
+//import Fuse from 'fuse.js';
 
 export default class GenerateDelta extends Command {
   static description = 'Update an existing InSpec profile with updated XCCDF guidance'
@@ -23,6 +30,8 @@ export default class GenerateDelta extends Command {
       description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
     }),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
+    // New flag -M for whether to try mapping controls to new profile
+    runMapControls: Flags.boolean({char: 'M', required: false, default: false, description: 'Run the mapControls function'}),
   }
 
   static examples = [
@@ -39,6 +48,8 @@ export default class GenerateDelta extends Command {
     let existingProfile: any | null = null
     let updatedXCCDF: any = {}
     let ovalDefinitions: any = {}
+
+    let processedXCCDF: any = {}
 
     let markDownFile = ''
     let outputProfileFolderPath = ''
@@ -121,6 +132,24 @@ export default class GenerateDelta extends Command {
       }
     }
 
+    console.log("TEST BEFORE RUN")
+    try {
+      if (flags.runMapControls) {
+        console.log("test DURING run")
+        // Process XCCDF of new profile to get controls
+        processedXCCDF = processXCCDF(updatedXCCDF, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
+              // profile = processXCCDF(xccdf, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
+ 
+        // Use existingProfile as it processes the existing inspec profile already
+        this.mapControls(existingProfile, processedXCCDF)
+      }
+    }
+    catch (error: any) {
+      logger.error(`ERROR: Could not process runMapControls ${flags.runMapControls}. Check the --help command for more information on the -o flag.`)
+      throw error
+    }
+
+    // TODO: Modify the output report to include the mapping of controls and describe what was mapped
     // Process the output folder
     try {
       // Create the folder if it doesn't exist
@@ -147,7 +176,6 @@ export default class GenerateDelta extends Command {
       logger.error(`ERROR: Could not process output ${flags.output}. Check the --help command for more information on the -o flag.`)
       throw error
     }
-
     // Set the report markdown file location
     if (flags.report) {
       if (fs.existsSync(flags.report) && fs.lstatSync(flags.report).isDirectory()) {
@@ -199,4 +227,138 @@ export default class GenerateDelta extends Command {
       }
     }
   }
+
+/**
+ * Maps controls from an old profile to a new profile by updating the control IDs
+ * based on matching SRG IDs and titles.
+ *
+ * @param oldProfile - The profile containing the old controls.
+ * @param newProfile - The profile containing the new controls.
+ *
+ * This method uses Fuse.js for fuzzy searching to find matching controls in the new profile
+ * based on the SRG ID (`tags.gtitle`). If a match is found and the titles match, the old control's
+ * ID is updated to the new control's ID.
+ *
+ * Example usage:
+ * ```typescript
+ * const oldProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
+ * const newProfile = processXCCDF(updatedXCCDF, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
+ * const generateDelta = new GenerateDelta()
+ * generateDelta.mapControls(oldProfile, newProfile);
+ * ```
+ */
+  async mapControls(oldProfile: Profile, newProfile: Profile): Promise<Profile>{
+    
+  // Todo: use the logger. Debug logging, error logging.
+  // Use a debugger to step through code and see what's happening
+    //console.log(JSON.stringify(Object.keys(newProfile), null, 2))
+
+    let oldControls: Control[] = oldProfile.controls
+    let newControls: Control[] = newProfile.controls
+
+    // Get existing controls into an array of control-type objects with id, title, description
+    // SRG ID is the common ID for identical controls b/w all profiles
+    // group by SRG ID
+    //console.log("in mapControls function")
+    //console.log(oldProfile.controls[0].tags.gtitle)
+
+/*
+Process: 
+(1) For each control in oldControls, find all controls in new controls with an equal SRG ID (gtitle property in tags)
+(2) If there is only one control with the same SRG ID, compare the titles of the two controls. If same, overwrite gid of old control with gid of new control
+*/
+
+    // complication: a single rule gets split into multiple checks
+    //  let existingControls = oldProfile.controls.map((control: any) => 
+    //    ({
+    //      id: control.id, 
+    //      title: control.title,
+    //    }))
+
+    // // Get new controls from new profile in XCCDF into an array
+    // let newControls = newProfile.controls.map((control: any) => 
+    //   ({
+    //     id: control.id, 
+    //     title: control.title,
+    //     description: control.description
+    //   }))
+
+    const { default: Fuse } = await import('fuse.js');
+
+    const fuseOptions = {
+      // isCaseSensitive: false,
+       includeScore: true,
+      // shouldSort: true,
+      // includeMatches: false,
+      // findAllMatches: false,
+      // minMatchCharLength: 1,
+      // location: 0,
+      // threshold: 0.6,
+      // distance: 100,
+      // useExtendedSearch: false,
+      // ignoreLocation: false,
+      // ignoreFieldNorm: false,
+      // fieldNormWeight: 1,
+      keys: [
+        "id",
+        "title",
+      ]
+    };
+
+
+    for (const oldControl of oldControls) {
+      let index = 0
+      let matchList: Control[] = []
+      for (const newControl of newControls) {
+        if (oldControl.tags.gtitle === newControl.tags.gtitle) {
+          console.log(`SRG ID: ${oldControl.tags.gtitle}`)
+          matchList.push(newControl)
+        }
+      }
+      if (matchList.length === 0){
+        console.log(`No matches found for ${oldControl.tags.gid}`)
+      }
+      else if (matchList.length === 1) {
+        // May need to use CCI (why are there multiple values for this?)
+        //console.log(`Matched control: ${oldControl.tags.gid} to ${matchList[0].tags.gid}`)
+        //console.log(`old control title: ${oldControl.title}, new control title: ${matchList[0].title}`)
+
+        //overwrite gid of old control with gid of new control
+        //console.log(`index: ${index}`)
+        //console.log(oldProfile.controls[index].tags.gid)
+        //Overwrite existing profile's gid with new profile's gid
+        oldProfile.controls[index].tags.gid = matchList[0].tags.gid
+      }
+      else if (matchList.length > 1) {
+        let fuseMatchList = matchList.map((control: Control) => 
+          ({
+            id: control.id, 
+            title: control.title,
+            gid: control.tags.gid
+          }))
+        const fuse = new Fuse(fuseMatchList, fuseOptions);
+        const result = fuse.search(oldControl.title as string);
+        console.log(`oldControl: ${oldControl.title}`)
+        console.log(result)
+        // Best result will probably be first match with the highest score
+        let bestResult = result[0].item.gid
+
+        oldProfile.controls[index].tags.gid = bestResult
+      index++
+    }
+
+   // forOf is better than forEach, forEach sucks
+    // for (const control of oldControls) {
+    //   const result = fuse.search(control.description);
+    //   if (result.length > 0) {
+    //     const bestMatch: any = result[0].item
+    //     console.log(`Best match for ${control.id} is ${bestMatch.id}\n`)
+    //     console.log(`= = = Existing control title:\n ${control.title}\n New control title:\n ${bestMatch.title}`)
+    //     console.log(`= = = Existing control desc:\n ${control.description}\n New control desc:\n ${bestMatch.description}`)
+    //   }
+    // }
+  }
+  // JS is pass by reference so probably not necessary
+  return oldProfile
+}
 }
