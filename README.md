@@ -572,19 +572,22 @@ convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M file
 
 [top](#convert-other-formats-to-hdf)
 #### CycloneDX SBOM to HDF
+
+Note: Currently, only the CycloneDX SBOM format is supported for SBOMs. To convert other non-CycloneDX SBOM formats, first convert your current SBOM data file into the CycloneDX SBOM data format with their provided utilities and then convert the file with the `convert cyclonedx_sbom2hdf` command.
+
 ```
-convert sbom2hdf              Translate a CycloneDX SBOM report into an HDF results set
+convert cyclonedx_sbom2hdf                Translate a CycloneDX SBOM report into an HDF results set
 
   USAGE
-    $ saf convert sbom2hdf -i <sbom-json> -o <hdf-scan-results-json> [-h]
+    $ saf convert cyclonedx_sbom2hdf -i <cyclonedx_sbom-json> -o <hdf-scan-results-json> [-h]
 
   FLAGS
     -h, --help                            Show CLI help.
-    -i, --input=<sbom-json>               (required) Input SBOM File
+    -i, --input=<cyclonedx_sbom-json>     (required) Input CycloneDX SBOM File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   EXAMPLES
-    $ saf convert sbom2hdf -i sbom.json -o output-hdf-name.json
+    $ saf convert cyclonedx_sbom2hdf -i cyclonedx_sbom.json -o output-hdf-name.json
 ```
 
 [top](#convert-other-formats-to-hdf)
