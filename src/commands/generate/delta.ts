@@ -10,6 +10,7 @@ import Control from '@mitre/inspec-objects/lib/objects/control'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
+import { match } from 'assert'
 //import Fuse from 'fuse.js';
 
 export default class GenerateDelta extends Command {
@@ -141,7 +142,8 @@ export default class GenerateDelta extends Command {
               // profile = processXCCDF(xccdf, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
  
         // Use existingProfile as it processes the existing inspec profile already
-        this.mapControls(existingProfile, processedXCCDF)
+        let mappedControls = this.mapControls(existingProfile, processedXCCDF)
+
       }
     }
     catch (error: any) {
@@ -247,11 +249,16 @@ export default class GenerateDelta extends Command {
  * generateDelta.mapControls(oldProfile, newProfile);
  * ```
  */
-  async mapControls(oldProfile: Profile, newProfile: Profile): Promise<Profile>{
-    
+  async mapControls(oldProfile: Profile, newProfile: Profile): Promise<object>{
+/*
+If a control isn't found to have a match at all, then req is missing or has been dropped
+Delta *should* be removing it automatically
+
+CLI Table Generator for selecting best matches
+*/
+    //console.log(newProfile.supports)
   // Todo: use the logger. Debug logging, error logging.
   // Use a debugger to step through code and see what's happening
-    //console.log(JSON.stringify(Object.keys(newProfile), null, 2))
 
     let oldControls: Control[] = oldProfile.controls
     let newControls: Control[] = newProfile.controls
@@ -259,8 +266,6 @@ export default class GenerateDelta extends Command {
     // Get existing controls into an array of control-type objects with id, title, description
     // SRG ID is the common ID for identical controls b/w all profiles
     // group by SRG ID
-    //console.log("in mapControls function")
-    //console.log(oldProfile.controls[0].tags.gtitle)
 
 /*
 Process: 
@@ -269,96 +274,95 @@ Process:
 */
 
     // complication: a single rule gets split into multiple checks
-    //  let existingControls = oldProfile.controls.map((control: any) => 
-    //    ({
-    //      id: control.id, 
-    //      title: control.title,
-    //    }))
-
-    // // Get new controls from new profile in XCCDF into an array
-    // let newControls = newProfile.controls.map((control: any) => 
-    //   ({
-    //     id: control.id, 
-    //     title: control.title,
-    //     description: control.description
-    //   }))
 
     const { default: Fuse } = await import('fuse.js');
 
     const fuseOptions = {
       // isCaseSensitive: false,
        includeScore: true,
-      // shouldSort: true,
+       shouldSort: true,
       // includeMatches: false,
       // findAllMatches: false,
       // minMatchCharLength: 1,
       // location: 0,
-      // threshold: 0.6,
+      threshold: 0.4,
       // distance: 100,
       // useExtendedSearch: false,
-      // ignoreLocation: false,
+      ignoreLocation: false,
       // ignoreFieldNorm: false,
       // fieldNormWeight: 1,
       keys: [
-        "id",
         "title",
       ]
     };
-
+    let controlMappings: {[key: string]: string} = {}
 
     for (const oldControl of oldControls) {
-      let index = 0
       let matchList: Control[] = []
+
+      // Map of oldControl gid to newControl gid
+
       for (const newControl of newControls) {
+
+
+
+
+
+        
+        // Create match lists of possible matches based on whether SRG IDs match
         if (oldControl.tags.gtitle === newControl.tags.gtitle) {
           console.log(`SRG ID: ${oldControl.tags.gtitle}`)
           matchList.push(newControl)
         }
       }
+      // Create fuse object for searching using generated matchList
+      const fuse = new Fuse(matchList, fuseOptions);
+
       if (matchList.length === 0){
         console.log(`No matches found for ${oldControl.tags.gid}`)
       }
       else if (matchList.length === 1) {
-        // May need to use CCI (why are there multiple values for this?)
-        //console.log(`Matched control: ${oldControl.tags.gid} to ${matchList[0].tags.gid}`)
-        //console.log(`old control title: ${oldControl.title}, new control title: ${matchList[0].title}`)
-
-        //overwrite gid of old control with gid of new control
-        //console.log(`index: ${index}`)
-        //console.log(oldProfile.controls[index].tags.gid)
-        //Overwrite existing profile's gid with new profile's gid
-        oldProfile.controls[index].tags.gid = matchList[0].tags.gid
-      }
-      else if (matchList.length > 1) {
-        let fuseMatchList = matchList.map((control: Control) => 
-          ({
-            id: control.id, 
-            title: control.title,
-            gid: control.tags.gid
-          }))
-        const fuse = new Fuse(fuseMatchList, fuseOptions);
         const result = fuse.search(oldControl.title as string);
+        // Check score for match
+
         console.log(`oldControl: ${oldControl.title}`)
         console.log(result)
-        // Best result will probably be first match with the highest score
-        let bestResult = result[0].item.gid
 
-        oldProfile.controls[index].tags.gid = bestResult
-      index++
+        if(result[0].score && result[0].score < 0.4 ) {
+          //Type guard for map
+          if (typeof oldControl.tags.gid === 'string' &&
+              typeof result[0].item.tags.gid === 'string'){
+          console.log(`Single match: ${oldControl.tags.gid} --> ${matchList[0].tags.gid}\n`)
+          controlMappings[oldControl.tags.gid] = result[0].item.tags.gid
+          }
+        }
+        else{
+          // Examples of fanning out / consolidating controls: in rhel7 to rhel8
+          console.log(`No matches found for ${oldControl.tags.gid}`)
+        }
+      }
+      else if (matchList.length > 1) {
+        const result = fuse.search(oldControl.title as string);
+
+        console.log(`oldControl: ${oldControl.title}`)
+        console.log(result)
+
+        if(result[0].score && result[0].score < 0.4) {
+          if ( typeof oldControl.tags.gid === 'string' &&
+              typeof result[0].item.tags.gid === 'string'){
+              console.log(`Best match in list: ${oldControl.tags.gid} --> ${result[0].item.tags.gid}\n`);
+              controlMappings[oldControl.tags.gid] = result[0].item.tags.gid
+            }
+          }
+          else{
+            console.log(`No matches found for ${oldControl.tags.gid}`)
+          }
     }
-
-   // forOf is better than forEach, forEach sucks
-    // for (const control of oldControls) {
-    //   const result = fuse.search(control.description);
-    //   if (result.length > 0) {
-    //     const bestMatch: any = result[0].item
-    //     console.log(`Best match for ${control.id} is ${bestMatch.id}\n`)
-    //     console.log(`= = = Existing control title:\n ${control.title}\n New control title:\n ${bestMatch.title}`)
-    //     console.log(`= = = Existing control desc:\n ${control.description}\n New control desc:\n ${bestMatch.description}`)
-    //   }
-    // }
   }
-  // JS is pass by reference so probably not necessary
-  return oldProfile
+  console.log("Hashmap:\n")
+  console.log(controlMappings)
+  console.log(Object.keys(controlMappings).length)
+  // JS is pass by reference, probably not necessary
+  return controlMappings
 }
 }
