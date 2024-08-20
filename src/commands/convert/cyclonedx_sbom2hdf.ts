@@ -22,7 +22,7 @@ export default class CycloneDXSBOM2HDF extends Command {
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8')
-    checkInput({data, filename: flags.input}, 'sbom', 'CycloneDX SBOM output file')
+    checkInput({data, filename: flags.input}, 'cyclonedx_sbom', 'CycloneDX SBOM output file')
 
     const converter = new Mapper(data, flags['with-raw'])
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
