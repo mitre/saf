@@ -46,6 +46,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [AWS Config to HDF](#aws-config-to-hdf)
       * [Burp Suite to HDF](#burp-suite-to-hdf)
       * [CKL to POA&amp;M](#ckl-to-poam)
+      * [CycloneDX SBOM to HDF](#cyclonedx-sbom-to-hdf)
       * [DBProtect to HDF](#dbprotect-to-hdf)
       * [Fortify to HDF](#fortify-to-hdf)
       * [gosec to HDF](#gosec-to-hdf)
@@ -568,6 +569,35 @@ convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M file
   EXAMPLES
     $ saf convert ckl2POAM -i checklist_file.ckl -o output-folder -d abcdefg -s 2
 ```
+
+[top](#convert-other-formats-to-hdf)
+#### CycloneDX SBOM to HDF
+
+Note: Currently, only the CycloneDX SBOM, VEX, and HBOM formats are officially supported in the CycloneDX SBOM convert command (formats like SaaSBOM are NOT supported and will result in errors). To convert other non-CycloneDX SBOM formats, first convert your current SBOM data file into the CycloneDX SBOM data format with [their provided utility](https://github.com/CycloneDX/cyclonedx-cli) and then convert the CycloneDX SBOM file to OHDF with the `saf convert cyclonedx_sbom2hdf` command.
+
+EX) To convert SPDX SBOM format to CycloneDX SBOM format using the [CycloneDX CLI](https://github.com/CycloneDX/cyclonedx-cli), you can perform the following:
+
+```
+cyclonedx-cli convert --input-file spdx-sbom.json --output-file cyclonedx-sbom.json --input-format spdxjson --output-format json
+```
+
+And then use that resulting CycloneDX SBOM file to convert to OHDF.
+
+```
+convert cyclonedx_sbom2hdf                Translate a CycloneDX SBOM report into an HDF results set
+
+  USAGE
+    $ saf convert cyclonedx_sbom2hdf -i <cyclonedx_sbom-json> -o <hdf-scan-results-json> [-h]
+
+  FLAGS
+    -h, --help                            Show CLI help.
+    -i, --input=<cyclonedx_sbom-json>     (required) Input CycloneDX SBOM File
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+
+  EXAMPLES
+    $ saf convert cyclonedx_sbom2hdf -i cyclonedx_sbom.json -o output-hdf-name.json
+```
+
 [top](#convert-other-formats-to-hdf)
 #### DBProtect to HDF
 ```
