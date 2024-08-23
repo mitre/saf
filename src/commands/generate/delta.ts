@@ -324,11 +324,10 @@ Process:
       else if (matchList.length === 1) {
         const result = fuse.search(oldControl.title as string);
         // Check score for match
-
         console.log(`oldControl: ${oldControl.title}`)
         console.log(result)
 
-        if(result[0].score && result[0].score < 0.4 ) {
+        if(result[0] && result[0].score && result[0].score < 0.6 ) {
           //Type guard for map
           if (typeof oldControl.tags.gid === 'string' &&
               typeof result[0].item.tags.gid === 'string'){
@@ -347,7 +346,7 @@ Process:
         console.log(`oldControl: ${oldControl.title}`)
         console.log(result)
 
-        if(result[0].score && result[0].score < 0.4) {
+        if(result[0] && result[0].score && result[0].score < 0.6) {
           if ( typeof oldControl.tags.gid === 'string' &&
               typeof result[0].item.tags.gid === 'string'){
               console.log(`Best match in list: ${oldControl.tags.gid} --> ${result[0].item.tags.gid}\n`);
@@ -364,5 +363,14 @@ Process:
   console.log(Object.keys(controlMappings).length)
   // JS is pass by reference, probably not necessary
   return controlMappings
+}
+
+showNonDisplayedCharacters(str: string): string {
+  return str
+    .replace(/\n/g, '\\n')
+    .replace(/\r/g, '\\r')
+    .replace(/\t/g, '\\t')
+    .replace(/\f/g, '\\f')
+    .replace(/\v/g, '\\v');
 }
 }
