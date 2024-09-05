@@ -11,7 +11,11 @@ import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
 import { match } from 'assert'
+
 //import Fuse from 'fuse.js';
+import table from 'table'
+import readline from 'readline'
+import {execSync} from 'child_process'
 
 export default class GenerateDelta extends Command {
   static description = 'Update an existing InSpec profile with updated XCCDF guidance'
@@ -45,6 +49,19 @@ export default class GenerateDelta extends Command {
     const logger = createWinstonLogger('generate:delta', flags.logLevel)
 
     logger.warn("'saf generate delta' is currently a release candidate. Please report any questions/bugs to https://github.com/mitre/saf/issues.")
+
+    // Create a readline prompt for user input
+    const promptUser = (query: string): Promise<string> => {
+      const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout,
+      });
+
+      return new Promise(resolve => rl.question(query, ans => {
+        rl.close();
+        resolve(ans);
+      }));
+    };
 
     let existingProfile: any | null = null
     let updatedXCCDF: any = {}
@@ -133,16 +150,69 @@ export default class GenerateDelta extends Command {
       }
     }
 
-    console.log("TEST BEFORE RUN")
     try {
       if (flags.runMapControls) {
-        console.log("test DURING run")
         // Process XCCDF of new profile to get controls
         processedXCCDF = processXCCDF(updatedXCCDF, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
               // profile = processXCCDF(xccdf, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
  
-        // Use existingProfile as it processes the existing inspec profile already
+        // Create a dictionary mapping new control GIDs to their old control counterparts
         let mappedControls = this.mapControls(existingProfile, processedXCCDF)
+
+        // request directory of controls to be mapped from user
+
+
+        let controlsDir = await promptUser('Enter the pathname of controls directory to be mapped: ')
+        console.log(`controlsDir: ${controlsDir}`)
+        // Iterate through each mapped control
+        // key = new control, controls[key] = old control
+        const controls: { [key: string]: any } = await mappedControls;
+        for (let key in controls){
+          console.log(`ITERATE MAP: ${key} --> ${controls[key]}`)
+
+          // for each control, modify the control file in the old controls directory
+          // then regenerate json profile
+          const sourceControlFile = path.join(controlsDir, `${controls[key]}.rb`)
+
+          if (fs.existsSync(sourceControlFile)) {
+            console.log(`Found control file: ${sourceControlFile}`)
+            const lines = fs.readFileSync(sourceControlFile, 'utf-8').split('\n');
+
+            // Find the line with the control name and replace it with the new control name
+            // single or double quotes are used on this line, check for both
+            // Template literals (`${controls[key]}`) must be used with dynamically created regular expression (RegExp() not / ... /)
+            const controlLineIndex = lines.findIndex(line => new RegExp(`control ['"]${controls[key]}['"] do`).test(line));
+            lines[controlLineIndex] = lines[controlLineIndex].replace(new RegExp(`control ['"]${controls[key]}['"] do`), `control '${key}' do`);
+            //fs.writeFileSync(sourceControlFile, lines.join('\n'));
+
+            // TODO: So, we should probably copy files from the source directory and rename for duplicates and to preserve source files
+            console.log(`mapped control file: ${sourceControlFile} to reference ID ${key}\n new line: ${lines[controlLineIndex]}`)
+
+          }
+          else{
+            console.log(`File not found at ${sourceControlFile}`)
+          }
+
+        }
+
+        // Regenerate the profile json
+      try {
+          logger.info(`Generating the profile json using inspec json command on '${controlsDir}'`)
+          // Get the directory name without the trailing "controls" directory
+          const profileDir = path.dirname(controlsDir)
+          console.log(profileDir)
+          // TODO: normally it's 'inspec json ...' but vscode doesn't recognize my alias?
+          const inspecJsonFile = execSync(`cinc-auditor json '${profileDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
+
+          logger.info('Generating InSpec Profiles from InSpec JSON summary')
+
+          // Replace existing profile (inputted JSON of source profile to be mapped)
+          // Allow delta to take care of the rest
+          existingProfile = processInSpecProfile(inspecJsonFile)
+      } catch (error: any) {
+          logger.error(`ERROR: Unable to generate the profile json because: ${error}`)
+          throw error
+        }
 
       }
     }
@@ -150,6 +220,8 @@ export default class GenerateDelta extends Command {
       logger.error(`ERROR: Could not process runMapControls ${flags.runMapControls}. Check the --help command for more information on the -o flag.`)
       throw error
     }
+
+    // Regenerate a new json profile based on modified control mappings
 
     // TODO: Modify the output report to include the mapping of controls and describe what was mapped
     // Process the output folder
@@ -249,6 +321,8 @@ export default class GenerateDelta extends Command {
  * generateDelta.mapControls(oldProfile, newProfile);
  * ```
  */
+
+// TODO: don't use SRG ID / gtitle anymore. SRG IDs can change between versions / releases
   async mapControls(oldProfile: Profile, newProfile: Profile): Promise<object>{
 /*
 If a control isn't found to have a match at all, then req is missing or has been dropped
@@ -273,8 +347,6 @@ Process:
 (2) If there is only one control with the same SRG ID, compare the titles of the two controls. If same, overwrite gid of old control with gid of new control
 */
 
-    // complication: a single rule gets split into multiple checks
-
     const { default: Fuse } = await import('fuse.js');
 
     const fuseOptions = {
@@ -285,79 +357,97 @@ Process:
       // findAllMatches: false,
       // minMatchCharLength: 1,
       // location: 0,
-      threshold: 0.4,
+      //threshold: 0.6,
       // distance: 100,
       // useExtendedSearch: false,
-      ignoreLocation: false,
-      // ignoreFieldNorm: false,
+      ignoreLocation: true,
+      ignoreFieldNorm: true,
       // fieldNormWeight: 1,
       keys: [
-        "title",
+        "title"
       ]
     };
     let controlMappings: {[key: string]: string} = {}
 
-    for (const oldControl of oldControls) {
+    for (const newControl of newControls) {
       let matchList: Control[] = []
 
-      // Map of oldControl gid to newControl gid
+      // Map of newControl gid to oldControl gid
 
-      for (const newControl of newControls) {
-
-
-
-
-
+      for (const oldControl of oldControls) {
         
         // Create match lists of possible matches based on whether SRG IDs match
-        if (oldControl.tags.gtitle === newControl.tags.gtitle) {
-          console.log(`SRG ID: ${oldControl.tags.gtitle}`)
-          matchList.push(newControl)
+        if (newControl.tags.gtitle === oldControl.tags.gtitle) {
+          console.log(`SRG ID: ${newControl.tags.gtitle}`)
+          matchList.push(oldControl)
         }
       }
       // Create fuse object for searching using generated matchList
       const fuse = new Fuse(matchList, fuseOptions);
 
       if (matchList.length === 0){
-        console.log(`No matches found for ${oldControl.tags.gid}`)
+        console.log(`No matches found for ${newControl.tags.gid}`)
       }
       else if (matchList.length === 1) {
-        const result = fuse.search(oldControl.title as string);
+        const result = fuse.search(newControl.title as string);
         // Check score for match
-        console.log(`oldControl: ${oldControl.title}`)
-        console.log(result)
+        //console.log(`newControl: ${newControl.title}`)
+        //console.log(`oldControl desc: `+oldControl.descs["default"])
+        //console.log(`\noldControl desc: ${JSON.stringify(oldControl.descs.default, null, 2)}`)
+        //console.log(`\nnewControl desc: ${JSON.stringify(matchList[0].descs, null, 2)} \n`)
+        //console.log(result)
 
         if(result[0] && result[0].score && result[0].score < 0.6 ) {
           //Type guard for map
-          if (typeof oldControl.tags.gid === 'string' &&
+          if (typeof newControl.tags.gid === 'string' &&
               typeof result[0].item.tags.gid === 'string'){
-          console.log(`Single match: ${oldControl.tags.gid} --> ${matchList[0].tags.gid}\n`)
-          controlMappings[oldControl.tags.gid] = result[0].item.tags.gid
+          //console.log(`Single match: ${newControl.tags.gid} --> ${matchList[0].tags.gid}\n`)
+          controlMappings[newControl.tags.gid] = result[0].item.tags.gid
           }
+        }
+        else if (result[0] && result[0].score && result[0].score < 0.8){
+          // CLI prompt to ask about close matches, map if user selects yes
+          // use table package to print strings into tables
+          // probably have option to enable manual matching
+          // todo: don't sort by SRG ID realistically, just fuzzy search and probably get same results
+          // after: have cli modify files, create new json, create new folder of controls
+          // --> DONE
+
+          // return true or false if top-most
+          // assumption: first result (highest score) will be the match if any of them are going to be it
+          // edge case: two identical titles, but different descriptions
+          //let choice = this.decideMatch(newControl, result[0].item)
+
         }
         else{
           // Examples of fanning out / consolidating controls: in rhel7 to rhel8
-          console.log(`No matches found for ${oldControl.tags.gid}`)
+          console.log(`No matches found for ${newControl.tags.gid}`)
         }
       }
       else if (matchList.length > 1) {
-        const result = fuse.search(oldControl.title as string);
+        const result = fuse.search(newControl.title as string);
 
-        console.log(`oldControl: ${oldControl.title}`)
-        console.log(result)
+        console.log(`newControl: ${newControl.title}`)
+        //console.log(result)
+        if(newControl.tags.gid === 'V-254265'){
+          console.log(result)
+        }
 
         if(result[0] && result[0].score && result[0].score < 0.6) {
-          if ( typeof oldControl.tags.gid === 'string' &&
+          if ( typeof newControl.tags.gid === 'string' &&
               typeof result[0].item.tags.gid === 'string'){
-              console.log(`Best match in list: ${oldControl.tags.gid} --> ${result[0].item.tags.gid}\n`);
-              controlMappings[oldControl.tags.gid] = result[0].item.tags.gid
+              console.log(`Best match in list: ${newControl.tags.gid} --> ${result[0].item.tags.gid}\n`);
+              controlMappings[newControl.tags.gid] = result[0].item.tags.gid
             }
           }
           else{
-            console.log(`No matches found for ${oldControl.tags.gid}`)
+            console.log(`No matches found for ${newControl.tags.gid}`)
           }
+            
     }
+          
   }
+  
   console.log("Hashmap:\n")
   console.log(controlMappings)
   console.log(Object.keys(controlMappings).length)
@@ -365,6 +455,20 @@ Process:
   return controlMappings
 }
 
+decideMatch(oldControl: Control, newControl: Control): boolean {
+
+
+  let data = [
+  [oldControl.tags.gid, newControl.tags.gid],
+  [oldControl.title, newControl.title]
+  ]
+  console.log("TABLE===========================================================================\n")
+  //console.log(table(data))
+
+  return true
+}
+
+// Use this to show or remove non-displayed characters from input strings to reduce control field variance
 showNonDisplayedCharacters(str: string): string {
   return str
     .replace(/\n/g, '\\n')
