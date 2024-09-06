@@ -1,6 +1,6 @@
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core'
 import fs from 'fs'
-import { processInSpecProfile, processOVAL, UpdatedProfileReturn, updateProfileUsingXCCDF, processXCCDF} from '@mitre/inspec-objects'
+import { processInSpecProfile, processOVAL, UpdatedProfileReturn, updateProfileUsingXCCDF, processXCCDF } from '@mitre/inspec-objects'
 
 // TODO: We shouldn't have to import like this, open issue to clean library up for inspec-objects
 // test failed in updating inspec-objects to address high lvl vuln
@@ -8,25 +8,25 @@ import Profile from '@mitre/inspec-objects/lib/objects/profile'
 import Control from '@mitre/inspec-objects/lib/objects/control'
 
 import path from 'path'
-import {createWinstonLogger} from '../../utils/logging'
+import { createWinstonLogger } from '../../utils/logging'
 import fse from 'fs-extra'
 import { match } from 'assert'
 
 //import Fuse from 'fuse.js';
 import table from 'table'
 import readline from 'readline'
-import {execSync} from 'child_process'
+import { execSync } from 'child_process'
 
 export default class GenerateDelta extends Command {
   static description = 'Update an existing InSpec profile with updated XCCDF guidance'
 
   static flags = {
-    help: Flags.help({char: 'h'}),
-    inspecJsonFile: Flags.string({char: 'J', required: true, description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command'}),
-    xccdfXmlFile: Flags.string({char: 'X', required: true, description: 'The XCCDF XML file containing the new guidance - in the form of .xml file'}),
-    ovalXmlFile: Flags.string({char: 'O', required: false, description: 'The OVAL XML file containing definitions used in the new guidance - in the form of .xml file'}),
-    output: Flags.string({char: 'o', required: true, description: 'The output folder for the updated profile - if it is not empty, it will be overwritten'}),
-    report: Flags.string({char: 'r', required: false, description: 'Output markdown report file - must have an extension of .md'}),
+    help: Flags.help({ char: 'h' }),
+    inspecJsonFile: Flags.string({ char: 'J', required: true, description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command' }),
+    xccdfXmlFile: Flags.string({ char: 'X', required: true, description: 'The XCCDF XML file containing the new guidance - in the form of .xml file' }),
+    ovalXmlFile: Flags.string({ char: 'O', required: false, description: 'The OVAL XML file containing definitions used in the new guidance - in the form of .xml file' }),
+    output: Flags.string({ char: 'o', required: true, description: 'The output folder for the updated profile - if it is not empty, it will be overwritten' }),
+    report: Flags.string({ char: 'r', required: false, description: 'Output markdown report file - must have an extension of .md' }),
     idType: Flags.string({
       char: 'T',
       required: false,
@@ -34,9 +34,9 @@ export default class GenerateDelta extends Command {
       options: ['rule', 'group', 'cis', 'version'],
       description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
     }),
-    logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
+    logLevel: Flags.string({ char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose'] }),
     // New flag -M for whether to try mapping controls to new profile
-    runMapControls: Flags.boolean({char: 'M', required: false, default: false, description: 'Run the mapControls function'}),
+    runMapControls: Flags.boolean({ char: 'M', required: false, default: false, description: 'Run the mapControls function' }),
   }
 
   static examples = [
@@ -44,13 +44,14 @@ export default class GenerateDelta extends Command {
   ]
 
   async run() { // skipcq: JS-0044
-    const {flags} = await this.parse(GenerateDelta)
+    const { flags } = await this.parse(GenerateDelta)
 
     const logger = createWinstonLogger('generate:delta', flags.logLevel)
 
     logger.warn("'saf generate delta' is currently a release candidate. Please report any questions/bugs to https://github.com/mitre/saf/issues.")
 
     // Create a readline prompt for user input
+    // Probably a better way to do this, prompt-sync is already in the package.json
     const promptUser = (query: string): Promise<string> => {
       const rl = readline.createInterface({
         input: process.stdin,
@@ -152,10 +153,11 @@ export default class GenerateDelta extends Command {
 
     try {
       if (flags.runMapControls) {
+        logger.info(`Mapping controls from the old profile to the new profile`)
         // Process XCCDF of new profile to get controls
         processedXCCDF = processXCCDF(updatedXCCDF, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
-              // profile = processXCCDF(xccdf, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
- 
+        // profile = processXCCDF(xccdf, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
+
         // Create a dictionary mapping new control GIDs to their old control counterparts
         let mappedControls = this.mapControls(existingProfile, processedXCCDF)
 
@@ -167,7 +169,7 @@ export default class GenerateDelta extends Command {
         // Iterate through each mapped control
         // key = new control, controls[key] = old control
         const controls: { [key: string]: any } = await mappedControls;
-        for (let key in controls){
+        for (let key in controls) {
           console.log(`ITERATE MAP: ${key} --> ${controls[key]}`)
 
           // for each control, modify the control file in the old controls directory
@@ -183,33 +185,35 @@ export default class GenerateDelta extends Command {
             // Template literals (`${controls[key]}`) must be used with dynamically created regular expression (RegExp() not / ... /)
             const controlLineIndex = lines.findIndex(line => new RegExp(`control ['"]${controls[key]}['"] do`).test(line));
             lines[controlLineIndex] = lines[controlLineIndex].replace(new RegExp(`control ['"]${controls[key]}['"] do`), `control '${key}' do`);
-            //fs.writeFileSync(sourceControlFile, lines.join('\n'));
 
-            // TODO: So, we should probably copy files from the source directory and rename for duplicates and to preserve source files
+            // don't overwrite unless serious
+            fs.writeFileSync(sourceControlFile, lines.join('\n'));
+
+            // TODO: Maybe copy files from the source directory and rename for duplicates and to preserve source files
             console.log(`mapped control file: ${sourceControlFile} to reference ID ${key}\n new line: ${lines[controlLineIndex]}`)
 
           }
-          else{
+          else {
             console.log(`File not found at ${sourceControlFile}`)
           }
 
         }
 
         // Regenerate the profile json
-      try {
+        try {
           logger.info(`Generating the profile json using inspec json command on '${controlsDir}'`)
           // Get the directory name without the trailing "controls" directory
           const profileDir = path.dirname(controlsDir)
-          console.log(profileDir)
+
           // TODO: normally it's 'inspec json ...' but vscode doesn't recognize my alias?
-          const inspecJsonFile = execSync(`cinc-auditor json '${profileDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
+          const inspecJsonFile = execSync(`cinc-auditor json '${profileDir}'`, { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 })
 
           logger.info('Generating InSpec Profiles from InSpec JSON summary')
 
           // Replace existing profile (inputted JSON of source profile to be mapped)
           // Allow delta to take care of the rest
           existingProfile = processInSpecProfile(inspecJsonFile)
-      } catch (error: any) {
+        } catch (error: any) {
           logger.error(`ERROR: Unable to generate the profile json because: ${error}`)
           throw error
         }
@@ -221,14 +225,12 @@ export default class GenerateDelta extends Command {
       throw error
     }
 
-    // Regenerate a new json profile based on modified control mappings
-
     // TODO: Modify the output report to include the mapping of controls and describe what was mapped
     // Process the output folder
     try {
       // Create the folder if it doesn't exist
       if (!fs.existsSync(flags.output)) {
-        fs.mkdirSync(path.join(flags.output), {recursive: true})
+        fs.mkdirSync(path.join(flags.output), { recursive: true })
       }
 
       if (path.basename(flags.output) === 'controls') {
@@ -302,179 +304,140 @@ export default class GenerateDelta extends Command {
     }
   }
 
-/**
- * Maps controls from an old profile to a new profile by updating the control IDs
- * based on matching SRG IDs and titles.
- *
- * @param oldProfile - The profile containing the old controls.
- * @param newProfile - The profile containing the new controls.
- *
- * This method uses Fuse.js for fuzzy searching to find matching controls in the new profile
- * based on the SRG ID (`tags.gtitle`). If a match is found and the titles match, the old control's
- * ID is updated to the new control's ID.
- *
- * Example usage:
- * ```typescript
- * const oldProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
- * const newProfile = processXCCDF(updatedXCCDF, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
- * const generateDelta = new GenerateDelta()
- * generateDelta.mapControls(oldProfile, newProfile);
- * ```
- */
-
-// TODO: don't use SRG ID / gtitle anymore. SRG IDs can change between versions / releases
-  async mapControls(oldProfile: Profile, newProfile: Profile): Promise<object>{
-/*
-If a control isn't found to have a match at all, then req is missing or has been dropped
-Delta *should* be removing it automatically
-
-CLI Table Generator for selecting best matches
-*/
-    //console.log(newProfile.supports)
-  // Todo: use the logger. Debug logging, error logging.
-  // Use a debugger to step through code and see what's happening
-
+  /**
+   * Maps controls from an old profile to a new profile by updating the control IDs
+   * based on matching SRG IDs and titles.
+   *
+   * @param oldProfile - The profile containing the old controls.
+   * @param newProfile - The profile containing the new controls.
+   *
+   * This method uses Fuse.js for fuzzy searching to find matching controls in the new profile
+   * based on the SRG ID (`tags.gtitle`). If a match is found and the titles match, the old control's
+   * ID is updated to the new control's ID.
+   *
+   * Example usage:
+   * ```typescript
+   * const oldProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
+   * const newProfile = processXCCDF(updatedXCCDF, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
+   * const generateDelta = new GenerateDelta()
+   * generateDelta.mapControls(oldProfile, newProfile);
+   * ```
+   */
+  async mapControls(oldProfile: Profile, newProfile: Profile): Promise<object> {
+    /*
+    If a control isn't found to have a match at all, then req is missing or has been dropped
+    Delta *should* be removing it automatically
+    */
     let oldControls: Control[] = oldProfile.controls
     let newControls: Control[] = newProfile.controls
-
-    // Get existing controls into an array of control-type objects with id, title, description
-    // SRG ID is the common ID for identical controls b/w all profiles
-    // group by SRG ID
-
-/*
-Process: 
-(1) For each control in oldControls, find all controls in new controls with an equal SRG ID (gtitle property in tags)
-(2) If there is only one control with the same SRG ID, compare the titles of the two controls. If same, overwrite gid of old control with gid of new control
-*/
 
     const { default: Fuse } = await import('fuse.js');
 
     const fuseOptions = {
       // isCaseSensitive: false,
-       includeScore: true,
-       shouldSort: true,
-      // includeMatches: false,
+      includeScore: true,
+      shouldSort: true,
+      includeMatches: true,
       // findAllMatches: false,
       // minMatchCharLength: 1,
       // location: 0,
-      //threshold: 0.6,
+      threshold: 0.4,
       // distance: 100,
       // useExtendedSearch: false,
+
+      // text / character movements are inherent when text is changed
       ignoreLocation: true,
+      // puts weight on length of field, skews results since often text is expanded in revisions
       ignoreFieldNorm: true,
       // fieldNormWeight: 1,
       keys: [
         "title"
       ]
     };
-    let controlMappings: {[key: string]: string} = {}
+    let controlMappings: { [key: string]: string } = {}
+
+    // Create list of just the GIDs and the title / relevant keys of old controls 
+    let searchList = oldControls.map((control) => {
+      if (control.title) {
+        return {
+          // Remove all non-displayed characters in the control title
+          title: control.title.replace(/[\n\r\t\f\v]/g, ''),
+          gid: control.tags.gid
+        }
+      }
+    })
 
     for (const newControl of newControls) {
-      let matchList: Control[] = []
 
-      // Map of newControl gid to oldControl gid
+      // Create fuse object for searching through matchList
+      const fuse = new Fuse(oldControls, fuseOptions);
 
-      for (const oldControl of oldControls) {
-        
-        // Create match lists of possible matches based on whether SRG IDs match
-        if (newControl.tags.gtitle === oldControl.tags.gtitle) {
-          console.log(`SRG ID: ${newControl.tags.gtitle}`)
-          matchList.push(oldControl)
+      // Check for existence of title, remove non-displayed characters
+      // TODO: Determine whether removing symbols other than non-displayed characters is helpful
+      // words separated by newlines don't have spaces between them
+      if (newControl.title) {
+        const result = fuse.search(newControl.title.replace(/[^\w\s]|[\r\t\f\v]/g, '').replace(/\n/g, ' '));
+
+        console.log(`newControl: ${newControl.tags.gid}`)
+
+        if (newControl.title) {
+          console.log(`newControl w/ non-displayed: ${this.showNonDisplayedCharacters(newControl.title.replace(/[^\w\s]|[\r\t\f\v]/g, '').replace(/\n/g, ' '))}`)
         }
-      }
-      // Create fuse object for searching using generated matchList
-      const fuse = new Fuse(matchList, fuseOptions);
 
-      if (matchList.length === 0){
-        console.log(`No matches found for ${newControl.tags.gid}`)
-      }
-      else if (matchList.length === 1) {
-        const result = fuse.search(newControl.title as string);
-        // Check score for match
-        //console.log(`newControl: ${newControl.title}`)
-        //console.log(`oldControl desc: `+oldControl.descs["default"])
-        //console.log(`\noldControl desc: ${JSON.stringify(oldControl.descs.default, null, 2)}`)
-        //console.log(`\nnewControl desc: ${JSON.stringify(matchList[0].descs, null, 2)} \n`)
-        //console.log(result)
-
-        if(result[0] && result[0].score && result[0].score < 0.6 ) {
-          //Type guard for map
+        if (result[0] && result[0].score && result[0].score < 0.3) {
           if (typeof newControl.tags.gid === 'string' &&
-              typeof result[0].item.tags.gid === 'string'){
-          //console.log(`Single match: ${newControl.tags.gid} --> ${matchList[0].tags.gid}\n`)
-          controlMappings[newControl.tags.gid] = result[0].item.tags.gid
+            typeof result[0].item.tags.gid === 'string') {
+
+
+            if (result[0].score > 0.1) {
+              // todo: modify output report or logger to show potential mismatches
+              // alternatively: add a match decision feature for high-scoring results
+              console.log(`Potential mismatch`)
+            }
+
+            // Check non displayed characters of title  
+            if (result[0].item.title) {
+              console.log(`oldControl w/ non-displayed: ${this.showNonDisplayedCharacters(result[0].item.title.replace(/[^\w\s]|[\r\t\f\v]/g, '').replace(/\n/g, ' '))}`)
+            }
+            console.log(`Best match in list: ${newControl.tags.gid} --> ${result[0].item.tags.gid}`);
+            console.log(`Score: ${result[0].score} \n`)
+
+            controlMappings[newControl.tags.gid] = result[0].item.tags.gid
+
           }
         }
-        else if (result[0] && result[0].score && result[0].score < 0.8){
-          // CLI prompt to ask about close matches, map if user selects yes
-          // use table package to print strings into tables
-          // probably have option to enable manual matching
-          // todo: don't sort by SRG ID realistically, just fuzzy search and probably get same results
-          // after: have cli modify files, create new json, create new folder of controls
-          // --> DONE
-
-          // return true or false if top-most
-          // assumption: first result (highest score) will be the match if any of them are going to be it
-          // edge case: two identical titles, but different descriptions
-          //let choice = this.decideMatch(newControl, result[0].item)
-
-        }
-        else{
-          // Examples of fanning out / consolidating controls: in rhel7 to rhel8
+        else {
           console.log(`No matches found for ${newControl.tags.gid}`)
         }
       }
-      else if (matchList.length > 1) {
-        const result = fuse.search(newControl.title as string);
-
-        console.log(`newControl: ${newControl.title}`)
-        //console.log(result)
-        if(newControl.tags.gid === 'V-254265'){
-          console.log(result)
-        }
-
-        if(result[0] && result[0].score && result[0].score < 0.6) {
-          if ( typeof newControl.tags.gid === 'string' &&
-              typeof result[0].item.tags.gid === 'string'){
-              console.log(`Best match in list: ${newControl.tags.gid} --> ${result[0].item.tags.gid}\n`);
-              controlMappings[newControl.tags.gid] = result[0].item.tags.gid
-            }
-          }
-          else{
-            console.log(`No matches found for ${newControl.tags.gid}`)
-          }
-            
     }
-          
+
+    console.log("Hashmap:\n")
+    console.log(controlMappings)
+    console.log(Object.keys(controlMappings).length)
+
+    return controlMappings
   }
-  
-  console.log("Hashmap:\n")
-  console.log(controlMappings)
-  console.log(Object.keys(controlMappings).length)
-  // JS is pass by reference, probably not necessary
-  return controlMappings
-}
 
-decideMatch(oldControl: Control, newControl: Control): boolean {
+  // decideMatch(oldControl: Control, newControl: Control): boolean {
 
+  //   let data = [
+  //     [oldControl.tags.gid, newControl.tags.gid],
+  //     [oldControl.title, newControl.title]
+  //   ]
+  //   console.log("TABLE===========================================================================\n")
+  //   //console.log(table(data))
 
-  let data = [
-  [oldControl.tags.gid, newControl.tags.gid],
-  [oldControl.title, newControl.title]
-  ]
-  console.log("TABLE===========================================================================\n")
-  //console.log(table(data))
+  //   return true
+  // }
 
-  return true
-}
+  showNonDisplayedCharacters(str: string): string {
+    return str
+      .replace(/\n/g, '\\n')
+      .replace(/\r/g, '\\r')
+      .replace(/\t/g, '\\t')
+      .replace(/\f/g, '\\f')
+      .replace(/\v/g, '\\v');
+  }
 
-// Use this to show or remove non-displayed characters from input strings to reduce control field variance
-showNonDisplayedCharacters(str: string): string {
-  return str
-    .replace(/\n/g, '\\n')
-    .replace(/\r/g, '\\r')
-    .replace(/\t/g, '\\t')
-    .replace(/\f/g, '\\f')
-    .replace(/\v/g, '\\v');
-}
 }
