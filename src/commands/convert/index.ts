@@ -1,4 +1,4 @@
-import {ASFFResults, ChecklistResults, BurpSuiteMapper, ConveyorResults, CycloneDXSBOMResults, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, MsftSecureScoreMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TrufflehogResults, TwistlockResults, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
+import {AnchoreGrypeMapper, ASFFResults, ChecklistResults, BurpSuiteMapper, ConveyorResults, CycloneDXSBOMResults, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, MsftSecureScoreMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TrufflehogResults, TwistlockResults, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
 import fs from 'fs'
 import _ from 'lodash'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
@@ -38,7 +38,7 @@ export default class Convert extends Command {
         case 'zap': {
           return Zap2HDF.flags
         }
-
+        case 'anchoregrype':
         case 'burp':
         case 'conveyor':
         case 'checklist':
@@ -71,6 +71,11 @@ export default class Convert extends Command {
     const {flags} = await this.parse(Convert)
     let converter
     switch (Convert.detectedType) {
+      case 'anchoregrype': {
+        converter = new AnchoreGrypeMapper(fs.readFileSync(flags.input, 'utf8'))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
+        break
+      }
       case 'asff': {
         let securityhub = _.get(flags, 'securityhub') as string[]
         if (securityhub) {
