@@ -42,6 +42,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 ### Convert Other Formats to HDF
 
   * [Convert To HDF](#convert-to-hdf)
+      * [Anchore Grype to HDF](#anchore-grype-to-hdf)
       * [ASFF to HDF](#asff-to-hdf)
       * [AWS Config to HDF](#aws-config-to-hdf)
       * [Burp Suite to HDF](#burp-suite-to-hdf)
@@ -279,6 +280,23 @@ Want to Recommend or Help Develop a Converter? See [the wiki](https://github.com
 
 
 ### Convert From HDF
+
+[top](#convert-other-formats-to-hdf)
+#### Anchore Grype to HDF
+```
+convert anchoregrype2hdf         Translate a Anchore Grype output file into an HDF results set
+
+  USAGE
+    $ saf convert anchoregrype2hdf -i <anchoregrype-json> -o <hdf-scan-results-json>
+
+  FLAGS
+    -h, --help                            Show CLI help.
+    -i, --input=<anchoregrype-json>         (required) Input Anchore Grype file
+    -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+
+  EXAMPLES
+    $ saf convert anchoregrype2hdf -i anchoregrype.json -o output-hdf-name.json
+```
 
 
 #### HDF to ASFF
