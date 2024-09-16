@@ -38,6 +38,7 @@ export default class Convert extends Command {
         case 'zap': {
           return Zap2HDF.flags
         }
+
         case 'anchoregrype':
         case 'burp':
         case 'conveyor':
@@ -76,6 +77,7 @@ export default class Convert extends Command {
         fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
+
       case 'asff': {
         let securityhub = _.get(flags, 'securityhub') as string[]
         if (securityhub) {
