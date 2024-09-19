@@ -1,7 +1,7 @@
 import { Command, Flags } from '@oclif/core'
 import fs from 'fs'
 import { processInSpecProfile, processOVAL, UpdatedProfileReturn, updateProfileUsingXCCDF, processXCCDF } from '@mitre/inspec-objects'
-
+import prompt from 'prompt-sync'
 // TODO: We shouldn't have to import like this, open issue to clean library up for inspec-objects
 // test failed in updating inspec-objects to address high lvl vuln
 import Profile from '@mitre/inspec-objects/lib/objects/profile'
@@ -154,49 +154,62 @@ export default class GenerateDelta extends Command {
     try {
       if (flags.runMapControls) {
         logger.info(`Mapping controls from the old profile to the new profile`)
+        let promptSync = prompt();
         // Process XCCDF of new profile to get controls
         processedXCCDF = processXCCDF(updatedXCCDF, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
         // profile = processXCCDF(xccdf, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
 
+
+        // let thresholdInput = parseFloat(promptSync('Enter the threshold for fuzzy search (default is 0.3): '))
+        // if(thresholdInput === '')
+        // {
+        //   thresholdInput = '0.3'
+        // }
         // Create a dictionary mapping new control GIDs to their old control counterparts
         let mappedControls = this.mapControls(existingProfile, processedXCCDF)
 
         // request directory of controls to be mapped from user
 
-
-        let controlsDir = await promptUser('Enter the pathname of controls directory to be mapped: ')
+        //let controlsDir = await promptUser('Enter the pathname of controls directory to be mapped: ')
+        //console.log(`controlsDir: ${controlsDir}`)
+        let controlsDir = promptSync('Enter the pathname of controls directory to be mapped: ');
         console.log(`controlsDir: ${controlsDir}`)
+        //logger.debug(`controlsDir: ${controlsDir}`)
         // Iterate through each mapped control
         // key = new control, controls[key] = old control
         const controls: { [key: string]: any } = await mappedControls;
         for (let key in controls) {
           console.log(`ITERATE MAP: ${key} --> ${controls[key]}`)
+          //logger.debug(`ITERATE MAP: ${key} --> ${controls[key]}`)
 
-          // for each control, modify the control file in the old controls directory
-          // then regenerate json profile
+          // For each control, modify the control file in the old controls directory
+          // Then regenerate json profile
           const sourceControlFile = path.join(controlsDir, `${controls[key]}.rb`)
 
           if (fs.existsSync(sourceControlFile)) {
             console.log(`Found control file: ${sourceControlFile}`)
+            //logger.debug(`Found control file: ${sourceControlFile}`)
+            
             const lines = fs.readFileSync(sourceControlFile, 'utf-8').split('\n');
 
             // Find the line with the control name and replace it with the new control name
-            // single or double quotes are used on this line, check for both
+            // Single or double quotes are used on this line, check for both
             // Template literals (`${controls[key]}`) must be used with dynamically created regular expression (RegExp() not / ... /)
             const controlLineIndex = lines.findIndex(line => new RegExp(`control ['"]${controls[key]}['"] do`).test(line));
             lines[controlLineIndex] = lines[controlLineIndex].replace(new RegExp(`control ['"]${controls[key]}['"] do`), `control '${key}' do`);
 
-            // don't overwrite unless serious
             fs.writeFileSync(sourceControlFile, lines.join('\n'));
 
             // TODO: Maybe copy files from the source directory and rename for duplicates and to preserve source files
             console.log(`mapped control file: ${sourceControlFile} to reference ID ${key}\n new line: ${lines[controlLineIndex]}`)
+            //logger.debug(`mapped control file: ${sourceControlFile} to reference ID ${key}\n new line: ${lines[controlLineIndex]}`)
+            
 
           }
           else {
             console.log(`File not found at ${sourceControlFile}`)
+            //logger.debug(`File not found at ${sourceControlFile}`)
           }
-
         }
 
         // Regenerate the profile json
@@ -314,7 +327,9 @@ export default class GenerateDelta extends Command {
    * This method uses Fuse.js for fuzzy searching to find matching controls in the new profile
    * based on the SRG ID (`tags.gtitle`). If a match is found and the titles match, the old control's
    * ID is updated to the new control's ID.
-   *
+   * 
+   * TODO: Source directory (old controls) should preserve original file names for git diff
+   * 
    * Example usage:
    * ```typescript
    * const oldProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
@@ -379,9 +394,11 @@ export default class GenerateDelta extends Command {
         const result = fuse.search(newControl.title.replace(/[^\w\s]|[\r\t\f\v]/g, '').replace(/\n/g, ' '));
 
         console.log(`newControl: ${newControl.tags.gid}`)
+        //logger.debug(`newControl: ${newControl.tags.gid}`)
 
         if (newControl.title) {
           console.log(`newControl w/ non-displayed: ${this.showNonDisplayedCharacters(newControl.title.replace(/[^\w\s]|[\r\t\f\v]/g, '').replace(/\n/g, ' '))}`)
+          //logger.debug(`newControl with non-displayed: ${this.showNonDisplayedCharacters(newControl.title.replace(/[^\w\s]|[\r\t\f\v]/g, '').replace(/\n/g, ' '))
         }
 
         if (result[0] && result[0].score && result[0].score < 0.3) {
@@ -389,18 +406,21 @@ export default class GenerateDelta extends Command {
             typeof result[0].item.tags.gid === 'string') {
 
 
-            if (result[0].score > 0.1) {
+            //if (result[0].score > 0.1) {
               // todo: modify output report or logger to show potential mismatches
               // alternatively: add a match decision feature for high-scoring results
-              console.log(`Potential mismatch`)
-            }
+            //  console.log(`Potential mismatch`)
+            //}
 
             // Check non displayed characters of title  
             if (result[0].item.title) {
               console.log(`oldControl w/ non-displayed: ${this.showNonDisplayedCharacters(result[0].item.title.replace(/[^\w\s]|[\r\t\f\v]/g, '').replace(/\n/g, ' '))}`)
+              //logger.debug(`oldControl with non-displayed: ${this.showNonDisplayedCharacters(result[0].item.title.replace(/[^\w\s]|[\r\t\f\v]/g, '').replace(/\n/g, ' '))}`)
             }
             console.log(`Best match in list: ${newControl.tags.gid} --> ${result[0].item.tags.gid}`);
+            //logger.debug(`Best match in list: ${newControl.tags.gid} --> ${result[0].item.tags.gid}`);
             console.log(`Score: ${result[0].score} \n`)
+            //logger.debug(`Score: ${result[0].score} \n`)
 
             controlMappings[newControl.tags.gid] = result[0].item.tags.gid
 
@@ -408,13 +428,17 @@ export default class GenerateDelta extends Command {
         }
         else {
           console.log(`No matches found for ${newControl.tags.gid}`)
+          //logger.debug(`No matches found for ${newControl.tags.gid}`)
         }
       }
     }
 
     console.log("Hashmap:\n")
+    //logger.debug("Hashmap:\n")
     console.log(controlMappings)
+    //logger.debug(controlMappings)
     console.log(Object.keys(controlMappings).length)
+    //logger.debug(Object.keys(controlMappings).length)
 
     return controlMappings
   }
