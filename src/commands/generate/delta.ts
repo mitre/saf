@@ -66,16 +66,18 @@ export default class GenerateDelta extends Command {
     let markDownFile = ''
     let outputProfileFolderPath = ''
 
+    let mappedControls: any = {}
     // Process the Input execution/profile JSON file. The processInSpecProfile
     // method will throw an error if an invalid profile file is provided.
     // NOTE: If mapping controls to new profile (using the -M) the
     //       existingProfile variable is re-generated as the controls change.
+    logger.info('Checking if an InSpec JSON file was provided...')
     try {
       if (fs.lstatSync(flags.inspecJsonFile).isFile()) {
         const inspecJsonFile = flags.inspecJsonFile
-        logger.debug(`Loading ${inspecJsonFile} as Profile JSON/Execution JSON`)
+        logger.debug(`  Loading ${inspecJsonFile} as Profile JSON/Execution JSON`)
         existingProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
-        logger.debug(`Loaded ${inspecJsonFile} as Profile JSON/Execution JSON`)
+        logger.debug(`  Loaded ${inspecJsonFile} as Profile JSON/Execution JSON`)
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {
@@ -93,34 +95,36 @@ export default class GenerateDelta extends Command {
     // TODO: Use an XML parser to determine if the provided XCCDF file is an
     //       XCCDF by checking the schema location (xsi:schemaLocation) includes xccdf
     //       and that includes an XCCDF namespace (xmlns)
+    logger.info('Checking if the provided XCCDF is valid...')
     try {
       if (fs.lstatSync(flags.xccdfXmlFile).isFile()) {
         const xccdfXmlFile = flags.xccdfXmlFile
         const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8')
         const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase()
         if (inputFirstLine.includes('xccdf')) {
-          logger.debug(`Loading ${xccdfXmlFile} as XCCDF`)
+          logger.debug('  Loading ${xccdfXmlFile} as XCCDF')
           updatedXCCDF = inputFile
-          logger.debug(`Loaded ${xccdfXmlFile} as XCCDF`)
+          logger.debug('  Loaded ${xccdfXmlFile} as XCCDF')
         } else {
-          logger.error(`ERROR: Unable to load ${xccdfXmlFile} as XCCDF`)
-          throw new Error('Cannot load XCCDF file')
+          logger.error(`  ERROR: Unable to load ${xccdfXmlFile} as XCCDF`)
+          throw new Error('  Cannot load XCCDF file')
         }
-        logger.debug(`Loaded ${xccdfXmlFile} as XCCDF`)
+        logger.debug(`  Loaded ${xccdfXmlFile} as XCCDF`)
       } else {
-        throw new Error('No benchmark (XCCDF) file was provided.')
+        throw new Error('  No benchmark (XCCDF) file was provided.')
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {
-        logger.error(`ERROR: No entity found for: ${flags.xccdfXmlFile}. Run the --help command to more information on expected input files.`)
+        logger.error(`  ERROR: No entity found for: ${flags.xccdfXmlFile}. Run the --help command to more information on expected input files.`)
         throw error
       } else {
-        logger.error(`ERROR: Unable to process the XCCDF XML file ${flags.xccdfXmlFile} because: ${error}`)
+        logger.error(`  ERROR: Unable to process the XCCDF XML file ${flags.xccdfXmlFile} because: ${error}`)
         throw error
       }
     }
 
     // Process the OVAL XML file
+    logger.info('Checking if an OVAL XML file was provided...')
     try {
       if (flags.ovalXmlFile) {
         if (fs.lstatSync(flags.ovalXmlFile).isFile()) {
@@ -129,51 +133,50 @@ export default class GenerateDelta extends Command {
           const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase()
 
           if (inputFirstLine.includes('oval_definitions')) {
-            logger.debug(`Loading ${ovalXmlFile} as OVAL`)
+            logger.debug(`  Loading ${ovalXmlFile} as OVAL`)
             ovalDefinitions = processOVAL(inputFile)
-            logger.debug(`Loaded ${ovalXmlFile} as OVAL`)
+            logger.debug(`  Loaded ${ovalXmlFile} as OVAL`)
           } else {
-            logger.error(`ERROR: Unable to load ${ovalXmlFile} as OVAL`)
+            logger.error(`  ERROR: Unable to load ${ovalXmlFile} as OVAL`)
             throw new Error('Cannot load OVAL file')
           }
         } else {
-          logger.error(`ERROR: An OVAL flag option was detected, but no file was provided, received: ${flags.ovalXmlFile}`)
+          logger.error(`  ERROR: An OVAL flag option was detected, but no file was provided, received: ${flags.ovalXmlFile}`)
           throw new Error('No OVAL file detected')
         }
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {
-        logger.error(`ERROR: No entity found for: ${flags.ovalXmlFile}. Run the --help command to more information on expected input files.`)
+        logger.error(`  ERROR: No entity found for: ${flags.ovalXmlFile}. Run the --help command to more information on expected input files.`)
         throw error
       } else {
-        logger.error(`Unable to process the OVAL XML file ${flags.ovalXmlFile} because: ${error}`)
+        logger.error(`  Unable to process the OVAL XML file ${flags.ovalXmlFile} because: ${error}`)
         throw error
       }
     }
 
     // Process the fuzzy search logic
+    logger.info('Checking if control mapping is required...')
     try {
       if (flags.runMapControls && flags.controlsDir) {
-        logger.info('Mapping controls from the old profile to the new profile')
-
+        logger.info('  Mapping controls from the old profile to the new profile')
         // Process XCCDF of new profile to get controls
         processedXCCDF = processXCCDF(updatedXCCDF, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
         // profile = processXCCDF(xccdf, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
 
         // Create a dictionary mapping new control GIDs to their old control counterparts
-        const mappedControls = this.mapControls(existingProfile, processedXCCDF)
+        mappedControls = await this.mapControls(existingProfile, processedXCCDF)
 
         const controlsDir = flags.controlsDir
-        console.log(`controlsDir: ${controlsDir}`)
 
         // Iterate through each mapped control
         // key = new control, controls[key] = old control
-        const controls: { [key: string]: any } = await mappedControls
+        const controls: { [key: string]: any } = mappedControls
 
         // Create a directory where we are storing the newly created mapped controls
         // Do not over right the original controls in the directory (controlsDir)
         const mappedDir = this.createMappedDirectory(controlsDir)
-
+        logger.info('  Updating the controls')
         console.log(colors.yellow('Updating Controls ===========================================================================\n'))
         // eslint-disable-next-line guard-for-in
         for (const key in controls) {
@@ -216,7 +219,7 @@ export default class GenerateDelta extends Command {
 
         // Regenerate the profile json based on the updated mapped controls
         try {
-          logger.info(`Generating the profile json using inspec json command on '${mappedDir}'`)
+          logger.info(`  Generating the profile json using the new mapped controls on: '${mappedDir}'`)
           // Get the directory name without the trailing "controls" directory
           // Here we are using the newly updated (mapped) controls
           //const profileDir = path.dirname(controlsDir)
@@ -225,26 +228,27 @@ export default class GenerateDelta extends Command {
           // use mappedDir
           const inspecJsonFile = execSync(`cinc-auditor json '${mappedDir}'`, { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 })
 
-          logger.info('Generating InSpec Profiles from InSpec JSON summary')
+          logger.info('  Generating InSpec Profiles from InSpec JSON summary')
 
           // Replace existing profile (inputted JSON of source profile to be mapped)
           // Allow delta to take care of the rest
           existingProfile = processInSpecProfile(inspecJsonFile)
         } catch (error: any) {
-          logger.error(`ERROR: Unable to generate the profile json because: ${error}`)
+          logger.error(`  ERROR: Unable to generate the profile json because: ${error}`)
           throw error
         }
       } else if (flags.runMapControls && !flags.controlsDir) {
-        logger.error('If the -M (Run the approximate string matching process) is specified\n' +
+        logger.error('  If the -M (Run the approximate string matching process) is specified\n' +
           'the -c (The InSpec profile controls directory containing the profiles to be updated) is required')
       }
     } catch (error: any) {
-      logger.error(`ERROR: Could not process runMapControls ${flags.runMapControls}. Check the --help command for more information on the -o flag.`)
+      logger.error(`  ERROR: Could not process runMapControls ${flags.runMapControls}. Check the --help command for more information on the -o flag.`)
       throw error
     }
 
     // TODO: Modify the output report to include the mapping of controls and describe what was mapped
     // Process the output folder
+    logger.info('Checking if provided output directory exists (create if it does not, clear if it exists)...')
     try {
       // Create the folder if it doesn't exist
       if (!fs.existsSync(flags.output)) {
@@ -252,13 +256,13 @@ export default class GenerateDelta extends Command {
       }
 
       if (path.basename(flags.output) === 'controls') {
-        logger.debug(`Deleting existing profile folder ${flags.output}`)
+        logger.debug(`  Deleting existing profile folder ${flags.output}`)
         fse.emptyDirSync(flags.output)
         outputProfileFolderPath = path.dirname(flags.output)
       } else {
         const controlDir = path.join(flags.output, 'controls')
         if (fs.existsSync(controlDir)) {
-          logger.debug(`Deleting content within existing controls folder within the profile folder ${flags.output}`)
+          logger.debug(`  Deleting content within existing controls folder within the profile folder ${flags.output}`)
           fse.emptyDirSync(controlDir)
         } else {
           fse.mkdirSync(controlDir)
@@ -267,11 +271,12 @@ export default class GenerateDelta extends Command {
         outputProfileFolderPath = flags.output
       }
     } catch (error: any) {
-      logger.error(`ERROR: Could not process output ${flags.output}. Check the --help command for more information on the -o flag.`)
+      logger.error(`  ERROR: Could not process output ${flags.output}. Check the --help command for more information on the -o flag.`)
       throw error
     }
 
     // Set the report markdown file location
+    logger.info('Check if an output markdown report was requested...')
     if (flags.report) {
       if (fs.existsSync(flags.report) && fs.lstatSync(flags.report).isDirectory()) {
         // Not a file - directory provided
@@ -285,24 +290,27 @@ export default class GenerateDelta extends Command {
         markDownFile = path.join(outputProfileFolderPath, 'delta.md')
       }
     }
+    else {
+      logger.debug('  An output markdown report was not requested')
+    }
 
     // If all variables have been satisfied, we can generate the delta
     // If the -M was used the delta is generated based on the mapped controls
+    logger.info('Executing the Delta process...')
     if (existingProfile && updatedXCCDF) {
       let updatedResult: UpdatedProfileReturn
-      logger.debug(`Processing XCCDF Benchmark file: ${flags.input} using ${flags.idType} id.`)
+      logger.debug(`  Processing XCCDF Benchmark file: ${flags.input} using ${flags.idType} id.`)
       const idTypes = ['rule', 'group', 'cis', 'version']
       if (idTypes.includes(flags.idType)) {
         updatedResult = updateProfileUsingXCCDF(existingProfile, updatedXCCDF, flags.idType as 'cis' | 'version' | 'rule' | 'group', logger, ovalDefinitions)
       } else {
-        logger.error(`ERROR: Invalid ID Type: ${flags.idType}. Check the --help command for the available ID Type options.`)
+        logger.error(`  ERROR: Invalid ID Type: ${flags.idType}. Check the --help command for the available ID Type options.`)
         throw new Error('Invalid ID Type')
       }
 
-      logger.debug('Computed the delta between the existing profile and updated benchmark.')
+      logger.debug('  Computed the delta between the existing profile and updated benchmark.')
 
       updatedResult.profile.controls.forEach(control => {
-        logger.debug(`Writing updated control ${control.id}.`)
         const controls = existingProfile.controls
 
         let index = 0;
@@ -315,26 +323,37 @@ export default class GenerateDelta extends Command {
             break
           }
         }
-          const newControl = updateControl(existingProfile.controls[index], control, logger)
-          // Call the .toRuby verbose if the log level is debug or verbose
-          const logLevel = (flags.logLevel == 'debug' || flags.logLevel == 'verbose') ? true : false
-          fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), newControl.toRuby(logLevel))
+        const newControl = updateControl(existingProfile.controls[index], control, logger)
+        // Call the .toRuby verbose if the log level is debug or verbose
+        const logLevel = (flags.logLevel == 'debug' || flags.logLevel == 'verbose') ? true : false
+        fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), newControl.toRuby(logLevel))
       })
 
-      logger.info(`Writing delta file for ${existingProfile.title}`)
+      logger.info(`  Writing delta file for ${existingProfile.title}`)
       fs.writeFileSync(path.join(outputProfileFolderPath, 'delta.json'), JSON.stringify(updatedResult.diff, null, 2))
 
       if (flags.report) {
-        logger.debug('Writing report markdown file')
-        fs.writeFileSync(path.join(markDownFile), updatedResult.markdown)
+        logger.debug('  Writing report markdown file')
+
+        // Mapped controls report data
+        if (flags.runMapControls) {
+          const reportData = '## Map Controls\nNew Control: Old Control\n' +
+            JSON.stringify(mappedControls!, null, 2) +
+            `\nTotal controls mapped: ${Object.keys(mappedControls!).length}\n\n` +
+            updatedResult.markdown
+          fs.writeFileSync(path.join(markDownFile), reportData)
+        }
+        else {
+          fs.writeFileSync(path.join(markDownFile), updatedResult.markdown)
+        }
       }
     } else {
       if (!existingProfile) {
-        logger.error('ERROR: Could not generate delta because the existingProfile variable was not satisfied.')
+        logger.error('  ERROR: Could not generate delta because the existingProfile variable was not satisfied.')
       }
 
       if (!updatedXCCDF) {
-        logger.error('ERROR: Could not generate delta because the updatedXCCDF variable was not satisfied.')
+        logger.error('  ERROR: Could not generate delta because the updatedXCCDF variable was not satisfied.')
       }
     }
   }
@@ -484,11 +503,11 @@ export default class GenerateDelta extends Command {
 
   createMappedDirectory(controlsDir: string): string {
     const destFilePath = path.basename(controlsDir)
-    console.log(`destFilePath is: ${destFilePath}`)
+    //console.log(`destFilePath is: ${destFilePath}`)
 
     const mappedDir = controlsDir.replace(destFilePath, 'mapped_controls')
-    console.log(`mappedDir is: ${mappedDir}`)
-    console.log(`controlsDir is: ${controlsDir}`)
+    //console.log(`mappedDir is: ${mappedDir}`)
+    //console.log(`controlsDir is: ${controlsDir}`)
     if (fs.existsSync(mappedDir)) {
       fs.rmSync(mappedDir, { recursive: true, force: true })
     }
