@@ -1,6 +1,6 @@
 import { Command, Flags } from '@oclif/core'
 import fs from 'fs'
-import { processInSpecProfile, processOVAL, UpdatedProfileReturn, updateProfileUsingXCCDF, processXCCDF } from '@mitre/inspec-objects'
+import { processInSpecProfile, processOVAL, UpdatedProfileReturn, updateProfileUsingXCCDF, processXCCDF, updateControl } from '@mitre/inspec-objects'
 
 // TODO: We shouldn't have to import like this, open issue to clean library up for inspec-objects
 // test failed in updating inspec-objects to address high lvl vuln
@@ -10,7 +10,7 @@ import Control from '@mitre/inspec-objects/lib/objects/control'
 import path from 'path'
 import { createWinstonLogger } from '../../utils/logging'
 import fse from 'fs-extra'
-import { Fuse } from 'fuse.js'
+import Fuse from 'fuse.js'
 
 import colors from 'colors' // eslint-disable-line no-restricted-imports
 import { execSync } from 'child_process'
@@ -214,7 +214,7 @@ export default class GenerateDelta extends Command {
           }
         }
 
-        // Regenerate the profile json
+        // Regenerate the profile json based on the updated mapped controls
         try {
           logger.info(`Generating the profile json using inspec json command on '${mappedDir}'`)
           // Get the directory name without the trailing "controls" directory
@@ -222,9 +222,8 @@ export default class GenerateDelta extends Command {
           //const profileDir = path.dirname(controlsDir)
           const profileDir = path.dirname(mappedDir)
 
-          // TODO: normally it's 'inspec json ...' but vscode doesn't recognize my alias?
           // use mappedDir
-          const inspecJsonFile = execSync(`inspec json '${mappedDir}'`, { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 })
+          const inspecJsonFile = execSync(`cinc-auditor json '${mappedDir}'`, { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 })
 
           logger.info('Generating InSpec Profiles from InSpec JSON summary')
 
@@ -288,6 +287,7 @@ export default class GenerateDelta extends Command {
     }
 
     // If all variables have been satisfied, we can generate the delta
+    // If the -M was used the delta is generated based on the mapped controls
     if (existingProfile && updatedXCCDF) {
       let updatedResult: UpdatedProfileReturn
       logger.debug(`Processing XCCDF Benchmark file: ${flags.input} using ${flags.idType} id.`)
@@ -303,7 +303,22 @@ export default class GenerateDelta extends Command {
 
       updatedResult.profile.controls.forEach(control => {
         logger.debug(`Writing updated control ${control.id}.`)
-        fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby())
+        const controls = existingProfile.controls
+
+        let index = 0;
+        for (let i in controls) {
+          const controlLine = controls[i].code.split('\n')[0]
+          // NOTE: The control.id can be in the form of V-123456 or SV-123456  
+          //       check the entire value or just the numeric value for a match
+          if (controlLine.includes(control.id) || controlLine.includes(control.id.split('-')[1])) {
+            index = parseInt(i)
+            break
+          }
+        }
+          const newControl = updateControl(existingProfile.controls[index], control, logger)
+          // Call the .toRuby verbose if the log level is debug or verbose
+          const logLevel = (flags.logLevel == 'debug' || flags.logLevel == 'verbose') ? true : false
+          fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), newControl.toRuby(logLevel))
       })
 
       logger.info(`Writing delta file for ${existingProfile.title}`)
