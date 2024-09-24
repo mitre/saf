@@ -1,6 +1,6 @@
-import { Command, Flags } from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
-import { processInSpecProfile, processOVAL, UpdatedProfileReturn, updateProfileUsingXCCDF, processXCCDF, updateControl } from '@mitre/inspec-objects'
+import {processInSpecProfile, processOVAL, UpdatedProfileReturn, updateProfileUsingXCCDF, processXCCDF, updateControl} from '@mitre/inspec-objects'
 
 // TODO: We shouldn't have to import like this, open issue to clean library up for inspec-objects
 // test failed in updating inspec-objects to address high lvl vuln
@@ -8,23 +8,23 @@ import Profile from '@mitre/inspec-objects/lib/objects/profile'
 import Control from '@mitre/inspec-objects/lib/objects/control'
 
 import path from 'path'
-import { createWinstonLogger } from '../../utils/logging'
+import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
 import Fuse from 'fuse.js'
 
 import colors from 'colors' // eslint-disable-line no-restricted-imports
-import { execSync } from 'child_process'
+import {execSync} from 'child_process'
 
 export default class GenerateDelta extends Command {
   static description = 'Update an existing InSpec profile with updated XCCDF guidance'
 
   static flags = {
-    help: Flags.help({ char: 'h' }),
-    inspecJsonFile: Flags.string({ char: 'J', required: true, description: 'Input execution/profile (list of controls the delta is being applied from) JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command' }),
-    xccdfXmlFile: Flags.string({ char: 'X', required: true, description: 'The XCCDF XML file containing the new guidance - in the form of .xml file' }),
-    ovalXmlFile: Flags.string({ char: 'O', required: false, description: 'The OVAL XML file containing definitions used in the new guidance - in the form of .xml file' }),
-    output: Flags.string({ char: 'o', required: true, description: 'The output folder for the updated profile (will contain the controls that delta was applied too) - if it is not empty, it will be overwritten. Do not use the original controls directory' }),
-    report: Flags.string({ char: 'r', required: false, description: 'Output markdown report file - must have an extension of .md' }),
+    help: Flags.help({char: 'h'}),
+    inspecJsonFile: Flags.string({char: 'J', required: true, description: 'Input execution/profile (list of controls the delta is being applied from) JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command'}),
+    xccdfXmlFile: Flags.string({char: 'X', required: true, description: 'The XCCDF XML file containing the new guidance - in the form of .xml file'}),
+    ovalXmlFile: Flags.string({char: 'O', required: false, description: 'The OVAL XML file containing definitions used in the new guidance - in the form of .xml file'}),
+    output: Flags.string({char: 'o', required: true, description: 'The output folder for the updated profile (will contain the controls that delta was applied too) - if it is not empty, it will be overwritten. Do not use the original controls directory'}),
+    report: Flags.string({char: 'r', required: false, description: 'Output markdown report file - must have an extension of .md'}),
     idType: Flags.string({
       char: 'T',
       required: false,
@@ -32,17 +32,17 @@ export default class GenerateDelta extends Command {
       options: ['rule', 'group', 'cis', 'version'],
       description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
     }),
-    logLevel: Flags.string({ char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose'] }),
+    logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
     // New flag -M for whether to try mapping controls to new profile
     runMapControls: Flags.boolean({
       char: 'M',
       required: false,
       default: false,
       dependsOn: ['controlsDir'],
-      description: 'Run the approximate string matching process'
+      description: 'Run the approximate string matching process',
     }),
-    controlsDir: Flags.string({ char: 'c', required: false, description: 'The InSpec profile directory containing the controls being updated (controls Delta is processing)' }),
-    backupControls: Flags.boolean({ char: 'b', required: false, default: true, allowNo: true, description: 'Preserve modified controls in a backup directory (oldControls) inside the controls directory\n[default: true]' }),
+    controlsDir: Flags.string({char: 'c', required: false, description: 'The InSpec profile directory containing the controls being updated (controls Delta is processing)'}),
+    backupControls: Flags.boolean({char: 'b', required: false, default: true, allowNo: true, description: 'Preserve modified controls in a backup directory (oldControls) inside the controls directory\n[default: true]'}),
   }
 
   static examples = [
@@ -51,7 +51,7 @@ export default class GenerateDelta extends Command {
   ]
 
   async run() { // skipcq: JS-0044
-    const { flags } = await this.parse(GenerateDelta)
+    const {flags} = await this.parse(GenerateDelta)
 
     const logger = createWinstonLogger('generate:delta', flags.logLevel)
 
@@ -102,13 +102,14 @@ export default class GenerateDelta extends Command {
         const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8')
         const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase()
         if (inputFirstLine.includes('xccdf')) {
-          logger.debug('  Loading ${xccdfXmlFile} as XCCDF')
+          logger.debug(`  Loading ${xccdfXmlFile} as XCCDF`)
           updatedXCCDF = inputFile
-          logger.debug('  Loaded ${xccdfXmlFile} as XCCDF')
+          logger.debug(`  Loaded ${xccdfXmlFile} as XCCDF`)
         } else {
           logger.error(`  ERROR: Unable to load ${xccdfXmlFile} as XCCDF`)
           throw new Error('  Cannot load XCCDF file')
         }
+
         logger.debug(`  Loaded ${xccdfXmlFile} as XCCDF`)
       } else {
         throw new Error('  No benchmark (XCCDF) file was provided.')
@@ -197,7 +198,7 @@ export default class GenerateDelta extends Command {
             // single or double quotes are used on this line, check for both
             // Template literals (`${controls[key]}`) must be used with dynamically created regular expression (RegExp() not / ... /)
             const controlLineIndex = lines.findIndex(line => new RegExp(`control ['"]${controls[key]}['"] do`).test(line))
-            if (controlLineIndex == -1) {
+            if (controlLineIndex === -1) {
               console.log(colors.bgRed('  Control not found:'), colors.red(` ${sourceControlFile}\n`))
             } else {
               lines[controlLineIndex] = lines[controlLineIndex].replace(new RegExp(`control ['"]${controls[key]}['"] do`), `control '${key}' do`)
@@ -222,11 +223,11 @@ export default class GenerateDelta extends Command {
           logger.info(`  Generating the profile json using the new mapped controls on: '${mappedDir}'`)
           // Get the directory name without the trailing "controls" directory
           // Here we are using the newly updated (mapped) controls
-          //const profileDir = path.dirname(controlsDir)
+          // const profileDir = path.dirname(controlsDir)
           const profileDir = path.dirname(mappedDir)
 
           // use mappedDir
-          const inspecJsonFile = execSync(`cinc-auditor json '${mappedDir}'`, { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 })
+          const inspecJsonFile = execSync(`cinc-auditor json '${mappedDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
 
           logger.info('  Generating InSpec Profiles from InSpec JSON summary')
 
@@ -252,7 +253,7 @@ export default class GenerateDelta extends Command {
     try {
       // Create the folder if it doesn't exist
       if (!fs.existsSync(flags.output)) {
-        fs.mkdirSync(path.join(flags.output), { recursive: true })
+        fs.mkdirSync(path.join(flags.output), {recursive: true})
       }
 
       if (path.basename(flags.output) === 'controls') {
@@ -289,8 +290,7 @@ export default class GenerateDelta extends Command {
       } else {
         markDownFile = path.join(outputProfileFolderPath, 'delta.md')
       }
-    }
-    else {
+    } else {
       logger.debug('  An output markdown report was not requested')
     }
 
@@ -313,19 +313,22 @@ export default class GenerateDelta extends Command {
       updatedResult.profile.controls.forEach(control => {
         const controls = existingProfile.controls
 
-        let index = 0;
-        for (let i in controls) {
-          const controlLine = controls[i].code.split('\n')[0]
-          // NOTE: The control.id can be in the form of V-123456 or SV-123456  
-          //       check the entire value or just the numeric value for a match
-          if (controlLine.includes(control.id) || controlLine.includes(control.id.split('-')[1])) {
-            index = parseInt(i)
-            break
+        let index = 0
+        for (const i in controls) {
+          if (i) {
+            const controlLine = controls[i].code.split('\n')[0]
+            // NOTE: The control.id can be in the form of V-123456 or SV-123456
+            //       check the entire value or just the numeric value for a match
+            if (controlLine.includes(control.id) || controlLine.includes(control.id.split('-')[1])) {
+              index = Number(i)
+              break
+            }
           }
         }
+
         const newControl = updateControl(existingProfile.controls[index], control, logger)
         // Call the .toRuby verbose if the log level is debug or verbose
-        const logLevel = (flags.logLevel == 'debug' || flags.logLevel == 'verbose') ? true : false
+        const logLevel = Boolean(flags.logLevel === 'debug' || flags.logLevel === 'verbose')
         fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), newControl.toRuby(logLevel))
       })
 
@@ -342,8 +345,7 @@ export default class GenerateDelta extends Command {
             `\nTotal controls mapped: ${Object.keys(mappedControls!).length}\n\n` +
             updatedResult.markdown
           fs.writeFileSync(path.join(markDownFile), reportData)
-        }
-        else {
+        } else {
           fs.writeFileSync(path.join(markDownFile), updatedResult.markdown)
         }
       }
@@ -452,7 +454,6 @@ export default class GenerateDelta extends Command {
         if (result[0] && result[0].score && result[0].score < 0.3) {
           if (typeof newControl.tags.gid === 'string' &&
             typeof result[0].item.tags.gid === 'string') {
-
             // Check non displayed characters of title
             console.log(colors.yellow('      oldControl Title: '), colors.green(`${this.updateTitle(result[0].item.title)}`))
             // NOTE: We determined that 0.1 needs to be reviewed due to possible
@@ -463,6 +464,7 @@ export default class GenerateDelta extends Command {
               // alternatively: add a match decision feature for high-scoring results
               console.log(colors.bgRed('** Potential mismatch **'))
             }
+
             console.log(colors.yellow('    Best match in list: '), colors.green(`${newControl.tags.gid} --> ${result[0].item.tags.gid}`))
             console.log(colors.yellow('                 Score: '), colors.green(`${result[0].score}\n`))
 
@@ -503,19 +505,18 @@ export default class GenerateDelta extends Command {
 
   createMappedDirectory(controlsDir: string): string {
     const destFilePath = path.basename(controlsDir)
-    //console.log(`destFilePath is: ${destFilePath}`)
+    // console.log(`destFilePath is: ${destFilePath}`)
 
     const mappedDir = controlsDir.replace(destFilePath, 'mapped_controls')
-    //console.log(`mappedDir is: ${mappedDir}`)
-    //console.log(`controlsDir is: ${controlsDir}`)
+    // console.log(`mappedDir is: ${mappedDir}`)
+    // console.log(`controlsDir is: ${controlsDir}`)
     if (fs.existsSync(mappedDir)) {
-      fs.rmSync(mappedDir, { recursive: true, force: true })
+      fs.rmSync(mappedDir, {recursive: true, force: true})
     }
 
     fs.mkdirSync(mappedDir)
 
     return mappedDir
-
   }
 
   printYellowGreen(title: string, info: string) {
