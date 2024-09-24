@@ -1,7 +1,7 @@
 import { Command, Flags } from '@oclif/core'
 import fs from 'fs'
 import { processInSpecProfile, processOVAL, UpdatedProfileReturn, updateProfileUsingXCCDF, processXCCDF } from '@mitre/inspec-objects'
-import prompt from 'prompt-sync'
+
 // TODO: We shouldn't have to import like this, open issue to clean library up for inspec-objects
 // test failed in updating inspec-objects to address high lvl vuln
 import Profile from '@mitre/inspec-objects/lib/objects/profile'
@@ -10,11 +10,9 @@ import Control from '@mitre/inspec-objects/lib/objects/control'
 import path from 'path'
 import { createWinstonLogger } from '../../utils/logging'
 import fse from 'fs-extra'
-import { match } from 'assert'
+import { Fuse } from 'fuse.js'
 
-//import Fuse from 'fuse.js';
-import table from 'table'
-import readline from 'readline'
+import colors from 'colors' // eslint-disable-line no-restricted-imports
 import { execSync } from 'child_process'
 
 export default class GenerateDelta extends Command {
@@ -22,10 +20,10 @@ export default class GenerateDelta extends Command {
 
   static flags = {
     help: Flags.help({ char: 'h' }),
-    inspecJsonFile: Flags.string({ char: 'J', required: true, description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command' }),
+    inspecJsonFile: Flags.string({ char: 'J', required: true, description: 'Input execution/profile (list of controls the delta is being applied from) JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command' }),
     xccdfXmlFile: Flags.string({ char: 'X', required: true, description: 'The XCCDF XML file containing the new guidance - in the form of .xml file' }),
     ovalXmlFile: Flags.string({ char: 'O', required: false, description: 'The OVAL XML file containing definitions used in the new guidance - in the form of .xml file' }),
-    output: Flags.string({ char: 'o', required: true, description: 'The output folder for the updated profile - if it is not empty, it will be overwritten' }),
+    output: Flags.string({ char: 'o', required: true, description: 'The output folder for the updated profile (will contain the controls that delta was applied too) - if it is not empty, it will be overwritten. Do not use the original controls directory' }),
     report: Flags.string({ char: 'r', required: false, description: 'Output markdown report file - must have an extension of .md' }),
     idType: Flags.string({
       char: 'T',
@@ -36,11 +34,20 @@ export default class GenerateDelta extends Command {
     }),
     logLevel: Flags.string({ char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose'] }),
     // New flag -M for whether to try mapping controls to new profile
-    runMapControls: Flags.boolean({ char: 'M', required: false, default: false, description: 'Run the mapControls function' }),
+    runMapControls: Flags.boolean({
+      char: 'M',
+      required: false,
+      default: false,
+      dependsOn: ['controlsDir'],
+      description: 'Run the approximate string matching process'
+    }),
+    controlsDir: Flags.string({ char: 'c', required: false, description: 'The InSpec profile directory containing the controls being updated (controls Delta is processing)' }),
+    backupControls: Flags.boolean({ char: 'b', required: false, default: true, allowNo: true, description: 'Preserve modified controls in a backup directory (oldControls) inside the controls directory\n[default: true]' }),
   }
 
   static examples = [
-    'saf generate delta -J ./the_profile_json_file.json -X ./the_xccdf_guidance_file.xml  -o the_output_directory -O ./the_oval_file.xml -T group -r the_update_report_file.md -L debug',
+    'saf generate delta -J <profile_json_file.json> -X <xccdf_guidance_file.xml, -o <updated_controls_directory>',
+    'saf generate delta -J <profile_json_file.json> -X <xccdf_guidance_file.xml, -o <updated_controls_directory> -M -c <controls_directory_being_processed_by_delta>',
   ]
 
   async run() { // skipcq: JS-0044
@@ -49,20 +56,6 @@ export default class GenerateDelta extends Command {
     const logger = createWinstonLogger('generate:delta', flags.logLevel)
 
     logger.warn("'saf generate delta' is currently a release candidate. Please report any questions/bugs to https://github.com/mitre/saf/issues.")
-
-    // Create a readline prompt for user input
-    // Probably a better way to do this, prompt-sync is already in the package.json
-    const promptUser = (query: string): Promise<string> => {
-      const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-      });
-
-      return new Promise(resolve => rl.question(query, ans => {
-        rl.close();
-        resolve(ans);
-      }));
-    };
 
     let existingProfile: any | null = null
     let updatedXCCDF: any = {}
@@ -73,7 +66,10 @@ export default class GenerateDelta extends Command {
     let markDownFile = ''
     let outputProfileFolderPath = ''
 
-    // Process the Input execution/profile JSON file
+    // Process the Input execution/profile JSON file. The processInSpecProfile
+    // method will throw an error if an invalid profile file is provided.
+    // NOTE: If mapping controls to new profile (using the -M) the
+    //       existingProfile variable is re-generated as the controls change.
     try {
       if (fs.lstatSync(flags.inspecJsonFile).isFile()) {
         const inspecJsonFile = flags.inspecJsonFile
@@ -91,7 +87,12 @@ export default class GenerateDelta extends Command {
       }
     }
 
-    // Process the XCCDF XML file containing the new/updated profile guidance
+    // Validate that the provided XCDDF containing the new/updated profile
+    // guidance is actually an XCCDF XML file by checking the XML schema
+    // location and name space
+    // TODO: Use an XML parser to determine if the provided XCCDF file is an
+    //       XCCDF by checking the schema location (xsi:schemaLocation) includes xccdf
+    //       and that includes an XCCDF namespace (xmlns)
     try {
       if (fs.lstatSync(flags.xccdfXmlFile).isFile()) {
         const xccdfXmlFile = flags.xccdfXmlFile
@@ -105,7 +106,6 @@ export default class GenerateDelta extends Command {
           logger.error(`ERROR: Unable to load ${xccdfXmlFile} as XCCDF`)
           throw new Error('Cannot load XCCDF file')
         }
-
         logger.debug(`Loaded ${xccdfXmlFile} as XCCDF`)
       } else {
         throw new Error('No benchmark (XCCDF) file was provided.')
@@ -151,75 +151,80 @@ export default class GenerateDelta extends Command {
       }
     }
 
+    // Process the fuzzy search logic
     try {
-      if (flags.runMapControls) {
-        logger.info(`Mapping controls from the old profile to the new profile`)
-        let promptSync = prompt();
+      if (flags.runMapControls && flags.controlsDir) {
+        logger.info('Mapping controls from the old profile to the new profile')
+
         // Process XCCDF of new profile to get controls
         processedXCCDF = processXCCDF(updatedXCCDF, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
         // profile = processXCCDF(xccdf, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
 
-
-        // let thresholdInput = parseFloat(promptSync('Enter the threshold for fuzzy search (default is 0.3): '))
-        // if(thresholdInput === '')
-        // {
-        //   thresholdInput = '0.3'
-        // }
         // Create a dictionary mapping new control GIDs to their old control counterparts
-        let mappedControls = this.mapControls(existingProfile, processedXCCDF)
+        const mappedControls = this.mapControls(existingProfile, processedXCCDF)
 
-        // request directory of controls to be mapped from user
-
-        //let controlsDir = await promptUser('Enter the pathname of controls directory to be mapped: ')
-        //console.log(`controlsDir: ${controlsDir}`)
-        let controlsDir = promptSync('Enter the pathname of controls directory to be mapped: ');
+        const controlsDir = flags.controlsDir
         console.log(`controlsDir: ${controlsDir}`)
-        //logger.debug(`controlsDir: ${controlsDir}`)
+
         // Iterate through each mapped control
         // key = new control, controls[key] = old control
-        const controls: { [key: string]: any } = await mappedControls;
-        for (let key in controls) {
-          console.log(`ITERATE MAP: ${key} --> ${controls[key]}`)
-          //logger.debug(`ITERATE MAP: ${key} --> ${controls[key]}`)
+        const controls: { [key: string]: any } = await mappedControls
 
-          // For each control, modify the control file in the old controls directory
-          // Then regenerate json profile
+        // Create a directory where we are storing the newly created mapped controls
+        // Do not over right the original controls in the directory (controlsDir)
+        const mappedDir = this.createMappedDirectory(controlsDir)
+
+        console.log(colors.yellow('Updating Controls ===========================================================================\n'))
+        // eslint-disable-next-line guard-for-in
+        for (const key in controls) {
+          // console.log(`ITERATE MAP: ${key} --> ${controls[key]}`)
+          console.log(colors.yellow('        ITERATE MAP: '), colors.green(`${key} --> ${controls[key]}`))
+          // for each control, modify the control file in the old controls directory
+          // then regenerate json profile
           const sourceControlFile = path.join(controlsDir, `${controls[key]}.rb`)
+          const mappedControlFile = path.join(mappedDir, `${controls[key]}.rb`)
 
           if (fs.existsSync(sourceControlFile)) {
-            console.log(`Found control file: ${sourceControlFile}`)
-            //logger.debug(`Found control file: ${sourceControlFile}`)
-            
-            const lines = fs.readFileSync(sourceControlFile, 'utf-8').split('\n');
+            // console.log(`Found control file: ${sourceControlFile}`)
+            // console.log(colors.yellow(' Found control file: '), colors.green(`${sourceControlFile}`))
+            console.log(colors.yellow(' Processing control: '), colors.green(`${sourceControlFile}`))
+            const lines = fs.readFileSync(sourceControlFile, 'utf8').split('\n')
 
             // Find the line with the control name and replace it with the new control name
-            // Single or double quotes are used on this line, check for both
+            // single or double quotes are used on this line, check for both
             // Template literals (`${controls[key]}`) must be used with dynamically created regular expression (RegExp() not / ... /)
-            const controlLineIndex = lines.findIndex(line => new RegExp(`control ['"]${controls[key]}['"] do`).test(line));
-            lines[controlLineIndex] = lines[controlLineIndex].replace(new RegExp(`control ['"]${controls[key]}['"] do`), `control '${key}' do`);
+            const controlLineIndex = lines.findIndex(line => new RegExp(`control ['"]${controls[key]}['"] do`).test(line))
+            if (controlLineIndex == -1) {
+              console.log(colors.bgRed('  Control not found:'), colors.red(` ${sourceControlFile}\n`))
+            } else {
+              lines[controlLineIndex] = lines[controlLineIndex].replace(new RegExp(`control ['"]${controls[key]}['"] do`), `control '${key}' do`)
 
-            fs.writeFileSync(sourceControlFile, lines.join('\n'));
+              // Saved processed control to the 'mapped_controls' directory
+              console.log(colors.yellow('  Processed control: '), colors.green(`${mappedControlFile}`))
+              fs.writeFileSync(mappedControlFile, lines.join('\n'))
 
-            // TODO: Maybe copy files from the source directory and rename for duplicates and to preserve source files
-            console.log(`mapped control file: ${sourceControlFile} to reference ID ${key}\n new line: ${lines[controlLineIndex]}`)
-            //logger.debug(`mapped control file: ${sourceControlFile} to reference ID ${key}\n new line: ${lines[controlLineIndex]}`)
-            
-
-          }
-          else {
-            console.log(`File not found at ${sourceControlFile}`)
-            //logger.debug(`File not found at ${sourceControlFile}`)
+              // TODO: Maybe copy files from the source directory and rename for duplicates and to preserve source files
+              // console.log(`mapped control file: ${sourceControlFile} to reference ID ${key}\n new line: ${lines[controlLineIndex]}`)
+              console.log(colors.yellow('Mapped control file: '), colors.green(`${sourceControlFile} to reference ID ${key}`))
+              console.log(colors.yellow(' New do Block Title: '), colors.bgGreen(`${lines[controlLineIndex]}\n`))
+            }
+          } else {
+            // console.log(`File not found at ${sourceControlFile}`)
+            console.log(colors.bgRed('  File not found at:'), colors.red(` ${sourceControlFile}\n`))
           }
         }
 
         // Regenerate the profile json
         try {
-          logger.info(`Generating the profile json using inspec json command on '${controlsDir}'`)
+          logger.info(`Generating the profile json using inspec json command on '${mappedDir}'`)
           // Get the directory name without the trailing "controls" directory
-          const profileDir = path.dirname(controlsDir)
+          // Here we are using the newly updated (mapped) controls
+          //const profileDir = path.dirname(controlsDir)
+          const profileDir = path.dirname(mappedDir)
 
           // TODO: normally it's 'inspec json ...' but vscode doesn't recognize my alias?
-          const inspecJsonFile = execSync(`cinc-auditor json '${profileDir}'`, { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 })
+          // use mappedDir
+          const inspecJsonFile = execSync(`inspec json '${mappedDir}'`, { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 })
 
           logger.info('Generating InSpec Profiles from InSpec JSON summary')
 
@@ -230,10 +235,11 @@ export default class GenerateDelta extends Command {
           logger.error(`ERROR: Unable to generate the profile json because: ${error}`)
           throw error
         }
-
+      } else if (flags.runMapControls && !flags.controlsDir) {
+        logger.error('If the -M (Run the approximate string matching process) is specified\n' +
+          'the -c (The InSpec profile controls directory containing the profiles to be updated) is required')
       }
-    }
-    catch (error: any) {
+    } catch (error: any) {
       logger.error(`ERROR: Could not process runMapControls ${flags.runMapControls}. Check the --help command for more information on the -o flag.`)
       throw error
     }
@@ -265,6 +271,7 @@ export default class GenerateDelta extends Command {
       logger.error(`ERROR: Could not process output ${flags.output}. Check the --help command for more information on the -o flag.`)
       throw error
     }
+
     // Set the report markdown file location
     if (flags.report) {
       if (fs.existsSync(flags.report) && fs.lstatSync(flags.report).isDirectory()) {
@@ -317,36 +324,44 @@ export default class GenerateDelta extends Command {
     }
   }
 
-  /**
-   * Maps controls from an old profile to a new profile by updating the control IDs
-   * based on matching SRG IDs and titles.
-   *
-   * @param oldProfile - The profile containing the old controls.
-   * @param newProfile - The profile containing the new controls.
-   *
-   * This method uses Fuse.js for fuzzy searching to find matching controls in the new profile
-   * based on the SRG ID (`tags.gtitle`). If a match is found and the titles match, the old control's
-   * ID is updated to the new control's ID.
-   * 
-   * TODO: Source directory (old controls) should preserve original file names for git diff
-   * 
-   * Example usage:
-   * ```typescript
-   * const oldProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
-   * const newProfile = processXCCDF(updatedXCCDF, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
-   * const generateDelta = new GenerateDelta()
-   * generateDelta.mapControls(oldProfile, newProfile);
-   * ```
-   */
+  async catch(error: any) { // skipcq: JS-0116
+    if (error.message) {
+      this.warn(error.message)
+    } else {
+      const suggestions = 'saf generate delta -J <profile_json_file.json> -X <xccdf_guidance_file.xml, -o <directory_for_updated_profiles>\n\t' +
+        'saf generate delta -J <profile_json_file.json> -X <xccdf_guidance_file.xml, -o <directory_for_updated_profiles> -M -c <directory_of_profiles_being_matched>'
+      this.warn('Invalid arguments\nTry this:\n\t' + suggestions)
+    }
+  }
+
+  // Maps controls from an old profile to a new profile by updating the control IDs
+  // based on matching SRG IDs and titles.
+  //
+  // This method uses Fuse.js for fuzzy searching, a technique of finding
+  // strings that are approximately equal to a given pattern (rather than
+  // exactly) to find matching controls in the new profile based on the
+  // SRG ID (`tags.gtitle`). If a match is found and the titles match, the old
+  // control's ID is updated to the new control's ID.
+  //
+  // Example usage:
+  // ```typescript
+  // const oldProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
+  // const newProfile = processXCCDF(updatedXCCDF, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
+  // const generateDelta = new GenerateDelta()
+  // generateDelta.mapControls(oldProfile, newProfile);
+  // ```
+  //
+  // @param oldProfile - The profile containing the old controls.
+  // @param newProfile - The profile containing the new controls.
   async mapControls(oldProfile: Profile, newProfile: Profile): Promise<object> {
     /*
     If a control isn't found to have a match at all, then req is missing or has been dropped
     Delta *should* be removing it automatically
     */
-    let oldControls: Control[] = oldProfile.controls
-    let newControls: Control[] = newProfile.controls
+    const oldControls: Control[] = oldProfile.controls
+    const newControls: Control[] = newProfile.controls
 
-    const { default: Fuse } = await import('fuse.js');
+    // const {default: Fuse} = await import('fuse.js')
 
     const fuseOptions = {
       // isCaseSensitive: false,
@@ -356,6 +371,8 @@ export default class GenerateDelta extends Command {
       // findAllMatches: false,
       // minMatchCharLength: 1,
       // location: 0,
+      // A threshold of 0.0 requires a perfect match (of both letters and location),
+      //   threshold of 1.0 would match anything
       threshold: 0.4,
       // distance: 100,
       // useExtendedSearch: false,
@@ -365,103 +382,117 @@ export default class GenerateDelta extends Command {
       // puts weight on length of field, skews results since often text is expanded in revisions
       ignoreFieldNorm: true,
       // fieldNormWeight: 1,
-      keys: [
-        "title"
-      ]
-    };
-    let controlMappings: { [key: string]: string } = {}
+      keys: ['title'],
+    }
+    const controlMappings: { [key: string]: string } = {}
 
-    // Create list of just the GIDs and the title / relevant keys of old controls 
-    let searchList = oldControls.map((control) => {
+    // Create list of just the GIDs and the title / relevant keys of old controls
+    // eslint-disable-next-line array-callback-return
+    const searchList = oldControls.map(control => {
       if (control.title) {
         return {
           // Remove all non-displayed characters in the control title
-          title: control.title.replace(/[\n\r\t\f\v]/g, ''),
-          gid: control.tags.gid
+          title: control.title.replaceAll(/[\n\r\t\f\v]/g, ''),
+          gid: control.tags.gid,
         }
       }
     })
 
+    console.log(colors.yellow('Mapping Process ===========================================================================\n'))
+    // Create fuse object for searching through matchList
+    const fuse = new Fuse(oldControls, fuseOptions)
     for (const newControl of newControls) {
-
-      // Create fuse object for searching through matchList
-      const fuse = new Fuse(oldControls, fuseOptions);
-
       // Check for existence of title, remove non-displayed characters
+      // eslint-disable-next-line no-warning-comments
       // TODO: Determine whether removing symbols other than non-displayed characters is helpful
       // words separated by newlines don't have spaces between them
       if (newControl.title) {
-        const result = fuse.search(newControl.title.replace(/[^\w\s]|[\r\t\f\v]/g, '').replace(/\n/g, ' '));
+        const result = fuse.search(newControl.title.replaceAll(/[^\w\s]|[\r\t\f\v]/g, '').replaceAll('\n', ''))
 
-        console.log(`newControl: ${newControl.tags.gid}`)
-        //logger.debug(`newControl: ${newControl.tags.gid}`)
+        console.log(colors.yellow('Processing New Control: '), colors.green(`${newControl.tags.gid}`))
 
         if (newControl.title) {
-          console.log(`newControl w/ non-displayed: ${this.showNonDisplayedCharacters(newControl.title.replace(/[^\w\s]|[\r\t\f\v]/g, '').replace(/\n/g, ' '))}`)
-          //logger.debug(`newControl with non-displayed: ${this.showNonDisplayedCharacters(newControl.title.replace(/[^\w\s]|[\r\t\f\v]/g, '').replace(/\n/g, ' '))
+          console.log(colors.yellow('      newControl Title: '), colors.green(`${this.updateTitle(newControl.title)}`))
         }
 
         if (result[0] && result[0].score && result[0].score < 0.3) {
           if (typeof newControl.tags.gid === 'string' &&
             typeof result[0].item.tags.gid === 'string') {
 
-
-            //if (result[0].score > 0.1) {
-              // todo: modify output report or logger to show potential mismatches
+            // Check non displayed characters of title
+            console.log(colors.yellow('      oldControl Title: '), colors.green(`${this.updateTitle(result[0].item.title)}`))
+            // NOTE: We determined that 0.1 needs to be reviewed due to possible
+            // words exchange that could alter the entire meaning of the title.
+            if (result[0].score > 0.1) {
+              // eslint-disable-next-line no-warning-comments
+              // TODO: modify output report or logger to show potential mismatches
               // alternatively: add a match decision feature for high-scoring results
-            //  console.log(`Potential mismatch`)
-            //}
-
-            // Check non displayed characters of title  
-            if (result[0].item.title) {
-              console.log(`oldControl w/ non-displayed: ${this.showNonDisplayedCharacters(result[0].item.title.replace(/[^\w\s]|[\r\t\f\v]/g, '').replace(/\n/g, ' '))}`)
-              //logger.debug(`oldControl with non-displayed: ${this.showNonDisplayedCharacters(result[0].item.title.replace(/[^\w\s]|[\r\t\f\v]/g, '').replace(/\n/g, ' '))}`)
+              console.log(colors.bgRed('** Potential mismatch **'))
             }
-            console.log(`Best match in list: ${newControl.tags.gid} --> ${result[0].item.tags.gid}`);
-            //logger.debug(`Best match in list: ${newControl.tags.gid} --> ${result[0].item.tags.gid}`);
-            console.log(`Score: ${result[0].score} \n`)
-            //logger.debug(`Score: ${result[0].score} \n`)
+            console.log(colors.yellow('    Best match in list: '), colors.green(`${newControl.tags.gid} --> ${result[0].item.tags.gid}`))
+            console.log(colors.yellow('                 Score: '), colors.green(`${result[0].score}\n`))
 
             controlMappings[newControl.tags.gid] = result[0].item.tags.gid
-
           }
-        }
-        else {
-          console.log(`No matches found for ${newControl.tags.gid}`)
-          //logger.debug(`No matches found for ${newControl.tags.gid}`)
+        } else {
+          console.log(colors.bgRed('      oldControl Title:'), colors.red(` ${this.updateTitle(result[0].item.title)}`))
+          console.log(colors.bgRed('  No matches found for:'), colors.red(` ${newControl.tags.gid}`))
+          console.log(colors.bgRed('                 Score:'), colors.red(` ${result[0].score} \n`))
         }
       }
     }
 
-    console.log("Hashmap:\n")
-    //logger.debug("Hashmap:\n")
-    console.log(controlMappings)
-    //logger.debug(controlMappings)
-    console.log(Object.keys(controlMappings).length)
-    //logger.debug(Object.keys(controlMappings).length)
+    this.printYellow('Mapping Results ===========================================================================')
+    this.printYellow('\tNew Control -> Old Control')
+    for (const [key, value] of Object.entries(controlMappings)) {
+      this.printGreen(`\t   ${key} -> ${value}`)
+    }
+
+    this.printYellowGreen('Total controls processed: ', `${Object.keys(controlMappings).length}\n`)
 
     return controlMappings
   }
 
-  // decideMatch(oldControl: Control, newControl: Control): boolean {
-
-  //   let data = [
-  //     [oldControl.tags.gid, newControl.tags.gid],
-  //     [oldControl.title, newControl.title]
-  //   ]
-  //   console.log("TABLE===========================================================================\n")
-  //   //console.log(table(data))
-
-  //   return true
-  // }
+  updateTitle(str: string): string {
+    const replace = str.replaceAll(/[^\w\s]|[\r\t\f\v]/g, '')
+    return this.showNonDisplayedCharacters(replace).replaceAll('  ', ' ')
+  }
 
   showNonDisplayedCharacters(str: string): string {
     return str
-      .replace(/\n/g, '\\n')
-      .replace(/\r/g, '\\r')
-      .replace(/\t/g, '\\t')
-      .replace(/\f/g, '\\f')
-      .replace(/\v/g, '\\v');
+      .replaceAll('\n', String.raw``)
+      .replaceAll('\r', String.raw``)
+      .replaceAll('\t', String.raw``)
+      .replaceAll('\f', String.raw``)
+      .replaceAll('', String.raw``)
   }
 
+  createMappedDirectory(controlsDir: string): string {
+    const destFilePath = path.basename(controlsDir)
+    console.log(`destFilePath is: ${destFilePath}`)
+
+    const mappedDir = controlsDir.replace(destFilePath, 'mapped_controls')
+    console.log(`mappedDir is: ${mappedDir}`)
+    console.log(`controlsDir is: ${controlsDir}`)
+    if (fs.existsSync(mappedDir)) {
+      fs.rmSync(mappedDir, { recursive: true, force: true })
+    }
+
+    fs.mkdirSync(mappedDir)
+
+    return mappedDir
+
+  }
+
+  printYellowGreen(title: string, info: string) {
+    console.log(colors.yellow(title), colors.green(info))
+  }
+
+  printYellow(info: string) {
+    console.log(colors.yellow(info))
+  }
+
+  printGreen(info: string) {
+    console.log(colors.green(info))
+  }
 }
