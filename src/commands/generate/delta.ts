@@ -105,7 +105,7 @@ export default class GenerateDelta extends Command {
       }
     }
 
-    // Validate that the provided XCDDF containing the new/updated profile
+    // Validate that the provided XCCDF containing the new/updated profile
     // guidance is actually an XCCDF XML file by checking the XML schema
     // location and name space
     // TODO: Use an XML parser to determine if the provided XCCDF file is an
@@ -237,7 +237,7 @@ export default class GenerateDelta extends Command {
           // const profileDir = path.dirname(controlsDir)
 
           // TODO: normally it's 'inspec json ...' but vscode doesn't recognize my alias?
-          const inspecJsonFileNew = execSync(`inspec json '${mappedDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
+          const inspecJsonFileNew = execSync(`cinc-auditor json '${mappedDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
 
           // Replace existing profile (inputted JSON of source profile to be mapped)
           // Allow delta to take care of the rest
@@ -510,6 +510,7 @@ export default class GenerateDelta extends Command {
                   } else {
                     GenerateDelta.match--
                   }
+                  GenerateDelta.noMatch++
                 }
 
                 break
@@ -545,7 +546,7 @@ export default class GenerateDelta extends Command {
     this.printYellowGreen('             Possible Mismatch Controls: ', `${GenerateDelta.posMisMatch}`)
     this.printYellowGreen('               Duplicate Match Controls: ', `${GenerateDelta.dupMatch}`)
     this.printYellowGreen('                      No Match Controls: ', `${GenerateDelta.noMatch}`)
-    this.printYellowGreen('                     New XCDDF Controls: ', `${GenerateDelta.newXccdfControl}\n`)
+    this.printYellowGreen('                     New XCCDF Controls: ', `${GenerateDelta.newXccdfControl}\n`)
 
     return controlMappings
   }
