@@ -49,6 +49,7 @@ export default class Convert extends Command {
         case 'msft_secure_score':
         case 'nessus':
         case 'netsparker':
+        case 'neuvector':
         case 'nikto':
         case 'prisma':
         case 'sarif':
