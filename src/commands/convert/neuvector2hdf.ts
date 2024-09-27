@@ -1,7 +1,7 @@
-import {Command, Flags} from '@oclif/core';
-import fs from 'fs';
-import {NeuVectorMapper as Mapper} from '@mitre/hdf-converters';
-import {checkSuffix} from '../../utils/global';
+import {Command, Flags} from '@oclif/core'
+import fs from 'fs'
+import {NeuVectorMapper as Mapper} from '@mitre/hdf-converters'
+import {checkSuffix} from '../../utils/global'
 
 export default class NeuVector2HDF extends Command {
   readonly usage =
@@ -11,7 +11,7 @@ export default class NeuVector2HDF extends Command {
     'Translate a NeuVector results JSON to a Heimdall Data Format JSON file';
 
   readonly examples = [
-    'saf convert neuvector2hdf -i neuvector.json -o output-hdf-name.json'
+    'saf convert neuvector2hdf -i neuvector.json -o output-hdf-name.json',
   ];
 
   readonly flags = {
@@ -19,28 +19,28 @@ export default class NeuVector2HDF extends Command {
     input: Flags.string({
       char: 'i',
       required: true,
-      description: 'Input NeuVector Results JSON File'
+      description: 'Input NeuVector Results JSON File',
     }),
     output: Flags.string({
       char: 'o',
       required: true,
-      description: 'Output HDF JSON file'
+      description: 'Output HDF JSON file',
     }),
     'with-raw': Flags.boolean({
       char: 'w',
       required: false,
-      description: 'Include raw input file in HDF JSON file'
-    })
+      description: 'Include raw input file in HDF JSON file',
+    }),
   };
 
   async run() {
-    const {flags} = await this.parse(NeuVector2HDF);
-    const input = fs.readFileSync(flags.input, 'utf8');
+    const {flags} = await this.parse(NeuVector2HDF)
+    const input = fs.readFileSync(flags.input, 'utf8')
 
-    const converter = new Mapper(input, flags['with-raw']);
+    const converter = new Mapper(input, flags['with-raw'])
     fs.writeFileSync(
       checkSuffix(flags.output),
-      JSON.stringify(converter.toHdf())
-    );
+      JSON.stringify(converter.toHdf()),
+    )
   }
 }
