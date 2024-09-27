@@ -20,7 +20,7 @@ export default class AnchoreGrype2HDF extends Command {
   async run() {
     const {flags} = await this.parse(AnchoreGrype2HDF)
     const input = fs.readFileSync(flags.input, 'utf8')
-    checkInput({data: input, filename: flags.input}, 'anchoregrype2hdf', 'Anchore Grype JSON results file')
+    checkInput({data: input, filename: flags.input}, 'grype', 'Anchore Grype JSON results file')
 
     const converter = new Mapper(input, flags['with-raw'])
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
