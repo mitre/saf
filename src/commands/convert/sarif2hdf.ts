@@ -1,7 +1,7 @@
-import {Command, Flags} from '@oclif/core';
-import fs from 'fs';
-import {SarifMapper as Mapper} from '@mitre/hdf-converters';
-import {checkInput, checkSuffix} from '../../utils/global';
+import {Command, Flags} from '@oclif/core'
+import fs from 'fs'
+import {SarifMapper as Mapper} from '@mitre/hdf-converters'
+import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class Sarif2HDF extends Command {
   static readonly usage =
@@ -11,7 +11,7 @@ export default class Sarif2HDF extends Command {
     'Translate a SARIF JSON file into a Heimdall Data Format JSON file\nSARIF level to HDF impact Mapping:\nSARIF level error -> HDF impact 0.7\nSARIF level warning -> HDF impact 0.5\nSARIF level note -> HDF impact 0.3\nSARIF level none -> HDF impact 0.1\nSARIF level not provided -> HDF impact 0.1 as default';
 
   static readonly examples = [
-    'saf convert sarif2hdf -i sarif-results.json -o output-hdf-name.json'
+    'saf convert sarif2hdf -i sarif-results.json -o output-hdf-name.json',
   ];
 
   static readonly flags = {
@@ -19,31 +19,31 @@ export default class Sarif2HDF extends Command {
     input: Flags.string({
       char: 'i',
       required: true,
-      description: 'Input SARIF JSON File'
+      description: 'Input SARIF JSON File',
     }),
     output: Flags.string({
       char: 'o',
       required: true,
-      description: 'Output HDF JSON File'
+      description: 'Output HDF JSON File',
     }),
     'with-raw': Flags.boolean({
       char: 'w',
       required: false,
-      description: 'Include raw input file in HDF JSON file'
-    })
+      description: 'Include raw input file in HDF JSON file',
+    }),
   };
 
   async run() {
-    const {flags} = await this.parse(Sarif2HDF);
+    const {flags} = await this.parse(Sarif2HDF)
 
     // Check for correct input type
-    const data = fs.readFileSync(flags.input, 'utf8');
-    checkInput({data, filename: flags.input}, 'sarif', 'SARIF JSON');
+    const data = fs.readFileSync(flags.input, 'utf8')
+    checkInput({data, filename: flags.input}, 'sarif', 'SARIF JSON')
 
-    const converter = new Mapper(data, flags['with-raw']);
+    const converter = new Mapper(data, flags['with-raw'])
     fs.writeFileSync(
       checkSuffix(flags.output),
-      JSON.stringify(converter.toHdf(), null, 2)
-    );
+      JSON.stringify(converter.toHdf(), null, 2),
+    )
   }
 }

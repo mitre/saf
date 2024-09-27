@@ -1,9 +1,9 @@
-import {Command, Flags} from '@oclif/core';
-import fs from 'fs';
-import {ASFFResults as Mapper} from '@mitre/hdf-converters';
-import {checkInput, checkSuffix} from '../../utils/global';
-import _ from 'lodash';
-import path from 'path';
+import {Command, Flags} from '@oclif/core'
+import fs from 'fs'
+import {ASFFResults as Mapper} from '@mitre/hdf-converters'
+import {checkInput, checkSuffix} from '../../utils/global'
+import _ from 'lodash'
+import path from 'path'
 
 export default class Trivy2HDF extends Command {
   static readonly usage =
@@ -13,7 +13,7 @@ export default class Trivy2HDF extends Command {
     'Translate a Trivy-derived AWS Security Finding Format results from JSONL into a Heimdall Data Format JSON file';
 
   static readonly examples = [
-    'saf convert trivy2hdf -i trivy-asff.json -o output-folder'
+    'saf convert trivy2hdf -i trivy-asff.json -o output-folder',
   ];
 
   static readonly flags = {
@@ -21,19 +21,19 @@ export default class Trivy2HDF extends Command {
     input: Flags.string({
       char: 'i',
       required: true,
-      description: 'Input Trivy ASFF JSON File'
+      description: 'Input Trivy ASFF JSON File',
     }),
     output: Flags.string({
       char: 'o',
       required: true,
-      description: 'Output HDF JSON Folder'
-    })
+      description: 'Output HDF JSON Folder',
+    }),
   };
 
   async run() {
-    const {flags} = await this.parse(Trivy2HDF);
+    const {flags} = await this.parse(Trivy2HDF)
     // comes as an _asff.json file which is basically the array of findings but without the surrounding object; however, could also be properly formed asff since it depends on the template used
-    const input = fs.readFileSync(flags.input, 'utf8').trim();
+    const input = fs.readFileSync(flags.input, 'utf8').trim()
     // if (Array.isArray(JSON.parse(input))) {
     //   input = `{"Findings": ${fs.readFileSync(flags.input, 'utf8').trim()}}`
     // }
@@ -41,21 +41,21 @@ export default class Trivy2HDF extends Command {
     checkInput(
       {data: input, filename: flags.input},
       'asff',
-      'Trivy-derived AWS Security Finding Format results'
-    );
+      'Trivy-derived AWS Security Finding Format results',
+    )
 
-    const converter = new Mapper(input);
-    const results = converter.toHdf();
+    const converter = new Mapper(input)
+    const results = converter.toHdf()
 
     if (!fs.existsSync(flags.output)) {
-      fs.mkdirSync(flags.output);
+      fs.mkdirSync(flags.output)
     }
 
     _.forOwn(results, (result, filename) => {
       fs.writeFileSync(
         path.join(flags.output, checkSuffix(filename)),
-        JSON.stringify(result, null, 2)
-      );
-    });
+        JSON.stringify(result, null, 2),
+      )
+    })
   }
 }

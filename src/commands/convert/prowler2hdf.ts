@@ -1,9 +1,9 @@
-import {Command, Flags} from '@oclif/core';
-import fs from 'fs';
-import {ASFFResults as Mapper} from '@mitre/hdf-converters';
-import {checkInput, checkSuffix} from '../../utils/global';
-import _ from 'lodash';
-import path from 'path';
+import {Command, Flags} from '@oclif/core'
+import fs from 'fs'
+import {ASFFResults as Mapper} from '@mitre/hdf-converters'
+import {checkInput, checkSuffix} from '../../utils/global'
+import _ from 'lodash'
+import path from 'path'
 
 export default class Prowler2HDF extends Command {
   static readonly usage =
@@ -13,7 +13,7 @@ export default class Prowler2HDF extends Command {
     'Translate a Prowler-derived AWS Security Finding Format results from JSONL into a Heimdall Data Format JSON file';
 
   static readonly examples = [
-    'saf convert prowler2hdf -i prowler-asff.json -o output-folder'
+    'saf convert prowler2hdf -i prowler-asff.json -o output-folder',
   ];
 
   static readonly flags = {
@@ -21,36 +21,36 @@ export default class Prowler2HDF extends Command {
     input: Flags.string({
       char: 'i',
       required: true,
-      description: 'Input Prowler ASFF JSON File'
+      description: 'Input Prowler ASFF JSON File',
     }),
     output: Flags.string({
       char: 'o',
       required: true,
-      description: 'Output HDF JSON Folder'
-    })
+      description: 'Output HDF JSON Folder',
+    }),
   };
 
   async run() {
-    const {flags} = await this.parse(Prowler2HDF);
-    const data = fs.readFileSync(flags.input, 'utf8');
+    const {flags} = await this.parse(Prowler2HDF)
+    const data = fs.readFileSync(flags.input, 'utf8')
     checkInput(
       {data: data, filename: flags.input},
       'asff',
-      'Prowler-derived AWS Security Finding Format results'
-    );
-    const converter = new Mapper(data);
-    const results = converter.toHdf();
+      'Prowler-derived AWS Security Finding Format results',
+    )
+    const converter = new Mapper(data)
+    const results = converter.toHdf()
 
     // Create output folder if not exists
     if (!fs.existsSync(flags.output)) {
-      fs.mkdirSync(flags.output);
+      fs.mkdirSync(flags.output)
     }
 
     _.forOwn(results, (result, filename) => {
       fs.writeFileSync(
         path.join(flags.output, checkSuffix(filename)),
-        JSON.stringify(result, null, 2)
-      );
-    });
+        JSON.stringify(result, null, 2),
+      )
+    })
   }
 }

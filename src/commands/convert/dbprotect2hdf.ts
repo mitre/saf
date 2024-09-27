@@ -1,7 +1,7 @@
-import {Command, Flags} from '@oclif/core';
-import fs from 'fs';
-import {DBProtectMapper as Mapper} from '@mitre/hdf-converters';
-import {checkInput, checkSuffix} from '../../utils/global';
+import {Command, Flags} from '@oclif/core'
+import fs from 'fs'
+import {DBProtectMapper as Mapper} from '@mitre/hdf-converters'
+import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class DBProtect2HDF extends Command {
   static readonly usage =
@@ -11,7 +11,7 @@ export default class DBProtect2HDF extends Command {
     'Translate a DBProtect report in "Check Results Details" XML format into a Heimdall Data Format JSON file';
 
   static readonly examples = [
-    'saf convert dbprotect2hdf -i check_results_details_report.xml -o output-hdf-name.json'
+    'saf convert dbprotect2hdf -i check_results_details_report.xml -o output-hdf-name.json',
   ];
 
   static readonly flags = {
@@ -19,35 +19,35 @@ export default class DBProtect2HDF extends Command {
     input: Flags.string({
       char: 'i',
       required: true,
-      description: "'Check Results Details' XML File"
+      description: "'Check Results Details' XML File",
     }),
     output: Flags.string({
       char: 'o',
       required: true,
-      description: 'Output HDF JSON File'
+      description: 'Output HDF JSON File',
     }),
     'with-raw': Flags.boolean({
       char: 'w',
       required: false,
-      description: 'Include raw input file in HDF JSON file'
-    })
+      description: 'Include raw input file in HDF JSON file',
+    }),
   };
 
   async run() {
-    const {flags} = await this.parse(DBProtect2HDF);
+    const {flags} = await this.parse(DBProtect2HDF)
 
     // Check for correct input type
-    const data = fs.readFileSync(flags.input, 'utf8');
+    const data = fs.readFileSync(flags.input, 'utf8')
     checkInput(
       {data, filename: flags.input},
       'dbProtect',
-      'DBProtect report in "Check Results Details" XML format'
-    );
+      'DBProtect report in "Check Results Details" XML format',
+    )
 
-    const converter = new Mapper(data, flags['with-raw']);
+    const converter = new Mapper(data, flags['with-raw'])
     fs.writeFileSync(
       checkSuffix(flags.output),
-      JSON.stringify(converter.toHdf(), null, 2)
-    );
+      JSON.stringify(converter.toHdf(), null, 2),
+    )
   }
 }

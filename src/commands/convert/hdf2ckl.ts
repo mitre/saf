@@ -1,14 +1,14 @@
-import {Command, Flags} from '@oclif/core';
-import _ from 'lodash';
-import fs from 'fs';
+import {Command, Flags} from '@oclif/core'
+import _ from 'lodash'
+import fs from 'fs'
 import {
   Assettype,
   ChecklistMetadata,
   ChecklistResults as Mapper,
   Role,
   Techarea,
-  validateChecklistMetadata
-} from '@mitre/hdf-converters';
+  validateChecklistMetadata,
+} from '@mitre/hdf-converters'
 
 export default class HDF2CKL extends Command {
   static readonly usage =
@@ -22,12 +22,12 @@ export default class HDF2CKL extends Command {
     input: Flags.string({
       char: 'i',
       required: true,
-      description: 'Input HDF file'
+      description: 'Input HDF file',
     }),
     output: Flags.string({
       char: 'o',
       required: true,
-      description: 'Output CKL file'
+      description: 'Output CKL file',
     }),
     metadata: Flags.string({
       char: 'm',
@@ -59,136 +59,136 @@ export default class HDF2CKL extends Command {
             'webordatabase',
             'webdbsite',
             'webdbinstance',
-            'vulidmapping'
-          ]
-        }
+            'vulidmapping',
+          ],
+        },
       ],
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     profilename: Flags.string({
       required: false,
       description: 'Profile name',
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     profiletitle: Flags.string({
       required: false,
       description: 'Profile title',
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     version: Flags.integer({
       required: false,
       description: 'Profile version number',
       min: 0,
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     releasenumber: Flags.integer({
       required: false,
       description: 'Profile release number',
       min: 0,
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     releasedate: Flags.string({
       required: false,
       description: 'Profile release date',
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     marking: Flags.string({
       required: false,
       description:
         'A security classification or designation of the asset, indicating its sensitivity level',
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     hostname: Flags.string({
       char: 'H',
       required: false,
       description: 'The name assigned to the asset within the network',
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     ip: Flags.string({
       char: 'I',
       required: false,
       description: 'IP address',
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     mac: Flags.string({
       char: 'M',
       required: false,
       description: 'MAC address',
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     fqdn: Flags.string({
       char: 'F',
       required: false,
       description: 'Fully Qualified Domain Name',
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     targetcomment: Flags.string({
       required: false,
       description: 'Additional comments or notes about the asset',
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     role: Flags.string({
       required: false,
       description:
         'The primary function or role of the asset within the network or organization',
       options: Object.values(Role),
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     assettype: Flags.string({
       required: false,
       description: 'The category or classification of the asset',
       options: Object.values(Assettype),
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     techarea: Flags.string({
       required: false,
       description: 'The technical area or domain to which the asset belongs',
       options: Object.values(Techarea),
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     stigguid: Flags.string({
       required: false,
       description: 'A unique identifier associated with the STIG for the asset',
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     targetkey: Flags.string({
       required: false,
       description:
         'A unique key or identifier for the asset within the checklist or inventory system',
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     webordatabase: Flags.boolean({
       required: false,
       description:
         'Indicates whether the STIG is primarily for either a web or database server',
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     webdbsite: Flags.string({
       required: false,
       description:
         'The specific site or application hosted on the web or database server',
       dependsOn: ['webordatabase'],
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     webdbinstance: Flags.string({
       required: false,
       description:
         'The specific instance of the web application or database running on the server',
       dependsOn: ['webordatabase'],
-      helpGroup: 'Checklist Metadata'
+      helpGroup: 'Checklist Metadata',
     }),
     vulidmapping: Flags.string({
       required: false,
       description:
         'Which type of control identifier to map to the checklist ID',
       options: ['gid', 'id'],
-      helpGroup: 'Checklist Metadata'
-    })
+      helpGroup: 'Checklist Metadata',
+    }),
   };
 
   static readonly examples = [
     'saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90:AB',
-    'saf convert hdf2ckl -i rhel8-results.json -o rhel8.ckl -m rhel8-metadata.json'
+    'saf convert hdf2ckl -i rhel8-results.json -o rhel8.ckl -m rhel8-metadata.json',
   ];
 
   static readonly oldMetadataFormatMapping = {
@@ -203,11 +203,11 @@ export default class HDF2CKL extends Command {
     techarea: 'tech_area',
     targetkey: 'target_key',
     webdbsite: 'web_db_site',
-    webdbinstance: 'web_db_site'
+    webdbinstance: 'web_db_site',
   };
 
   async run() {
-    const {flags} = await this.parse(HDF2CKL);
+    const {flags} = await this.parse(HDF2CKL)
 
     /* Order of precedence for checklist metadata:
       command flags (hostname, ip, etc.) or metadata file (-m flag)
@@ -228,83 +228,83 @@ export default class HDF2CKL extends Command {
       hostname: '',
       targetcomment: '',
       webdbinstance: '',
-      webdbsite: ''
-    };
-    const inputHDF = JSON.parse(fs.readFileSync(flags.input, 'utf8'));
-    let flagMetadata;
-    flagMetadata = flags.metadata
-      ? JSON.parse(fs.readFileSync(flags.metadata, 'utf8'))
-      : {
-          profiles: [
-            {
-              name: flags.profilename,
-              title: flags.profiletitle,
-              version: flags.version,
-              releasenumber: flags.releasenumber,
-              releasedate: flags.releasedate
-            }
-          ],
-          marking: flags.marking,
-          hostname: flags.hostname,
-          hostip: flags.ip,
-          hostmac: flags.mac,
-          hostfqdn: flags.fqdn,
-          targetcomment: flags.targetcomment,
-          role: flags.role,
-          assettype: flags.assettype,
-          techarea: flags.techarea,
-          targetkey: flags.targetkey,
-          webordatabase: flags.webordatabase,
-          webdbsite: flags.webdbsite,
-          webdbinstance: flags.webdbinstance,
-          vulidmapping: flags.vulidmapping
-        };
+      webdbsite: '',
+    }
+    const inputHDF = JSON.parse(fs.readFileSync(flags.input, 'utf8'))
+    let flagMetadata
+    flagMetadata = flags.metadata ?
+      JSON.parse(fs.readFileSync(flags.metadata, 'utf8')) :
+      {
+        profiles: [
+          {
+            name: flags.profilename,
+            title: flags.profiletitle,
+            version: flags.version,
+            releasenumber: flags.releasenumber,
+            releasedate: flags.releasedate,
+          },
+        ],
+        marking: flags.marking,
+        hostname: flags.hostname,
+        hostip: flags.ip,
+        hostmac: flags.mac,
+        hostfqdn: flags.fqdn,
+        targetcomment: flags.targetcomment,
+        role: flags.role,
+        assettype: flags.assettype,
+        techarea: flags.techarea,
+        targetkey: flags.targetkey,
+        webordatabase: flags.webordatabase,
+        webdbsite: flags.webdbsite,
+        webdbinstance: flags.webdbinstance,
+        vulidmapping: flags.vulidmapping,
+      }
 
     // to preserve backwards compatibility with old metadata format
     if (flags.metadata && _.has(flagMetadata, 'benchmark')) {
-      let profile;
+      let profile
       if (_.has(flagMetadata, 'benchmark.version')) {
-        const version: string = _.get(flagMetadata, 'benchmark.version');
+        const version: string = _.get(flagMetadata, 'benchmark.version')
 
         // get sections of numbers in version string
         const parsedVersion = version
           .split(/\D+/)
           .filter(Boolean)
-          .map((s) => Number.parseInt(s, 10));
-        profile = {version: parsedVersion[0], releasenumber: parsedVersion[1]};
+          .map(s => Number.parseInt(s, 10))
+        profile = {version: parsedVersion[0], releasenumber: parsedVersion[1]}
       } else {
-        profile = {};
+        profile = {}
       }
 
-      const newFlagMetadata = {profiles: [profile]};
+      const newFlagMetadata = {profiles: [profile]}
 
       for (const [newKey, oldKey] of Object.entries(
-        HDF2CKL.oldMetadataFormatMapping
+        HDF2CKL.oldMetadataFormatMapping,
       )) {
-        const oldValue = _.get(flagMetadata, oldKey);
+        const oldValue = _.get(flagMetadata, oldKey)
         if (oldValue) {
-          _.set(newFlagMetadata, newKey, oldValue);
+          _.set(newFlagMetadata, newKey, oldValue)
         }
       }
 
-      flagMetadata = newFlagMetadata;
+      flagMetadata = newFlagMetadata
     }
 
     const hdfMetadata = _.get(
       inputHDF,
       'passthrough.metadata',
-      _.get(inputHDF, 'passthrough.checklist.asset', {})
-    );
-    const metadata = _.merge(defaultMetadata, hdfMetadata, flagMetadata);
-    _.set(inputHDF, 'passthrough.metadata', metadata);
+      _.get(inputHDF, 'passthrough.checklist.asset', {}),
+    )
+    const metadata = _.merge(defaultMetadata, hdfMetadata, flagMetadata)
+    _.set(inputHDF, 'passthrough.metadata', metadata)
 
-    const validationResults = validateChecklistMetadata(metadata);
+    const validationResults = validateChecklistMetadata(metadata)
     if (validationResults.ok) {
-      fs.writeFileSync(flags.output, new Mapper(inputHDF).toCkl());
+      fs.writeFileSync(flags.output, new Mapper(inputHDF).toCkl())
     } else {
       console.error(
-        `Error creating checklist:\n${validationResults.error.message}`
-      );
+        `Error creating checklist:\n${validationResults.error.message}`,
+      )
     }
   }
 }

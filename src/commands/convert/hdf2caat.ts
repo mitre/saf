@@ -1,7 +1,7 @@
-import {Command, Flags} from '@oclif/core';
-import fs from 'fs';
-import path from 'path';
-import {FromHDFToCAATMapper as Mapper} from '@mitre/hdf-converters';
+import {Command, Flags} from '@oclif/core'
+import fs from 'fs'
+import path from 'path'
+import {FromHDFToCAATMapper as Mapper} from '@mitre/hdf-converters'
 
 export default class HDF2CAAT extends Command {
   static readonly usage =
@@ -11,7 +11,7 @@ export default class HDF2CAAT extends Command {
     'Translate an HDF file into a Compliance Assessment and Audit Tracking (CAAT) XLSX file';
 
   static readonly examples = [
-    'saf convert hdf2caat -i hdf_input.json -o caat-results.xlsx'
+    'saf convert hdf2caat -i hdf_input.json -o caat-results.xlsx',
   ];
 
   static readonly flags = {
@@ -20,27 +20,27 @@ export default class HDF2CAAT extends Command {
       char: 'i',
       required: true,
       multiple: true,
-      description: 'Input HDF JSON file'
+      description: 'Input HDF JSON file',
     }),
     output: Flags.string({
       char: 'o',
       required: true,
-      description: 'Output CAAT XLSX file'
-    })
+      description: 'Output CAAT XLSX file',
+    }),
   };
 
   async run() {
-    const {flags} = await this.parse(HDF2CAAT);
+    const {flags} = await this.parse(HDF2CAAT)
 
-    const inputData = flags.input.map((filename) => ({
+    const inputData = flags.input.map(filename => ({
       data: fs.readFileSync(filename, 'utf8'),
-      filename: path.basename(filename)
-    }));
+      filename: path.basename(filename),
+    }))
 
-    const converter = new Mapper(inputData);
+    const converter = new Mapper(inputData)
     fs.writeFileSync(
       flags.output,
-      converter.toCAAT(false, {bookType: 'xlsx', type: 'buffer'})
-    );
+      converter.toCAAT(false, {bookType: 'xlsx', type: 'buffer'}),
+    )
   }
 }
