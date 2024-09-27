@@ -1,4 +1,4 @@
-import {AnchoreGrypeMapper, ASFFResults, ChecklistResults, BurpSuiteMapper, ConveyorResults, CycloneDXSBOMResults, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, MsftSecureScoreMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TrufflehogResults, TwistlockResults, XCCDFResultsMapper, ZapMapper} from '@mitre/hdf-converters'
+import {AnchoreGrypeMapper, ASFFResults, ChecklistResults, BurpSuiteMapper, ConveyorResults, CycloneDXSBOMResults, DBProtectMapper, fingerprint, FortifyMapper, JfrogXrayMapper, MsftSecureScoreMapper, NessusResults, NetsparkerMapper, NiktoMapper, PrismaMapper, SarifMapper, ScoutsuiteMapper, SnykResults, TrufflehogResults, TwistlockResults, XCCDFResultsMapper, ZapMapper, NeuVectorMapper} from '@mitre/hdf-converters'
 import fs from 'fs'
 import _ from 'lodash'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
@@ -170,6 +170,12 @@ export default class Convert extends Command {
           fs.writeFileSync(`${checkSuffix(flags.output)}`, JSON.stringify(result, null, 2))
         }
 
+        break
+      }
+
+      case 'neuvector': {
+        converter = new NeuVectorMapper(fs.readFileSync(flags.input, 'utf8'))
+        fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2))
         break
       }
 

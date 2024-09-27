@@ -10,7 +10,7 @@ describe('Test NeuVector', () => {
   test
     .stdout()
     .command([
-      'convert nevuector2hdf',
+      'convert neuvector2hdf',
       '-i',
       path.resolve(
         './test/sample_data/neuvector/sample_input_report/neuvector-mitre-caldera.json'
@@ -18,7 +18,7 @@ describe('Test NeuVector', () => {
       '-o',
       `${tmpobj.name}/neuvectortest.json`
     ])
-    .it('hdf-converter output test', () => {
+    .it('hdf-converter output test on mitre/caldera', () => {
       const converted = JSON.parse(
         fs.readFileSync(`${tmpobj.name}/neuvectortest.json`, 'utf8')
       );
@@ -38,7 +38,7 @@ describe('Test NeuVector', () => {
   test
     .stdout()
     .command([
-      'convert nevuector2hdf',
+      'convert neuvector2hdf',
       '-i',
       path.resolve(
         './test/sample_data/neuvector/sample_input_report/neuvector-mitre-heimdall.json'
@@ -46,7 +46,7 @@ describe('Test NeuVector', () => {
       '-o',
       `${tmpobj.name}/neuvectortest.json`
     ])
-    .it('hdf-converter output test', () => {
+    .it('hdf-converter output test on mitre/heimdall', () => {
       const converted = JSON.parse(
         fs.readFileSync(`${tmpobj.name}/neuvectortest.json`, 'utf8')
       );
@@ -66,7 +66,7 @@ describe('Test NeuVector', () => {
   test
     .stdout()
     .command([
-      'convert nevuector2hdf',
+      'convert neuvector2hdf',
       '-i',
       path.resolve(
         './test/sample_data/neuvector/sample_input_report/neuvector-mitre-heimdall2.json'
@@ -74,7 +74,7 @@ describe('Test NeuVector', () => {
       '-o',
       `${tmpobj.name}/neuvectortest.json`
     ])
-    .it('hdf-converter output test', () => {
+    .it('hdf-converter output test on mitre/heimdall2', () => {
       const converted = JSON.parse(
         fs.readFileSync(`${tmpobj.name}/neuvectortest.json`, 'utf8')
       );
@@ -94,7 +94,7 @@ describe('Test NeuVector', () => {
   test
     .stdout()
     .command([
-      'convert nevuector2hdf',
+      'convert neuvector2hdf',
       '-i',
       path.resolve(
         './test/sample_data/neuvector/sample_input_report/neuvector-mitre-vulcan.json'
@@ -102,7 +102,7 @@ describe('Test NeuVector', () => {
       '-o',
       `${tmpobj.name}/neuvectortest.json`
     ])
-    .it('hdf-converter output test', () => {
+    .it('hdf-converter output test on mitre/vulcan', () => {
       const converted = JSON.parse(
         fs.readFileSync(`${tmpobj.name}/neuvectortest.json`, 'utf8')
       );
@@ -135,7 +135,7 @@ describe('Test NeuVector withraw flag', () => {
       `${tmpobj.name}/neuvectortest.json`,
       '-w'
     ])
-    .it('hdf-converter withraw output test', () => {
+    .it('hdf-converter withraw output test on mitre/caldera', () => {
       const converted = JSON.parse(
         fs.readFileSync(`${tmpobj.name}/neuvectortest.json`, 'utf8')
       );
@@ -164,7 +164,7 @@ describe('Test NeuVector withraw flag', () => {
       `${tmpobj.name}/neuvectortest.json`,
       '-w'
     ])
-    .it('hdf-converter withraw output test', () => {
+    .it('hdf-converter withraw output test on mitre/heimdall', () => {
       const converted = JSON.parse(
         fs.readFileSync(`${tmpobj.name}/neuvectortest.json`, 'utf8')
       );
@@ -193,7 +193,7 @@ describe('Test NeuVector withraw flag', () => {
       `${tmpobj.name}/neuvectortest.json`,
       '-w'
     ])
-    .it('hdf-converter withraw output test', () => {
+    .it('hdf-converter withraw output test on mitre/heimdall2', () => {
       const converted = JSON.parse(
         fs.readFileSync(`${tmpobj.name}/neuvectortest.json`, 'utf8')
       );
@@ -222,7 +222,7 @@ describe('Test NeuVector withraw flag', () => {
       `${tmpobj.name}/neuvectortest.json`,
       '-w'
     ])
-    .it('hdf-converter withraw output test', () => {
+    .it('hdf-converter withraw output test on mitre/vulcan', () => {
       const converted = JSON.parse(
         fs.readFileSync(`${tmpobj.name}/neuvectortest.json`, 'utf8')
       );
