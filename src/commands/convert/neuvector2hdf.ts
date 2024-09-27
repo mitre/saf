@@ -1,20 +1,20 @@
 import {Command, Flags} from '@oclif/core'
 import fs from 'fs'
 import {NeuVectorMapper as Mapper} from '@mitre/hdf-converters'
-import {checkSuffix} from '../../utils/global'
+import {checkInput, checkSuffix} from '../../utils/global'
 
 export default class NeuVector2HDF extends Command {
-  readonly usage =
+  static usage =
     'convert neuvector2hdf -i <neuvector-json> -o <hdf-scan-results-json>';
 
-  readonly description =
+  static description =
     'Translate a NeuVector results JSON to a Heimdall Data Format JSON file';
 
-  readonly examples = [
+  static examples = [
     'saf convert neuvector2hdf -i neuvector.json -o output-hdf-name.json',
   ];
 
-  readonly flags = {
+  static flags = {
     help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
@@ -36,11 +36,16 @@ export default class NeuVector2HDF extends Command {
   async run() {
     const {flags} = await this.parse(NeuVector2HDF)
     const input = fs.readFileSync(flags.input, 'utf8')
+    checkInput(
+      {data: input, filename: flags.input},
+      'neuvector',
+      'NeuVector results JSON',
+    )
 
     const converter = new Mapper(input, flags['with-raw'])
     fs.writeFileSync(
       checkSuffix(flags.output),
-      JSON.stringify(converter.toHdf()),
+      JSON.stringify(converter.toHdf(), null, 2),
     )
   }
 }
