@@ -43,12 +43,12 @@ function getInputFilename(): string {
 }
 
 export default class Convert extends Command {
-  static description =
+  static readonly description =
     'The generic convert command translates any supported file-based security results set into the Heimdall Data Format';
 
-  static examples = ['saf convert -i input -o output'];
+  static readonly examples = ['saf convert -i input -o output'];
 
-  static flags = {
+  static readonly flags = {
     input: Flags.string({
       char: 'i',
       required: true,
