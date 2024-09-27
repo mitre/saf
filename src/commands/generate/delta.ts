@@ -50,7 +50,11 @@ export default class GenerateDelta extends Command {
       dependsOn: ['controlsDir'],
       description: 'Run the approximate string matching process',
     }),
-    controlsDir: Flags.string({char: 'c', required: false, description: 'The InSpec profile directory containing the controls being updated (controls Delta is processing)'}),
+    controlsDir: Flags.string({
+      char: 'c', 
+      required: false,
+      default: '',
+      description: 'The InSpec profile directory containing the controls being updated (controls Delta is processing)'}),
     // backupControls: Flags.boolean({char: 'b', required: false, default: true, allowNo: true, description: 'Preserve modified controls in a backup directory (oldControls) inside the controls directory\n[default: true]'}),
   }
 
@@ -262,7 +266,7 @@ export default class GenerateDelta extends Command {
           'the -c (The InSpec profile controls directory containing the profiles to be updated) is required')
       }
     } catch (error: any) {
-      logger.error(`ERROR: Could not process runMapControls ${flags.runMapControls}. Check the --help command for more information on the -o flag.`)
+      logger.error(`ERROR: Could not process runMapControls flag. Check the --help command for more information on the -o flag.`)
       throw error
     }
 
