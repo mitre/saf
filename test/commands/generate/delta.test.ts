@@ -7,6 +7,7 @@ import GenerateDelta from '../../../src/commands/generate/delta'
 // Functional tests
 describe('The generate delta command', () => {
   // should process delta request with rule id type
+  // generate delta -J ./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json -X ./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml -o ../demo-output/ -T rule 
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
   test
     .stdout()

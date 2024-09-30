@@ -10,6 +10,7 @@ import {
   updateControl,
 } from '@mitre/inspec-objects'
 
+// eslint-disable-next-line no-warning-comments
 // TODO: We shouldn't have to import like this, open issue to clean library up for inspec-objects
 // test failed in updating inspec-objects to address high lvl vuln
 import Profile from '@mitre/inspec-objects/lib/objects/profile'
@@ -118,6 +119,7 @@ export default class GenerateDelta extends Command {
     // Validate that the provided XCDDF containing the new/updated profile
     // guidance is actually an XCCDF XML file by checking the XML schema
     // location and name space
+    // eslint-disable-next-line no-warning-comments
     // TODO: Use an XML parser to determine if the provided XCCDF file is an
     //       XCCDF by checking the schema location (xsi:schemaLocation) includes xccdf
     //       and that includes an XCCDF namespace (xmlns)
@@ -250,7 +252,7 @@ export default class GenerateDelta extends Command {
           // Get the directory name without the trailing "controls" directory
           // Here we are using the newly updated (mapped) controls
           // const profileDir = path.dirname(controlsDir)
-
+          // eslint-disable-next-line no-warning-comments
           // TODO: normally it's 'inspec json ...' but vscode doesn't recognize my alias?
           const inspecJsonFileNew = execSync(`inspec json '${mappedDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
 
@@ -335,11 +337,11 @@ export default class GenerateDelta extends Command {
       logger.debug('  Computed the delta between the existing profile and updated benchmark.')
 
       updatedResult.profile.controls.forEach(control => {
-        if (flags.runMapControls) {
+        //if (flags.runMapControls) {
           // ---
           const controls = existingProfile.controls
 
-          let index = 0
+          let index = -1
           // eslint-disable-next-line guard-for-in
           for (const i in controls) {
             const controlLine = controls[i].code.split('\n')[0]
@@ -350,16 +352,18 @@ export default class GenerateDelta extends Command {
               break
             }
           }
-
-          const newControl = updateControl(existingProfile.controls[index], control, logger)
           // Call the .toRuby verbose if the log level is debug or verbose
           const logLevel = Boolean(flags.logLevel === 'debug' || flags.logLevel === 'verbose')
-          fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), newControl.toRuby(logLevel))
-        // ----
-        } else {
-          // Old style of updating controls
-          logger.debug(`Writing updated control ${control.id}.`)
-          fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby())
+
+          if (index >= 0) {
+            const newControl = updateControl(existingProfile.controls[index], control, logger)
+            
+            logger.debug(`Writing updated control with code block for: ${control.id}.`)
+            fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), newControl.toRuby(logLevel))
+          } else {
+            // Old style of updating controls
+            logger.debug(`Writing new control without code block for: ${control.id}.`)
+            fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby(logLevel))
         }
       })
 
