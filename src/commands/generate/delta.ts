@@ -51,7 +51,7 @@ export default class GenerateDelta extends Command {
       description: 'Run the approximate string matching process',
     }),
     controlsDir: Flags.string({
-      char: 'c', 
+      char: 'c',
       required: false,
       default: '',
       description: 'The InSpec profile directory containing the controls being updated (controls Delta is processing)'}),
@@ -252,7 +252,7 @@ export default class GenerateDelta extends Command {
           // const profileDir = path.dirname(controlsDir)
 
           // TODO: normally it's 'inspec json ...' but vscode doesn't recognize my alias?
-          const inspecJsonFileNew = execSync(`cinc-auditor json '${mappedDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
+          const inspecJsonFileNew = execSync(`inspec json '${mappedDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
 
           // Replace existing profile (inputted JSON of source profile to be mapped)
           // Allow delta to take care of the rest
@@ -266,7 +266,7 @@ export default class GenerateDelta extends Command {
           'the -c (The InSpec profile controls directory containing the profiles to be updated) is required')
       }
     } catch (error: any) {
-      logger.error(`ERROR: Could not process runMapControls flag. Check the --help command for more information on the -o flag.`)
+      logger.error('ERROR: Could not process runMapControls flag. Check the --help command for more information on the -o flag.')
       throw error
     }
 
@@ -335,8 +335,7 @@ export default class GenerateDelta extends Command {
       logger.debug('  Computed the delta between the existing profile and updated benchmark.')
 
       updatedResult.profile.controls.forEach(control => {
-        
-        if(flags.runMapControls){
+        if (flags.runMapControls) {
           // ---
           const controls = existingProfile.controls
 

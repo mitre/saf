@@ -132,17 +132,20 @@ describe('The generate delta command', () => {
     .stdout()
     .command(['generate delta',
       '-J',
-      path.resolve('./test/sample_data/inspec/json/Windows_Server_2022_v1r3_mini-profile.json'),
+      path.resolve('./test/sample_data/inspec/json/profile_and_controls/Windows_Server_2022_v1r3_mini-profile.json'),
       '-X',
       path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2022_V2R1_mini-sample-xccdf.xml'),
       '-o',
       `${tmpobj.name}`,
       '-T',
-      'rule'])
+      'rule',
+      '-M',
+      '-c',
+      path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2022_v1r3_mini_controls/')
+    ])
     .it('should generate the controls for delta request with "rule" id type', () => {
       const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length
       expect(fileCount).to.eql(5)
     })
-
   
 })
