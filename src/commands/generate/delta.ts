@@ -252,7 +252,7 @@ export default class GenerateDelta extends Command {
           // const profileDir = path.dirname(controlsDir)
 
           // TODO: normally it's 'inspec json ...' but vscode doesn't recognize my alias?
-          const inspecJsonFileNew = execSync(`inspec json '${mappedDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
+          const inspecJsonFileNew = execSync(`cinc-auditor json '${mappedDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
 
           // Replace existing profile (inputted JSON of source profile to be mapped)
           // Allow delta to take care of the rest
@@ -335,24 +335,33 @@ export default class GenerateDelta extends Command {
       logger.debug('  Computed the delta between the existing profile and updated benchmark.')
 
       updatedResult.profile.controls.forEach(control => {
-        const controls = existingProfile.controls
+        
+        if(flags.runMapControls){
+          // ---
+          const controls = existingProfile.controls
 
-        let index = 0
-        // eslint-disable-next-line guard-for-in
-        for (const i in controls) {
-          const controlLine = controls[i].code.split('\n')[0]
-          // NOTE: The control.id can be in the form of V-123456 or SV-123456
-          //       check the entire value or just the numeric value for a mach
-          if (controlLine.includes(control.id) || controlLine.includes(control.id.split('-')[1])) {
-            index = Number.parseInt(i, 10)
-            break
+          let index = 0
+          // eslint-disable-next-line guard-for-in
+          for (const i in controls) {
+            const controlLine = controls[i].code.split('\n')[0]
+            // NOTE: The control.id can be in the form of V-123456 or SV-123456
+            //       check the entire value or just the numeric value for a match
+            if (controlLine.includes(control.id) || controlLine.includes(control.id.split('-')[1])) {
+              index = Number.parseInt(i, 10)
+              break
+            }
           }
-        }
 
-        const newControl = updateControl(existingProfile.controls[index], control, logger)
-        // Call the .toRuby verbose if the log level is debug or verbose
-        const logLevel = Boolean(flags.logLevel === 'debug' || flags.logLevel === 'verbose')
-        fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), newControl.toRuby(logLevel))
+          const newControl = updateControl(existingProfile.controls[index], control, logger)
+          // Call the .toRuby verbose if the log level is debug or verbose
+          const logLevel = Boolean(flags.logLevel === 'debug' || flags.logLevel === 'verbose')
+          fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), newControl.toRuby(logLevel))
+        // ----
+        } else {
+          // Old style of updating controls
+          logger.debug(`Writing updated control ${control.id}.`)
+          fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby())
+        }
       })
 
       logger.info(`  Writing delta file for ${existingProfile.title}`)

@@ -126,4 +126,23 @@ describe('The generate delta command', () => {
 
   // should process delta request with oval definitions file specified
   // should provide error if oval definitions flag is specified with incorrect file format
+
+  // Process delta mapping functionality
+  test
+    .stdout()
+    .command(['generate delta',
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/Windows_Server_2022_v1r3_mini-profile.json'),
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2022_V2R1_mini-sample-xccdf.xml'),
+      '-o',
+      `${tmpobj.name}`,
+      '-T',
+      'rule'])
+    .it('should generate the controls for delta request with "rule" id type', () => {
+      const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length
+      expect(fileCount).to.eql(5)
+    })
+
+  
 })
