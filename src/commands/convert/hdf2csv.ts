@@ -22,30 +22,27 @@ export default class HDF2CSV extends Command {
 
   static examples = ['saf convert hdf2csv -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"']
 
-  convertRows(evaluation: ContextualizedEvaluation, filename: string, fieldsToAdd: string[]): ControlSetRows {
-    const controls = evaluation.contains.flatMap(profile => profile.contains) || []
-    return controls.map(ctrl => convertRow(filename, ctrl, fieldsToAdd))
-  }
-
   async run() {
     const {flags} = await this.parse(HDF2CSV)
     const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(flags.input, 'utf8')))
 
     // Convert all controls from a file to ControlSetRows
-    let rows: ControlSetRows = this.convertRows(contextualizedEvaluation, convertFullPathToFilename(flags.input), flags.fields.split(','))
+    let rows: ControlSetRows = convertRows(contextualizedEvaluation, convertFullPathToFilename(flags.input), flags.fields.split(','))
     rows = rows.map((row, index) => {
       const cleanedRow: Record<string, string> = {}
       for (const key in row) {
-        if ((row[key]).length > 32767) {
-          if ('ID' in row) {
-            console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`)
-          } else {
-            console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`)
-          }
+        if (row[key] !== undefined) {
+          if ((row[key]).length > 32767) {
+            if ('ID' in row) {
+              console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`)
+            } else {
+              console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`)
+            }
 
-          cleanedRow[key] = _.truncate(row[key], {length: 32757, omission: 'TRUNCATED'})
-        } else {
-          cleanedRow[key] = row[key]
+            cleanedRow[key] = _.truncate(row[key], {length: 32757, omission: 'TRUNCATED'})
+          } else {
+            cleanedRow[key] = row[key]
+          }
         }
       }
 
@@ -53,4 +50,17 @@ export default class HDF2CSV extends Command {
     })
     await new ObjectsToCsv(rows).toDisk(flags.output)
   }
+
+  async catch(error: any) {
+    if (error.message.includes('See more help with --help')) {
+      this.warn(error.message)
+    } else {
+      this.error(error)
+    }
+  }
+}
+
+function convertRows(evaluation: ContextualizedEvaluation, filename: string, fieldsToAdd: string[]): ControlSetRows {
+  const controls = evaluation.contains.flatMap(profile => profile.contains) || []
+  return controls.map(ctrl => convertRow(filename, ctrl, fieldsToAdd))
 }
