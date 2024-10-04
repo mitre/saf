@@ -43,12 +43,12 @@ function getInputFilename(): string {
 }
 
 export default class Convert extends Command {
-  static description =
+  static readonly description =
     'The generic convert command translates any supported file-based security results set into the Heimdall Data Format';
 
-  static examples = ['saf convert -i input -o output'];
+  static readonly examples = ['saf convert -i input -o output'];
 
-  static flags = {
+  static readonly flags = {
     input: Flags.string({
       char: 'i',
       required: true,
@@ -126,17 +126,14 @@ export default class Convert extends Command {
       }
 
       case 'asff': {
-        let securityhub = _.get(flags, 'securityhub') as string[]
-        if (securityhub) {
-          securityhub = securityhub.map(file =>
-            fs.readFileSync(file, 'utf8'),
-          )
-        }
+        const securityhub = _.get(flags, 'securityhub') as string[]
+        const files = securityhub?.map(file => fs.readFileSync(file, 'utf8'))
 
         converter = new ASFFResults(
           fs.readFileSync(flags.input, 'utf8'),
-          securityhub,
+          files,
         )
+
         const results = converter.toHdf()
 
         fs.mkdirSync(flags.output)
@@ -233,14 +230,16 @@ export default class Convert extends Command {
       case 'nessus': {
         converter = new NessusResults(fs.readFileSync(flags.input, 'utf8'))
         const result = converter.toHdf()
-        if (Array.isArray(result)) {
-          for (const element of result) {
-            fs.writeFileSync(
-              `${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`,
-              JSON.stringify(element, null, 2),
-            )
-          }
-        } else {
+        const pluralResults = Array.isArray(result) ? result : []
+        const singularResult = pluralResults.length === 0
+        for (const element of pluralResults) {
+          fs.writeFileSync(
+            `${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`,
+            JSON.stringify(element, null, 2),
+          )
+        }
+
+        if (singularResult) {
           fs.writeFileSync(
             `${checkSuffix(flags.output)}`,
             JSON.stringify(result, null, 2),
@@ -317,16 +316,18 @@ export default class Convert extends Command {
       case 'snyk': {
         converter = new SnykResults(fs.readFileSync(flags.input, 'utf8'))
         const result = converter.toHdf()
-        if (Array.isArray(result)) {
-          for (const element of result) {
-            fs.writeFileSync(
-              `${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`,
-              JSON.stringify(element, null, 2),
-            )
-          }
-        } else {
+        const pluralResults = Array.isArray(result) ? result : []
+        const singularResult = pluralResults.length === 0
+        for (const element of pluralResults) {
           fs.writeFileSync(
-            checkSuffix(flags.output),
+            `${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`,
+            JSON.stringify(element, null, 2),
+          )
+        }
+
+        if (singularResult) {
+          fs.writeFileSync(
+            `${checkSuffix(flags.output)}`,
             JSON.stringify(result, null, 2),
           )
         }

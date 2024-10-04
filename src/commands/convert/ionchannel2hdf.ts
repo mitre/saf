@@ -1,17 +1,22 @@
 import {IonChannelAPIMapper, IonChannelMapper} from '@mitre/hdf-converters'
 import {Command, Flags} from '@oclif/core'
-import {checkInput, checkSuffix, convertFullPathToFilename} from '../../utils/global'
+import {
+  checkInput,
+  checkSuffix,
+  convertFullPathToFilename,
+} from '../../utils/global'
 import {createWinstonLogger} from '../../utils/logging'
 import fs from 'fs'
 import path from 'path'
 
 export default class IonChannel2HDF extends Command {
-  static usage = 'convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json>... | -a <api-key> -t <team-name> [--raw ] [-p <project>...] [-A ]) [-L info|warn|debug|verbose]'
+  static readonly usage =
+    'convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json>... | -a <api-key> -t <team-name> [--raw ] [-p <project>...] [-A ]) [-L info|warn|debug|verbose]';
 
-  static description =
+  static readonly description =
     'Pull and translate SBOM data from Ion Channel into Heimdall Data Format';
 
-  static flags = {
+  static readonly flags = {
     help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
@@ -62,7 +67,9 @@ export default class IonChannel2HDF extends Command {
     const logger = createWinstonLogger('IonChannel2HDF', flags.logLevel)
 
     if (!Array.isArray(flags.input) && !(flags.apiKey && flags.teamName)) {
-      throw new Error('Please either provide a list of input files or set the api key and the team name.')
+      throw new Error(
+        'Please either provide a list of input files or set the api key and the team name.',
+      )
     }
 
     if (flags.apiKey && flags.teamName && flags.allProjects) {
@@ -88,7 +95,10 @@ export default class IonChannel2HDF extends Command {
           json = await apiClient.toHdf()
         }
 
-        fs.writeFileSync(path.join(flags.output, filename), JSON.stringify(json, null, 2))
+        fs.writeFileSync(
+          path.join(flags.output, filename),
+          JSON.stringify(json, null, 2),
+        )
       }
     } else if (flags.apiKey && flags.teamName && Array.isArray(flags.project)) {
       logger.debug('Creating Ion Channel API Client')
@@ -112,7 +122,10 @@ export default class IonChannel2HDF extends Command {
           json = await apiClient.toHdf()
         }
 
-        fs.writeFileSync(path.join(flags.output, filename), JSON.stringify(json, null, 2))
+        fs.writeFileSync(
+          path.join(flags.output, filename),
+          JSON.stringify(json, null, 2),
+        )
       }
     } else if (Array.isArray(flags.input)) {
       logger.debug('Processing input files')
@@ -120,7 +133,11 @@ export default class IonChannel2HDF extends Command {
       for (const filename of flags.input) {
         // Check for correct input type
         const data = fs.readFileSync(filename, 'utf8')
-        checkInput({data: data, filename: filename}, 'ionchannel', 'IonChannel JSON')
+        checkInput(
+          {data: data, filename: filename},
+          'ionchannel',
+          'IonChannel JSON',
+        )
 
         logger.debug(`Processing...${filename}`)
         fs.writeFileSync(
@@ -128,13 +145,13 @@ export default class IonChannel2HDF extends Command {
             flags.output,
             checkSuffix(convertFullPathToFilename(filename)),
           ),
-          JSON.stringify(
-            (new IonChannelMapper(data)).toHdf(),
-          ),
+          JSON.stringify(new IonChannelMapper(data).toHdf()),
         )
       }
     } else {
-      throw new TypeError('Please provide a list of input files, a list of projects, or use the --allProjects flag.')
+      throw new TypeError(
+        'Please provide a list of input files, a list of projects, or use the --allProjects flag.',
+      )
     }
   }
 }

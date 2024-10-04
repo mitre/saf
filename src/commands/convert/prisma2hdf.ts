@@ -5,17 +5,29 @@ import path from 'path'
 import _ from 'lodash'
 
 export default class Prisma2HDF extends Command {
-  static usage = 'convert prisma2hdf -i <prisma-cloud-csv> -o <hdf-output-folder> [-h]'
+  static readonly usage =
+    'convert prisma2hdf -i <prisma-cloud-csv> -o <hdf-output-folder> [-h]';
 
-  static description = 'Translate a Prisma Cloud Scan Report CSV file into Heimdall Data Format JSON files'
+  static readonly description =
+    'Translate a Prisma Cloud Scan Report CSV file into Heimdall Data Format JSON files';
 
-  static examples = ['saf convert prisma2hdf -i prismacloud-report.csv -o output-hdf-name.json']
+  static readonly examples = [
+    'saf convert prisma2hdf -i prismacloud-report.csv -o output-hdf-name.json',
+  ];
 
-  static flags = {
+  static readonly flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Prisma Cloud Scan Report CSV'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
-  }
+    input: Flags.string({
+      char: 'i',
+      required: true,
+      description: 'Prisma Cloud Scan Report CSV',
+    }),
+    output: Flags.string({
+      char: 'o',
+      required: true,
+      description: 'Output HDF JSON File',
+    }),
+  };
 
   async run() {
     const {flags} = await this.parse(Prisma2HDF)

@@ -6,17 +6,29 @@ import _ from 'lodash'
 import path from 'path'
 
 export default class Trivy2HDF extends Command {
-  static usage = 'convert trivy2hdf -i <trivy-finding-json> -o <hdf-output-folder>'
+  static readonly usage =
+    'convert trivy2hdf -i <trivy-finding-json> -o <hdf-output-folder>';
 
-  static description = 'Translate a Trivy-derived AWS Security Finding Format results from JSONL into a Heimdall Data Format JSON file'
+  static readonly description =
+    'Translate a Trivy-derived AWS Security Finding Format results from JSONL into a Heimdall Data Format JSON file';
 
-  static examples = ['saf convert trivy2hdf -i trivy-asff.json -o output-folder']
+  static readonly examples = [
+    'saf convert trivy2hdf -i trivy-asff.json -o output-folder',
+  ];
 
-  static flags = {
+  static readonly flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Input Trivy ASFF JSON File'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON Folder'}),
-  }
+    input: Flags.string({
+      char: 'i',
+      required: true,
+      description: 'Input Trivy ASFF JSON File',
+    }),
+    output: Flags.string({
+      char: 'o',
+      required: true,
+      description: 'Output HDF JSON Folder',
+    }),
+  };
 
   async run() {
     const {flags} = await this.parse(Trivy2HDF)
@@ -26,7 +38,11 @@ export default class Trivy2HDF extends Command {
     //   input = `{"Findings": ${fs.readFileSync(flags.input, 'utf8').trim()}}`
     // }
 
-    checkInput({data: input, filename: flags.input}, 'asff', 'Trivy-derived AWS Security Finding Format results')
+    checkInput(
+      {data: input, filename: flags.input},
+      'asff',
+      'Trivy-derived AWS Security Finding Format results',
+    )
 
     const converter = new Mapper(input)
     const results = converter.toHdf()
@@ -43,4 +59,3 @@ export default class Trivy2HDF extends Command {
     })
   }
 }
-
