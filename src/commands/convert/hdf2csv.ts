@@ -12,6 +12,7 @@ import colors from 'colors' // eslint-disable-line no-restricted-imports
 import inquirer from 'inquirer'
 import inquirerFileTreeSelection from 'inquirer-file-tree-selection-prompt'
 import {addToProcessLogData, printGreen, printMagenta, printYellow, saveProcessLogData} from '../../utils/cliHelper'
+import {EventEmitter} from 'events'
 
 // Using the BaseCommand class that implements common commands (--interactive, --LogLevel)
 export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
@@ -42,7 +43,7 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   }
 
   // The config.bin (translates to saf), the <%= command.id %> (translates to convert hdf2csv)
-  static examples = [
+  static readonly examples = [
     '<%= config.bin %> <%= command.id %> -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"',
     '<%= config.bin %> <%= command.id %> --interactive',
   ]
@@ -53,10 +54,10 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     addToProcessLogData('================== HDF2CSV CLI Process ===================')
     addToProcessLogData(`Date: ${new Date().toISOString()}\n`)
 
-    let inputFile: string = ''
-    let outputFile: string = ''
-    let includeFields: string = ''
-    let truncateFields: boolean = false
+    let inputFile = ''
+    let outputFile = ''
+    let includeFields = ''
+    let truncateFields = false
 
     if (flags.interactive) {
       const interactiveFlags = await getFlags()
@@ -133,8 +134,7 @@ async function getFlags(): Promise<any> {
   // The default max listeners is set to 10. The inquire checkbox sets a
   // listener for each entry it displays, we are providing 16 entries,
   // does using 16 listeners. Need to increase the defaultMaxListeners.
-  // eslint-disable-next-line unicorn/prefer-module
-  require('events').defaultMaxListeners = 20
+  EventEmitter.defaultMaxListeners = 20
 
   inquirer.registerPrompt('file-tree-selection', inquirerFileTreeSelection)
 

@@ -22,7 +22,7 @@ export function saveProcessLogData() {
   }
 
   const file = fs.createWriteStream(logFileName)
-  file.on('error', function (err) {
+  file.on('error', () => {
     throw new Error('Error saving the CLI process log data')
   })
 

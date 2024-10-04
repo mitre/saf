@@ -4,7 +4,7 @@ export type Flags<T extends typeof Command> = Interfaces.InferredFlags<typeof Ba
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>
 
 export abstract class InteractiveBaseCommand extends Command {
-  static baseFlags = {
+  static readonly baseFlags = {
     interactive: Flags.boolean({
       aliases: ['interactive', 'ask-me'],
       // Show this flag under a separate GLOBAL section in help.
@@ -16,7 +16,7 @@ export abstract class InteractiveBaseCommand extends Command {
 
 export abstract class BaseCommand<T extends typeof Command> extends Command {
   // define flags that can be inherited by any command that extends BaseCommand
-  static baseFlags = {
+  static readonly baseFlags = {
     ...InteractiveBaseCommand.baseFlags,
     logLevel: Flags.option({
       char: 'L',
@@ -43,7 +43,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     this.args = args as Args<T>
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<any> {
+  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
     // If error message is for missing flags, display what fields
     // are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
@@ -54,7 +54,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     }
   }
 
-  protected async finally(_: Error | undefined): Promise<any> {
+  protected async finally(_: Error | undefined): Promise<any> { // skipcq: JS-0116
     // called after run and catch regardless of whether or not the command errored
     return super.finally(_)
   }
