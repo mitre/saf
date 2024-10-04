@@ -10,15 +10,11 @@ export abstract class InteractiveBaseCommand extends Command {
       // Show this flag under a separate GLOBAL section in help.
       helpGroup: 'GLOBAL',
       description: 'Collect input tags interactively - not available for all CLI commands',
-      // summary: 'Run command in interactive mode',
     }),
   };
 }
 
 export abstract class BaseCommand<T extends typeof Command> extends Command {
-  // add the --json flag
-  static enableJsonFlag = true
-
   // define flags that can be inherited by any command that extends BaseCommand
   static baseFlags = {
     ...InteractiveBaseCommand.baseFlags,
@@ -28,7 +24,6 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       helpGroup: 'GLOBAL',
       options: ['info', 'warn', 'debug', 'verbose'] as const,
       description: 'Specify level for logging.',
-      // summary: 'Specify log level',
     })(),
   }
 

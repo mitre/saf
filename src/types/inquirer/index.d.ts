@@ -4,4 +4,3 @@ declare module 'inquirer';
 // If you are still using CJS, please install inquirer-file-tree-selection-prompt@^1 version 1.0.19
 // https://github.com/anc95/inquirer-file-tree-selection
 declare module 'inquirer-file-tree-selection-prompt';
-declare module 'inquirer-select-directory';
