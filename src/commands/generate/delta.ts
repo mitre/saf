@@ -1,5 +1,5 @@
 /* eslint-disable max-depth */
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {
   processInSpecProfile,
@@ -99,9 +99,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
     const logger = createWinstonLogger('generate:delta', flags.logLevel)
 
-    logger.warn(colors.red('╔════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╗'))
-    logger.warn(colors.red('║ saf generate delta is currently a release candidate - report any questions/bugs to https://github.com/mitre/saf/issues ║'))
-    logger.warn(colors.red('╚════════════════════════════════════════════════════════════════════════════════════════════════════════════════════════╝'))
+    logger.warn(colors.green('╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗'))
+    logger.warn(colors.green('║ saf generate delta is officially released - report any questions/bugs to https://github.com/mitre/saf/issues ║'))
+    logger.warn(colors.green('╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝'))
 
     // logger.warn("'saf generate delta' is currently a release candidate. Please report any questions/bugs to https://github.com/mitre/saf/issues.")
     addToProcessLogData('==================== Delta Process =====================')
@@ -116,6 +116,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     let idType = ''
     let runMapControls = true
     let controlsDir = ''
+    let logLevel = ''
 
     // Process variables
     let existingProfile: any | null = null
@@ -138,6 +139,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       idType = interactiveFlags.idType
       runMapControls = interactiveFlags.runMapControls
       controlsDir = interactiveFlags.controlsDir
+      logLevel = interactiveFlags.logLevel
     } else if (this.requiredFlagsProvided(flags)) {
       // Required flags
       inspecJsonFile = flags.inspecJsonFile!
@@ -150,6 +152,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       idType = flags.idType
       runMapControls = flags.runMapControls
       controlsDir = flags.controlsDir!
+      logLevel = flags.logLevel
 
       // Save the flags to the log object
       addToProcessLogData('Process Flags ===========================================')
@@ -161,6 +164,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     } else {
       return
     }
+
+    addToProcessLogData('\n')
 
     // Process the Input execution/profile JSON file. The processInSpecProfile
     // method will throw an error if an invalid profile file is provided.
@@ -709,7 +714,11 @@ async function getFlags(): Promise<any> {
   // does using 16 listeners. Need to increase the defaultMaxListeners.
   EventEmitter.defaultMaxListeners = 20
 
+  // Register the file selection prompt
   inquirer.registerPrompt('file-tree-selection', inquirerFileTreeSelection)
+
+  // Variable used to store the prompts (question and answers)
+  const interactiveValues: {[key: string]: any} = {}
 
   printYellow('Provide the necessary information:')
   printGreen('  Required flag - Input execution/profile (list of controls the delta is being applied from) JSON file')
@@ -803,29 +812,26 @@ async function getFlags(): Promise<any> {
       },
     },
   ]
-
-  let interactiveValues: any
   // const askRequired = inquirer.prompt(requiredQuestions).then((answers: any) => {
   //   addToProcessLogData('Process Flags ============================================')
   //   for (const question in answers) {
   //     if (answers[question] !== null) {
   //       addToProcessLogData(question + '=' + answers[question])
+  //       interactiveValues[question] = answers[question]
   //     }
   //   }
-
-  //   interactiveValues = answers
   // })
   // await askRequired
 
-  // Optional OVAL file Flag
+  // Optional - OVAL file Flag
   const addOvalFilePrompt = {
     type: 'list',
-    name: 'addOvalFile',
+    name: 'useOvalFile',
     message: 'Include an OVAL XML file:',
     choices: ['true', 'false'],
     default: false,
     filter(val: string) {
-      return (val === 'false')
+      return (val === 'true')
     },
   }
   const ovalFilePrompt = {
@@ -859,21 +865,29 @@ async function getFlags(): Promise<any> {
       return true
     },
   }
-  // const askOvalOptional = inquirer.prompt(addOvalFilePrompt).then((addOvalAnswer: any) => {
-  //   if (addOvalAnswer.addOvalFile === 'true') {
-  //     inquirer.prompt(ovalFilePrompt).then((answer: any) => {
-  //       for (const question in answer) {
-  //         if (answer[question] !== null) {
-  //           addToProcessLogData(question + '=' + answer[question])
-  //           interactiveValues[question] = answer[question]
-  //         }
-  //       }
-  //     })
-  //   }
-  // })
-  // await askOvalOptional
+  let askOvalFile: any
+  const askOvalOptional = inquirer.prompt(addOvalFilePrompt).then(async (addOvalAnswer: any) => {
+    if (addOvalAnswer.useOvalFile === true) {
+      addToProcessLogData('useOvalFile=true')
+      interactiveValues.useOvalFile = true
+      askOvalFile = inquirer.prompt(ovalFilePrompt).then(async (answer: any) => {
+        for (const question in answer) {
+          if (answer[question] !== null) {
+            addToProcessLogData(question + '=' + answer[question])
+            interactiveValues[question] = answer[question]
+          }
+        }
+      })
+    } else {
+      addToProcessLogData('useOvalFile=false')
+      interactiveValues.useOvalFile = false
+    }
+  }).finally(async () => {
+    await askOvalFile
+  })
+  await askOvalOptional
 
-  // Optional map controls using fuzzy logic
+  // Optional - Map controls using fuzzy logic
   const useFuzzyLogicPrompt = {
     type: 'list',
     name: 'runMapControls',
@@ -894,7 +908,6 @@ async function getFlags(): Promise<any> {
     enableGoUpperDirectory: true,
     transformer: (input: any) => {
       const name = input.split(path.sep).pop()
-      const fileExtension =  name.split('.').slice(1).pop()
       if (name[0] === '.') {
         return colors.grey(name)
       }
@@ -902,13 +915,10 @@ async function getFlags(): Promise<any> {
       return name
     },
   }
-  // let useFuzzyLogic = false
   const askFuzzyLogicOptional = inquirer.prompt(useFuzzyLogicPrompt).then(async (fuzzyLogicAnswer: any) => {
-    console.log(`fuzzyLogicAnswer.runMapControls value is" ${fuzzyLogicAnswer.runMapControls}`)
     if (fuzzyLogicAnswer.runMapControls === true) {
-      console.log('HERE')
       addToProcessLogData('runMapControls=true')
-      interactiveValues.runMapControls = 'true'
+      interactiveValues.runMapControls = true
       const askFuzzyLogicDir = inquirer.prompt(fuzzyLogicPrompt).then((answer: any) => {
         for (const question in answer) {
           if (answer[question] !== null) {
@@ -920,25 +930,23 @@ async function getFlags(): Promise<any> {
       await askFuzzyLogicDir
     } else {
       addToProcessLogData('runMapControls=false')
-      interactiveValues.runMapControls = 'false'
+      interactiveValues.runMapControls = false
     }
   })
   await askFuzzyLogicOptional
 
-  // if (useFuzzyLogic) {
-  //   const askFuzzyLogicDir = inquirer.prompt(fuzzyLogicPrompt).then((answer: any) => {
-  //     for (const question in answer) {
-  //       if (answer[question] !== null) {
-  //         addToProcessLogData(question + '=' + answer[question])
-  //         interactiveValues[question] = answer[question]
-  //       }
-  //     }
-  //   })
-  //   await askFuzzyLogicDir
-  // }
-
-  // Other Optional Flags
-  const otherOptionalPrompts = [
+  // Optional - Generate markdown report from Inspect-objects process
+  const generateReportPrompt = {
+    type: 'list',
+    name: 'generateReport',
+    message: 'Generate the Inspect-Object process markdown report file:',
+    choices: ['true', 'false'],
+    default: false,
+    filter(val: string) {
+      return (val === 'true')
+    },
+  }
+  const reportFilePrompt = [
     {
       type: 'file-tree-selection',
       name: 'reportDirectory',
@@ -965,6 +973,32 @@ async function getFlags(): Promise<any> {
         return 'deltaProcessReport.md'
       },
     },
+  ]
+
+  let askReportFile: any
+  const askReportOptional = inquirer.prompt(generateReportPrompt).then(async (genReportAnswer: any) => {
+    if (genReportAnswer.generateReport === true) {
+      addToProcessLogData('generateReport=true')
+      interactiveValues.generateReport = true
+      askReportFile = inquirer.prompt(reportFilePrompt).then(async (answer: any) => {
+        for (const question in answer) {
+          if (answer[question] !== null) {
+            addToProcessLogData(question + '=' + answer[question])
+            interactiveValues[question] = answer[question]
+          }
+        }
+      })
+    } else {
+      addToProcessLogData('generateReport=false')
+      interactiveValues.generateReport = false
+    }
+  }).finally(async () => {
+    await askReportFile
+  })
+  await askReportOptional
+
+  // Optional - Select what group Id to process the controls and Log Level
+  const otherOptionalPrompts = [
     {
       type: 'rawlist',
       name: 'idType',
@@ -972,6 +1006,18 @@ async function getFlags(): Promise<any> {
       choices: ['rule', 'group', 'cis', 'version'],
       default() {
         return 'rule'
+      },
+      filter(val: string) {
+        return val.toLowerCase()
+      },
+    },
+    {
+      type: 'rawlist',
+      name: 'logLevel',
+      message: 'Select the log level:',
+      choices: ['info', 'warn', 'debug', 'verbose'],
+      default() {
+        return 'info'
       },
       filter(val: string) {
         return val.toLowerCase()
