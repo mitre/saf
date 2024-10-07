@@ -97,16 +97,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   async run() { // skipcq: JS-0044
     const {flags} = await this.parse(GenerateDelta)
 
-    const logger = createWinstonLogger('generate:delta', flags.logLevel)
-
-    logger.warn(colors.green('╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗'))
-    logger.warn(colors.green('║ saf generate delta is officially released - report any questions/bugs to https://github.com/mitre/saf/issues ║'))
-    logger.warn(colors.green('╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝'))
-
-    // logger.warn("'saf generate delta' is currently a release candidate. Please report any questions/bugs to https://github.com/mitre/saf/issues.")
-    addToProcessLogData('==================== Delta Process =====================')
-    addToProcessLogData(`Date: ${new Date().toISOString()}`)
-
     // Flag variables
     let inspecJsonFile = ''
     let xccdfXmlFile = ''
@@ -126,6 +116,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     let markDownFile = ''
     let outputProfileFolderPath = ''
     let mappedControls: any = {}
+
+    addToProcessLogData('==================== Delta Process =====================')
+    addToProcessLogData(`Date: ${new Date().toISOString()}`)
 
     if (flags.interactive) {
       const interactiveFlags = await getFlags()
@@ -166,6 +159,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     }
 
     addToProcessLogData('\n')
+    const logger = createWinstonLogger('generate:delta', logLevel)
+
+    logger.warn(colors.green('╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗'))
+    logger.warn(colors.green('║ saf generate delta is officially released - report any questions/bugs to https://github.com/mitre/saf/issues ║'))
+    logger.warn(colors.green('╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝'))
 
     // Process the Input execution/profile JSON file. The processInSpecProfile
     // method will throw an error if an invalid profile file is provided.
@@ -424,17 +422,17 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         }
 
         // Call the .toRuby verbose if the log level is debug or verbose
-        const logLevel = Boolean(flags.logLevel === 'debug' || flags.logLevel === 'verbose')
+        const processLogLevel = Boolean(logLevel === 'debug' || logLevel === 'verbose')
         if (index >= 0) {
           // We found a mapping for this control
           const newControl = updateControl(existingProfile.controls[index], control, logger)
 
           logger.debug(`Writing updated control with code block for: ${control.id}.`)
-          fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), newControl.toRuby(logLevel))
+          fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), newControl.toRuby(processLogLevel))
         } else {
           // We didn't find a mapping for this control - Old style of updating controls
           logger.debug(`Writing new control without code block for: ${control.id}.`)
-          fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby(logLevel))
+          fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby(processLogLevel))
         }
       })
 
@@ -812,16 +810,16 @@ async function getFlags(): Promise<any> {
       },
     },
   ]
-  // const askRequired = inquirer.prompt(requiredQuestions).then((answers: any) => {
-  //   addToProcessLogData('Process Flags ============================================')
-  //   for (const question in answers) {
-  //     if (answers[question] !== null) {
-  //       addToProcessLogData(question + '=' + answers[question])
-  //       interactiveValues[question] = answers[question]
-  //     }
-  //   }
-  // })
-  // await askRequired
+  const askRequired = inquirer.prompt(requiredQuestions).then((answers: any) => {
+    addToProcessLogData('Process Flags ============================================')
+    for (const question in answers) {
+      if (answers[question] !== null) {
+        addToProcessLogData(question + '=' + answers[question])
+        interactiveValues[question] = answers[question]
+      }
+    }
+  })
+  await askRequired
 
   // Optional - OVAL file Flag
   const addOvalFilePrompt = {
