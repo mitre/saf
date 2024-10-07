@@ -49,8 +49,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message)
     } else {
-      this.error(err)
-      //  super.catch(err)
+      this.warn(err)
     }
   }
 

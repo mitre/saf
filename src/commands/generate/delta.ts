@@ -799,16 +799,16 @@ async function getFlags(): Promise<any> {
       },
     },
   ]
-  // const askRequired = inquirer.prompt(requiredQuestions).then((answers: any) => {
-  //   addToProcessLogData('Process Flags ============================================')
-  //   for (const question in answers) {
-  //     if (answers[question] !== null) {
-  //       addToProcessLogData(question + '=' + answers[question])
-  //       interactiveValues[question] = answers[question]
-  //     }
-  //   }
-  // })
-  // await askRequired
+  const askRequired = inquirer.prompt(requiredQuestions).then((answers: any) => {
+    addToProcessLogData('Process Flags ============================================')
+    for (const question in answers) {
+      if (answers[question] !== null) {
+        addToProcessLogData(question + '=' + answers[question])
+        interactiveValues[question] = answers[question]
+      }
+    }
+  })
+  await askRequired
 
   // Optional - OVAL file Flag
   const addOvalFilePrompt = {
