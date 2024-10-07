@@ -1,4 +1,4 @@
-import {Flags} from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 import {ContextualizedEvaluation, contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
 import fs from 'fs'
@@ -16,8 +16,6 @@ import {EventEmitter} from 'events'
 
 // Using the BaseCommand class that implements common commands (--interactive, --LogLevel)
 export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
-  static usage = 'convert hdf2csv -i <hdf-scan-results-json> -o <output-csv> [-h] [-f <csv-fields>] [-t]'
-
   static description = 'Translate a Heimdall Data Format JSON file into a Comma Separated Values (CSV) file'
 
   // eslint-disable-next-line no-warning-comments
@@ -31,8 +29,8 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     cannot be specified alongside the --interactive flag
   */
   static flags = {
-    input: Flags.string({char: 'i', required: false, exclusive: ['interactive'], description: 'Input HDF file'}),
-    output: Flags.string({char: 'o', required: false, exclusive: ['interactive'], description: 'Output CSV file'}),
+    input: Flags.string({char: 'i', required: false, exclusive: ['interactive'], description: '(required if not --interactive) Input HDF file'}),
+    output: Flags.string({char: 'o', required: false, exclusive: ['interactive'], description: '(required if not --interactive) Output CSV file'}),
     fields: Flags.string({
       char: 'f', required: false, exclusive: ['interactive'],
       default: csvExportFields.join(','), description: 'Fields to include in output CSV, separated by commas',
@@ -65,30 +63,21 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       outputFile = path.join(interactiveFlags.outputDirectory, interactiveFlags.outputFileName)
       includeFields = interactiveFlags.fields.join(',')
       truncateFields = Boolean(interactiveFlags.truncateFields)
-    } else {
-      if (!flags.input) {
-        this.warn('Missing required input HDF json file')
-        this.log('See more help with -h or --help')
-        return
-      }
-
-      if (!flags.output) {
-        this.warn('Missing required output CSV file')
-        this.log('See more help with -h or --help')
-        return
-      }
-
-      inputFile = flags.input
-      outputFile = flags.output
+    } else if (this.requiredFlagsProvided(flags)) {
+      inputFile = flags.input!
+      outputFile = flags.output!
       includeFields = flags.fields
       truncateFields = flags.noTruncate
 
       // Save the flags to the log object
+      addToProcessLogData('Process Flags ============================================')
       for (const key in flags) {
         if (Object.prototype.hasOwnProperty.call(flags, key)) {
           addToProcessLogData(key + '=' + flags[key as keyof typeof flags])
         }
       }
+    } else {
+      return
     }
 
     if (validFileFlags(inputFile, outputFile)) {
@@ -120,6 +109,28 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       await new ObjectsToCsv(rows).toDisk(outputFile)
       saveProcessLogData()
     }
+  }
+
+  requiredFlagsProvided(flags: { input: any; output: any }): boolean {
+    let missingFlags = false
+    let strMsg = 'Warning: The following errors occurred:\n'
+
+    if (!flags.input) {
+      strMsg += colors.dim('  Missing required flag input (HDF file)\n')
+      missingFlags = true
+    }
+
+    if (!flags.output) {
+      strMsg += colors.dim('  Missing required flag output (CSV file)\n')
+      missingFlags = true
+    }
+
+    if (missingFlags) {
+      strMsg += 'See more help with -h or --help'
+      this.warn(strMsg)
+    }
+
+    return !missingFlags
   }
 }
 
@@ -233,7 +244,8 @@ async function getFlags(): Promise<any> {
   ]
 
   let interactiveValues: any
-  const rvalue = inquirer.prompt(questions).then((answers: any) => {
+  const ask = inquirer.prompt(questions).then((answers: any) => {
+    addToProcessLogData('Process Flags ============================================')
     for (const envVar in answers) {
       if (answers[envVar] !== null) {
         addToProcessLogData(envVar + '=' + answers[envVar])
@@ -243,7 +255,7 @@ async function getFlags(): Promise<any> {
     interactiveValues = answers
   })
 
-  await rvalue
+  await ask
   return interactiveValues
 }
 
