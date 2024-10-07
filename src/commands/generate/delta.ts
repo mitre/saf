@@ -64,7 +64,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       options: ['rule', 'group', 'cis', 'version'],
       description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
     }),
-    // logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
     // New flag -M for whether to try mapping controls to new profile
     runMapControls: Flags.boolean({
       char: 'M',
@@ -94,7 +93,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   static oldControlsLength = 0
   static newControlsLength = 0
 
-  async run() { // skipcq: JS-0044
+  async run() { // skipcq: JS-0044, JS-R1005
     const {flags} = await this.parse(GenerateDelta)
 
     // Flag variables
@@ -135,16 +134,16 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       logLevel = interactiveFlags.logLevel
     } else if (this.requiredFlagsProvided(flags)) {
       // Required flags
-      inspecJsonFile = flags.inspecJsonFile!
-      xccdfXmlFile = flags.xccdfXmlFile!
-      deltaOutputDir = flags.deltaOutputDir!
+      inspecJsonFile = flags.inspecJsonFile as string
+      xccdfXmlFile = flags.xccdfXmlFile as string
+      deltaOutputDir = flags.deltaOutputDir as string
 
       // Optional flags
-      ovalXmlFile = flags.ovalXmlFile!
-      reportFile = flags.reportFile!
+      ovalXmlFile = flags.ovalXmlFile as string
+      reportFile = flags.reportFile as string
       idType = flags.idType
       runMapControls = flags.runMapControls
-      controlsDir = flags.controlsDir!
+      controlsDir = flags.controlsDir as string
       logLevel = flags.logLevel
 
       // Save the flags to the log object
@@ -474,16 +473,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     }
   }
 
-  // async catch(error: any) { // skipcq: JS-0116
-  //   if (error.message) {
-  //     this.warn(error.message)
-  //   } else {
-  //     const suggestions = 'saf generate delta -J <profile_json_file.json> -X <xccdf_guidance_file.xml, -o <directory_for_updated_profiles>\n\t' +
-  //       'saf generate delta -J <profile_json_file.json> -X <xccdf_guidance_file.xml, -o <directory_for_updated_profiles> -M -c <directory_of_profiles_being_matched>'
-  //     this.warn('Invalid arguments\nTry this:\n\t' + suggestions)
-  //   }
-  // }
-
   // Maps controls from an old profile to a new profile by updating the control IDs
   // based on matching SRG IDs and titles.
   //
@@ -810,16 +799,16 @@ async function getFlags(): Promise<any> {
       },
     },
   ]
-  const askRequired = inquirer.prompt(requiredQuestions).then((answers: any) => {
-    addToProcessLogData('Process Flags ============================================')
-    for (const question in answers) {
-      if (answers[question] !== null) {
-        addToProcessLogData(question + '=' + answers[question])
-        interactiveValues[question] = answers[question]
-      }
-    }
-  })
-  await askRequired
+  // const askRequired = inquirer.prompt(requiredQuestions).then((answers: any) => {
+  //   addToProcessLogData('Process Flags ============================================')
+  //   for (const question in answers) {
+  //     if (answers[question] !== null) {
+  //       addToProcessLogData(question + '=' + answers[question])
+  //       interactiveValues[question] = answers[question]
+  //     }
+  //   }
+  // })
+  // await askRequired
 
   // Optional - OVAL file Flag
   const addOvalFilePrompt = {
@@ -864,11 +853,11 @@ async function getFlags(): Promise<any> {
     },
   }
   let askOvalFile: any
-  const askOvalOptional = inquirer.prompt(addOvalFilePrompt).then(async (addOvalAnswer: any) => {
+  const askOvalOptional = inquirer.prompt(addOvalFilePrompt).then((addOvalAnswer: any) => {
     if (addOvalAnswer.useOvalFile === true) {
       addToProcessLogData('useOvalFile=true')
       interactiveValues.useOvalFile = true
-      askOvalFile = inquirer.prompt(ovalFilePrompt).then(async (answer: any) => {
+      askOvalFile = inquirer.prompt(ovalFilePrompt).then((answer: any) => {
         for (const question in answer) {
           if (answer[question] !== null) {
             addToProcessLogData(question + '=' + answer[question])
@@ -974,11 +963,11 @@ async function getFlags(): Promise<any> {
   ]
 
   let askReportFile: any
-  const askReportOptional = inquirer.prompt(generateReportPrompt).then(async (genReportAnswer: any) => {
+  const askReportOptional = inquirer.prompt(generateReportPrompt).then((genReportAnswer: any) => {
     if (genReportAnswer.generateReport === true) {
       addToProcessLogData('generateReport=true')
       interactiveValues.generateReport = true
-      askReportFile = inquirer.prompt(reportFilePrompt).then(async (answer: any) => {
+      askReportFile = inquirer.prompt(reportFilePrompt).then((answer: any) => {
         for (const question in answer) {
           if (answer[question] !== null) {
             addToProcessLogData(question + '=' + answer[question])
