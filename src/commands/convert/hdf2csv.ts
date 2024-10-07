@@ -1,4 +1,4 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import {ContextualizedEvaluation, contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
 import fs from 'fs'
@@ -64,8 +64,8 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       includeFields = interactiveFlags.fields.join(',')
       truncateFields = Boolean(interactiveFlags.truncateFields)
     } else if (this.requiredFlagsProvided(flags)) {
-      inputFile = flags.input!
-      outputFile = flags.output!
+      inputFile = flags.input as string
+      outputFile = flags.output as string
       includeFields = flags.fields
       truncateFields = flags.noTruncate
 
