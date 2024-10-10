@@ -1,0 +1,15 @@
+================== HDF2CSV CLI Process ===================
+Date: 2024-10-10T16:01:13.945Z
+
+Provide the necessary information:
+  Required flag - HDF file to convert to a CSV formatted file
+  Required flag - CSV output directory (output file name is hdf2csv.csv)
+  Optional flag - Fields to include in output CSV (comma delineated)
+  Optional flag - Truncate fields that exceed Excel cell limit (32,767 characters)
+
+Process Flags ============================================
+inputFile=D:\2-SourceCode\SAF-CLI\2-Test_data\openscap-report.hdf.json
+outputDirectory=D:\2-SourceCode\SAF-CLI\2-Test_data
+outputFileName=myoutputName.csv
+fields=Results Set,Status,ID,Title,Description,Descriptions,Impact,Severity,Code,Check,Fix,800-53 Controls,CCI IDs,Results,Waived,Waiver Data
+truncateFields=true

@@ -28,8 +28,9 @@ import _ from 'lodash'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import path from 'path'
 import ASFF2HDF from './asff2hdf'
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import Zap2HDF from './zap2hdf'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 function getInputFilename(): string {
   const inputFileIndex = process.argv.findIndex(
@@ -42,7 +43,8 @@ function getInputFilename(): string {
   return process.argv[inputFileIndex + 1]
 }
 
-export default class Convert extends Command {
+// export default class Convert extends Command {
+export default class Convert extends BaseCommand<typeof Convert> {
   static readonly description =
     'The generic convert command translates any supported file-based security results set into the Heimdall Data Format';
 
@@ -126,7 +128,7 @@ export default class Convert extends Command {
       }
 
       case 'asff': {
-        const securityhub = _.get(flags, 'securityhub') as string[]
+        const securityhub = _.get(flags, 'securityhub') as unknown as string[]
         const files = securityhub?.map(file => fs.readFileSync(file, 'utf8'))
 
         converter = new ASFFResults(
@@ -367,7 +369,7 @@ export default class Convert extends Command {
       case 'zap': {
         converter = new ZapMapper(
           fs.readFileSync(flags.input, 'utf8'),
-          _.get(flags, 'name') as string,
+          _.get(flags, 'name') as unknown as string,
         )
         fs.writeFileSync(
           checkSuffix(flags.output),
