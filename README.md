@@ -38,6 +38,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [HDF to Checklist](#hdf-to-checklist)
       * [HDF to CSV](#hdf-to-csv)
       * [HDF to Condensed JSON](#hdf-to-condensed-json)
+      * [HDF to HTML](#hdf-to-html)
 
 ### Convert Other Formats to HDF
 
@@ -481,6 +482,38 @@ convert hdf2condensed         Condensed format used by some community members
 
   EXAMPLES
     $ saf convert hdf2condensed -i rhel7-results.json -o rhel7-condensed.json
+```
+[top](#convert-hdf-to-other-formats)
+#### HDF to HTML
+```
+convert hdf2html             Translate an HDF file into a Heimdall Report HTML file
+
+  USAGE
+    $ saf convert hdf2html -i <hdf-scan-results-json>... -o <output-html> [-t <output-type>] [-h]
+
+  FLAGS
+    -h, --help
+        Show CLI help.
+
+    -i, --input=<value>...
+        (required) Input HDF JSON file
+
+    -o, --output=<value>
+        (required) Output HTML file
+
+    -t, --type=<option>
+        [default: Administrator] The report type to generate
+        Report types differ with the information they include
+        Executive: Profile Info + Statuses + Compliance Level
+        Manager: Executive + Test Results and Details
+        Administrator: Manager + Test Code
+        <options: executive|manager|administrator>
+
+  DESCRIPTION
+    Translate an HDF file into a Heimdall Report HTML file
+
+  EXAMPLES
+    $ saf convert hdf2html -i hdf_input.json -o report.html -t manager 
 ```
 [top](#convert-hdf-to-other-formats)
 
