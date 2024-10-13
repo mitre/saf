@@ -12,13 +12,26 @@ import {
 
 export default class HDF2CKL extends Command {
   static readonly usage =
-    'saf convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [--profilename <value>] [--profiletitle <value>] [--version <value>] [--releasenumber <value>] [--releasedate <value>] [--marking <value>] [-H <value>] [-I <value>] [-M <value>] [-F <value>] [--targetcomment <value>] [--role Domain Controller|Member Server|None|Workstation] [--assettype Computing|Non-Computing] [--techarea |Application Review|Boundary Security|CDS Admin Review|CDS Technical Review|Database Review|Domain Name System (DNS)|Exchange Server|Host Based System Security (HBSS)|Internal Network|Mobility|Other Review|Releasable Networks (REL)|Releaseable Networks (REL)|Traditional Security|UNIX OS|VVOIP Review|Web Review|Windows OS] [--stigguid <value>] [--targetkey <value>] [--webdbsite <value> --webordatabase] [--webdbinstance <value> ] [--vulidmapping gid|id]';
+    '<%= command.id %> -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] ' +
+    '[--profilename <value>] [--profiletitle <value>] [--version <value>] [--releasenumber <value>] ' +
+    '[--releasedate <value>] [--marking <value>] [-H <value>] [-I <value>] [-M <value>] [-F <value>] ' +
+    '[--targetcomment <value>] [--role Domain Controller|Member Server|None|Workstation] ' +
+    '[--assettype Computing|Non-Computing] [--techarea |Application Review|Boundary Security|' +
+    'CDS Admin Review|CDS Technical Review|Database Review|Domain Name System (DNS)|Exchange Server|' +
+    'Host Based System Security (HBSS)|Internal Network|Mobility|Other Review|Releasable Networks (REL)|' +
+    'Releaseable Networks (REL)|Traditional Security|UNIX OS|VVOIP Review|Web Review|Windows OS] ' +
+    '[--stigguid <value>] [--targetkey <value>] [--webdbsite <value> --webordatabase] ' +
+    '[--webdbinstance <value> ] [--vulidmapping gid|id]'
 
   static readonly description =
-    'Translate a Heimdall Data Format JSON file into a DISA checklist file';
+    'Translate a Heimdall Data Format JSON file into a DISA checklist file'
+
+  static readonly examples = [
+    '<%= config.bin %> <%= command.id %> -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90:AB',
+    '<%= config.bin %> <%= command.id %> -i rhel8-results.json -o rhel8.ckl -m rhel8-metadata.json',
+  ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,
@@ -184,12 +197,7 @@ export default class HDF2CKL extends Command {
       options: ['gid', 'id'],
       helpGroup: 'Checklist Metadata',
     }),
-  };
-
-  static readonly examples = [
-    'saf convert hdf2ckl -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90:AB',
-    'saf convert hdf2ckl -i rhel8-results.json -o rhel8.ckl -m rhel8-metadata.json',
-  ];
+  }
 
   static readonly oldMetadataFormatMapping = {
     'profiles[0].name': 'benchmark.title',
@@ -204,7 +212,7 @@ export default class HDF2CKL extends Command {
     targetkey: 'target_key',
     webdbsite: 'web_db_site',
     webdbinstance: 'web_db_site',
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(HDF2CKL)
@@ -305,6 +313,16 @@ export default class HDF2CKL extends Command {
       console.error(
         `Error creating checklist:\n${validationResults.error.message}`,
       )
+    }
+  }
+
+  async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+    // If error message is for missing flags, display what fields
+    // are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('--help', '-h or --help'))
+    } else {
+      this.warn(err)
     }
   }
 }

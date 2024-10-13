@@ -1,4 +1,4 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
@@ -25,6 +25,7 @@ import {
 } from '../../utils/ckl2poam'
 import {default as files} from '../../resources/files.json'
 import {convertFullPathToFilename, dataURLtoU8Array} from '../../utils/global'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 const prompt = promptSync()
 const {printf} = format
@@ -40,17 +41,17 @@ const logger = createLogger({
 
 const STARTING_ROW = 8 // The row we start inserting controls into
 
-export default class CKL2POAM extends Command {
+export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
   static readonly usage =
-    'convert ckl2POAM -i <disa-checklist>... -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]';
+    '<%= command.id %> -i <disa-checklist>... -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]'
 
   static readonly description =
-    'Translate DISA Checklist CKL file(s) to POA&M files';
+    'Translate DISA Checklist CKL file(s) to POA&M files'
 
-  static aliases = ['convert:ckl2poam'];
+  static aliases = ['convert:ckl2poam']
 
   static readonly examples = [
-    'saf convert ckl2POAM -i checklist_file.ckl -o output-folder -d abcdefg -s 2',
+    '<%= config.bin %> <%= command.id %> -i checklist_file.ckl -o output-folder -d abcdefg -s 2',
   ];
 
   static readonly flags = {
@@ -106,7 +107,7 @@ export default class CKL2POAM extends Command {
         message: 'Opening file',
       })
       const parser = new xml2js.Parser()
-      fs.readFile(fileName, function (readFileError, data) {
+      fs.readFile(fileName, (readFileError, data) => {
         if (readFileError) {
           logger.log({
             level: 'error',
@@ -116,7 +117,7 @@ export default class CKL2POAM extends Command {
         }
 
         // Parse the XML to a javascript object
-        parser.parseString(data, function (parseFileError: any, result: STIG) {
+        parser.parseString(data, (parseFileError: any, result: STIG) => {
           if (parseFileError) {
             logger.log({
               level: 'error',

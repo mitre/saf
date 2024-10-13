@@ -46,7 +46,7 @@ export declare const StatusEnum: {
   readonly NotChecked: 'Not Checked';
   readonly NotApplicable: 'Not Applicable';
 }
-export declare type StatusEnum = typeof StatusEnum[keyof typeof StatusEnum];
+export declare type StatusEnum = typeof StatusEnum[keyof typeof StatusEnum]
 
 function printRedMsg(msg: string) {
   console.log('\x1B[91m', msg, '\x1B[0m')
@@ -182,7 +182,7 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
 }
 
 export default class EmasserContainerScans extends Command {
-  static usage = '<%= command.id %> [options]'
+  static usage = '<%= command.id %> -s system-id -f container-code-scan-file.json'
 
   static description = 'Upload containers and their scan results in the assets module for a system'
 
@@ -194,7 +194,6 @@ export default class EmasserContainerScans extends Command {
     colorize(JSON.stringify(getJsonExamples('container_scans-optional'), null, 2))]
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Post (upload) one or many containers and their scan results for a system'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

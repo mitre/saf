@@ -48,7 +48,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
   static readonly description =
     'The generic convert command translates any supported file-based security results set into the Heimdall Data Format';
 
-  static readonly examples = ['saf convert -i input -o output'];
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i input -o output'];
 
   static readonly flags = {
     input: Flags.string({
@@ -63,6 +63,8 @@ export default class Convert extends BaseCommand<typeof Convert> {
     }),
     ...Convert.getFlagsForInputFile(getInputFilename()),
   };
+
+  static detectedType: string;
 
   static getFlagsForInputFile(filePath: string) {
     if (filePath) {
@@ -81,26 +83,12 @@ export default class Convert extends BaseCommand<typeof Convert> {
           return Zap2HDF.flags
         }
 
-        case 'anchoregrype':
-        case 'burp':
-        case 'conveyor':
-        case 'checklist':
-        case 'dbProtect':
-        case 'fortify':
-        case 'jfrog':
-        case 'msft_secure_score':
-        case 'nessus':
-        case 'netsparker':
-        case 'neuvector':
-        case 'nikto':
-        case 'prisma':
-        case 'sarif':
-        case 'cyclonedx_sbom':
-        case 'scoutsuite':
-        case 'snyk':
-        case 'trufflehog':
-        case 'twistlock':
-        case 'xccdf': {
+        // catch all other cases:
+        // 'anchoregrype', 'burp', 'conveyor' 'checklist', 'dbProtect', 'fortify',
+        // 'jfrog', 'msft_secure_score', 'nessus', 'netsparker', 'neuvector' 'nikto',
+        // 'prisma', 'sarif', 'cyclonedx_sbom', 'scoutsuite', 'snyk', 'trufflehog',
+        // 'twistlock', 'xccdf'
+        default: {
           return {}
         }
       }
@@ -109,8 +97,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
     return {}
   }
 
-  static detectedType: string;
-
+  // skipcq: JS-R1005
   async run() {
     // skipcq: JS-0044
     const {flags} = await this.parse(Convert)

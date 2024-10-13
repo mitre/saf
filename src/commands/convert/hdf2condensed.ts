@@ -1,4 +1,4 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import fs from 'fs'
 import {
@@ -10,16 +10,20 @@ import {
 } from '../../utils/threshold'
 import _ from 'lodash'
 import {checkSuffix} from '../../utils/global'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class HDF2Condensed extends Command {
+export default class HDF2Condensed extends BaseCommand<typeof HDF2Condensed> {
   static readonly usage =
-    'convert hdf2condensed -i <hdf-scan-results-json> -o <condensed-json> [-h]';
+    '<%= command.id %> -i <hdf-scan-results-json> -o <condensed-json> [-h]'
 
   static readonly description =
-    'Condensed format used by some community members to pre-process data for elasticsearch and custom dashboards';
+    'Condensed format used by some community members to pre-process data for elasticsearch and custom dashboards'
+
+  static readonly examples = [
+    '<%= config.bin %> <%= command.id %> -i rhel7-results.json -o rhel7-condensed.json',
+  ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,
@@ -30,11 +34,7 @@ export default class HDF2Condensed extends Command {
       required: true,
       description: 'Output condensed JSON file',
     }),
-  };
-
-  static readonly examples = [
-    'saf convert hdf2condensed -i rhel7-results.json -o rhel7-condensed.json',
-  ];
+  }
 
   async run() {
     const {flags} = await this.parse(HDF2Condensed)

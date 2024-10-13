@@ -1,4 +1,4 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import https from 'https'
 import {FromHdfToAsffMapper as Mapper} from '@mitre/hdf-converters'
@@ -11,22 +11,22 @@ import {
 import {NodeHttpHandler} from '@smithy/node-http-handler'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import _ from 'lodash'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class HDF2ASFF extends Command {
+export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
   static readonly usage =
-    'convert hdf2asff -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] (-u [-I -C <certificate>] | [-o <asff-output-folder>])';
+    '<%= command.id %> -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] (-u [-I -C <certificate>] | [-o <asff-output-folder>])'
 
   static readonly description =
-    'Translate a Heimdall Data Format JSON file into AWS Security Findings Format JSON file(s) and/or upload to AWS Security Hub';
+    'Translate a Heimdall Data Format JSON file into AWS Security Findings Format JSON file(s) and/or upload to AWS Security Hub'
 
   static readonly examples = [
-    'saf convert hdf2asff -i rhel7-scan_02032022A.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7.asff',
-    'saf convert hdf2asff -i rds_mysql_i123456789scan_03042022A.json -a 987654321 -r us-west-1 -t Instance_i123456789 -u',
-    'saf convert hdf2asff -i snyk_acme_project5_hdf_04052022A.json -a 2143658798 -r us-east-1 -t acme_project5 -o snyk_acme_project5 -u',
-  ];
+    '<%= config.bin %> <%= command.id %> -i rhel7-scan_02032022A.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7.asff',
+    '<%= config.bin %> <%= command.id %> -i rds_mysql_i123456789scan_03042022A.json -a 987654321 -r us-west-1 -t Instance_i123456789 -u',
+    '<%= config.bin %> <%= command.id %> -i snyk_acme_project5_hdf_04052022A.json -a 2143658798 -r us-east-1 -t acme_project5 -o snyk_acme_project5 -u',
+  ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     accountId: Flags.string({
       char: 'a',
       required: true,

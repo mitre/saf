@@ -1,21 +1,21 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {JfrogXrayMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class JfrogXray2HDF extends Command {
+export default class JfrogXray2HDF extends BaseCommand<typeof JfrogXray2HDF> {
   static readonly usage =
-    'convert jfrog_xray2hdf -i <jfrog-xray-json> -o <hdf-scan-results-json> [-h] [-w]';
+    '<%= command.id %> -i <jfrog-xray-json> -o <hdf-scan-results-json> [-h] [-w]';
 
   static readonly description =
     'Translate a JFrog Xray results JSON file into a Heimdall Data Format JSON file';
 
   static readonly examples = [
-    'saf convert jfrog_xray2hdf -i xray_results.json -o output-hdf-name.json',
+    '<%= config.bin %> <%= command.id %> -i xray_results.json -o output-hdf-name.json',
   ];
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,
@@ -26,7 +26,7 @@ export default class JfrogXray2HDF extends Command {
       required: true,
       description: 'Output HDF JSON File',
     }),
-    'with-raw': Flags.boolean({
+    includeRaw: Flags.boolean({
       char: 'w',
       required: false,
       description: 'Include raw input file in HDF JSON file',
@@ -44,7 +44,7 @@ export default class JfrogXray2HDF extends Command {
       'JFrog Xray results JSON',
     )
 
-    const converter = new Mapper(data, flags['with-raw'])
+    const converter = new Mapper(data, flags.includeRaw)
     fs.writeFileSync(
       checkSuffix(flags.output),
       JSON.stringify(converter.toHdf(), null, 2),

@@ -1,4 +1,4 @@
-import {Command, Flags, Interfaces} from '@oclif/core'
+import {Args, Command, Flags, Interfaces} from '@oclif/core'
 
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<typeof BaseCommand['baseFlags'] & T['flags']>
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>
@@ -9,7 +9,7 @@ export abstract class InteractiveBaseCommand extends Command {
       aliases: ['interactive', 'ask-me'],
       // Show this flag under a separate GLOBAL section in help.
       helpGroup: 'GLOBAL',
-      description: 'Collect input tags interactively -\x1B[31m not available for all CLI commands\x1B[0m',
+      description: 'Collect input tags interactively \x1B[31m(not available on all CLI commands)\x1B[0m',
     }),
   };
 }
@@ -23,7 +23,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       default: 'info',
       helpGroup: 'GLOBAL',
       options: ['info', 'warn', 'debug', 'verbose'] as const,
-      description: 'Specify level for logging.',
+      description: 'Specify level for logging \x1B[31m(if implemented by the CLI command)\x1B[0m',
     })(),
   }
 
@@ -47,7 +47,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     // If error message is for missing flags, display what fields
     // are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message + ' or -h')
+      this.warn(err.message.replace('--help', '\x1B[93m<cli-command> -h or --help\x1B[0m'))
     } else {
       this.warn(err)
     }

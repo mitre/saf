@@ -2,7 +2,7 @@ import _ from 'lodash'
 /* eslint-disable unicorn/import-style */
 import * as util from 'util' // skipcq: JS-C1003 - util does not expose itself as an ES Module.
 /* eslint-enable unicorn/import-style */
-import {Command, Help, Interfaces} from '@oclif/core'
+import {Command, Help} from '@oclif/core'
 
 /*
   Override the showCommandHelp (called directly for single-command CLIs) method defined in the oclif Help class.
@@ -13,7 +13,7 @@ import {Command, Help, Interfaces} from '@oclif/core'
   To prevent this override from being used, remove the filepath of this help class in oclif's config in package.json.
   The help is defined in the package.json "oclif" section:
     "oclif": {
-      "helpClass": "./lib/help/help"
+      "helpClass": "./lib/utils/oclif/help/help"
       ...
     }
 

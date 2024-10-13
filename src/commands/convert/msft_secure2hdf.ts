@@ -1,5 +1,5 @@
 import {ExecJSON} from 'inspecjs'
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import https from 'https'
 import {MsftSecureScoreResults as Mapper} from '@mitre/hdf-converters'
@@ -16,6 +16,7 @@ import {
 } from '@microsoft/microsoft-graph-types'
 import {TokenCredentialAuthenticationProvider} from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials'
 import _ from 'lodash'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 function processInputs(
   scoreDoc: SecureScore,
@@ -45,24 +46,32 @@ function processInputs(
   }
 }
 
-export default class MsftSecure2HDF extends Command {
+export default class MsftSecure2HDF extends BaseCommand<typeof MsftSecure2HDF> {
   static readonly usage = [
-    'convert msft_secure2hdf -r <secureScore-json> -p <secure-score-control-profiles> -o <hdf-scan-results-json> [-h]',
-    'convert msft_secure2hdf -t <azure-tenant-id> -a <azure-app-id> -s <azure-app-secret> -o <hdf-scan-results-json> [-h]',
-    'convert msft_secure2hdf -i <combined-inputs> -o <hdf-scan-results-json> [-h]',
+    '<%= command.id %> -p <secure-score-control-profiles> -r <secureScore-json>-o <hdf-scan-results-json> [-h]',
+    '<%= command.id %> -t <azure-tenant-id> -a <azure-app-id> -s <azure-app-secret> -o <hdf-scan-results-json> [-h]',
+    '<%= command.id %> -i <combined-inputs> -o <hdf-scan-results-json> [-h]',
   ];
 
   static readonly description =
     'Translate a Microsoft Secure Score report and Secure Score Control to a Heimdall Data Format JSON file.';
 
   static readonly examples = [
-    'saf convert msft_secure2hdf -p secureScore.json -r secureScoreControlProfiles -o output-hdf-name.json',
-    'saf convert msft_secure2hdf -t "12345678-1234-1234-1234-1234567890abcd" -a "12345678-1234-1234-1234-1234567890abcd" -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" -o output-hdf-name.json [-I | -C <certificate>] [-t <target>...]',
-    'saf convert msft_secure2hdf -i <(jq \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json) -o output-hdf-name.json',
+    {
+      description: '\x1B[93mUsing input files\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -p secureScore.json -r secureScoreControlProfiles -o output-hdf-name.json',
+    },
+    {
+      description: '\x1B[93mUsing Azure tenant ID\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -t "12345678-1234-1234-1234-1234567890abcd" -a "12345678-1234-1234-1234-1234567890abcd" -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" -o output-hdf-name.json [-I | -C <certificate>] [-t <target>...]',
+    },
+    {
+      description: '\x1B[93mUsing combined inputs\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -i <(jq \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json) -o output-hdf-name.json',
+    },
   ];
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     combinedInputs: Flags.string({
       char: 'i',
       required: false,
@@ -112,7 +121,7 @@ export default class MsftSecure2HDF extends Command {
       required: true,
       description: 'Output HDF JSON file',
     }),
-    'with-raw': Flags.boolean({
+    includeRaw: Flags.boolean({
       char: 'w',
       required: false,
       description: 'Include raw input file in HDF JSON file',
@@ -144,14 +153,14 @@ export default class MsftSecure2HDF extends Command {
       // load from pre-downloaded files
       scoreDoc = JSON.parse(fs.readFileSync(flags.inputScoreDoc, 'utf8'))
       profilesDoc = JSON.parse(fs.readFileSync(flags.inputProfiles, 'utf8'))
-      processInputs(scoreDoc, profilesDoc, flags.output, flags['with-raw'])
+      processInputs(scoreDoc, profilesDoc, flags.output, flags.includeRaw)
     } else if (flags.combinedInputs !== undefined) {
       const combined = JSON.parse(
         fs.readFileSync(flags.combinedInputs, 'utf8'),
       )
       const scoreDoc = combined.secureScore
       const profilesDoc = combined.profiles
-      processInputs(scoreDoc, profilesDoc, flags.output, flags['with-raw'])
+      processInputs(scoreDoc, profilesDoc, flags.output, flags.includeRaw)
     } else if (
       flags.tenantId !== undefined &&
       flags.appId !== undefined &&
@@ -200,7 +209,7 @@ export default class MsftSecure2HDF extends Command {
       await pagingIterator.iterate()
       profilesDoc.value = allProfiles
 
-      processInputs(scoreDoc, profilesDoc, flags.output, flags['with-raw'])
+      processInputs(scoreDoc, profilesDoc, flags.output, flags.includeRaw)
     } else {
       throw new Error(
         'Invalid arguments provided.  Include (-a, -s, -t) or (-r, -p) or (-h)',

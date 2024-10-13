@@ -1,5 +1,5 @@
 import {IonChannelAPIMapper, IonChannelMapper} from '@mitre/hdf-converters'
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import {
   checkInput,
   checkSuffix,
@@ -8,16 +8,32 @@ import {
 import {createWinstonLogger} from '../../utils/logging'
 import fs from 'fs'
 import path from 'path'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class IonChannel2HDF extends Command {
+export default class IonChannel2HDF extends BaseCommand<typeof IonChannel2HDF> {
   static readonly usage =
     'convert ionchannel2hdf -o <hdf-output-folder> [-h] (-i <ionchannel-json>... | -a <api-key> -t <team-name> [--raw ] [-p <project>...] [-A ]) [-L info|warn|debug|verbose]';
 
   static readonly description =
-    'Pull and translate SBOM data from Ion Channel into Heimdall Data Format';
+    'Pull and translate SBOM data from Ion Channel into Heimdall Data Format'
+
+  static readonly examples = [
+    {
+      description: '\x1B[93mUsing Input IonChannel JSON file\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -o output-folder-name -i ion-channel-file.json',
+    },
+    {
+      description: '\x1B[93mUsing IonChannel API Key (pull one project)\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -o output-folder-name -a ion-channel-apikey -t team-name -p project-name-to-pull --raw',
+    },
+    {
+      description: '\x1B[93mUsing IonChannel API Key (pull all project)\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -o output-folder-name -a ion-channel-apikey -t team-name -A --raw',
+    },
+
+  ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       description: 'Input IonChannel JSON file',
@@ -55,12 +71,7 @@ export default class IonChannel2HDF extends Command {
       description: 'Pull all projects available within your team',
       dependsOn: ['apiKey'],
     }),
-    logLevel: Flags.string({
-      char: 'L',
-      default: 'info',
-      options: ['info', 'warn', 'debug', 'verbose'],
-    }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(IonChannel2HDF)
@@ -134,7 +145,7 @@ export default class IonChannel2HDF extends Command {
         // Check for correct input type
         const data = fs.readFileSync(filename, 'utf8')
         checkInput(
-          {data: data, filename: filename},
+          {data: data, filename: filename}, // skipcq: JS-0240
           'ionchannel',
           'IonChannel JSON',
         )

@@ -21,10 +21,21 @@ import {EventEmitter} from 'events'
 
 export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   static readonly usage =
-    '<%= command.id %> [-L info|warn|debug|verbose] [-i <hdf-json>|--interactive]' +
-    ' [-o <csv-file>|--interactive] [-f <header-fields>|--interactive] [-t|--interactive]'
+    '<%= command.id %> [-i <hdf-json>|--interactive] [-o <csv-file>|--interactive] ' +
+    ' [-f <header-fields>|--interactive] [-t|--interactive] [-L info|warn|debug|verbose]'
 
     static description = 'Translate a Heimdall Data Format JSON file into a Comma Separated Values (CSV) file'
+
+    static readonly examples = [
+      {
+        description: '\x1B[93mRunning the CLI interactively\x1B[0m',
+        command: '<%= config.bin %> <%= command.id %> --interactive',
+      },
+      {
+        description: '\x1B[93mProviding flags at the command line\x1B[0m',
+        command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"',
+      },
+    ]
 
     // eslint-disable-next-line no-warning-comments
     /*
@@ -62,103 +73,92 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
         description: 'Do not truncate fields longer than 32,767 characters (the cell limit in Excel)'}),
     }
 
-  static readonly examples = [
-    {
-      description: '\x1B[93mRunning the CLI interactively\x1B[0m',
-      command: '<%= config.bin %> <%= command.id %> --interactive',
-    },
-    {
-      description: '\x1B[93mProviding flags at the command line\x1B[0m',
-      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"',
-    },
-  ]
+    async run() {
+      const {flags} = await this.parse(HDF2CSV)
 
-  async run() {
-    const {flags} = await this.parse(HDF2CSV)
+      addToProcessLogData('================== HDF2CSV CLI Process ===================')
+      addToProcessLogData(`Date: ${new Date().toISOString()}\n`)
 
-    addToProcessLogData('================== HDF2CSV CLI Process ===================')
-    addToProcessLogData(`Date: ${new Date().toISOString()}\n`)
+      let inputFile = ''
+      let outputFile = ''
+      let includeFields = ''
+      let truncateFields = false
 
-    let inputFile = ''
-    let outputFile = ''
-    let includeFields = ''
-    let truncateFields = false
+      if (flags.interactive) {
+        const interactiveFlags = await getFlags()
+        inputFile = interactiveFlags.inputFile
+        outputFile = path.join(interactiveFlags.outputDirectory, interactiveFlags.outputFileName)
+        includeFields = interactiveFlags.fields.join(',')
+        truncateFields = Boolean(interactiveFlags.truncateFields)
+      } else if (this.requiredFlagsProvided(flags)) {
+        inputFile = flags.input as string
+        outputFile = flags.output as string
+        includeFields = flags.fields
+        truncateFields = flags.noTruncate
 
-    if (flags.interactive) {
-      const interactiveFlags = await getFlags()
-      inputFile = interactiveFlags.inputFile
-      outputFile = path.join(interactiveFlags.outputDirectory, interactiveFlags.outputFileName)
-      includeFields = interactiveFlags.fields.join(',')
-      truncateFields = Boolean(interactiveFlags.truncateFields)
-    } else if (this.requiredFlagsProvided(flags)) {
-      inputFile = flags.input as string
-      outputFile = flags.output as string
-      includeFields = flags.fields
-      truncateFields = flags.noTruncate
-
-      // Save the flags to the log object
-      addToProcessLogData('Process Flags ============================================')
-      for (const key in flags) {
-        if (Object.prototype.hasOwnProperty.call(flags, key)) {
-          addToProcessLogData(key + '=' + flags[key as keyof typeof flags])
-        }
-      }
-    } else {
-      return
-    }
-
-    if (validFileFlags(inputFile, outputFile)) {
-      const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(inputFile, 'utf8')))
-
-      // Convert all controls from a file to ControlSetRows
-      let rows: ControlSetRows = convertRows(contextualizedEvaluation, convertFullPathToFilename(inputFile), includeFields.split(','))
-      rows = rows.map((row, index) => {
-        const cleanedRow: Record<string, string> = {}
-        for (const key in row) {
-          if (row[key] !== undefined) {
-            if ((row[key]).length > 32767 && truncateFields) {
-              if ('ID' in row) {
-                console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`)
-              } else {
-                console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`)
-              }
-
-              cleanedRow[key] = _.truncate(row[key], {length: 32757, omission: 'TRUNCATED'})
-            } else {
-              cleanedRow[key] = row[key]
-            }
+        // Save the flags to the log object
+        addToProcessLogData('Process Flags ============================================')
+        for (const key in flags) {
+          if (Object.prototype.hasOwnProperty.call(flags, key)) {
+            addToProcessLogData(key + '=' + flags[key as keyof typeof flags])
           }
         }
+      } else {
+        return
+      }
 
-        return cleanedRow
-      })
+      if (validFileFlags(inputFile, outputFile)) {
+        const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(inputFile, 'utf8')))
 
-      await new ObjectsToCsv(rows).toDisk(outputFile)
-      saveProcessLogData()
+        // Convert all controls from a file to ControlSetRows
+        let rows: ControlSetRows = convertRows(contextualizedEvaluation, convertFullPathToFilename(inputFile), includeFields.split(','))
+        rows = rows.map((row, index) => {
+          const cleanedRow: Record<string, string> = {}
+          for (const key in row) {
+            if (row[key] !== undefined) {
+              if ((row[key]).length > 32767 && truncateFields) {
+                if ('ID' in row) {
+                  console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`)
+                } else {
+                  console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`)
+                }
+
+                cleanedRow[key] = _.truncate(row[key], {length: 32757, omission: 'TRUNCATED'})
+              } else {
+                cleanedRow[key] = row[key]
+              }
+            }
+          }
+
+          return cleanedRow
+        })
+
+        await new ObjectsToCsv(rows).toDisk(outputFile)
+        saveProcessLogData()
+      }
     }
-  }
 
-  requiredFlagsProvided(flags: { input: any; output: any }): boolean {
-    let missingFlags = false
-    let strMsg = 'Warning: The following errors occurred:\n'
+    requiredFlagsProvided(flags: { input: any; output: any }): boolean {
+      let missingFlags = false
+      let strMsg = 'Warning: The following errors occurred:\n'
 
-    if (!flags.input) {
-      strMsg += colors.dim('  Missing required flag input (HDF file)\n')
-      missingFlags = true
+      if (!flags.input) {
+        strMsg += colors.dim('  Missing required flag input (HDF file)\n')
+        missingFlags = true
+      }
+
+      if (!flags.output) {
+        strMsg += colors.dim('  Missing required flag output (CSV file)\n')
+        missingFlags = true
+      }
+
+      if (missingFlags) {
+        strMsg += 'See more help with -h or --help'
+        this.warn(strMsg)
+      }
+
+      return !missingFlags
     }
-
-    if (!flags.output) {
-      strMsg += colors.dim('  Missing required flag output (CSV file)\n')
-      missingFlags = true
-    }
-
-    if (missingFlags) {
-      strMsg += 'See more help with -h or --help'
-      this.warn(strMsg)
-    }
-
-    return !missingFlags
-  }
 }
 
 function convertRows(evaluation: ContextualizedEvaluation, filename: string, fieldsToAdd: string[]): ControlSetRows {

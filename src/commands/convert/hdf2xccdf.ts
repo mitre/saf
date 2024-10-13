@@ -1,20 +1,20 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {FromHDFToXCCDFMapper as Mapper} from '@mitre/hdf-converters'
 import {default as files} from '../../resources/files.json'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class HDF2XCCDF extends Command {
+export default class HDF2XCCDF extends BaseCommand<typeof HDF2XCCDF> {
   static readonly usage =
-    'convert hdf2xccdf -i <hdf-scan-results-json> -o <output-xccdf-xml> [-h]';
+    '<%= command.id %> -i <hdf-scan-results-json> -o <output-xccdf-xml> [-h]'
 
-  static readonly description = 'Translate an HDF file into an XCCDF XML file';
+  static readonly description = 'Translate an HDF file into an XCCDF XML file'
 
   static readonly examples = [
-    'saf convert hdf2xccdf -i hdf_input.json -o xccdf-results.xml',
-  ];
+    '<%= config.bin %> <%= command.id %> -i hdf_input.json -o xccdf-results.xml',
+  ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,
@@ -25,7 +25,7 @@ export default class HDF2XCCDF extends Command {
       required: true,
       description: 'Output XCCDF XML file',
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(HDF2XCCDF)

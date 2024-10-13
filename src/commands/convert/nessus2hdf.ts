@@ -1,22 +1,24 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {NessusResults as Mapper} from '@mitre/hdf-converters'
 import _ from 'lodash'
 import {checkInput, checkSuffix} from '../../utils/global'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class Nessus2HDF extends Command {
+export default class Nessus2HDF extends BaseCommand<typeof Nessus2HDF> {
   static readonly usage =
-    'convert nessus2hdf -i <nessus-xml> -o <hdf-scan-results-json> [-h] [-w]';
+    '<%= command.id %> -i <nessus-xml> -o <hdf-scan-results-json> [-h] [-w]'
 
   static readonly description =
-    "Translate a Nessus XML results file into a Heimdall Data Format JSON file\nThe current iteration maps all plugin families except 'Policy Compliance'\nA separate HDF JSON is generated for each host reported in the Nessus Report.";
+    'Translate a Nessus XML results file into a Heimdall Data Format JSON file\n' +
+    "The current iteration maps all plugin families except 'Policy Compliance'\n" +
+    'A separate HDF JSON is generated for each host reported in the Nessus Report.'
 
   static readonly examples = [
-    'saf convert nessus2hdf -i nessus_results.xml -o output-hdf-name.json',
-  ];
+    '<%= config.bin %> <%= command.id %> -i nessus_results.xml -o output-hdf-name.json',
+  ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,
@@ -27,7 +29,7 @@ export default class Nessus2HDF extends Command {
       required: true,
       description: 'Output HDF JSON File',
     }),
-    'with-raw': Flags.boolean({
+    includeRaw: Flags.boolean({
       char: 'w',
       required: false,
       description: 'Include raw input file in HDF JSON file',
@@ -45,7 +47,7 @@ export default class Nessus2HDF extends Command {
       'Nessus XML results file',
     )
 
-    const converter = new Mapper(data, flags['with-raw'])
+    const converter = new Mapper(data, flags.includeRaw)
     const result = converter.toHdf()
     if (Array.isArray(result)) {
       for (const element of result) {

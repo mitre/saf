@@ -1,18 +1,29 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import {FromHDFToSplunkMapper} from '@mitre/hdf-converters'
 import {convertFullPathToFilename} from '../../utils/global'
 import fs from 'fs'
 import {createWinstonLogger, getHDFSummary} from '../../utils/logging'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class HDF2Splunk extends Command {
+export default class HDF2Splunk extends BaseCommand<typeof HDF2Splunk> {
   static readonly usage =
-    'convert hdf2splunk -i <hdf-scan-results-json> -H <host> -I <index> [-h] [-P <port>] [-s http|https] [-u <username> | -t <token>] [-p <password>] [-L info|warn|debug|verbose]';
+    '<%= command.id %> -i <hdf-scan-results-json> -H <host> -I <index> [-h] [-P <port>] [-s http|https] [-u <username> | -t <token>] [-p <password>] [-L info|warn|debug|verbose]'
 
   static readonly description =
-    'Translate and upload a Heimdall Data Format JSON file into a Splunk server';
+    'Translate and upload a Heimdall Data Format JSON file into a Splunk server'
+
+  static readonly examples = [
+    {
+      description: '\x1B[93mUser name/password Authentication\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf',
+    },
+    {
+      description: '\x1B[93mToken Authentication\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf',
+    },
+  ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,
@@ -60,18 +71,7 @@ export default class HDF2Splunk extends Command {
       required: true,
       description: 'Splunk index to import HDF data into',
     }),
-    logLevel: Flags.string({
-      char: 'L',
-      required: false,
-      default: 'info',
-      options: ['info', 'warn', 'debug', 'verbose'],
-    }),
-  };
-
-  static readonly examples = [
-    'saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf',
-    'saf convert hdf2splunk -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf',
-  ];
+  }
 
   async run() {
     const {flags} = await this.parse(HDF2Splunk)

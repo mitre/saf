@@ -1,21 +1,21 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {ConveyorResults as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 import path from 'path'
-export default class Conveyor2HDF extends Command {
+import {BaseCommand} from '../../utils/oclif/baseCommand'
+export default class Conveyor2HDF extends BaseCommand<typeof Conveyor2HDF> {
   static readonly usage =
-    'convert conveyor2hdf -i <conveyor-json> -o <hdf-scan-results-json> [-h]';
+    '<%= command.id %> -i <conveyor-json> -o <hdf-scan-results-json> [-h]'
 
   static readonly description =
-    'Translate a Conveyor JSON file into a Heimdall Data Format JSON files';
+    'Translate a Conveyor JSON file into a Heimdall Data Format JSON files'
 
   static readonly examples = [
-    'saf convert conveyor2hdf -i conveyor_results.json -o output-hdf-name.json',
-  ];
+    '<%= config.bin %> <%= command.id %> -i conveyor_results.json -o output-hdf-name.json',
+  ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,

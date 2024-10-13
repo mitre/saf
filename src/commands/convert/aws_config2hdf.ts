@@ -1,22 +1,22 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {AwsConfigMapper as Mapper} from '@mitre/hdf-converters'
 import {ExecJSON} from 'inspecjs'
 import {checkSuffix} from '../../utils/global'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class AWSConfig2HDF extends Command {
+export default class AWSConfig2HDF extends BaseCommand<typeof AWSConfig2HDF> {
   static readonly usage =
-    'convert aws_config2hdf -r <region> -o <hdf-scan-results-json> [-h] [-a <access-key-id>] [-s <secret-access-key>] [-t <session-token>] [-i]';
+    '<%= command.id %> -r <region> -o <hdf-scan-results-json> [-h] [-a <access-key-id>] [-s <secret-access-key>] [-t <session-token>] [-i]'
 
   static readonly description =
-    'Pull Configuration findings from AWS Config and convert into a Heimdall Data Format JSON file';
+    'Pull Configuration findings from AWS Config and convert into a Heimdall Data Format JSON file'
 
   static readonly examples = [
-    'saf convert aws_config2hdf -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json',
-  ];
+    '<%= config.bin %> <%= command.id %> -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json',
+  ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     accessKeyId: Flags.string({
       char: 'a',
       required: false,

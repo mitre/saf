@@ -56,6 +56,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
       * [Microsoft Secure Score to HDF](#msft_secure-to-hdf)
       * [Netsparker to HDF](#netsparker-to-hdf)
+      * [NeuVector to HDF](#neuvector-to-hdf)
       * [Nikto to HDF](#nikto-to-hdf)
       * [Prisma to HDF](#prisma-to-hdf)
       * [Prowler to HDF](#prowler-to-hdf)
@@ -505,18 +506,19 @@ convert asff2hdf              Translate a AWS Security Finding Format JSON into 
 
   FLAGS
     -C, --certificate=<certificate>       Trusted signing certificate file
-    -I, --insecure                        Disable SSL verification, this is insecure.
+    -I, --insecure                        Disable SSL verification, this is insecure
+    -H, --securityHub=<standard-json>     Additional input files to provide context that an ASFF file needs
+                                          such as the CIS AWS Foundations or AWS Foundational Security Best
+                                          Practices documents (in ASFF compliant JSON form)    
     -L, --logLevel=<option>               [default: info]
                                           <options: info|warn|debug|verbose>
     -a, --aws                             Pull findings from AWS Security Hub
     -h, --help                            Show CLI help.
-    -i, --input=<asff-json>               Input ASFF JSON file
+    -i, --input=<asff-json>               (required if not using AWS) Input ASFF JSON file
     -o, --output=<hdf-output-folder>      (required) Output HDF JSON folder
     -r, --region=<region>                 Security Hub region to pull findings from
     -t, --target=<target>...              Target ID(s) to pull from Security Hub (maximum 10), leave blank for non-HDF findings
-    --securityhub=<standard-json>...      Additional input files to provide context that an ASFF file needs
-                                          such as the CIS AWS Foundations or AWS Foundational Security Best
-                                          Practices documents (in ASFF compliant JSON form)
+
 
   EXAMPLES
     $ saf convert asff2hdf -i asff-findings.json -o output-folder-name
@@ -710,18 +712,22 @@ convert jfrog_xray2hdf        Translate a JFrog Xray results JSON file into a
 [top](#convert-other-formats-to-hdf)
 #### Tenable Nessus to HDF
 ```
-convert nessus2hdf            Translate a Nessus XML results file into a Heimdall
-                              Data Format JSON file. The current iteration maps all
-                              plugin families except for 'Policy Compliance'
+convert nessus2hdf            Translate a Nessus XML results file into a Heimdall Data Format JSON file.
+                              The current iteration maps all plugin families except for 'Policy Compliance'
                               A separate HDF JSON is generated for each host reported in the Nessus Report.
   USAGE
-    $ saf convert nessus2hdf -i <nessus-xml> -o <hdf-scan-results-json> [-h]
-
+    $ saf convert nessus2hdf -i <nessus-xml> -o <hdf-scan-results-json> [-h] [-w]
+  
   FLAGS
-    -h, --help                            Show CLI help.
     -i, --input=<nessus-xml>              (required) Input Nessus XML File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --includeRaw                      Include raw input file in HDF JSON file
 
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
+  
   EXAMPLES
     $ saf convert nessus2hdf -i nessus_results.xml -o output-hdf-name.json
 ```
@@ -770,17 +776,44 @@ convert netsparker2hdf        Translate a Netsparker XML results file into a
                               iteration only works with Netsparker Enterprise
                               Vulnerabilities Scan.
   USAGE
-    $ saf convert netsparker2hdf -i <netsparker-xml> -o <hdf-scan-results-json> [-h]
+    $ saf convert netsparker2hdf -i <netsparker-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<netsparker-xml>          (required) Input Netsparker XML File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --includeRaw                      Include raw input file in HDF JSON file
+
+GLOBAL FLAGS
+  -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                           <options: info|warn|debug|verbose>
+      --interactive        Collect input tags interactively (not available on all CLI commands)
 
   EXAMPLES
     $ saf convert netsparker2hdf -i netsparker_results.xml -o output-hdf-name.json
 ```
 
+[top](#convert-other-formats-to-hdf)
+#### NeuVector to HDF
+```
+convert neuvector2hdf         Translate a NeuVector results JSON to a Heimdall Data Format JSON file
+
+USAGE
+  $ saf convert neuvector2hdf -i <neuvector-json> -o <hdf-scan-results-json>
+
+FLAGS
+  -i, --input=<value>   (required) Input NeuVector Results JSON File
+  -o, --output=<value>  (required) Output HDF JSON file
+  -w, --includeRaw      Include raw input file in HDF JSON file
+
+GLOBAL FLAGS
+  -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                           <options: info|warn|debug|verbose>
+      --interactive        Collect input tags interactively (not available on all CLI commands)
+
+EXAMPLES
+  $ saf convert neuvector2hdf -i neuvector.json -o output-hdf-name.json
+```
 [top](#convert-other-formats-to-hdf)
 #### Nikto to HDF
 ```
@@ -789,15 +822,20 @@ convert nikto2hdf             Translate a Nikto results JSON file into a Heimdal
                               Note: Currently this mapper only supports single
                               target Nikto Scans
   USAGE
-    $ saf convert nikto2hdf -i <nikto-json> -o <hdf-scan-results-json> [-h]
+    $ saf convert nikto2hdf -i <nikto-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
     -h, --help                            Show CLI help.
     -i, --input=<nikto-json>              (required) Input Niktop Results JSON File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --includeRaw                      Include raw input file in HDF JSON file
 
-  EXAMPLES
-    $ saf convert nikto2hdf -i nikto-results.json -o output-hdf-name.json
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
+EXAMPLES
+  $ saf convert nikto2hdf -i nikto-results.json -o output-hdf-name.json
 ```
 [top](#convert-other-formats-to-hdf)
 #### Prisma to HDF

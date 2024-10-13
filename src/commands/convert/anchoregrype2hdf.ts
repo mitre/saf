@@ -1,21 +1,21 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {AnchoreGrypeMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class AnchoreGrype2HDF extends Command {
+export default class AnchoreGrype2HDF extends BaseCommand<typeof AnchoreGrype2HDF> {
   static readonly usage =
-    'convert anchoregrype2hdf -i <anchoregrype-json> -o <hdf-scan-results-json>';
+    '<%= command.id %> -i <anchoregrype-json> -o <hdf-scan-results-json>';
 
   static readonly description =
-    'Translate a Anchore Grype output file into an HDF results set';
+    'Translate an Anchore Grype output file into an HDF results set';
 
   static readonly examples = [
-    'saf convert anchoregrype2hdf -i anchoregrype.json -o output-hdf-name.json',
+    '<%= config.bin %> <%= command.id %> -i anchoregrype.json -o output-hdf-name.json',
   ];
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,
@@ -26,7 +26,11 @@ export default class AnchoreGrype2HDF extends Command {
       required: true,
       description: 'Output HDF file',
     }),
-    'with-raw': Flags.boolean({char: 'w', required: false}),
+    includeRaw: Flags.boolean({
+      char: 'w',
+      required: false,
+      description: 'Include raw data from the input Anchore Grype file',
+    }),
   };
 
   async run() {
@@ -38,7 +42,7 @@ export default class AnchoreGrype2HDF extends Command {
       'Anchore Grype JSON results file',
     )
 
-    const converter = new Mapper(input, flags['with-raw'])
+    const converter = new Mapper(input, flags.includeRaw)
     fs.writeFileSync(
       checkSuffix(flags.output),
       JSON.stringify(converter.toHdf(), null, 2),

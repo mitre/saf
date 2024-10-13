@@ -35,7 +35,7 @@ export default class Snyk2HDF extends Command {
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8')
     checkInput(
-      {data: data, filename: flags.input},
+      {data: data, filename: flags.input}, // skipcq: JS-0240
       'snyk',
       'Snyk results JSON',
     )

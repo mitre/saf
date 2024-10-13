@@ -1,21 +1,21 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {BurpSuiteMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class Burpsuite2HDF extends Command {
+export default class Burpsuite2HDF extends  BaseCommand<typeof Burpsuite2HDF> {
   static readonly usage =
-    'convert burpsuite2hdf -i <burpsuite-xml> -o <hdf-scan-results-json> [-h] [-w]';
+    '<%= command.id %> -i <burpsuite-xml> -o <hdf-scan-results-json> [-h] [-w]';
 
   static readonly description =
     'Translate a BurpSuite Pro XML file into a Heimdall Data Format JSON file';
 
   static readonly examples = [
-    'saf convert burpsuite2hdf -i burpsuite_results.xml -o output-hdf-name.json',
+    '<%= config.bin %> <%= command.id %> -i burpsuite_results.xml -o output-hdf-name.json',
   ];
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,
@@ -26,7 +26,7 @@ export default class Burpsuite2HDF extends Command {
       required: true,
       description: 'Output HDF JSON File',
     }),
-    'with-raw': Flags.boolean({
+    includeRaw: Flags.boolean({
       char: 'w',
       required: false,
       description: 'Include raw input file in HDF JSON file',
@@ -40,7 +40,7 @@ export default class Burpsuite2HDF extends Command {
     const data = fs.readFileSync(flags.input, 'utf8')
     checkInput({data, filename: flags.input}, 'burp', 'BurpSuite Pro XML')
 
-    const converter = new Mapper(data, flags['with-raw'])
+    const converter = new Mapper(data, flags.includeRaw)
     fs.writeFileSync(
       checkSuffix(flags.output),
       JSON.stringify(converter.toHdf(), null, 2),
