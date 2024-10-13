@@ -1,23 +1,23 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {ASFFResults as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class Prowler2HDF extends Command {
+export default class Prowler2HDF extends BaseCommand<typeof Prowler2HDF> {
   static readonly usage =
-    'convert prowler2hdf -i <prowler-finding-json> -o <hdf-output-folder> [-h]';
+    '<%= command.id %> -i <prowler-finding-json> -o <hdf-output-folder> [-h]'
 
   static readonly description =
-    'Translate a Prowler-derived AWS Security Finding Format results from JSONL into a Heimdall Data Format JSON file';
+    'Translate a Prowler-derived AWS Security Finding Format results from JSONL into a Heimdall Data Format JSON file'
 
   static readonly examples = [
-    'saf convert prowler2hdf -i prowler-asff.json -o output-folder',
-  ];
+    '<%= config.bin %> <%= command.id %> -i prowler-asff.json -o output-folder',
+  ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,
@@ -28,7 +28,7 @@ export default class Prowler2HDF extends Command {
       required: true,
       description: 'Output HDF JSON Folder',
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(Prowler2HDF)

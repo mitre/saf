@@ -1,20 +1,26 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import {SplunkMapper} from '@mitre/hdf-converters/lib/src/splunk-mapper'
 import {table} from 'table'
 import {createWinstonLogger} from '../../utils/logging'
 import _ from 'lodash'
 import fs from 'fs'
 import path from 'path'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class Splunk2HDF extends Command {
+export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
   static readonly usage =
-    'splunk2hdf -H <host> -I <index> [-h] [-P <port>] [-s http|https] (-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID>... -o <hdf-output-folder>]';
+    '<%= command.id %> -H <host> -I <index> [-h] [-P <port>] [-s http|https]\n' +
+    '(-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID>... -o <hdf-output-folder>]'
 
   static readonly description =
-    'Pull HDF data from your Splunk instance back into an HDF file';
+    'Pull HDF data from your Splunk instance back into an HDF file'
+
+  static readonly examples = [
+    '<%= config.bin %> <%= command.id %> -H 127.0.0.1 -u admin -p Valid_password!\n' +
+    '-I hdf -i some-file-in-your-splunk-instance.json -i yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder',
+  ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     host: Flags.string({
       char: 'H',
       required: true,
@@ -57,12 +63,6 @@ export default class Splunk2HDF extends Command {
       required: true,
       description: 'Splunk index to query HDF data from',
     }),
-    logLevel: Flags.string({
-      char: 'L',
-      required: false,
-      default: 'info',
-      options: ['info', 'warn', 'debug', 'verbose'],
-    }),
     input: Flags.string({
       char: 'i',
       multiple: true,
@@ -74,11 +74,7 @@ export default class Splunk2HDF extends Command {
       required: false,
       description: 'Output HDF JSON Folder',
     }),
-  };
-
-  static readonly examples = [
-    'saf convert splunk2hdf -H 127.0.0.1 -u admin -p Valid_password! -I hdf -i some-file-in-your-splunk-instance.json -i yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder',
-  ];
+  }
 
   async searchExecutions(
     mapper: SplunkMapper,

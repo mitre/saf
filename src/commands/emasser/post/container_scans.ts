@@ -1,5 +1,5 @@
 import {colorize} from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
+import {Command} from '@oclif/core'
 import {ContainersApi} from '@mitre/emass_client'
 import {ContainersResponsePost} from '@mitre/emass_client/dist/api'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
@@ -263,5 +263,15 @@ export default class EmasserContainerScans extends Command {
     addContainer.addContainerSansBySystemId(flags.systemId, requestBodyArray).then((response: ContainersResponsePost) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
+  }
+
+  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+    // If error message is for missing flags, display what fields
+    // are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('--help', '\x1B[93m<cli-command> -h or --help\x1B[0m'))
+    } else {
+      this.warn(err)
+    }
   }
 }

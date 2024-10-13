@@ -1,22 +1,22 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {PrismaMapper as Mapper} from '@mitre/hdf-converters'
 import path from 'path'
 import _ from 'lodash'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class Prisma2HDF extends Command {
+export default class Prisma2HDF extends BaseCommand<typeof Prisma2HDF> {
   static readonly usage =
-    'convert prisma2hdf -i <prisma-cloud-csv> -o <hdf-output-folder> [-h]';
+    '<%= command.id %> -i <prisma-cloud-csv> -o <hdf-output-folder> [-h]';
 
   static readonly description =
     'Translate a Prisma Cloud Scan Report CSV file into Heimdall Data Format JSON files';
 
   static readonly examples = [
-    'saf convert prisma2hdf -i prismacloud-report.csv -o output-hdf-name.json',
+    '<%= config.bin %> <%= command.id %> -i prismacloud-report.csv -o output-hdf-name.json',
   ];
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,

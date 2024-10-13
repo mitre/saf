@@ -1,22 +1,23 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {SnykResults as Mapper} from '@mitre/hdf-converters'
 import _ from 'lodash'
 import {checkInput, checkSuffix} from '../../utils/global'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class Snyk2HDF extends Command {
+export default class Snyk2HDF extends BaseCommand<typeof Snyk2HDF> {
   static readonly usage =
-    'convert snyk2hdf -i <snyk-json> -o <hdf-scan-results-json> [-h]';
+    '<%= command.id %> -i <snyk-json> -o <hdf-scan-results-json> [-h]'
 
   static readonly description =
-    'Translate a Snyk results JSON file into a Heimdall Data Format JSON file\nA separate HDF JSON is generated for each project reported in the Snyk Report.';
+    'Translate a Snyk results JSON file into a Heimdall Data Format JSON file\n' +
+    'A separate HDF JSON is generated for each project reported in the Snyk Report.'
 
   static readonly examples = [
-    'saf convert snyk2hdf -i snyk_results.json -o output-file-prefix',
-  ];
+    '<%= config.bin %> <%= command.id %> -i snyk_results.json -o output-file-prefix',
+  ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,
@@ -27,7 +28,7 @@ export default class Snyk2HDF extends Command {
       required: true,
       description: 'Output HDF JSON File',
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(Snyk2HDF)

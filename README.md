@@ -846,10 +846,13 @@ convert prisma2hdf            Translate a Prisma Cloud Scan Report CSV file into
     $ saf convert prisma2hdf -i <prisma-cloud-csv> -o <hdf-output-folder> [-h]
 
   FLAGS
-    -h, --help                        Show CLI help.
     -i, --input=<prisma-cloud-csv>    (required) Prisma Cloud Scan Report CSV
     -o, --output=<hdf-output-folder>  (required) Output HDF JSON file
 
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                            <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
   EXAMPLES
     $ saf convert prisma2hdf -i prismacloud-report.csv -o output-hdf-name.json
 ```
@@ -867,6 +870,11 @@ convert prowler2hdf           Translate a Prowler-derived AWS Security Finding
     -i, --input=<prowler-finding-json>    (required) Input Prowler ASFF JSON File
     -o, --output=<hdf-output-folder>      (required) Output HDF JSON Folder
 
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                            <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
+  
   EXAMPLES
     $ saf convert prowler2hdf -i prowler-asff.json -o output-folder
 ```
@@ -876,20 +884,26 @@ convert prowler2hdf           Translate a Prowler-derived AWS Security Finding
 convert sarif2hdf             Translate a SARIF JSON file into a Heimdall Data
                               Format JSON file
   USAGE
-    $ saf convert sarif2hdf -i <sarif-json> -o <hdf-scan-results-json> [-h]
+    $ saf convert sarif2hdf -i <sarif-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                            Show CLI help.
+    -h, --help                            Show CLI help
     -i, --input=<sarif-json>              (required) Input SARIF JSON File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --includeRaw      Include raw input file in HDF JSON file
+
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
 
   DESCRIPTION
-    SARIF level to HDF impact Mapping:
-    SARIF level error -> HDF impact 0.7
-    SARIF level warning -> HDF impact 0.5
-    SARIF level note -> HDF impact 0.3
-    SARIF level none -> HDF impact 0.1
-    SARIF level not provided -> HDF impact 0.1 as default
+    SARIF level to HDF impact mapping are:
+      SARIF level error -> HDF impact 0.7
+      SARIF level warning -> HDF impact 0.5
+      SARIF level note -> HDF impact 0.3
+      SARIF level none -> HDF impact 0.1
+      SARIF level not provided -> HDF impact 0.1 as default
 
   EXAMPLES
     $ saf convert sarif2hdf -i sarif-results.json -o output-hdf-name.json
@@ -903,12 +917,18 @@ convert scoutsuite2hdf        Translate a ScoutSuite results from a Javascript
 
                               Note: Currently this mapper only supports AWS
   USAGE
-    $ saf convert scoutsuite2hdf -i <scoutsuite-results-js> -o <hdf-scan-results-json> [-h]
+    $ saf convert scoutsuite2hdf -i <scoutsuite-results-js> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                            Show CLI help.
+    -h, --help                            Show CLI help
     -i, --input=<scoutsuite-results-js>   (required) Input ScoutSuite Results JS File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
+    -w, --includeRaw      Include raw input file in HDF JSON file
+
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                            <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
 
   EXAMPLES
     $ saf convert scoutsuite2hdf -i scoutsuite-results.js -o output-hdf-name.json
@@ -928,6 +948,11 @@ convert snyk2hdf              Translate a Snyk results JSON file into a Heimdall
     -i, --input=<snyk-json>               (required) Input Snyk Results JSON File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
+
   EXAMPLES
     $ saf convert snyk2hdf -i snyk_results.json -o output-file-prefix
 ```
@@ -942,13 +967,18 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
     $ saf convert sonarqube2hdf -n <sonar-project-key> -u <http://your.sonar.instance:9000> -a <your-sonar-api-key> [ -b <target-branch> | -p <pull-request-id> ] -o <hdf-scan-results-json>
 
   FLAGS
+    -h, --help                                    Show CLI help 
     -a, --auth=<your-sonar-api-key>               (required) SonarQube API Key
-    -b, --branch=<target-branch>                  Requires Sonarqube Developer Edition or above
-    -h, --help                                    Show CLI help.
     -n, --projectKey=<sonar-project-key>          (required) SonarQube Project Key
     -o, --output=<hdf-scan-results-json>          (required) Output HDF JSON File
+    -u, --url=<http://your.sonar.instance:9000>   (required) SonarQube Base URL (excluding '/api')       
+    -b, --branch=<target-branch>                  Requires Sonarqube Developer Edition or above
     -p, --pullRequestID=<pull-request-id>         Requires Sonarqube Developer Edition or above
-    -u, --url=<http://your.sonar.instance:9000>   (required) SonarQube Base URL (excluding '/api')
+
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
 
   EXAMPLES
     $ saf convert sonarqube2hdf -n sonar_project_key -u http://sonar:9000 --auth abcdefg -p 123 -o scan_results.json
@@ -963,19 +993,21 @@ convert splunk2hdf            Pull HDF data from your Splunk instance back into 
     $ saf splunk2hdf -H <host> -I <index> [-h] [-P <port>] [-s http|https] (-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID> -o <hdf-output-folder>]
 
   FLAGS
-    -H, --host=<host>                   (required) Splunk Hostname or IP
-    -I, --index=<index>                 (required) Splunk index to query HDF data from
-    -L, --logLevel=<option>             [default: info]
-                                        <options: info|warn|debug|verbose>
-    -P, --port=<port>                   [default: 8089] Splunk management port (also known as the Universal Forwarder port)
-    -h, --help                          Show CLI help.
-    -i, --input=<filename/GUID>...      GUID(s) or Filename(s) of files from Splunk to convert
-    -o, --output=<hdf-output-folder>    Output HDF JSON Folder
-    -p, --password=<password>           Your Splunk password
-    -s, --scheme=<option>               [default: https] HTTP Scheme used for communication with splunk
-                                        <options: http|https>
-    -t, --token=<token>                 Your Splunk API Token
-    -u, --username=<username>           Your Splunk username
+    -H, --host=<value>      (required) Splunk Hostname or IP
+    -I, --index=<value>     (required) Splunk index to query HDF data from
+    -P, --port=<value>      [default: 8089] Splunk management port (also known as the Universal Forwarder port)
+    -i, --input=<value>...  GUID(s) or Filename(s) of files from Splunk to convert
+    -o, --output=<value>    Output HDF JSON Folder
+    -p, --password=<value>  Your Splunk password
+    -s, --scheme=<option>   [default: https] HTTP Scheme used for communication with splunk
+                            <options: http|https>
+    -t, --token=<value>     Your Splunk API Token
+    -u, --username=<value>  Your Splunk username
+
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
 
   EXAMPLES
     $ saf convert splunk2hdf -H 127.0.0.1 -u admin -p Valid_password! -I hdf -i some-file-in-your-splunk-instance.json -i yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder
@@ -995,10 +1027,15 @@ convert trivy2hdf             Translate a Trivy-derived AWS Security Finding
     -i, --input=<trivy-finding-json>  (required) Input Trivy ASFF JSON File
     -o, --output=<hdf-output-folder>  (required) Output HDF JSON Folder
 
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
+
   DESCRIPTION
     Note: Currently this mapper only supports the results of Trivy's `image`
     subcommand (featuring the CVE findings) while using the ASFF template format
-    (which comes bundled with the repo).  An example call to Trivy to get this
+    (which comes bundled with the repo). An example call to Trivy to get this
     type of file looks as follows:
     AWS_REGION=us-east-1 AWS_ACCOUNT_ID=123456789012 trivy image --no-progress --format template --template "@/absolute_path_to/git_clone_of/trivy/contrib/asff.tpl" -o trivy_asff.json golang:1.12-alpine
 

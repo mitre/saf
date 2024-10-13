@@ -41,7 +41,7 @@ export default class MyHelpClass extends Help {
     const hasArgs = _.has(command.args, 'name')
     if (hasArgs) {
       const argNamesMap = new Map<string, string>()
-      _.forOwn(command.args, function (value, key) { // skipcq: JS-0241
+      _.forOwn(command.args, (value, key) => {
         if (key !== 'name') {
           const argName = _.get(command.args[key], 'name')
           argNamesMap.set(argName.toUpperCase(), argName)

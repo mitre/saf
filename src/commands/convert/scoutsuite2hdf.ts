@@ -1,21 +1,22 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {ScoutsuiteMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class Scoutsuite2HDF extends Command {
+export default class Scoutsuite2HDF extends BaseCommand<typeof Scoutsuite2HDF> {
   static readonly usage =
-    'convert scoutsuite2hdf -i <scoutsuite-results-js> -o <hdf-scan-results-json> [-h] [-w]';
+    '<%= command.id %> -i <scoutsuite-results-js> -o <hdf-scan-results-json> [-h] [-w]'
 
   static readonly description =
-    'Translate a ScoutSuite results from a Javascript object into a Heimdall Data Format JSON file\nNote: Currently this mapper only supports AWS.';
+    'Translate a ScoutSuite results from a Javascript object into a Heimdall Data Format JSON file\n' +
+    'Note: Currently this mapper only supports AWS.'
 
   static readonly examples = [
-    'saf convert scoutsuite2hdf -i scoutsuite-results.js -o output-hdf-name.json',
-  ];
+    '<%= config.bin %> <%= command.id %> -i scoutsuite-results.js -o output-hdf-name.json',
+  ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,
@@ -26,12 +27,12 @@ export default class Scoutsuite2HDF extends Command {
       required: true,
       description: 'Output HDF JSON File',
     }),
-    'with-raw': Flags.boolean({
+    includeRaw: Flags.boolean({
       char: 'w',
       required: false,
       description: 'Include raw input file in HDF JSON file',
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(Scoutsuite2HDF)
@@ -44,7 +45,7 @@ export default class Scoutsuite2HDF extends Command {
       'ScoutSuite results from a Javascript object',
     )
 
-    const converter = new Mapper(data, flags['with-raw'])
+    const converter = new Mapper(data, flags.includeRaw)
     fs.writeFileSync(
       checkSuffix(flags.output),
       JSON.stringify(converter.toHdf(), null, 2),
