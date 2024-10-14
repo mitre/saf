@@ -34,7 +34,8 @@ jobs:
 
       - name: Pack Windows Installer
         working-directory: ./saf
-        run: npx oclif pack win
+        run: ../oclif/bin/run.js pack win
+        # run: npx oclif pack win
 
       - name: Pack Debian Package
         working-directory: ./saf
