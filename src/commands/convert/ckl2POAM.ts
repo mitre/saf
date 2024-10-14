@@ -48,7 +48,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
   static readonly description =
     'Translate DISA Checklist CKL file(s) to POA&M files'
 
-  static aliases = ['convert:ckl2poam']
+  static readonly aliases = ['convert:ckl2poam']
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> -i checklist_file.ckl -o output-folder -d abcdefg -s 2',

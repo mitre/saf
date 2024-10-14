@@ -24,7 +24,7 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     '<%= command.id %> [-i <hdf-json>|--interactive] [-o <csv-file>|--interactive] ' +
     ' [-f <header-fields>|--interactive] [-t|--interactive] [-L info|warn|debug|verbose]'
 
-    static description = 'Translate a Heimdall Data Format JSON file into a Comma Separated Values (CSV) file'
+    static readonly description = 'Translate a Heimdall Data Format JSON file into a Comma Separated Values (CSV) file'
 
     static readonly examples = [
       {
