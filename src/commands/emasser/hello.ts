@@ -9,8 +9,8 @@ export default class EmasserSayHello extends Command {
     let user = 'rookie'
     try {
       user = os.userInfo().username
-    } catch {}
-
-    console.log('\x1B[96m', `Hello ${user} - enjoy using ${name} ${version} !`, '\x1B[0m')
+    } finally {
+      console.log('\x1B[96m', `Hello ${user} - enjoy using ${name} ${version} !`, '\x1B[0m')
+    }
   }
 }

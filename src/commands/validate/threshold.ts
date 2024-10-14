@@ -4,7 +4,15 @@ import fs from 'fs'
 import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import _ from 'lodash'
 import {ThresholdValues} from '../../types/threshold'
-import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject, statusSeverityPaths, totalMax, totalMin} from '../../utils/threshold'
+import {calculateCompliance,
+  exitNonZeroIfTrue,
+  extractStatusCounts,
+  getControlIdMap,
+  renameStatusName,
+  severityTargetsObject,
+  statusSeverityPaths,
+  totalMax,
+  totalMin} from '../../utils/threshold'
 import {expect} from 'chai'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
