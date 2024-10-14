@@ -1,6 +1,7 @@
 import {createLogger, format, transports, transport, Logger} from 'winston'
-
 import {ContextualizedControl, contextualizeEvaluation, ExecJSON} from 'inspecjs'
+import colors from 'colors' // eslint-disable-line no-restricted-imports
+
 /**
  * Summary type represents a summary of an HDF execution.
  * @property {string[]} profileNames - An array of profile names.
@@ -21,35 +22,76 @@ export type Summary = {
   notReviewedCount: number;
   errorCount: number;
 }
+
+const syslogColors = {
+  debug: 'bold blue',
+  info: 'cyan',
+  notice: 'white',
+  warning: 'bold yellow',
+  error: 'bold red',
+  verbose: 'blue',
+  crit: 'inverse yellow',
+  alert: 'bold inverse red',
+  emerg: 'bold inverse magenta',
+}
+
 /**
  * createWinstonLogger function creates a Winston logger.
  * @param {string} mapperName - The name of the mapper.
  * @param {string} [level='info'] - The log level. Default is 'info'.
  * @returns {Logger} A Winston logger.
  */
-
 export function createWinstonLogger(mapperName: string, level = 'info'): Logger {
   const transportList: transport[] = [
     new transports.File({filename: 'saf-cli.log'}),
   ]
 
   if ((process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') || level === 'verbose') {
-    transportList.push(new transports.Console())
+    transportList.push(new transports.Console({
+      format: format.combine(
+        format.colorize({
+          all: true,
+          colors: syslogColors,
+        }),
+        format.simple(),
+        format.timestamp({
+          format: 'MMM-DD-YYYY HH:mm:ss Z',
+        }),
+        format.errors({stack: true}),
+        format.printf(
+          info => colors.yellow(`[${[info.timestamp]} -> ${mapperName}]:`) + ` ${info.message}`,
+        ),
+      ),
+    }))
   }
 
   return createLogger({
     transports: transportList,
     level,
-    format: format.combine(
-      format.timestamp({
-        format: 'MMM-DD-YYYY HH:mm:ss Z',
-      }),
-      format.printf(
-        info => `[${[info.timestamp]}] ${mapperName} ${info.message}`,
-      ),
-    ),
   })
 }
+// export function createWinstonLogger(mapperName: string, level = 'info'): Logger {
+//   const transportList: transport[] = [
+//     new transports.File({filename: 'saf-cli.log'}),
+//   ]
+
+//   if ((process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') || level === 'verbose') {
+//     transportList.push(new transports.Console())
+//   }
+
+//   return createLogger({
+//     transports: transportList,
+//     level,
+//     format: format.combine(
+//       format.timestamp({
+//         format: 'MMM-DD-YYYY HH:mm:ss Z',
+//       }),
+//       format.printf(
+//         info => `[${[info.timestamp]}] ${mapperName} ${info.message}`,
+//       ),
+//     ),
+//   })
+// }
 /**
  * The function `getHDFSummary` takes an execution object and returns a summary string containing
  * information about the profiles, passed/failed/not applicable/not reviewed counts.

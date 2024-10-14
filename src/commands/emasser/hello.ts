@@ -6,11 +6,11 @@ export default class EmasserSayHello extends Command {
   static hidden = true
 
   async run(): Promise<void> { // skipcq: JS-0116, JS-0105
+    let user = 'rookie'
     try {
-      const user = os.userInfo()
-      console.log('\x1B[96m', 'Hello ' + user.username + ' - enjoy using ' + name + ' ' + version + '!', '\x1B[0m')
-    } catch {
-      console.log('\x1B[96m', 'Hello rookie - enjoy using ' + name + ' ' + version + '!', '\x1B[0m')
-    }
+      user = os.userInfo().username
+    } catch {}
+
+    console.log('\x1B[96m', `Hello ${user} - enjoy using ${name} ${version} !`, '\x1B[0m')
   }
 }

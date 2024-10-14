@@ -1334,20 +1334,51 @@ To get a quick compliance summary from an HDF file (grouped by profile name) use
 view summary                  Get a quick compliance overview of an HDF file
 
   USAGE
-    $ saf view summary -i <hdf-file> [-h] [-j] [-o <output>]
+    $ saf view summary -i <<hdf-file>... [-o <output>] [-f json|yaml|markdown] [-s] [-r] [-t] [-l <value>] [-h]
 
-  FLAGS
-    -h, --help                  Show CLI help.
-    -i, --input=<hdf-file>...   (required) Input HDF files
-    -j, --json                  Output results as JSON
-    -o, --output=<output>
+  FORMATTING FLAGS
+    -f, --format=<option>    [default: yaml] Specify output format
+                            <options: json|yaml|markdown>
+    -r, --[no-]print-pretty  Enable human-readable data output
+    -t, --[no-]title-table   Add titles to the markdown table(s)
+
+  HELP FLAGS
+    -h, --help  Show help information
+
+  I/O FLAGS
+    -i, --input=<value>...  (required) Specify input HDF file(s)
+    -o, --output=<value>    Specify output file(s)
+    -s, --[no-]stdout       Enable printing to console
+
+  DEBUGGING FLAGS
+    -l, --logLevel=<value>  [default: info] Set log level
 
   ALIASES
     $ saf summary
 
   EXAMPLES
-    $ saf view summary -i rhel7-results.json
-    $ saf view summary -i rhel7-host1-results.json nginx-host1-results.json mysql-host1-results.json
+    Summarize 'input.hdf' single HDF file
+      $ saf summary -i input.hdf
+
+    Specify Formats
+      $ saf summary -i input.hdf input.json --format=json
+
+    Output GitHub Flavored Markdown Table, skip the console, and save to 'output.md
+      $ saf summary -i input.hdf input.json --format=markdown --no-stdout -o output.md
+
+    Summarize multiple HDF files
+      $ saf summary --input input1.hdf --input input2.hdf
+      $ saf summary --input input1.hdf input2.hdf
+
+    Save summary to 'output.json' and print to the console
+      $ saf summary -i input.hdf --output output.json
+
+    Enable human-readable output
+      $ saf summary --input input.hdf --pretty-print
+
+    Useful for scripts or data-processing (RAW yaml/json/etc.)
+      $ saf summary -i input.hdf --no-pretty-print
+
 ```
 [top](#view-hdf-summaries-and-data)
 
@@ -1371,6 +1402,11 @@ validate threshold            Validate the compliance and status counts of an HD
                                                       (Intended for backwards compatibility with InSpec Tools)
     -h, --help                                        Show CLI help.
     -i, --input=<hdf-json>                            (required) Input HDF JSON File
+
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
 
   EXAMPLES
     $ saf validate threshold -i rhel7-results.json -F output.yaml
@@ -1695,6 +1731,11 @@ FLAGS
   -i, --input=<value>   (required) An input HDF file
   -o, --output=<value>  An output `passthrough` JSON file (otherwise the data is sent to stdout)
 
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
+
 EXAMPLES
   $ saf supplement passthrough read -i hdf.json -o passthrough.json
 ```
@@ -1715,13 +1756,19 @@ FLAGS
   -i, --input=<value>            (required) An input Heimdall Data Format file
   -o, --output=<value>           An output Heimdall Data Format JSON file (otherwise the input file is overwritten)
 
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
+
 DESCRIPTION
   Passthrough data can be any context/structure. See sample ideas at [https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60)#:~:text=Settings-,Supplement%20HDF%20files%20with%20additional%20information,-(ex.%20%60passthrough%60%2C%20%60target](https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60))
   
 EXAMPLES
-  $ saf supplement passthrough write -i hdf.json -d '{"a": 5}'
-
-  $ saf supplement passthrough write -i hdf.json -f passthrough.json -o new-hdf.json
+  Providing passthrough-data
+    $ saf supplement passthrough write -i hdf.json -d '{"a": 5}'
+  Using passthrough-data file
+    $ saf supplement passthrough write -i hdf.json -f passthrough.json -o new-hdf.json
 ```
 [top](#enhance-and-supplement-hdf-data)
 
@@ -1776,6 +1823,11 @@ FLAGS
   -i, --input=<value>   (required) An input HDF file
   -o, --output=<value>  An output `target` JSON file (otherwise the data is sent to stdout)
 
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
+
 EXAMPLES
   $ saf supplement target read -i hdf.json -o target.json
 ```
@@ -1796,13 +1848,19 @@ FLAGS
   -i, --input=<value>       (required) An input Heimdall Data Format file
   -o, --output=<value>      An output Heimdall Data Format JSON file (otherwise the input file is overwritten)
 
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
+
 DESCRIPTION
   Target data can be any context/structure. See sample ideas at https://github.com/mitre/saf/wiki/Supplement-HDF-files-with-additional-information-(ex.-%60passthrough%60,-%60target%60)
 
 EXAMPLES
-  $ saf supplement target write -i hdf.json -d '{"a": 5}'
-
-  $ saf supplement target write -i hdf.json -f target.json -o new-hdf.json
+  Providing target-data
+    $ saf supplement target write -i hdf.json -d '{"a": 5}'
+  Using target-data file
+    $ saf supplement target write -i hdf.json -f target.json -o new-hdf.json
 ```
 [top](#enhance-and-supplement-hdf-data)
 
