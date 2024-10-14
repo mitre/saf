@@ -18,7 +18,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
           check-latest: true
           cache: 'npm'
           cache-dependency-path: ./saf/package-lock.json
@@ -34,8 +34,7 @@ jobs:
 
       - name: Pack Windows Installer
         working-directory: ./saf
-        run: ../oclif/bin/run.js pack win
-        # run: npx oclif pack win
+        run: npx oclif pack win
 
       - name: Pack Debian Package
         working-directory: ./saf
