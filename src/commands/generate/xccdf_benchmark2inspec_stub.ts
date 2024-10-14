@@ -1,21 +1,27 @@
 
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {InSpecMetaData} from '../../types/inspec'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import {processOVAL, processXCCDF} from '@mitre/inspec-objects'
 import Profile from '@mitre/inspec-objects/lib/objects/profile'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class XCCDFBenchmark2InSpec extends Command {
-  static usage =
-    'saf generate xccdf_benchmark2inspec_stub -i <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] [-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]';
+export default class XCCDFBenchmark2InSpec extends BaseCommand<typeof XCCDFBenchmark2InSpec> {
+  static readonly usage =
+    '<%= command.id %> -i <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>]\n' +
+    '[-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]'
 
-  static description =
-    'Translate an XCCDF benchmark file to a skeleton for an InSpec profile';
+  static readonly description =
+    'Translate an XCCDF benchmark file to a skeleton for an InSpec profile'
 
-  static flags = {
-    help: Flags.help({char: 'h'}),
+  static readonly examples = [
+    '<%= config.bin %> <%= command.id %> -i ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md',
+    '<%= config.bin %> <%= command.id %> -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml -O ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml --logLevel debug',
+  ]
+
+  static readonly flags = {
     input: Flags.string({char: 'i', required: true, description: 'Path to the XCCDF benchmark file'}),
     metadata: Flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
     singleFile: Flags.boolean({char: 's', required: false, default: false, description: 'Output the resulting controls as a single file'}),
@@ -28,13 +34,7 @@ export default class XCCDFBenchmark2InSpec extends Command {
     }),
     ovalDefinitions: Flags.string({char: 'O', required: false, description: 'Path to an OVAL definitions file to populate profile elements that reference OVAL definitions'}),
     output: Flags.string({char: 'o', required: false, default: 'profile', description: 'The output folder to write the generated InSpec content'}),
-    logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
-  };
-
-  static examples = [
-    'saf generate xccdf_benchmark2inspec_stub -i ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md',
-    'saf generate xccdf_benchmark2inspec_stub -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml -O ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml --logLevel debug',
-  ]
+  }
 
   async run() {
     const {flags} = await this.parse(XCCDFBenchmark2InSpec)

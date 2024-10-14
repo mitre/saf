@@ -1,21 +1,21 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {VeracodeMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class Veracode2HDF extends Command {
+export default class Veracode2HDF extends BaseCommand<typeof Veracode2HDF> {
   static readonly usage =
-    'convert veracode2hdf -i <veracode-xml> -o <hdf-scan-results-json> [-h]';
+    '<%= command.id %> -i <veracode-xml> -o <hdf-scan-results-json> [-h]';
 
   static readonly description =
     'Translate a Veracode XML file into a Heimdall Data Format JSON file';
 
   static readonly examples = [
-    'saf convert veracode2hdf -i veracode_results.xml -o output-hdf-name.json',
+    '<%= config.bin %> <%= command.id %> -i veracode_results.xml -o output-hdf-name.json',
   ];
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,

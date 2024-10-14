@@ -63,7 +63,7 @@ describe('Test hdf2checklist', () => {
     .stderr()
     .command(['convert hdf2ckl', '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'), '-o', `${tmpobj.name}/hdf2ckl_metadata_error_test.json`, '-m', path.resolve('test/sample_data/checklist/sample_input_report/invalid_metadata.json')])
     .it(
-      'hdf-converter output test - throws error when using invalid checklist metadata',
+      'hdf-converter output test - throws error when using invalid checklist metadata (Asset Type)',
       ctx => {
         expect(ctx.stderr).to.equal('Error creating checklist:\nInvalid checklist metadata fields:\n\tHost IP (invalid)\n\tAsset Type (Not a real assettype)\n')
       },
@@ -74,7 +74,7 @@ describe('Test hdf2checklist', () => {
     .stderr()
     .command(['convert hdf2ckl', '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'), '-o', `${tmpobj.name}/hdf2ckl_metadata_error_test.json`, '--ip', 'bad ip address'])
     .it(
-      'hdf-converter output test - throws error when using invalid checklist metadata',
+      'hdf-converter output test - throws error when using invalid checklist metadata (Host IP)',
       ctx => {
         expect(ctx.stderr).to.equal('Error creating checklist:\nInvalid checklist metadata fields:\n\tHost IP (bad ip address)\n')
       },

@@ -1,21 +1,21 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {TwistlockResults as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class Twistlock2HDF extends Command {
+export default class Twistlock2HDF extends BaseCommand<typeof Twistlock2HDF> {
   static readonly usage =
-    'convert twistlock2hdf -i <twistlock-json> -o <hdf-scan-results-json> [-h] [-w]';
+    '<%= command.id %> -i <twistlock-json> -o <hdf-scan-results-json> [-h] [-w]'
 
   static readonly description =
-    'Translate a Twistlock CLI output file into an HDF results set';
+    'Translate a Twistlock CLI output file into an HDF results set'
 
   static readonly examples = [
-    'saf convert twistlock2hdf -i twistlock.json -o output-hdf-name.json',
-  ];
+    '<%= config.bin %> <%= command.id %> -i twistlock.json -o output-hdf-name.json',
+  ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h'}),
     input: Flags.string({
       char: 'i',
       required: true,
@@ -26,12 +26,12 @@ export default class Twistlock2HDF extends Command {
       required: true,
       description: 'Output HDF JSON File',
     }),
-    'with-raw': Flags.boolean({
+    includeRaw: Flags.boolean({
       char: 'w',
       required: false,
       description: 'Include raw input file in HDF JSON file',
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(Twistlock2HDF)
@@ -44,7 +44,7 @@ export default class Twistlock2HDF extends Command {
       'Twistlock CLI output file',
     )
 
-    const converter = new Mapper(data, flags['with-raw'])
+    const converter = new Mapper(data, flags.includeRaw)
     fs.writeFileSync(
       checkSuffix(flags.output),
       JSON.stringify(converter.toHdf(), null, 2),

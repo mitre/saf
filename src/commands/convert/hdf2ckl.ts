@@ -320,7 +320,7 @@ export default class HDF2CKL extends Command {
     // If error message is for missing flags, display what fields
     // are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('--help', '-h or --help'))
+      this.warn(err.message.replace('--help', '\x1B[93m<cli-command> -h or --help\x1B[0m'))
     } else {
       this.warn(err)
     }
