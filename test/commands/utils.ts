@@ -33,3 +33,8 @@ export function omitChecklistChangingFields(input: string) {
   return input.replaceAll(/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/gm, '')
     .replace(/<!--Heimdall Version :: \S+-->/, '')
 }
+
+export function omitHtmlChangingfields(input: string) {
+  return input.replace(/(tailwindcss .+ \|)/, 'TAILWIND VERSION')
+    .replace(/TW Elements \d+\.\d+\.\d+/, 'TW ELEMENTS VERSION')
+}
