@@ -94,9 +94,9 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Delta Supporting Commands](#delta-supporting-options) 
       * [CKL Templates](#ckl-templates)
       * [InSpec Metadata](#inspec-metadata)
+      * [Inspec Profile](#inspec-profile)
       * [Thresholds](#thresholds-1)
       * [Spreadsheet (csv/xlsx) to InSpec](#spreadsheet-csvxlsx-to-inspec)
-      * [XCCDF Benchmark to InSpec Stubs](#xccdf-benchmark-to-inspec-stub)
         * [DoD Stub vs CIS Stub Formatting](#dod-stub-vs-cis-stub-formatting)
       * [Mapping Files](#mapping-files)
 
@@ -1536,6 +1536,40 @@ generate inspec_metadata      Generate an InSpec metadata template for "saf conv
 ```
 [top](#generate-data-reports-and-more)
 
+#### Inspec Profile
+```
+generate inspec_profile              Generate a new skeleton profile based on a XCCDF benchmark file
+
+USAGE
+  $ saf generate inspec_profile -i <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] [-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]
+
+FLAGS
+  -O, --ovalDefinitions=<value>  Path to an OVAL definitions file to populate profile elements that reference OVAL definitions
+  -T, --idType=<option>          [default: rule] Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' -
+                                 Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex.
+                                 C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
+                                 <options: rule|group|cis|version>
+  -i, --xccdfXmlFile=<value>     (required) Path to the XCCDF benchmark file
+  -m, --metadata=<value>         Path to a JSON file with additional metadata for the inspec.yml
+                                 The metadata Json is of the following format:
+                                 {"maintainer": string, "copyright": string, "copyright_email": string, "license": string, "version": string}
+  -o, --output=<value>           [default: profile] The output folder to write the generated InSpec content (defaults to profile if 
+                                 unable to translate xccdf title)
+  -s, --singleFile               Output the resulting controls as a single file
+
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                            <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
+
+ALIASES
+  $ saf generate xccdf_benchmark2inspec_stub
+
+EXAMPLES
+  $ saf generate xccdf_benchmark2inspec_stub -i ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md
+  $ saf generate xccdf_benchmark2inspec_stub -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml -O ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml --logLevel debug
+```
+[top](#generate-data-reports-and-more)
 #### Thresholds
 
 Threshold files are used in CI to ensure minimum compliance levels and validate control severities and statuses using `saf validate threshold`
@@ -1597,40 +1631,6 @@ EXAMPLES
   saf generate spreadsheet2inspec_stub -i spreadsheet.xlsx -o profile
 ```
 [top](#generate-data-reports-and-more)
-
-#### XCCDF Benchmark to InSpec Stub
-```
-generate xccdf_benchmark2inspec_stub              Translate a DISA STIG XCCDF Benchmark XML file into a skeleton for an InSpec profile
-
-USAGE
-  $ saf generate xccdf_benchmark2inspec_stub -i <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] [-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]
-
-FLAGS
-  -h, --help                     Show CLI help.
-  -i, --input=<value>            (required) Path to the XCCDF benchmark file
-  -o, --output=<value>           [default: profile] The output folder to write the generated InSpec content
-  -T, --idType=<option>          [default: rule] Control ID Types: 
-                                 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 
-                                 'group' - Group IDs (ex. 'V-XXXXX'), 
-                                 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 
-                                 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
-                                 <options: rule|group|cis|version>
-  -O, --ovalDefinitions=<value>  Path to an OVAL definitions file to populate profile elements that reference OVAL defintions
-  -m, --metadata=<value>         Path to a JSON file with additional metadata for the inspec.yml file
-  -s, --singleFile               Output the resulting controls as a single file
-  -L, --logLevel=<option>        [default: info] <options: info|warn|debug|verbose>
-
-  GLOBAL FLAGS
-    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
-                            <options: info|warn|debug|verbose>
-        --interactive        Collect input tags interactively (not available on all CLI commands)
-
-EXAMPLES
-  $ saf generate xccdf_benchmark2inspec_stub -i ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md
-  $ saf generate xccdf_benchmark2inspec_stub -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml -O ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml --logLevel debug
-```
-[top](#generate-data-reports-and-more)
-
 
 ##### DoD Stub vs CIS Stub Formatting
 
