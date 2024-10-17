@@ -2,7 +2,6 @@
 import {Flags} from '@oclif/core'
 import fs from 'fs'
 import parser from 'fast-xml-parser'
-import _ from 'lodash'
 import {InSpecMetaData, InspecReadme} from '../../types/inspec'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
@@ -10,6 +9,8 @@ import {processOVAL, processXCCDF} from '@mitre/inspec-objects'
 import Profile from '@mitre/inspec-objects/lib/objects/profile'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 import {Logger} from 'winston'
+import {execSync} from 'child_process'
+import _ from 'lodash'
 
 export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
   static readonly usage =
@@ -97,14 +98,15 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     }
 
     // Generate the output folder based on the XCCDF Benchmark.title
+    // if the default name is provided (profile) by the output -o flag
     const options = {
       ignoreAttributes: false,
       attributeNamePrefix: '@_',
     }
     const xmlDoc = new parser.XMLParser(options).parse(xccdf)
-    const benchmarkTitle = _.get(xmlDoc, 'Benchmark.title')
     let outDir = ''
     if (flags.output === 'profile') {
+      const benchmarkTitle = _.get(xmlDoc, 'Benchmark.title')
       outDir = (benchmarkTitle === undefined) ?
         flags.output :
         benchmarkTitle.replace('Security Technical Implementation Guide', 'stig-baseline')
@@ -177,6 +179,11 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     profile.license = 'Apache-2.0'
     profile.summary = `InSpec profile aligned to DISA STIG for ${readmeObj.profileTitle}`
     profile.version = readmeObj.profileVersion
+    // Get inspec installed version, use the major.0 if installed, otherwise set to 5.0
+    const inspecVersion = execSync('inspec --version').toString()
+    // match() allows matching single integer and multiple decimal places
+    const isDecimal = inspecVersion.match(/^-?\d*(\.?\d+)+/)
+    profile.inspec_version = (isDecimal === null) ? '>= 3.1.2' : `>=${inspecVersion.split('.')[0]}.0`
 
     // Add metadata if provided
     if (flags.metadata) {
@@ -197,6 +204,10 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     generateReadme(readmeObj, outDir, logger)
     generateLicenses(outDir, logger)
     generateNotice(outDir, logger)
+    generateRubocopYml(outDir, logger)
+    generateGemFile(outDir, logger)
+    generateRakeFile(outDir, logger)
+    generateGitIgnoreFile(outDir, logger)
 
     logger.info('Generating profile controls...')
     // Write all controls
@@ -288,6 +299,7 @@ Table of Contents
 * [Getting Started](#getting-started)
     * [Intended Usage](#intended-usage)
     * [Tailoring to Your Environment](#tailoring-to-your-environment)
+    * [Testing the Profile Controls](#testing-the-profile-controls)
 * [Running the Profile](#running-the-profile)
     * [Directly from Github](#directly-from-github) 
     * [Using a local Archive copy](#using-a-local-archive-copy)
@@ -335,50 +347,72 @@ The latest versions and installation options are available at the [InSpec](http:
 
 [top](#table-of-contents)
 ### Tailoring to Your Environment
-The following inputs must be configured in an inputs ".yml" file for the profile to run
-correctly for your specific environment. More information about InSpec inputs can be
-found in the [InSpec Profile Documentation](https://www.inspec.io/docs/reference/profiles/).
+The \`inspec.yml\` file contains metadata that describes the profile.
 
+***[Update the \`inspec.yml\` file parameter \`inputs\` with a list of inputs appropriate for the profile and specific environment.]***
+
+Chef InSpec Resources:
+- [InSpec Profile Documentation](https://docs.chef.io/inspec/profiles/).
+- [InSpec Inputs](https://docs.chef.io/inspec/profiles/inputs/).
+- [inspec.yml](https://docs.chef.io/inspec/profiles/inspec_yml/).
+
+>[!NOTE]
+> Inputs are variables that can be referenced by any control in the profile, and are defined and given a default value in the \`inspec.yml\` file.
+
+Below is an example how the \`inputs\` are defined in the \`inspec.yml\`:
 \`\`\`
-# Set to either the string "true" or "false"
-sensitive_system: false
+inputs:
+  # Skip controls that take a long time to test 
+  - name: disable_slow_controls
+    description: Controls that are known to consistently have long run times can be disabled with this attribute
+    type: Boolean
+    value: false
 
-# List of temporary accounts on the domain
-temp_accounts_domain: []
-
-# List of temporary accounts on local system
-temp_accounts_local: []
-
-# List of emergency accounts on the domain
-emergency_accounts_domain: []
-
-# List of emergency accounts on the system
-emergency_accounts_local: []
-
-# List of authorized users in the local Administrators group for a domain controller
-local_administrators_dc: []
-
-# List of authorized users in the local Administrators group for a member server
-local_administrators_member: []
-
-# Local Administrator Account on Windows Server
-local_administrator: ""
-
-# List of authorized users in the Backup Operators Group
-backup_operators: []
-
-# List Application or Service Accounts domain
-application_accounts_domain: []
-
-# List Excluded Accounts domain
-excluded_accounts_domain: []
-
-# List Application Local Accounts
-application_accounts_local: []
-
-# List of authorized users in the local Administrators group
-administrators: []
+  # List of configuration files for the specific system
+  - name: logging_conf_files
+    description: Configuration files for the logging service
+    type: Array
+    value:
+      - <dir-path-1>/*.conf
+      - <dir-path-2>/*.conf
 \`\`\`
+
+[top](#table-of-contents)
+### Testing the Profile Controls
+The Gemfile provided contains all necessary ruby dependencies for checking the profile controls.
+#### Requirements
+All action are conducted using \`ruby\` (gemstone/programming language). Currently \`inspec\` 
+commands have ben tested with ruby version 3.1.2. A higher version of ruby is not guarantee to
+provide the expected results. Any modern distribution of Ruby comes with Bundler preinstalled by default.
+
+Install ruby based on the OS being used, see [Installing Ruby](https://www.ruby-lang.org/en/documentation/installation/)
+
+After installing \`ruby\` install the necessary dependencies by invoking the bundler command
+(must be in the sam directory where the Gemfile is located):
+\`\`\`
+bundle install
+\`\`\`
+
+#### Testing Commands
+Ensure the controls are chef-style formatted:
+\`\`\`
+  bundle exec cookstyle -a ./controls
+\`\`\`
+
+Linting and validating controls:
+\`\`\`
+  bundle exec rake inspec:check          # validate the inspec profile
+  bundle exec rake lint                  # Run RuboCop
+  bundle exec rake lint:autocorrect      # Autocorrect RuboCop offenses (only when it's s...
+  bundle exec rake lint:autocorrect_all  # Autocorrect RuboCop offenses (safe and unsafe)
+  bundle exec rake pre_commit_checks     # pre-commit checks
+\`\`\`
+
+Ensure the controls are ready to be committed into the repo:
+\`\`\`
+  bundle exec rake pre_commit_checks
+\`\`\`
+
 
 [top](#table-of-contents)
 ## Running the Profile
@@ -388,10 +422,10 @@ access to the hosting repository.
 
 \`\`\`
 # Using \`ssh\` transport
-inspec exec https://github.com/mitre/${contentObj.profileTitle}/archive/main.tar.gz --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
+bundle exec inspec exec https://github.com/mitre/${contentObj.profileTitle}/archive/main.tar.gz --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
 
 # Using \`winrm\` transport
-inspec exec https://github.com/mitre/${contentObj.profileTitle}/archive/master.tar.gz --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>
+bundle exec inspec exec https://github.com/mitre/${contentObj.profileTitle}/archive/master.tar.gz --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>
 \`\`\`
 
 [top](#table-of-contents)
@@ -408,13 +442,13 @@ When the **"runner"** host uses this profile overlay for the first time, follow 
 mkdir profiles
 cd profiles
 git clone https://github.com/mitre/${contentObj.profileTitle}.git
-inspec archive ${contentObj.profileTitle}
+bundle exec inspec archive ${contentObj.profileTitle}
 
 # Using \`ssh\` transport
-inspec exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
+bundle exec inspec exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
 
 # Using \`winrm\` transport
-inspec exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
+bundle exec inspec exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
 \`\`\`
 
 For every successive run, follow these steps to always have the latest version of this profile baseline:
@@ -423,13 +457,13 @@ For every successive run, follow these steps to always have the latest version o
 cd ${contentObj.profileTitle}
 git pull
 cd ..
-inspec archive ${contentObj.profileTitle} --overwrite
+bundle exec inspec archive ${contentObj.profileTitle} --overwrite
 
 # Using \`ssh\` transport
-inspec exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
+bundle exec inspec exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
 
 # Using \`winrm\` transport
-inspec exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
+bundle exec inspec exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
 \`\`\`
 
 [top](#table-of-contents)
@@ -519,6 +553,341 @@ Office, 7515 Colshire Drive, McLean, VA 22102-7539, (703) 983-6000.
       logger.error(`Error saving the NOTICE.md file to: ${outDir}. Cause: ${err}`)
     } else {
       logger.debug('NOTICE.md generated successfully!')
+    }
+  })
+}
+
+function generateRubocopYml(outDir: string, logger: Logger) {
+  const robocopContent =
+`AllCops:
+  NewCops: enable
+  Exclude:
+  - "libraries/**/*"
+
+Layout/LineLength:
+  Max: 1500
+  AllowURI: true
+  IgnoreCopDirectives: true
+
+Naming/FileName:
+  Enabled: false
+
+Metrics/BlockLength:
+  Max: 1000
+
+Lint/ConstantDefinitionInBlock:
+  Enabled: false
+
+# Required for Profiles as it can introduce profile errors
+Style/NumericPredicate:
+  Enabled: false
+
+Style/WordArray:
+  Description: "Use %w or %W for an array of words. (https://rubystyle.guide#percent-w)"
+  Enabled: false
+
+Style/RedundantPercentQ:
+  Enabled: true
+
+Style/NestedParenthesizedCalls:
+  Enabled: false
+
+Style/TrailingCommaInHashLiteral:
+  Description: "https://docs.rubocop.org/rubocop/cops_style.html#styletrailingcommainhashliteral"
+  Enabled: true
+  EnforcedStyleForMultiline: no_comma
+
+Style/TrailingCommaInArrayLiteral:
+  Enabled: true
+  EnforcedStyleForMultiline: no_comma
+
+Style/BlockDelimiters:
+  Enabled: false
+
+Lint/AmbiguousBlockAssociation:
+  Enabled: false
+
+Metrics/BlockNesting:
+  Enabled: false
+
+Lint/ShadowingOuterLocalVariable:
+  Enabled: false
+
+Style/FormatStringToken:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# The following cops were added to RuboCop, but are not configured.
+# Please set Enabled to either \`true\` or \`false\` in your \`.rubocop.yml\` file.
+# For more information: https://docs.rubocop.org/rubocop/versioning.html
+Gemspec/DateAssignment: # new in 1.10
+  Enabled: true
+Gemspec/RequireMFA: # new in 1.23
+  Enabled: true
+Layout/LineEndStringConcatenationIndentation: # new in 1.18
+  Enabled: true
+Layout/SpaceBeforeBrackets: # new in 1.7
+  Enabled: true
+Lint/AmbiguousAssignment: # new in 1.7
+  Enabled: true
+Lint/AmbiguousOperatorPrecedence: # new in 1.21
+  Enabled: true
+Lint/AmbiguousRange: # new in 1.19
+  Enabled: true
+Lint/DeprecatedConstants: # new in 1.8
+  Enabled: true
+Lint/DuplicateBranch: # new in 1.3
+  Enabled: true
+Lint/DuplicateRegexpCharacterClassElement: # new in 1.1
+  Enabled: true
+Lint/EmptyBlock: # new in 1.1
+  Enabled: true
+Lint/EmptyClass: # new in 1.3
+  Enabled: true
+Lint/EmptyInPattern: # new in 1.16
+  Enabled: true
+Lint/IncompatibleIoSelectWithFiberScheduler: # new in 1.21
+  Enabled: true
+Lint/LambdaWithoutLiteralBlock: # new in 1.8
+  Enabled: true
+Lint/NoReturnInBeginEndBlocks: # new in 1.2
+  Enabled: true
+Lint/NumberedParameterAssignment: # new in 1.9
+  Enabled: true
+Lint/OrAssignmentToConstant: # new in 1.9
+  Enabled: true
+Lint/RedundantDirGlobSort: # new in 1.8
+  Enabled: true
+Lint/RequireRelativeSelfPath: # new in 1.22
+  Enabled: true
+Lint/SymbolConversion: # new in 1.9
+  Enabled: true
+Lint/ToEnumArguments: # new in 1.1
+  Enabled: true
+Lint/TripleQuotes: # new in 1.9
+  Enabled: true
+Lint/UnexpectedBlockArity: # new in 1.5
+  Enabled: true
+Lint/UnmodifiedReduceAccumulator: # new in 1.1
+  Enabled: true
+Lint/UselessRuby2Keywords: # new in 1.23
+  Enabled: true
+Naming/BlockForwarding: # new in 1.24
+  Enabled: true
+Security/IoMethods: # new in 1.22
+  Enabled: true
+Style/ArgumentsForwarding: # new in 1.1
+  Enabled: true
+Style/CollectionCompact: # new in 1.2
+  Enabled: true
+Style/DocumentDynamicEvalDefinition: # new in 1.1
+  Enabled: true
+Style/EndlessMethod: # new in 1.8
+  Enabled: true
+Style/FileRead: # new in 1.24
+  Enabled: true
+Style/FileWrite: # new in 1.24
+  Enabled: true
+Style/HashConversion: # new in 1.10
+  Enabled: true
+Style/HashExcept: # new in 1.7
+  Enabled: true
+Style/IfWithBooleanLiteralBranches: # new in 1.9
+  Enabled: true
+Style/InPatternThen: # new in 1.16
+  Enabled: true
+Style/MapToHash: # new in 1.24
+  Enabled: true
+Style/MultilineInPatternThen: # new in 1.16
+  Enabled: true
+Style/NegatedIfElseCondition: # new in 1.2
+  Enabled: true
+Style/NilLambda: # new in 1.3
+  Enabled: true
+Style/NumberedParameters: # new in 1.22
+  Enabled: true
+Style/NumberedParametersLimit: # new in 1.22
+  Enabled: true
+Style/OpenStructUse: # new in 1.23
+  Enabled: true
+Style/QuotedSymbols: # new in 1.16
+  Enabled: true
+Style/RedundantArgument: # new in 1.4
+  Enabled: true
+Style/RedundantSelfAssignmentBranch: # new in 1.19
+  Enabled: true
+Style/SelectByRegexp: # new in 1.22
+  Enabled: true
+Style/StringChars: # new in 1.12
+  Enabled: true
+Style/SwapValues: # new in 1.1
+  Enabled: true
+`
+  fs.writeFile(path.join(outDir, '.rubocop.yml'), robocopContent, err => {
+    if (err) {
+      logger.error(`Error saving the .rubocop.yml file to: ${outDir}. Cause: ${err}`)
+    } else {
+      logger.debug('.rubocop.yml generated successfully!')
+    }
+  })
+}
+
+function generateGemFile(outDir: string, logger: Logger) {
+  const gemFileContent =
+`# frozen_string_literal: true
+
+source 'https://rubygems.org'
+
+gem 'cookstyle'
+gem 'highline'
+gem 'inspec', '>= 6.6.0'
+gem 'inspec-bin'
+gem 'inspec-core'
+gem 'kitchen-ansible'
+gem 'kitchen-docker'
+gem 'kitchen-dokken'
+gem 'kitchen-ec2'
+gem 'kitchen-inspec'
+gem 'kitchen-sync'
+gem 'kitchen-vagrant'
+gem 'parser', '3.3.0.5'
+gem 'pry-byebug'
+gem 'rake'
+gem 'rubocop'
+gem 'rubocop-rake'
+gem 'test-kitchen'
+gem 'train-awsssm'
+`
+  fs.writeFile(path.join(outDir, 'Gemfile'), gemFileContent, err => {
+    if (err) {
+      logger.error(`Error saving the Gemfile file to: ${outDir}. Cause: ${err}`)
+    } else {
+      logger.debug('Gemfile generated successfully!')
+    }
+  })
+}
+
+function generateRakeFile(outDir: string, logger: Logger) {
+  const rakefileContent =
+`# frozen_string_literal: true
+
+# !/usr/bin/env rake
+
+require 'rake/testtask'
+require 'rubocop/rake_task'
+
+namespace :inspec do
+  desc 'validate the inspec profile'
+  task :check do
+    system 'bundle exec inspec check .'
+  end
+end
+
+begin
+  RuboCop::RakeTask.new(:lint) do |task|
+    task.options += %w[--display-cop-names --no-color --parallel]
+  end
+rescue LoadError
+  puts 'rubocop is not available. Install the rubocop gem to run the lint tests.'
+end
+
+desc 'pre-commit checks'
+task pre_commit_checks: [:lint, 'inspec:check']
+`
+  fs.writeFile(path.join(outDir, 'Rakefile'), rakefileContent, err => {
+    if (err) {
+      logger.error(`Error saving the Rakefile file to: ${outDir}. Cause: ${err}`)
+    } else {
+      logger.debug('Rakefile generated successfully!')
+    }
+  })
+}
+
+function generateGitIgnoreFile(outDir: string, logger: Logger) {
+  const gitignoreContent =
+`.DS_Store
+*.gem
+*.rbc
+/.config
+/coverage/
+/InstalledFiles
+/pkg/
+/spec/reports/
+/spec/examples.txt
+/test/tmp/
+/test/version_tmp/
+/tmp/
+spec/results/**
+.kitchen
+.kitchen.local.yml
+Gemfile.lock
+inspec.lock
+.kitchen
+vendor/**
+saf-cli.log
+
+# Used by dotenv library to load environment variables.
+# .env
+
+# Ignore Byebug command history file.
+.byebug_history
+
+## Specific to RubyMotion:
+.dat*
+.repl_history
+build/
+*.bridgesupport
+build-iPhoneOS/
+build-iPhoneSimulator/
+
+## Specific to RubyMotion (use of CocoaPods):
+#
+# We recommend against adding the Pods directory to your .gitignore. However
+# you should judge for yourself, the pros and cons are mentioned at:
+# https://guides.cocoapods.org/using/using-cocoapods.html#should-i-check-the-pods-directory-into-source-control
+#
+# vendor/Pods/
+
+## Documentation cache and generated files:
+/.yardoc/
+/_yardoc/
+/doc/
+/rdoc/
+
+## Environment normalization:
+/.bundle/
+/vendor/bundle
+/lib/bundler/man/
+
+# for a library or gem, you might want to ignore these files since the code is
+# intended to run in multiple environments; otherwise, check them in:
+# Gemfile.lock
+# .ruby-version
+# .ruby-gemset
+
+# unless supporting rvm < 1.11.0 or doing something fancy, ignore this:
+.rvmrc
+
+# Used by RuboCop. Remote config files pulled in from inherit_from directive.
+# .rubocop-https?--*
+
+# VS CODE / VSCODIUM
+.vscode
+
+# delta files
+delta.json
+report.md
+*xccdf.xml
+check-results.txt
+kitchen.local.ec2.yml
+`
+  fs.writeFile(path.join(outDir, '.gitignore'), gitignoreContent, err => {
+    if (err) {
+      logger.error(`Error saving the .gitignore file to: ${outDir}. Cause: ${err}`)
+    } else {
+      logger.debug('.gitignore generated successfully!')
     }
   })
 }
