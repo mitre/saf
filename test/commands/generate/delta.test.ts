@@ -2,9 +2,12 @@ import {expect, test} from '@oclif/test'
 import tmp from 'tmp'
 import path from 'path'
 import fs from 'fs'
+import GenerateDelta from '../../../src/commands/generate/delta'
 
+// Functional tests
 describe('The generate delta command', () => {
   // should process delta request with rule id type
+  // generate delta -J ./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json -X ./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml -o ../demo-output/ -T rule 
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
   test
     .stdout()
@@ -126,4 +129,56 @@ describe('The generate delta command', () => {
 
   // should process delta request with oval definitions file specified
   // should provide error if oval definitions flag is specified with incorrect file format
+
+  // Process delta mapping functionality
+  test
+    .stdout()
+    .command(['generate delta',
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/profile_and_controls/Windows_Server_2022_v1r3_mini-profile.json'),
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2022_V2R1_mini-sample-xccdf.xml'),
+      '-o',
+      `${tmpobj.name}`,
+      '-T',
+      'rule',
+      '-M',
+      '-c',
+      path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2022_v1r3_mini_controls/')
+    ])
+    .it('should match and map controls from one profile to another', () => {
+      const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length
+      expect(fileCount).to.eql(5)
+    })
+
+    test
+    .stdout()
+    .command(['generate delta',
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/profile_and_controls/Windows_Server_2022_v1r3_mini-profile.json'),
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2022_V2R1_mini-sample-xccdf.xml'),
+      '-o',
+      `${tmpobj.name}`,
+      '-T',
+      'rule',
+      '-M',
+      '-c',
+      path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2022_v1r3_mini_controls/')
+    ])
+    .it('Should map to the correct filenames', () => {
+      const files = fs.readdirSync(`${tmpobj.name}/controls/`)
+
+      const expectedFiles = [
+        'SV-254238.rb',
+        'SV-254239.rb',
+        'SV-254239.rb',
+        'SV-254241.rb',
+        'SV-254242.rb'
+      ]
+      console.log(files)
+      expectedFiles.forEach(file => {
+        expect(files).to.include(file);
+      })
+    })
 })
