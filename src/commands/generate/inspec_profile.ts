@@ -103,10 +103,15 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     }
     const xmlDoc = new parser.XMLParser(options).parse(xccdf)
     const benchmarkTitle = _.get(xmlDoc, 'Benchmark.title')
-    const outDir = (benchmarkTitle === undefined) ?
-      flags.output :
-      benchmarkTitle.replace('Security Technical Implementation Guide', 'stig-baseline')
-        .replaceAll(' ', '-').toLowerCase()
+    let outDir = ''
+    if (flags.output === 'profile') {
+      outDir = (benchmarkTitle === undefined) ?
+        flags.output :
+        benchmarkTitle.replace('Security Technical Implementation Guide', 'stig-baseline')
+          .replaceAll(' ', '-').toLowerCase()
+    } else {
+      outDir = flags.output
+    }
 
     // Check if the output folder already exists
     logger.info('Processing output directory...')
