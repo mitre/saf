@@ -10,10 +10,10 @@ describe('Test inspec_profile (aliases:xccdf_benchmark2inspec)', () => {
   fs.readdirSync('./test/sample_data/xccdf/stigs').forEach(file => {
     test
       .stdout()
-      .command(['generate inspec_profile', '-i', path.resolve('./test/sample_data/xccdf/stigs', file), '-o', `${tmpobj.name}`])
+      .command(['generate inspec_profile', '-i', path.resolve('./test/sample_data/xccdf/stigs', file), '-o', `${tmpobj.name}/profile`])
       .it(`Has the same number of controls in the stig as generated - ${file}`, () => {
         const parsedXCCDF = processXCCDF(fs.readFileSync(path.resolve('./test/sample_data/xccdf/stigs', file), 'utf8'), false, 'rule')
-        const fileCount = fs.readdirSync(`${tmpobj.name}/${file}/controls/`).length
+        const fileCount = fs.readdirSync(`${tmpobj.name}/profile/controls/`).length
         expect(fileCount).to.eql(parsedXCCDF.controls.length)
       })
   })
