@@ -8,7 +8,6 @@ describe('Test inspec_profile (aliases:xccdf_benchmark2inspec)', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   fs.readdirSync('./test/sample_data/xccdf/stigs').forEach(file => {
-    console.log(`prcessing: ${tmpobj.name}/${file}`)
     test
       .stdout()
       .command(['generate inspec_profile', '-i', path.resolve('./test/sample_data/xccdf/stigs', file), '-o', `${tmpobj.name}/${file}`])

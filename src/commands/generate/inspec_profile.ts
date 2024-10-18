@@ -1,4 +1,3 @@
-
 import {Flags} from '@oclif/core'
 import fs from 'fs'
 import parser from 'fast-xml-parser'
@@ -9,20 +8,25 @@ import {processOVAL, processXCCDF} from '@mitre/inspec-objects'
 import Profile from '@mitre/inspec-objects/lib/objects/profile'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 import {Logger} from 'winston'
-import {execSync} from 'child_process'
 import _ from 'lodash'
 
 export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
   static readonly usage =
-    '<%= command.id %> -i <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>]\n' +
+    '<%= command.id %> -i <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] ' +
     '[-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]'
 
   static readonly description =
     'Generate a new skeleton profile based on a XCCDF benchmark file'
 
   static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md',
-    '<%= config.bin %> <%= command.id %> -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml -O ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml --logLevel debug',
+    {
+      description: '\x1B[93mRequired flag only\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -i ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml',
+    },
+    {
+      description: '\x1B[93mSpecifying OVAL and Output location\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -i ./U_RHEL_9_STIG_V1R2_Manual-xccdf.xml -O ./RHEL_9_Benchmark-oval.xml -o ./output/directory',
+    },
   ]
 
   static readonly aliases = ['generate:xccdf_benchmark2inspec_stub']
@@ -44,14 +48,16 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
       char: 's',
       required: false,
       default: false,
-      description: 'Output the resulting controls as a single file',
+      description: 'Output the resulting controls to a single file - if false (default) each control is written to a file',
     }),
     idType: Flags.string({
       char: 'T',
       required: false,
       default: 'rule',
       options: ['rule', 'group', 'cis', 'version'],
-      description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
+      description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'),\n" +
+       "'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1),\n" +
+       "'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
     }),
     ovalDefinitions: Flags.string({
       char: 'O',
@@ -178,12 +184,11 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     profile.copyright_email = 'saf@groups.mitre.org'
     profile.license = 'Apache-2.0'
     profile.summary = `InSpec profile aligned to DISA STIG for ${readmeObj.profileTitle}`
+    profile.description = null
+    profile.depends = []
+    profile.supports = []
     profile.version = readmeObj.profileVersion
-    // Get inspec installed version, use the major.0 if installed, otherwise set to 5.0
-    const inspecVersion = execSync('inspec --version').toString()
-    // match() allows matching single integer and multiple decimal places
-    const isDecimal = inspecVersion.match(/^-?\d*(\.?\d+)+/)
-    profile.inspec_version = (isDecimal === null) ? '>= 3.1.2' : `>=${inspecVersion.split('.')[0]}.0`
+    profile.inspec_version = '~>6.0'
 
     // Add metadata if provided
     if (flags.metadata) {
@@ -194,13 +199,8 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
       profile.version = metadata.version || readmeObj.profileVersion
     }
 
-    // Write inspec.yml
-    logger.debug(`Writing inspec.yml file to: ${path.join(outDir, 'inspec.yml')}`)
-    fs.writeFileSync(
-      path.join(outDir, 'inspec.yml'),
-      profile.createInspecYaml(),
-    )
-
+    // Generate files
+    generateYaml(profile, outDir, logger)
     generateReadme(readmeObj, outDir, logger)
     generateLicenses(outDir, logger)
     generateNotice(outDir, logger)
@@ -208,9 +208,10 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     generateGemFile(outDir, logger)
     generateRakeFile(outDir, logger)
     generateGitIgnoreFile(outDir, logger)
+    logger.debug(`Saved generated files to output directory: ${outDir}`)
 
-    logger.info('Generating profile controls...')
     // Write all controls
+    logger.info('Generating profile controls...')
     if (flags.singleFile) {
       const controls = profile.controls
         .map(control => control.toRuby())
@@ -254,7 +255,7 @@ function getReadmeContent(_xmlDoc: any): InspecReadme {
   // stigRelDate is in the form of: ["Release"," 1 Benchmark Date"," 24 Jul 2024"]
   const stigRelDate = releaseInfoObj['#text'].split(':')
   const stigRelease = stigRelDate[1].trim().split(' ')[0]
-  const sitVersion = `Version ${stigVersion} Release ${stigRelease} (V${stigVersion}R${stigRelease})`
+  const sitgVersion = `Version ${stigVersion} Release ${stigRelease} (V${stigVersion}R${stigRelease})`
   const stigDate = stigRelDate[2]
 
   readmeObj.profileName = benchmarkTitle.replace(
@@ -264,7 +265,7 @@ function getReadmeContent(_xmlDoc: any): InspecReadme {
   readmeObj.profileTitle = benchmarkTitle
   readmeObj.profileVersion = `${stigVersion}.${stigRelease}.0`
   readmeObj.stigDate = stigDate
-  readmeObj.stigVersion = sitVersion
+  readmeObj.stigVersion = sitgVersion
 
   return readmeObj
 }
@@ -349,7 +350,8 @@ The latest versions and installation options are available at the [InSpec](http:
 ### Tailoring to Your Environment
 The \`inspec.yml\` file contains metadata that describes the profile.
 
-***[Update the \`inspec.yml\` file parameter \`inputs\` with a list of inputs appropriate for the profile and specific environment.]***
+***[Update the \`inspec.yml\` file parameter \`inputs\` with a list of inputs appropriate
+ for the profile and specific environment. Also update the inspec_version to the required version]***
 
 Chef InSpec Resources:
 - [InSpec Profile Documentation](https://docs.chef.io/inspec/profiles/).
@@ -357,7 +359,8 @@ Chef InSpec Resources:
 - [inspec.yml](https://docs.chef.io/inspec/profiles/inspec_yml/).
 
 >[!NOTE]
-> Inputs are variables that can be referenced by any control in the profile, and are defined and given a default value in the \`inspec.yml\` file.
+> Inputs are variables that can be referenced by any control in the profile, and are defined
+  and given a default value in the \`inspec.yml\` file.
 
 Below is an example how the \`inputs\` are defined in the \`inspec.yml\`:
 \`\`\`
@@ -504,6 +507,32 @@ DISA STIGs are published by DISA IASE, see: https://iase.disa.mil/Pages/privacy_
       logger.error(`Error saving the README.md file to: ${outDir}. Cause: ${err}`)
     } else {
       logger.debug('README.md generated successfully!')
+    }
+  })
+}
+
+function generateYaml(profile: Profile, outDir: string, logger: Logger) {
+  console.log(`profile.supports.length is: ${profile.supports.length}`)
+  console.log(`profile.depends.length is: ${profile.depends.length}`)
+  const inspecYmlContent =
+`name: ${profile.name}
+title: ${profile.title}
+maintainer: ${profile.maintainer}
+copyright: ${profile.copyright}
+copyright_email: ${profile.copyright_email}
+license: ${profile.license}
+summary: ${profile.summary}
+description: ${profile.description}
+version: ${profile.version}
+supports: ${(profile.supports.length === 0) ? '[]' : profile.supports}
+depends: ${(profile.depends.length === 0) ? '[]' : JSON.stringify(profile.depends, null, 2)}
+inspec_version: "${profile.inspec_version}"
+`
+  fs.writeFile(path.join(outDir, 'inspec.yml'), inspecYmlContent, err => {
+    if (err) {
+      logger.error(`Error saving the inspec.yml file to: ${outDir}. Cause: ${err}`)
+    } else {
+      logger.debug('inspec.yml generated successfully!')
     }
   })
 }
