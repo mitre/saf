@@ -1,4 +1,4 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import {Attestation} from '@mitre/hdf-converters'
 import fs from 'fs'
 import AccurateSearch from 'accurate-search'
@@ -8,22 +8,22 @@ import promptSync from 'prompt-sync'
 import {default as files} from '../../resources/files.json'
 import {dataURLtoU8Array} from '../../utils/global'
 import yaml from 'yaml'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 const MAX_SEARCH_RESULTS = 5
 const prompt = promptSync()
 
-export default class CreateAttestations extends Command {
-    static usage = 'attest create -o <attestation-file> [-i <hdf-json> -t <json | xlsx | yml | yaml>]'
+export default class CreateAttestations extends BaseCommand<typeof CreateAttestations> {
+    static readonly usage = '<%= command.id %> -o <attestation-file> [-i <hdf-json> -t <json | xlsx | yml | yaml>]'
 
-    static description = 'Create attestation files for use with `saf attest apply`'
+    static readonly description = 'Create attestation files for use with `saf attest apply`'
 
-    static examples = [
-      'saf attest create -o attestation.json -i hdf.json',
-      'saf attest create -o attestation.xlsx -t xlsx',
+    static readonly examples = [
+      '<%= config.bin %> <%= command.id %> -o attestation.json -i hdf.json',
+      '<%= config.bin %> <%= command.id %> -o attestation.xlsx -t xlsx',
     ]
 
-    static flags = {
-      help: Flags.help({char: 'h'}),
+    static readonly flags = {
       input: Flags.string({char: 'i', description: '(optional) An input HDF file to search for controls'}),
       output: Flags.string({char: 'o', required: true, description: 'The output filename'}),
       format: Flags.string({char: 't', description: '(optional) The output file type', default: 'json', options: ['json', 'xlsx', 'yml', 'yaml']}),

@@ -112,9 +112,10 @@
   "main": "lib/index.js",
   "oclif": {
     "commands": "./lib/commands",
-    "helpClass": "./lib/help/help",
+    "helpClass": "./lib/utils/oclif/help/help",
+    "theme": "./oclif-theme.json",
     "additionalHelpFlags": [
-      "-h"
+      "-h", "--whatzUp", "--whatzup", "--tell-me-more"
     ],
     "additionalVersionFlags": [
       "-v"

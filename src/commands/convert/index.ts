@@ -28,8 +28,9 @@ import _ from 'lodash'
 import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
 import path from 'path'
 import ASFF2HDF from './asff2hdf'
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import Zap2HDF from './zap2hdf'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 function getInputFilename(): string {
   const inputFileIndex = process.argv.findIndex(
@@ -42,13 +43,14 @@ function getInputFilename(): string {
   return process.argv[inputFileIndex + 1]
 }
 
-export default class Convert extends Command {
-  static description =
+// export default class Convert extends Command {
+export default class Convert extends BaseCommand<typeof Convert> {
+  static readonly description =
     'The generic convert command translates any supported file-based security results set into the Heimdall Data Format';
 
-  static examples = ['saf convert -i input -o output'];
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i input -o output'];
 
-  static flags = {
+  static readonly flags = {
     input: Flags.string({
       char: 'i',
       required: true,
@@ -61,6 +63,8 @@ export default class Convert extends Command {
     }),
     ...Convert.getFlagsForInputFile(getInputFilename()),
   };
+
+  static detectedType: string;
 
   static getFlagsForInputFile(filePath: string) {
     if (filePath) {
@@ -79,26 +83,12 @@ export default class Convert extends Command {
           return Zap2HDF.flags
         }
 
-        case 'anchoregrype':
-        case 'burp':
-        case 'conveyor':
-        case 'checklist':
-        case 'dbProtect':
-        case 'fortify':
-        case 'jfrog':
-        case 'msft_secure_score':
-        case 'nessus':
-        case 'netsparker':
-        case 'neuvector':
-        case 'nikto':
-        case 'prisma':
-        case 'sarif':
-        case 'cyclonedx_sbom':
-        case 'scoutsuite':
-        case 'snyk':
-        case 'trufflehog':
-        case 'twistlock':
-        case 'xccdf': {
+        // catch all other cases:
+        // 'anchoregrype', 'burp', 'conveyor' 'checklist', 'dbProtect', 'fortify',
+        // 'jfrog', 'msft_secure_score', 'nessus', 'netsparker', 'neuvector' 'nikto',
+        // 'prisma', 'sarif', 'cyclonedx_sbom', 'scoutsuite', 'snyk', 'trufflehog',
+        // 'twistlock', 'xccdf'
+        default: {
           return {}
         }
       }
@@ -107,8 +97,7 @@ export default class Convert extends Command {
     return {}
   }
 
-  static detectedType: string;
-
+  // skipcq: JS-R1005
   async run() {
     // skipcq: JS-0044
     const {flags} = await this.parse(Convert)
@@ -126,17 +115,14 @@ export default class Convert extends Command {
       }
 
       case 'asff': {
-        let securityhub = _.get(flags, 'securityhub') as string[]
-        if (securityhub) {
-          securityhub = securityhub.map(file =>
-            fs.readFileSync(file, 'utf8'),
-          )
-        }
+        const securityhub = _.get(flags, 'securityhub') as unknown as string[]
+        const files = securityhub?.map(file => fs.readFileSync(file, 'utf8'))
 
         converter = new ASFFResults(
           fs.readFileSync(flags.input, 'utf8'),
-          securityhub,
+          files,
         )
+
         const results = converter.toHdf()
 
         fs.mkdirSync(flags.output)
@@ -233,14 +219,16 @@ export default class Convert extends Command {
       case 'nessus': {
         converter = new NessusResults(fs.readFileSync(flags.input, 'utf8'))
         const result = converter.toHdf()
-        if (Array.isArray(result)) {
-          for (const element of result) {
-            fs.writeFileSync(
-              `${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`,
-              JSON.stringify(element, null, 2),
-            )
-          }
-        } else {
+        const pluralResults = Array.isArray(result) ? result : []
+        const singularResult = pluralResults.length === 0
+        for (const element of pluralResults) {
+          fs.writeFileSync(
+            `${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`,
+            JSON.stringify(element, null, 2),
+          )
+        }
+
+        if (singularResult) {
           fs.writeFileSync(
             `${checkSuffix(flags.output)}`,
             JSON.stringify(result, null, 2),
@@ -317,16 +305,18 @@ export default class Convert extends Command {
       case 'snyk': {
         converter = new SnykResults(fs.readFileSync(flags.input, 'utf8'))
         const result = converter.toHdf()
-        if (Array.isArray(result)) {
-          for (const element of result) {
-            fs.writeFileSync(
-              `${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`,
-              JSON.stringify(element, null, 2),
-            )
-          }
-        } else {
+        const pluralResults = Array.isArray(result) ? result : []
+        const singularResult = pluralResults.length === 0
+        for (const element of pluralResults) {
           fs.writeFileSync(
-            checkSuffix(flags.output),
+            `${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`,
+            JSON.stringify(element, null, 2),
+          )
+        }
+
+        if (singularResult) {
+          fs.writeFileSync(
+            `${checkSuffix(flags.output)}`,
             JSON.stringify(result, null, 2),
           )
         }
@@ -366,7 +356,7 @@ export default class Convert extends Command {
       case 'zap': {
         converter = new ZapMapper(
           fs.readFileSync(flags.input, 'utf8'),
-          _.get(flags, 'name') as string,
+          _.get(flags, 'name') as unknown as string,
         )
         fs.writeFileSync(
           checkSuffix(flags.output),

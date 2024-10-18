@@ -1,20 +1,22 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import _ from 'lodash'
 import fs from 'fs'
 import YAML from 'yaml'
 import {ThresholdValues} from '../../types/threshold'
 import {calculateCompliance, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject} from '../../utils/threshold'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class GenerateThreshold extends Command {
-  static usage = 'generate threshold -i <hdf-json> [-o <threshold-yaml>] [-h] [-e] [-c]'
+export default class GenerateThreshold extends BaseCommand<typeof GenerateThreshold> {
+  static readonly usage = '<%= command.id %> -i <hdf-json> [-o <threshold-yaml>] [-h] [-e] [-c]'
 
-  static description = 'Generate a compliance template for "saf validate threshold". Default output states that you must have your current control counts or better (More Passes and/or less Fails/Skips/Not Applicable/No Impact/Errors)'
+  static readonly description = 'Generate a compliance template for "saf validate threshold".\n' +
+  'Default output states that you must have your current control counts or better\n' +
+  '(More Passes and/or less Fails/Skips/Not Applicable/No Impact/Errors)'
 
-  static examples = ['saf generate threshold -i rhel7-results.json -e -c -o output.yaml']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i rhel7-results.json -e -c -o output.yaml']
 
-  static flags = {
-    help: Flags.help({char: 'h'}),
+  static readonly flags = {
     input: Flags.string({char: 'i', required: true, description: 'Input HDF JSON File'}),
     output: Flags.string({char: 'o', required: false, description: 'Output Threshold YAML File'}),
     exact: Flags.boolean({char: 'e', description: 'All counts should be exactly the same when validating, not just less than or greater than'}),
