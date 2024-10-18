@@ -1,5 +1,5 @@
 import {colorize} from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
+import {Command} from '@oclif/core'
 
 import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
@@ -11,14 +11,13 @@ import {MilestoneResponsePost,
   MilestonesGet as Milestones} from '@mitre/emass_client/dist/api'
 
 export default class EmasserPostMilestones extends Command {
-  static usage = '<%= command.id %> [options]'
+  static usage = '<%= command.id %> -s <system-id> -p <poam-id> -d <description> -c <completion-date>'
 
   static description = 'Add milestones to one or many POA&M items in a system'
 
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-d,--description] [-c,--scheduledCompletionDate]']
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) milestones to one or many POA&M items in a system'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
@@ -36,5 +35,15 @@ export default class EmasserPostMilestones extends Command {
     addMilestone.addMilestoneBySystemIdAndPoamId(flags.systemId, flags.poamId, requestBodyArray).then((response: MilestoneResponsePost) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
+  }
+
+  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+    // If error message is for missing flags, display what fields
+    // are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('--help', '\x1B[93m<cli-command> -h or --help\x1B[0m'))
+    } else {
+      this.warn(err)
+    }
   }
 }

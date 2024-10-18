@@ -1,4 +1,4 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
 import parse from 'csv-parse/lib/sync'
@@ -12,16 +12,16 @@ import {extractValueViaPathOrNumber} from '../../utils/global'
 import {CciNistMappingData} from '@mitre/hdf-converters'
 import {default as CISNistMappings} from '../../resources/cis2nist.json'
 import {default as files} from '../../resources/files.json'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class Spreadsheet2HDF extends Command {
-  static usage = 'generate spreadsheet2inspec_stub -i, --input=<XLSX or CSV> -o, --output=FOLDER'
+export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF> {
+  static readonly usage = '<%= command.id %> -i, --input=<XLSX or CSV> -o, --output=FOLDER'
 
-  static description = 'Convert CSV STIGs or CIS XLSX benchmarks into a skeleton InSpec profile'
+  static readonly description = 'Convert CSV STIGs or CIS XLSX benchmarks into a skeleton InSpec profile'
 
-  static examples = ['saf generate spreadsheet2inspec_stub -i spreadsheet.xlsx -o profile']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i spreadsheet.xlsx -o profile']
 
-  static flags = {
-    help: Flags.help({char: 'h'}),
+  static readonly flags = {
     input: Flags.string({char: 'i', required: true}),
     controlNamePrefix: Flags.string({char: 'c', required: false, default: '', description: 'Prefix for all control IDs'}),
     format: Flags.string({char: 'f', required: false, default: 'general', options: ['cis', 'disa', 'general']}),

@@ -1,0 +1,26 @@
+{
+    "bin": "yellow",
+    "command": "yellow",
+    "commandSummary": "green",
+    "dollarSign": "yellow",
+    "flag": "yellow",
+    "flagDefaultValue": "blue",
+    "flagOptions": "blue",
+    "flagRequired": "red",
+    "flagSeparator": "yellow",
+    "json": {
+      "brace": "magenta",
+      "bracket": "magenta",
+      "colon": "dim",
+      "comma": "dim",
+      "key": "yellow",
+      "string": "green",
+      "number": "green",
+      "boolean": "green",
+      "null": "red"
+    },
+    "sectionDescription": "blue",
+    "sectionHeader": "underline",
+    "topic": "yellow",
+    "version": "yellow"
+  }

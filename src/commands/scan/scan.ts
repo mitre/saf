@@ -1,16 +1,16 @@
 import {Command, Flags} from '@oclif/core'
 
 export default class Scan extends Command {
-  static aliases = ['scan']
+  static readonly aliases = ['scan']
 
-  static description = 'Visit https://saf.mitre.org/#/validate to explore and run inspec profiles'
+  static readonly description = 'Visit https://saf.mitre.org/#/validate to explore and run inspec profiles'
 
-  static flags = {
+  static readonly flags = {
     help: Flags.help({char: 'h'}),
   }
 
   async run() {
-    console.log('Visit https://saf.mitre.org/#/validate to explore and run inspec profiles')
+    console.log('\x1B[93mVisit https://saf.mitre.org/#/validate to explore and run inspec profiles\x1B[0m')
   }
 }
 

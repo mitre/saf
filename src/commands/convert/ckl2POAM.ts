@@ -1,4 +1,4 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
 import _ from 'lodash'
@@ -8,47 +8,85 @@ import {STIG, Vulnerability, STIGHolder} from '../../types/STIG'
 import promptSync from 'prompt-sync'
 import XlsxPopulate from 'xlsx-populate'
 import moment from 'moment'
-import {cci2nist, cklSeverityToImpact, cklSeverityToLikelihood, cklSeverityToPOAMSeverity, cklSeverityToRelevanceOfThreat, cklSeverityToResidualRiskLevel, cleanStatus, combineComments, convertToRawSeverity, createCVD, extractSolution, extractSTIGUrl, replaceSpecialCharacters} from '../../utils/ckl2poam'
+import {
+  cci2nist,
+  cklSeverityToImpact,
+  cklSeverityToLikelihood,
+  cklSeverityToPOAMSeverity,
+  cklSeverityToRelevanceOfThreat,
+  cklSeverityToResidualRiskLevel,
+  cleanStatus,
+  combineComments,
+  convertToRawSeverity,
+  createCVD,
+  extractSolution,
+  extractSTIGUrl,
+  replaceSpecialCharacters,
+} from '../../utils/ckl2poam'
 import {default as files} from '../../resources/files.json'
 import {convertFullPathToFilename, dataURLtoU8Array} from '../../utils/global'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 const prompt = promptSync()
 const {printf} = format
 
-const fmt = printf(({
-  level,
-  file,
-  message,
-}) => {
+const fmt = printf(({level, file, message}) => {
   return `${level.toUpperCase()}: ${file}: ${message}`
 })
 
 const logger = createLogger({
   format: fmt,
-  transports: [
-    new transports.Console(),
-  ],
+  transports: [new transports.Console()],
 })
 
 const STARTING_ROW = 8 // The row we start inserting controls into
 
-export default class CKL2POAM extends Command {
-  static usage = 'convert ckl2POAM -i <disa-checklist>... -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]'
+export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
+  static readonly usage =
+    '<%= command.id %> -i <disa-checklist>... -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]'
 
-  static description = 'Translate DISA Checklist CKL file(s) to POA&M files'
+  static readonly description =
+    'Translate DISA Checklist CKL file(s) to POA&M files'
 
-  static aliases = ['convert:ckl2poam']
+  static readonly aliases = ['convert:ckl2poam']
 
-  static examples = ['saf convert ckl2POAM -i checklist_file.ckl -o output-folder -d abcdefg -s 2']
+  static readonly examples = [
+    '<%= config.bin %> <%= command.id %> -i checklist_file.ckl -o output-folder -d abcdefg -s 2',
+  ];
 
-  static flags = {
+  static readonly flags = {
     help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, multiple: true, description: 'Path to the DISA Checklist File(s)'}),
-    officeOrg: Flags.string({char: 'O', required: false, default: '', description: 'Default value for Office/org (prompts for each file if not set)'}),
-    deviceName: Flags.string({char: 'd', required: false, default: '', description: 'Name of target device (prompts for each file if not set)'}),
-    rowsToSkip: Flags.integer({char: 's', required: false, default: 4, description: 'Rows to leave between POA&M Items for milestones'}),
-    output: Flags.string({char: 'o', required: true, description: 'Path to output PO&M File(s)'}),
-  }
+    input: Flags.string({
+      char: 'i',
+      required: true,
+      multiple: true,
+      description: 'Path to the DISA Checklist File(s)',
+    }),
+    officeOrg: Flags.string({
+      char: 'O',
+      required: false,
+      default: '',
+      description:
+        'Default value for Office/org (prompts for each file if not set)',
+    }),
+    deviceName: Flags.string({
+      char: 'd',
+      required: false,
+      default: '',
+      description: 'Name of target device (prompts for each file if not set)',
+    }),
+    rowsToSkip: Flags.integer({
+      char: 's',
+      required: false,
+      default: 4,
+      description: 'Rows to leave between POA&M Items for milestones',
+    }),
+    output: Flags.string({
+      char: 'o',
+      required: true,
+      description: 'Path to output PO&M File(s)',
+    }),
+  };
 
   async run() {
     const {flags} = await this.parse(CKL2POAM)
@@ -69,7 +107,7 @@ export default class CKL2POAM extends Command {
         message: 'Opening file',
       })
       const parser = new xml2js.Parser()
-      fs.readFile(fileName, function (readFileError, data) {
+      fs.readFile(fileName, (readFileError, data) => {
         if (readFileError) {
           logger.log({
             level: 'error',
@@ -79,7 +117,7 @@ export default class CKL2POAM extends Command {
         }
 
         // Parse the XML to a javascript object
-        parser.parseString(data, function (parseFileError: any, result: STIG) {
+        parser.parseString(data, (parseFileError: any, result: STIG) => {
           if (parseFileError) {
             logger.log({
               level: 'error',
@@ -139,32 +177,50 @@ export default class CKL2POAM extends Command {
               file: fileName,
               message: `Found ${vulnerabilities.length} vulnerabilities`,
             })
-            const officeOrg = flags.officeOrg || prompt('What should the default value be for Office/org? ')
-            const host = flags.deviceName || prompt('What is the device name? ')
+            const officeOrg =
+              flags.officeOrg ||
+              prompt('What should the default value be for Office/org? ')
+            const host =
+              flags.deviceName || prompt('What is the device name? ')
             // Read our template
-            XlsxPopulate.fromDataAsync(dataURLtoU8Array(files.POAMTemplate.data)).then((workBook: any) => {
+            XlsxPopulate.fromDataAsync(
+              dataURLtoU8Array(files.POAMTemplate.data),
+            ).then((workBook: any) => {
               // eMASS reads the first sheet in the notebook
               const sheet = workBook.sheet(0)
               // The current row we are on
               let currentRow = STARTING_ROW
               // The scheduled completion date, default of one year from today
-              const aYearFromNow = moment(new Date(new Date().setFullYear(new Date().getFullYear() + 1))).format('M/DD/YYYY')
+              const aYearFromNow = moment(
+                new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
+              ).format('M/DD/YYYY')
               // For each vulnerability
               vulnerabilities.forEach(vulnerability => {
-                if (vulnerability.STATUS !== 'NotAFinding' && vulnerability.STATUS !== 'Not_Reviewed') {
+                if (
+                  vulnerability.STATUS !== 'NotAFinding' &&
+                  vulnerability.STATUS !== 'Not_Reviewed'
+                ) {
                   // Control Vulnerability Description
                   if (vulnerability.STATUS === 'Not_Applicable') {
                     sheet.cell(`C${currentRow}`).value('Not Applicable')
                   } else {
-                    sheet.cell(`C${currentRow}`).value(replaceSpecialCharacters(createCVD(vulnerability)))
+                    sheet
+                      .cell(`C${currentRow}`)
+                      .value(
+                        replaceSpecialCharacters(createCVD(vulnerability)),
+                      )
                   }
 
                   // Security Control Number
-                  sheet.cell(`D${currentRow}`).value(cci2nist(vulnerability.CCI_REF || ''))
+                  sheet
+                    .cell(`D${currentRow}`)
+                    .value(cci2nist(vulnerability.CCI_REF || ''))
                   // Office/org
                   sheet.cell(`E${currentRow}`).value(officeOrg)
                   // Security Checks
-                  sheet.cell(`F${currentRow}`).value(vulnerability.Rule_ID?.split(',')[0])
+                  sheet
+                    .cell(`F${currentRow}`)
+                    .value(vulnerability.Rule_ID?.split(',')[0])
                   // Resources Required
                   sheet.cell(`G${currentRow}`).value('NA')
                   // Scheduled Completion Date
@@ -173,37 +229,94 @@ export default class CKL2POAM extends Command {
                   // Source Identifying Vulnerability
                   sheet.cell(`K${currentRow}`).value(infos.title || '')
                   // Status
-                  sheet.cell(`L${currentRow}`).value(cleanStatus(vulnerability.STATUS || ''))
+                  sheet
+                    .cell(`L${currentRow}`)
+                    .value(cleanStatus(vulnerability.STATUS || ''))
                   // Comments
-                  if (vulnerability.STATUS === 'Open' || vulnerability.STATUS === 'Not_Applicable') {
+                  if (
+                    vulnerability.STATUS === 'Open' ||
+                    vulnerability.STATUS === 'Not_Applicable'
+                  ) {
                     if (host.startsWith('Nessus')) {
-                      sheet.cell(`M${currentRow}`).value(combineComments(vulnerability, extractSTIGUrl(vulnerability.FINDING_DETAILS || '')))
+                      sheet
+                        .cell(`M${currentRow}`)
+                        .value(
+                          combineComments(
+                            vulnerability,
+                            extractSTIGUrl(vulnerability.FINDING_DETAILS || ''),
+                          ),
+                        )
                     } else {
-                      sheet.cell(`M${currentRow}`).value(combineComments(vulnerability, host))
+                      sheet
+                        .cell(`M${currentRow}`)
+                        .value(combineComments(vulnerability, host))
                     }
                   }
 
                   // Raw Severity
-                  sheet.cell(`N${currentRow}`).value(convertToRawSeverity(vulnerability.Severity || ''))
+                  sheet
+                    .cell(`N${currentRow}`)
+                    .value(convertToRawSeverity(vulnerability.Severity || ''))
                   // Severity
-                  sheet.cell(`P${currentRow}`).value(cklSeverityToPOAMSeverity(vulnerability.Severity || ''))
+                  sheet
+                    .cell(`P${currentRow}`)
+                    .value(
+                      cklSeverityToPOAMSeverity(vulnerability.Severity || ''),
+                    )
                   // Relevance of Threat
-                  sheet.cell(`Q${currentRow}`).value(cklSeverityToRelevanceOfThreat(vulnerability.Severity || ''))
+                  sheet
+                    .cell(`Q${currentRow}`)
+                    .value(
+                      cklSeverityToRelevanceOfThreat(
+                        vulnerability.Severity || '',
+                      ),
+                    )
                   // Likelihood
-                  sheet.cell(`R${currentRow}`).value(cklSeverityToLikelihood(vulnerability.Severity || ''))
+                  sheet
+                    .cell(`R${currentRow}`)
+                    .value(
+                      cklSeverityToLikelihood(vulnerability.Severity || ''),
+                    )
                   // Impact
-                  sheet.cell(`S${currentRow}`).value(cklSeverityToImpact(vulnerability.Severity || ''))
+                  sheet
+                    .cell(`S${currentRow}`)
+                    .value(cklSeverityToImpact(vulnerability.Severity || ''))
                   // Residual Risk Level
-                  sheet.cell(`U${currentRow}`).value(cklSeverityToResidualRiskLevel(vulnerability.Severity || ''))
+                  sheet
+                    .cell(`U${currentRow}`)
+                    .value(
+                      cklSeverityToResidualRiskLevel(
+                        vulnerability.Severity || '',
+                      ),
+                    )
                   // Impact Description
-                  sheet.cell(`T${currentRow}`).value(replaceSpecialCharacters(vulnerability.Vuln_Discuss || ''))
+                  sheet
+                    .cell(`T${currentRow}`)
+                    .value(
+                      replaceSpecialCharacters(vulnerability.Vuln_Discuss || ''),
+                    )
                   // Recommendations
-                  sheet.cell(`V${currentRow}`).value(replaceSpecialCharacters(vulnerability.Fix_Text || extractSolution(vulnerability.FINDING_DETAILS || '') || ''))
+                  sheet
+                    .cell(`V${currentRow}`)
+                    .value(
+                      replaceSpecialCharacters(
+                        vulnerability.Fix_Text ||
+                          extractSolution(
+                            vulnerability.FINDING_DETAILS || '',
+                          ) ||
+                          '',
+                      ),
+                    )
                   // Go to the next row
                   currentRow += flags.rowsToSkip + 1
                 }
               })
-              return workBook.toFileAsync(path.join(flags.output, `${convertFullPathToFilename(fileName)}-${moment(new Date()).format('YYYY-MM-DD-HHmm')}.xlsm`))
+              return workBook.toFileAsync(
+                path.join(
+                  flags.output,
+                  `${convertFullPathToFilename(fileName)}-${moment(new Date()).format('YYYY-MM-DD-HHmm')}.xlsm`,
+                ),
+              )
             })
           }
         })

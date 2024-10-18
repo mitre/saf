@@ -2,19 +2,28 @@ import fs from 'fs'
 import path from 'path'
 import {readdir} from 'fs/promises'
 import {execSync} from 'child_process'
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import {createWinstonLogger} from '../../utils/logging'
 import Profile from '@mitre/inspec-objects/lib/objects/profile'
 import {processInSpecProfile, processXCCDF} from '@mitre/inspec-objects'
 import colors from 'colors' // eslint-disable-line no-restricted-imports
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class GenerateUpdateControls extends Command {
-  static usage = '<%= command.id %> [ARGUMENTS]'
+export default class GenerateUpdateControls extends BaseCommand<typeof GenerateUpdateControls> {
+  static readonly usage = '<%= command.id %> [ARGUMENTS]'
 
-  static description = 'Update the control names and/or format for an existing InSpec profile with updated XCCDF guidance, old controls are saved by default'
+  static readonly description = 'Update the control names and/or format for an existing InSpec\n' +
+  'profile with updated XCCDF guidance, old controls are saved by default'
 
-  static flags = {
-    help: Flags.help({char: 'h'}),
+  static readonly examples = [
+    '<%= config.bin %> <%= command.id %> -X ./the_xccdf_guidance_file.xml -c the_controls_directory -L debug',
+    '<%= config.bin %> <%= command.id %> -X ./the_xccdf_guidance_file.xml -c the_controls_directory -g -L debug',
+    '<%= config.bin %> <%= command.id %> -X ./the_xccdf_guidance_file.xml -c the_controls_directory -J ./the_profile_json-L debug',
+    '<%= config.bin %> <%= command.id %> -X ./the_xccdf_guidance_file.xml -c the_controls_directory --no-formatControls -P SV -L debug',
+    '<%= config.bin %> <%= command.id %> -X ./the_xccdf_guidance_file.xml -c the_controls_directory --no-backupControls --no-formatControls -P SV -L debug',
+  ]
+
+  static readonly flags = {
     xccdfXmlFile: Flags.string({char: 'X', required: true, description: 'The XCCDF XML file containing the new guidance - in the form of .xml file'}),
     inspecJsonFile: Flags.string({char: 'J', required: false, description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> > profile.json" command'}),
     controlsDir: Flags.string({char: 'c', required: true, description: 'The InSpec profile controls directory containing the profiles to be updated'}),
@@ -24,14 +33,6 @@ export default class GenerateUpdateControls extends Command {
     backupControls: Flags.boolean({char: 'b', required: false, default: true, allowNo: true, description: 'Preserve modified controls in a backup directory (oldControls) inside the controls directory\n[default: true]'}),
     logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
   }
-
-  static examples = [
-    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory -L debug',
-    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory -g -L debug',
-    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory -J ./the_profile_json-L debug',
-    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory --no-formatControls -P SV -L debug',
-    'saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory --no-backupControls --no-formatControls -P SV -L debug',
-  ]
 
   // skipcq: JS-R1005
   async run(): Promise<any> { // skipcq: JS-0044

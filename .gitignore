@@ -16,4 +16,4 @@ out
 **/saf-cli.log
 *.html
 saf-cli.log
-*.log
+CliProcessOutput.log

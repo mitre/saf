@@ -18,6 +18,6 @@ export interface CSVControl {
 
 export type ControlSetRow = {
   [key: string]: string;
-};
+}
 
-export type ControlSetRows = ControlSetRow[];
+export type ControlSetRows = ControlSetRow[]

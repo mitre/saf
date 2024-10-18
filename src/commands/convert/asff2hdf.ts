@@ -1,46 +1,109 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {ASFFResults as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
-import {AwsSecurityFindingFilters, DescribeStandardsControlsCommandOutput, GetEnabledStandardsCommandOutput, SecurityHub, SecurityHubClientConfig, StandardsControl, StandardsSubscription} from '@aws-sdk/client-securityhub'
+import {
+  AwsSecurityFindingFilters,
+  DescribeStandardsControlsCommandOutput,
+  GetEnabledStandardsCommandOutput,
+  SecurityHub,
+  SecurityHubClientConfig,
+  StandardsControl,
+  StandardsSubscription,
+} from '@aws-sdk/client-securityhub'
 import {NodeHttpHandler} from '@smithy/node-http-handler'
 import https from 'https'
 import {createWinstonLogger} from '../../utils/logging'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 // Should be no more than 100
 const API_MAX_RESULTS = 100
 
-export default class ASFF2HDF extends Command {
-  static usage = 'convert asff2hdf -o <hdf-output-folder> [-h] (-i <asff-json> [--securityhub <standard-json>...] | -a -r <region> [-I | -C <certificate>] [-t <target>...]) [-L info|warn|debug|verbose]'
+export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
+  static readonly usage =
+   '<%= command.id %> -o <hdf-output-folder> [--interactive] [-L info|warn|debug|verbose]' +
+   ' [-i <asff-json> | -a | -r <region> | -I | -C <certificate> | -t <target>...] [-H <additional-input-files>...]'
 
-  static description =
+  static readonly description =
     'Translate a AWS Security Finding Format JSON into a Heimdall Data Format JSON file(s)';
 
-  static examples = [
-    'saf convert asff2hdf -i asff-findings.json -o output-folder-name',
-    'saf convert asff2hdf -i asff-findings.json --securityhub standard-1.json standard-2.json -o output-folder-name',
-    'saf convert asff2hdf --aws -o out -r us-west-2 --target rhel7',
+  static readonly examples = [
+    {
+      description: '\x1B[93mUsing ASFF JSON file\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -i asff-findings.json -o output-folder-name',
+    },
+    {
+      description: '\x1B[93mUsing ASFF JSON file with additional input files\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -i asff-findings.json --securityHub standard-1.json standard-2.json -o output-folder-name',
+    },
+    {
+      description: '\x1B[93mUsing AWS to pull ASFF JSON findings\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> --aws -o out -r us-west-2 --target rhel7',
+    },
+
   ];
 
-  static flags = {
-    help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: false, description: 'Input ASFF JSON file', exclusive: ['aws', 'region', 'insecure', 'certificate', 'target']}),
-    aws: Flags.boolean({char: 'a', required: false, description: 'Pull findings from AWS Security Hub', exclusive: ['input'], dependsOn: ['region']}),
-    region: Flags.string({char: 'r', required: false, description: 'Security Hub region to pull findings from', exclusive: ['input']}),
-    insecure: Flags.boolean({char: 'I', required: false, default: false, description: 'Disable SSL verification, this is insecure.', exclusive: ['input', 'certificate']}),
-    securityhub: Flags.string({required: false, multiple: true, description: 'Additional input files to provide context that an ASFF file needs such as the CIS AWS Foundations or AWS Foundational Security Best Practices documents (in ASFF compliant JSON form)'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON folder'}),
-    certificate: Flags.string({char: 'C', required: false, description: 'Trusted signing certificate file', exclusive: ['input', 'insecure']}),
-    logLevel: Flags.string({char: 'L', required: false, default: 'info', options: ['info', 'warn', 'debug', 'verbose']}),
-    target: Flags.string({char: 't', required: false, multiple: true, description: 'Target ID(s) to pull from Security Hub (maximum 10), leave blank for non-HDF findings', exclusive: ['input']}),
+  static readonly flags = {
+    input: Flags.string({
+      char: 'i',
+      required: false,
+      description: '\x1B[31m(required if not using AWS)\x1B[34m Input ASFF JSON file',
+      exclusive: ['aws', 'region', 'insecure', 'certificate', 'target'],
+    }),
+    aws: Flags.boolean({
+      char: 'a',
+      required: false,
+      description: 'Pull findings from AWS Security Hub',
+      exclusive: ['input'],
+      dependsOn: ['region'],
+    }),
+    region: Flags.string({
+      char: 'r',
+      required: false,
+      description: 'Security Hub region to pull findings from',
+      exclusive: ['input'],
+    }),
+    insecure: Flags.boolean({
+      char: 'I',
+      required: false,
+      default: false,
+      description: 'Disable SSL verification, this is insecure.',
+      exclusive: ['input', 'certificate'],
+    }),
+    securityHub: Flags.string({
+      char: 'H',
+      required: false,
+      multiple: true,
+      description:
+        'Additional input files to provide context that an ASFF file needs such as the CIS AWS Foundations or AWS Foundational Security Best Practices documents (in ASFF compliant JSON form)',
+    }),
+    output: Flags.string({
+      char: 'o',
+      required: true,
+      description: 'Output HDF JSON folder',
+    }),
+    certificate: Flags.string({
+      char: 'C',
+      required: false,
+      description: 'Trusted signing certificate file',
+      exclusive: ['input', 'insecure'],
+    }),
+    target: Flags.string({
+      char: 't',
+      required: false,
+      multiple: true,
+      description:
+        'Target ID(s) to pull from Security Hub (maximum 10), leave blank for non-HDF findings',
+      exclusive: ['input'],
+    }),
   };
 
   async run() {
     const {flags} = await this.parse(ASFF2HDF)
     const logger = createWinstonLogger('asff2hdf', flags.logLevel)
-    let securityhub
+    let securityHub
 
     // Check if output folder already exists
     if (fs.existsSync(flags.output)) {
@@ -55,13 +118,25 @@ export default class ASFF2HDF extends Command {
       try {
         const convertedJson = JSON.parse(data)
         if (Array.isArray(convertedJson)) {
-          findings.push(...convertedJson.map(finding => JSON.stringify(finding)))
+          findings.push(
+            ...convertedJson.map(finding => JSON.stringify(finding)),
+          )
         } else if ('Findings' in convertedJson) {
-          findings.push(...convertedJson.Findings.map((finding: Record<string, unknown>) => JSON.stringify(finding)))
+          findings.push(
+            ...convertedJson.Findings.map((finding: Record<string, unknown>) =>
+              JSON.stringify(finding),
+            ),
+          )
         } else if ('Controls' in convertedJson) {
-          throw new Error('Invalid ASFF findings format - a standards standards was passed to --input instead of --securityhub')
+          throw new Error(
+            'Invalid ASFF findings format - a standards standards was passed to --input instead of --securityHub',
+          )
         } else {
-          checkInput({data: data, filename: flags.input}, 'asff', 'AWS Security Finding Format JSON')
+          checkInput(
+            {data: data, filename: flags.input}, // skipcq: JS-0240
+            'asff',
+            'AWS Security Finding Format JSON',
+          )
         }
       } catch (error) {
         const splitLines = data.split('\n')
@@ -72,7 +147,9 @@ export default class ASFF2HDF extends Command {
         }
 
         try {
-          findings.push(...splitLines.map(finding => JSON.stringify(JSON.parse(finding))))
+          findings.push(
+            ...splitLines.map(finding => JSON.stringify(JSON.parse(finding))),
+          )
         } catch (error) {
           logger.error('Invalid ASFF findings format - unable to parse JSON')
           throw error
@@ -80,12 +157,13 @@ export default class ASFF2HDF extends Command {
       }
 
       // If we've been passed any Security Standards JSONs
-      if (flags.securityhub) {
-        securityhub = flags.securityhub.map((file: string) =>
+      if (flags.securityHub) {
+        securityHub = flags.securityHub.map((file: string) =>
           fs.readFileSync(file, 'utf8'),
         )
       }
-    } else if (flags.aws) { // Flag to pull findings from AWS Security Hub
+    } else if (flags.aws) {
+      // Flag to pull findings from AWS Security Hub
       const clientOptions: SecurityHubClientConfig = {
         region: flags.region,
         requestHandler: new NodeHttpHandler({
@@ -93,7 +171,9 @@ export default class ASFF2HDF extends Command {
             // Disable HTTPS verification if requested
             rejectUnauthorized: !flags.insecure,
             // Pass an SSL certificate to trust
-            ca: flags.certificate ? fs.readFileSync(flags.certificate, 'utf8') : undefined,
+            ca: flags.certificate ?
+              fs.readFileSync(flags.certificate, 'utf8') :
+              undefined,
           }),
         }),
       }
@@ -114,7 +194,10 @@ export default class ASFF2HDF extends Command {
       }
 
       logger.info('Starting collection of Findings')
-      let queryParams: Record<string, unknown> = {Filters: filters, MaxResults: API_MAX_RESULTS}
+      let queryParams: Record<string, unknown> = {
+        Filters: filters,
+        MaxResults: API_MAX_RESULTS,
+      }
       // Get findings
       while (first || nextToken !== undefined) {
         first = false
@@ -122,9 +205,15 @@ export default class ASFF2HDF extends Command {
         _.set(queryParams, 'NextToken', nextToken)
 
         const getFindingsResult = await client.getFindings(queryParams)
-        logger.debug(`Received: ${getFindingsResult.Findings?.length} findings`)
+        logger.debug(
+          `Received: ${getFindingsResult.Findings?.length} findings`,
+        )
         if (getFindingsResult.Findings) {
-          findings.push(...getFindingsResult.Findings.map(finding => JSON.stringify(finding)))
+          findings.push(
+            ...getFindingsResult.Findings.map(finding =>
+              JSON.stringify(finding),
+            ),
+          )
         }
 
         nextToken = getFindingsResult.NextToken
@@ -143,17 +232,24 @@ export default class ASFF2HDF extends Command {
         first = false
         logger.debug(`Querying for NextToken: ${nextToken}`)
         // type system seems to think that this call / the result is from the callback variant of the function instead of the promise based one and throwing fits
-        const getEnabledStandardsResult: GetEnabledStandardsCommandOutput = (await client.getEnabledStandards({NextToken: nextToken})) as unknown as GetEnabledStandardsCommandOutput
+        const getEnabledStandardsResult: GetEnabledStandardsCommandOutput =
+          (await client.getEnabledStandards({
+            NextToken: nextToken,
+          })) as unknown as GetEnabledStandardsCommandOutput
 
-        logger.debug(`Received: ${getEnabledStandardsResult.StandardsSubscriptions?.length} standards`)
+        logger.debug(
+          `Received: ${getEnabledStandardsResult.StandardsSubscriptions?.length} standards`,
+        )
         if (getEnabledStandardsResult.StandardsSubscriptions) {
-          enabledStandards.push(...getEnabledStandardsResult.StandardsSubscriptions)
+          enabledStandards.push(
+            ...getEnabledStandardsResult.StandardsSubscriptions,
+          )
         }
 
         nextToken = getEnabledStandardsResult.NextToken
       }
 
-      securityhub = []
+      securityHub = []
 
       // Describe the controls to give context to the mapper
       for (const standard of enabledStandards) {
@@ -164,13 +260,14 @@ export default class ASFF2HDF extends Command {
         while (nextToken !== undefined) {
           first = false
           logger.debug(`Querying for NextToken: ${nextToken}`)
-          const getEnabledStandardsResult: DescribeStandardsControlsCommandOutput = await client.describeStandardsControls(
-            {
+          const getEnabledStandardsResult: DescribeStandardsControlsCommandOutput =
+            await client.describeStandardsControls({
               StandardsSubscriptionArn: standard.StandardsSubscriptionArn,
               NextToken: nextToken || '',
-            },
+            })
+          logger.info(
+            `Received: ${getEnabledStandardsResult.Controls?.length} Controls`,
           )
-          logger.info(`Received: ${getEnabledStandardsResult.Controls?.length} Controls`)
 
           if (getEnabledStandardsResult.Controls) {
             standardsControls.push(...getEnabledStandardsResult.Controls)
@@ -179,16 +276,15 @@ export default class ASFF2HDF extends Command {
           nextToken = getEnabledStandardsResult.NextToken
         }
 
-        securityhub.push(JSON.stringify({Controls: standardsControls}))
+        securityHub.push(JSON.stringify({Controls: standardsControls}))
       }
     } else {
-      throw new Error('Please select an input file or --aws to pull findings from AWS')
+      throw new Error(
+        'Please select an input file or --aws to pull findings from AWS',
+      )
     }
 
-    const converter = new Mapper(
-      findings.join('\n'),
-      securityhub,
-    )
+    const converter = new Mapper(findings.join('\n'), securityHub)
 
     const results = converter.toHdf()
 

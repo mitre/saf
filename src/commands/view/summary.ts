@@ -44,8 +44,11 @@ interface CommandFlags {
 /**
  * Summary Class
  *
- * This class represents a command in the CLI that provides a quick compliance overview of an HDF file.
- * It includes methods to convert the data to different formats (JSON, YAML, Markdown) and to print the data to the console or write it to a file.
+ * This class represents a command in the CLI that provides a quick compliance
+ * overview of an HDF file.
+ *
+ * It includes methods to convert the data to different formats (JSON, YAML,
+ * Markdown) and to print the data to the console or write it to a file.
  *
  * @class
  * @public
@@ -55,19 +58,20 @@ export default class Summary extends Command {
   /**
    * @property {string[]} aliases - Alternative command name.
    */
-  static aliases = ['summary']
+  static readonly aliases = ['summary']
 
   /**
    * @property {ReturnType<typeof createWinstonLogger>} logger - Winston logger for this command.
    */
-  private logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View Summary:');
+  private logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View Summary')
 
   /**
    * @property {string} description - Command description displayed in the help message.
    */
-  static description = 'Generate a comprehensive summary of compliance data, including totals and counts, from your HDF files.\n The output can be displayed in the console, or exported as YAML, JSON, or a GitHub-flavored Markdown table.';
+  static readonly description = 'Generate a comprehensive summary of compliance data, including totals and counts, from your HDF files.\n' +
+                                'The output can be displayed in the console, or exported as YAML, JSON, or a GitHub-flavored Markdown table.'
 
-  static flags = {
+  static readonly flags = {
     input: Flags.string({char: 'i', required: true, multiple: true, description: 'Specify input HDF file(s)', helpGroup: IO_GROUP}),
     output: Flags.string({char: 'o', description: 'Specify output file(s)', helpGroup: IO_GROUP}),
     format: Flags.string({char: 'f', description: 'Specify output format', helpGroup: FORMATTING_GROUP, options: FORMAT_OPTIONS, default: 'yaml'}),
@@ -78,24 +82,32 @@ export default class Summary extends Command {
     help: Flags.help({char: 'h', description: 'Show help information', helpGroup: 'help'}),
   };
 
-  static examples = [
+  static readonly examples = [
     // Basic usage
-    "$ saf summary -i input.hdf                                              # Summarize 'input.hdf' single HDF file",
+    "\x1B[93mSummarize 'input.hdf' single HDF file\n" +
+    '\x1B[93m  $\x1B[34m saf summary -i input.hdf',
 
     // Specify output format
-    '$ saf summary -i input.json --format=json                               # Specify Formats',
-    '$ saf summary -i input.json --format=markdown --no-stdout -o output.md  # Output GitHub Flavored Markdown Table, skip the console, and save to \'output.md\'',
+    '\x1B[93mSpecify Formats\n' +
+    '\x1B[93m  $\x1B[34m saf summary -i input.hdf input.json --format=json',
+
+    '\x1B[93mOutput GitHub Flavored Markdown Table, skip the console, and save to \'output.md\n' +
+    '\x1B[93m  $\x1B[34m saf summary -i input.hdf input.json --format=markdown --no-stdout -o output.md',
 
     // Multiple input files
-    '$ saf summary --input input1.hdf --input input2.hdf                     # Summarize multiple HDF files',
-    '$ saf summary --input input1.hdf input2.hdf',
+    '\x1B[93mSummarize multiple HDF files\n' +
+    '\x1B[93m  $\x1B[34m saf summary --input input1.hdf --input input2.hdf\n' +
+    '\x1B[93m  $\x1B[34m saf summary --input input1.hdf input2.hdf',
 
     // Specify output file
-    "$ saf summary -i input.hdf --output output.json                         # Save summary to 'output.json' and print to the console",
+    "\x1B[93mSave summary to 'output.json' and print to the console\n" +
+    '\x1B[93m  $\x1B[34m saf summary -i input.hdf --output output.json',
 
     // Enable and disable flags
-    '$ saf summary --input input.hdf --pretty-print                          # Enable human-readable output',
-    '$ saf summary -i input.hdf --no-pretty-print                            # Useful for scripts or data-processing (RAW yaml/json/etc.)',
+    '\x1B[93mEnable human-readable output\n' +
+    '\x1B[93m  $\x1B[34m saf summary --input input.hdf --pretty-print',
+    '\x1B[93mUseful for scripts or data-processing (RAW yaml/json/etc.)\n' +
+    '\x1B[93m  $\x1B[34m saf summary -i input.hdf --no-pretty-print',
   ]
 
   /**

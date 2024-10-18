@@ -352,7 +352,7 @@ export default class EmasserGetDashboards extends Command {
 
   async catch(error: any) { // skipcq: JS-0116
     if (error.message) {
-      this.error(error)
+      this.warn(error)
     } else {
       const suggestions = 'get dashboards [-h or --help] for available arguments'
       this.warn('Invalid arguments\nTry this:\n\t' + suggestions)

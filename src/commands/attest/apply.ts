@@ -1,4 +1,4 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import {ExecJSON} from 'inspecjs'
 import {addAttestationToHDF, Attestation, parseXLSXAttestations} from '@mitre/hdf-converters'
 import _ from 'lodash'
@@ -6,19 +6,19 @@ import yaml from 'yaml'
 import fs from 'fs'
 import path from 'path'
 import {convertFullPathToFilename} from '../../utils/global'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class ApplyAttestation extends Command {
-    static usage = 'attest apply -i <input-hdf-json>... <attestation>... -o <output-hdf-path>'
+export default class ApplyAttestation extends BaseCommand<typeof ApplyAttestation> {
+    static readonly usage = '<%= command.id %> -i <input-hdf-json>... <attestation>... -o <output-hdf-path>'
 
-    static description = 'Apply one or more attestation files to one or more HDF results sets'
+    static readonly description = 'Apply one or more attestation files to one or more HDF results sets'
 
-    static examples = [
-      'saf attest apply -i hdf.json attestation.json -o new-hdf.json',
-      'saf attest apply -i hdf1.json hdf2.json attestation.xlsx -o outputDir',
+    static readonly examples = [
+      '<%= config.bin %> <%= command.id %> -i hdf.json attestation.json -o new-hdf.json',
+      '<%= config.bin %> <%= command.id %> -i hdf1.json hdf2.json attestation.xlsx -o outputDir',
     ]
 
-    static flags = {
-      help: Flags.help({char: 'h'}),
+    static readonly flags = {
       input: Flags.string({char: 'i', required: true, multiple: true, description: 'Your input HDF and Attestation file(s)'}),
       output: Flags.string({char: 'o', required: true, description: 'Output file or folder (for multiple executions)'}),
     }

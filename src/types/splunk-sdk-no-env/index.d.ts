@@ -12,7 +12,7 @@ declare module '@mitre/splunk-sdk-no-env' {
       autologin?: boolean;
       version?: string;
       insecure?: boolean;
-    };
+    }
 
     export type jobTrackCallbacks = {
       done?: (job: Job) => void;
@@ -20,18 +20,18 @@ declare module '@mitre/splunk-sdk-no-env' {
       progress?: (job: Job) => void;
       failed?: (job: Job) => void;
       error?: (err: any) => void;
-    };
+    }
 
     class Http {
-      constructor();
+      constructor()
     }
 
     class Logger {
-      error(message: any): void;
+      error(message: any): void
     }
 
     class Indexs {
-      fetch(callback: (error: any, success: any, indexes: Index[]) => void): void;
+      fetch(callback: (error: any, success: any, indexes: Index[]) => void): void
     }
 
     class Index {
@@ -41,24 +41,24 @@ declare module '@mitre/splunk-sdk-no-env' {
         event: string,
         config: {sourcetype: string; index: string},
         callback: (error: any) => void
-      ): void;
+      ): void
     }
 
     class Jobs {
-      fetch(callback: (error: any, success: any, jobs: Job[]) => void): void;
+      fetch(callback: (error: any, success: any, jobs: Job[]) => void): void
 
       create(
         query: string,
         params: unknown,
         callback: (error: any, createdJob: Job) => void
-      ): void;
+      ): void
     }
 
     class Job {
       track(
         options: {period?: number},
         callbacks: jobTrackCallbacks | ((readyStatus: any) => void)
-      ): void;
+      ): void
 
       results(
         params: {count: number},
@@ -67,16 +67,16 @@ declare module '@mitre/splunk-sdk-no-env' {
           results: {fields: string[]; rows: string[]},
           job: Job
         ) => void
-      ): void;
+      ): void
     }
 
     class Service {
-      constructor(config: SplunkConfig);
-      constructor(httpInstance: any, config: SplunkConfig);
+      constructor(config: SplunkConfig)
+      constructor(httpInstance: any, config: SplunkConfig)
 
-      login(callback: (error: any, success: any) => void): boolean;
-      indexes(): Indexs;
-      jobs(): Jobs;
+      login(callback: (error: any, success: any) => void): boolean
+      indexes(): Indexs
+      jobs(): Jobs
 
       requestOptions: {
         strictSSL: boolean;
