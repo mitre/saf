@@ -385,13 +385,13 @@ inputs:
 The Gemfile provided contains all necessary ruby dependencies for checking the profile controls.
 #### Requirements
 All action are conducted using \`ruby\` (gemstone/programming language). Currently \`inspec\` 
-commands have ben tested with ruby version 3.1.2. A higher version of ruby is not guarantee to
+commands have been tested with ruby version 3.1.2. A higher version of ruby is not guaranteed to
 provide the expected results. Any modern distribution of Ruby comes with Bundler preinstalled by default.
 
 Install ruby based on the OS being used, see [Installing Ruby](https://www.ruby-lang.org/en/documentation/installation/)
 
 After installing \`ruby\` install the necessary dependencies by invoking the bundler command
-(must be in the sam directory where the Gemfile is located):
+(must be in the same directory where the Gemfile is located):
 \`\`\`
 bundle install
 \`\`\`
@@ -406,7 +406,7 @@ Linting and validating controls:
 \`\`\`
   bundle exec rake inspec:check          # validate the inspec profile
   bundle exec rake lint                  # Run RuboCop
-  bundle exec rake lint:autocorrect      # Autocorrect RuboCop offenses (only when it's s...
+  bundle exec rake lint:autocorrect      # Autocorrect RuboCop offenses (only when it's safe)
   bundle exec rake lint:autocorrect_all  # Autocorrect RuboCop offenses (safe and unsafe)
   bundle exec rake pre_commit_checks     # pre-commit checks
 \`\`\`
@@ -481,9 +481,9 @@ or **[Heimdall-Server](https://github.com/mitre/heimdall2)** for a user-interact
 
 Heimdall-Lite is a \`browser only\` viewer that allows you to easily view your results directly and locally rendered in your browser.
 Heimdall-Server is configured with a \`data-services backend\` allowing for data persistency to a database (PostgreSQL).
-For a more detail features capabilities see [Heimdall Features](https://github.com/mitre/heimdall2?tab=readme-ov-file#features)
+For more detail on feature capabilities see [Heimdall Features](https://github.com/mitre/heimdall2?tab=readme-ov-file#features)
 
-Heimdall can **_export your results into a DISA Checklist (CKL) file_** for easily upload into eMass using the \`Heimdall Export\` function.
+Heimdall can **_export your results into a DISA Checklist (CKL) file_** for easily uploading into eMass using the \`Heimdall Export\` function.
 
 Depending on your environment restrictions, the [SAF CLI](https://saf-cli.mitre.org) can be used to run a local docker instance
 of Heimdall-Lite via the \`saf view:heimdall\` command.
