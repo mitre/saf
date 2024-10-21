@@ -9,6 +9,7 @@ import Profile from '@mitre/inspec-objects/lib/objects/profile'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 import {Logger} from 'winston'
 import _ from 'lodash'
+import YAML from 'yaml'
 
 export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
   static readonly usage =
@@ -512,22 +513,26 @@ DISA STIGs are published by DISA IASE, see: https://iase.disa.mil/Pages/privacy_
 }
 
 function generateYaml(profile: Profile, outDir: string, logger: Logger) {
-  console.log(`profile.supports.length is: ${profile.supports.length}`)
-  console.log(`profile.depends.length is: ${profile.depends.length}`)
-  const inspecYmlContent =
-`name: ${profile.name}
-title: ${profile.title}
-maintainer: ${profile.maintainer}
-copyright: ${profile.copyright}
-copyright_email: ${profile.copyright_email}
-license: ${profile.license}
-summary: ${profile.summary}
-description: ${profile.description}
-version: ${profile.version}
-supports: ${(profile.supports.length === 0) ? '[]' : profile.supports}
-depends: ${(profile.depends.length === 0) ? '[]' : JSON.stringify(profile.depends, null, 2)}
-inspec_version: "${profile.inspec_version}"
-`
+  // ----------------------------------------------------------------------
+  // NOTE: Not using the profile.createInspecYaml() as it does not wrap the
+  //       inspect_version in double quotes (the format is ~>#.#). Use this
+  //       function until ts-object.ts method is fixed
+
+  const inspecYmlContent = YAML.stringify({
+    name: profile.name,
+    title: profile.title,
+    maintainer: profile.maintainer,
+    copyright: profile.copyright,
+    copyright_email: profile.copyright_email,
+    license: profile.license,
+    summary: profile.summary,
+    description: profile.description,
+    version: profile.version,
+    supports: profile.supports,
+    depends: profile.depends,
+    inspec_version: YAML.stringify(`${profile.inspec_version}`, {defaultStringType: 'QUOTE_DOUBLE'}),
+  })
+
   fs.writeFile(path.join(outDir, 'inspec.yml'), inspecYmlContent, err => {
     if (err) {
       logger.error(`Error saving the inspec.yml file to: ${outDir}. Cause: ${err}`)
