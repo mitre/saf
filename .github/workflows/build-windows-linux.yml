@@ -5,7 +5,8 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
-
+  workflow_dispatch:
+  
 jobs:
   build-deploy:
     runs-on: ubuntu-22.04
@@ -17,7 +18,7 @@ jobs:
       - name: setup node
         uses: actions/setup-node@v4
         with:
-          node-version: "18"
+          node-version: "20"
           check-latest: true
           cache: 'npm'
           cache-dependency-path: ./saf/package-lock.json
@@ -38,6 +39,25 @@ jobs:
       - name: Pack Debian Package
         working-directory: ./saf
         run: sudo npx oclif pack deb
+        
+      - name: Rename Windows Installers
+        run: |
+          cd saf/dist/win32
+          for file in saf-*.exe; do
+                  prefix=${file%-*-*} # get prefix by removing frome end
+                  suffix=${file#saf-*-*-} # get suffix by removing from start
+                  mv "$file" "$prefix-$suffix"
+          done
+
+      - name: Rename Debian Installers
+        run: |
+          cd saf/dist/deb
+          for file in saf_*.deb; do
+                  prefix=${file%.*-*.deb}
+                  prefix_ver=${prefix#saf_}
+                  suffix=${file#*_*_}
+                  sudo mv "$file" "saf-$prefix_ver-$suffix"
+          done
 
       - name: Upload SAF-CLI Windows Build x64 Artifact
         uses: actions/upload-artifact@v4
@@ -56,4 +76,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: SAF-CLI Debian Build x64
-          path: saf/dist/deb/saf_*.deb
+          path: saf/dist/deb/saf-*.deb

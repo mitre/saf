@@ -1,22 +1,35 @@
-import {Command, Flags} from '@oclif/core'
-import flat from 'flat'
+import {Flags} from '@oclif/core'
 import YAML from 'yaml'
 import fs from 'fs'
 import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import _ from 'lodash'
 import {ThresholdValues} from '../../types/threshold'
-import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject, statusSeverityPaths, totalMax, totalMin} from '../../utils/threshold'
+import {calculateCompliance,
+  exitNonZeroIfTrue,
+  extractStatusCounts,
+  getControlIdMap,
+  renameStatusName,
+  severityTargetsObject,
+  statusSeverityPaths,
+  totalMax,
+  totalMin} from '../../utils/threshold'
 import {expect} from 'chai'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class Threshold extends Command {
-  static usage = 'validate threshold -i <hdf-json> [-h] [-T <flattened-threshold-json> | -F <template-file>]'
+let flat: any
+// eslint-disable-next-line unicorn/prefer-top-level-await -- node/ts versions don't support top level await
+(async () => {
+  flat = await import('flat')
+})()
 
-  static description = 'Validate the compliance and status counts of an HDF file'
+export default class Threshold extends BaseCommand<typeof Threshold> {
+  static readonly usage = '<%= command.id %> -i <hdf-json> [-h] [-T <flattened-threshold-json> | -F <template-file>]'
 
-  static examples = ['saf validate threshold -i rhel7-results.json -F output.yaml']
+  static readonly description = 'Validate the compliance and status counts of an HDF file'
 
-  static flags = {
-    help: Flags.help({char: 'h'}),
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i rhel7-results.json -F output.yaml']
+
+  static readonly flags = {
     input: Flags.string({char: 'i', required: true, description: 'Input HDF JSON File'}),
     templateInline: Flags.string({char: 'T', required: false, exclusive: ['templateFile'], description: 'Flattened JSON containing your validation thresholds (Intended for backwards compatibility with InSpec Tools)'}),
     templateFile: Flags.string({char: 'F', required: false, exclusive: ['templateInline'], description: 'Expected data template, generate one with "saf generate threshold"'}),

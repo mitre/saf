@@ -41,19 +41,19 @@ export interface Data {
  * a single PrintableSummary object, or an array of PrintableSummary objects.
  * Used in functions where the input can be either a single object or an array of objects.
  */
-export type DataOrArray = Data | Data[] | PrintableSummary | PrintableSummary[];
+export type DataOrArray = Data | Data[] | PrintableSummary | PrintableSummary[]
 
 /**
  * Represents the possible values for the row names in the generated Markdown table.
- * The possible values are 'Total', 'Critical', 'High', 'Medium', 'Low', and 'Not Applicable'.
+ * The possible values are 'Total', 'Critical', 'High', 'Medium', 'Low'.
  */
-export type RowType = 'total' | 'critical' | 'high' | 'medium' | 'low' | 'Not Applicable';
+export type RowType = 'total' | 'critical' | 'high' | 'medium' | 'low'
 
 /**
  * Represents the possible values for the column names in the generated Markdown table.
  * The possible values are 'compliance', 'passed', 'failed', 'skipped', 'no_impact', and 'error'.
  */
-export type ColumnType = 'compliance' | 'passed' | 'failed' | 'skipped' | 'no_impact' | 'error';
+export type ColumnType = 'compliance' | 'passed' | 'failed' | 'skipped' | 'no_impact' | 'error'
 
 /**
  * Represents the arguments for the `printAndWriteOutput` function.

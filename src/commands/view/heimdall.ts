@@ -6,16 +6,15 @@ import {dynamicImport} from 'tsimportlib'
 import {getInstalledPath} from '../../utils/global'
 
 export default class Heimdall extends Command {
-  static aliases = ['heimdall']
+  static readonly aliases = ['heimdall']
 
-  static usage = 'view heimdall [-h] [-p <port>] [-f <file>] [-n]'
+  static readonly usage = '<%= command.id %> [-h] [-p <port>] [-f <file>] [-n]'
 
-  static description = 'Run an instance of Heimdall Lite to visualize your data'
+  static readonly description = 'Run an instance of Heimdall Lite to visualize your data'
 
-  static examples = ['saf view heimdall -p 8080']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -p 8080']
 
-  static flags = {
-    help: Flags.help({char: 'h'}),
+  static readonly flags = {
     port: Flags.integer({char: 'p', required: false, default: 3000, description: 'Port To Expose Heimdall On (Default 3000)'}),
     files: Flags.string({char: 'f', required: false, multiple: true, description: 'File(s) to display in Heimdall'}),
     noOpenBrowser: Flags.boolean({char: 'n', required: false, default: false, description: 'Do not open the default browser automatically'}),

@@ -1,4 +1,4 @@
-import colorize from 'json-colorizer'
+import {colorize} from 'json-colorizer'
 import {Zip} from 'zip-lib'
 import {Command, Flags} from '@oclif/core'
 import {ArtifactsApi} from '@mitre/emass_client'

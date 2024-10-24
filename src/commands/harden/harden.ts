@@ -1,15 +1,15 @@
 import {Command, Flags} from '@oclif/core'
 
 export default class Harden extends Command {
-  static aliases = ['harden']
+  static readonly aliases = ['harden']
 
-  static description = 'Visit https://saf.mitre.org/#/harden to explore and run hardening scripts'
+  static readonly description = 'Visit https://saf.mitre.org/#/harden to explore and run hardening scripts'
 
-  static flags = {
+  static readonly flags = {
     help: Flags.help({char: 'h'}),
   }
 
   async run() {
-    console.log('Visit https://saf.mitre.org/#/harden to explore and run hardening scripts')
+    console.log('\x1B[93mVisit https://saf.mitre.org/#/harden to explore and run hardening scripts\x1B[0m')
   }
 }
