@@ -6,6 +6,7 @@ import {
   ConveyorResults,
   CycloneDXSBOMResults,
   DBProtectMapper,
+  DependencyTrackMapper,
   fingerprint,
   FortifyMapper,
   JfrogXrayMapper,
@@ -84,7 +85,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         }
 
         // catch all other cases:
-        // 'anchoregrype', 'burp', 'conveyor' 'checklist', 'dbProtect', 'fortify',
+        // 'anchoregrype', 'burp', 'conveyor' 'checklist', 'dbProtect', 'dependencyTrack', 'fortify',
         // 'jfrog', 'msft_secure_score', 'nessus', 'netsparker', 'neuvector' 'nikto',
         // 'prisma', 'sarif', 'cyclonedx_sbom', 'scoutsuite', 'snyk', 'trufflehog',
         // 'twistlock', 'xccdf'
@@ -169,6 +170,15 @@ export default class Convert extends BaseCommand<typeof Convert> {
 
       case 'dbProtect': {
         converter = new DBProtectMapper(fs.readFileSync(flags.input, 'utf8'))
+        fs.writeFileSync(
+          checkSuffix(flags.output),
+          JSON.stringify(converter.toHdf(), null, 2),
+        )
+        break
+      }
+
+      case 'dependencyTrack': {
+        converter = new DependencyTrackMapper(fs.readFileSync(flags.input, 'utf8'))
         fs.writeFileSync(
           checkSuffix(flags.output),
           JSON.stringify(converter.toHdf(), null, 2),

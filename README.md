@@ -49,6 +49,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [CKL to POA&amp;M](#ckl-to-poam)
       * [CycloneDX SBOM to HDF](#cyclonedx-sbom-to-hdf)
       * [DBProtect to HDF](#dbprotect-to-hdf)
+      * [Dependency-Track to HDF](#dependency-track-to-hdf)
       * [Fortify to HDF](#fortify-to-hdf)
       * [gosec to HDF](#gosec-to-hdf)
       * [Ion Channel 2 HDF](#ion-channel-2-hdf)
@@ -712,6 +713,29 @@ convert dbprotect2hdf         Translate a DBProtect report in "Check Results
         
     EXAMPLES
       $ saf convert dbprotect2hdf -i check_results_details_report.xml -o output-hdf-name.json
+```
+
+[top](#convert-other-formats-to-hdf)
+##### Dependency-Track to HDF
+```
+convert dependency_track2hdf       Translate a Dependency-Track results JSON
+                                   file into a Heimdall Data Format JSON file
+  USAGE
+    $ saf convert dependency_track2hdf -i <dt-fpf-json> -o <hdf-scan-results-json> [-h] [-w]
+
+  FLAGS
+    -h, --help            Show CLI help.
+    -i, --input=<value>   (required) Input Dependency-Track FPF file
+    -o, --output=<value>  (required) Output HDF file
+    -w, --with-raw
+
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
+
+  EXAMPLES
+    saf convert dependency_track2hdf -i dt-fpf.json -o output-hdf-name.json
 ```
 
 [top](#convert-other-formats-to-hdf)
