@@ -724,7 +724,7 @@ convert dependency_track2hdf       Translate a Dependency-Track results JSON
     $ saf convert dependency_track2hdf -i <dt-fpf-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                            Show CLI help.
+    -h, --help            Show CLI help.
     -i, --input=<value>   (required) Input Dependency-Track FPF file
     -o, --output=<value>  (required) Output HDF file
     -w, --with-raw
