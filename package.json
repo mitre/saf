@@ -13,7 +13,7 @@
     "@microsoft/microsoft-graph-types": "^2.40.0",
     "@mitre/emass_client": "3.10.0",
     "@mitre/hdf-converters": "2.10.20",
-    "@mitre/heimdall-lite": "2.10.19",
+    "@mitre/heimdall-lite": "2.10.20",
     "@mitre/inspec-objects": "1.0.1",
     "@oclif/core": "^4.0.15",
     "@oclif/plugin-help": "^6.0.9",
