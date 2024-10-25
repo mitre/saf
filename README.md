@@ -718,16 +718,24 @@ convert dbprotect2hdf         Translate a DBProtect report in "Check Results
 [top](#convert-other-formats-to-hdf)
 ##### Dependency-Track to HDF
 ```
-convert dependency_track2hdf       Translate a Dependency-Track results FPF file into
-                                              a Heimdall Data Format JSON file
+convert dependency_track2hdf       Translate a Dependency-Track results JSON
+                                   file into a Heimdall Data Format JSON file
+  USAGE
+    $ saf convert dependency_track2hdf -i <dt-fpf-json> -o <hdf-scan-results-json> [-h] [-w]
 
-OPTIONS
-  -i, --input=input          Input Dependency-Track FPF File
-  -o, --output=output        Output HDF JSON File
-  -w, --with-raw             Include raw input file in HDF JSON file
+  FLAGS
+    -h, --help                            Show CLI help.
+    -i, --input=<value>   (required) Input Dependency-Track FPF file
+    -o, --output=<value>  (required) Output HDF file
+    -w, --with-raw
 
-EXAMPLES
-  saf convert dependency_track2hdf -i dt-fpf.json -o output-hdf-name.json
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
+
+  EXAMPLES
+    saf convert dependency_track2hdf -i dt-fpf.json -o output-hdf-name.json
 ```
 
 [top](#convert-other-formats-to-hdf)
