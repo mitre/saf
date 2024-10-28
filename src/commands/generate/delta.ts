@@ -680,7 +680,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       .replaceAll('\v', String.raw``)
   }
 
-  createMappedDirectory(controlsDir: string): string {
+  createMappedDirectory(controlsDir: string): string { // skipcq: JS-0105
     const destFilePath = path.basename(controlsDir)
     const mappedDir = controlsDir.replace(destFilePath, 'mapped_controls')
     if (fs.existsSync(mappedDir)) {
