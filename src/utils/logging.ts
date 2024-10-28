@@ -4,13 +4,13 @@ import colors from 'colors' // eslint-disable-line no-restricted-imports
 
 /**
  * Summary type represents a summary of an HDF execution.
- * @property {string[]} profileNames - An array of profile names.
- * @property {number} controlCount - The total number of controls.
- * @property {number} passedCount - The number of controls that passed.
- * @property {number} failedCount - The number of controls that failed.
+ * @property {string[]} profileNames     - An array of profile names.
+ * @property {number} controlCount       - The total number of controls.
+ * @property {number} passedCount        - The number of controls that passed.
+ * @property {number} failedCount        - The number of controls that failed.
  * @property {number} notApplicableCount - The number of controls that are not applicable.
- * @property {number} notReviewedCount - The number of controls that were not reviewed.
- * @property {number} errorCount - The number of controls that resulted in an error.
+ * @property {number} notReviewedCount   - The number of controls that were not reviewed.
+ * @property {number} errorCount         - The number of controls that resulted in an error.
  */
 
 export type Summary = {
@@ -23,6 +23,7 @@ export type Summary = {
   errorCount: number;
 }
 
+// Use user defined colors. Used by the console log transporter
 const syslogColors = {
   debug: 'bold blue',
   info: 'cyan',
@@ -37,12 +38,12 @@ const syslogColors = {
 
 /**
  * createWinstonLogger function creates a Winston logger.
- * @param {string} mapperName - The name of the mapper.
+ * @param {string} mapperName     - The name of the mapper.
  * @param {string} [level='info'] - The log level. Default is 'info'.
- * @returns {Logger} A Winston logger.
+ * @returns {Logger}              - A Winston logger.
  */
+
 export function createWinstonLogger(mapperName: string, level = 'info'): Logger {
-  winston.clear()
   const transportList: transport[] = [
     new transports.File({filename: 'saf-cli.log'}),
   ]
@@ -130,4 +131,3 @@ export function getHDFSummary(hdf: ExecJSON.Execution): string {
   summary += `Profiles: [Profile<${summaryObject.profileNames.join('> Profile<')}>], Passed=${summaryObject.passedCount}, Failed=${summaryObject.failedCount}, Not Applicable=${summaryObject.notApplicableCount}, Not Reviewed=${summaryObject.notReviewedCount}>`
   return summary
 }
-

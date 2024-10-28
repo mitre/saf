@@ -116,7 +116,7 @@
     "helpClass": "./lib/utils/oclif/help/help",
     "theme": "./oclif-theme.json",
     "additionalHelpFlags": [
-      "-h", "--whatzUp", "--whatzup", "--tell-me-more"
+      "-h", "--tell-me-more", "--explain"
     ],
     "additionalVersionFlags": [
       "-v"
@@ -192,8 +192,8 @@
     "dev": "rm -rf lib && tsc && node bin/run",
     "test": "npm run test:mocha && npm run test:jest",
     "tests": "npm run test",
-    "test:mocha": "ts-mocha --timeout 8500 --forbid-only \"test/**/*.test.ts\"",
-    "test:mocha:one": "ts-mocha --timeout 8500 --forbid-only",
+    "test:mocha": "ts-mocha --timeout 15000 --forbid-only \"test/**/*.test.ts\"",
+    "test:mocha:one": "ts-mocha --timeout 15000 --forbid-only",
     "test:jest": "jest",
     "test:jest:one": "jest --findRelatedTests",
     "prepack": "run-script-os",

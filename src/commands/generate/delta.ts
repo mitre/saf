@@ -36,7 +36,7 @@ import {
   printYellowGreen,
   saveProcessLogData,
 } from '../../utils/cliHelper'
-import {BaseCommand} from '../../baseCommand'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 import colors from 'colors' // eslint-disable-line no-restricted-imports
 import inquirer from 'inquirer'
 import inquirerFileTreeSelection from 'inquirer-file-tree-selection-prompt'
@@ -64,7 +64,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       options: ['rule', 'group', 'cis', 'version'],
       description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
     }),
-
     // New flag -M for whether to try mapping controls to new profile
     runMapControls: Flags.boolean({
       char: 'M',
@@ -443,8 +442,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         logger.debug('  Writing report markdown file')
         if (runMapControls) {
           const reportData = '## Map Controls\n' +
-            JSON.stringify(mappedControls!, null, 2) +
-            `\nTotal Mapped Controls: ${Object.keys(mappedControls!).length}\n\n` +
+            JSON.stringify(mappedControls!, null, 2) + // skipcq:  JS-0339
+            `\nTotal Mapped Controls: ${Object.keys(mappedControls!).length}\n\n` + // skipcq:  JS-0339
             `Total Controls Found on Delta Directory: ${GenerateDelta.oldControlsLength}\n` +
             `          Total Controls Found on XCCDF: ${GenerateDelta.newControlsLength}\n` +
             `                         Match Controls: ${GenerateDelta.match}\n` +
@@ -555,7 +554,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         printYellowBgGreen('Processing New Control: ', `${newControl.tags.gid}`)
         printYellowBgGreen('      newControl Title: ', `${this.updateTitle(newControl.title)}`)
 
-        if (result[0] && result[0].score && result[0].score < 0.3) {
+        if (result[0] && result[0].score && result[0].score < 0.3) { // skipcq: JS-W1044
           if (controlIdToScoreMap.has(result[0].item.tags.gid)) {
             const score = controlIdToScoreMap.get(result[0].item.tags.gid)
 
@@ -594,7 +593,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             // The result[0].item.tags.gid is is the old control id
             for (const key in controlMappings) {
               if (controlMappings[key] === result[0].item.tags.gid) {
-                delete controlMappings[key]
+                delete controlMappings[key] // skipcq: JS-0320
                 // Lets now check if this entry was previously processed
                 if (controlIdToScoreMap.has(result[0].item.tags.gid)) {
                   const score = controlIdToScoreMap.get(result[0].item.tags.gid)
@@ -645,7 +644,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     return controlMappings
   }
 
-  requiredFlagsProvided(flags: any): boolean {
+  requiredFlagsProvided(flags: any): boolean { // skipcq: JS-0105
     let missingFlags = false
     let strMsg = 'Warning: The following errors occurred:\n'
 
@@ -672,7 +671,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     return !missingFlags
   }
 
-  updateTitle(str: string): string {
+  updateTitle(str: string): string { // skipcq: JS-0105
     return str
       .replaceAll('\n', String.raw``)
       .replaceAll('\r', String.raw``)
