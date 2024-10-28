@@ -64,6 +64,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       options: ['rule', 'group', 'cis', 'version'],
       description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
     }),
+
     // New flag -M for whether to try mapping controls to new profile
     runMapControls: Flags.boolean({
       char: 'M',

@@ -1,8 +1,9 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import promptSync from 'prompt-sync'
 import {Assettype, ChecklistMetadata, Role, Techarea, validateChecklistMetadata} from '@mitre/hdf-converters'
 import path from 'path'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 const prompt = promptSync()
 
@@ -45,15 +46,14 @@ function enforceEnum(ask: string, options: string[]): string | null {
   return response
 }
 
-export default class GenerateCKLMetadata extends Command {
-  static usage = 'generate ckl_metadata -o <json-file> [-h]'
+export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLMetadata> {
+  static readonly usage = '<%= command.id %> -o <json-file> [-h]'
 
-  static description = 'Generate a checklist metadata template for "saf convert hdf2ckl"'
+  static readonly description = 'Generate a checklist metadata template for "saf convert hdf2ckl"'
 
-  static examples = ['saf generate ckl_metadata -o rhel_metadata.json']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -o rhel_metadata.json']
 
-  static flags = {
-    help: Flags.help({char: 'h'}),
+  static readonly flags = {
     output: Flags.string({char: 'o', required: true, description: 'Output JSON File'}),
   }
 

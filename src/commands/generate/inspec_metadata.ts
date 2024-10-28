@@ -1,18 +1,18 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import fs from 'fs'
 import promptSync from 'prompt-sync'
+import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 const prompt = promptSync()
 
-export default class GenerateInSpecMetadata extends Command {
-  static usage = 'generate inspec_metadata -o <json-file>'
+export default class GenerateInSpecMetadata extends BaseCommand<typeof GenerateInSpecMetadata> {
+  static readonly usage = '<%= command.id %> -o <json-file>'
 
-  static description = 'Generate an InSpec metadata template for "saf convert *2inspec_stub"'
+  static readonly description = 'Generate an InSpec metadata template for "saf convert *2inspec_stub"'
 
-  static examples = ['saf generate inspec_metadata -o ms_sql_baseline_metadata.json']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -o ms_sql_baseline_metadata.json']
 
-  static flags = {
-    help: Flags.help({char: 'h'}),
+  static readonly flags = {
     output: Flags.string({char: 'o', required: true, description: 'Output JSON File'}),
   }
 

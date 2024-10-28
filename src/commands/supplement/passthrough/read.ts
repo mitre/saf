@@ -1,15 +1,16 @@
-import {Command, Flags} from '@oclif/core'
+import {Flags} from '@oclif/core'
 import {ExecJSON} from 'inspecjs'
 import fs from 'fs'
+import {BaseCommand} from '../../../utils/oclif/baseCommand'
 
-export default class ReadPassthrough extends Command {
-    static usage = 'supplement passthrough read -i <hdf-json> [-o <passthrough-json>]'
+export default class ReadPassthrough extends BaseCommand<typeof ReadPassthrough> {
+    static readonly usage = '<%= command.id %> -i <hdf-json> [-o <passthrough-json>]'
 
-    static description = 'Read the `passthrough` attribute in a given Heimdall Data Format JSON file and send it to stdout or write it to a file'
+    static readonly description = 'Read the `passthrough` attribute in a given Heimdall Data Format JSON file and send it to stdout or write it to a file'
 
-    static examples = ['saf supplement passthrough read -i hdf.json -o passthrough.json']
+    static readonly examples = ['<%= config.bin %> <%= command.id %> -i hdf.json -o passthrough.json']
 
-    static flags = {
+    static readonly flags = {
       help: Flags.help({char: 'h'}),
       input: Flags.string({char: 'i', required: true, description: 'An input HDF file'}),
       output: Flags.string({char: 'o', description: 'An output `passthrough` JSON file (otherwise the data is sent to stdout)'}),

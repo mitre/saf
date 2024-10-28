@@ -1,16 +1,19 @@
 {
   "name": "@mitre/saf",
   "description": "The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) brings together applications, techniques, libraries, and tools developed by MITRE and the security community to streamline security automation for systems and DevOps pipelines.",
-  "version": "1.4.9",
+  "version": "1.4.15",
   "author": "The MITRE Security Automation Framework",
   "bin": "./bin/run",
   "bugs": "https://github.com/mitre/saf/issues",
   "dependencies": {
     "@aws-sdk/client-config-service": "^3.398.0",
     "@aws-sdk/client-securityhub": "^3.287.0",
+    "@azure/identity": "^4.3.0",
+    "@microsoft/microsoft-graph-client": "^3.0.7",
+    "@microsoft/microsoft-graph-types": "^2.40.0",
     "@mitre/emass_client": "3.10.0",
-    "@mitre/hdf-converters": "2.10.12",
-    "@mitre/heimdall-lite": "2.10.12",
+    "@mitre/hdf-converters": "2.10.20",
+    "@mitre/heimdall-lite": "2.10.20",
     "@mitre/inspec-objects": "1.0.1",
     "@oclif/core": "^4.0.15",
     "@oclif/plugin-help": "^6.0.9",
@@ -19,7 +22,7 @@
     "@oclif/plugin-warn-if-update-available": "^3.0.15",
     "@smithy/node-http-handler": "^3.0.0",
     "@types/chai": "^4",
-    "@types/express": "^4.17.17",
+    "@types/express": "^5.0.0",
     "@types/fs-extra": "^11.0.1",
     "@types/get-installed-path": "^4.0.1",
     "@types/jest": "^29.5.11",
@@ -50,7 +53,7 @@
     "https": "^1.0.0",
     "inquirer": "8.0.0",
     "inquirer-file-tree-selection-prompt": "2.0.2",
-    "inspecjs": "^2.10.11",
+    "inspecjs": "^2.10.16",
     "jest": "^29.7.0",
     "jest-mock": "^29.7.0",
     "js-yaml": "^4.1.0",
@@ -69,7 +72,7 @@
     "ts-node": "^10",
     "tsimportlib": "^0.0.5",
     "tslib": "^2",
-    "typescript": "~5.5",
+    "typescript": "~5.6",
     "uuid": "^10.0.0",
     "winston": "^3.10.0",
     "xlsx-populate": "^1.21.0",
@@ -86,8 +89,8 @@
     "eslint": "^8.48.0",
     "eslint-config-oclif": "^4.0",
     "eslint-config-oclif-typescript": "^1.0.3",
-    "eslint-plugin-unicorn": "^55.0.0",
-    "marked": "^13.0.0",
+    "eslint-plugin-unicorn": "^56.0.0",
+    "marked": "^14.0.0",
     "mocha": "^10",
     "mock-fs": "^5.2.0",
     "oclif": "^4.8.8",
@@ -110,9 +113,10 @@
   "main": "lib/index.js",
   "oclif": {
     "commands": "./lib/commands",
-    "helpClass": "./lib/help/help",
+    "helpClass": "./lib/utils/oclif/help/help",
+    "theme": "./oclif-theme.json",
     "additionalHelpFlags": [
-      "-h"
+      "-h", "--whatzUp", "--whatzup", "--tell-me-more"
     ],
     "additionalVersionFlags": [
       "-v"

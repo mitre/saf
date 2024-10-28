@@ -1,7 +1,5 @@
-import winston, {createLogger, format, transports, transport, Logger} from 'winston'
-
+import {createLogger, format, transports, transport, Logger} from 'winston'
 import {ContextualizedControl, contextualizeEvaluation, ExecJSON} from 'inspecjs'
-
 import colors from 'colors' // eslint-disable-line no-restricted-imports
 
 /**
@@ -37,15 +35,12 @@ const syslogColors = {
   emerg: 'bold inverse magenta',
 }
 
-winston.addColors(syslogColors)
-
 /**
  * createWinstonLogger function creates a Winston logger.
  * @param {string} mapperName - The name of the mapper.
  * @param {string} [level='info'] - The log level. Default is 'info'.
  * @returns {Logger} A Winston logger.
  */
-
 export function createWinstonLogger(mapperName: string, level = 'info'): Logger {
   winston.clear()
   const transportList: transport[] = [
