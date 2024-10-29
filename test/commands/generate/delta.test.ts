@@ -105,9 +105,6 @@ describe('The generate delta command', () => {
       expect(fileCount).to.eql(4)
     })
 
-  // should provide error if not given a proper InSpec Profile JSON file
-  // should provide error if not given a proper XCCDF file
-
   // should process delta request with oval definitions file specified
   // should provide error if oval definitions flag is specified with incorrect file format
 
@@ -121,16 +118,15 @@ describe('The generate delta command', () => {
       '-T', 'rule', '-M',
       '-c', path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2022_v1r3_mini_controls/'),
     ])
-    // .it('should match and map controls from one profile to another', () => {
-    //   const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length
-    //   expect(fileCount).to.eql(5)
-    // })
+    .timeout(25000)
     .it('should match and map controls from one profile to another', async ctx => {
       // Wait for the command to finish execution
       await ctx.returned
 
       // Now you can safely access the output
       expect(ctx.stdout).to.contain('Match Controls:  5')
+      const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length
+      expect(fileCount).to.eql(5)
     })
   test
     .stdout()
@@ -141,7 +137,7 @@ describe('The generate delta command', () => {
       '-T', 'rule', '-M',
       '-c', path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2022_v1r3_mini_controls/'),
     ])
-    // .it('should map to the correct filenames', () => {
+    .timeout(25000)
     .it('should map to the correct filenames', async ctx => {
       await ctx.returned
       const files = fs.readdirSync(`${tmpobj.name}/controls/`)
@@ -153,7 +149,9 @@ describe('The generate delta command', () => {
         'SV-254241.rb',
         'SV-254242.rb',
       ]
-      console.log(files)
+
+      expect(ctx.stdout).to.contain('Mapping Process =====================')
+
       expectedFiles.forEach(file => {
         expect(files).to.include(file)
       })
