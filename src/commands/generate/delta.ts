@@ -438,7 +438,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       if (reportFile) {
         logger.debug('  Writing report markdown file')
         if (runMapControls) {
-          const totalMappedControls = Object.keys(mappedControls!).length
+          const totalMappedControls = Object.keys(mappedControls!).length // skipcq: JS-0339
           const reportData = '## Map Controls\n' +
             JSON.stringify(mappedControls!, null, 2) + // skipcq:  JS-0339
             `\nTotal Mapped Controls: ${Object.keys(mappedControls!).length}\n\n` + // skipcq:  JS-0339
@@ -657,7 +657,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     return controlMappings
   }
 
-  getMappedStatisticsValidation(totalMappedControls: number, statValidation: string): string {
+  getMappedStatisticsValidation(totalMappedControls: number, statValidation: string): string { // skipcq: JS-0105
     let evalStats = ''
     const match = GenerateDelta.match
     const misMatch = GenerateDelta.posMisMatch

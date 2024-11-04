@@ -15,7 +15,6 @@ import {
   addToProcessLogData,
   printGreen,
   printMagenta,
-  printRed,
   printYellow,
   saveProcessLogData} from '../../utils/oclif/cliHelper'
 import {EventEmitter} from 'events'

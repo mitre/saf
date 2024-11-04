@@ -175,7 +175,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     //-------------------------------------------------------------------------
     // Check if we have an InSpec json file, generate if not provided
     // Process the InSpec json content, convert entries into a Profile object
-    logger.info(`Processing the Input execution/profile JSON file: ${path.basename(flags.inspecJsonFile!)}...`)
+    logger.info(`Processing the Input execution/profile JSON file: ${path.basename(flags.inspecJsonFile!)}...`) // skipcq: JS-0339
     if (flags.inspecJsonFile) {
       try {
         if (fs.lstatSync(flags.inspecJsonFile).isFile()) {
@@ -239,7 +239,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     //    (key and value are the new control Id)
     //
     //  xccdfNewControlsMetaDataMap -> Contains baseline Y metadata indexed by old control Id
-    //    ((key = legacy Id (V or SV number) and value = new control metadata)
+    //    (key = legacy Id (V or SV number) and value = new control metadata)
     //
     // The xccdfLegacyControlsMap and xccdfControlsMap are used so we can invoke the .has(key)
     // method (test if map contains provided key), did we processed the legacy and the new tag
