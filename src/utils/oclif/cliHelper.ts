@@ -57,6 +57,11 @@ export function printRed(info: string) {
   processLogData.push(`${info}`)
 }
 
+export function printBoldRedGreen(title: string, info: string) {
+  console.log(colors.bold.red(title), colors.green(info))
+  processLogData.push(`${title} ${info}`)
+}
+
 export function printBgRed(info: string) {
   console.log(colors.bgRed(info))
   processLogData.push(`${info}`)

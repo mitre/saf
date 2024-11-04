@@ -25,10 +25,11 @@ export type Summary = {
 
 // Use user defined colors. Used by the console log transporter
 const syslogColors = {
-  debug: 'bold blue',
+  debug: 'blue',
   info: 'cyan',
   notice: 'white',
-  warning: 'bold yellow',
+  warn: 'magenta',
+  warning: 'bold magenta',
   error: 'bold red',
   verbose: 'blue',
   crit: 'inverse yellow',

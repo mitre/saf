@@ -35,7 +35,7 @@ import {
   printYellowBgGreen,
   printYellowGreen,
   saveProcessLogData,
-} from '../../utils/cliHelper'
+} from '../../utils/oclif/cliHelper'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 import colors from 'colors' // eslint-disable-line no-restricted-imports
 import inquirer from 'inquirer'
@@ -47,11 +47,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
   static flags = {
     inspecJsonFile: Flags.string({char: 'J', required: false, exclusive: ['interactive'],
-      description: '(required if not --interactive) Input execution/profile (list of controls the delta is being applied from) JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command'}),
+      description: '\x1B[31m(required if not --interactive)\x1B[34m Input execution/profile (list of controls the delta is being applied from) JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command'}),
     xccdfXmlFile: Flags.string({char: 'X', required: false, exclusive: ['interactive'],
-      description: '(required if not --interactive) The XCCDF XML file containing the new guidance - in the form of .xml file'}),
+      description: '\x1B[31m(required if not --interactive)\x1B[34m The XCCDF XML file containing the new guidance - in the form of .xml file'}),
     deltaOutputDir: Flags.string({char: 'o', required: false, exclusive: ['interactive'],
-      description: '(required if not --interactive) The output folder for the updated profile (will contain the controls that delta was applied too) - if it is not empty, it will be overwritten. Do not use the original controls directory'}),
+      description: '\x1B[31m(required if not --interactive)\x1B[34m The output folder for the updated profile (will contain the controls that delta was applied too) - if it is not empty, it will be overwritten. Do not use the original controls directory'}),
     ovalXmlFile: Flags.string({char: 'O', required: false, exclusive: ['interactive'],
       description: 'The OVAL XML file containing definitions used in the new guidance - in the form of .xml file'}),
     reportFile: Flags.string({char: 'r', required: false, exclusive: ['interactive'],
@@ -175,7 +175,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         logger.debug(`  Loading ${inspecJsonFile} as Profile JSON/Execution JSON`)
         existingProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
         logger.debug(`  Loaded ${inspecJsonFile} as Profile JSON/Execution JSON`)
-        // addToProcessLogData(`InSpec Profile JSON file: ${inspecJsonFile}`)
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {
@@ -269,8 +268,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         processedXCCDF = processXCCDF(updatedXCCDF, false, idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
         // Create a dictionary mapping new control GIDs to their old control counterparts
         mappedControls = await this.mapControls(existingProfile, processedXCCDF)
-
-        // const controlsDir = controlsDir
 
         // Iterate through each mapped control
         // key = new control, controls[key] = old control
@@ -441,6 +438,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       if (reportFile) {
         logger.debug('  Writing report markdown file')
         if (runMapControls) {
+          const totalMappedControls = Object.keys(mappedControls!).length
           const reportData = '## Map Controls\n' +
             JSON.stringify(mappedControls!, null, 2) + // skipcq:  JS-0339
             `\nTotal Mapped Controls: ${Object.keys(mappedControls!).length}\n\n` + // skipcq:  JS-0339
@@ -451,6 +449,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             `               Duplicate Match Controls: ${GenerateDelta.dupMatch}\n` +
             `                      No Match Controls: ${GenerateDelta.noMatch}\n` +
             `                     New XCDDF Controls: ${GenerateDelta.newXccdfControl}\n\n` +
+            'Statistics Validation ------------------------------------------\n' +
+            `Match + Mismatch = Total Mapped Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}\n` +
+            `  Total Processed = Total XCCDF Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n` +
             updatedResult.markdown
           fs.writeFileSync(path.join(markDownFile), reportData)
         } else {
@@ -502,6 +503,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     GenerateDelta.oldControlsLength = oldControls.length
     GenerateDelta.newControlsLength = newControls.length
 
+    fs.writeFileSync('inspecProfileControls.json', JSON.stringify(oldControls))
+    fs.writeFileSync('xccdfProfileControls.json', JSON.stringify(newControls))
     // const {default: Fuse} = await import('fuse.js')
 
     const fuseOptions = {
@@ -541,7 +544,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       // TODO: Determine whether removing symbols other than non-displayed characters is helpful
       // words separated by newlines don't have spaces between them
       if (newControl.title) {
-        // Regex: [\w\s] ->  match word characters and whitespace
+        // Regex: [\w\s]     -> match word characters and whitespace
         //        [\r\t\f\v] -> carriage return, tab, form feed and vertical tab
         const result = fuse.search(newControl.title.replaceAll(/[^\w\s]|[\r\t\f\v]/g, '').replaceAll('\n', ''))
         if (isEmpty(result)) {
@@ -623,12 +626,18 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     }
 
     printCyan('Mapping Results ===========================================================================')
-    printYellow('\tNew Control -> Old Control')
+    // printYellow('\tNew Control -> Old Control')
+    // for (const [key, value] of Object.entries(controlMappings)) {
+    //   printGreen(`\t   ${key} -> ${value}`)
+    // }
+    printYellow('\tOld Control -> New Control')
     for (const [key, value] of Object.entries(controlMappings)) {
-      printGreen(`\t   ${key} -> ${value}`)
+      printGreen(`\t   ${value} -> ${key}`)
     }
 
-    printYellowGreen('Total Mapped Controls: ', `${Object.keys(controlMappings).length}\n`)
+    const totalMappedControls = Object.keys(controlMappings).length
+    // printYellowGreen('Total Mapped Controls: ', `${Object.keys(controlMappings).length}\n`)
+    printYellowGreen('Total Mapped Controls: ', `${totalMappedControls}\n`)
 
     printCyan('Control Counts ================================')
     printYellowGreen('Total Controls Found on Delta Directory: ', `${GenerateDelta.oldControlsLength}`)
@@ -641,7 +650,28 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     printYellowGreen('                      No Match Controls: ', `${GenerateDelta.noMatch}`)
     printYellowGreen('                     New XCDDF Controls: ', `${GenerateDelta.newXccdfControl}\n`)
 
+    printCyan('Statistics Validation =============================================')
+    printYellowGreen('Match + Mismatch = Total Mapped Controls: ', `${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}`)
+    printYellowGreen('  Total Processed = Total XCCDF Controls: ', `${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`)
+
     return controlMappings
+  }
+
+  getMappedStatisticsValidation(totalMappedControls: number, statValidation: string): string {
+    let evalStats = ''
+    const match = GenerateDelta.match
+    const misMatch = GenerateDelta.posMisMatch
+    const statMach = ((match + misMatch) === totalMappedControls)
+    const dupMatch = GenerateDelta.dupMatch
+    const noMatch = GenerateDelta.noMatch
+    const newXccdfControl = GenerateDelta.newXccdfControl
+    const statTotalMatch = ((totalMappedControls + dupMatch + noMatch + newXccdfControl) === GenerateDelta.newControlsLength)
+
+    evalStats = statValidation === 'totalMapped' ?
+      `(${match}+${misMatch}=${totalMappedControls}) ${statMach}` :
+      `(${match}+${misMatch}+${dupMatch}+${noMatch}+${newXccdfControl}=${GenerateDelta.newControlsLength}) ${statTotalMatch}`
+
+    return evalStats
   }
 
   requiredFlagsProvided(flags: any): boolean { // skipcq: JS-0105
