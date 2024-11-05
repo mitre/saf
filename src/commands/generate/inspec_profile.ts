@@ -203,7 +203,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     // Generate files
     generateYaml(profile, outDir, logger)
     generateReadme(readmeObj, outDir, logger)
-    generateLicenses(outDir, logger)
+    generateLicense(outDir, logger)
     generateNotice(outDir, logger)
     generateRubocopYml(outDir, logger)
     generateGemFile(outDir, logger)
@@ -542,7 +542,7 @@ function generateYaml(profile: Profile, outDir: string, logger: Logger) {
   })
 }
 
-function generateLicenses(outDir: string, logger: Logger) {
+function generateLicense(outDir: string, logger: Logger) {
   const licensesContent =
 `Licensed under the apache-2.0 license, except as noted below.  
     
@@ -558,11 +558,11 @@ are permitted provided that the following conditions are met:
   used to endorse or promote products derived from this software without specific prior
   written permission.
 `
-  fs.writeFile(path.join(outDir, 'LICENSES.md'), licensesContent, err => {
+  fs.writeFile(path.join(outDir, 'LICENSE.md'), licensesContent, err => {
     if (err) {
-      logger.error(`Error saving the LICENSES.md file to: ${outDir}. Cause: ${err}`)
+      logger.error(`Error saving the LICENSE file to: ${outDir}. Cause: ${err}`)
     } else {
-      logger.debug('LICENSES.md generated successfully!')
+      logger.debug('LICENSE generated successfully!')
     }
   })
 }

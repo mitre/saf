@@ -23,7 +23,7 @@ import {
 
 /**
  * This class is used to prepare profile controls from one SRG or STIG baseline
- * to another. The controls are updated based on guidances provided by the an
+ * to another. The controls are updated based on guidances provided by the
  * Extensible Configuration Checklist Description Format (XCCDF) document.
  *
  * The XCCDF document is an XML formatted file that containing the updated
@@ -34,7 +34,7 @@ import {
  * 1 - The directory where baseline X controls are located is provided
  * 2 - An InSpec json formatted file containing all baseline X controls is
  *     provided or generated
- *     a - The json file is generated using the inspec json CLI command*
+ *     a - The json file is generated using the inspec json CLI command
  * 3 - A XCCDF file containing the new baseline guidances is provided. The file
  *     is obtained from the DISA site
  *
@@ -45,6 +45,7 @@ import {
  * 3 - The XCCDF XML data is converted into a json Profile (includes controls)
  *     (baseline Y)
  * 4 - The baseline Y metadata is combined with baseline X code
+ * 5 - New controls are written to provided output directory
  */
 
 export default class GenerateUpdateControls extends BaseCommand<typeof GenerateUpdateControls> {

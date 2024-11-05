@@ -1450,13 +1450,14 @@ See the wiki for more information on 👉 [Delta](https://github.com/mitre/saf/w
 Update an existing InSpec profile with updated XCCDF guidance
 
 USAGE
-  $ saf generate delta -J <value> -X <value> -o <value> [-h] [-O <value>] [-r <value>] [-T rule|group|cis|version] [-L info|warn|debug|verbose]
+  $ saf generate delta [-L info|warn|debug|verbose] [-J <value> | --interactive] [-X <value> | ] [-o <value> | ]
+    [-O <value> | ] [-r <value> | ] [-T rule|group|cis|version | ] [-M -c <value>]
 
 FLAGS
   -h, --help               Show CLI help.
-  -J, --inspecJsonFile=<value>  (required) Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command
-  -X, --xccdfXmlFile=<value>    (required) The XCCDF XML file containing the new guidance - in the form of .xml file
-  -o, --outputFolder=<value>    (required) The output folder for the updated profile - if not empty it will be overwritten
+  -J, --inspecJsonFile=<value>  (required if not --interactive) Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command
+  -X, --xccdfXmlFile=<value>    (required if not --interactive) The XCCDF XML file containing the new guidance - in the form of .xml file
+  -o, --deltaOutputDir=<value>  (required if not --interactive) The output folder for the updated profile - if not empty it will be overwritten
   -O, --ovalXmlFile=<value>     The OVAL XML file containing definitions used in the new guidance - in the form of .xml file
   -T, --idType=<option>         [default: rule] Control ID Types: 
                                 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 
@@ -1464,6 +1465,8 @@ FLAGS
                                 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 
                                 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
                                 <options: rule|group|cis|version>
+  -M, --runMapControls          Run the approximate string matching process
+  -c, --controlsDir=<value>     The InSpec profile directory containing the controls being updated (controls Delta is processing)
   -r, --report=<value>          Output markdown report file - must have an extension of .md
 
 GLOBAL FLAGS
@@ -1472,12 +1475,16 @@ GLOBAL FLAGS
       --interactive        Collect input tags interactively (not available on all CLI commands)
 
 EXAMPLES
-  $ saf generate delta -J ./the_profile_json_file.json -X ./the_xccdf_guidance_file.xml  -o the_output_directory -O ./the_oval_file.xml -T group -r the_update_report_file.md -L debug
+  $ saf generate delta -J <profile_json_file.json> -X <xccdf_guidance_file.xml, -o <updated_controls_directory>
+
+  $ saf generate delta -J <profile_json_file.json> -X <xccdf_guidance_file.xml, -o <updated_controls_directory> -M
+    -c <controls_directory_being_processed_by_delta>
+
 ```
 [top](#generate-data-reports-and-more)
 
 #### Delta Supporting Options
-Use this process prior of running `generate delta` if the updated guidance's have new control numbers and/or to format the controls how `generate delta` will. Running this process minimizes the delta output content and makes for better and easier visualization of the modification provided by the Delta process.
+Use this process prior of running `generate delta`. The process updates the controls with metadata provided by the XCCDF guidance to include the controls name and number. Additionally it formates the control the same way the `generate delta` will. Running this process minimizes the delta output content and makes for better and easier visualization of the modification provided by the Delta process.
 
 ```
 USAGE

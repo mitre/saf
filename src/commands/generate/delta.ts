@@ -262,8 +262,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     logger.info('Checking if control mapping is required...')
     try {
       if (runMapControls && controlsDir) {
-        logger.info('  Mapping controls from the old profile to the new profile')
-        addToProcessLogData('Mapping controls from the old profile to the new profile\n')
+        logger.info('  Mapping controls (using fuzzy logic - lower value = best match) from the old profile to the new profile')
+        addToProcessLogData('Mapping controls (using fuzzy logic - lower value = best match) from the old profile to the new profile\n')
         // Process XCCDF of new profile to get controls
         processedXCCDF = processXCCDF(updatedXCCDF, false, idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions)
         // Create a dictionary mapping new control GIDs to their old control counterparts
@@ -295,7 +295,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             const lines = fs.readFileSync(sourceControlFile, 'utf8').split('\n')
             const controlLineIndex = lines.findIndex(line => new RegExp(`control ['"]${controls[key]}['"] do`).test(line))
             if (controlLineIndex === -1) {
-              // console.log(colors.bgRed('  Control not found:'), colors.red(` ${sourceControlFile}\n`))
               printBgRedRed('  Control not found:', ` ${sourceControlFile}\n`)
             } else {
               lines[controlLineIndex] = lines[controlLineIndex].replace(new RegExp(`control ['"]${controls[key]}['"] do`), `control '${key}' do`)
@@ -442,13 +441,13 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           const reportData = '## Map Controls\n' +
             JSON.stringify(mappedControls!, null, 2) + // skipcq:  JS-0339
             `\nTotal Mapped Controls: ${Object.keys(mappedControls!).length}\n\n` + // skipcq:  JS-0339
-            `Total Controls Found on Delta Directory: ${GenerateDelta.oldControlsLength}\n` +
-            `          Total Controls Found on XCCDF: ${GenerateDelta.newControlsLength}\n` +
-            `                         Match Controls: ${GenerateDelta.match}\n` +
-            `             Possible Mismatch Controls: ${GenerateDelta.posMisMatch}\n` +
-            `               Duplicate Match Controls: ${GenerateDelta.dupMatch}\n` +
-            `                      No Match Controls: ${GenerateDelta.noMatch}\n` +
-            `                     New XCDDF Controls: ${GenerateDelta.newXccdfControl}\n\n` +
+            `Total Controls Available for Delta: ${GenerateDelta.oldControlsLength}\n` +
+            `     Total Controls Found on XCCDF: ${GenerateDelta.newControlsLength}\n` +
+            `                    Match Controls: ${GenerateDelta.match}\n` +
+            `        Possible Mismatch Controls: ${GenerateDelta.posMisMatch}\n` +
+            `          Duplicate Match Controls: ${GenerateDelta.dupMatch}\n` +
+            `                 No Match Controls: ${GenerateDelta.noMatch}\n` +
+            `                New XCDDF Controls: ${GenerateDelta.newXccdfControl}\n\n` +
             'Statistics Validation ------------------------------------------\n' +
             `Match + Mismatch = Total Mapped Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}\n` +
             `  Total Processed = Total XCCDF Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n` +
@@ -503,10 +502,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     GenerateDelta.oldControlsLength = oldControls.length
     GenerateDelta.newControlsLength = newControls.length
 
-    fs.writeFileSync('inspecProfileControls.json', JSON.stringify(oldControls))
-    fs.writeFileSync('xccdfProfileControls.json', JSON.stringify(newControls))
-    // const {default: Fuse} = await import('fuse.js')
-
     const fuseOptions = {
       // isCaseSensitive: false,
       includeScore: true,
@@ -554,28 +549,28 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           continue
         }
 
-        printYellowBgGreen('Processing New Control: ', `${newControl.tags.gid}`)
-        printYellowBgGreen('      newControl Title: ', `${this.updateTitle(newControl.title)}`)
+        printYellowBgGreen('Processing New Control: ', `${newControl.id}`)
+        printYellowBgGreen('     New Control Title: ', `${this.updateTitle(newControl.title)}`)
 
         if (result[0] && result[0].score && result[0].score < 0.3) { // skipcq: JS-W1044
-          if (controlIdToScoreMap.has(result[0].item.tags.gid)) {
-            const score = controlIdToScoreMap.get(result[0].item.tags.gid)
+          if (controlIdToScoreMap.has(result[0].item.id)) {
+            const score = controlIdToScoreMap.get(result[0].item.id)
 
             if (result[0].score < score) {
-              controlIdToScoreMap.set(result[0].item.tags.gid, result[0].score)
+              controlIdToScoreMap.set(result[0].item.id, result[0].score)
             } else {
-              printBgMagentaRed('       Duplicate match:', ` ${newControl.tags.gid} --> ${result[0].item.tags.gid}`)
-              printBgMagentaRed('      oldControl Title:', ` ${this.updateTitle(result[0].item.title)}`)
-              printBgMagentaRed('                 Score:', ` ${result[0].score}\n`)
+              printBgMagentaRed('     Old Control Title:', ` ${this.updateTitle(result[0].item.title)}`)
+              printBgMagentaRed('       Duplicate Match:', ` ${result[0].item.id} --> ${newControl.id}`)
+              printBgMagentaRed('        Matching Score:', ` ${result[0].score}\n`)
               GenerateDelta.dupMatch++
               continue
             }
           }
 
-          if (typeof newControl.tags.gid === 'string' &&
-            typeof result[0].item.tags.gid === 'string') {
+          if (typeof newControl.id === 'string' &&
+            typeof result[0].item.id === 'string') {
             // Check non displayed characters of title
-            printYellowGreen('      oldControl Title: ', `${this.updateTitle(result[0].item.title)}`)
+            printYellowGreen('     Old Control Title: ', `${this.updateTitle(result[0].item.title)}`)
             // NOTE: We determined that 0.1 needs to be reviewed due to possible
             // words exchange that could alter the entire meaning of the title.
 
@@ -583,23 +578,23 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               // eslint-disable-next-line no-warning-comments
               // TODO: modify output report or logger to show potential mismatches
               // alternatively: add a match decision feature for high-scoring results
-              printBgRed('** Potential mismatch **')
+              printBgRed('** Potential Mismatch **')
               GenerateDelta.posMisMatch++
             } else {
               GenerateDelta.match++
             }
 
-            printYellowGreen('    Best match in list: ', `${newControl.tags.gid} --> ${result[0].item.tags.gid}`)
-            printYellowGreen('                 Score: ', `${result[0].score}\n`)
+            printYellowGreen('  Best Match Candidate: ', `${result[0].item.id} --> ${newControl.id}`)
+            printYellowGreen('        Matching Score: ', `${result[0].score}\n`)
 
             // Check if we have added an entry for the old control being processed
-            // The result[0].item.tags.gid is is the old control id
+            // The result[0].item.id is the old control id
             for (const key in controlMappings) {
-              if (controlMappings[key] === result[0].item.tags.gid) {
+              if (controlMappings[key] === result[0].item.id) {
                 delete controlMappings[key] // skipcq: JS-0320
                 // Lets now check if this entry was previously processed
-                if (controlIdToScoreMap.has(result[0].item.tags.gid)) {
-                  const score = controlIdToScoreMap.get(result[0].item.tags.gid)
+                if (controlIdToScoreMap.has(result[0].item.id)) {
+                  const score = controlIdToScoreMap.get(result[0].item.id)
                   if (score > 0.1) {
                     GenerateDelta.posMisMatch--
                   } else {
@@ -613,23 +608,19 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               }
             }
 
-            controlMappings[newControl.tags.gid] = result[0].item.tags.gid
-            controlIdToScoreMap.set(result[0].item.tags.gid, result[0].score)
+            controlMappings[newControl.id] = result[0].item.id
+            controlIdToScoreMap.set(result[0].item.id, result[0].score)
           }
         } else {
-          printBgRedRed('      oldControl Title:', ` ${this.updateTitle(result[0].item.title)}`)
-          printBgRedRed('  No matches found for:', ` ${newControl.tags.gid} --> ${result[0].item.tags.gid}`)
-          printBgRedRed('                 Score:', ` ${result[0].score} \n`)
+          printBgRedRed('     Old Control Title:', ` ${this.updateTitle(result[0].item.title)}`)
+          printBgRedRed('    No Match Found for:', ` ${result[0].item.id} --> ${newControl.id}`)
+          printBgRedRed('        Matching Score:', ` ${result[0].score} \n`)
           GenerateDelta.noMatch++
         }
       }
     }
 
     printCyan('Mapping Results ===========================================================================')
-    // printYellow('\tNew Control -> Old Control')
-    // for (const [key, value] of Object.entries(controlMappings)) {
-    //   printGreen(`\t   ${key} -> ${value}`)
-    // }
     printYellow('\tOld Control -> New Control')
     for (const [key, value] of Object.entries(controlMappings)) {
       printGreen(`\t   ${value} -> ${key}`)
@@ -639,16 +630,16 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     // printYellowGreen('Total Mapped Controls: ', `${Object.keys(controlMappings).length}\n`)
     printYellowGreen('Total Mapped Controls: ', `${totalMappedControls}\n`)
 
-    printCyan('Control Counts ================================')
-    printYellowGreen('Total Controls Found on Delta Directory: ', `${GenerateDelta.oldControlsLength}`)
-    printYellowGreen('          Total Controls Found on XCCDF: ', `${GenerateDelta.newControlsLength}\n`)
+    printCyan('Control Counts ===========================')
+    printYellowGreen('Total Controls Available for Delta: ', `${GenerateDelta.oldControlsLength}`)
+    printYellowGreen('     Total Controls Found on XCCDF: ', `${GenerateDelta.newControlsLength}\n`)
 
-    printCyan('Match Statistics ==============================')
-    printYellowGreen('                         Match Controls: ', `${GenerateDelta.match}`)
-    printYellowGreen('             Possible Mismatch Controls: ', `${GenerateDelta.posMisMatch}`)
-    printYellowGreen('               Duplicate Match Controls: ', `${GenerateDelta.dupMatch}`)
-    printYellowGreen('                      No Match Controls: ', `${GenerateDelta.noMatch}`)
-    printYellowGreen('                     New XCDDF Controls: ', `${GenerateDelta.newXccdfControl}\n`)
+    printCyan('Match Statistics =========================')
+    printYellowGreen('                    Match Controls: ', `${GenerateDelta.match}`)
+    printYellowGreen('        Possible Mismatch Controls: ', `${GenerateDelta.posMisMatch}`)
+    printYellowGreen('          Duplicate Match Controls: ', `${GenerateDelta.dupMatch}`)
+    printYellowGreen('                 No Match Controls: ', `${GenerateDelta.noMatch}`)
+    printYellowGreen('                New XCDDF Controls: ', `${GenerateDelta.newXccdfControl}\n`)
 
     printCyan('Statistics Validation =============================================')
     printYellowGreen('Match + Mismatch = Total Mapped Controls: ', `${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}`)
