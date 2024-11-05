@@ -31,6 +31,7 @@ import {
   printCyan,
   printGreen,
   printMagenta,
+  printRed,
   printYellow,
   printYellowBgGreen,
   printYellowGreen,
@@ -276,40 +277,64 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // Create a directory where we are storing the newly created mapped controls
         // Do not over right the original controls in the directory (controlsDir)
         const mappedDir = this.createMappedDirectory(controlsDir)
+        const shortRunningDir = path.sep + path.basename(path.dirname(controlsDir))
+        const shortProfileDir = shortRunningDir + path.sep + path.basename(controlsDir)
+        const shortMappedDir = shortRunningDir + path.sep + path.basename(mappedDir)
+        // const controls + path.sep + path.basename(controlsDir)
         logger.info('  Updating controls with new control number')
         printCyan('Updating Controls ===========================================================================')
+
+        // For each control, modify the control file in the old controls directory
+        // then regenerate json profile
         // eslint-disable-next-line guard-for-in
         for (const key in controls) {
-          printYellowGreen('        ITERATE MAP: ', `${key} --> ${controls[key]}`)
-          // for each control, modify the control file in the old controls directory
-          // then regenerate json profile
+          const sourceShortControlFile = path.join(shortProfileDir, `${controls[key]}.rb`)
+          const mappedShortControlFile = path.join(shortMappedDir, `${controls[key]}.rb`)
+
           const sourceControlFile = path.join(controlsDir, `${controls[key]}.rb`)
           const mappedControlFile = path.join(mappedDir, `${controls[key]}.rb`)
 
-          if (fs.existsSync(sourceControlFile)) {
-            printYellowGreen(' Processing control: ', `${sourceControlFile}`)
+          printYellowGreen('Mapping (From --> To): ', `${controls[key]} --> ${key}`)
 
+          let lines
+          if (fs.existsSync(sourceControlFile)) {
+            lines = fs.readFileSync(sourceControlFile, 'utf8').split('\n')
+          } else {
+            printBgRedRed('    File not found at:', ` ${sourceControlFile}\n`)
+            printRed('╔═══════════════════════════════════════════════════════════════════════════════╗')
+            printRed('║ Make sure the appropriate Input execution/profile JSON file is being used (-J)║')
+            printRed('╚═══════════════════════════════════════════════════════════════════════════════╝')
+            return
+          }
+
+          // If the key equals the controls[wey], the update_controls4delta process was ran
+          // and the controls were properly updated to the proper control number and name.
+          if (controls[key] === key) {
+            // The controls are up to date with the xccdf
+            printYellowGreen('   Control is Current: ', `${sourceShortControlFile}`)
+            // Saved processed control to the 'mapped_controls' directory
+            printYellowGreen('    Processed control: ', `${mappedShortControlFile}\n`)
+            fs.writeFileSync(mappedControlFile, lines.join('\n'))
+          } else {
+            printYellowGreen('   Processing control: ', `${sourceShortControlFile}`)
             // Find the line with the control name and replace it with the new control name
             // single or double quotes are used on this line, check for both
             // Template literals (`${controls[key]}`) must be used with dynamically created regular expression (RegExp() not / ... /)
-            const lines = fs.readFileSync(sourceControlFile, 'utf8').split('\n')
             const controlLineIndex = lines.findIndex(line => new RegExp(`control ['"]${controls[key]}['"] do`).test(line))
             if (controlLineIndex === -1) {
-              printBgRedRed('  Control not found:', ` ${sourceControlFile}\n`)
+              printBgRedRed('    Control not found:', ` ${sourceControlFile}\n`)
             } else {
               lines[controlLineIndex] = lines[controlLineIndex].replace(new RegExp(`control ['"]${controls[key]}['"] do`), `control '${key}' do`)
 
               // Saved processed control to the 'mapped_controls' directory
-              printYellowGreen('  Processed control: ', `${mappedControlFile}`)
+              printYellowGreen('    Processed control: ', `${mappedShortControlFile}`)
               fs.writeFileSync(mappedControlFile, lines.join('\n'))
 
               // eslint-disable-next-line no-warning-comments
               // TODO: Maybe copy files from the source directory and rename for duplicates and to preserve source files
-              printYellowGreen('Mapped control file: ', `${sourceControlFile} to reference ID ${key}`)
-              printYellowBgGreen(' New do Block Title: ', `${lines[controlLineIndex]}\n`)
+              printYellowGreen('  Mapped control file: ', `${sourceShortControlFile} to reference ID ${key}`)
+              printYellowBgGreen('     New control name: ', `${key}.rb\n`)
             }
-          } else {
-            printBgRedRed('  File not found at:', ` ${sourceControlFile}\n`)
           }
         }
 
@@ -627,7 +652,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     }
 
     const totalMappedControls = Object.keys(controlMappings).length
-    // printYellowGreen('Total Mapped Controls: ', `${Object.keys(controlMappings).length}\n`)
     printYellowGreen('Total Mapped Controls: ', `${totalMappedControls}\n`)
 
     printCyan('Control Counts ===========================')
