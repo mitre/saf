@@ -52,12 +52,12 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
         char: 'i',
         required: false,
         exclusive: ['interactive'],
-        description: '(required if not --interactive) Input HDF file'}),
+        description: '\x1B[31m(required if not --interactive)\x1B[34m Input HDF file'}),
       output: Flags.string({
         char: 'o',
         required: false,
         exclusive: ['interactive'],
-        description: '(required if not --interactive) Output CSV file'}),
+        description: '\x1B[31m(required if not --interactive)\x1B[34m Output CSV file'}),
       fields: Flags.string({
         char: 'f',
         required: false,

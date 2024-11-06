@@ -47,6 +47,7 @@
     "flat": "^6.0.1",
     "form-data": "^4.0.0",
     "fs-extra": "^11.1.1",
+    "fuse.js": "^7.0.0",
     "get-installed-path": "^4.0.8",
     "htmlparser2": "^9.0.0",
     "https": "^1.0.0",
@@ -115,7 +116,7 @@
     "helpClass": "./lib/utils/oclif/help/help",
     "theme": "./oclif-theme.json",
     "additionalHelpFlags": [
-      "-h", "--whatzUp", "--whatzup", "--tell-me-more"
+      "-h", "--tell-me-more", "--explain"
     ],
     "additionalVersionFlags": [
       "-v"
