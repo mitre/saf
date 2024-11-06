@@ -217,8 +217,9 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     // The XCCDF contains the profiles metadata - it does not have the code descriptions
     logger.info(`Processing XCCDF Benchmark file: ${path.basename(flags.xccdfXmlFile)}...`)
     const xccdf = fs.readFileSync(flags.xccdfXmlFile, 'utf8')
-    const xccdfProfile = processXCCDF(xccdf, false, (flags.useXccdfGroupId) ? 'group' : 'rule') // skipcq: JS-0242
-    logger.debug('  Converted XCCDF Benchmark file into a Profile JSON/Execution object using rule id')
+    const idType = (flags.useXccdfGroupId) ? 'group' : 'rule'
+    const xccdfProfile = processXCCDF(xccdf, false, idType)
+    logger.debug(`  Converted XCCDF Benchmark file into a Profile JSON/Execution object using ${idType} Id`)
 
     //-------------------------------------------------------------------------
     // Create variable map data types containing various Controls Id mappings.
@@ -226,9 +227,12 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     //   "id": "SV-205624" -> the new control Id (generated from the Rule or Group Id)
     //   "tags"."gid": "V-205624" -> the group control Id
     //   "tags"."legacy": ["SV-103063", "V-92975"] -> legacy control Id's
+    //
     // Mapping is determined based on the "useXccdfGroupId" flag, if set mapping
     // (old control Id to new Id) is accomplished using the tags.gid value,
     // otherwise it is accomplished using the tags.legacy values.
+    // NOTE: If using tags.legacy and there isn't any legacy tags, the XCCDF
+    //       control Id is used which is defaulted to the Rule Id
     //
     //  xccdfLegacyToControlMap -> maps control legacy Ids to new Ids
     //    (key = legacy Id (V or SV number) and value = new Id (SV number))
@@ -252,22 +256,23 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     for (const control of xccdfProfile.controls) {
       let controlId
       if (flags.useXccdfGroupId) {
-        logger.debug('  Using tags.gid to determine new control name')
+        logger.debug('  Using `tags.gid` to determine new Control Name/Id')
         controlId = (flags.controlPrefix === 'V') ?
           control.tags.gid?.match(/^V-\d+/)?.toString() :
           control.tags.gid?.match(/^SV-\d+/)?.toString()
       } else {
-        logger.debug('  Using tags.legacy to determine new control name')
+        logger.debug('  Using `tags.legacy` to determine new Control Name/Id')
         controlId = control.tags.legacy?.map(value => {
           const control = (flags.controlPrefix === 'V') ?
             value.match(/^V-\d+/)?.toString() :
             value.match(/^SV-\d+/)?.toString()
           return (control === undefined) ? '' : control
         }).find(Boolean)
+        // If there isn't a legacy tag, use the XCCDF Id (see note above)
         if (controlId === '') controlId = control.id
       }
 
-      logger.debug(`    Old control name: ${controlId} -> New control name: ${control.id}`)
+      logger.debug(`    Old Control Name/Id: ${controlId} -> New Control Name/Id: ${control.id}`)
       xccdfLegacyToControlMap.set(controlId, control.id)
       xccdfLegacyControlsMap.set(controlId, controlId)
       xccdfControlsMap.set(control.id, control.id)
@@ -333,7 +338,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     for (const file of files) {
       const fileExt = path.extname(file)
       if (fileExt === ext) {
-        logger.info(`Processing file: ${file}`)
+        logger.info(`Processing Control (file): ${file}`)
         const currentFileFullPath = path.join(controlsDir, file)
         const currentControlNumber = path.parse(file).name
         const newXCCDFControlNumber = xccdfLegacyToControlMap.get(currentControlNumber)   // old control Id to new control Id
@@ -343,7 +348,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
 
         // FILE = XCCDF (new control Id)
         if (currentControlNumber === xccdfNewControlNumber) {
-          logger.debug(`  Baseline X control Id is current: ${currentControlNumber} `)
+          logger.debug(`  Baseline X Control is current: ${currentControlNumber} `)
 
           // Update statistics (value does not matter)
           isCorrectControl++
@@ -351,7 +356,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
 
           // Process the control
           if (baselineYControls.has(currentControlNumber)) {
-            logger.debug('  \x1B[32mUpdating control metadata with XCCDF content\x1B[0m')
+            logger.debug('  \x1B[32mUpdating Control metadata with XCCDF content\x1B[0m')
             updatedControl = baselineYControls.get(currentControlNumber)
             // Save file
             saveControl(currentFileFullPath, currentControlNumber, currentControlNumber, updatedControl, flags.backupControls, false)
@@ -359,15 +364,14 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
 
         // FILE = LEGACY NUMBER (old control Id)
         } else if (currentControlNumber === xccdfLegacyControlNumber) {
-          logger.debug(`  Baseline X control Id is not the same as baseline Y, changing Fom: ${currentControlNumber} To: ${newXCCDFControlNumber}`)
+          logger.debug(`  Baseline X Control Id is not the same as baseline Y, changing From: ${currentControlNumber} To: ${newXCCDFControlNumber}`)
 
           // Change the V or SV Id to the SV Id based on format flag
           if (baselineYControls.has(currentControlNumber)) {
-            // updatedControl = baselineYControls.get(xccdfLegacyControlNumber).replace(`${currentControlNumber}`, `${newXCCDFControlNumber}`)
-            logger.debug('  \x1B[32mUpdating control metadata with XCCDF content\x1B[0m')
+            logger.debug('  \x1B[32mUpdating Control metadata with XCCDF content\x1B[0m')
             updatedControl = baselineYControls.get(currentControlNumber)
           } else {
-            logger.debug('  \x1B[31mKeeping control metadata content - updating control name\x1B[0m')
+            logger.debug('  \x1B[31mKeeping Control metadata content - Updating Control name\x1B[0m')
             notInProfileJSON++
             skipMetadataUpdate.push(`(${currentControlNumber} wasn't updated with metadata from: ${newXCCDFControlNumber})`)
             updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, newXCCDFControlNumber)
@@ -379,12 +383,12 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
 
         // FILE ≠ XCCDF
         } else if (xccdfNewControlNumber === undefined) {
-          logger.warn(`  Control skipped updating (not in the XCCDF objects): ${currentControlNumber}`)
+          logger.warn(`  Control skipped updating (not in the XCCDF guidance): ${currentControlNumber}`)
           skipped++
           skippedControls.push(currentControlNumber)
         // FILE ≠ XCCDF ≠ LEGACY NUMBER
         } else {
-          logger.error(`  No logic found processing Control: ${currentControlNumber}`)
+          logger.error('  No logic found processing Control (not current, or in the XCCDF guidance, or a legacy Control)')
         }
       }
     }
