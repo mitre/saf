@@ -13,7 +13,7 @@ import YAML from 'yaml'
 
 export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
   static readonly usage =
-    '<%= command.id %> -i <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] ' +
+    '<%= command.id %> -X <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] ' +
     '[-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]'
 
   static readonly description =
@@ -22,11 +22,11 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
   static readonly examples = [
     {
       description: '\x1B[93mRequired flag only\x1B[0m',
-      command: '<%= config.bin %> <%= command.id %> -i ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml',
+      command: '<%= config.bin %> <%= command.id %> -X ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml',
     },
     {
       description: '\x1B[93mSpecifying OVAL and Output location\x1B[0m',
-      command: '<%= config.bin %> <%= command.id %> -i ./U_RHEL_9_STIG_V1R2_Manual-xccdf.xml -O ./RHEL_9_Benchmark-oval.xml -o ./output/directory',
+      command: '<%= config.bin %> <%= command.id %> -X ./U_RHEL_9_STIG_V1R2_Manual-xccdf.xml -O ./RHEL_9_Benchmark-oval.xml -o ./output/directory',
     },
   ]
 
@@ -34,7 +34,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
 
   static readonly flags = {
     xccdfXmlFile: Flags.string({
-      char: 'i',
+      char: 'X',
       required: true,
       description: 'Path to the XCCDF benchmark file',
     }),
@@ -206,6 +206,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     generateLicense(outDir, logger)
     generateNotice(outDir, logger)
     generateRubocopYml(outDir, logger)
+    generateGemRc(outDir, logger)
     generateGemFile(outDir, logger)
     generateRakeFile(outDir, logger)
     generateGitIgnoreFile(outDir, logger)
@@ -275,12 +276,12 @@ function generateReadme(contentObj: InspecReadme, outDir: string, logger: Logger
   const readmeContent =
 `# ${contentObj.profileTitle}
 This InSpec Profile was created to facilitate testing and auditing of \`${contentObj.profileShortName}\`
-infrastructure and applications when validating compliancy with Department of [Defense (DoD) STIG](https://iase.disa.mil/stigs/)
+infrastructure and applications when validating compliancy with [Department of Defense (DoD) STIG](https://public.cyber.mil/stigs/)
 requirements
 
-- Profile Version: ${contentObj.profileVersion}
-- STIG Date: ${contentObj.stigDate}    
-- STIG Version: ${contentObj.stigVersion}
+- Profile Version: **${contentObj.profileVersion.trim()}**
+- STIG Date: **${contentObj.stigDate.trim()}**
+- STIG Version: **${contentObj.stigVersion.trim()}**
 
 
 This profile was developed to reduce the time it takes to perform a security checks based upon the
@@ -609,6 +610,9 @@ Naming/FileName:
 Metrics/BlockLength:
   Max: 1000
 
+Layout/MultilineBlockLayout:
+  Enabled: true
+
 Lint/ConstantDefinitionInBlock:
   Enabled: false
 
@@ -768,17 +772,25 @@ Style/SwapValues: # new in 1.1
   })
 }
 
+function generateGemRc(outDir: string, logger: Logger) {
+  const gemRc =
+`gem: --no-document
+`
+  fs.writeFile(path.join(outDir, '.gemrc'), gemRc, err => {
+    if (err) {
+      logger.error(`Error saving the .gemrc file to: ${outDir}. Cause: ${err}`)
+    } else {
+      logger.debug('.gemrc generated successfully!')
+    }
+  })
+}
+
 function generateGemFile(outDir: string, logger: Logger) {
   const gemFileContent =
 `# frozen_string_literal: true
 
 source 'https://rubygems.org'
-
-gem 'cookstyle'
 gem 'highline'
-gem 'inspec', '>= 6.6.0'
-gem 'inspec-bin'
-gem 'inspec-core'
 gem 'kitchen-ansible'
 gem 'kitchen-docker'
 gem 'kitchen-dokken'
@@ -786,13 +798,20 @@ gem 'kitchen-ec2'
 gem 'kitchen-inspec'
 gem 'kitchen-sync'
 gem 'kitchen-vagrant'
-gem 'parser', '3.3.0.5'
 gem 'pry-byebug'
 gem 'rake'
 gem 'rubocop'
 gem 'rubocop-rake'
 gem 'test-kitchen'
 gem 'train-awsssm'
+
+source 'https://rubygems.cinc.sh/' do
+  gem 'chef-config'
+  gem 'chef-utils'
+  gem 'cinc-auditor-bin'
+  gem 'inspec'
+  gem 'inspec-core'
+end
 `
   fs.writeFile(path.join(outDir, 'Gemfile'), gemFileContent, err => {
     if (err) {
@@ -813,9 +832,9 @@ require 'rake/testtask'
 require 'rubocop/rake_task'
 
 namespace :inspec do
-  desc 'validate the inspec profile'
+  desc 'validate the profile'
   task :check do
-    system 'bundle exec inspec check .'
+    system 'bundle exec cinc-auditor check .'
   end
 end
 

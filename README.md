@@ -1572,7 +1572,7 @@ generate inspec_metadata      Generate an InSpec metadata template for "saf conv
 generate inspec_profile              Generate a new skeleton profile based on a XCCDF benchmark file
 
 USAGE
-  $ saf generate inspec_profile -i <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] [-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]
+  $ saf generate inspec_profile -X <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] [-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]
 
 FLAGS
   -O, --ovalDefinitions=<value>  Path to an OVAL definitions file to populate profile elements that reference OVAL definitions
@@ -1580,7 +1580,7 @@ FLAGS
                                  Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex.
                                  C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
                                  <options: rule|group|cis|version>
-  -i, --xccdfXmlFile=<value>     (required) Path to the XCCDF benchmark file
+  -X, --xccdfXmlFile=<value>     (required) Path to the XCCDF benchmark file
   -m, --metadata=<value>         Path to a JSON file with additional metadata for the inspec.yml
                                  The metadata Json is of the following format:
                                  {"maintainer": string, "copyright": string, "copyright_email": string, "license": string, "version": string}
@@ -1597,8 +1597,8 @@ ALIASES
   $ saf generate xccdf_benchmark2inspec_stub
 
 EXAMPLES
-  $ saf generate xccdf_benchmark2inspec_stub -i ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md
-  $ saf generate xccdf_benchmark2inspec_stub -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml -O ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml --logLevel debug
+  $ saf generate xccdf_benchmark2inspec_stub -X ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md
+  $ saf generate xccdf_benchmark2inspec_stub -X ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml -O ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml --logLevel debug
 ```
 [top](#generate-data-reports-and-more)
 #### Thresholds

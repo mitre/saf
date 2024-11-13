@@ -6,9 +6,9 @@ import {Flags} from '@oclif/core'
 import {createWinstonLogger} from '../../utils/logging'
 import Profile from '@mitre/inspec-objects/lib/objects/profile'
 import {
+  getExistingDescribeFromControl,
   processInSpecProfile,
   processXCCDF,
-  updateControl,
 } from '@mitre/inspec-objects'
 import colors from 'colors' // eslint-disable-line no-restricted-imports
 import {BaseCommand} from '../../utils/oclif/baseCommand'
@@ -100,9 +100,9 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     const {flags} = await this.parse(GenerateUpdateControls)
     const logger = createWinstonLogger('generate:update_controls', flags.logLevel)
 
-    logger.warn(colors.yellow('╔═══════════════════════════════════════════════════════════════════════════════════════════════╗'))
-    logger.warn(colors.yellow('║ Ensure profile controls are in cookstyle format (https://docs.chef.io/workstation/cookstyle/) ║'))
-    logger.warn(colors.yellow('╚═══════════════════════════════════════════════════════════════════════════════════════════════╝'))
+    logger.warn(colors.yellow('╔═══════════════════════════════════════════════╗'))
+    logger.warn(colors.yellow('║ Profile controls are formatted using Rubocop  ║'))
+    logger.warn(colors.yellow('╚═══════════════════════════════════════════════╝'))
 
     let inspecProfile: Profile = new Profile()
     GenerateUpdateControls.backupDir = path.join(path.dirname(flags.controlsDir), 'oldControls')
@@ -302,14 +302,22 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         }
       }
 
-      const oldControlId = control.id
-      const newControl = updateControl(control, xccdfNewControlsMetaDataMap.get(control.id), logger)
-      if (flags.formatControls) {
-        logger.debug('  Formatted the same way `generate delta` will write controls.')
-        baselineYControls.set(oldControlId, newControl.toRuby(false))
-      } else {
-        logger.debug('  Did not formatted the same way `generate delta` will write controls.')
-        baselineYControls.set(oldControlId, newControl.toString())
+      // NOTE: Not using the ts-object updateControl function as it maps the
+      // metadata (aka tags) from the source onto the new control. Need to add
+      // a new function that simply retrieves the describe block (code) from
+      // the source and adds to the destination (update) control)
+      if (xccdfNewControlsMetaDataMap.has(control.id)) {
+        const newControl = xccdfNewControlsMetaDataMap.get(control.id)
+        const existingDescribeBlock = getExistingDescribeFromControl(control)
+        newControl.describe = existingDescribeBlock
+
+        if (flags.formatControls) {
+          logger.debug('  Formatted the same way `generate delta` will write controls.')
+          baselineYControls.set(control.id, newControl.toRuby(false))
+        } else {
+          logger.debug('  Did not formatted the same way `generate delta` will write controls.')
+          baselineYControls.set(control.id, newControl.toString())
+        }
       }
     }
 
