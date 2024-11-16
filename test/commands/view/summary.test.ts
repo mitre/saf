@@ -20,7 +20,7 @@ describe('Summary command', () => {
 
   // NOTE: replacing the CR from both files to ensure proper comparison.
   it('runs summary with Markdown output and matches the markdown reference file', async () => {
-    const {stdout} = await runCommand<{name: string}>(['summary', '-i', hdfFilePath, '--format=markdown', '--no-title-table', '-o', generatedMD])
+    await runCommand<{name: string}>(['summary', '-i', hdfFilePath, '--format=markdown', '--no-title-table', '-o', generatedMD])
     const expectedOutput = fs.readFileSync(MD_reference, 'utf8').replaceAll(/\r/gi, '').trim()
     const actualOutput = fs.readFileSync(generatedMD, 'utf8').replaceAll(/\r/gi, '').trim()
     expect(actualOutput).to.equal(expectedOutput)

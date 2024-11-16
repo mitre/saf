@@ -11,7 +11,7 @@ describe('Test anchore grype', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    const {stdout, stderr} = await runCommand<{name: string}>(['convert anchoregrype2hdf',
+    await runCommand<{name: string}>(['convert anchoregrype2hdf',
       '-i', path.resolve('./test/sample_data/anchoregrype/sample_input_report/anchore_grype.json'),
       '-o', `${tmpobj.name}/anchore-grype-hdf.json`,
     ])
@@ -29,7 +29,7 @@ describe('Test anchore grype withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter withraw output test', async () => {
-    const {stdout, stderr} = await runCommand<{name: string}>(['convert anchoregrype2hdf',
+    await runCommand<{name: string}>(['convert anchoregrype2hdf',
       '-i', path.resolve('./test/sample_data/anchoregrype/sample_input_report/anchore_grype.json'),
       '-o', `${tmpobj.name}/anchore-grype-withraw.json`, '-w',
     ])

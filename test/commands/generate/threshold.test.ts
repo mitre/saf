@@ -11,7 +11,7 @@ describe('Generate threshold', () => {
   it('when provided an output file to store threshold', async () => {
     // Need to convert to linefeed (\n) otherwise the test will fail when executed in a Windows platform.
     // The YAML.stringify will always include \n as the last character, as is expected of YAML documents.
-    const {stdout} = await runCommand<{name: string}>(['generate threshold', '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'), '-o', `${tmpobj.name}/red_hat_good.counts.good.yml`])
+    await runCommand<{name: string}>(['generate threshold', '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'), '-o', `${tmpobj.name}/red_hat_good.counts.good.yml`])
     const test = YAML.stringify(fs.readFileSync(`${tmpobj.name}/red_hat_good.counts.good.yml`, 'utf8').replaceAll(/\r\n/gi, '\n'))
     const sample = YAML.stringify(fs.readFileSync(path.resolve('./test/sample_data/thresholds/red_hat_good.counts.good.yml'), 'utf8').replaceAll(/\r\n/gi, '\n'))
     expect(test).to.eql(sample)

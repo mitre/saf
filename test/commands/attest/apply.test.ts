@@ -12,7 +12,7 @@ describe('Test attest apply', () => {
 
   // NOTE: replacing all CR from the files being generated to ensure proper comparison.
   it('Successfully applies a JSON attestations file', async () => {
-    const {stdout} = await runCommand<{name: string}>(['attest apply',
+    await runCommand<{name: string}>(['attest apply',
       '-i', path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus.json'),
       path.resolve('./test/sample_data/attestations/attestations_jsonFormat.json'),
       '-o', `${tmpobj.name}/rhel8_attestations_jsonOutput.json`,
@@ -24,7 +24,7 @@ describe('Test attest apply', () => {
   })
 
   it('Successfully applies an XLSX attestations file', async () => {
-    const {stdout} = await runCommand<{name: string}>(['attest apply', '-i', path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus.json'), path.resolve('./test/sample_data/attestations/attestations_xlsxFormat.xlsx'), '-o', `${tmpobj.name}/rhel8_attestations_xlsxOutput.json`])
+    await runCommand<{name: string}>(['attest apply', '-i', path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus.json'), path.resolve('./test/sample_data/attestations/attestations_xlsxFormat.xlsx'), '-o', `${tmpobj.name}/rhel8_attestations_xlsxOutput.json`])
     const output = JSON.parse(fs.readFileSync(`${tmpobj.name}/rhel8_attestations_xlsxOutput.json`, 'utf8').replaceAll(/\r/gi, ''))
     const expected = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json'), 'utf8').replaceAll(/\r/gi, ''))
 
@@ -32,7 +32,7 @@ describe('Test attest apply', () => {
   })
 
   it('Successfully applies a YAML attestations file', async () => {
-    const {stdout} = await runCommand<{name: string}>(['attest apply', '-i', path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus.json'), path.resolve('./test/sample_data/attestations/attestations_yamlFormat.yaml'), '-o', `${tmpobj.name}/rhel8_attestations_yamlOutput.json`])
+    await runCommand<{name: string}>(['attest apply', '-i', path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus.json'), path.resolve('./test/sample_data/attestations/attestations_yamlFormat.yaml'), '-o', `${tmpobj.name}/rhel8_attestations_yamlOutput.json`])
     const output = JSON.parse(fs.readFileSync(`${tmpobj.name}/rhel8_attestations_yamlOutput.json`, 'utf8').replaceAll(/\r/gi, ''))
     const expected = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json'), 'utf8').replaceAll(/\r/gi, ''))
 

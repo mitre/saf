@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-control 'V-254240' do
+control 'SV-254240' do
   title "Windows Server 2019 administrative accounts must not be used with
 applications that access the Internet, such as web browsers, or with potential
 Internet sources, such as email."

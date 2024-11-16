@@ -12,7 +12,7 @@ describe('Test supplement passthrough', () => {
   fs.copyFileSync(path.resolve('./test/sample_data/HDF/input/minimal-hdf.json'), path.resolve(`${tmpobj.name}/minimal-hdf.json`))
 
   it('Successfully writes a passthrough json to an HDF and makes a new output file', async () => {
-    const {stdout} = await runCommand<{name: string}>(['supplement passthrough write',
+    await runCommand<{name: string}>(['supplement passthrough write',
       '-i', path.resolve('./test/sample_data/HDF/input/minimal-hdf.json'),
       '-f', path.resolve('./test/sample_data/passthrough/passthrough-object.json'),
       '-o', `${tmpobj.name}/minimal-hdf-passthrough-object.json`,
@@ -24,7 +24,7 @@ describe('Test supplement passthrough', () => {
   })
 
   it('Successfully writes a passthrough json to an HDF inline', async () => {
-    const {stdout} = await runCommand<{name: string}>(['supplement passthrough write',
+    await runCommand<{name: string}>(['supplement passthrough write',
       '-i', path.resolve(`${tmpobj.name}/minimal-hdf.json`),
       '-f', path.resolve('./test/sample_data/passthrough/passthrough-object.json'),
     ])
@@ -35,7 +35,7 @@ describe('Test supplement passthrough', () => {
   })
 
   it('Successfully writes passthrough data to an HDF and makes a new output file', async () => {
-    const {stdout} = await runCommand<{name: string}>(['supplement passthrough write',
+    await runCommand<{name: string}>(['supplement passthrough write',
       '-i', path.resolve('./test/sample_data/HDF/input/minimal-hdf.json'),
       '-d', '"test string"', '-o', `${tmpobj.name}/minimal-hdf-passthrough-nonobject.json`,
     ])
@@ -46,7 +46,7 @@ describe('Test supplement passthrough', () => {
   })
 
   it('Successfully reads passthrough data from an HDF and writes it to a file', async () => {
-    const {stdout} = await runCommand<{name: string}>(['supplement passthrough read',
+    await runCommand<{name: string}>(['supplement passthrough read',
       '-i', path.resolve('./test/sample_data/passthrough/minimal-hdf-passthrough-object.json'),
       '-o', `${tmpobj.name}/passthrough-object.json`])
     const output = JSON.parse(fs.readFileSync(`${tmpobj.name}/passthrough-object.json`, 'utf8'))

@@ -12,7 +12,7 @@ describe('The generate delta command', () => {
 
   // should process delta request with rule id type
   it('should generate the controls for delta request with "rule" id type', async () => {
-    const {stdout} = await runCommand<{name: string}>(['generate delta',
+    await runCommand<{name: string}>(['generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}`,
@@ -25,7 +25,7 @@ describe('The generate delta command', () => {
   // should process delta request with no id type specified
   // should process delta with initially empty output folder
   it('should generate the output folder and place the controls in newly created folder for review', async () => {
-    const {stdout} = await runCommand<{name: string}>(['generate delta',
+    await runCommand<{name: string}>(['generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}/RHEL_7`,
@@ -35,7 +35,7 @@ describe('The generate delta command', () => {
   })
 
   it('should generate a report with given file name and place it on the specified directory', async () => {
-    const {stdout} = await runCommand<{name: string}>(['generate delta',
+    await runCommand<{name: string}>(['generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}/RHEL_7`,
@@ -45,7 +45,7 @@ describe('The generate delta command', () => {
   })
 
   it('should generate a report name delta.md and place it in the default directory', async () => {
-    const {stdout} = await runCommand<{name: string}>(['generate delta',
+    await runCommand<{name: string}>(['generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}`,
@@ -57,7 +57,7 @@ describe('The generate delta command', () => {
   // should process delta request with group id type
   // should process delta with output folder that contains controls information
   it('should generate the controls for delta request with "group" id type', async () => {
-    const {stdout} = await runCommand<{name: string}>(['generate delta',
+    await runCommand<{name: string}>(['generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}`,
@@ -69,7 +69,7 @@ describe('The generate delta command', () => {
 
   // should process delta request with cis id type
   it('should generate the controls for delta request with "cis" id type', async () => {
-    const {stdout} = await runCommand<{name: string}>(['generate delta',
+    await runCommand<{name: string}>(['generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}`,
@@ -82,7 +82,7 @@ describe('The generate delta command', () => {
   // should process delta request with version id type
   // should process delta request if given the "controls" folder
   it('should generate the controls for delta request with "version" id type', async () => {
-    const {stdout} = await runCommand<{name: string}>(['generate delta',
+    await runCommand<{name: string}>(['generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}/controls`,

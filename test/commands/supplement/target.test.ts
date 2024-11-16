@@ -12,7 +12,7 @@ describe('Test supplement target', () => {
   fs.copyFileSync(path.resolve('./test/sample_data/HDF/input/minimal-hdf.json'), path.resolve(`${tmpobj.name}/minimal-hdf.json`))
 
   it('Successfully writes a target json to an HDF and makes a new output file', async () => {
-    const {stdout} = await runCommand<{name: string}>(['supplement target write',
+    await runCommand<{name: string}>(['supplement target write',
       '-i', path.resolve('./test/sample_data/HDF/input/minimal-hdf.json'),
       '-f', path.resolve('./test/sample_data/target/target-object.json'),
       '-o', `${tmpobj.name}/minimal-hdf-target-object.json`,
@@ -24,7 +24,7 @@ describe('Test supplement target', () => {
   })
 
   it('Successfully writes a target json to an HDF inline', async () => {
-    const {stdout} = await runCommand<{name: string}>(['supplement target write',
+    await runCommand<{name: string}>(['supplement target write',
       '-i', path.resolve(`${tmpobj.name}/minimal-hdf.json`),
       '-f', path.resolve('./test/sample_data/target/target-object.json'),
     ])
@@ -35,7 +35,7 @@ describe('Test supplement target', () => {
   })
 
   it('Successfully writes target data to an HDF and makes a new output file', async () => {
-    const {stdout} = await runCommand<{name: string}>(['supplement target write',
+    await runCommand<{name: string}>(['supplement target write',
       '-i', path.resolve('./test/sample_data/HDF/input/minimal-hdf.json'),
       '-d', '"test string"', '-o', `${tmpobj.name}/minimal-hdf-target-nonobject.json`,
     ])
@@ -46,7 +46,7 @@ describe('Test supplement target', () => {
   })
 
   it('Successfully reads target data from an HDF and writes it to a file', async () => {
-    const {stdout} = await runCommand<{name: string}>(['supplement target read',
+    await runCommand<{name: string}>(['supplement target read',
       '-i', path.resolve('./test/sample_data/target/minimal-hdf-target-object.json'),
       '-o', `${tmpobj.name}/target-object.json`,
     ])
