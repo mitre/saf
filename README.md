@@ -1569,18 +1569,18 @@ generate inspec_metadata      Generate an InSpec metadata template for "saf conv
 
 #### Inspec Profile
 ```
-generate inspec_profile              Generate a new skeleton profile based on a XCCDF benchmark file
+generate inspec_profile              Generate a new skeleton profile based on a (STIG or CIS) XCCDF benchmark file 
 
 USAGE
-  $ saf generate inspec_profile -X <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] [-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]
+  $ saf generate inspec_profile -X <[stig or cis]-xccdf-xml> [-O <oval-xccdf-xml>] [-o <output-folder>] [-m <metadata-json>] [-s] [-T rule|group|cis|version] [--interactive] [-L info|warn|debug|verbose] 
 
 FLAGS
+  -X, --xccdfXmlFile=<value>     (required) Path to the XCCDF benchmark file
   -O, --ovalDefinitions=<value>  Path to an OVAL definitions file to populate profile elements that reference OVAL definitions
   -T, --idType=<option>          [default: rule] Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' -
                                  Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex.
                                  C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
                                  <options: rule|group|cis|version>
-  -X, --xccdfXmlFile=<value>     (required) Path to the XCCDF benchmark file
   -m, --metadata=<value>         Path to a JSON file with additional metadata for the inspec.yml
                                  The metadata Json is of the following format:
                                  {"maintainer": string, "copyright": string, "copyright_email": string, "license": string, "version": string}
