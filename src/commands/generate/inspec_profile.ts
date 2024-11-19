@@ -34,7 +34,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
 
   static readonly flags = {
     xccdfXmlFile: Flags.string({
-      char: 'i',
+      char: 'X',
       required: true,
       description: 'Path to the XCCDF benchmark file',
     }),

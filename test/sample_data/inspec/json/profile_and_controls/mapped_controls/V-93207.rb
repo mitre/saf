@@ -1,6 +1,6 @@
 # encoding: UTF-8
 
-control 'V-254241' do
+control 'SV-254241' do
   title "Windows Server 2019 members of the Backup Operators group must have
 separate accounts for backup duties and normal operational tasks."
   desc  "Backup Operators are able to read and write to any file in the system,
