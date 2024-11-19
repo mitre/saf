@@ -3,7 +3,6 @@ import {fingerprint} from '@mitre/hdf-converters'
 import {getInstalledPathSync} from 'get-installed-path'
 import {AnyProfile, ContextualizedEvaluation, ExecJSON} from 'inspecjs'
 import _ from 'lodash'
-import path from 'path'
 
 export type SpreadsheetTypes = 'cis' | 'disa' | 'general'
 
