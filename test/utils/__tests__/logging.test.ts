@@ -23,7 +23,7 @@ jest.mock('winston', () => {
 describe('createWinstonLogger', () => {
   it('should create a logger with the correct configuration', () => {
     // eslint-disable-next-line unicorn/prefer-module
-    const winston = require('winston')
+    const winston = require('winston') // skipcq: JS-0359
     createWinstonLogger('testMapper', 'info')
 
     expect(winston.createLogger).toHaveBeenCalledWith({

@@ -46,7 +46,7 @@ describe('Test Heimdall Embedded', () => {
       const response = await axios.get('http://localhost:3000')
       const dom = new JSDOM(response.data)
       const text = dom.window.document.body.textContent
-      expect(text).to.not.be.null
+      expect(text).to.not.be.null // skipcq: JS-0354
     } catch (error: any) {
       expect(error.message).to.equal('Request failed with status code 404')
     }
@@ -57,7 +57,7 @@ describe('Test Heimdall Embedded', () => {
       const response = await axios.get('http://localhost:3000')
       const dom = new JSDOM(response.data)
       const appDiv = dom.window.document.querySelector('#app')
-      expect(appDiv).to.not.be.null
+      expect(appDiv).to.not.be.null // skipcq: JS-0354
     } catch (error: any) {
       expect(error.message).to.equal('Request failed with status code 404')
     }

@@ -39,7 +39,7 @@ export function removeUUIDs(obj: any) {
     if (obj[key] && typeof obj[key] === 'object') {
       removeUUIDs(obj[key])
     } else if (typeof obj[key] === 'string' && isUUID(obj[key])) {
-      delete obj[key]
+      delete obj[key] // skipcq: JS-0320
     }
   }
 }

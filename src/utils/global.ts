@@ -20,35 +20,29 @@ export function checkSuffix(input: string) {
 /**
  * The `convertFullPathToFilename` function.
  *
- * This function returns the last value for a given path, using path.basename
- * witch is usually the filename.
+ * This function returns the last value for a given path witch is usually the filename.
+ * Not using path.basename as it doesn't "just work" as one would expect handling paths
+ * from other filesystem types.
  *
- * The reason this function was originally developed was due to path.basename not
- * working as expected, not sure what was observed that made it not working as expected.
- *
- * The original function code was:
- * ============================================================================
- *   let filePath = inputPath.split('/')
- *   let basename = inputPath.endsWith('/') ? filePath.at(-2) : filePath.at(-1)
- *   if (!basename) {
- *     throw new Error('Could not derive basename from file path')
- *   }
- *
- *   filePath = basename.split('\\')
- *   basename = filePath.at(-1)
- *   if (!basename) {
- *     throw new Error('Could not derive basename from file path')
- *   }
- *
- *   return basename
- * ============================================================================
  * @param inputPath - The full path to convert. This should be a string representing a valid file path.
  *
  * @returns {string} - The filename extracted from the full path. If the path does not contain a filename, an empty string is returned.
  */
-// replacement for path.basename since it doesn't "just work" as one would expect with handling paths from other filesystem types
 export function convertFullPathToFilename(inputPath: string): string {
-  return path.basename(inputPath)
+  // return path.basename(inputPath)
+  let filePath = inputPath.split('/')
+  let basename = inputPath.endsWith('/') ? filePath.at(-2) : filePath.at(-1)
+  if (!basename) {
+    throw new Error('Could not derive basename from file path using /')
+  }
+
+  filePath = basename.split('\\')
+  basename = inputPath.endsWith('\\') ? filePath.at(-2) : filePath.at(-1)
+  if (!basename) {
+    throw new Error('Could not derive basename from file path using \\')
+  }
+
+  return basename
 }
 
 /**

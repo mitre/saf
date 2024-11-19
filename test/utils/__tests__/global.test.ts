@@ -138,9 +138,9 @@ describe('getInstalledPath', () => {
     }))
 
     // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
-    const {getInstalledPath} = require('../../../src/utils/global')
+    const {getInstalledPath} = require('../../../src/utils/global') // skipcq: JS-0359
     // eslint-disable-next-line unicorn/prefer-module
-    const {getInstalledPathSync} = require('get-installed-path')
+    const {getInstalledPathSync} = require('get-installed-path') // skipcq: JS-0359
 
     const result = getInstalledPath('module-name')
 
@@ -159,9 +159,9 @@ describe('getInstalledPath', () => {
     }))
 
     // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
-    const {getInstalledPath} = require('../../../src/utils/global')
+    const {getInstalledPath} = require('../../../src/utils/global') // skipcq: JS-0359
     // eslint-disable-next-line unicorn/prefer-module
-    const {getInstalledPathSync} = require('get-installed-path')
+    const {getInstalledPathSync} = require('get-installed-path') // skipcq: JS-0359
 
     const result = getInstalledPath('module-name')
 
@@ -336,11 +336,11 @@ describe('checkInput', () => {
 
   it('should not throw an error when the detected type matches the desired type', () => {
     // eslint-disable-next-line unicorn/prefer-module
-    const {fingerprint} = require('@mitre/hdf-converters')
+    const {fingerprint} = require('@mitre/hdf-converters') // skipcq: JS-0359
     fingerprint.mockReturnValue('text')
 
     // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
-    const {checkInput} = require('../../../src/utils/global')
+    const {checkInput} = require('../../../src/utils/global') // skipcq: JS-0359
 
     const guessOptions = {data: 'file data', filename: 'file.txt'}
     const desiredType = 'text'
@@ -351,11 +351,11 @@ describe('checkInput', () => {
 
   it('should throw an error when the detected type does not match the desired type', () => {
     // eslint-disable-next-line unicorn/prefer-module
-    const {fingerprint} = require('@mitre/hdf-converters')
+    const {fingerprint} = require('@mitre/hdf-converters') // skipcq: JS-0359
     fingerprint.mockReturnValue('image')
 
     // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
-    const {checkInput} = require('../../../src/utils/global')
+    const {checkInput} = require('../../../src/utils/global') // skipcq: JS-0359
 
     const guessOptions = {data: 'file data', filename: 'file.txt'}
     const desiredType = 'text'
@@ -366,11 +366,11 @@ describe('checkInput', () => {
 
   it('should throw an error when the detected type is unknown', () => {
     // eslint-disable-next-line unicorn/prefer-module
-    const {fingerprint} = require('@mitre/hdf-converters')
+    const {fingerprint} = require('@mitre/hdf-converters') // skipcq: JS-0359
     fingerprint.mockReturnValue(null)
 
     // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
-    const {checkInput} = require('../../../src/utils/global')
+    const {checkInput} = require('../../../src/utils/global') // skipcq: JS-0359
 
     const guessOptions = {data: 'file data', filename: 'file.txt'}
     const desiredType = 'text'
