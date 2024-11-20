@@ -17,18 +17,18 @@ jobs:
     steps:
      - uses: actions/checkout@v4
 
-     - name: Setup Node.js ${{ matrix.platform }}
+     - name: Setup Node.js on ${{ matrix.platform }}
        uses: actions/setup-node@v4
        with:
         node-version: "18"
         check-latest: true
         cache: 'npm'
 
-     - name: Install dependencies ${{ matrix.platform }}
+     - name: Install dependencies on ${{ matrix.platform }}
        run: npm ci
 
-     - name: Prepack ${{ matrix.platform }}
+     - name: Prepack (compile) on ${{ matrix.platform }}
        run: npm run prepack
 
-     - name: Run e2e tests ${{ matrix.platform }}
+     - name: Run e2e tests on ${{ matrix.platform }}
        run: npm run test

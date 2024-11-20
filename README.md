@@ -244,13 +244,13 @@ USAGE
   $ saf attest create -o <attestation-file> [-i <hdf-json> -t <json | xlsx | yml | yaml>]
 
 FLAGS
-  -h, --help             Show CLI help.
   -i, --input=<value>    (optional) An input HDF file to search for controls
   -o, --output=<value>   (required) The output filename
   -t, --format=<option>  [default: json] (optional) The output file type
                          <options: json|xlsx|yml|yaml>
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -269,11 +269,11 @@ USAGE
   $ saf attest apply -i <input-hdf-json>... <attestation>... -o <output-hdf-path>
 
 FLAGS
-  -h, --help              Show CLI help.
   -i, --input=<value>...  (required) Your input HDF and Attestation file(s)
   -o, --output=<value>    (required) Output file or folder (for multiple executions)
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -302,12 +302,12 @@ convert anchoregrype2hdf         Translate a Anchore Grype output file into an H
     $ saf convert anchoregrype2hdf -i <anchoregrype-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                            Show CLI help.
     -i, --input=<anchoregrype-json>         (required) Input Anchore Grype file
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
     -w, --includeRaw                      Include raw data from the input Anchore Grype file
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -334,8 +334,6 @@ convert hdf2asff              Translate a Heimdall Data Format JSON file into
     -R, --specifyRegionAttribute            Manually specify the top-level `Region` attribute - SecurityHub
                                             populates this attribute automatically and prohibits one from
                                             updating it using `BatchImportFindings` or `BatchUpdateFindings`
-    -a, --accountId=<account-id>            (required) AWS Account ID
-    -h, --help                              Show CLI help.
     -i, --input=<hdf-scan-results-json>     (required) Input HDF JSON File
     -o, --output=<asff-output-folder>       Output ASFF JSON Folder
     -r, --region=<region>                   (required) SecurityHub Region
@@ -343,6 +341,7 @@ convert hdf2asff              Translate a Heimdall Data Format JSON file into
     -u, --upload                            Upload findings to AWS Security Hub
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -370,7 +369,6 @@ convert hdf2splunk            Translate and upload a Heimdall Data Format JSON f
     -H, --host=<host>                       (required) Splunk Hostname or IP
     -I, --index=<index>                     (required) Splunk index to import HDF data into
     -P, --port=<port>                       [default: 8089] Splunk management port (also known as the Universal Forwarder port)
-    -h, --help                              Show CLI help.
     -i, --input=<hdf-scan-results-json>     (required) Input HDF file
     -p, --password=<password>               Your Splunk password
     -s, --scheme=<option>                   [default: https] HTTP Scheme used for communication with splunk
@@ -379,6 +377,7 @@ convert hdf2splunk            Translate and upload a Heimdall Data Format JSON f
     -u, --username=<username>               Your Splunk username
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -422,11 +421,11 @@ convert hdf2xccdf             Translate an HDF file into an XCCDF XML
     $ saf convert hdf2xccdf -i <hdf-scan-results-json> -o <output-xccdf-xml> [-h]
 
   FLAGS
-    -h, --help                              Show CLI help.
     -i, --input=<hdf-scan-results-json>     (required) Input HDF file
     -o, --output=<output-xccdf-xml>         (required) Output XCCDF XML File
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -494,12 +493,12 @@ convert hdf2csv               Translate a Heimdall Data Format JSON file into a
 
   FLAGS
     -f, --fields=<csv-fields>               [default: All Fields] Fields to include in output CSV, separated by commas
-    -h, --help                              Show CLI help.
     -i, --input=<hdf-scan-results-json>     (required) Input HDF file
     -o, --output=<output-csv>               (required) Output CSV file
     -t, --noTruncate                        Don't truncate fields longer than 32,767 characters (the cell limit in Excel)
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -520,11 +519,11 @@ convert hdf2condensed         Condensed format used by some community members
     $ saf convert hdf2condensed -i <hdf-scan-results-json> -o <condensed-json> [-h]
 
   FLAGS
-    -h, --help            Show CLI help.
     -i, --input=<hdf-scan-results-json>     (required) Input HDF file
     -o, --output=<condensed-json>           (required) Output condensed JSON file
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -558,13 +557,13 @@ convert asff2hdf              Translate a AWS Security Finding Format JSON into 
                                           such as the CIS AWS Foundations or AWS Foundational Security Best
                                           Practices documents (in ASFF compliant JSON form)    
     -a, --aws                             Pull findings from AWS Security Hub
-    -h, --help                            Show CLI help.
     -i, --input=<asff-json>               (required if not using AWS) Input ASFF JSON file
     -o, --output=<hdf-output-folder>      (required) Output HDF JSON folder
     -r, --region=<region>                 Security Hub region to pull findings from
     -t, --target=<target>...              Target ID(s) to pull from Security Hub (maximum 10), leave blank for non-HDF findings
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -590,7 +589,6 @@ convert aws_config2hdf        Pull Configuration findings from AWS Config and co
 
   FLAGS
     -a, --accessKeyId=<access-key-id>           Access key ID
-    -h, --help                                  Show CLI help.
     -i, --insecure                              Disable SSL verification, this is insecure.
     -o, --output=<hdf-scan-results-json>        (required) Output HDF JSON File
     -r, --region=<region>                       (required) Region to pull findings from
@@ -598,6 +596,7 @@ convert aws_config2hdf        Pull Configuration findings from AWS Config and co
     -t, --sessionToken=<session-token>          Session token
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -614,12 +613,12 @@ convert burpsuite2hdf         Translate a BurpSuite Pro XML file into a Heimdall
     $ saf convert burpsuite2hdf -i <burpsuite-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                             Show CLI help.
     -i, --input=<burpsuite-xml>            (required) Input Burpsuite Pro XML File
     -o, --output=<hdf-scan-results-json>   (required) Output HDF JSON File
     -w, --includeRaw                       Include raw input file in HDF JSON file
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -641,12 +640,12 @@ convert ckl2POAM              Translate DISA Checklist CKL file(s) to POA&M file
   FLAGS
     -O, --officeOrg=<office/org>          Default value for Office/org (prompts for each file if not set)
     -d, --deviceName=<device-name>        Name of target device (prompts for each file if not set)
-    -h, --help                            Show CLI help.
     -i, --input=<disa-checklist>...       (required) Path to the DISA Checklist File(s)
     -o, --output=<poam-output-folder>     (required) Path to output PO&M File(s)
     -s, --rowsToSkip=<num-rows>           [default: 4] Rows to leave between POA&M Items for milestones
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -678,12 +677,12 @@ convert cyclonedx_sbom2hdf                Translate a CycloneDX SBOM report into
     $ saf convert cyclonedx_sbom2hdf -i <cyclonedx_sbom-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                            Show CLI help.
     -i, --input=<cyclonedx_sbom-json>     (required) Input CycloneDX SBOM File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
     -w, --includeRaw                      Include raw input file in HDF JSON file
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -701,12 +700,12 @@ convert dbprotect2hdf         Translate a DBProtect report in "Check Results
     $ saf convert dbprotect2hdf -i <dbprotect-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                            Show CLI help.
     -i, --input=<dbprotect-xml>           (required) 'Check Results Details' XML File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
     -w, --includeRaw                      Include raw input file in HDF JSON file
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -749,12 +748,12 @@ convert fortify2hdf           Translate a Fortify results FVDL file into a Heimd
     $ saf convert fortify2hdf -i <fortify-fvdl> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                            Show CLI help.
     -i, --input=<fortify-fvdl>            (required) Input FVDL File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
     -w, --includeRaw                      Include raw input file in HDF JSON file
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -799,7 +798,6 @@ convert ionchannel2hdf        Pull and translate SBOM data from Ion Channel
     -L, --logLevel=<option>             [default: info]
                                         <options: info|warn|debug|verbose>
     -a, --apiKey=<api-key>              API Key from Ion Channel user settings
-    -h, --help                          Show CLI help.
     -i, --input=<ionchannel-json>...    Input IonChannel JSON file
     -o, --output=<hdf-output-folder>    (required) Output JSON folder
     -p, --project=<project>...          The name of the project(s) you would like to pull
@@ -807,6 +805,7 @@ convert ionchannel2hdf        Pull and translate SBOM data from Ion Channel
         --raw                           Output Ion Channel raw data
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -830,12 +829,12 @@ convert jfrog_xray2hdf        Translate a JFrog Xray results JSON file into a
     $ saf convert jfrog_xray2hdf -i <jfrog-xray-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                            Show CLI help.
     -i, --input=<jfrog-xray-json>         (required) Input JFrog JSON File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
     -w, --includeRaw                      Include raw input file in HDF JSON file
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                             <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -880,27 +879,42 @@ Combined JSON|Combine the outputs from `security/secureScore` and `security/secu
 convert msft_secure2hdf       Translate a Microsoft Secure Score report and Secure Score Control to a Heimdall Data Format JSON file
 
   USAGE
-    $ saf convert msft_secure2hdf -r <secureScore-json> -p <secure-score-control-profiles> -o <hdf-scan-results-json> [-h]
+    $ saf convert msft_secure2hdf -p <secure-score-control-profiles> -r <secureScore-json>-o <hdf-scan-results-json> [-h]
     $ saf convert msft_secure2hdf -t <azure-tenant-id> -a <azure-app-id> -s <azure-app-secret> -o <hdf-scan-results-json> [-h]
     $ saf convert msft_secure2hdf -i <combined-inputs> -o <hdf-scan-results-json> [-h]
 
   FLAGS
-    -h, --help                                                  Show CLI help.
-    -i, --combinedInputs                                        JSON File combining the outputs from the Microsoft Graph API endpoints
-    -r, --inputScoreDoc=<secure-score-json>                     Input Secure Scores JSON File
-    -p, --inputProfiles=<secure-score-control-profiles-json>    Input Secure Score Control Profiles JSON File
-    -t, --tenantId=<azure-tenant-id>                            Azure Tenant ID
-    -a, --appId=<azure-app-id>                                  Azure App ID
-    -s, --appSecreet=<azure-app-id>                             Azure App Secret
-    -o, --output=<hdf-scan-results-json>                        Output HDF JSON File
+    -C, --certificate=<value>     Trusted signing certificate file
+    -I, --insecure                Disable SSL verification, this is insecure.
+    -a, --appId=<value>           Azure application ID
+    -i, --combinedInputs=<value>  JSON File combining the outputs from the Microsoft Graph API endpoints
+                                  {secureScore: <CONTENTS_OF_INPUT_SCORE_DOC>}, profiles: <CONTENTS_OF_INPUT_PROFILES_DOC>
+    -o, --output=<value>          (required) Output HDF JSON file
+    -p, --inputProfiles=<value>   Input Microsoft Graph API "GET /security/secureScoreControlProfiles" output JSON File
+    -r, --inputScoreDoc=<value>   Input Microsoft Graph API "GET /security/secureScores" output JSON File
+    -s, --appSecret=<value>       Azure application secret
+    -t, --tenantId=<value>        Azure tenant ID
+    -w, --includeRaw              Include raw input file in HDF JSON file
+
+  GLOBAL FLAGS
+    -h, --help               Show CLI help
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
 
   EXAMPLES
-    $ saf convert msft_secure2hdf -r secureScore.json -p secureScoreControlProfile.json -o output-hdf-name.json
-    $ saf convert msft_secure2hdf -t "12345678-1234-1234-1234-1234567890abcd"   \
-                                  -a "12345678-1234-1234-1234-1234567890abcd"   \
-                                  -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" \
-                                  -o output-hdf-name.json
-    $ saf convert msft_secure2hdf -i <(jq -s \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json) -o output-hdf-name.json
+    Using input files
+      $ saf convert msft_secure2hdf -p secureScore.json -r secureScoreControlProfiles -o output-hdf-name.json
+
+    Using Azure tenant ID
+      $ saf convert msft_secure2hdf -t "12345678-1234-1234-1234-1234567890abcd"   \
+                                    -a "12345678-1234-1234-1234-1234567890abcd"   \
+                                    -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" \
+                                    -o output-hdf-name.json [-I | -C <certificate>]
+
+    Using combined inputs
+      $ saf convert msft_secure2hdf -i <(jq '{"secureScore": .[0], "profiles": .[1]}' secureScore.json secureScoreControlProfiles.json) -o output-hdf-name.json
+
 ```
 
 [top](#convert-other-formats-to-hdf)
@@ -914,12 +928,12 @@ convert netsparker2hdf        Translate a Netsparker XML results file into a
     $ saf convert netsparker2hdf -i <netsparker-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                            Show CLI help.
     -i, --input=<netsparker-xml>          (required) Input Netsparker XML File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
     -w, --includeRaw                      Include raw input file in HDF JSON file
 
 GLOBAL FLAGS
+  -h, --help               Show CLI help
   -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                            <options: info|warn|debug|verbose>
       --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -960,12 +974,12 @@ convert nikto2hdf             Translate a Nikto results JSON file into a Heimdal
     $ saf convert nikto2hdf -i <nikto-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                            Show CLI help.
     -i, --input=<nikto-json>              (required) Input Niktop Results JSON File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
     -w, --includeRaw                      Include raw input file in HDF JSON file
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1001,11 +1015,11 @@ convert prowler2hdf           Translate a Prowler-derived AWS Security Finding
     $ saf convert prowler2hdf -i <prowler-finding-json> -o <hdf-output-folder> [-h]
 
   FLAGS
-    -h, --help                            Show CLI help.
     -i, --input=<prowler-finding-json>    (required) Input Prowler ASFF JSON File
     -o, --output=<hdf-output-folder>      (required) Output HDF JSON Folder
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                             <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1022,12 +1036,12 @@ convert sarif2hdf             Translate a SARIF JSON file into a Heimdall Data
     $ saf convert sarif2hdf -i <sarif-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                            Show CLI help
     -i, --input=<sarif-json>              (required) Input SARIF JSON File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
     -w, --includeRaw                      Include raw input file in HDF JSON file
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1055,12 +1069,12 @@ convert scoutsuite2hdf        Translate a ScoutSuite results from a Javascript
     $ saf convert scoutsuite2hdf -i <scoutsuite-results-js> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                            Show CLI help
     -i, --input=<scoutsuite-results-js>   (required) Input ScoutSuite Results JS File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
     -w, --includeRaw                      Include raw input file in HDF JSON file
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                             <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1079,11 +1093,11 @@ convert snyk2hdf              Translate a Snyk results JSON file into a Heimdall
     $ saf convert snyk2hdf -i <snyk-json> -o <hdf-scan-results-json> [-h]
 
   FLAGS
-    -h, --help                            Show CLI help.
     -i, --input=<snyk-json>               (required) Input Snyk Results JSON File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1102,7 +1116,6 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
     $ saf convert sonarqube2hdf -n <sonar-project-key> -u <http://your.sonar.instance:9000> -a <your-sonar-api-key> [ -b <target-branch> | -p <pull-request-id> ] -o <hdf-scan-results-json>
 
   FLAGS
-    -h, --help                                    Show CLI help 
     -a, --auth=<your-sonar-api-key>               (required) SonarQube API Key
     -n, --projectKey=<sonar-project-key>          (required) SonarQube Project Key
     -o, --output=<hdf-scan-results-json>          (required) Output HDF JSON File
@@ -1111,6 +1124,7 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
     -p, --pullRequestID=<pull-request-id>         Requires Sonarqube Developer Edition or above
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1158,11 +1172,11 @@ convert trivy2hdf             Translate a Trivy-derived AWS Security Finding
     $ saf convert trivy2hdf -i <trivy-finding-json> -o <hdf-output-folder>
 
   FLAGS
-    -h, --help                        Show CLI help.
     -i, --input=<trivy-finding-json>  (required) Input Trivy ASFF JSON File
     -o, --output=<hdf-output-folder>  (required) Output HDF JSON Folder
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1187,12 +1201,12 @@ convert trufflehog2hdf         Translate a Trufflehog output file into an HDF re
     $ saf convert trufflehog2hdf -i <trufflehog-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                            Show CLI help.
     -i, --input=<trufflehog-json>         (required) Input Trufflehog file
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
     -w, --includeRaw                      Include raw input file in HDF JSON file
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1210,12 +1224,12 @@ convert twistlock2hdf         Translate a Twistlock CLI output file into an HDF 
     $ saf convert twistlock2hdf -i <twistlock-json> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                            Show CLI help.
     -i, --input=<twistlock-json>          (required) Input Twistlock file
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
     -w, --includeRaw                      Include raw input file in HDF JSON file
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1233,11 +1247,11 @@ convert veracode2hdf          Translate a Veracode XML file into a Heimdall Data
     $ saf convert veracode2hdf -i <veracode-xml> -o <hdf-scan-results-json> [-h]
 
   FLAGS
-    -h, --help                            Show CLI help
     -i, --input=<veracode-xml>            (required) Input Veracode XML File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1255,12 +1269,12 @@ convert xccdf_results2hdf     Translate a SCAP client XCCDF-Results XML report
     $ saf convert xccdf_results2hdf -i <xccdf-results-xml> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help            Show CLI help.
     -i, --input=<xccdf-results-xml>       (required) Input XCCDF Results XML File
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
     -w, --includeRaw                      Include raw input file in HDF JSON file
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1278,13 +1292,13 @@ convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall D
     $ saf convert zap2hdf -i <zap-json> -n <target-site-name> -o <hdf-scan-results-json> [-h] [-w]
 
   FLAGS
-    -h, --help                            Show CLI help.
     -i, --input=<zap-json>                (required) Input OWASP Zap Results JSON File
     -n, --name=<target-site-name>         (required) Target Site Name
     -o, --output=<hdf-scan-results-json>  (required) Output HDF JSON File
     -w, --includeRaw                      Include raw input file in HDF JSON file
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1337,8 +1351,8 @@ view heimdall                 Run an instance of Heimdall Lite to
     $ saf view heimdall [-h] [-p <port>] [-f <file>] [-n]
 
   FLAGS
+    -h, --help              Show CLI help
     -f, --files=<file>...   File(s) to display in Heimdall
-    -h, --help              Show CLI help.
     -n, --noOpenBrowser     Don't open the default browser automatically
     -p, --port=<port>       [default: 3000] Port To Expose Heimdall On (Default 3000)
 
@@ -1424,10 +1438,10 @@ validate threshold            Validate the compliance and status counts of an HD
     -F, --templateFile=<template-file>                Expected data template, generate one with "saf generate threshold"
     -T, --templateInline=<flattened-threshold-json>   Flattened JSON containing your validation thresholds
                                                       (Intended for backwards compatibility with InSpec Tools)
-    -h, --help                                        Show CLI help.
     -i, --input=<hdf-json>                            (required) Input HDF JSON File
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1454,7 +1468,6 @@ USAGE
     [-O <value> | ] [-r <value> | ] [-T rule|group|cis|version | ] [-M -c <value>]
 
 FLAGS
-  -h, --help               Show CLI help.
   -J, --inspecJsonFile=<value>  (required if not --interactive) Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command
   -X, --xccdfXmlFile=<value>    (required if not --interactive) The XCCDF XML file containing the new guidance - in the form of .xml file
   -o, --deltaOutputDir=<value>  (required if not --interactive) The output folder for the updated profile - if not empty it will be overwritten
@@ -1470,6 +1483,7 @@ FLAGS
   -r, --report=<value>          Output markdown report file - must have an extension of .md
 
 GLOBAL FLAGS
+  -h, --help               Show CLI help
   -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                           <options: info|warn|debug|verbose>
       --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1491,7 +1505,6 @@ USAGE
   $ saf generate update_controls4delta -X <value> -J <value> -c <value> [-P V|VS] [--[no-]useXccdfGroupId] [--[no-]backupControls] [--[no-]formatControls] [-L info|warn|debug|verbose]
 
 FLAGS
-  -h, --help                    Show CLI help.
   -X, --xccdfXmlFile=<value>    (required) The XCCDF XML file containing the new guidance - in the form of an .xml file
   -c, --controlsDir=<value>     (required) The InSpec profile controls directory containing the profiles to be updated  
   -J, --inspecJsonFile=<value>  Input execution/profile JSON file - can be generated using the "inspec json <profile path> > profile.json"
@@ -1505,6 +1518,7 @@ FLAGS
                                 [default: true]
 
 GLOBAL FLAGS
+  -h, --help               Show CLI help
   -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                             <options: info|warn|debug|verbose>
       --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1530,10 +1544,10 @@ generate ckl_metadata         Generate a checklist metadata template for "saf co
     $ saf generate ckl_metadata -o <json-file> [-h]
 
   FLAGS
-    -h, --help                Show CLI help.
     -o, --output=<json-file>  (required) Output JSON File
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1554,10 +1568,10 @@ generate inspec_metadata      Generate an InSpec metadata template for "saf conv
     $ saf generate inspec_metadata -o <json-file>
 
   FLAGS
-    -h, --help                Show CLI help.
     -o, --output=<json-file>  (required) Output JSON File
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1572,15 +1586,15 @@ generate inspec_metadata      Generate an InSpec metadata template for "saf conv
 generate inspec_profile              Generate a new skeleton profile based on a XCCDF benchmark file
 
 USAGE
-  $ saf generate inspec_profile -i <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] [-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]
+  $ saf generate inspec_profile -X <stig-xccdf-xml> [-O <oval-xccdf-xml] [-o <output-folder>] [-m <metadata-json>] [-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)] [-h] [--interactive]
 
 FLAGS
+  -X, --xccdfXmlFile=<value>     (required) Path to the XCCDF benchmark file  
   -O, --ovalDefinitions=<value>  Path to an OVAL definitions file to populate profile elements that reference OVAL definitions
   -T, --idType=<option>          [default: rule] Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' -
                                  Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex.
                                  C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
                                  <options: rule|group|cis|version>
-  -i, --xccdfXmlFile=<value>     (required) Path to the XCCDF benchmark file
   -m, --metadata=<value>         Path to a JSON file with additional metadata for the inspec.yml
                                  The metadata Json is of the following format:
                                  {"maintainer": string, "copyright": string, "copyright_email": string, "license": string, "version": string}
@@ -1589,16 +1603,17 @@ FLAGS
   -s, --singleFile               Output the resulting controls as a single file
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
-                            <options: info|warn|debug|verbose>
+                             <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
 
 ALIASES
   $ saf generate xccdf_benchmark2inspec_stub
 
 EXAMPLES
-  $ saf generate xccdf_benchmark2inspec_stub -i ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md
-  $ saf generate xccdf_benchmark2inspec_stub -i ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml -O ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml --logLevel debug
+  $ saf generate xccdf_benchmark2inspec_stub -X ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml -T group --logLevel debug -r rhel-6-update-report.md
+  $ saf generate xccdf_benchmark2inspec_stub -X ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-xccdf.xml -O ./CIS_Ubuntu_Linux_18.04_LTS_Benchmark_v1.1.0-oval.xml --logLevel debug
 ```
 [top](#generate-data-reports-and-more)
 #### Thresholds
@@ -1618,11 +1633,11 @@ generate threshold            Generate a compliance template for "saf validate t
   FLAGS
     -c, --generateControlIds  Validate control IDs have the correct severity and status
     -e, --exact               All counts should be exactly the same when validating, not just less than or greater than
-    -h, --help                Show CLI help.
     -i, --input=<value>       (required) Input HDF JSON File
     -o, --output=<value>      Output Threshold YAML File
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1758,11 +1773,11 @@ USAGE
   $ saf supplement passthrough read -i <hdf-json> [-o <passthrough-json>]
 
 FLAGS
-  -h, --help            Show CLI help.
   -i, --input=<value>   (required) An input HDF file
   -o, --output=<value>  An output `passthrough` JSON file (otherwise the data is sent to stdout)
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1783,11 +1798,11 @@ USAGE
 FLAGS
   -d, --passthroughData=<value>  Input passthrough-data (can be any valid JSON); this flag or `passthroughFile` must be provided
   -f, --passthroughFile=<value>  An input passthrough-data file (can contain any valid JSON); this flag or `passthroughData` must be provided
-  -h, --help                     Show CLI help.
   -i, --input=<value>            (required) An input Heimdall Data Format file
   -o, --output=<value>           An output Heimdall Data Format JSON file (otherwise the input file is overwritten)
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1850,11 +1865,11 @@ USAGE
   $ saf supplement target read -i <hdf-json> [-o <target-json>]
 
 FLAGS
-  -h, --help            Show CLI help.
   -i, --input=<value>   (required) An input HDF file
   -o, --output=<value>  An output `target` JSON file (otherwise the data is sent to stdout)
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)
@@ -1875,11 +1890,11 @@ USAGE
 FLAGS
   -d, --targetData=<value>  Input target-data (can be any valid JSON); this flag or `targetFile` must be provided
   -f, --targetFile=<value>  An input target-data file (can contain any valid JSON); this flag or `targetData` must be provided
-  -h, --help                Show CLI help.
   -i, --input=<value>       (required) An input Heimdall Data Format file
   -o, --output=<value>      An output Heimdall Data Format JSON file (otherwise the input file is overwritten)
 
   GLOBAL FLAGS
+    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
         --interactive        Collect input tags interactively (not available on all CLI commands)

@@ -11,7 +11,6 @@ export default class ReadPassthrough extends BaseCommand<typeof ReadPassthrough>
     static readonly examples = ['<%= config.bin %> <%= command.id %> -i hdf.json -o passthrough.json']
 
     static readonly flags = {
-      help: Flags.help({char: 'h'}),
       input: Flags.string({char: 'i', required: true, description: 'An input HDF file'}),
       output: Flags.string({char: 'o', description: 'An output `passthrough` JSON file (otherwise the data is sent to stdout)'}),
     }
