@@ -904,7 +904,7 @@ convert msft_secure2hdf       Translate a Microsoft Secure Score report and Secu
 
   EXAMPLES
     Using input files
-      $ saf convert msft_secure2hdf -p secureScore.json -r secureScoreControlProfiles -o output-hdf-name.json
+      $ saf convert msft_secure2hdf -p secureScore.json -r secureScoreControlProfiles -o output-hdf-name.json [-w]
 
     Using Azure tenant ID
       $ saf convert msft_secure2hdf -t "12345678-1234-1234-1234-1234567890abcd"   \
@@ -913,7 +913,8 @@ convert msft_secure2hdf       Translate a Microsoft Secure Score report and Secu
                                     -o output-hdf-name.json [-I | -C <certificate>]
 
     Using combined inputs
-      $ saf convert msft_secure2hdf -i <(jq '{"secureScore": .[0], "profiles": .[1]}' secureScore.json secureScoreControlProfiles.json) -o output-hdf-name.json
+      $ saf convert msft_secure2hdf -i <(jq '{"secureScore": .[0], "profiles": .[1]}' secureScore.json secureScoreControlProfiles.json)> \
+                                    -o output-hdf-name.json [-w]
 
 ```
 
@@ -1583,7 +1584,7 @@ generate inspec_metadata      Generate an InSpec metadata template for "saf conv
 
 #### Inspec Profile
 ```
-generate inspec_profile              Generate a new skeleton profile based on a XCCDF benchmark file
+generate inspec_profile              Generate a new skeleton profile based on a (STIG or CIS) XCCDF benchmark file 
 
 USAGE
   $ saf generate inspec_profile -X <stig-xccdf-xml> [-O <oval-xccdf-xml] [-o <output-folder>] [-m <metadata-json>] [-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)] [-h] [--interactive]

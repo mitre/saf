@@ -17,7 +17,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     '[-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)] [-h] [--interactive]'
 
   static readonly description =
-    'Generate a new skeleton profile based on a XCCDF benchmark file'
+    'Generate a new skeleton profile based on a (STIG or CIS) XCCDF benchmark file'
 
   static readonly examples = [
     {
@@ -113,7 +113,9 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     const xmlDoc = new parser.XMLParser(options).parse(xccdf)
     let outDir = ''
     if (flags.output === 'profile') {
-      const benchmarkTitle = _.get(xmlDoc, 'Benchmark.title')
+      const benchmarkTitle = (flags.idType.toLocaleLowerCase() === 'cis') ?
+        _.get(xmlDoc, 'xccdf:Benchmark.xccdf:title.#text') :
+        _.get(xmlDoc, 'Benchmark.title')
       outDir = (benchmarkTitle === undefined) ?
         flags.output :
         benchmarkTitle.replace('Security Technical Implementation Guide', 'stig-baseline')
@@ -176,8 +178,11 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
 
     // Set profile default values (values used to generate the inspect.yml file)
     logger.info('Generating markdown and yaml files...')
-    const readmeObj = getReadmeContent(xmlDoc)
+    const readmeObj = flags.idType.toLocaleLowerCase() === 'cis' ?
+      getCISReadmeContent(xmlDoc) :
+      getDISAReadmeContent(xmlDoc)
 
+    // Set default values for the inspec.yml file
     profile.name = readmeObj.profileName
     profile.title = readmeObj.profileTitle
     profile.maintainer = 'MITRE SAF Team'
@@ -206,6 +211,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     generateLicense(outDir, logger)
     generateNotice(outDir, logger)
     generateRubocopYml(outDir, logger)
+    generateGemRc(outDir, logger)
     generateGemFile(outDir, logger)
     generateRakeFile(outDir, logger)
     generateGitIgnoreFile(outDir, logger)
@@ -231,17 +237,25 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
         )
       })
     }
+
+    logger.info('Generation of skeleton profile completed - All done now')
   }
 }
 
-function getReadmeContent(_xmlDoc: any): InspecReadme {
+function getDISAReadmeContent(_xmlDoc: any): InspecReadme {
   const readmeObj: InspecReadme = {
     profileName: '',
     profileTitle: '',
     profileVersion: '',
-    stigVersion: '',
-    stigDate: '',
+    benchmarkVersion: '',
+    benchmarkDate: '',
     profileShortName: '',
+    profileType: 'STIG',
+    profileGuidance: 'STIG Guidance',
+    profileGuidanceAgency: 'Defense Information Systems Agency (DISA)',
+    profileDeveloperPartner: 'in partnership between the DISA Services Directorate (SD) and the DISA Risk Management Executive (RME) office',
+    profileCompliance: '[Department of Defense (DoD) STIG](https://public.cyber.mil/stigs/)',
+    profileDevelopers: 'DISA RME and DISA SD Office, along with their vendor partners, create and maintain a set of Security Technical Implementation Guides',
   }
 
   const benchmarkTitle = _.get(_xmlDoc, 'Benchmark.title')
@@ -256,7 +270,7 @@ function getReadmeContent(_xmlDoc: any): InspecReadme {
   // stigRelDate is in the form of: ["Release"," 1 Benchmark Date"," 24 Jul 2024"]
   const stigRelDate = releaseInfoObj['#text'].split(':')
   const stigRelease = stigRelDate[1].trim().split(' ')[0]
-  const sitgVersion = `Version ${stigVersion} Release ${stigRelease} (V${stigVersion}R${stigRelease})`
+  const stigDisplayVersion = `Version ${stigVersion} Release ${stigRelease} (V${stigVersion}R${stigRelease})`
   const stigDate = stigRelDate[2]
 
   readmeObj.profileName = benchmarkTitle.replace(
@@ -265,8 +279,38 @@ function getReadmeContent(_xmlDoc: any): InspecReadme {
   readmeObj.profileShortName = benchmarkTitle.replace('Security Technical Implementation Guide', '').trim()
   readmeObj.profileTitle = benchmarkTitle
   readmeObj.profileVersion = `${stigVersion}.${stigRelease}.0`
-  readmeObj.stigDate = stigDate
-  readmeObj.stigVersion = sitgVersion
+  readmeObj.benchmarkDate = stigDate
+  readmeObj.benchmarkVersion = stigDisplayVersion
+
+  return readmeObj
+}
+
+function getCISReadmeContent(_xmlDoc: any): InspecReadme {
+  const readmeObj: InspecReadme = {
+    profileName: '',
+    profileTitle: '',
+    profileVersion: '',
+    benchmarkVersion: '',
+    benchmarkDate: '',
+    profileShortName: '',
+    profileType: 'CIS',
+    profileGuidance: 'CIS Guidance',
+    profileGuidanceAgency: 'Center for Internet Security (CIS)',
+    profileDeveloperPartner: '',
+    profileCompliance: '[Center for Internet Security (CIS) Benchmark](https://www.cisecurity.org/cis-benchmarks)',
+    profileDevelopers: 'Center for Internet Security, Inc. (CIS®) create and maintain a set of Critical Security Controls (CIS Controls)',
+  }
+
+  const benchmarkTitle = _.get(_xmlDoc, 'xccdf:Benchmark.xccdf:title.#text')
+  const cisVersion = _.get(_xmlDoc, 'xccdf:Benchmark.xccdf:version')
+  const cisDate = _.get(_xmlDoc, 'xccdf:Benchmark.xccdf:status.@_date')
+
+  readmeObj.profileName = benchmarkTitle.replaceAll(' ', '-').toLowerCase()
+  readmeObj.profileShortName = benchmarkTitle.replace('Benchmark', '').trim()
+  readmeObj.profileTitle = benchmarkTitle
+  readmeObj.profileVersion = cisVersion
+  readmeObj.benchmarkDate = cisDate
+  readmeObj.benchmarkVersion = cisVersion
 
   return readmeObj
 }
@@ -275,29 +319,28 @@ function generateReadme(contentObj: InspecReadme, outDir: string, logger: Logger
   const readmeContent =
 `# ${contentObj.profileTitle}
 This InSpec Profile was created to facilitate testing and auditing of \`${contentObj.profileShortName}\`
-infrastructure and applications when validating compliancy with Department of [Defense (DoD) STIG](https://iase.disa.mil/stigs/)
+infrastructure and applications when validating compliancy with ${contentObj.profileCompliance}
 requirements
 
-- Profile Version: ${contentObj.profileVersion}
-- STIG Date: ${contentObj.stigDate}    
-- STIG Version: ${contentObj.stigVersion}
+- Profile Version: **${contentObj.profileVersion.trim()}**
+- Benchmark Date: **${contentObj.benchmarkDate.trim()}**
+- Benchmark Version: **${contentObj.benchmarkVersion.trim()}**
 
 
 This profile was developed to reduce the time it takes to perform a security checks based upon the
-STIG Guidance from the Defense Information Systems Agency (DISA) in partnership between the DISA
-Services Directorate (SD) and the DISA Risk Management Executive (RME) office.
+${contentObj.profileGuidance} from the ${contentObj.profileGuidanceAgency} ${contentObj.profileDeveloperPartner}.
 
 The results of a profile run will provide information needed to support an Authority to Operate (ATO)
 decision for the applicable technology.
 
-The ${contentObj.profileShortName} STIG Profile uses the [InSpec](https://github.com/inspec/inspec)
+The ${contentObj.profileShortName} ${contentObj.profileType} Profile uses the [InSpec](https://github.com/inspec/inspec)
 open-source compliance validation language to support automation of the required compliance, security
 and policy testing for Assessment and Authorization (A&A) and Authority to Operate (ATO) decisions
 and Continuous Authority to Operate (cATO) processes.
 
 Table of Contents
 =================
-* [STIG Information](#stig-information)
+* [${contentObj.profileType} Benchmark  Information](#benchmark-information)
 * [Getting Started](#getting-started)
     * [Intended Usage](#intended-usage)
     * [Tailoring to Your Environment](#tailoring-to-your-environment)
@@ -308,21 +351,20 @@ Table of Contents
     * [Different Run Options](#different-run-options)
 * [Using Heimdall for Viewing Test Results](#using-heimdall-for-viewing-test-results)
 
-## STIG Information
-The DISA RME and DISA SD Office, along with their vendor partners, create and maintain a set
-of Security Technical Implementation Guides for applications, computer systems and networks
+## Benchmark Information
+The ${contentObj.profileDevelopers} for applications, computer systems and networks
 connected to the Department of Defense (DoD). These guidelines are the primary security standards
-used by the DoD agencies. In addition to defining security guidelines, the STIGs also stipulate
+used by the DoD agencies. In addition to defining security guidelines, the ${contentObj.profileType}s also stipulate
 how security training should proceed and when security checks should occur. Organizations must
 stay compliant with these guidelines or they risk having their access to the DoD terminated.
 
-Requirements associated with the ${contentObj.profileShortName} STIG are derived from the
+Requirements associated with the ${contentObj.profileShortName} ${contentObj.profileType} are derived from the
 [Security Requirements Guides](https://csrc.nist.gov/glossary/term/security_requirements_guide)
 and align to the [National Institute of Standards and Technology](https://www.nist.gov/) (NIST)
 [Special Publication (SP) 800-53](https://csrc.nist.gov/Projects/risk-management/sp800-53-controls/release-search#!/800-53)
 Security Controls, [DoD Control Correlation Identifier](https://public.cyber.mil/stigs/cci/) and related standards.
 
-The ${contentObj.profileShortName} STIG profile checks were developed to provide technical implementation
+The ${contentObj.profileShortName} ${contentObj.profileType} profile checks were developed to provide technical implementation
 validation to the defined DoD requirements, the guidance can provide insight for any organizations wishing
 to enhance their security posture and can be tailored easily for use in your organization.
 
@@ -330,7 +372,7 @@ to enhance their security posture and can be tailored easily for use in your org
 ## Getting Started  
 It is intended and recommended that InSpec run this profile from a __"runner"__ host
 (such as a DevOps orchestration server, an administrative management system, or a developer's workstation/laptop)
-against the target remotely over __winrm__.
+against the target remotely over the best transporter (SSH, TLS, HTTPS, WinRM, etc).
 
 __For the best security of the runner, always install the _latest version_ of InSpec on the runner
     and supporting Ruby language components.__ 
@@ -350,40 +392,69 @@ The latest versions and installation options are available at the [InSpec](http:
 [top](#table-of-contents)
 ### Tailoring to Your Environment
 The \`inspec.yml\` file contains metadata that describes the profile.
+<h3>
 
-***[Update the \`inspec.yml\` file parameter \`inputs\` with a list of inputs appropriate
- for the profile and specific environment. Also update the inspec_version to the required version]***
+> [!WARNING] 
+>Do not change the inputs in the inspec.yml file
+</h3>
+
+This profile uses InSpec Inputs to make the tests more flexible. You are able to provide inputs at
+runtime either via the cli or via YAML files to help the profile work best in your deployment.
+
+The \`inputs\` configured in the \`inspec.yml\` file are **profile definition and defaults for the profile**
+only. InSpec provides two ways to customize profiles behavior at run-time that does not require modifying
+the \`inspec.yml\` file itself. 
+
+The reason the \`inspec.ym;\` should not be modified is because automated profiles like this one are invoked
+from a script, inside a pipeline or some kind of task scheduler. Such automation usually works by running the
+profile directly from its source (i.e. this repository), which means the runner will not have access to the
+\`inspec.yml\`.
+
+To tailor the tested values for your deployment or organizationally defined values, **_you may update the inputs_**.
+
+>[!NOTE]
+> Inputs are variables that can be referenced by any control in the profile, and are defined
+  and given a default value in the \`inspec.yml\` file. 
+
+#### Update Profile Inputs from the CLI or Local File
+Inputs can be overridden by providing an input file or a CLI flag at execution time.
+
+1. Via the cli with the \`--input\` flag
+  
+    Example: \`[inspec or cinc-auditor] exec <my-profile.tar.gz> --input disable_slow_controls=true\`
+
+2. Pass them in a YAML file with the \`--input-file\` flag.
+    
+    Example: \`[inspec or cinc-auditor] exec <my-profile.tar.gz> --input-file=<my_inputs_file.yml>\`
+
+Example Inputs
+
+\`\`\`yaml
+  # This file specifies the attributes for the configurable controls
+  # used in the ${contentObj.profileShortName} ${contentObj.profileType}.
+
+  # Controls that are known to consistently have long run times can be disabled with this attribute
+  disable_slow_controls: false
+
+  # List of configuration files for the specific system
+  logging_conf_files: [
+    <dir-path-1>/*.conf
+    <dir-path-2>/*.conf
+  ]
+\`\`\`
+
+>[!TIP]
+> For additional information about \`input\` file examples references the [MITRE SAF Training](https://mitre.github.io/saf-training/courses/beginner/06.html#input-file-example)
 
 Chef InSpec Resources:
 - [InSpec Profile Documentation](https://docs.chef.io/inspec/profiles/).
 - [InSpec Inputs](https://docs.chef.io/inspec/profiles/inputs/).
 - [inspec.yml](https://docs.chef.io/inspec/profiles/inspec_yml/).
 
->[!NOTE]
-> Inputs are variables that can be referenced by any control in the profile, and are defined
-  and given a default value in the \`inspec.yml\` file.
-
-Below is an example how the \`inputs\` are defined in the \`inspec.yml\`:
-\`\`\`
-inputs:
-  # Skip controls that take a long time to test 
-  - name: disable_slow_controls
-    description: Controls that are known to consistently have long run times can be disabled with this attribute
-    type: Boolean
-    value: false
-
-  # List of configuration files for the specific system
-  - name: logging_conf_files
-    description: Configuration files for the logging service
-    type: Array
-    value:
-      - <dir-path-1>/*.conf
-      - <dir-path-2>/*.conf
-\`\`\`
 
 [top](#table-of-contents)
 ### Testing the Profile Controls
-The Gemfile provided contains all necessary ruby dependencies for checking the profile controls.
+The Gemfile provided contains all the necessary ruby dependencies for checking the profile controls.
 #### Requirements
 All action are conducted using \`ruby\` (gemstone/programming language). Currently \`inspec\` 
 commands have been tested with ruby version 3.1.2. A higher version of ruby is not guaranteed to
@@ -393,27 +464,23 @@ Install ruby based on the OS being used, see [Installing Ruby](https://www.ruby-
 
 After installing \`ruby\` install the necessary dependencies by invoking the bundler command
 (must be in the same directory where the Gemfile is located):
-\`\`\`
+\`\`\`bash
 bundle install
 \`\`\`
 
 #### Testing Commands
-Ensure the controls are chef-style formatted:
-\`\`\`
-  bundle exec cookstyle -a ./controls
-\`\`\`
 
 Linting and validating controls:
-\`\`\`
-  bundle exec rake inspec:check          # validate the inspec profile
-  bundle exec rake lint                  # Run RuboCop
-  bundle exec rake lint:autocorrect      # Autocorrect RuboCop offenses (only when it's safe)
-  bundle exec rake lint:autocorrect_all  # Autocorrect RuboCop offenses (safe and unsafe)
-  bundle exec rake pre_commit_checks     # pre-commit checks
+\`\`\`bash
+  bundle exec rake [inspec or cinc-auditor]:check # validate the inspec profile
+  bundle exec rake lint                           # Run RuboCop
+  bundle exec rake lint:autocorrect               # Autocorrect RuboCop offenses (only when it's safe)
+  bundle exec rake lint:autocorrect_all           # Autocorrect RuboCop offenses (safe and unsafe)
+  bundle exec rake pre_commit_checks              # pre-commit checks
 \`\`\`
 
 Ensure the controls are ready to be committed into the repo:
-\`\`\`
+\`\`\`bash
   bundle exec rake pre_commit_checks
 \`\`\`
 
@@ -424,12 +491,12 @@ Ensure the controls are ready to be committed into the repo:
 This options is best used when network connectivity is available and policies permit
 access to the hosting repository.
 
-\`\`\`
+\`\`\`bash
 # Using \`ssh\` transport
-bundle exec inspec exec https://github.com/mitre/${contentObj.profileTitle}/archive/main.tar.gz --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
+bundle exec [inspec or cinc-auditor] exec https://github.com/mitre/${contentObj.profileName}/archive/main.tar.gz --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
 
 # Using \`winrm\` transport
-bundle exec inspec exec https://github.com/mitre/${contentObj.profileTitle}/archive/master.tar.gz --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>
+bundle exec [inspec or cinc-auditor] exec https://github.com/mitre/${contentObj.profileName}/archive/master.tar.gz --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>
 \`\`\`
 
 [top](#table-of-contents)
@@ -442,32 +509,32 @@ Git can be downloaded from the [Git](https://git-scm.com/book/en/v2/Getting-Star
 
 When the **"runner"** host uses this profile overlay for the first time, follow these steps:
 
-\`\`\`
+\`\`\`bash
 mkdir profiles
 cd profiles
-git clone https://github.com/mitre/${contentObj.profileTitle}.git
-bundle exec inspec archive ${contentObj.profileTitle}
+git clone https://github.com/mitre/${contentObj.profileName}.git
+bundle exec [inspec or cinc-auditor] archive ${contentObj.profileName}
 
 # Using \`ssh\` transport
-bundle exec inspec exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
+bundle exec [inspec or cinc-auditor] exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
 
 # Using \`winrm\` transport
-bundle exec inspec exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
+bundle exec [inspec or cinc-auditor] exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
 \`\`\`
 
 For every successive run, follow these steps to always have the latest version of this profile baseline:
 
-\`\`\`
-cd ${contentObj.profileTitle}
+\`\`\`bash
+cd ${contentObj.profileName}
 git pull
 cd ..
-bundle exec inspec archive ${contentObj.profileTitle} --overwrite
+bundle exec [inspec or cinc-auditor] archive ${contentObj.profileName} --overwrite
 
 # Using \`ssh\` transport
-bundle exec inspec exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
+bundle exec [inspec or cinc-auditor] exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
 
 # Using \`winrm\` transport
-bundle exec inspec exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
+bundle exec [inspec or cinc-auditor] exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
 \`\`\`
 
 [top](#table-of-contents)
@@ -489,20 +556,42 @@ Heimdall can **_export your results into a DISA Checklist (CKL) file_** for easi
 Depending on your environment restrictions, the [SAF CLI](https://saf-cli.mitre.org) can be used to run a local docker instance
 of Heimdall-Lite via the \`saf view:heimdall\` command.
 
-Additionally both Heimdall applications can be deployed via docker, kurbernetes, or the installation packages.
+Additionally both Heimdall applications can be deployed via docker, kubernetes, or the installation packages.
 
 [top](#table-of-contents)
 ## Authors
-Defense Information Systems Agency (DISA) https://www.disa.mil/
-
-STIG support by DISA Risk Management Team and Cyber Exchange https://public.cyber.mil/
+${contentObj.profileType === 'CIS' ?
+    'Center for Internet Security (CIS) https://www.cisecurity.org/' :
+    'Defense Information Systems Agency (DISA) https://www.disa.mil/\n\n' +
+  'STIG support by DISA Risk Management Team and Cyber Exchange https://public.cyber.mil/'
+}
 
 MITRE Security Automation Framework Team https://saf.mitre.org
 
 ## NOTICE
-DISA STIGs are published by DISA IASE, see: https://iase.disa.mil/Pages/privacy_policy.aspx
-`
 
+© 2018-2025 The MITRE Corporation.
+
+Approved for Public Release; Distribution Unlimited. Case Number 18-3678.
+
+## NOTICE 
+
+MITRE hereby grants express written permission to use, reproduce, distribute, modify, and otherwise leverage this software to the extent permitted by the licensed terms provided in the LICENSE.md file included with this project.
+
+## NOTICE  
+
+This software was produced for the U. S. Government under Contract Number HHSM-500-2012-00008I, and is subject to Federal Acquisition Regulation Clause 52.227-14, Rights in Data-General.  
+
+No other use other than that granted to the U. S. Government, or to those acting on behalf of the U. S. Government under that Clause is authorized without the express written permission of The MITRE Corporation.
+
+For further information, please contact The MITRE Corporation, Contracts Management Office, 7515 Colshire Drive, McLean, VA  22102-7539, (703) 983-6000.
+
+## NOTICE
+${contentObj.profileType === 'CIS' ?
+    'CIS Benchmarks are published by Center for Internet Security, see: https://www.cisecurity.org/cis-benchmarks' :
+    'DISA STIGs are published by DISA IASE, see: https://iase.disa.mil/Pages/privacy_policy.aspx'
+}
+`
   fs.writeFile(path.join(outDir, 'README.md'), readmeContent, err => {
     if (err) {
       logger.error(`Error saving the README.md file to: ${outDir}. Cause: ${err}`)
@@ -531,7 +620,27 @@ function generateYaml(profile: Profile, outDir: string, logger: Logger) {
     supports: profile.supports,
     depends: profile.depends,
     inspec_version: YAML.stringify(`${profile.inspec_version}`, {defaultStringType: 'QUOTE_DOUBLE'}),
-  })
+  }) +
+`
+
+### INPUTS ###
+# Inputs are variables that can be referenced by any control in the profile,
+# and are defined and given a default value in this file.
+
+# By default, each parameter is set to exactly comply with the profile baseline
+# wherever possible. Some profile controls will require a unique value reflecting
+# the necessary context for the supporting system.
+
+# Values provided here can be overridden using an input file or a CLI flag at
+# execution time. See InSpec's Inputs docs at https://docs.chef.io/inspec/profiles/inputs/
+# for details.
+
+# NOTE: DO NOT directly change the default values by editing this file. Use
+# overrides instead.
+###
+
+inputs:
+`
 
   fs.writeFile(path.join(outDir, 'inspec.yml'), inspecYmlContent, err => {
     if (err) {
@@ -608,6 +717,9 @@ Naming/FileName:
 
 Metrics/BlockLength:
   Max: 1000
+
+Layout/MultilineBlockLayout:
+  Enabled: true
 
 Lint/ConstantDefinitionInBlock:
   Enabled: false
@@ -768,17 +880,25 @@ Style/SwapValues: # new in 1.1
   })
 }
 
+function generateGemRc(outDir: string, logger: Logger) {
+  const gemRc =
+`gem: --no-document
+`
+  fs.writeFile(path.join(outDir, '.gemrc'), gemRc, err => {
+    if (err) {
+      logger.error(`Error saving the .gemrc file to: ${outDir}. Cause: ${err}`)
+    } else {
+      logger.debug('.gemrc generated successfully!')
+    }
+  })
+}
+
 function generateGemFile(outDir: string, logger: Logger) {
   const gemFileContent =
 `# frozen_string_literal: true
 
 source 'https://rubygems.org'
-
-gem 'cookstyle'
 gem 'highline'
-gem 'inspec', '>= 6.6.0'
-gem 'inspec-bin'
-gem 'inspec-core'
 gem 'kitchen-ansible'
 gem 'kitchen-docker'
 gem 'kitchen-dokken'
@@ -786,13 +906,21 @@ gem 'kitchen-ec2'
 gem 'kitchen-inspec'
 gem 'kitchen-sync'
 gem 'kitchen-vagrant'
-gem 'parser', '3.3.0.5'
+gem 'berkshelf'
 gem 'pry-byebug'
 gem 'rake'
 gem 'rubocop'
 gem 'rubocop-rake'
 gem 'test-kitchen'
 gem 'train-awsssm'
+
+source 'https://rubygems.cinc.sh/' do
+  gem 'chef-config'
+  gem 'chef-utils'
+  gem 'cinc-auditor-bin'
+  gem 'inspec'
+  gem 'inspec-core'
+end
 `
   fs.writeFile(path.join(outDir, 'Gemfile'), gemFileContent, err => {
     if (err) {
@@ -813,9 +941,9 @@ require 'rake/testtask'
 require 'rubocop/rake_task'
 
 namespace :inspec do
-  desc 'validate the inspec profile'
+  desc 'validate the profile'
   task :check do
-    system 'bundle exec inspec check .'
+    system 'bundle exec cinc-auditor check .'
   end
 end
 
