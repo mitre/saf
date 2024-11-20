@@ -11,7 +11,6 @@ export default class ReadTarget extends BaseCommand<typeof ReadTarget> {
     static readonly examples = ['<%= config.bin %> <%= command.id %> -i hdf.json -o target.json']
 
     static readonly flags = {
-      help: Flags.help({char: 'h'}),
       input: Flags.string({char: 'i', required: true, description: 'An input HDF file'}),
       output: Flags.string({char: 'o', description: 'An output `target` JSON file (otherwise the data is sent to stdout)'}),
     }

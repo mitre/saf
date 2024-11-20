@@ -22,7 +22,6 @@ export default class WritePassthrough extends BaseCommand<typeof WritePassthroug
     ]
 
     static readonly flags = {
-      help: Flags.help({char: 'h'}),
       input: Flags.string({char: 'i', required: true, description: 'An input Heimdall Data Format file'}),
       passthroughFile: Flags.string({char: 'f', exclusive: ['passthroughData'], description: 'An input passthrough-data file (can contain any valid JSON); this flag or `passthroughData` must be provided'}),
       passthroughData: Flags.string({char: 'd', exclusive: ['passthroughFile'], description: 'Input passthrough-data (can be any valid JSON); this flag or `passthroughFile` must be provided'}),

@@ -13,20 +13,20 @@ import YAML from 'yaml'
 
 export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
   static readonly usage =
-    '<%= command.id %> -i <stig-xccdf-xml> [-o <output-folder>] [-h] [-m <metadata-json>] ' +
-    '[-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)]'
+    '<%= command.id %> -X <stig-xccdf-xml> [-O <oval-xccdf-xml]  [-o <output-folder>] [-m <metadata-json>] ' +
+    '[-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)] [-h] [--interactive]'
 
   static readonly description =
     'Generate a new skeleton profile based on a XCCDF benchmark file'
 
   static readonly examples = [
     {
-      description: '\x1B[93mRequired flag only\x1B[0m',
-      command: '<%= config.bin %> <%= command.id %> -i ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml',
+      description: '\x1B[93mBase Command\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -X ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml',
     },
     {
       description: '\x1B[93mSpecifying OVAL and Output location\x1B[0m',
-      command: '<%= config.bin %> <%= command.id %> -i ./U_RHEL_9_STIG_V1R2_Manual-xccdf.xml -O ./RHEL_9_Benchmark-oval.xml -o ./output/directory',
+      command: '<%= config.bin %> <%= command.id %> -X ./U_RHEL_9_STIG_V1R2_Manual-xccdf.xml -O ./RHEL_9_Benchmark-oval.xml -o ./output/directory',
     },
   ]
 
