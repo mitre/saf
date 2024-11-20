@@ -106,6 +106,7 @@ describe('generateMarkdownTable', () => {
       })
     }
   })
+
   it(`columns are in the expected order: ${expectedColumnOrder}`, () => {
     const result = generateMarkdownTable(item, titleTables)
     const tokens = marked.lexer(result)
@@ -128,6 +129,7 @@ describe('generateMarkdownTable', () => {
       })
     }
   })
+
   it(`each column matches a column in ${expectedColumnOrder}`, () => {
     const result = generateMarkdownTable(item, titleTables)
     const tokens = marked.lexer(result)

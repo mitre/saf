@@ -22,7 +22,6 @@ export default class WriteTarget extends BaseCommand<typeof WriteTarget> {
     ]
 
     static readonly flags = {
-      help: Flags.help({char: 'h'}),
       input: Flags.string({char: 'i', required: true, description: 'An input Heimdall Data Format file'}),
       targetFile: Flags.string({char: 'f', exclusive: ['targetData'], description: 'An input target-data file (can contain any valid JSON); this flag or `targetData` must be provided'}),
       targetData: Flags.string({char: 'd', exclusive: ['targetFile'], description: 'Input target-data (can be any valid JSON); this flag or `targetFile` must be provided'}),

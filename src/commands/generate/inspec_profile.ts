@@ -13,15 +13,15 @@ import YAML from 'yaml'
 
 export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
   static readonly usage =
-    '<%= command.id %> -X <[stig or cis]-xccdf-xml> [--interactive] [-L info|warn|debug|verbose] ' +
-    '[-m <metadata-json>] [-s] [-T rule|group|cis|version] [-O <oval-xccdf-xml>] [-o <output-folder>]'
+    '<%= command.id %> -X <stig-xccdf-xml> [-O <oval-xccdf-xml]  [-o <output-folder>] [-m <metadata-json>] ' +
+    '[-T (rule|group|cis|version)] [-s] [-L (info|warn|debug|verbose)] [-h] [--interactive]'
 
   static readonly description =
     'Generate a new skeleton profile based on a (STIG or CIS) XCCDF benchmark file'
 
   static readonly examples = [
     {
-      description: '\x1B[93mRequired flag only\x1B[0m',
+      description: '\x1B[93mBase Command\x1B[0m',
       command: '<%= config.bin %> <%= command.id %> -X ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml',
     },
     {
