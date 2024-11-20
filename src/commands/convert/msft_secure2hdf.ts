@@ -48,28 +48,28 @@ function processInputs(
 
 export default class MsftSecure2HDF extends BaseCommand<typeof MsftSecure2HDF> {
   static readonly usage = [
-    '<%= command.id %> -p <secure-score-control-profiles> -r <secureScore-json>-o <hdf-scan-results-json> [-h]',
-    '<%= command.id %> -t <azure-tenant-id> -a <azure-app-id> -s <azure-app-secret> -o <hdf-scan-results-json> [-h]',
-    '<%= command.id %> -i <combined-inputs> -o <hdf-scan-results-json> [-h]',
-  ];
+    '<%= command.id %> -p <secure-score-control-profiles> -r <secureScore-json> -o <hdf-scan-results-json> [-w] [--interactive] [-L info|warn|debug|verbose] [-h]',
+    '<%= command.id %> -t <azure-tenant-id> -a <azure-app-id> -s <azure-app-secret> -o <hdf-scan-results-json> [-C <certificate> | -I] [-w] [--interactive] [-L info|warn|debug|verbose] [-h]',
+    '<%= command.id %> -i <combined-inputs> -o <hdf-scan-results-json> [-w] [--interactive] [-L info|warn|debug|verbose] [-h]',
+  ]
 
   static readonly description =
-    'Translate a Microsoft Secure Score report and Secure Score Control to a Heimdall Data Format JSON file.';
+    'Translate a Microsoft Secure Score report and Secure Score Control to a Heimdall Data Format JSON file.'
 
   static readonly examples = [
     {
       description: '\x1B[93mUsing input files\x1B[0m',
-      command: '<%= config.bin %> <%= command.id %> -p secureScore.json -r secureScoreControlProfiles -o output-hdf-name.json',
+      command: '<%= config.bin %> <%= command.id %> -p secureScore.json -r secureScoreControlProfiles -o output-hdf-name.json [-w]',
     },
     {
       description: '\x1B[93mUsing Azure tenant ID\x1B[0m',
-      command: '<%= config.bin %> <%= command.id %> -t "12345678-1234-1234-1234-1234567890abcd" -a "12345678-1234-1234-1234-1234567890abcd" -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" -o output-hdf-name.json [-I | -C <certificate>] [-t <target>...]',
+      command: '<%= config.bin %> <%= command.id %> -t "12345678-1234-1234-1234-1234567890abcd" -a "12345678-1234-1234-1234-1234567890abcd" -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" -o output-hdf-name.json [-I | -C <certificate>]',
     },
     {
       description: '\x1B[93mUsing combined inputs\x1B[0m',
-      command: '<%= config.bin %> <%= command.id %> -i <(jq \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json) -o output-hdf-name.json',
+      command: '<%= config.bin %> <%= command.id %> -i <(jq \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json)> -o output-hdf-name.json [-w]',
     },
-  ];
+  ]
 
   static readonly flags = {
     combinedInputs: Flags.string({
@@ -139,7 +139,7 @@ export default class MsftSecure2HDF extends BaseCommand<typeof MsftSecure2HDF> {
       description: 'Disable SSL verification, this is insecure.',
       exclusive: ['input', 'certificate'],
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(MsftSecure2HDF)
@@ -212,7 +212,7 @@ export default class MsftSecure2HDF extends BaseCommand<typeof MsftSecure2HDF> {
       processInputs(scoreDoc, profilesDoc, flags.output, flags.includeRaw)
     } else {
       throw new Error(
-        'Invalid arguments provided.  Include (-a, -s, -t) or (-r, -p) or (-h)',
+        'Invalid arguments provided.  Valid options are: (-a, -s, -t) or (-r, -p) or (-i) or (-h)',
       )
     }
   }

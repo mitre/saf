@@ -880,27 +880,45 @@ Combined JSON|Combine the outputs from `security/secureScore` and `security/secu
 convert msft_secure2hdf       Translate a Microsoft Secure Score report and Secure Score Control to a Heimdall Data Format JSON file
 
   USAGE
-    $ saf convert msft_secure2hdf -r <secureScore-json> -p <secure-score-control-profiles> -o <hdf-scan-results-json> [-h]
-    $ saf convert msft_secure2hdf -t <azure-tenant-id> -a <azure-app-id> -s <azure-app-secret> -o <hdf-scan-results-json> [-h]
-    $ saf convert msft_secure2hdf -i <combined-inputs> -o <hdf-scan-results-json> [-h]
+    $ saf convert msft_secure2hdf -p <secure-score-control-profiles> -r <secureScore-json> -o <hdf-scan-results-json> [-w] [--interactive] [-L info|warn|debug|verbose] [-h]
+    $ saf convert msft_secure2hdf -t <azure-tenant-id> -a <azure-app-id> -s <azure-app-secret> -o <hdf-scan-results-json> [-C <certificate> | -I] [-w] [--interactive] [-L info|warn|debug|verbose] [-h]
+    $ saf convert msft_secure2hdf -i <combined-inputs> -o <hdf-scan-results-json> [-w] [--interactive] [-L info|warn|debug|verbose] [-h]
 
   FLAGS
-    -h, --help                                                  Show CLI help.
-    -i, --combinedInputs                                        JSON File combining the outputs from the Microsoft Graph API endpoints
-    -r, --inputScoreDoc=<secure-score-json>                     Input Secure Scores JSON File
-    -p, --inputProfiles=<secure-score-control-profiles-json>    Input Secure Score Control Profiles JSON File
-    -t, --tenantId=<azure-tenant-id>                            Azure Tenant ID
-    -a, --appId=<azure-app-id>                                  Azure App ID
-    -s, --appSecreet=<azure-app-id>                             Azure App Secret
-    -o, --output=<hdf-scan-results-json>                        Output HDF JSON File
+    -h, --help                    Show CLI help.
+    -o, --output=<value>          (required) Output HDF JSON file
+    -i, --combinedInputs=<value>  {secureScore: <CONTENTS_OF_INPUT_SCORE_DOC>}, profiles: <CONTENTS_OF_INPUT_PROFILES_DOC>
+
+    -r, --inputScoreDoc=<value>   Input Microsoft Graph API "GET /security/secureScores" output JSON File
+    -p, --inputProfiles=<value>   Input Microsoft Graph API "GET /security/secureScoreControlProfiles" output JSON File
+    
+    -t, --tenantId=<value>        Azure tenant ID
+    -a, --appId=<value>           Azure application ID
+    -s, --appSecret=<value>       Azure application secret
+    -C, --certificate=<value>     Trusted signing certificate file
+    -I, --insecure                Disable SSL verification, this is insecure.
+    
+    -w, --includeRaw              Include raw input file in HDF JSON file
+
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                            <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
 
   EXAMPLES
-    $ saf convert msft_secure2hdf -r secureScore.json -p secureScoreControlProfile.json -o output-hdf-name.json
-    $ saf convert msft_secure2hdf -t "12345678-1234-1234-1234-1234567890abcd"   \
-                                  -a "12345678-1234-1234-1234-1234567890abcd"   \
-                                  -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" \
-                                  -o output-hdf-name.json
-    $ saf convert msft_secure2hdf -i <(jq -s \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json) -o output-hdf-name.json
+    Using input files
+      $ saf convert msft_secure2hdf -p secureScore.json -r secureScoreControlProfiles -o output-hdf-name.json [-w]
+
+    Using Azure tenant ID
+      $ saf convert msft_secure2hdf -t "12345678-1234-1234-1234-1234567890abcd"   \
+                                    -a "12345678-1234-1234-1234-1234567890abcd"   \
+                                    -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" \
+                                    -o output-hdf-name.json [-I | -C <certificate>]
+
+    Using combined inputs
+      $ saf convert msft_secure2hdf -i <(jq '{"secureScore": .[0], "profiles": .[1]}' secureScore.json secureScoreControlProfiles.json)> \
+                                    -o output-hdf-name.json [-w]
+
 ```
 
 [top](#convert-other-formats-to-hdf)

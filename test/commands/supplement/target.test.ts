@@ -1,7 +1,4 @@
-/* eslint-disable array-bracket-newline */
-/* eslint-disable array-element-newline */
-import {expect} from 'chai'
-import {runCommand} from '@oclif/test'
+import {expect, test} from '@oclif/test'
 import tmp from 'tmp'
 import path from 'path'
 import fs from 'fs'
@@ -11,58 +8,49 @@ describe('Test supplement target', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
   fs.copyFileSync(path.resolve('./test/sample_data/HDF/input/minimal-hdf.json'), path.resolve(`${tmpobj.name}/minimal-hdf.json`))
 
-  it('Successfully writes a target json to an HDF and makes a new output file', async () => {
-    await runCommand<{name: string}>(['supplement target write',
-      '-i', path.resolve('./test/sample_data/HDF/input/minimal-hdf.json'),
-      '-f', path.resolve('./test/sample_data/target/target-object.json'),
-      '-o', `${tmpobj.name}/minimal-hdf-target-object.json`,
-    ])
-    const output = JSON.parse(fs.readFileSync(`${tmpobj.name}/minimal-hdf-target-object.json`, 'utf8'))
-    const expected = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/target/minimal-hdf-target-object.json'), 'utf8'))
+  test
+    .command(['supplement target write', '-i', path.resolve('./test/sample_data/HDF/input/minimal-hdf.json'), '-f', path.resolve('./test/sample_data/target/target-object.json'), '-o', `${tmpobj.name}/minimal-hdf-target-object.json`])
+    .it('Successfully writes a target json to an HDF and makes a new output file', () => {
+      const output = JSON.parse(fs.readFileSync(`${tmpobj.name}/minimal-hdf-target-object.json`, 'utf8'))
+      const expected = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/target/minimal-hdf-target-object.json'), 'utf8'))
 
-    expect(omitHDFChangingFields(output)).to.eql(omitHDFChangingFields(expected))
-  })
+      expect(omitHDFChangingFields(output)).to.eql(omitHDFChangingFields(expected))
+    })
 
-  it('Successfully writes a target json to an HDF inline', async () => {
-    await runCommand<{name: string}>(['supplement target write',
-      '-i', path.resolve(`${tmpobj.name}/minimal-hdf.json`),
-      '-f', path.resolve('./test/sample_data/target/target-object.json'),
-    ])
-    const output = JSON.parse(fs.readFileSync(`${tmpobj.name}/minimal-hdf.json`, 'utf8'))
-    const expected = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/target/minimal-hdf-target-object.json'), 'utf8'))
+  test
+    .command(['supplement target write', '-i', path.resolve(`${tmpobj.name}/minimal-hdf.json`), '-f', path.resolve('./test/sample_data/target/target-object.json')])
+    .it('Successfully writes a target json to an HDF inline', () => {
+      const output = JSON.parse(fs.readFileSync(`${tmpobj.name}/minimal-hdf.json`, 'utf8'))
+      const expected = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/target/minimal-hdf-target-object.json'), 'utf8'))
 
-    expect(omitHDFChangingFields(output)).to.eql(omitHDFChangingFields(expected))
-  })
+      expect(omitHDFChangingFields(output)).to.eql(omitHDFChangingFields(expected))
+    })
 
-  it('Successfully writes target data to an HDF and makes a new output file', async () => {
-    await runCommand<{name: string}>(['supplement target write',
-      '-i', path.resolve('./test/sample_data/HDF/input/minimal-hdf.json'),
-      '-d', '"test string"', '-o', `${tmpobj.name}/minimal-hdf-target-nonobject.json`,
-    ])
-    const output = JSON.parse(fs.readFileSync(`${tmpobj.name}/minimal-hdf-target-nonobject.json`, 'utf8'))
-    const expected = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/target/minimal-hdf-target-nonobject.json'), 'utf8'))
+  test
+    .command(['supplement target write', '-i', path.resolve('./test/sample_data/HDF/input/minimal-hdf.json'), '-d', 'test string', '-o', `${tmpobj.name}/minimal-hdf-target-nonobject.json`])
+    .it('Successfully writes target data to an HDF and makes a new output file', () => {
+      const output = JSON.parse(fs.readFileSync(`${tmpobj.name}/minimal-hdf-target-nonobject.json`, 'utf8'))
+      const expected = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/target/minimal-hdf-target-nonobject.json'), 'utf8'))
 
-    expect(omitHDFChangingFields(output)).to.eql(omitHDFChangingFields(expected))
-  })
+      expect(omitHDFChangingFields(output)).to.eql(omitHDFChangingFields(expected))
+    })
 
-  it('Successfully reads target data from an HDF and writes it to a file', async () => {
-    await runCommand<{name: string}>(['supplement target read',
-      '-i', path.resolve('./test/sample_data/target/minimal-hdf-target-object.json'),
-      '-o', `${tmpobj.name}/target-object.json`,
-    ])
-    const output = JSON.parse(fs.readFileSync(`${tmpobj.name}/target-object.json`, 'utf8'))
-    const expected = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/target/target-object.json'), 'utf8'))
+  test
+    .command(['supplement target read', '-i', path.resolve('./test/sample_data/target/minimal-hdf-target-object.json'), '-o', `${tmpobj.name}/target-object.json`])
+    .it('Successfully reads target data from an HDF and writes it to a file', () => {
+      const output = JSON.parse(fs.readFileSync(`${tmpobj.name}/target-object.json`, 'utf8'))
+      const expected = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/target/target-object.json'), 'utf8'))
 
-    expect(output).to.eql(expected)
-  })
+      expect(output).to.eql(expected)
+    })
 
-  it('Successfully reads target data from an HDF and writes it to stdout', async () => {
-    const {stdout} = await runCommand<{name: string}>(['supplement target read',
-      '-i', path.resolve('./test/sample_data/target/minimal-hdf-target-object.json'),
-    ])
-    const output = JSON.parse(stdout)
-    const expected = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/target/target-object.json'), 'utf8'))
+  test
+    .stdout()
+    .command(['supplement target read', '-i', path.resolve('./test/sample_data/target/minimal-hdf-target-object.json')])
+    .it('Successfully reads target data from an HDF and writes it to stdout', ctx => {
+      const output = JSON.parse(ctx.stdout)
+      const expected = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/target/target-object.json'), 'utf8'))
 
-    expect(output).to.eql(expected)
-  })
+      expect(output).to.eql(expected)
+    })
 })
