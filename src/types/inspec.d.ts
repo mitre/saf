@@ -44,10 +44,16 @@ export interface InSpecMetaData {
 }
 
 export interface InspecReadme {
+    profileType: string,
+    profileGuidance: string,
+    profileGuidanceAgency: string,
+    profileDeveloperPartner: string,
+    profileCompliance: string,
+    profileDevelopers: string,
     profileName: string;
     profileShortName: string;
     profileTitle: string;
     profileVersion: string;
-    stigVersion: string;
-    stigDate: string;
+    benchmarkVersion: string;
+    benchmarkDate: string;
 }
