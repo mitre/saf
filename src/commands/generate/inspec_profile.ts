@@ -390,34 +390,32 @@ The latest versions and installation options are available at the [InSpec](http:
     release of the profile, and _is not intended_ be used for formal and ongoing testing on systems.
 
 [top](#table-of-contents)
-### Tailoring to Your Environment
-The \`inspec.yml\` file contains metadata that describes the profile.
-<h3>
+### Tailoring to Your Environment *While Still Complying* with the security guidance document for which this profile is based
 
-> [!WARNING] 
->Do not change the inputs in the inspec.yml file
-</h3>
+The following inputs are permitted to be configured in an inputs ".yml" file for the profile to run correctly for your specific environment, 
+while still complying with the security guidance document for which this profile is based. This is important to prevent confusion 
+when test results are passed downstream to different stakeholders under the *security guidance name used by this profile repository*
+For changes beyond the inputs cited in this section, users can create an *organizationally-named overlay repository*.
+For more information on developing overlays, see training https://mitre-saf-training.netlify.app/courses/beginner/10.html
 
-This profile uses InSpec Inputs to make the tests more flexible. You are able to provide inputs at
-runtime either via the cli or via YAML files to help the profile work best in your deployment.
+Tailorable Inputs *While Still Complying* with the security guidance document for which this profile is based:
 
-The \`inputs\` configured in the \`inspec.yml\` file are **profile definition and defaults for the profile**
-only. InSpec provides two ways to customize profiles behavior at run-time that does not require modifying
-the \`inspec.yml\` file itself. 
+\`\`\`yaml
+  # This file specifies the attributes for the configurable controls
+  # used in the ${contentObj.profileShortName} ${contentObj.profileType}.
 
-The reason the \`inspec.ym;\` should not be modified is because automated profiles like this one are invoked
-from a script, inside a pipeline or some kind of task scheduler. Such automation usually works by running the
-profile directly from its source (i.e. this repository), which means the runner will not have access to the
-\`inspec.yml\`.
+  # Your unique list of administrative users
+  admins_list: [joe, sam, beth]
 
-To tailor the tested values for your deployment or organizationally defined values, **_you may update the inputs_**.
+  # List of configuration files for the specific system
+  logging_conf_files: [
+    <dir-path-1>/*.conf
+    <dir-path-2>/*.conf
+  ]
+\`\`\`
 
->[!NOTE]
-> Inputs are variables that can be referenced by any control in the profile, and are defined
-  and given a default value in the \`inspec.yml\` file. 
-
-#### Update Profile Inputs from the CLI or Local File
-Inputs can be overridden by providing an input file or a CLI flag at execution time.
+#### Using Inputs from the CLI or Local File
+Your tailored inputs can be providing an input file or a CLI flag at execution time.
 
 1. Via the cli with the \`--input\` flag
   
@@ -426,22 +424,6 @@ Inputs can be overridden by providing an input file or a CLI flag at execution t
 2. Pass them in a YAML file with the \`--input-file\` flag.
     
     Example: \`[inspec or cinc-auditor] exec <my-profile.tar.gz> --input-file=<my_inputs_file.yml>\`
-
-Example Inputs
-
-\`\`\`yaml
-  # This file specifies the attributes for the configurable controls
-  # used in the ${contentObj.profileShortName} ${contentObj.profileType}.
-
-  # Controls that are known to consistently have long run times can be disabled with this attribute
-  disable_slow_controls: false
-
-  # List of configuration files for the specific system
-  logging_conf_files: [
-    <dir-path-1>/*.conf
-    <dir-path-2>/*.conf
-  ]
-\`\`\`
 
 >[!TIP]
 > For additional information about \`input\` file examples references the [MITRE SAF Training](https://mitre.github.io/saf-training/courses/beginner/06.html#input-file-example)
