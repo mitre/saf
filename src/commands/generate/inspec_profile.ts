@@ -417,24 +417,7 @@ Latest versions and other installation options are available at [CINC Auditor](h
     release of the profile, and _is not intended_ be used for formal and ongoing testing on systems.
 
 [top](#table-of-contents)
-### Tailoring to Your Environment
-
-<h4><span style="color:red">
-
-> [!WARNING] 
->Modification to the testing environment should be done in a manner that **DOES NOT**
- alter the **Security Guidance Document** for the profile.
-</h4></span>
-
-This profile uses InSpec Inputs providing flexibility during testing. Inputs allow for
-customize the behavior of Chef InSpec profiles.
-
-InSpec Inputs are defined in the \`inspec.yml\` file. The \`inputs\` configured in this
-file are **profile definition and defaults for the profile** extracted from the profile
-guidances and contain metadata that describes the profile, and shouldn't be modified.
-
-InSpec provides several methods for customizing profiles behaviors at run-time that does not require
-modifying the \`inspec.yml\` file itself (see [Update Profile Inputs](#update-profile-inputs)).
+### Tailoring to Your Environment *While Still Complying* with the security guidance document for which this profile is based
 
 The following inputs are permitted to be configured in an inputs \`.yml\` file (often named inputs.yml)
 for the profile to run correctly on a specific environment, while still complying with the security
@@ -453,7 +436,7 @@ For more information on developing overlays, reference the [MITRE SAF Training](
   # Disable controls that are known to consistently have long run times
   disable_slow_controls: [true or false]
 
-  # A unique list of administrative users
+  # Your environment's unique list of administrative users
   admins_list: [admin1, admin2, admin3]
 
   # List of configuration files for the specific system
@@ -469,8 +452,8 @@ For more information on developing overlays, reference the [MITRE SAF Training](
 >Inputs are variables that are referenced by control(s) in the profile that implement them.
  They are declared (defined) and given a default value in the \`inspec.yml\` file. 
 
-#### Update Profile Inputs
-Inputs can be overridden by providing an input file or a CLI flag at execution time.
+#### Using Inputs from the CLI or Local File
+Your tailored inputs can be providing an input file or a CLI flag at execution time.
 
 1. Via the cli with the \`--input\` flag
   
