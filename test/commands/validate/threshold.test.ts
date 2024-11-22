@@ -34,13 +34,6 @@ describe('Test validate threshold - using template file', () => {
     const {stdout} = await runCommand<{name: string}>(['validate threshold',
       '-i', path.resolve('./test/sample_data/HDF/input/triple_overlay_profile_example.json'),
       '--templateFile', path.resolve('./test/sample_data/thresholds/triple_overlay_profile_example.json.counts.totalMinMax.yml'),
-    expect(stdout).to.equal('')
-  })
-
-  it('Validate threshold minMaxTotal - Triple Overlay Compliance', async () => {
-    const {stdout} = await runCommand<{name: string}>(['validate threshold',
-      '-i', path.resolve('./test/sample_data/HDF/input/triple_overlay_profile_example.json'),
-      '--templateFile', path.resolve('./test/sample_data/thresholds/triple_overlay_profile_example.json.counts.totalMinMax.yml'),
     ])
     expect(stdout).to.equal('')
   })
