@@ -23,16 +23,32 @@ let flat: any
 })()
 
 export default class Threshold extends BaseCommand<typeof Threshold> {
-  static readonly usage = '<%= command.id %> -i <hdf-json> [-h] [-T <flattened-threshold-json> | -F <template-file>]'
+  static readonly usage = '<%= command.id %> -i <hdf-json> [-I <flattened-threshold-json> | -T <template-file>] [-h] [-L info|warn|debug|verbose]'
 
   static readonly description = 'Validate the compliance and status counts of an HDF file'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i rhel7-results.json -F output.yaml']
+  static readonly examples = [
+    {
+      description: '\x1B[93mProviding a threshold template file\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -T threshold.yaml',
+    },
+    {
+      description: '\x1B[93mSpecifying the threshold inline\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -I "{compliance.min: 80}, {passed.total.min: 18}, {failed.total.max: 2}"',
+    },
+  ]
 
   static readonly flags = {
-    input: Flags.string({char: 'i', required: true, description: 'Input HDF JSON File'}),
-    templateInline: Flags.string({char: 'T', required: false, exclusive: ['templateFile'], description: 'Flattened JSON containing your validation thresholds (Intended for backwards compatibility with InSpec Tools)'}),
-    templateFile: Flags.string({char: 'F', required: false, exclusive: ['templateInline'], description: 'Expected data template, generate one with "saf generate threshold"'}),
+    input: Flags.string({
+      char: 'i', required: true, description: 'The HDF JSON File to be validated by the threshold values'}),
+    templateInline: Flags.string({
+      char: 'I', required: false, exclusive: ['templateFile'],
+      description: 'An inline (on the command line) flattened JSON containing the validation thresholds (Intended for backwards compatibility with InSpec Tools)',
+    }),
+    templateFile: Flags.string({
+      char: 'T', required: false, exclusive: ['templateInline'],
+      description: 'A threshold YAML file containing expected threshold values. Generate it using the "saf generate threshold" command',
+    }),
   }
 
   async run() {
@@ -53,7 +69,7 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
       thresholds = Object.values(parsed).every(key => typeof key === 'number') ? flat.unflatten(parsed) : parsed
     } else {
       console.log('Please provide an inline compliance template or a compliance file.')
-      console.log('See https://github.com/mitre/saf#compliance for more information')
+      console.log('See https://github.com/mitre/saf/wiki/Validation-with-Thresholds for more information')
       return
     }
 

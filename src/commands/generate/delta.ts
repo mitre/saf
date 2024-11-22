@@ -47,36 +47,37 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   static description = 'Update an existing InSpec profile with updated XCCDF guidance'
 
   static flags = {
-    inspecJsonFile: Flags.string({char: 'J', required: false, exclusive: ['interactive'],
-      description: '\x1B[31m(required if not --interactive)\x1B[34m Input execution/profile (list of controls the delta is being applied from) JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command'}),
-    xccdfXmlFile: Flags.string({char: 'X', required: false, exclusive: ['interactive'],
-      description: '\x1B[31m(required if not --interactive)\x1B[34m The XCCDF XML file containing the new guidance - in the form of .xml file'}),
-    deltaOutputDir: Flags.string({char: 'o', required: false, exclusive: ['interactive'],
+    inspecJsonFile: Flags.string({
+      char: 'J', required: false, exclusive: ['interactive'],
+      description: '\x1B[31m(required if not --interactive)\x1B[34m Input execution/profile (list of controls the delta is being applied from) JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command',
+    }),
+    xccdfXmlFile: Flags.string({
+      char: 'X', required: false, exclusive: ['interactive'],
+      description: '\x1B[31m(required if not --interactive)\x1B[34m The XCCDF XML file containing the new guidance - in the form of .xml file',
+    }),
+    deltaOutputDir: Flags.string({
+      char: 'o', required: false, exclusive: ['interactive'],
       description: '\x1B[31m(required if not --interactive)\x1B[34m The output folder for the updated profile (will contain the controls that delta was applied too) - if it is not empty, it will be overwritten. Do not use the original controls directory'}),
-    ovalXmlFile: Flags.string({char: 'O', required: false, exclusive: ['interactive'],
+    ovalXmlFile: Flags.string({
+      char: 'O', required: false, exclusive: ['interactive'],
       description: 'The OVAL XML file containing definitions used in the new guidance - in the form of .xml file'}),
-    reportFile: Flags.string({char: 'r', required: false, exclusive: ['interactive'],
+    reportFile: Flags.string({
+      char: 'r', required: false, exclusive: ['interactive'],
       description: 'Output markdown report file - must have an extension of .md'}),
     idType: Flags.string({
-      char: 'T',
-      required: false,
-      exclusive: ['interactive'],
-      default: 'rule',
-      options: ['rule', 'group', 'cis', 'version'],
+      char: 'T', required: false, exclusive: ['interactive'],
+      default: 'rule', options: ['rule', 'group', 'cis', 'version'],
       description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
     }),
     // New flag -M for whether to try mapping controls to new profile
     runMapControls: Flags.boolean({
-      char: 'M',
-      required: false,
+      char: 'M', required: false,
       exclusive: ['interactive'],
       dependsOn: ['controlsDir'],
       description: 'Run the approximate string matching process',
     }),
     controlsDir: Flags.string({
-      char: 'c',
-      required: false,
-      exclusive: ['interactive'],
+      char: 'c', required: false, exclusive: ['interactive'],
       description: 'The InSpec profile directory containing the controls being updated (controls Delta is processing)'}),
   }
 

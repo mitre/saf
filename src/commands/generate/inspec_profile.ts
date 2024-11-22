@@ -21,7 +21,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
 
   static readonly examples = [
     {
-      description: '\x1B[93mRequired flag only\x1B[0m',
+      description: '\x1B[93mBase Command\x1B[0m',
       command: '<%= config.bin %> <%= command.id %> -X ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml',
     },
     {
@@ -184,12 +184,12 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
 
     // Set default values for the inspec.yml file
     profile.name = readmeObj.profileName
-    profile.title = readmeObj.profileTitle
+    profile.title = readmeObj.inspecTitle
     profile.maintainer = 'MITRE SAF Team'
     profile.copyright = 'MITRE'
     profile.copyright_email = 'saf@groups.mitre.org'
     profile.license = 'Apache-2.0'
-    profile.summary = `InSpec profile aligned to DISA STIG for ${readmeObj.profileTitle}`
+    profile.summary = `InSpec profile aligned to ${readmeObj.profileGuidance} for ${readmeObj.profileTitle}`
     profile.description = null
     profile.depends = []
     profile.supports = []
@@ -253,9 +253,10 @@ function getDISAReadmeContent(_xmlDoc: any): InspecReadme {
     profileType: 'STIG',
     profileGuidance: 'STIG Guidance',
     profileGuidanceAgency: 'Defense Information Systems Agency (DISA)',
-    profileDeveloperPartner: 'in partnership between the DISA Services Directorate (SD) and the DISA Risk Management Executive (RME) office',
+    profileDeveloperPartner: ' in partnership between the DISA Services Directorate (SD) and the DISA Risk Management Executive (RME) office',
     profileCompliance: '[Department of Defense (DoD) STIG](https://public.cyber.mil/stigs/)',
     profileDevelopers: 'DISA RME and DISA SD Office, along with their vendor partners, create and maintain a set of Security Technical Implementation Guides',
+    inspecTitle: '',
   }
 
   const benchmarkTitle = _.get(_xmlDoc, 'Benchmark.title')
@@ -279,6 +280,7 @@ function getDISAReadmeContent(_xmlDoc: any): InspecReadme {
   readmeObj.profileShortName = benchmarkTitle.replace('Security Technical Implementation Guide', '').trim()
   readmeObj.profileTitle = benchmarkTitle
   readmeObj.profileVersion = `${stigVersion}.${stigRelease}.0`
+  readmeObj.inspecTitle = `${benchmarkTitle} :: Version ${stigVersion}, Release ${stigRelease} :: Benchmark Date: ${stigDate}`
   readmeObj.benchmarkDate = stigDate
   readmeObj.benchmarkVersion = stigDisplayVersion
 
@@ -299,6 +301,7 @@ function getCISReadmeContent(_xmlDoc: any): InspecReadme {
     profileDeveloperPartner: '',
     profileCompliance: '[Center for Internet Security (CIS) Benchmark](https://www.cisecurity.org/cis-benchmarks)',
     profileDevelopers: 'Center for Internet Security, Inc. (CIS®) create and maintain a set of Critical Security Controls (CIS Controls)',
+    inspecTitle: '',
   }
 
   const benchmarkTitle = _.get(_xmlDoc, 'xccdf:Benchmark.xccdf:title.#text')
@@ -309,6 +312,7 @@ function getCISReadmeContent(_xmlDoc: any): InspecReadme {
   readmeObj.profileShortName = benchmarkTitle.replace('Benchmark', '').trim()
   readmeObj.profileTitle = benchmarkTitle
   readmeObj.profileVersion = cisVersion
+  readmeObj.inspecTitle = `${benchmarkTitle} :: Version ${cisVersion} :: Benchmark Date: ${cisDate}`
   readmeObj.benchmarkDate = cisDate
   readmeObj.benchmarkVersion = cisVersion
 
@@ -328,7 +332,7 @@ requirements
 
 
 This profile was developed to reduce the time it takes to perform a security checks based upon the
-${contentObj.profileGuidance} from the ${contentObj.profileGuidanceAgency} ${contentObj.profileDeveloperPartner}.
+${contentObj.profileGuidance} from the ${contentObj.profileGuidanceAgency}${contentObj.profileDeveloperPartner}.
 
 The results of a profile run will provide information needed to support an Authority to Operate (ATO)
 decision for the applicable technology.
@@ -414,32 +418,58 @@ Latest versions and other installation options are available at [CINC Auditor](h
 
 [top](#table-of-contents)
 ### Tailoring to Your Environment
-The \`inspec.yml\` file contains metadata that describes the profile.
-<h3><span style="color:red">
+
+<h4><span style="color:red">
 
 > [!WARNING] 
->Do not change the inputs in the inspec.yml file
-</h3></span>
+>Modification to the testing environment should be done in a manner that **DOES NOT**
+ alter the **Security Guidance Document** for the profile.
+</h4></span>
 
-This profile uses InSpec Inputs to make the tests more flexible. You are able to provide inputs at
-runtime either via the cli or via YAML files to help the profile work best in your deployment.
+This profile uses InSpec Inputs providing flexibility during testing. Inputs allow for
+customize the behavior of Chef InSpec profiles.
 
-The \`inputs\` configured in the \`inspec.yml\` file are **profile definition and defaults for the profile**
-only. InSpec provides two ways to customize profiles behavior at run-time that does not require modifying
-the \`inspec.yml\` file itself. 
+InSpec Inputs are defined in the \`inspec.yml\` file. The \`inputs\` configured in this
+file are **profile definition and defaults for the profile** extracted from the profile
+guidances and contain metadata that describes the profile, and shouldn't be modified.
 
-The reason the \`inspec.ym\` should not be modified is because automated profiles like this one are invoked
-from a script, inside a pipeline or some kind of task scheduler. Such automation usually works by running the
-profile directly from its source (i.e. this repository), which means the runner will not have access to the
-\`inspec.yml\`.
+InSpec provides several methods for customizing profiles behaviors at run-time that does not require
+modifying the \`inspec.yml\` file itself (see [Update Profile Inputs](#update-profile-inputs)).
 
-To tailor the tested values for your deployment or organizationally defined values, **_you may update the inputs_**.
+The following inputs are permitted to be configured in an inputs \`.yml\` file (often named inputs.yml)
+for the profile to run correctly on a specific environment, while still complying with the security
+guidance document intent. This is important to prevent confusion when test results are passed downstream
+to different stakeholders under the *security guidance name used by this profile repository*
 
->[!NOTE]
-> Inputs are variables that can be referenced by any control in the profile, and are defined
-  and given a default value in the \`inspec.yml\` file. 
+For changes beyond the inputs cited in this section, users can create an *organizationally-named overlay repository*.
+For more information on developing overlays, reference the [MITRE SAF Training](https://mitre-saf-training.netlify.app/courses/beginner/10.html)
 
-#### Update Profile Inputs from the CLI or Local File
+#### Example of tailoring Inputs *While Still Complying* with the security guidance document for the profile:
+
+\`\`\`yaml
+  # This file specifies the attributes for the configurable controls
+  # used by the ${contentObj.profileShortName} ${contentObj.profileType} profile.
+
+  # Disable controls that are known to consistently have long run times
+  disable_slow_controls: [true or false]
+
+  # A unique list of administrative users
+  admins_list: [admin1, admin2, admin3]
+
+  # List of configuration files for the specific system
+  logging_conf_files: [
+    <dir-path-1>/*.conf
+    <dir-path-2>/*.conf
+  ]
+  
+  ...
+\`\`\`
+
+> [!NOTE]
+>Inputs are variables that are referenced by control(s) in the profile that implement them.
+ They are declared (defined) and given a default value in the \`inspec.yml\` file. 
+
+#### Update Profile Inputs
 Inputs can be overridden by providing an input file or a CLI flag at execution time.
 
 1. Via the cli with the \`--input\` flag
@@ -450,24 +480,8 @@ Inputs can be overridden by providing an input file or a CLI flag at execution t
     
     Example: \`[inspec or cinc-auditor] exec <my-profile.tar.gz> --input-file=<my_inputs_file.yml>\`
 
-Example Inputs
-
-\`\`\`yaml
-  # This file specifies the attributes for the configurable controls
-  # used in the ${contentObj.profileShortName} ${contentObj.profileType}.
-
-  # Controls that are known to consistently have long run times can be disabled with this attribute
-  disable_slow_controls: false
-
-  # List of configuration files for the specific system
-  logging_conf_files: [
-    <dir-path-1>/*.conf
-    <dir-path-2>/*.conf
-  ]
-\`\`\`
-
 >[!TIP]
-> For additional information about \`input\` file examples references the [MITRE SAF Training](https://mitre.github.io/saf-training/courses/beginner/06.html#input-file-example)
+> For additional information about \`input\` file examples reference the [MITRE SAF Training](https://mitre.github.io/saf-training/courses/beginner/06.html#input-file-example)
 
 Chef InSpec Resources:
 - [InSpec Profile Documentation](https://docs.chef.io/inspec/profiles/).

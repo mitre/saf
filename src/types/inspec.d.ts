@@ -54,6 +54,7 @@ export interface InspecReadme {
     profileShortName: string;
     profileTitle: string;
     profileVersion: string;
+    inspecTitle: string;
     benchmarkVersion: string;
     benchmarkDate: string;
 }
