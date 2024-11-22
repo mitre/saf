@@ -415,6 +415,7 @@ Latest versions and other installation options are available at [CINC Auditor](h
 [top](#table-of-contents)
 ### Tailoring to Your Environment
 The \`inspec.yml\` file contains metadata that describes the profile.
+
 <h3><span style="color:red">
 
 > [!WARNING] 
