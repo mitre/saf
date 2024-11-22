@@ -8,7 +8,7 @@ describe('dataLoader.ts utils', () => {
   let evaluation: ContextualizedEvaluation
   let result: { [key: string]: ContextualizedEvaluation }
 
-  before(() => {
+  beforeEach(() => {
     // Arrange
     hdfFilePath = path.resolve('./test/sample_data/HDF/input/rhel-8_hardened.json')
 

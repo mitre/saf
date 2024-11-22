@@ -33,3 +33,18 @@ export function omitChecklistChangingFields(input: string) {
   return input.replaceAll(/[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}/gm, '')
     .replace(/<!--Heimdall Version :: \S+-->/, '')
 }
+
+export function removeUUIDs(obj: any) {
+  for (const key in obj) {
+    if (obj[key] && typeof obj[key] === 'object') {
+      removeUUIDs(obj[key])
+    } else if (typeof obj[key] === 'string' && isUUID(obj[key])) {
+      delete obj[key] // skipcq: JS-0320
+    }
+  }
+}
+
+export function isUUID(str: string) {
+  const uuidRegex = /^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$/
+  return uuidRegex.test(str)
+}

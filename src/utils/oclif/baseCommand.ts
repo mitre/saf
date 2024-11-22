@@ -3,6 +3,17 @@ import {Args, Command, Flags, Interfaces} from '@oclif/core'
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<typeof BaseCommand['baseFlags'] & T['flags']>
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>
 
+export abstract class HelpBaseCommand extends Command {
+  static readonly baseFlags = {
+    help: Flags.help({
+      char: 'h',
+      aliases: ['explain', 'tell-me-more'],
+      // Show this flag under a separate GLOBAL section in help.
+      helpGroup: 'GLOBAL',
+      description: 'Show CLI help',
+    }),
+  };
+}
 export abstract class InteractiveBaseCommand extends Command {
   static readonly baseFlags = {
     interactive: Flags.boolean({
@@ -17,6 +28,7 @@ export abstract class InteractiveBaseCommand extends Command {
 export abstract class BaseCommand<T extends typeof Command> extends Command {
   // define flags that can be inherited by any command that extends BaseCommand
   static readonly baseFlags = {
+    ...HelpBaseCommand.baseFlags,
     ...InteractiveBaseCommand.baseFlags,
     logLevel: Flags.option({
       char: 'L',
@@ -47,7 +59,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     // If error message is for missing flags, display what fields
     // are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('--help', '\x1B[93m<cli-command> -h or --help\x1B[0m'))
+      this.warn(err.message.replace('--help', `\x1B[93m${process.argv.at(-2)} ${process.argv.at(-1)} -h or --help\x1B[0m`))
     } else {
       this.warn(err)
     }
