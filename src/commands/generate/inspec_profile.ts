@@ -418,14 +418,6 @@ Latest versions and other installation options are available at [CINC Auditor](h
 
 [top](#table-of-contents)
 ### Tailoring to Your Environment
-
-<h4><span style="color:red">
-
-> [!WARNING] 
->Modification to the testing environment should be done in a manner that **DOES NOT**
- alter the **Security Guidance Document** for the profile.
-</h4></span>
-
 This profile uses InSpec Inputs providing flexibility during testing. Inputs allow for
 customize the behavior of Chef InSpec profiles.
 
@@ -434,7 +426,7 @@ file are **profile definition and defaults for the profile** extracted from the 
 guidances and contain metadata that describes the profile, and shouldn't be modified.
 
 InSpec provides several methods for customizing profiles behaviors at run-time that does not require
-modifying the \`inspec.yml\` file itself (see [Update Profile Inputs](#update-profile-inputs)).
+modifying the \`inspec.yml\` file itself (see [Using Customized Inputs](#using-customized-inputs)).
 
 The following inputs are permitted to be configured in an inputs \`.yml\` file (often named inputs.yml)
 for the profile to run correctly on a specific environment, while still complying with the security
@@ -469,14 +461,14 @@ For more information on developing overlays, reference the [MITRE SAF Training](
 >Inputs are variables that are referenced by control(s) in the profile that implement them.
  They are declared (defined) and given a default value in the \`inspec.yml\` file. 
 
-#### Update Profile Inputs
-Inputs can be overridden by providing an input file or a CLI flag at execution time.
+#### Using Customized Inputs
+Customized inputs may be used at the CLI by providing an input file or a flag at execution time.
 
-1. Via the cli with the \`--input\` flag
+1. Using the \`--input\` flag
   
     Example: \`[inspec or cinc-auditor] exec <my-profile.tar.gz> --input disable_slow_controls=true\`
 
-2. Pass them in a YAML file with the \`--input-file\` flag.
+2. Using the \`--input-file\` flag.
     
     Example: \`[inspec or cinc-auditor] exec <my-profile.tar.gz> --input-file=<my_inputs_file.yml>\`
 
@@ -541,8 +533,8 @@ bundle exec [inspec or cinc-auditor] exec https://github.com/mitre/${contentObj.
 If your runner is not always expected to have direct access to the profile's hosted location,
 use the following steps to create an archive bundle of this overlay and all of its dependent tests:
 
-(Git is required to clone the InSpec profile using the instructions below.
-Git can be downloaded from the [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git) site.)
+Git is required to clone the InSpec profile using the instructions below.
+Git can be downloaded from the [Git Web Site](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git).
 
 When the **"runner"** host uses this profile overlay for the first time, follow these steps:
 
@@ -598,12 +590,12 @@ Additionally both Heimdall applications can be deployed via docker, kubernetes, 
 [top](#table-of-contents)
 ## Authors
 ${contentObj.profileType === 'CIS' ?
-    'Center for Internet Security (CIS) https://www.cisecurity.org/' :
-    'Defense Information Systems Agency (DISA) https://www.disa.mil/\n\n' +
-  'STIG support by DISA Risk Management Team and Cyber Exchange https://public.cyber.mil/'
+    '[Center for Internet Security (CIS)](https://www.cisecurity.org/)' :
+    '[Defense Information Systems Agency (DISA)](https://www.disa.mil/)\n\n' +
+  '[STIG support by DISA Risk Management Team and Cyber Exchange](https://public.cyber.mil/)'
 }
 
-MITRE Security Automation Framework Team https://saf.mitre.org
+[MITRE Security Automation Framework Team](https://saf.mitre.org)
 
 ## NOTICE
 
@@ -625,8 +617,8 @@ For further information, please contact The MITRE Corporation, Contracts Managem
 
 ## NOTICE
 ${contentObj.profileType === 'CIS' ?
-    'CIS Benchmarks are published by Center for Internet Security, see: https://www.cisecurity.org/cis-benchmarks' :
-    'DISA STIGs are published by DISA IASE, see: https://iase.disa.mil/Pages/privacy_policy.aspx'
+    '[CIS Benchmarks are published by Center for Internet Security](https://www.cisecurity.org/cis-benchmarks)' :
+    '[DISA STIGs are published by DISA IASE](https://public.cyber.mil/stigs/)'
 }
 `
   fs.writeFile(path.join(outDir, 'README.md'), readmeContent, err => {

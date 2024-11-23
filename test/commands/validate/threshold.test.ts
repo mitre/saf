@@ -71,11 +71,11 @@ describe('Test validate threshold - using inline values', () => {
       '--templateInline', '"{compliance.min: 66}, {passed.critical.min: 0}, {failed.medium.min: 97}"',
     ])
     expect(stdout).to.equal('')
-    // expect(stderr).to.equal('    Error: failed.medium.min: Threshold not met. Number of received total\n' +
-    //                         '    failed controls (87) is less than your set threshold for the number of\n' +
-    //                         '    failed controls (97)\n')
-    //expect(stderr).to.equal('    Error: failed.medium.min: Threshold not met. Number of received total failed controls (87) is less than your set threshold for the number of failed controls (97)\n')
-    const stderrFormatted = stderr.replaceAll(/\n/gi,' ').replaceAll(/\t/gi,' ').replaceAll(/\s+/g, ' ').trim()
-    expect(stderrFormatted).to.equal('Error: failed.medium.min: Threshold not met. Number of received total failed controls (87) is less than your set threshold for the number of failed controls (97)')
+    // Format stderr to remove newlines, tabs, and extra spaces
+    expect(
+      stderr.replaceAll(/\n/gi, ' ').replaceAll(/\t/gi, ' ').replaceAll(/\s+/g, ' ').trim(),
+    ).to.equal(
+      'Error: failed.medium.min: Threshold not met. Number of received total failed controls (87) is less than your set threshold for the number of failed controls (97)',
+    )
   })
 })
