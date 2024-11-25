@@ -1433,13 +1433,14 @@ See the wiki for more information on 👉 [template files](https://github.com/mi
 validate threshold            Validate the compliance and status counts of an HDF file
 
   USAGE
-    $ saf validate threshold -i <hdf-json> [-h] [-T <flattened-threshold-json> | -F <template-file>]
+    $ saf validate threshold -i <hdf-json> [-I <flattened-threshold-json> | -T <template-file>] [-h] [-L info|warn|debug|verbose]
 
   FLAGS
-    -F, --templateFile=<template-file>                Expected data template, generate one with "saf generate threshold"
-    -T, --templateInline=<flattened-threshold-json>   Flattened JSON containing your validation thresholds
-                                                      (Intended for backwards compatibility with InSpec Tools)
-    -i, --input=<hdf-json>                            (required) Input HDF JSON File
+    -i, --input=<value>           (required) The HDF JSON File to be validated by the threshold values   
+    -T, --templateFile=<value>    A threshold YAML file containing expected threshold values.
+                                  Generate it using the "saf generate threshold" command
+    -I, --templateInline=<value>  An inline (on the command line) flattened JSON containing the validation
+                                  thresholds (Intended for backwards compatibility with InSpec Tools)
 
   GLOBAL FLAGS
     -h, --help               Show CLI help
@@ -1448,7 +1449,12 @@ validate threshold            Validate the compliance and status counts of an HD
         --interactive        Collect input tags interactively (not available on all CLI commands)
 
   EXAMPLES
-    $ saf validate threshold -i rhel7-results.json -F output.yaml
+    Providing a threshold template file
+      $ saf validate threshold -i rhel7-results.json -T threshold.yaml
+    
+    Specifying the threshold inline
+      $ saf validate threshold -i rhel7-results.json -I "{compliance.min: 80}, {passed.total.min: 18}, {failed.total.max: 2}"
+
 ```
 
 [top](#validate-hdf-thresholds)
@@ -1619,7 +1625,7 @@ EXAMPLES
 [top](#generate-data-reports-and-more)
 #### Thresholds
 
-Threshold files are used in CI to ensure minimum compliance levels and validate control severities and statuses using `saf validate threshold`
+Threshold files are used in Continious Integration (CI) to ensure minimum compliance levels and validate control severities and statuses using `saf validate threshold`
 
 See the wiki for more information on 👉 [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
 

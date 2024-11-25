@@ -4,7 +4,7 @@ import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import path from 'path'
 
-describe('Test validate threshold', () => {
+describe('Test validate threshold - using template file', () => {
   it('Validate threshold test - Triple Overlay Valid Counts', async () => {
     const {stdout, stderr} = await runCommand<{name: string}>(['validate threshold',
       '-i', path.resolve('./test/sample_data/HDF/input/triple_overlay_profile_example.json'),
@@ -53,5 +53,29 @@ describe('Test validate threshold', () => {
       '--templateFile', path.resolve('./test/sample_data/thresholds/rhel-8_hardened.counts.bad.noimpactHigh.yml'),
     ])
     expect(stdout).to.equal('')
+  })
+})
+
+describe('Test validate threshold - using inline values', () => {
+  it('Validate threshold test - Valid inline content', async () => {
+    const {stdout, stderr} = await runCommand<{name: string}>(['validate threshold',
+      '-i', path.resolve('./test/sample_data/HDF/input/rhel-8_hardened.json'),
+      '--templateInline', '"{compliance.min: 66}, {passed.critical.min: 0}, {failed.medium.min: 0}"',
+    ])
+    expect(stdout).to.equal('All validation tests passed\n')
+    expect(stderr).to.equal('')
+  })
+  it('Validate threshold test - Invalid inline content', async () => {
+    const {stdout, stderr} = await runCommand<{name: string}>(['validate threshold',
+      '-i', path.resolve('./test/sample_data/HDF/input/rhel-8_hardened.json'),
+      '--templateInline', '"{compliance.min: 66}, {passed.critical.min: 0}, {failed.medium.min: 97}"',
+    ])
+    expect(stdout).to.equal('')
+    // Format stderr to remove newlines, tabs, and extra spaces
+    expect(
+      stderr.replaceAll(/\n/gi, ' ').replaceAll(/\t/gi, ' ').replaceAll(/\s+/g, ' ').trim(),
+    ).to.equal(
+      'Error: failed.medium.min: Threshold not met. Number of received total failed controls (87) is less than your set threshold for the number of failed controls (97)',
+    )
   })
 })
