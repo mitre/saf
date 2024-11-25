@@ -324,7 +324,7 @@ function generateReadme(contentObj: InspecReadme, outDir: string, logger: Logger
 `# ${contentObj.profileTitle}
 This InSpec Profile was created to facilitate testing and auditing of \`${contentObj.profileShortName}\`
 infrastructure and applications when validating compliancy with ${contentObj.profileCompliance}
-requirements
+requirements.
 
 - Profile Version: **${contentObj.profileVersion.trim()}**
 - Benchmark Date: **${contentObj.benchmarkDate.trim()}**
@@ -418,14 +418,14 @@ Latest versions and other installation options are available at [CINC Auditor](h
 
 [top](#table-of-contents)
 ### Tailoring to Your Environment
-This profile uses InSpec Inputs providing flexibility during testing. Inputs allow for
-customize the behavior of Chef InSpec profiles.
+This profile uses InSpec Inputs to provide flexibility during testing. Inputs allow for
+customizing the behavior of Chef InSpec profiles.
 
 InSpec Inputs are defined in the \`inspec.yml\` file. The \`inputs\` configured in this
-file are **profile definition and defaults for the profile** extracted from the profile
-guidances and contain metadata that describes the profile, and shouldn't be modified.
+file are **profile definitions and defaults for the profile** extracted from the profile
+guidances and contain metadata that describe the profile, and shouldn't be modified.
 
-InSpec provides several methods for customizing profiles behaviors at run-time that does not require
+InSpec provides several methods for customizing profile behaviors at run-time that does not require
 modifying the \`inspec.yml\` file itself (see [Using Customized Inputs](#using-customized-inputs)).
 
 The following inputs are permitted to be configured in an inputs \`.yml\` file (often named inputs.yml)
@@ -501,11 +501,11 @@ bundle install
 
 Linting and validating controls:
 \`\`\`bash
-  bundle exec rake [inspec or cinc-auditor]:check # validate the inspec profile
+  bundle exec rake [inspec or cinc-auditor]:check # Validate the inspec profile
   bundle exec rake lint                           # Run RuboCop
   bundle exec rake lint:autocorrect               # Autocorrect RuboCop offenses (only when it's safe)
   bundle exec rake lint:autocorrect_all           # Autocorrect RuboCop offenses (safe and unsafe)
-  bundle exec rake pre_commit_checks              # pre-commit checks
+  bundle exec rake pre_commit_checks              # Pre-commit checks
 \`\`\`
 
 Ensure the controls are ready to be committed into the repo:
@@ -517,7 +517,7 @@ Ensure the controls are ready to be committed into the repo:
 [top](#table-of-contents)
 ## Running the Profile
 ### Directly from Github
-This options is best used when network connectivity is available and policies permit
+This option is best used when network connectivity is available and policies permit
 access to the hosting repository.
 
 \`\`\`bash
