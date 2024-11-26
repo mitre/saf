@@ -194,7 +194,9 @@
   "scripts": {
     "lint": "eslint \"src/**/*.ts\" --fix",
     "lint:ci": "eslint \"src/**/*.ts\" --max-warnings 0",
-    "dev": "rm -rf lib && tsc && node bin/run",
+    "dev": "run-script-os",
+    "dev:win32": "(IF EXIST lib rmdir /s /q lib) && tsc && node bin/run",
+    "dev:darwin:linux": "rm -rf lib && tsc && node bin/run",
     "test": "npm run test:mocha && npm run test:jest",
     "tests": "npm run test",
     "test:mocha": "ts-mocha --timeout 25000 --forbid-only \"test/**/*.test.ts\"",
