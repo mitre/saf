@@ -53,14 +53,19 @@ The 'utility' tests are located in the `./tests/utility` directory and organized
 npm run test:jest
 npm run test:jest:one ./tests/utility/calculations.test.ts
 ```
+### Run All Tests
+To invoke all tests `chai` and `jest` use the follwong command:
+```bash
+npm run test or npm run tests
+```
 
 ## Linting
 
-We use ESLint with the TypeScript ESLint plugin for linting. To run the linter, use:
+We use ESLint with the TypeScript ESLint plugin for linting. The command lint’s all TypeScript files found in the `scr` directory (including sub-directories). To run the linter, use:
 
 ```bash
-npm run lint
-npm run lint --fix
+npm run lint:ci  # Reports issues found, does not fix them
+npm run lint     # Invokes the --fix flag, fixes issue found
 ```
 
 ## Building
@@ -78,13 +83,15 @@ This script will clean the `lib` directory and compile the TypeScript files.
 Here's how you can use the CLI:
 
 ```bash
-./bin/run command-name
+./bin/run command-name    # Darwin or Linux
+node bin/run command-name # Windows
 ```
 
 You can get help on the available commands with:
 
 ```bash
-./bin/run --help
+./bin/run --help    # Darwin or Linux
+node bin/run --help # Windows
 ```
 
 ## Contributing
