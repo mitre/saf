@@ -4,12 +4,12 @@ The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) bring
 
 The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimdall_tools) and [InSpec Tools](https://github.com/mitre/inspec_tools).
 
-## Terminology:
+## Terminology
 
 - "[Heimdall](https://github.com/mitre/heimdall2)" - Our visualizer for all security result data
 - "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - Our common data format to preserve and transform security data
 
-## Installation:
+## Installation
 
   * [Via NPM](#installation-via-npm)
       * [Update via NPM](#update-via-npm)
@@ -19,6 +19,9 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Update via Docker](#update-via-docker)
   * [Via Windows Installer](#installation-via-windows-installer)
       * [Update via Windows Installer](#update-via-windows-installer)
+
+## Developers 
+For detail information about development, testing , and contributing to the SAF project refer to [MITRE SAF Develpment](https://github.com/mitre/saf/blob/main/docs/contributors-guide.md)
 
 ## Usage
 
