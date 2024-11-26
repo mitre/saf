@@ -54,9 +54,10 @@ npm run test:jest
 npm run test:jest:one ./tests/utility/calculations.test.ts
 ```
 ### Run All Tests
-To invoke all tests `chai` and `jest` use the follwong command:
+To invoke all tests `chai` and `jest` use the following commands:
 ```bash
-npm run test or npm run tests
+npm run test
+npm run tests
 ```
 
 ## Linting
@@ -65,7 +66,7 @@ We use ESLint with the TypeScript ESLint plugin for linting. The command lint’
 
 ```bash
 npm run lint:ci  # Reports issues found, does not fix them
-npm run lint     # Invokes the --fix flag, fixes issue found
+npm run lint     # Invokes the --fix flag, fixes issues found
 ```
 
 ## Building
