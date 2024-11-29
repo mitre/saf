@@ -383,11 +383,8 @@ It is intended and recommended that CINC-auditor and this profile executed from 
 (such as a DevOps orchestration server, an administrative management system, or a developer's workstation/laptop)
 against the target. This can be any Unix/Linux/MacOS or Windows runner host, with access to the Internet.
 
-<h4>
-
 > [!TIP]
 > **For the best security of the runner, always install on the runner the latest version of CINC-auditor and any other supporting language components.**
-</h4>
 
 To install CINC-auditor on a UNIX/Linux/MacOS platform use the following command:
 \`\`\`bash
