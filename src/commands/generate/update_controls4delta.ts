@@ -184,7 +184,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     // Process the InSpec json content, convert entries into a Profile object
     logger.info('Processing the Input execution/profile JSON summary...')
     if (flags.inspecJsonFile) {
-      logger.info(`  Using execution/profile summary file: ${path.basename(flags.inspecJsonFile!)}`)
+      logger.info(`  Using execution/profile summary file: ${path.basename(flags.inspecJsonFile!)}`) // skipcq: JS-0339
       try {
         if (fs.lstatSync(flags.inspecJsonFile).isFile()) {
           const inspecJsonFile = flags.inspecJsonFile
