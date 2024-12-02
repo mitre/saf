@@ -43,6 +43,16 @@ import inquirer from 'inquirer'
 import inquirerFileTreeSelection from 'inquirer-file-tree-selection-prompt'
 import {EventEmitter} from 'events'
 
+/**
+ * This class extends the capabilities of the update_controls4delta providing the following capabilities:
+ *   1 - Creates new controls found in updated guidances
+*    2 - Fuzzy matching capability (optional)
+*        a - Maps controls based on similarity and not control IDs
+*        b - For controls which a match is found, the describe block (code)
+*            within the old control is mapped over to the new control
+*    3 - Detailed logging
+*        a - report file (.md), mapping statistics (CliProcessOutput.log)
+*/
 export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   static description = 'Update an existing InSpec profile with updated XCCDF guidance'
 
