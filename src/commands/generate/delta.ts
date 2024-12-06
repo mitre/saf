@@ -43,6 +43,16 @@ import inquirer from 'inquirer'
 import inquirerFileTreeSelection from 'inquirer-file-tree-selection-prompt'
 import {EventEmitter} from 'events'
 
+/**
+ * This class extends the capabilities of the update_controls4delta providing the following capabilities:
+ *   1 - Creates new controls found in updated guidances
+*    2 - Fuzzy matching capability (optional)
+*        a - Maps controls based on similarity and not control IDs
+*        b - For controls which a match is found, the describe block (code)
+*            within the old control is mapped over to the new control
+*    3 - Detailed logging
+*        a - report file (.md), mapping statistics (CliProcessOutput.log)
+*/
 export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   static description = 'Update an existing InSpec profile with updated XCCDF guidance'
 
@@ -285,8 +295,10 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         logger.info('  Updating controls with new control number')
         printCyan('Updating Controls ===========================================================================')
 
-        // For each control, modify the control file in the old controls directory
-        // then regenerate json profile
+        // We need to update controls that a mapping were found executing the mapControls method.
+        // This is needed because when we re-generate the new profile summary we need the controls
+        // to have the new name/Id. So, for each control, modify the control file in the old controls
+        // directory with the proper name and Id, than regenerate json profile summary.
         // eslint-disable-next-line guard-for-in
         for (const key in controls) {
           const sourceShortControlFile = path.join(shortProfileDir, `${controls[key]}.rb`)
@@ -339,7 +351,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           }
         }
 
-        // Regenerate the profile json based on the updated mapped controls
+        // Regenerate the profile json summary based on the updated mapped controls
         try {
           logger.info(`  Generating the profile json using the new mapped controls on: '${mappedDir}'`)
           // Get the directory name without the trailing "controls" directory
@@ -445,7 +457,14 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // Call the .toRuby verbose if the log level is debug or verbose
         const processLogLevel = Boolean(logLevel === 'debug' || logLevel === 'verbose')
         if (index >= 0) {
-          // We found a mapping for this control
+          // We found a mapping for this control (aka index >=0)
+          // The new control (control) has the new metadata but doesn't have
+          // the describe block (code). Using the updateControl method with the new
+          // control so we can get the code with the new metadata.
+
+          // eslint-disable-next-line no-warning-comments
+          // TODO: Can use the getExistingDescribeFromControl(existingProfile.controls[index])
+          //       method from inspect-objects
           const newControl = updateControl(existingProfile.controls[index], control, logger)
 
           logger.debug(`Writing updated control with code block for: ${control.id}.`)
