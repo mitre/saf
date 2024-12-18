@@ -149,14 +149,13 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     logger.info('Verifying that a controls folder exists...')
     if (fs.existsSync(flags.controlsDir)) {
       logger.debug('  Found controls directory')
-      fs.readdir(flags.controlsDir, function (err, files) { // skipcq: JS-0241
-        if (err) {
-          logger.error(`ERROR: Checking if controls directory is empty, received: ${err.message}`)
-          throw new Error(`Error checking controls directory, error: ${err.message}`)
-        } else if (files.length) {
+      try {
+        const files = await readdir(flags.controlsDir)
+        if (files.length) {
           logger.debug(`  Found ${files.length} Controls in the controls directory`)
           if (flags.backupControls) {
             // Create the backup directory inside the parent controls directory
+            // eslint-disable-next-line max-depth
             if (fs.existsSync(GenerateUpdateControls.backupDir)) {
               fs.rmSync(GenerateUpdateControls.backupDir, {recursive: true, force: true})
             }
@@ -168,16 +167,24 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
           logger.error(`No controls were found in the provide directory: ${flags.controlsDir}`)
           throw new Error(`No controls were found in the provide directory: ${flags.controlsDir}`)
         }
-      })
+      } catch (error: any) {
+        logger.error(`ERROR: Checking if controls directory is empty, received: ${error.message}`)
+        throw new Error(`Error checking controls directory, error: ${error.message}`)
+      }
     } else {
       throw new Error('Controls folder not specified or does not exist')
     }
 
+    // Shorten the controls directory to sow the 'controls' directory and its parent
+    const shortControlsDir = path.sep + path.basename(path.dirname(flags.controlsDir)) +
+                             path.sep + path.basename(flags.controlsDir)
+
     //-------------------------------------------------------------------------
     // Check if we have an InSpec json file, generate if not provided
     // Process the InSpec json content, convert entries into a Profile object
-    logger.info(`Processing the Input execution/profile JSON file: ${path.basename(flags.inspecJsonFile!)}...`) // skipcq: JS-0339
+    logger.info('Processing the Input execution/profile JSON summary...')
     if (flags.inspecJsonFile) {
+      logger.info(`  Using execution/profile summary file: ${path.basename(flags.inspecJsonFile!)}`) // skipcq: JS-0339
       try {
         if (fs.lstatSync(flags.inspecJsonFile).isFile()) {
           const inspecJsonFile = flags.inspecJsonFile
@@ -199,7 +206,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     } else {
       // Generate the profile json
       try {
-        logger.info(`Generating the profile json using inspec json command on '${flags.controlsDir}'`)
+        logger.info(`  Generating the summary file on directory: ${shortControlsDir}`)
         // Get the directory name without the trailing "controls" directory
         const profileDir = path.dirname(flags.controlsDir)
         const inspecJsonFile = execSync(`inspec json '${profileDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
@@ -326,7 +333,6 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     // Updated controls have:
     //   Metadata from XCCDF guidances
     //   Code block from matching old control (inspec json)
-    const shortControlsDir = path.sep + path.basename(path.dirname(flags.controlsDir)) + path.sep + path.basename(flags.controlsDir)
     logger.info(`Updating controls in directory: ..${shortControlsDir}`)
 
     const ext = '.rb'
