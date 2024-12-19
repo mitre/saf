@@ -77,6 +77,8 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     const {flags} = await this.parse(InspecProfile)
 
     const logger = createWinstonLogger('generate:inspect_profile', flags.logLevel)
+    const benchmarkType = flags.idType.toLocaleLowerCase()
+    logger.info(`Processing Benchmark Type: ${(benchmarkType === 'cis') ? 'CIS' : 'STIG'}`)
 
     // Process the XCCDF XML file containing the profile guidance
     let xccdf: any = {}
@@ -113,7 +115,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     const xmlDoc = new parser.XMLParser(options).parse(xccdf)
     let outDir = ''
     if (flags.output === 'profile') {
-      const benchmarkTitle = (flags.idType.toLocaleLowerCase() === 'cis') ?
+      const benchmarkTitle = (benchmarkType === 'cis') ?
         _.get(xmlDoc, 'xccdf:Benchmark.xccdf:title.#text') :
         _.get(xmlDoc, 'Benchmark.title')
       outDir = (benchmarkTitle === undefined) ?
@@ -178,7 +180,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
 
     // Set profile default values (values used to generate the inspect.yml file)
     logger.info('Generating markdown and yaml files...')
-    const readmeObj = flags.idType.toLocaleLowerCase() === 'cis' ?
+    const readmeObj = (benchmarkType === 'cis') ?
       getCISReadmeContent(xmlDoc) :
       getDISAReadmeContent(xmlDoc)
 
@@ -498,10 +500,9 @@ bundle install
 
 Linting and validating controls:
 \`\`\`bash
-  bundle exec rake [inspec or cinc-auditor]:check # Validate the inspec profile
-  bundle exec rake lint                           # Run RuboCop
-  bundle exec rake lint:autocorrect               # Autocorrect RuboCop offenses (only when it's safe)
-  bundle exec rake lint:autocorrect_all           # Autocorrect RuboCop offenses (safe and unsafe)
+  bundle exec rake [inspec or cinc-auditor]:check # Validate the InSpec Profile
+  bundle exec rake lint                           # Run RuboCop Linter
+  bundle exec rake lint:auto_correct              # Autocorrect RuboCop offenses (only when it's safe)
   bundle exec rake pre_commit_checks              # Pre-commit checks
 \`\`\`
 
