@@ -1,10 +1,15 @@
 // utils/calculations.ts
 
 import _ from 'lodash'
-import flat from 'flat'
 import {ContextualizedEvaluation, ContextualizedProfile} from 'inspecjs'
 import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../threshold'
 import {createWinstonLogger} from '../logging'
+
+let flat: any
+// eslint-disable-next-line unicorn/prefer-top-level-await -- node/ts versions don't support top level await
+(async () => {
+  flat = await import('flat')
+})()
 
 /**
 * The logger for this command.
@@ -48,7 +53,7 @@ export function calculateComplianceScoresForExecJSONs(execJSONs: Record<string, 
     const overallCompliance = calculateCompliance(overallStatusCounts)
     const existingCompliance = _.get(complianceScores, profileName) || []
     existingCompliance.push(overallCompliance)
-    _.set(complianceScores, `["${profileName.replaceAll('"', '\\"')}"]`, existingCompliance)
+    _.set(complianceScores, `["${profileName.replaceAll('"', String.raw`\"`)}"]`, existingCompliance)
   })
   return complianceScores
 }
@@ -67,9 +72,9 @@ export function calculateTotalCountsForSummaries(summaries: Record<string, Recor
       Object.entries(flattened).forEach(([key, value]) => {
         const existingValue = _.get(totals, `${profileName}.${key}`, 0)
         if (typeof existingValue === 'number') {
-          _.set(totals, `["${profileName.replaceAll('"', '\\"')}"].${key}`, existingValue + value)
+          _.set(totals, `["${profileName.replaceAll('"', String.raw`\"`)}"].${key}`, existingValue + value)
         } else {
-          _.set(totals, `["${profileName.replaceAll('"', '\\"')}"].${key}`, value)
+          _.set(totals, `["${profileName.replaceAll('"', String.raw`\"`)}"].${key}`, value)
         }
       })
     })

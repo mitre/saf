@@ -1,3 +1,4 @@
+
 import {Command, Flags} from '@oclif/core'
 import express from 'express'
 import fs from 'fs'
@@ -6,16 +7,15 @@ import {dynamicImport} from 'tsimportlib'
 import {getInstalledPath} from '../../utils/global'
 
 export default class Heimdall extends Command {
-  static aliases = ['heimdall']
+  static readonly aliases = ['heimdall']
 
-  static usage = 'view heimdall [-h] [-p <port>] [-f <file>] [-n]'
+  static readonly usage = '<%= command.id %> [-h] [-p <port>] [-f <file>] [-n]'
 
-  static description = 'Run an instance of Heimdall Lite to visualize your data'
+  static readonly description = 'Run an instance of Heimdall Lite to visualize your data'
 
-  static examples = ['saf view heimdall -p 8080']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -p 8080']
 
-  static flags = {
-    help: Flags.help({char: 'h'}),
+  static readonly flags = {
     port: Flags.integer({char: 'p', required: false, default: 3000, description: 'Port To Expose Heimdall On (Default 3000)'}),
     files: Flags.string({char: 'f', required: false, multiple: true, description: 'File(s) to display in Heimdall'}),
     noOpenBrowser: Flags.boolean({char: 'n', required: false, default: false, description: 'Do not open the default browser automatically'}),
@@ -24,7 +24,9 @@ export default class Heimdall extends Command {
   async run() {
     // NOTE: The npm open package is native ESM and no longer provides a CommonJS export
     // The SAF CLI is a CommonJS project and needs to dynamic import the open package
-    // Doing a normal dynamic import in typescript doesn't work because typescript will still translate the import into a require.  This library works around that issue by preventing that translation from occurring.
+    // Doing a normal dynamic import in typescript doesn't work because typescript will
+    // still translate the import into a require.  This library works around that issue
+    // by preventing that translation from occurring.
     const openDynamicImport = await dynamicImport('open', module) // eslint-disable-line unicorn/prefer-module
     const open = openDynamicImport.default
 
@@ -69,7 +71,7 @@ export default class Heimdall extends Command {
       }
     }
 
-    const installedPath = getInstalledPath()
+    const installedPath = getInstalledPath('@mitre/saf')
 
     express()
       .use(predefinedLoadJSON)

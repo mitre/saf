@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-deploy:
-    runs-on: macos-12
+    runs-on: macos-14
     steps:
       - uses: actions/checkout@v4
 
@@ -28,7 +28,7 @@ jobs:
       - name: npm pack
         run: npx oclif pack macos
 
-      - name: Rename Windows Installers
+      - name: Rename Mac Installers
         run: |
           cd dist/macos
           for file in saf-*.pkg; do

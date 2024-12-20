@@ -6,12 +6,17 @@ generatedMD.md
 /lib
 /tmp
 /bin/deepsource
+/test/logs
+/test/sample_data/inspec/json/profile_and_controls/mapped_controls
 node_modules
 **/.DS_Store
 *.*.un~
+*.*.swp
 out
 .env
 *.tgz
 **/saf-cli.log
 *.html
 saf-cli.log
+CliProcessOutput.log
+deltaProcessReport.md

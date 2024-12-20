@@ -1,0 +1,69 @@
+{
+  "platform": {
+    "name": "mac_os_x",
+    "release": "20.6.0",
+    "target_id": "af9cc1ad-9583-5403-8a69-79a34daa9792"
+  },
+  "profiles": [
+    {
+      "name": "test_inspec_profile",
+      "version": "0.1.0",
+      "sha256": "5b6b2189b26425192a9eb4ae99ba52403c054e7a5f0a61f847d773a3444b8546",
+      "title": "InSpec Profile",
+      "maintainer": "The Authors",
+      "summary": "An InSpec Compliance Profile",
+      "license": "Apache-2.0",
+      "copyright": "The Authors",
+      "copyright_email": "you@example.com",
+      "supports": [
+        {
+          "platform": "os"
+        }
+      ],
+      "attributes": [],
+      "groups": [
+        {
+          "id": "controls/test1.rb",
+          "controls": [
+            "test"
+          ]
+        }
+      ],
+      "controls": [
+        {
+          "id": "test",
+          "title": "Returns a fail",
+          "desc": null,
+          "descriptions": [],
+          "impact": 0.7,
+          "refs": [],
+          "tags": {},
+          "code": "control \"test\" do\n  impact 0.7\n  title \"Returns a fail\"\n  describe true do\n    it { should be false }\n  end\nend\n",
+          "source_location": {
+            "line": 1,
+            "ref": "./controls/test1.rb"
+          },
+          "waiver_data": {},
+          "results": [
+            {
+              "status": "failed",
+              "code_desc": "true is expected to equal false",
+              "run_time": 0.026805,
+              "start_time": "2022-09-27T21:58:28-04:00",
+              "message": "\nexpected false\n     got true\n",
+              "resource_class": "Object",
+              "resource_params": "[]",
+              "resource_id": ""
+            }
+          ]
+        }
+      ],
+      "status": "loaded",
+      "status_message": ""
+    }
+  ],
+  "statistics": {
+    "duration": 0.032271
+  },
+  "version": "5.18.14"
+}

@@ -42,3 +42,19 @@ export interface InSpecMetaData {
     license?: string;
     version?: string;
 }
+
+export interface InspecReadme {
+    profileType: string,
+    profileGuidance: string,
+    profileGuidanceAgency: string,
+    profileDeveloperPartner: string,
+    profileCompliance: string,
+    profileDevelopers: string,
+    profileName: string;
+    profileShortName: string;
+    profileTitle: string;
+    profileVersion: string;
+    inspecTitle: string;
+    benchmarkVersion: string;
+    benchmarkDate: string;
+}
