@@ -15,7 +15,7 @@ import {
 // test failed in updating inspec-objects to address high lvl vuln
 import Profile from '@mitre/inspec-objects/lib/objects/profile'
 import Control from '@mitre/inspec-objects/lib/objects/control'
-
+import _ from 'lodash'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
@@ -38,10 +38,11 @@ import {
   saveProcessLogData,
 } from '../../utils/oclif/cliHelper'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
-import colors from 'colors' // eslint-disable-line no-restricted-imports
-// import inquirer from 'inquirer'
-// import inquirerFileTreeSelection from 'inquirer-file-tree-selection-prompt'
-// import {EventEmitter} from 'events'
+import {EventEmitter} from 'events'
+// eslint-disable-next-line no-restricted-imports
+import colors from 'colors'
+// eslint-disable-next-line node/no-extraneous-import
+import {checkbox, input, confirm, select} from '@inquirer/prompts'
 
 /**
  * This class extends the capabilities of the update_controls4delta providing the following capabilities:
@@ -132,18 +133,18 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     addToProcessLogData(`Date: ${new Date().toISOString()}`)
 
     if (flags.interactive) {
-      // const interactiveFlags = await getFlags()
-      // // Required flags
-      // inspecJsonFile = interactiveFlags.inspecJsonFile
-      // xccdfXmlFile = interactiveFlags.xccdfXmlFile
-      // deltaOutputDir = interactiveFlags.deltaOutputDir
-      // // Optional flags
-      // ovalXmlFile = interactiveFlags.ovalXmlFile
-      // reportFile = path.join(interactiveFlags.reportDirectory, interactiveFlags.reportFileName)
-      // idType = interactiveFlags.idType
-      // runMapControls = interactiveFlags.runMapControls
-      // controlsDir = interactiveFlags.controlsDir
-      // logLevel = interactiveFlags.logLevel
+      const interactiveFlags = await getFlags()
+      // Required flags
+      inspecJsonFile = interactiveFlags.inspecJsonFile
+      xccdfXmlFile = interactiveFlags.xccdfXmlFile
+      deltaOutputDir = interactiveFlags.deltaOutputDir
+      // Optional flags
+      ovalXmlFile = interactiveFlags.ovalXmlFile
+      reportFile = path.join(interactiveFlags.reportDirectory, interactiveFlags.reportFileName)
+      idType = interactiveFlags.idType
+      runMapControls = interactiveFlags.runMapControls
+      controlsDir = interactiveFlags.controlsDir
+      logLevel = interactiveFlags.logLevel
     } else if (this.requiredFlagsProvided(flags)) {
       // Required flags
       inspecJsonFile = flags.inspecJsonFile as string
@@ -760,330 +761,490 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
 // Interactively ask the user for the arguments required for the cli.
 // All flags, required and optional are asked
-// async function getFlags(): Promise<any> {
-//   // The default max listeners is set to 10. The inquire checkbox sets a
-//   // listener for each entry it displays, we are providing 16 entries,
-//   // does using 16 listeners. Need to increase the defaultMaxListeners.
-//   EventEmitter.defaultMaxListeners = 20
+async function getFlags(): Promise<any> {
+  // The default max listeners is set to 10. The inquire checkbox sets a
+  // listener for each entry it displays, we are providing 16 entries,
+  // does using 16 listeners. Need to increase the defaultMaxListeners.
+  EventEmitter.defaultMaxListeners = 20
 
-//   // Register the file selection prompt
-//   inquirer.registerPrompt('file-tree-selection', inquirerFileTreeSelection)
+  // Dynamically import inquirer-file-selector and chalk
+  // Once we move the SAF CLI from a CommonJS to as ES modules we can use the regular import
+  const {default: fileSelector} = await import('inquirer-file-selector')
+  const {default: chalk} = await import('chalk')
 
-//   // Variable used to store the prompts (question and answers)
-//   const interactiveValues: {[key: string]: any} = {}
+  const fileSelectorTheme = {
+    style: {
+      file: (text: unknown) => chalk.green(text),
+      help: (text: unknown) => chalk.yellow(text),
+    },
+  }
 
-//   printYellow('Provide the necessary information:')
-//   printGreen('  Required flag - Input execution/profile (list of controls the delta is being applied from) JSON file')
-//   printGreen('  Required flag - The XCCDF XML file containing the new guidance - in the form of .xml file')
-//   printGreen('  Required flag - The output folder for the updated profile (will contain the controls that delta was applied too)')
-//   printMagenta('  Optional flag - The OVAL XML file containing definitions used in the new guidance - in the form of .xml file')
-//   printMagenta('  Optional flag - Output markdown report file - must have an extension of .md')
-//   printMagenta('  Optional flag - Control ID Types: [\'rule\', \'group\', \'cis\', \'version\']')
-//   printMagenta('  Optional flag - Run the approximate string matching process')
-//   printMagenta('  Optional flag - The InSpec profile directory containing the controls being updated (controls Delta is processing)\n')
+  // Variable used to store the prompts (question and answers)
+  const interactiveValues: {[key: string]: any} = {}
 
-//   // Required Flags
-//   const requiredQuestions = [
-//     {
-//       type: 'file-tree-selection',
-//       name: 'inspecJsonFile',
-//       message: 'Select the Input execution/profile (list of controls the delta is being applied from) JSON file:',
-//       filters: 'json',
-//       pageSize: 15,
-//       require: true,
-//       enableGoUpperDirectory: true,
-//       transformer: (input: any) => {
-//         const name = input.split(path.sep).pop()
-//         const fileExtension =  name.split('.').slice(1).pop()
-//         if (name[0] === '.') {
-//           return colors.grey(name)
-//         }
+  printYellow('Provide the necessary information:')
+  printGreen('  Required flag - Input execution/profile (list of controls the delta is being applied from) JSON file')
+  printGreen('  Required flag - The XCCDF XML file containing the new guidance - in the form of .xml file')
+  printGreen('  Required flag - The output folder for the updated profile (will contain the controls that delta was applied too)')
+  printMagenta('  Optional flag - The OVAL XML file containing definitions used in the new guidance - in the form of .xml file')
+  printMagenta('  Optional flag - Output markdown report file - must have an extension of .md')
+  printMagenta('  Optional flag - Control ID Types: [\'rule\', \'group\', \'cis\', \'version\']')
+  printMagenta('  Optional flag - Run the approximate string matching process')
+  printMagenta('  Optional flag - The InSpec profile directory containing the controls being updated (controls Delta is processing)\n')
 
-//         if (fileExtension === 'json') {
-//           return colors.green(name)
-//         }
+  // Required Flags
+  const requiredAnswers = {
+    inspecJsonFile: await fileSelector({
+      message: 'Select the Input execution/profile (list of controls the delta is being applied from) JSON file:',
+      pageSize: 15,
+      loop: true,
+      type: 'file',
+      allowCancel: false,
+      emptyText: 'Directory is empty',
+      showExcluded: false,
+      filter: file => file.isDirectory() || file.name.endsWith('.json'),
+      theme: fileSelectorTheme,
+    }),
+    xccdfXmlFile: await fileSelector({
+      message: 'Select the XCCDF XML file containing the new guidance - in the form of .xml file:',
+      pageSize: 15,
+      loop: true,
+      type: 'file',
+      emptyText: 'Directory is empty',
+      showExcluded: false,
+      filter: file => file.isDirectory() || file.name.endsWith('.xml'),
+      theme: fileSelectorTheme,
+    }),
+    deltaOutputDir: await fileSelector({
+      message: 'Select the output folder for the updated profile control(s) (do not use the original controls directory)',
+      pageSize: 15,
+      loop: true,
+      type: 'directory',
+      allowCancel: false,
+      emptyText: 'Directory is empty',
+      theme: fileSelectorTheme,
+    }),
+  }
 
-//         return name
-//       },
-//       validate: (input: any) => {
-//         const name = input.split(path.sep).pop()
-//         const fileExtension =  name.split('.').slice(1).pop()
-//         if (fileExtension !== 'json') {
-//           return 'Not a .json file, please select another file'
-//         }
+  addToProcessLogData('Process Flags ============================================')
+  // eslint-disable-next-line guard-for-in
+  for (const tagName in requiredAnswers) {
+    const answerValue = _.get(requiredAnswers, tagName)
+    if (answerValue !== null) {
+      addToProcessLogData(tagName + '=' + answerValue)
+      interactiveValues[tagName] = answerValue
+    }
+  }
 
-//         return true
-//       },
-//     },
-//     {
-//       type: 'file-tree-selection',
-//       name: 'xccdfXmlFile',
-//       message: 'Select the XCCDF XML file containing the new guidance - in the form of .xml file:',
-//       filters: 'xml',
-//       pageSize: 15,
-//       require: true,
-//       enableGoUpperDirectory: true,
-//       transformer: (input: any) => {
-//         const name = input.split(path.sep).pop()
-//         const fileExtension =  name.split('.').slice(1).pop()
-//         if (name[0] === '.') {
-//           return colors.grey(name)
-//         }
+  // const requiredQuestions = [
+  //   {
+  //     type: 'file-tree-selection',
+  //     name: 'inspecJsonFile',
+  //     message: 'Select the Input execution/profile (list of controls the delta is being applied from) JSON file:',
+  //     filters: 'json',
+  //     pageSize: 15,
+  //     require: true,
+  //     enableGoUpperDirectory: true,
+  //     transformer: (input: any) => {
+  //       const name = input.split(path.sep).pop()
+  //       const fileExtension =  name.split('.').slice(1).pop()
+  //       if (name[0] === '.') {
+  //         return colors.grey(name)
+  //       }
 
-//         if (fileExtension === 'xml') {
-//           return colors.green(name)
-//         }
+  //       if (fileExtension === 'json') {
+  //         return colors.green(name)
+  //       }
 
-//         return name
-//       },
-//       validate: (input: any) => {
-//         const name = input.split(path.sep).pop()
-//         const fileExtension =  name.split('.').slice(1).pop()
-//         if (fileExtension !== 'xml') {
-//           return 'Not a .xml file, please select another file'
-//         }
+  //       return name
+  //     },
+  //     validate: (input: any) => {
+  //       const name = input.split(path.sep).pop()
+  //       const fileExtension =  name.split('.').slice(1).pop()
+  //       if (fileExtension !== 'json') {
+  //         return 'Not a .json file, please select another file'
+  //       }
 
-//         return true
-//       },
-//     },
-//     {
-//       type: 'file-tree-selection',
-//       name: 'deltaOutputDir',
-//       message: 'Select the output folder for the updated profile (do not use the original controls directory):',
-//       pageSize: 15,
-//       require: true,
-//       onlyShowDir: true,
-//       enableGoUpperDirectory: true,
-//       transformer: (input: any) => {
-//         const name = input.split(path.sep).pop()
-//         if (name[0] === '.') {
-//           return colors.grey(name)
-//         }
+  //       return true
+  //     },
+  //   },
+  //   {
+  //     type: 'file-tree-selection',
+  //     name: 'xccdfXmlFile',
+  //     message: 'Select the XCCDF XML file containing the new guidance - in the form of .xml file:',
+  //     filters: 'xml',
+  //     pageSize: 15,
+  //     require: true,
+  //     enableGoUpperDirectory: true,
+  //     transformer: (input: any) => {
+  //       const name = input.split(path.sep).pop()
+  //       const fileExtension =  name.split('.').slice(1).pop()
+  //       if (name[0] === '.') {
+  //         return colors.grey(name)
+  //       }
 
-//         return name
-//       },
-//     },
-//   ]
-//   const askRequired = inquirer.prompt(requiredQuestions).then((answers: any) => {
-//     addToProcessLogData('Process Flags ============================================')
-//     for (const question in answers) {
-//       if (answers[question] !== null) {
-//         addToProcessLogData(question + '=' + answers[question])
-//         interactiveValues[question] = answers[question]
-//       }
-//     }
-//   })
-//   await askRequired
+  //       if (fileExtension === 'xml') {
+  //         return colors.green(name)
+  //       }
 
-//   // Optional - OVAL file Flag
-//   const addOvalFilePrompt = {
-//     type: 'list',
-//     name: 'useOvalFile',
-//     message: 'Include an OVAL XML file:',
-//     choices: ['true', 'false'],
-//     default: false,
-//     filter(val: string) {
-//       return (val === 'true')
-//     },
-//   }
-//   const ovalFilePrompt = {
-//     type: 'file-tree-selection',
-//     name: 'ovalXmlFile',
-//     message: 'Select the OVAL XML file containing definitions used in the new guidance - in the form of .xml file:',
-//     filters: 'xml',
-//     pageSize: 15,
-//     require: true,
-//     enableGoUpperDirectory: true,
-//     transformer: (input: any) => {
-//       const name = input.split(path.sep).pop()
-//       const fileExtension =  name.split('.').slice(1).pop()
-//       if (name[0] === '.') {
-//         return colors.grey(name)
-//       }
+  //       return name
+  //     },
+  //     validate: (input: any) => {
+  //       const name = input.split(path.sep).pop()
+  //       const fileExtension =  name.split('.').slice(1).pop()
+  //       if (fileExtension !== 'xml') {
+  //         return 'Not a .xml file, please select another file'
+  //       }
 
-//       if (fileExtension === 'xml') {
-//         return colors.green(name)
-//       }
+  //       return true
+  //     },
+  //   },
+  //   {
+  //     type: 'file-tree-selection',
+  //     name: 'deltaOutputDir',
+  //     message: 'Select the output folder for the updated profile control(s) (do not use the original controls directory):',
+  //     pageSize: 15,
+  //     require: true,
+  //     onlyShowDir: true,
+  //     enableGoUpperDirectory: true,
+  //     transformer: (input: any) => {
+  //       const name = input.split(path.sep).pop()
+  //       if (name[0] === '.') {
+  //         return colors.grey(name)
+  //       }
 
-//       return name
-//     },
-//     validate: (input: any) => {
-//       const name = input.split(path.sep).pop()
-//       const fileExtension =  name.split('.').slice(1).pop()
-//       if (fileExtension !== 'xml') {
-//         return 'Not a .xml file, please select another file'
-//       }
+  //       return name
+  //     },
+  //   },
+  // ]
+  // const askRequired = inquirer.prompt(requiredQuestions).then((answers: any) => {
+  //   addToProcessLogData('Process Flags ============================================')
+  //   for (const question in answers) {
+  //     if (answers[question] !== null) {
+  //       addToProcessLogData(question + '=' + answers[question])
+  //       interactiveValues[question] = answers[question]
+  //     }
+  //   }
+  // })
+  // await askRequired
 
-//       return true
-//     },
-//   }
-//   let askOvalFile: any
-//   const askOvalOptional = inquirer.prompt(addOvalFilePrompt).then((addOvalAnswer: any) => {
-//     if (addOvalAnswer.useOvalFile === true) {
-//       addToProcessLogData('useOvalFile=true')
-//       interactiveValues.useOvalFile = true
-//       askOvalFile = inquirer.prompt(ovalFilePrompt).then((answer: any) => {
-//         for (const question in answer) {
-//           if (answer[question] !== null) {
-//             addToProcessLogData(question + '=' + answer[question])
-//             interactiveValues[question] = answer[question]
-//           }
-//         }
-//       })
-//     } else {
-//       addToProcessLogData('useOvalFile=false')
-//       interactiveValues.useOvalFile = false
-//     }
-//   }).finally(async () => {
-//     await askOvalFile
-//   })
-//   await askOvalOptional
+  // Optional - OVAL file Flag
+  const useOvalFile = await confirm({message: 'Include an OVAL XML file?'})
+  if (useOvalFile) {
+    const ovalXmlFile = await fileSelector({
+      message: 'Select the OVAL XML file containing definitions used in the new guidance - in the form of .xml file:',
+      pageSize: 15,
+      loop: true,
+      type: 'file',
+      emptyText: 'Directory is empty',
+      showExcluded: false,
+      filter: file => file.isDirectory() || file.name.endsWith('.xml'),
+      theme: fileSelectorTheme,
+    })
 
-//   // Optional - Map controls using fuzzy logic
-//   const useFuzzyLogicPrompt = {
-//     type: 'list',
-//     name: 'runMapControls',
-//     message: 'Run the approximate string matching process (fuzzy logic):',
-//     choices: ['true', 'false'],
-//     default: true,
-//     filter(val: string) {
-//       return (val === 'true')
-//     },
-//   }
-//   const fuzzyLogicPrompt =     {
-//     type: 'file-tree-selection',
-//     name: 'controlsDir',
-//     message: 'Select the InSpec profile directory containing the controls being updated (controls Delta is processing):',
-//     pageSize: 15,
-//     require: true,
-//     onlyShowDir: true,
-//     enableGoUpperDirectory: true,
-//     transformer: (input: any) => {
-//       const name = input.split(path.sep).pop()
-//       if (name[0] === '.') {
-//         return colors.grey(name)
-//       }
+    addToProcessLogData('useOvalFile=true')
+    interactiveValues.useOvalFile = true
+    interactiveValues.ovalXmlFile = ovalXmlFile
+  } else {
+    addToProcessLogData('useOvalFile=false')
+    interactiveValues.useOvalFile = false
+  }
 
-//       return name
-//     },
-//   }
-//   const askFuzzyLogicOptional = inquirer.prompt(useFuzzyLogicPrompt).then(async (fuzzyLogicAnswer: any) => {
-//     if (fuzzyLogicAnswer.runMapControls === true) {
-//       addToProcessLogData('runMapControls=true')
-//       interactiveValues.runMapControls = true
-//       const askFuzzyLogicDir = inquirer.prompt(fuzzyLogicPrompt).then((answer: any) => {
-//         for (const question in answer) {
-//           if (answer[question] !== null) {
-//             addToProcessLogData(question + '=' + answer[question])
-//             interactiveValues[question] = answer[question]
-//           }
-//         }
-//       })
-//       await askFuzzyLogicDir
-//     } else {
-//       addToProcessLogData('runMapControls=false')
-//       interactiveValues.runMapControls = false
-//     }
-//   })
-//   await askFuzzyLogicOptional
+  // const addOvalFilePrompt = {
+  //   type: 'list',
+  //   name: 'useOvalFile',
+  //   message: 'Include an OVAL XML file:',
+  //   choices: ['true', 'false'],
+  //   default: false,
+  //   filter(val: string) {
+  //     return (val === 'true')
+  //   },
+  // }
+  // const ovalFilePrompt = {
+  //   type: 'file-tree-selection',
+  //   name: 'ovalXmlFile',
+  //   message: 'Select the OVAL XML file containing definitions used in the new guidance - in the form of .xml file:',
+  //   filters: 'xml',
+  //   pageSize: 15,
+  //   require: true,
+  //   enableGoUpperDirectory: true,
+  //   transformer: (input: any) => {
+  //     const name = input.split(path.sep).pop()
+  //     const fileExtension =  name.split('.').slice(1).pop()
+  //     if (name[0] === '.') {
+  //       return colors.grey(name)
+  //     }
 
-//   // Optional - Generate markdown report from Inspect-objects process
-//   const generateReportPrompt = {
-//     type: 'list',
-//     name: 'generateReport',
-//     message: 'Generate the Inspect-Object process markdown report file:',
-//     choices: ['true', 'false'],
-//     default: false,
-//     filter(val: string) {
-//       return (val === 'true')
-//     },
-//   }
-//   const reportFilePrompt = [
-//     {
-//       type: 'file-tree-selection',
-//       name: 'reportDirectory',
-//       message: 'Select the output directory for the markdown report file:',
-//       pageSize: 15,
-//       require: true,
-//       onlyShowDir: true,
-//       enableGoUpperDirectory: true,
-//       transformer: (input: any) => {
-//         const name = input.split(path.sep).pop()
-//         if (name[0] === '.') {
-//           return colors.grey(name)
-//         }
+  //     if (fileExtension === 'xml') {
+  //       return colors.green(name)
+  //     }
 
-//         return name
-//       },
-//     },
-//     {
-//       type: 'input',
-//       name: 'reportFileName',
-//       message: 'Specify the output report filename (must have an extension of .md):',
-//       require: true,
-//       default() {
-//         return 'deltaProcessReport.md'
-//       },
-//     },
-//   ]
+  //     return name
+  //   },
+  //   validate: (input: any) => {
+  //     const name = input.split(path.sep).pop()
+  //     const fileExtension =  name.split('.').slice(1).pop()
+  //     if (fileExtension !== 'xml') {
+  //       return 'Not a .xml file, please select another file'
+  //     }
 
-//   let askReportFile: any
-//   const askReportOptional = inquirer.prompt(generateReportPrompt).then((genReportAnswer: any) => {
-//     if (genReportAnswer.generateReport === true) {
-//       addToProcessLogData('generateReport=true')
-//       interactiveValues.generateReport = true
-//       askReportFile = inquirer.prompt(reportFilePrompt).then((answer: any) => {
-//         for (const question in answer) {
-//           if (answer[question] !== null) {
-//             addToProcessLogData(question + '=' + answer[question])
-//             interactiveValues[question] = answer[question]
-//           }
-//         }
-//       })
-//     } else {
-//       addToProcessLogData('generateReport=false')
-//       interactiveValues.generateReport = false
-//     }
-//   }).finally(async () => {
-//     await askReportFile
-//   })
-//   await askReportOptional
+  //     return true
+  //   },
+  // }
+  // let askOvalFile: any
+  // const askOvalOptional = inquirer.prompt(addOvalFilePrompt).then((addOvalAnswer: any) => {
+  //   if (addOvalAnswer.useOvalFile === true) {
+  //     addToProcessLogData('useOvalFile=true')
+  //     interactiveValues.useOvalFile = true
+  //     askOvalFile = inquirer.prompt(ovalFilePrompt).then((answer: any) => {
+  //       for (const question in answer) {
+  //         if (answer[question] !== null) {
+  //           addToProcessLogData(question + '=' + answer[question])
+  //           interactiveValues[question] = answer[question]
+  //         }
+  //       }
+  //     })
+  //   } else {
+  //     addToProcessLogData('useOvalFile=false')
+  //     interactiveValues.useOvalFile = false
+  //   }
+  // }).finally(async () => {
+  //   await askOvalFile
+  // })
+  // await askOvalOptional
 
-//   // Optional - Select what group Id to process the controls and Log Level
-//   const otherOptionalPrompts = [
-//     {
-//       type: 'rawlist',
-//       name: 'idType',
-//       message: 'Select the Control ID Type used to process the controls:',
-//       choices: ['rule', 'group', 'cis', 'version'],
-//       default() {
-//         return 'rule'
-//       },
-//       filter(val: string) {
-//         return val.toLowerCase()
-//       },
-//     },
-//     {
-//       type: 'rawlist',
-//       name: 'logLevel',
-//       message: 'Select the log level:',
-//       choices: ['info', 'warn', 'debug', 'verbose'],
-//       default() {
-//         return 'info'
-//       },
-//       filter(val: string) {
-//         return val.toLowerCase()
-//       },
-//     },
-//   ]
-//   const askOptional = inquirer.prompt(otherOptionalPrompts).then((answers: any) => {
-//     for (const question in answers) {
-//       if (answers[question] !== null) {
-//         addToProcessLogData(question + '=' + answers[question])
-//         interactiveValues[question] = answers[question]
-//       }
-//     }
-//   })
-//   await askOptional
-//   return interactiveValues
-// }
+  // Optional - Map controls using fuzzy logic
+  const useFuzzyLogic = await confirm({message: 'Run the approximate string matching process (fuzzy logic)?'})
+  if (useFuzzyLogic) {
+    const controlsDir = await fileSelector({
+      message: 'Select the InSpec profile directory containing the controls being updated (controls Delta is processing):',
+      pageSize: 15,
+      loop: true,
+      type: 'directory',
+      allowCancel: false,
+      emptyText: 'Directory is empty',
+      theme: fileSelectorTheme,
+    })
+
+    addToProcessLogData('runMapControls=true')
+    interactiveValues.runMapControls = true
+    interactiveValues.controlsDir = controlsDir
+  } else {
+    addToProcessLogData('runMapControls=false')
+    interactiveValues.runMapControls = false
+  }
+
+  // const useFuzzyLogicPrompt = {
+  //   type: 'list',
+  //   name: 'runMapControls',
+  //   message: 'Run the approximate string matching process (fuzzy logic):',
+  //   choices: ['true', 'false'],
+  //   default: true,
+  //   filter(val: string) {
+  //     return (val === 'true')
+  //   },
+  // }
+  // const fuzzyLogicPrompt =     {
+  //   type: 'file-tree-selection',
+  //   name: 'controlsDir',
+  //   message: 'Select the InSpec profile directory containing the controls being updated (controls Delta is processing):',
+  //   pageSize: 15,
+  //   require: true,
+  //   onlyShowDir: true,
+  //   enableGoUpperDirectory: true,
+  //   transformer: (input: any) => {
+  //     const name = input.split(path.sep).pop()
+  //     if (name[0] === '.') {
+  //       return colors.grey(name)
+  //     }
+
+  //     return name
+  //   },
+  // }
+  // const askFuzzyLogicOptional = inquirer.prompt(useFuzzyLogicPrompt).then(async (fuzzyLogicAnswer: any) => {
+  //   if (fuzzyLogicAnswer.runMapControls === true) {
+  //     addToProcessLogData('runMapControls=true')
+  //     interactiveValues.runMapControls = true
+  //     const askFuzzyLogicDir = inquirer.prompt(fuzzyLogicPrompt).then((answer: any) => {
+  //       for (const question in answer) {
+  //         if (answer[question] !== null) {
+  //           addToProcessLogData(question + '=' + answer[question])
+  //           interactiveValues[question] = answer[question]
+  //         }
+  //       }
+  //     })
+  //     await askFuzzyLogicDir
+  //   } else {
+  //     addToProcessLogData('runMapControls=false')
+  //     interactiveValues.runMapControls = false
+  //   }
+  // })
+  // await askFuzzyLogicOptional
+
+  // Optional - Generate markdown report from Inspect-objects process
+  const generateReport = await confirm({message: 'Generate the Inspect-Object process markdown report file?'})
+  if (generateReport) {
+    const answers = {
+      reportDirectory: await fileSelector({
+        message: 'Select the output directory for the markdown report file:',
+        pageSize: 15,
+        loop: true,
+        type: 'directory',
+        allowCancel: false,
+        emptyText: 'Directory is empty',
+        theme: fileSelectorTheme,
+      }),
+      reportFileName: await input({
+        message: 'Specify the output report filename (must have an extension of .md):',
+        default: 'deltaProcessReport.md',
+        required: true,
+      }),
+    }
+
+    addToProcessLogData('generateReport=true')
+    interactiveValues.generateReport = true
+
+    // eslint-disable-next-line guard-for-in
+    for (const tagName in answers) {
+      const answerValue = _.get(answers, tagName)
+      if (answerValue !== null) {
+        addToProcessLogData(tagName + '=' + answerValue)
+        interactiveValues[tagName] = answerValue
+      }
+    }
+  } else {
+    addToProcessLogData('generateReport=false')
+    interactiveValues.generateReport = false
+  }
+
+  // const generateReportPrompt = {
+  //   type: 'list',
+  //   name: 'generateReport',
+  //   message: 'Generate the Inspect-Object process markdown report file:',
+  //   choices: ['true', 'false'],
+  //   default: false,
+  //   filter(val: string) {
+  //     return (val === 'true')
+  //   },
+  // }
+  // const reportFilePrompt = [
+  //   {
+  //     type: 'file-tree-selection',
+  //     name: 'reportDirectory',
+  //     message: 'Select the output directory for the markdown report file:',
+  //     pageSize: 15,
+  //     require: true,
+  //     onlyShowDir: true,
+  //     enableGoUpperDirectory: true,
+  //     transformer: (input: any) => {
+  //       const name = input.split(path.sep).pop()
+  //       if (name[0] === '.') {
+  //         return colors.grey(name)
+  //       }
+
+  //       return name
+  //     },
+  //   },
+  //   {
+  //     type: 'input',
+  //     name: 'reportFileName',
+  //     message: 'Specify the output report filename (must have an extension of .md):',
+  //     require: true,
+  //     default() {
+  //       return 'deltaProcessReport.md'
+  //     },
+  //   },
+  // ]
+
+  // let askReportFile: any
+  // const askReportOptional = inquirer.prompt(generateReportPrompt).then((genReportAnswer: any) => {
+  //   if (genReportAnswer.generateReport === true) {
+  //     addToProcessLogData('generateReport=true')
+  //     interactiveValues.generateReport = true
+  //     askReportFile = inquirer.prompt(reportFilePrompt).then((answer: any) => {
+  //       for (const question in answer) {
+  //         if (answer[question] !== null) {
+  //           addToProcessLogData(question + '=' + answer[question])
+  //           interactiveValues[question] = answer[question]
+  //         }
+  //       }
+  //     })
+  //   } else {
+  //     addToProcessLogData('generateReport=false')
+  //     interactiveValues.generateReport = false
+  //   }
+  // }).finally(async () => {
+  //   await askReportFile
+  // })
+  // await askReportOptional
+
+  // Optional - Select what group Id to process the controls and Log Level
+  const answers = {
+    idType: await checkbox({
+      message: 'Select the Control ID Type used to process the controls:',
+      required: true,
+      choices: [
+        {name: 'rule', value: 'rule', checked: true},
+        {name: 'group', value: 'group'},
+        {name: 'cis', value: 'cis'},
+        {name: 'version', value: 'version'},
+      ],
+    }),
+    logLevel: await checkbox({
+      message: 'Select the log level:',
+      required: true,
+      choices: [
+        {name: 'info', value: 'info', checked: true},
+        {name: 'warn', value: 'warn'},
+        {name: 'debug', value: 'debug'},
+        {name: 'verbose', value: 'verbose'},
+      ],
+    }),
+  }
+
+  // eslint-disable-next-line guard-for-in
+  for (const tagName in answers) {
+    const answerValue = _.get(answers, tagName)
+    if (answerValue !== null) {
+      addToProcessLogData(tagName + '=' + answerValue)
+      interactiveValues[tagName] = answerValue
+    }
+  }
+
+  // const otherOptionalPrompts = [
+  //   {
+  //     type: 'rawlist',
+  //     name: 'idType',
+  //     message: 'Select the Control ID Type used to process the controls:',
+  //     choices: ['rule', 'group', 'cis', 'version'],
+  //     default() {
+  //       return 'rule'
+  //     },
+  //     filter(val: string) {
+  //       return val.toLowerCase()
+  //     },
+  //   },
+  //   {
+  //     type: 'rawlist',
+  //     name: 'logLevel',
+  //     message: 'Select the log level:',
+  //     choices: ['info', 'warn', 'debug', 'verbose'],
+  //     default() {
+  //       return 'info'
+  //     },
+  //     filter(val: string) {
+  //       return val.toLowerCase()
+  //     },
+  //   },
+  // ]
+  // const askOptional = inquirer.prompt(otherOptionalPrompts).then((answers: any) => {
+  //   for (const question in answers) {
+  //     if (answers[question] !== null) {
+  //       addToProcessLogData(question + '=' + answers[question])
+  //       interactiveValues[question] = answers[question]
+  //     }
+  //   }
+  // })
+  // await askOptional
+  return interactiveValues
+}
