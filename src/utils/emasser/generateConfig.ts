@@ -1,4 +1,3 @@
-import path from 'path'
 import fse from 'fs-extra'
 import dotenv from 'dotenv'
 import _ from 'lodash'
@@ -224,13 +223,13 @@ async function processPrompt() {
   }
 }
 
-export function generateConfig() {
+export async function generateConfig() {
   if (fse.existsSync('.env')) {
     console.log(colors.yellow('A configuration file already exists, updating - Press Enter to accept the current value(s), otherwise provide new value'))
-    processPrompt()
+    await processPrompt()
   } else {
     console.log(colors.yellow('No configuration file found, creating - Provide the environment variables values'))
     generateNewdotEnv()
-    processPrompt()
+    await processPrompt()
   }
 }
