@@ -1,9 +1,11 @@
 import path from 'path'
-import colors from 'colors' // eslint-disable-line no-restricted-imports
 import fse from 'fs-extra'
 import dotenv from 'dotenv'
-import inquirer from 'inquirer'
-import inquirerFileTreeSelection from 'inquirer-file-tree-selection-prompt'
+import _ from 'lodash'
+// eslint-disable-next-line no-restricted-imports
+import colors from 'colors'
+// eslint-disable-next-line node/no-extraneous-import
+import {input, password, select} from '@inquirer/prompts'
 
 const PROMPT_MESSAGE = [
   'Provide the eMASS API key (EMASSER_API_KEY) - valid key is > 30 alpha numeric characters:',
@@ -16,8 +18,8 @@ const PROMPT_MESSAGE = [
   'Server requests a certificate from connecting clients - true or false (default true):',
   'Reject clients with invalid certificates - true or false (default true):',
   'Set debugging on (true) or off (false) (default false):',
-  'Display null value fields - true or false (default true):',
-  'Convert epoch to data/time value - true or false (default false):',
+  'Display null value fields - true or false (default false):',
+  'Convert epoch to data/time value - true or false (default true):',
 ]
 
 const PROMPT_NAMES_REQUIRED = [
@@ -60,18 +62,25 @@ function generateNewdotEnv() {
   fse.writeFileSync('.env', data)
 }
 
-function processPrompt() {
+async function processPrompt() {
   const envConfig = dotenv.parse(fse.readFileSync('.env'))
-  inquirer.registerPrompt('file-tree-selection', inquirerFileTreeSelection)
 
-  const questions = [
-    {
-      type: 'input',
-      name: PROMPT_NAMES_REQUIRED[0],
+  // Dynamically import inquirer-file-selector and chalk
+  // Once we move the SAF CLI from a CommonJS to as ES modules we can use the regular import
+  const {default: fileSelector} = await import('inquirer-file-selector')
+  const {default: chalk} = await import('chalk')
+
+  const fileSelectorTheme = {
+    style: {
+      file: (text: unknown) => chalk.green(text),
+      help: (text: unknown) => chalk.yellow(text),
+    },
+  }
+
+  const answers = {
+    EMASSER_API_KEY: await input({
       message: PROMPT_MESSAGE[0],
-      default() {
-        return envConfig.EMASSER_API_KEY
-      },
+      default: envConfig.EMASSER_API_KEY,
       validate(input: string) {
         if (/([a-zA-Z0-9-]{30,})/g.test(input)) { // skipcq: JS-0113
           return true
@@ -79,22 +88,14 @@ function processPrompt() {
 
         throw new Error('Invalid API key. Must have more than 30 alpha numeric characters, no special keys other than a dash(-)')
       },
-    },
-    {
-      type: 'input',
-      name: PROMPT_NAMES_REQUIRED[1],
+    }),
+    EMASSER_USER_UID: await input({
       message: PROMPT_MESSAGE[1],
-      default() {
-        return envConfig.EMASSER_USER_UID
-      },
-    },
-    {
-      type: 'input',
-      name: PROMPT_NAMES_REQUIRED[2],
+      default: envConfig.EMASSER_USER_UID,
+    }),
+    EMASSER_HOST_URL: await input({
       message: PROMPT_MESSAGE[2],
-      default() {
-        return envConfig.EMASSER_HOST_URL
-      },
+      default: envConfig.EMASSER_HOST_URL,
       validate(input: string) {
         // eslint-disable-next-line no-useless-escape
         if (/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/g.test(input)) { // skipcq: JS-0113, JS-0097
@@ -103,88 +104,38 @@ function processPrompt() {
 
         throw new Error('Invalid eMASS FQDN (URL). Format: [protocol]://[hostname].[...].[domain].')
       },
-    },
-    {
-      type: 'file-tree-selection',
-      name: PROMPT_NAMES_REQUIRED[3],
+    }),
+    EMASSER_KEY_FILE_PATH: await fileSelector({
       message: PROMPT_MESSAGE[3],
-      filters: 'pem',
       pageSize: 15,
-      default() {
-        return envConfig.EMASSER_KEY_FILE_PATH
-      },
-      enableGoUpperDirectory: true,
-      transformer: (input: any) => {
-        const name = input.split(path.sep).pop()
-        const fileExtension =  name.split('.').slice(1).pop()
-        if (name[0] === '.') {
-          return colors.grey(name)
-        }
-
-        if (fileExtension === 'pem') {
-          return colors.green(name)
-        }
-
-        return name
-      },
-      validate: (input: any) => {
-        const name = input.split(path.sep).pop()
-        const fileExtension =  name.split('.').slice(1).pop()
-        if (fileExtension !== 'pem') {
-          return 'Not a .pem file, please select another file'
-        }
-
-        return true
-      },
-    },
-    {
-      type: 'file-tree-selection',
-      name: PROMPT_NAMES_REQUIRED[4],
+      loop: true,
+      type: 'file',
+      allowCancel: true,
+      cancelText: 'No Key (.pem) file was selected',
+      emptyText: 'Directory is empty',
+      showExcluded: false,
+      filter: file => file.isDirectory() || file.name.endsWith('.pem'),
+      theme: fileSelectorTheme,
+    }),
+    EMASSER_CERT_FILE_PATH: await fileSelector({
       message: PROMPT_MESSAGE[4],
-      filters: 'pem',
       pageSize: 15,
-      default() {
-        return envConfig.EMASSER_CERT_FILE_PATH
-      },
-      enableGoUpperDirectory: true,
-      transformer: (input: any) => {
-        const name = input.split(path.sep).pop()
-        const fileExtension =  name.split('.').slice(1).pop()
-        if (name[0] === '.') {
-          return colors.grey(name)
-        }
-
-        if (fileExtension === 'pem') {
-          return colors.green(name)
-        }
-
-        return name
-      },
-      validate: (input: any) => {
-        const name = input.split(path.sep).pop()
-        const fileExtension = name.split('.').slice(1).pop()
-        if (fileExtension !== 'pem') {
-          return 'Not a .pem file, please select another file'
-        }
-
-        return true
-      },
-    },
-    {
-      type: 'password',
-      name: PROMPT_NAMES_REQUIRED[5],
+      loop: true,
+      type: 'file',
+      allowCancel: true,
+      cancelText: 'No Client (.pem) file was selected',
+      emptyText: 'Directory is empty',
+      showExcluded: false,
+      filter: file => file.isDirectory() || file.name.endsWith('.pem'),
+      theme: fileSelectorTheme,
+    }),
+    EMASSER_KEY_FILE_PASSWORD: await password({
       message: PROMPT_MESSAGE[5],
-      default() {
-        return envConfig.EMASSER_KEY_FILE_PASSWORD
-      },
-    },
-    {
-      type: 'input',
-      name: PROMPT_NAMES_OPTIONAL[0],
+      mask: true,
+    }),
+    EMASSER_PORT: await input({
       message: PROMPT_MESSAGE[6],
-      default() {
-        return envConfig.EMASSER_PORT
-      },
+      default: envConfig.EMASSER_PORT,
       validate(input: string) {
         if (/(^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$)/g.test(input)) { // skipcq: JS-0113
           return true
@@ -192,95 +143,85 @@ function processPrompt() {
 
         throw new Error('Invalid port provided. Must be a Well-known (0-1023), or Registered (1024-49151), or Private (49152-65535) port number')
       },
-    },
-    {
-      type: 'list',
-      name: PROMPT_NAMES_OPTIONAL[1],
+    }),
+    EMASSER_REQUEST_CERT: await select({
       message: PROMPT_MESSAGE[7],
-      choices: ['true', 'false'],
       default: true,
-      filter(val: string) {
-        return (val === 'true')
-      },
-    },
-    {
-      type: 'list',
-      name: PROMPT_NAMES_OPTIONAL[2],
+      choices: [
+        {name: 'true', value: true},
+        {name: 'false', value: false},
+      ],
+    }),
+    EMASSER_REJECT_UNAUTHORIZED: await select({
       message: PROMPT_MESSAGE[8],
-      choices: ['true', 'false'],
       default: true,
-      filter(val: string) {
-        return (val === 'true')
-      },
-    },
-    {
-      type: 'list',
-      name: PROMPT_NAMES_OPTIONAL[3],
+      choices: [
+        {name: 'true', value: true},
+        {name: 'false', value: false},
+      ],
+    }),
+    EMASSER_DEBUGGING: await select({
       message: PROMPT_MESSAGE[9],
-      choices: ['true', 'false'],
-      default: true,
-      filter(val: string) {
-        return (val === 'true')
-      },
-    },
-    {
-      type: 'list',
-      name: PROMPT_NAMES_OPTIONAL[4],
+      default: false,
+      choices: [
+        {name: 'true', value: true},
+        {name: 'false', value: false},
+      ],
+    }),
+    EMASSER_CLI_DISPLAY_NULL: await select({
       message: PROMPT_MESSAGE[10],
-      choices: ['true', 'false'],
-      default: true,
-      filter(val: string) {
-        return (val === 'true')
-      },
-    },
-    {
-      type: 'list',
-      name: PROMPT_NAMES_OPTIONAL[5],
+      default: false,
+      choices: [
+        {name: 'true', value: true},
+        {name: 'false', value: false},
+      ],
+    }),
+    EMASSER_EPOCH_TO_DATETIME: await select({
       message: PROMPT_MESSAGE[11],
-      choices: ['true', 'false'],
       default: true,
-      filter(val: string) {
-        return (val === 'true')
-      },
-    },
-  ]
+      choices: [
+        {name: 'true', value: true},
+        {name: 'false', value: false},
+      ],
+    }),
+  }
 
-  inquirer.prompt(questions).then((answers: any) => {
-    // Save the content to the .env file
-    let data = ''
-    let envGenerated = true
-    for (const envVar in answers) {
-      if (answers[envVar] !== null) {
-        // eslint-disable-next-line unicorn/prefer-number-properties
-        data = isNaN(answers[envVar]) ? data + envVar + "='" + answers[envVar] + "'\n" : data + envVar + '=' + answers[envVar] + '\n'
+  // Collect all of the provided answers
+  let data = ''
+  // eslint-disable-next-line guard-for-in
+  for (const tagName in answers) {
+    const answerValue = _.get(answers, tagName)
+    if (answerValue !== null) {
+      // eslint-disable-next-line unicorn/prefer-number-properties
+      data = isNaN(answerValue) ? data + tagName + "='" + answerValue + "'\n" : data + tagName + '=' + answerValue + '\n'
+    }
+  }
+
+  // Write the .env file
+  let envGenerated = true
+  try {
+    fse.writeFileSync('.env', data)
+  } catch {
+    envGenerated = false
+  }
+
+  // Output the content of the new or updated .env configuration file
+  if (envGenerated) {
+    const table: string[][] = fse.readFileSync('.env', 'utf8').split('\n').map(pair => pair.split('='))
+    const envData: object = Object.fromEntries(table)
+
+    console.log('\n', colors.yellow('An eMASS configuration file with the following environment variables was created:'))
+
+    for (const [key, value] of Object.entries(envData)) {
+      if (key.trim() !== '') {
+        console.log(`\t${colors.blue(key)}=${colors.green(value)}`)
       }
     }
 
-    // Write the .env file
-    try {
-      fse.writeFileSync('.env', data)
-    } catch {
-      envGenerated = false
-    }
-
-    // Output the content of the new or updated .env configuration file
-    if (envGenerated) {
-      const table: string[][] = fse.readFileSync('.env', 'utf8').split('\n').map(pair => pair.split('='))
-      const envData: object = Object.fromEntries(table)
-
-      console.log('\n', colors.yellow('An eMASS configuration file with the following environment variables was created:'))
-
-      for (const [key, value] of Object.entries(envData)) {
-        if (key.trim() !== '') {
-          console.log(`\t${colors.blue(key)}=${colors.green(value)}`)
-        }
-      }
-
-      console.log('\n', colors.yellow('To modify any of the entries, simple run the configure command again.'))
-      console.log('\n', colors.cyan.bold('To verify connection to the eMASS services use the command: '), colors.green.underline('saf emasser get test_connection'))
-      console.log('\n', colors.cyan.bold('For additional help on available eMASS CLI API commands use: '), colors.green.underline('saf emasser -h or -help'))
-    }
-  })
+    console.log('\n', colors.yellow('To modify any of the entries, simple run the configure command again.'))
+    console.log('\n', colors.cyan.bold('To verify connection to the eMASS services use the command: '), colors.green.underline('saf emasser get test_connection'))
+    console.log('\n', colors.cyan.bold('For additional help on available eMASS CLI API commands use: '), colors.green.underline('saf emasser -h or -help'))
+  }
 }
 
 export function generateConfig() {

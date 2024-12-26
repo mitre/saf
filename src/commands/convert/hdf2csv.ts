@@ -8,16 +8,18 @@ import {convertRow, csvExportFields} from '../../utils/csv'
 import {convertFullPathToFilename} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 import path from 'path'
-import colors from 'colors' // eslint-disable-line no-restricted-imports
-import inquirer from 'inquirer'
-import inquirerFileTreeSelection from 'inquirer-file-tree-selection-prompt'
 import {
   addToProcessLogData,
   printGreen,
   printMagenta,
+  printRed,
   printYellow,
   saveProcessLogData} from '../../utils/oclif/cliHelper'
 import {EventEmitter} from 'events'
+// eslint-disable-next-line no-restricted-imports
+import colors from 'colors'
+// eslint-disable-next-line node/no-extraneous-import
+import {checkbox, input, select} from '@inquirer/prompts'
 
 export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   static readonly usage =
@@ -133,8 +135,15 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
           return cleanedRow
         })
 
-        await new ObjectsToCsv(rows).toDisk(outputFile)
-        saveProcessLogData()
+        try {
+          await new ObjectsToCsv(rows).toDisk(outputFile)
+          printGreen('\nTranslation completed successfully')
+        } catch (error: any) {
+          const error_ = error.code === 'EISDIR' ? new Error('The CSV output file mane was not provided.') : error
+          printRed(`\nTranslation failed: ${error_}`)
+        } finally {
+          saveProcessLogData()
+        }
       }
     }
 
@@ -174,116 +183,88 @@ async function getFlags(): Promise<any> {
   // does using 16 listeners. Need to increase the defaultMaxListeners.
   EventEmitter.defaultMaxListeners = 20
 
-  inquirer.registerPrompt('file-tree-selection', inquirerFileTreeSelection)
+  // Dynamically import inquirer-file-selector and chalk
+  // Once we move the SAF CLI from a CommonJS to as ES modules we can use the regular import
+  const {default: fileSelector} = await import('inquirer-file-selector')
+  const {default: chalk} = await import('chalk')
 
   printYellow('Provide the necessary information:')
   printGreen('  Required flag - HDF file to convert to a CSV formatted file')
-  printGreen('  Required flag - CSV output directory (output file name is hdf2csv.csv)')
-  printMagenta('  Optional flag - Fields to include in output CSV (comma delineated)')
+  printGreen('  Required flag - Translation output directory (where the CSV file is written to)')
+  printGreen('  Required flag - CSV output file name (default name is hdf2csv.csv)')
+  printGreen('  Required flag - Field(s) (at least one) to include in output CSV (comma delineated)')
   printMagenta('  Optional flag - Truncate fields that exceed Excel cell limit (32,767 characters)\n')
 
-  const choices: string[] = []
+  interface ChoiceItems {
+    name: string,
+    value: string,
+    checked: boolean
+  }
+  const choices: ChoiceItems[] = []
   for (const str of csvExportFields) {
-    choices.push(str)
+    choices.push({name: str, value: str, checked: true})
   }
 
-  const questions = [
-    {
-      type: 'file-tree-selection',
-      name: 'inputFile',
-      message: 'Select the HDF file to be converted to a CSV:',
-      filters: 'json',
-      pageSize: 15,
-      require: true,
-      enableGoUpperDirectory: true,
-      transformer: (input: any) => {
-        const name = input.split(path.sep).pop()
-        const fileExtension =  name.split('.').slice(1).pop()
-        if (name[0] === '.') {
-          return colors.grey(name)
-        }
-
-        if (fileExtension === 'json') {
-          return colors.green(name)
-        }
-
-        return name
-      },
-      validate: (input: any) => {
-        const name = input.split(path.sep).pop()
-        const fileExtension =  name.split('.').slice(1).pop()
-        if (fileExtension !== 'json') {
-          return 'Not a .json file, please select another file'
-        }
-
-        return true
-      },
+  const fileSelectorTheme = {
+    style: {
+      file: (text: unknown) => chalk.green(text),
+      help: (text: unknown) => chalk.yellow(text),
     },
-    {
-      type: 'file-tree-selection',
-      name: 'outputDirectory',
+  }
+
+  const answers = {
+    inputFile: await fileSelector({
+      message: 'Select the HDF file to be converted to a CSV:',
+      pageSize: 15,
+      loop: true,
+      type: 'file',
+      allowCancel: false,
+      cancelText: 'No HDF file to be converted was selected',
+      emptyText: 'Directory is empty',
+      showExcluded: false,
+      filter: file => file.isDirectory() || file.name.endsWith('.json'),
+      theme: fileSelectorTheme,
+    }),
+    outputDirectory: await fileSelector({
       message: 'Select output directory for the generated CSV file:',
       pageSize: 15,
-      require: true,
-      onlyShowDir: true,
-      enableGoUpperDirectory: true,
-      transformer: (input: any) => {
-        const name = input.split(path.sep).pop()
-        if (name[0] === '.') {
-          return colors.grey(name)
-        }
-
-        return name
-      },
-    },
-    {
-      type: 'input',
-      name: 'outputFileName',
+      loop: true,
+      type: 'directory',
+      allowCancel: false,
+      cancelText: 'No output directory was selected',
+      emptyText: 'Directory is empty',
+      theme: fileSelectorTheme,
+    }),
+    outputFileName: await input({
       message: 'Specify the output filename (.csv). It will be saved to the previously selected directory:',
-      require: true,
-      default() {
-        return 'hdf2csv.csv'
-      },
-    },
-    {
-      type: 'checkbox',
-      name: 'fields',
+      default: 'hdf2csv.csv',
+      required: true,
+    }),
+    fields: await checkbox({
       message: 'Select fields to include in output CSV file:',
+      required: true,
       choices,
-      validate(answer: string | any[]) {
-        if (answer.length === 0) {
-          return 'You must choose at least one field to include in the output.'
-        }
-
-        return true
-      },
-    },
-    {
-      type: 'list',
-      name: 'truncateFields',
+    }),
+    truncateFields: await select({
       message: 'Truncate fields longer than 32,767 characters (the cell limit in Excel):',
-      choices: ['true', 'false'],
       default: false,
-      filter(val: string) {
-        return (val === 'true')
-      },
-    },
-  ]
+      choices: [
+        {name: 'true', value: true},
+        {name: 'false', value: false},
+      ],
+    }),
+  }
 
-  let interactiveValues: any
-  const ask = inquirer.prompt(questions).then((answers: any) => {
-    addToProcessLogData('Process Flags ============================================')
-    for (const envVar in answers) {
-      if (answers[envVar] !== null) {
-        addToProcessLogData(envVar + '=' + answers[envVar])
-      }
+  addToProcessLogData('Process Flags ============================================')
+  // eslint-disable-next-line guard-for-in
+  for (const tagName in answers) {
+    const answerValue = _.get(answers, tagName)
+    if (answerValue !== null) {
+      addToProcessLogData(tagName + '=' + answerValue)
     }
+  }
 
-    interactiveValues = answers
-  })
-
-  await ask
-  return interactiveValues
+  return answers
 }
 
 function validFileFlags(input: string, output: string): boolean {

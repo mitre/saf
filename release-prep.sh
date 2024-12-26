@@ -1,8 +1,8 @@
 #!/bin/bash
-# red="\033[31m"
-# green="\033[32m"
-# yellow="\033[33m"
-# blue="\033[34m"
+
+#-----------------------------------------------------------------------------#
+#               S U P P O R T I N G  F U N C T I O N S                        #
+#----------------------------------------------------------------------------<#
 RESET="\e[0m"
 CYAN="\e[36m"
 
@@ -59,14 +59,14 @@ fi
 #------------------------------------------------------------------------------
 # Retrieve the latest main content from github 
 PrintColor "Yellow" "Retrieve the latest main content from github..."
-#git checkout main
+git checkout main
 PrintColor "Green" "Done"
 echo
 
 #------------------------------------------------------------------------------
 # Pull the main branch content from github 
 PrintColor "Yellow" "Pull the main branch from github..."
-#git pull origin main
+git pull origin main
 PrintColor "Green" "Done"
 echo
 
@@ -141,11 +141,11 @@ echo
 PrintColor "Yellow" "Delete node_modules if it exists, install supporting modules..."
 if [ -d "node_modules" ]; then
   PrintColor "Cyan" "  Removing the node_modules directory"
-  #rm -rf node_modules
+  rm -rf node_modules
 fi
 
 PrintColor "Cyan" "  Installing node modules"
-#npm install 
+npm install 
 PrintColor "Green" "Done"
 echo
 
@@ -153,10 +153,10 @@ echo
 # Build the SAF CLI package and run all tests
 PrintColor "Yellow" "Build the SAF CLI package and run all tests..."
 PrintColor "Cyan" "  Build the SAF CLI package"
-# npm pack
+npm pack
 
 PrintColor "Cyan" "  Run the SAF CLI tests"
-#npm run test
+npm run test
 # $? holds exit status of last command run, npm run test returns non-zero exit status if all tests don't pass
 if [ $? -ne 0 ]; then
   PrintColor "Red" "  Failed the SAF CLI test(s)"
@@ -174,7 +174,7 @@ do
     if [ "$first_word" = "M" ]; then
       second_word=$(echo $line | cut -d ' ' -f 2)
       PrintColor "Cyan" "  Adding $second_word to git commit"
-      #git add $second_word
+      git add $second_word
     fi
 done
 PrintColor "Green" "Done"
@@ -186,18 +186,20 @@ PrintColor "Yellow" "Commit, tag, and push release to GitHub..."
 
 # Commit the previously staged files
 PrintColor "Cyan" "  Committing previously staged files with 'signoff' tag"
-# git commit --signoff -m "${version}"
+git commit --signoff -m "${version}"
 
 # Tag the new release with the provided version number
 PrintColor "Cyan" "  Tagging the new release with version $version"
-# git tag -a -m "Release for version ${version}" $version
+git tag -a -m "Release for version ${version}" $version
 
 # Push the tagged commit to the main branch of the repository
 PrintColor "Cyan" "  Pushing atomic to the main branch with version $version"
-# git push --atomic origin main $version
+git push --atomic origin main $version
 
 PrintColor "Green" "Done"
 echo
 
-PrintColor "Green" "SAF CLI pre-release automated process completed."
-PrintColor "Green" "Please proceed to the SAF CLI GitHub Wiki to complete the release."
+PrintColor "Green" "╔══════════════════════════════════════════════════════════════════╗"
+PrintColor "Green" "║  ******* SAF CLI pre-release automated process finished *******  ║"
+PrintColor "Green" "║Please proceed to the SAF CLI GitHub Wiki to complete the release.║"
+PrintColor "Green" "╚══════════════════════════════════════════════════════════════════╝"

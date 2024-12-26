@@ -74,14 +74,14 @@ if ( "exit", "Exit","EXIT" -Contains $srtInput ) {
 #------------------------------------------------------------------------------
 # Retrieve the latest main content from github 
 Write-Output "Retrieve the latest main content from github..." | Yellow
-# git checkout main
+git checkout main
 Write-Output "Done" | Green
 Write-Host
 
 #------------------------------------------------------------------------------
 # Pull the main branch content from github 
 Write-Output "Pull the main branch from github..." | Yellow
-# git pull origin main
+git pull origin main
 Write-Output "Done" | Green
 Write-Host
 
@@ -145,12 +145,12 @@ Write-Host
 Write-Output "Delete node_modules if it exists, install supporting modules..." | Yellow
 $nodeFolder = "node_modules"
 if (Test-Path $nodeFolder) {
-#  Remove-Item -Path $nodeFolder -Recurse
+  Remove-Item -Path $nodeFolder -Recurse
   Write-Output "  Node modules folder removed" | Cyan
 }
 
 Write-Output "  Installing node modules" | Cyan
-# npm install
+npm install
 Write-Output "Done" | Green
 Write-Host
 
@@ -158,11 +158,11 @@ Write-Host
 # Build the SAF CLI package and run all tests
 Write-Output "Build the SAF CLI package and run all tests..." | Yellow
 Write-Output "  Build the SAF CLI package" | Cyan
-# npm pack
+npm pack
 
 Write-Output "  Run the SAF CLI tests" | Cyan
 $Error.Clear()
-# npm run test
+npm run test
 if ($Error.Count -gt 0) {
   Write-Output "  Failed the SAF CLI test(s)" | Red
   TerminateScript
@@ -184,7 +184,7 @@ $gitStatus.Split("`n") | ForEach-Object {
     # Check if the first word is "M" (modified)
     if ($firstWord -eq "M") {
       Write-Output "  Adding $secondWord to git commit" | Cyan
-      #git add $secondWord
+      git add $secondWord
     }
 }
 Write-Output "Done" | Green
@@ -196,19 +196,20 @@ Write-Output "Commit, tag, and push release to GitHub..." | Yellow
 
 # Commit the previously staged files
 Write-Output "  Committing previously staged files with 'signoff' tag" | Cyan
-#git commit --signoff -m "$nextVersion"
+git commit --signoff -m "$nextVersion"
 
 # Tag the new release with the provided version number
 Write-Output "  Tagging the new release with version $nextVersion" | Cyan
-#git tag -a -m "Release for version $nextVersion" $nextVersion
+git tag -a -m "Release for version $nextVersion" $nextVersion
 
 # Push the tagged commit to the main branch of the repository
 Write-Output "  Pushing atomic to the main branch with version $nextVersion" | Cyan
-#git push --atomic origin main $nextVersion
+git push --atomic origin main $nextVersion
 
 Write-Output "Done" | Green
 Write-Host
 
-
-Write-Output "SAF CLI pre-release automated process completed." | Green
-Write-Output "Please proceed to the SAF CLI GitHub Wiki to complete the release." | Green
+Write-Output "╔══════════════════════════════════════════════════════════════════╗" | Green
+Write-Output "║  ******* SAF CLI pre-release automated process finished *******  ║" | Green
+Write-Output "║Please proceed to the SAF CLI GitHub Wiki to complete the release.║" | Green
+Write-Output "╚══════════════════════════════════════════════════════════════════╝" | Green
