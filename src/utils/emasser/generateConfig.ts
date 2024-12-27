@@ -65,7 +65,7 @@ async function processPrompt() {
   const envConfig = dotenv.parse(fse.readFileSync('.env'))
 
   // Dynamically import inquirer-file-selector and chalk
-  // Once we move the SAF CLI from a CommonJS to as ES modules we can use the regular import
+  // Once we move the SAF CLI from a CommonJS to an ES modules we can use the regular import
   const {default: fileSelector} = await import('inquirer-file-selector')
   const {default: chalk} = await import('chalk')
 
