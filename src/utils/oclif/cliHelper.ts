@@ -17,8 +17,6 @@ export function addToProcessLogData(str: string) {
 }
 
 export async function saveProcessLogData() {
-  const {default: chalk} = await import('chalk')
-
   if (!logFileName) {
     logFileName = 'CliProcessOutput.log'
   }
@@ -35,10 +33,6 @@ export async function saveProcessLogData() {
 
   writeStream.on('error', err => {
     throw new Error('Error saving the CLI process log data', err)
-  })
-
-  writeStream.on('finish', () => {
-    console.log(chalk.yellow('SAF CLI Process Data was written to log file:', logFileName))
   })
 }
 
