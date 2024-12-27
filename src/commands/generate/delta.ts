@@ -534,7 +534,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // Print the process output report to current directory
         addToProcessLogData('Update Results ===========================================================================\n')
         addToProcessLogData(updatedResult.markdown)
-        saveProcessLogData()
+        saveProcessLogData() // skipcq: JS-0328
       } else {
         saveLogs(logger,
           `  ERROR: The updateProfileUsingXCCDF process failed to provide updated profiles, received: ${updatedResult}.`)
@@ -991,7 +991,7 @@ function saveLogs(logger: winston.Logger, errorMsg: string) {
     addToProcessLogData(error.trim())
   }
 
-  saveProcessLogData()
+  saveProcessLogData() // skipcq: JS-0328
 }
 
 function sleep(ms: number) {

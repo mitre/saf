@@ -34,7 +34,7 @@ export async function saveProcessLogData() {
   writeStream.end()
 
   writeStream.on('error', err => {
-    throw new Error('Error saving the CLI process log data')
+    throw new Error('Error saving the CLI process log data', err)
   })
 
   writeStream.on('finish', () => {

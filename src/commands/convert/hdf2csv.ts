@@ -142,7 +142,7 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
           const error_ = error.code === 'EISDIR' ? new Error('The CSV output file mane was not provided.') : error
           printRed(`\nTranslation failed: ${error_}`)
         } finally {
-          saveProcessLogData()
+          saveProcessLogData() // skipcq: JS-0328
         }
       }
     }
