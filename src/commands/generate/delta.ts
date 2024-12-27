@@ -534,18 +534,22 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // Print the process output report to current directory
         addToProcessLogData('Update Results ===========================================================================\n')
         addToProcessLogData(updatedResult.markdown)
-        saveProcessLogData() // skipcq: JS-0328
+        printGreen('\nDelta Process completed successfully\n')
+        saveProcessLogData()
       } else {
+        printRed('\nDelta Process failed\n')
         saveLogs(logger,
           `  ERROR: The updateProfileUsingXCCDF process failed to provide updated profiles, received: ${updatedResult}.`)
       }
     } else {
       if (!existingProfile) {
         logger.error('  ERROR: Could not generate delta because the existingProfile variable was not satisfied.')
+        printRed('\nDelta Process failed\n')
       }
 
       if (!updatedXCCDF) {
         logger.error('  ERROR: Could not generate delta because the updatedXCCDF variable was not satisfied.')
+        printRed('\nDelta Process failed\n')
       }
     }
   }
@@ -991,7 +995,7 @@ function saveLogs(logger: winston.Logger, errorMsg: string) {
     addToProcessLogData(error.trim())
   }
 
-  saveProcessLogData() // skipcq: JS-0328
+  saveProcessLogData()
 }
 
 function sleep(ms: number) {

@@ -137,12 +137,12 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
 
         try {
           await new ObjectsToCsv(rows).toDisk(outputFile)
-          printGreen('\nTranslation completed successfully')
+          printGreen('\nTranslation completed successfully\n')
         } catch (error: any) {
           const error_ = error.code === 'EISDIR' ? new Error('The CSV output file mane was not provided.') : error
-          printRed(`\nTranslation failed: ${error_}`)
+          printRed(`\nTranslation failed: ${error_}\n`)
         } finally {
-          saveProcessLogData() // skipcq: JS-0328
+          saveProcessLogData()
         }
       }
     }

@@ -39,25 +39,25 @@ Write-Output "#    - Push and updated the repository three references (new versi
 Write-Output "# Prerequisites:                                                               " | Yellow
 Write-Output "#    - Before executing the preparatory script ensure that the you're on a     " | Yellow
 Write-Output "#      directory containing the most recent commit of the SAF CLI.             " | Yellow
-Write-Output "#    - Windows PowerShell 7. PowerShell version less than 6.0.0 will malformed " | Red
+Write-Output "#    - Windows PowerShell 6. PowerShell version less than 6.0.0 will malformed " | Red
 Write-Output "#      the output, pretty print does not work properly.                        " | Red
 Write-Output "#      (see PowerShell Prettier formatting for ConvertTo-Json output PR #2736) " | Red
 Write-Output "#------------------------------------------------------------------------------" | Yellow
 Write-Host
-#Write-Output "This scrip must run on a PowerShell with administrative elevated permissions"
 
+# Common color variables declaration
 $ESC = [char]27
 $YELLOW = $ESC+'[33m'
 $CYAN = $ESC+'[36m'
 
-# Lets check the PowerShell version, requires 7 or higher
+# Check PowerShell version, requires 6 or higher
 $currentVersion = $PSVersionTable.PSVersion # Check PowerShell version
 $requiredVersion = [version]"6.0.0"
 
 if ($currentVersion -ge $requiredVersion) {
   Write-Output "Using PowerShell version: $currentVersion" | Green
 } else {
-  Write-Output "Using PowerShell version:  $currentVersion" | Red
+  Write-Output "Installed PowerShell version:  $currentVersion" | Red
   Write-Output "This script requires PowerShell version >= to: $requiredVersion" | Red
   TerminateScript
 }
@@ -67,7 +67,7 @@ if ($currentVersion -ge $requiredVersion) {
 # Start the Script
 Write-Output "Press enter to continue - or type exit/EXIT to terminate" | Green
 $srtInput = Read-Host
-if ( "exit", "Exit","EXIT" -Contains $srtInput ) {
+if ( "exit", "Exit", "EXIT" -Contains $srtInput ) {
   TerminateScript
 }
 
@@ -88,6 +88,7 @@ Write-Host
 #------------------------------------------------------------------------------
 # Update the version tag with the next value (package.json file)
 Write-Output "Increment the SAF CLI version number..." | Yellow
+
 # 1. Read the JSON file
 $jsonContent = Get-Content -Path "package.json" -Raw
 $jsonObject = $jsonContent | ConvertFrom-Json
@@ -95,7 +96,7 @@ $version = $jsonObject.version
 
 # 2. Update the version (Increment the build number)
 $versionArray = $version.Split(".")            # Split the version (array)
-$versionArray[-1] = [int]$versionArray[-1] + 1 # Increment the last element
+$versionArray[-1] = [int]$versionArray[-1] + 1 # Increment the last element (patch version)
 $newVersion = $versionArray -join "."          # Join back into a string
 
 # 3. Ask the user to update or confirm the new version number
@@ -118,8 +119,10 @@ Write-Output "Done" | Green
 Write-Host
 
 #------------------------------------------------------------------------------
-# Update MITRE dependencies to latest versions
-Write-Output "Update MITRE dependencies to latest versions..." | Yellow
+# Update MITRE dependencies to latest version
+Write-Output "Update MITRE dependencies to latest version..." | Yellow
+# List of MITRE packages to be checked - Add as needed
+# NOTE: Do not update @mitre/emass_client until further notice
 $packages = "@mitre/hdf-converters", "@mitre/heimdall-lite", "@mitre/inspec-objects"
 foreach ($package in $packages) {
   Write-Output "  Processing package: $package" | Cyan
@@ -157,10 +160,10 @@ Write-Host
 #------------------------------------------------------------------------------
 # Build the SAF CLI package and run all tests
 Write-Output "Build the SAF CLI package and run all tests..." | Yellow
-Write-Output "  Build the SAF CLI package" | Cyan
+Write-Output "  Building the SAF CLI package" | Cyan
 npm pack
 
-Write-Output "  Run the SAF CLI tests" | Cyan
+Write-Output "  Running the SAF CLI tests" | Cyan
 $Error.Clear()
 npm run test
 if ($Error.Count -gt 0) {

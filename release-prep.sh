@@ -110,10 +110,10 @@ PrintColor "Green" "Done"
 echo
 
 #------------------------------------------------------------------------------
-# Update MITRE dependencies to latest versions
-# Do not update @mitre/emass_client until further notice
-PrintColor "Yellow" "Update MITRE dependencies to latest versions..."
-# List of MITRE packages
+# Update MITRE dependencies to latest version
+PrintColor "Yellow" "Update MITRE dependencies to latest version..."
+# List of MITRE packages to be checked - Add as needed
+# NOTE: Do not update @mitre/emass_client until further notice
 packages=("@mitre/hdf-converters" "@mitre/heimdall-lite" "@mitre/inspec-objects")
 
 # Iterate over each package
@@ -152,10 +152,10 @@ echo
 #------------------------------------------------------------------------------
 # Build the SAF CLI package and run all tests
 PrintColor "Yellow" "Build the SAF CLI package and run all tests..."
-PrintColor "Cyan" "  Build the SAF CLI package"
+PrintColor "Cyan" "  Building the SAF CLI package"
 npm pack
 
-PrintColor "Cyan" "  Run the SAF CLI tests"
+PrintColor "Cyan" "  Running the SAF CLI tests"
 npm run test
 # $? holds exit status of last command run, npm run test returns non-zero exit status if all tests don't pass
 if [ $? -ne 0 ]; then
