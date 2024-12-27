@@ -401,7 +401,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     }
 
     // Process the output folder
-    logger.info('Checking if provided output directory exists (create is it does not, clear if exists)...')
+    logger.info('Checking if provided output directory exists (create it if does not, clear if exists)...')
     try {
       // Create the folder if it doesn't exist
       if (!fs.existsSync(deltaOutputDir)) {

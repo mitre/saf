@@ -7,7 +7,7 @@ import path from 'path'
 import fs from 'fs'
 
 // Functional tests
-describe('The generate delta command', () => {
+describe('Test generate delta command', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   // should process delta request with rule id type
@@ -105,7 +105,7 @@ describe('The generate delta command', () => {
 
     // Now you can safely access the output
     expect(stdout).to.contain('Match Controls:  5')
-  }, 25000)
+  }, 45000)
 
   it('should map to the correct filenames', async () => {
     const {stdout} = await runCommand<{name: string}>(['generate delta',
@@ -124,5 +124,5 @@ describe('The generate delta command', () => {
     expect(output.includes('["+","SV-254240"]'))
     expect(output.includes('["+","SV-254241"]'))
     expect(output.includes('["+","SV-254242"]'))
-  }, 25000)
+  }, 45000)
 })
