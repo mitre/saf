@@ -16,7 +16,7 @@ export function addToProcessLogData(str: string) {
   processLogData.push(str)
 }
 
-export async function saveProcessLogData() {
+export function saveProcessLogData() {
   if (!logFileName) {
     logFileName = 'CliProcessOutput.log'
   }
