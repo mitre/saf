@@ -102,7 +102,7 @@
     "ts-mocha": "^10.0.0"
   },
   "engines": {
-    "node": "^20.0.0"
+    "node": "^22.0.0"
   },
   "files": [
     "/bin",
@@ -200,8 +200,8 @@
     "dev:darwin:linux": "rm -rf lib && tsc && node bin/run",
     "test": "npm run test:mocha && npm run test:jest",
     "tests": "npm run test",
-    "test:mocha": "ts-mocha --timeout 45000 --forbid-only \"test/**/*.test.ts\"",
-    "test:mocha:one": "ts-mocha --timeout 45000 --forbid-only",
+    "test:mocha": "ts-mocha --timeout 25000 --forbid-only \"test/**/*.test.ts\"",
+    "test:mocha:one": "ts-mocha --timeout 25000 --forbid-only",
     "test:jest": "jest",
     "test:jest:one": "jest --findRelatedTests",
     "prepack": "run-script-os",
