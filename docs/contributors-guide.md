@@ -94,6 +94,39 @@ You can get help on the available commands with:
 ./bin/run --help    # Darwin or Linux
 node bin/run --help # Windows
 ```
+## Creating a Release
+The process of creating a release is document in the SAF CLI Wiki Page [How-to Create a SAF CLI Release](https://github.com/mitre/saf/wiki/How%E2%80%90to-Create-a-SAF-CLI-Release)
+
+>[!WARNING]
+> Before executing the preparatory script ensure that the you're on a directory containing the most recent commit of the SAF CLI. The first step of the scrip will do a `git checkout main` proceeding by a `git pull origin main`
+
+Basically the process of creating a SAF CLI release consists of performing the following steps:
+
+1. Run the appropriate preparatory release script
+    ```bash
+    ./release-pre.sh   # Darwin or Linux
+    .\release-pre.ps1  # Windows
+    ```
+    The script performs the following:
+
+    - Retrieve the latest main content
+    - Bump the SAF CLI version number in the VERSION file and package.json
+    - Update MITRE dependencies to latest versions
+    - Remove the `node_modules` if exists
+    - Install all supporting modules
+    - Build and run all tests
+    - Add unstaged files to the staging area (package.json - version) or any other file with the modified flag (M)
+    - Commit previously staged files with `signoff` tag with the new version number
+    - Tag the commit with new release version
+    - Push and updated all three references to the repository with the version number
+
+2. Add the generated packages to the staged released
+3. Associate the tags with the drafted release
+4. Set the release to be the latest
+5. Publish the release
+
+>[!NOTE]
+>Detailed information on steps 2 through 5 are listed in the [How-to Create a SAF CLI Release](https://github.com/mitre/saf/wiki/How%E2%80%90to-Create-a-SAF-CLI-Release) Wiki page
 
 ## Contributing
 
