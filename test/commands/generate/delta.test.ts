@@ -124,5 +124,5 @@ describe('Test generate delta command', () => {
     expect(output.includes('["+","SV-254240"]'))
     expect(output.includes('["+","SV-254241"]'))
     expect(output.includes('["+","SV-254242"]'))
-  }, 45000)
+  })
 })
