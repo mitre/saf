@@ -26,15 +26,16 @@ jobs:
 
       - name: Install dependencies on ${{ matrix.platform }}
         run: npm ci
-
+        
       - name: Install cinc-auditor on ${{ matrix.platform }}
-        if: matrix.platform == 'windows-latest'
+        if: ${{ matrix.platform == 'windows-latest' }}
         run: |
+          Start-Process powershell -Verb RunAs
           . { iwr -useb https://omnitruck.cinc.sh/install.ps1 } | iex; install -project cinc-auditor
           cinc-auditor -v
      
       - name: Install cinc-auditor on ${{ matrix.platform }}
-        if: matrix.platform == 'ubuntu-latest' || matrix.platform == 'macos-latest'
+        if: ${{ matrix.platform == 'ubuntu-latest' || matrix.platform == 'macos-latest' }}
         run: |
           curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
           cinc-auditor -v
