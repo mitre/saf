@@ -15,20 +15,32 @@ jobs:
        platform: [ ubuntu-latest, macos-latest, windows-latest ]
     runs-on: ${{ matrix.platform }}
     steps:
-     - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-     - name: Setup Node.js on ${{ matrix.platform }}
-       uses: actions/setup-node@v4
-       with:
-        node-version: "22"
-        check-latest: true
-        cache: 'npm'
+      - name: Setup Node.js on ${{ matrix.platform }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          check-latest: true
+          cache: 'npm'
 
-     - name: Install dependencies on ${{ matrix.platform }}
-       run: npm ci
+      - name: Install dependencies on ${{ matrix.platform }}
+        run: npm ci
 
-     - name: Prepack (compile) on ${{ matrix.platform }}
-       run: npm run prepack
+      - name: Install cinc-auditor on ${{ matrix.platform }}
+        if: matrix.platform == 'windows-latest'
+        run: |
+          . { iwr -useb https://omnitruck.cinc.sh/install.ps1 } | iex; install -project cinc-auditor
+          cinc-auditor -v
+     
+      - name: Install cinc-auditor on ${{ matrix.platform }}
+        if: matrix.platform == 'ubuntu-latest' || matrix.platform == 'macos-latest'
+        run: |
+          curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
+          cinc-auditor -v
 
-     - name: Run e2e tests on ${{ matrix.platform }}
-       run: npm run test
+      - name: Prepack (compile) on ${{ matrix.platform }}
+        run: npm run prepack
+
+      - name: Run e2e tests on ${{ matrix.platform }}
+        run: npm run test
