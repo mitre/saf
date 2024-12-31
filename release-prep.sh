@@ -67,6 +67,10 @@ echo
 # Pull the main branch content from github 
 PrintColor "Yellow" "Pull the main branch from github..."
 git pull origin main
+if [ $? -ne 0 ]; then
+  PrintColor "Red" "  Failed to Pull the main branch from github"
+  TerminateScript
+fi
 PrintColor "Green" "Done"
 echo
 
@@ -102,9 +106,10 @@ while true; do
 done
 PrintColor "Green" "Setting SAF CLI version to: $next_version"
 
-# 4. Write the updated JSON back to the file
+# 4. Update the package.json and VERSION files
 updated_json=$(echo "$json_content" | jq --arg version "$next_version" '.version = $version')
 echo "$updated_json" > package.json
+echo "$next_version" > VERSION
 
 PrintColor "Green" "Done"
 echo
