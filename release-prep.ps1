@@ -81,7 +81,12 @@ Write-Host
 #------------------------------------------------------------------------------
 # Pull the main branch content from github 
 Write-Output "Pull the main branch from github..." | Yellow
+$Error.Clear()
 git pull origin main
+if ($LastExitCode -gt 0) {
+  Write-Output "  Failed to Pull the main branch from github" | Red
+  TerminateScript
+}
 Write-Output "Done" | Green
 Write-Host
 
