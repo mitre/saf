@@ -378,9 +378,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // Get the directory name without the trailing "controls" directory
           // Here we are using the newly updated (mapped) controls
           // const profileDir = path.dirname(controlsDir)
-          // eslint-disable-next-line no-warning-comments
-          // TODO: normally it's 'inspec json ...' but vscode doesn't recognize my alias?
-          const inspecJsonFileNew = execSync(`inspec json '${mappedDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
+          const inspecJsonFileNew = execSync(`cinc-auditor json '${mappedDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
 
           // Replace existing profile (inputted JSON of source profile to be mapped)
           // Allow delta to take care of the rest

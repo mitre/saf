@@ -44,19 +44,19 @@ jobs:
         run: |
           cd saf/dist/win32
           for file in saf-*.exe; do
-                  prefix=${file%-*-*} # get prefix by removing frome end
-                  suffix=${file#saf-*-*-} # get suffix by removing from start
-                  mv "$file" "$prefix-$suffix"
+            prefix=${file%-*-*}     # get prefix by removing from end
+            suffix=${file#saf-*-*-} # get suffix by removing from start
+            mv "$file" "$prefix-$suffix"
           done
 
       - name: Rename Debian Installers
         run: |
           cd saf/dist/deb
           for file in saf_*.deb; do
-                  prefix=${file%.*-*.deb}
-                  prefix_ver=${prefix#saf_}
-                  suffix=${file#*_*_}
-                  sudo mv "$file" "saf-$prefix_ver-$suffix"
+            prefix=${file%.*-*.deb}
+            prefix_ver=${prefix#saf_}
+            suffix=${file#*_*_}
+            sudo mv "$file" "saf-$prefix_ver-$suffix"
           done
 
       - name: Upload SAF-CLI Windows Build x64 Artifact
