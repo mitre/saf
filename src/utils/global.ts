@@ -8,12 +8,24 @@ export type SpreadsheetTypes = 'cis' | 'disa' | 'general'
 
 export const knownInspecMetadataKeys = ['control', 'title', 'desc', 'description', 'rationale', 'impact', 'references', 'tag']
 
+/**
+ * Check if provide input (file or full path file) has a json extension
+ * if it does return the file. If the file does not have a .json extension
+ * check if it has any other extension, if it does remove it and append a
+ * .json extension.
+ *
+ * @param input The file of full path of the file to check
+ * @returns the input variable if it has a .json suffix
+ */
 export function checkSuffix(input: string) {
   if (input.endsWith('.json')) {
     return input
   }
 
-  return `${input}.json`
+  // Check if file provided extension is a .json
+  // If the extension is not a .json remove it and append .json
+  const inputSplit = input.split('.')
+  return inputSplit[1] ? `${inputSplit[0]}.json` : `${input}.json`
 }
 
 /**
