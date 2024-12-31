@@ -34,9 +34,10 @@ jobs:
           Start-Process powershell -Verb RunAs
           . { iwr -useb https://omnitruck.cinc.sh/install.ps1 } | iex; install -project cinc-auditor
           $env:Path
-          $env:Path = $env:Path + 'C:\cinc-project\cinc-auditor\bin\cinc-auditor'
+          $env:Path = $env:Path + 'C:\cinc-project\cinc-auditor\bin' + 'C:\cinc-project\cinc-auditor\embedded\bin'
           $env:Path
-     
+          cinc-auditor -v
+
       - name: Install cinc-auditor on ${{ matrix.platform }}
         if: ${{ matrix.platform == 'ubuntu-latest' || matrix.platform == 'macos-latest' }}
         run: |
