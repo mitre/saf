@@ -32,9 +32,9 @@ jobs:
         run: |
           cd dist/macos
           for file in saf-*.pkg; do
-                  prefix=${file%-*-*.pkg}
-                  suffix=${file#saf-*-*-*}
-                  mv "$file" "$prefix-$suffix"
+            prefix=${file%-*-*.pkg}
+            suffix=${file#saf-*-*-*}
+            mv "$file" "$prefix-$suffix"
           done
 
       - name: Upload SAF-CLI macOS Installer Artifact
