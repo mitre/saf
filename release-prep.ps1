@@ -117,9 +117,10 @@ do {
 
 Write-Output "$CYAN Setting SAF CLI version to: $nextVersion" | Green
 
-# 4. Write the updated JSON back to the file
+# 4. Update the package.json and VERSION files
 $jsonObject.version = $nextVersion 
 $jsonObject | ConvertTo-Json -Depth 3 | Set-Content -Path "package.json"
+[System.IO.File]::WriteAllText("VERSION", $nextVersion)
 Write-Output "Done" | Green
 Write-Host
 
