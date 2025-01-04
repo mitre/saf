@@ -21,7 +21,7 @@
     "@oclif/plugin-version": "^2.0.11",
     "@oclif/plugin-warn-if-update-available": "^3.0.15",
     "@smithy/node-http-handler": "^3.0.0",
-    "@types/chai": "^4",
+    "@types/chai": "^5",
     "@types/express": "^5.0.0",
     "@types/fs-extra": "^11.0.1",
     "@types/get-installed-path": "^4.0.1",
