@@ -4,12 +4,12 @@ The MITRE Security Automation Framework (SAF) Command Line Interface (CLI) bring
 
 The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimdall_tools) and [InSpec Tools](https://github.com/mitre/inspec_tools).
 
-## Terminology:
+## Terminology
 
 - "[Heimdall](https://github.com/mitre/heimdall2)" - Our visualizer for all security result data
 - "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - Our common data format to preserve and transform security data
 
-## Installation:
+## Installation
 
   * [Via NPM](#installation-via-npm)
       * [Update via NPM](#update-via-npm)
@@ -19,6 +19,9 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Update via Docker](#update-via-docker)
   * [Via Windows Installer](#installation-via-windows-installer)
       * [Update via Windows Installer](#update-via-windows-installer)
+
+## Developers 
+For detail information about development, testing , and contributing to the SAF project refer to [MITRE SAF Develpment](https://github.com/mitre/saf/blob/main/docs/contributors-guide.md)
 
 ## Usage
 
@@ -440,7 +443,7 @@ convert hdf2ckl               Translate a Heimdall Data Format JSON file into a
                               DISA checklist file
 
   USAGE
-    $ saf convert hdf2ckl saf convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [--profilename <value>] [--profiletitle <value>] [--version <value>] [--releasenumber <value>] [--releasedate <value>] [--marking <value>] [-H <value>] [-I <value>] [-M <value>] [-F <value>] [--targetcomment <value>] [--role Domain Controller|Member Server|None|Workstation] [--assettype Computing|Non-Computing] [--techarea |Application Review|Boundary Security|CDS Admin Review|CDS Technical Review|Database Review|Domain Name System (DNS)|Exchange Server|Host Based System Security (HBSS)|Internal Network|Mobility|Other Review|Releasable Networks (REL)|Releaseable Networks (REL)|Traditional Security|UNIX OS|VVOIP Review|Web Review|Windows OS] [--stigguid <value>] [--targetkey <value>] [--webdbsite <value> --webordatabase] [--webdbinstance <value> ] [--vulidmapping gid|id]
+    $ saf convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [--profilename <value>] [--profiletitle <value>] [--version <value>] [--releasenumber <value>] [--releasedate <value>] [--marking <value>] [-H <value>] [-I <value>] [-M <value>] [-F <value>] [--targetcomment <value>] [--role Domain Controller|Member Server|None|Workstation] [--assettype Computing|Non-Computing] [--techarea |Application Review|Boundary Security|CDS Admin Review|CDS Technical Review|Database Review|Domain Name System (DNS)|Exchange Server|Host Based System Security (HBSS)|Internal Network|Mobility|Other Review|Releasable Networks (REL)|Releaseable Networks (REL)|Traditional Security|UNIX OS|VVOIP Review|Web Review|Windows OS] [--stigguid <value>] [--targetkey <value>] [--webdbsite <value> --webordatabase] [--webdbinstance <value> ] [--vulidmapping gid|id]
 
   FLAGS
     -h, --help            Show CLI help.
@@ -1433,13 +1436,14 @@ See the wiki for more information on 👉 [template files](https://github.com/mi
 validate threshold            Validate the compliance and status counts of an HDF file
 
   USAGE
-    $ saf validate threshold -i <hdf-json> [-h] [-T <flattened-threshold-json> | -F <template-file>]
+    $ saf validate threshold -i <hdf-json> [-I <flattened-threshold-json> | -T <template-file>] [-h] [-L info|warn|debug|verbose]
 
   FLAGS
-    -F, --templateFile=<template-file>                Expected data template, generate one with "saf generate threshold"
-    -T, --templateInline=<flattened-threshold-json>   Flattened JSON containing your validation thresholds
-                                                      (Intended for backwards compatibility with InSpec Tools)
-    -i, --input=<hdf-json>                            (required) Input HDF JSON File
+    -i, --input=<value>           (required) The HDF JSON File to be validated by the threshold values   
+    -T, --templateFile=<value>    A threshold YAML file containing expected threshold values.
+                                  Generate it using the "saf generate threshold" command
+    -I, --templateInline=<value>  An inline (on the command line) flattened JSON containing the validation
+                                  thresholds (Intended for backwards compatibility with InSpec Tools)
 
   GLOBAL FLAGS
     -h, --help               Show CLI help
@@ -1448,7 +1452,12 @@ validate threshold            Validate the compliance and status counts of an HD
         --interactive        Collect input tags interactively (not available on all CLI commands)
 
   EXAMPLES
-    $ saf validate threshold -i rhel7-results.json -F output.yaml
+    Providing a threshold template file
+      $ saf validate threshold -i rhel7-results.json -T threshold.yaml
+    
+    Specifying the threshold inline
+      $ saf validate threshold -i rhel7-results.json -I "{compliance.min: 80}, {passed.total.min: 18}, {failed.total.max: 2}"
+
 ```
 
 [top](#validate-hdf-thresholds)
@@ -1619,7 +1628,7 @@ EXAMPLES
 [top](#generate-data-reports-and-more)
 #### Thresholds
 
-Threshold files are used in CI to ensure minimum compliance levels and validate control severities and statuses using `saf validate threshold`
+Threshold files are used in Continious Integration (CI) to ensure minimum compliance levels and validate control severities and statuses using `saf validate threshold`
 
 See the wiki for more information on 👉 [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
 

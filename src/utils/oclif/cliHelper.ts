@@ -21,13 +21,19 @@ export function saveProcessLogData() {
     logFileName = 'CliProcessOutput.log'
   }
 
-  const file = fs.createWriteStream(logFileName)
-  file.on('error', () => {
-    throw new Error('Error saving the CLI process log data')
-  })
+  // If the file does not exist, it will be created.
+  const writeStream = fs.createWriteStream(logFileName)
+  processLogData.forEach(value => writeStream.write(`${value}\n`))
 
-  processLogData.forEach(value => file.write(`${value}\n`))
-  file.end()
+  // Close the stream to ensure data is flushed and written
+  writeStream.close()
+
+  // Signal the end of the stream
+  writeStream.end()
+
+  writeStream.on('error', err => {
+    throw new Error('Error saving the CLI process log data', err)
+  })
 }
 
 // Print Yellow and various combination
