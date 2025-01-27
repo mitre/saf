@@ -4,11 +4,11 @@ import {readdir} from 'fs/promises'
 import {execSync} from 'child_process'
 import {Flags} from '@oclif/core'
 import {createWinstonLogger} from '../../utils/logging'
-import Profile from '@mitre/inspec-objects/lib/objects/profile'
 import {
   getExistingDescribeFromControl,
   processInSpecProfile,
   processXCCDF,
+  Profile,
 } from '@mitre/inspec-objects'
 import colors from 'colors' // eslint-disable-line no-restricted-imports
 import {BaseCommand} from '../../utils/oclif/baseCommand'

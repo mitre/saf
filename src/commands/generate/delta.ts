@@ -9,13 +9,9 @@ import {
   updateProfileUsingXCCDF,
   processXCCDF,
   updateControl,
+  Profile,
+  Control,
 } from '@mitre/inspec-objects'
-
-// eslint-disable-next-line no-warning-comments
-// TODO: We shouldn't have to import like this, open issue to clean library up for inspec-objects
-// test failed in updating inspec-objects to address high lvl vuln
-import Profile from '@mitre/inspec-objects/lib/objects/profile'
-import Control from '@mitre/inspec-objects/lib/objects/control'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import fse from 'fs-extra'
