@@ -38,20 +38,20 @@ We use both ts-mocha/chai and ts-jest for testing.
 
 ### Command Tests
 
-The 'command' tests are located in the `./tests/commands` directory and organized by the OCLIF commands such as attest, view, generate etc. These tests are written in ts-mocha. You can run all the tests or a single test. For example:
+The 'command' tests are located in the `./test/commands` directory and organized by the OCLIF commands such as attest, view, generate etc. These tests are written in ts-mocha. You can run all the tests or a single test. For example:
 
 ```bash
 npm run test:mocha
-npm run test:mocha:one ./tests/command/view/summary.ts
+npm run test:mocha:one ./test/commands/view/summary.ts
 ```
 
 ### Utility Tests
 
-The 'utility' tests are located in the `./tests/utility` directory and organized by each of the utility classes of the saf-cli. These tests are a mix of chai and jest tests. The chai tests are all the files named `{utility}.test.ts` and the jest tests are located in the `__tests__` directory. You can run all the tests or a single test. For example:
+The 'utility' tests are located in the `./test/utils` directory and organized by each of the utility classes of the saf-cli. These tests are a mix of chai and jest tests. The chai tests are all the files named `{utility}.test.ts` and the jest tests are located in the `__tests__` directory. You can run all the tests or a single test. For example:
 
 ```bash
 npm run test:jest
-npm run test:jest:one ./tests/utility/calculations.test.ts
+npm run test:jest:one ./test/utils/calculations.test.ts
 ```
 ### Run All Tests
 To invoke all tests `chai` and `jest` use the following commands:
