@@ -18,7 +18,7 @@ export default class EmasserPutMilestones extends Command {
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-m,--milestoneId] [-d,--description] [-c,--scheduledCompletionDate]'];
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the PUT Milestones endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the PUT Milestones endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

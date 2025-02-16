@@ -18,7 +18,7 @@ export default class EmasserDeleteMilestones extends Command {
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-M,--milestonesId]'];
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the DELETE Milestones endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the DELETE Milestones endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

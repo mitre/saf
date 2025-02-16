@@ -29,6 +29,7 @@ export class ApiConfig {
   public debugging: string;
   public displayNulls: string;
   public displayDateTime: string;
+  public downloadDir: string;
 
   constructor() {
     try {
@@ -46,17 +47,19 @@ export class ApiConfig {
     }
 
     // Option Environment Variable
+    // The userUid is required by some eMASS instances for actionable requests (post,put,delete)
+    this.userUid = this.getRequiredEnv('EMASSER_USER_UID')
     this.port = this.getOptionalEnv('EMASSER_PORT', 443)
     this.sslVerify = this.getOptionalEnv('EMASSER_REJECT_UNAUTHORIZED', false)
     this.reqCert = this.getOptionalEnv('EMASSER_REQUEST_CERT', false)
     this.debugging = this.getOptionalEnv('EMASSER_DEBUGGING', false)
     this.displayNulls = this.getOptionalEnv('EMASSER_CLI_DISPLAY_NULL', true)
     this.displayDateTime = this.getOptionalEnv('EMASSER_EPOCH_TO_DATETIME', false)
+    this.downloadDir = this.getOptionalEnv('EMASSER_DOWNLOAD_DIR', 'eMASSerDownloads')
 
     // Required Environment Variables
     try {
       this.apiKey = this.getRequiredEnv('EMASSER_API_KEY')
-      this.userUid = this.getRequiredEnv('EMASSER_USER_UID')
       this.url = this.getRequiredEnv('EMASSER_HOST_URL')
       this.keyCert = this.getRequiredEnv('EMASSER_KEY_FILE_PATH')
       this.clientCert = this.getRequiredEnv('EMASSER_CERT_FILE_PATH')

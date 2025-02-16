@@ -209,7 +209,7 @@ Each CLI endpoint command have several layers of help.
       export     Exports the milestone(s) for provided system (Id) and file name
 
     FLAGS
-      -h, --help  Show emasser CLI help for the GET Artifacts endpoint
+      -h, --help  Show eMASSer CLI help for the GET Artifacts endpoint
 
     DESCRIPTION
       Retrieve artifacts for a system or system/filename combination
@@ -227,7 +227,7 @@ Each CLI endpoint command have several layers of help.
       export     Exports the milestone(s) for provided system (Id) and file name
 
     FLAGS
-      -h, --help              Show emasser CLI help for the GET Artifacts endpoint
+      -h, --help              Show eMASSer CLI help for the GET Artifacts endpoint
       -f, --filename=<value>  (required) The artifact file name
       -s, --systemId=<value>  (required) The system identification number      
       -C, --[no-]compress     Boolean - Compress true or false
@@ -275,7 +275,7 @@ USAGE
   $ saf emasser get system [options]
 
 FLAGS
-  -h, --help                 Show emasser CLI help for the GET System endpoint
+  -h, --help                 Show eMASSer CLI help for the GET System endpoint
   -s, --systemId=<value>     (required) The system identification number  
   -I, --[no-]includePackage  Boolean - include system packages
   -p, --policy=<option>      Filter on policy
@@ -315,7 +315,7 @@ USAGE
   $ saf emasser get systems [options]
 
 FLAGS
-  -h, --help                        Show emasser CLI help for the GET Systems endpoint
+  -h, --help                        Show eMASSer CLI help for the GET Systems endpoint
   -D, --[no-]includeDecommissioned  Boolean - include decommissioned systems
   -I, --[no-]includePackage         Boolean - include system packages
   -M, --[no-]includeDitprMetrics    Boolean - include DoD Information Technology metrics
@@ -362,7 +362,7 @@ ARGUMENTS
   byCategory  Retrieves role(s) - filtered by [options] params
 
 FLAGS
-  -h, --help  Show emasser CLI help for the GET Roles endpoint
+  -h, --help  Show eMASSer CLI help for the GET Roles endpoint
 
 DESCRIPTION
   Retrieve all available system roles, or filter by options
@@ -396,7 +396,7 @@ USAGE
   $ saf emasser get controls [options]
 
 FLAGS
-  -h, --help              Show emasser CLI help for the GET Controls endpoint
+  -h, --help              Show eMASSer CLI help for the GET Controls endpoint
   -s, --systemId=<value>  (required) The system identification number
   -A, --[no-]acronyms     The system acronym(s) e.g "AC-1, AC-2" - if not provided all controls for systemId are returned
 
@@ -428,7 +428,7 @@ USAGE
   $ saf emasser get test_results [options]
 
 FLAGS
-  -h, --help                     Show emasser CLI help for the GET Test Results endpoint
+  -h, --help                     Show eMASSer CLI help for the GET Test Results endpoint
   -s, --systemId=<value>         (required) The system identification number
   -L, --[no-]latestOnly          Boolean - Filter on latest only
   -a, --controlAcronyms=<value>  The system acronym(s) e.g "AC-1, AC-2"
@@ -471,7 +471,7 @@ There are two endpoints for system poams `forSystem` and `byPoamId`
       byPoamId   Retrieves Poams for specified system and poam ID
 
     FLAGS
-      -h, --help                              Show emasser CLI help for the GET POA&Ms endpoint
+      -h, --help                              Show eMASSer CLI help for the GET POA&Ms endpoint
       -s, --systemId=<value>                  (required) The system identification number    
       -Y, --[no-]systemOnly                   Boolean - Return only systems
       -a, --controlAcronyms=<value>           The system acronym(s) e.g "AC-1, AC-2"
@@ -512,7 +512,7 @@ There are two endpoints for system poams `forSystem` and `byPoamId`
       byPoamId   Retrieves Poams for specified system and poam ID
 
     FLAGS
-      -h, --help              Show emasser CLI help for the GET POA&Ms endpoint
+      -h, --help              Show eMASSer CLI help for the GET POA&Ms endpoint
       -p, --poamId=<value>    (required) The poam identification number
       -s, --systemId=<value>  (required) The system identification number
 
@@ -545,7 +545,7 @@ There are two endpoints for system milestones `byPoamId` and `byMilestoneId`
       byMilestoneId  Retrieves milestone(s) for specified system, poam, and milestone Id
 
     FLAGS
-      -h, --help                                  Show emasser CLI help for the GET Milestones endpoint
+      -h, --help                                  Show eMASSer CLI help for the GET Milestones endpoint
       -p, --poamId=<value>                        (required) Unique poam identifier
       -s, --systemId=<value>                      (required) Unique system identifier    
       -c, --scheduledCompletionDateEnd=<value>    Unix time format (e.g. 1499990400)
@@ -582,7 +582,7 @@ There are two endpoints for system milestones `byPoamId` and `byMilestoneId`
       byMilestoneId  Retrieves milestone(s) for specified system, poam, and milestone Id
 
     FLAGS
-      -h, --help                 Show emasser CLI help for the GET Milestones endpoint
+      -h, --help                 Show eMASSer CLI help for the GET Milestones endpoint
       -m, --milestoneId=<value>  (required) Unique milestone identifier
       -p, --poamId=<value>       (required) The poam identification number
       -s, --systemId=<value>     (required) The system identification number
@@ -617,7 +617,7 @@ There are two endpoints for artifacts `forSystem` and `export`
       export     Exports the milestone(s) for provided system (Id) and file name
 
     FLAGS
-      -h, --help                     Show emasser CLI help for the GET Artifacts endpoint
+      -h, --help                     Show eMASSer CLI help for the GET Artifacts endpoint
       -s, --systemId=<value>         (required) Unique system identifier    
       -a, --controlAcronyms=<value>  The system acronym(s) e.g "AC-1, AC-2"
       -c, --ccis=<value>             The system CCIS string numerical value
@@ -656,7 +656,7 @@ There are two endpoints for artifacts `forSystem` and `export`
     export     Exports the milestone(s) for provided system (Id) and file name
 
   FLAGS
-    -h, --help              Show emasser CLI help for the GET Artifacts endpoint
+    -h, --help              Show eMASSer CLI help for the GET Artifacts endpoint
     -s, --systemId=<value>  (required) The system identification number  
     -f, --filename=<value>  (required) The artifact file name    
     -C, --[no-]compress     Boolean - Compress true or false
@@ -690,7 +690,7 @@ To view one or many Control Approval Chain (CAC) in a system specified system ID
     $ saf emasser get cac [options]
 
   FLAGS
-    -h, --help                     Show emasser CLI help for the GET CAC endpoint
+    -h, --help                     Show eMASSer CLI help for the GET CAC endpoint
     -s, --systemId=<value>         (required) The system identification number  
     -a, --controlAcronyms=<value>  The system acronym(s) e.g "AC-1, AC-2"
 
@@ -723,7 +723,7 @@ To view one or many Package Approval Chain (PAC) in a system specified system ID
     $ saf emasser get pac [options]
 
   FLAGS
-    -h, --help              Show emasser CLI help for the GET PAC endpoint
+    -h, --help              Show eMASSer CLI help for the GET PAC endpoint
     -s, --systemId=<value>  (required) The system identification number
 
   DESCRIPTION
@@ -748,7 +748,7 @@ To view Cybersecurity Maturity Model Certification (CMMC) Assessments use the fo
     $ saf emasser get cmmc [options]
 
   FLAGS
-    -h, --help               Show emasser CLI help for the GET CMMC endpoint  
+    -h, --help               Show eMASSer CLI help for the GET CMMC endpoint  
     -d, --sinceDate=<value>  (required) The CMMC date. Unix date format
 
   DESCRIPTION
@@ -773,7 +773,7 @@ To view Workflow Definitions use the following command:
     $ saf emasser get workflow_definitions [options]
 
   FLAGS
-    -h, --help                       Show emasser CLI help for the GET Workflow Definitions endpoint
+    -h, --help                       Show eMASSer CLI help for the GET Workflow Definitions endpoint
     -i, --[no-]includeInactive       Boolean - Include inactive workflows
     -r, --registrationType=<option>  The registration type - must be a valid type
                                     <options: assessAndAuthorize|assessOnly|guest|regular|functional|cloudServiceProvider|commonControlProvider>
@@ -808,7 +808,7 @@ There are two endpoints to view workflow instances `all` and `byInstanceId`
       byInstanceId  Retrieves workflow(s) instance by ID
 
     FLAGS
-      -h, --help                            Show emasser CLI help for the GET Workflow Instances endpoint
+      -h, --help                            Show eMASSer CLI help for the GET Workflow Instances endpoint
       -C, --[no-]includeComments            Boolean - Include transition comments
       -D, --[no-]includeDecommissionSystems Boolean - Include decommissioned systems
       -p, --pageIndex=<value>               The page number to query     
@@ -842,7 +842,7 @@ There are two endpoints to view workflow instances `all` and `byInstanceId`
       byInstanceId  Retrieves workflow(s) instance by ID
 
     FLAGS
-      -h, --help                        Show emasser CLI help for the GET Workflow Instances endpoint
+      -h, --help                        Show eMASSer CLI help for the GET Workflow Instances endpoint
       -w, --workflowInstanceId=<value>  (required) Unique workflow instance identifier
 
     DESCRIPTION
@@ -899,7 +899,7 @@ ARGUMENTS
   va_threat_architecture_details  Get VA threat architecture details dashboard information
 
 FLAGS
-  -h, --help                  Show emasser CLI help for the GET Dashboards endpoint
+  -h, --help                  Show eMASSer CLI help for the GET Dashboards endpoint
   -I, --[no-]excludeInherited Boolean - exclude inherited data (default false)
   -i, --pageIndex=<value>     The index of the starting page (default first page 0)
   -o, --orgId=<value>         (required) The organization identification number
@@ -2115,7 +2115,7 @@ USAGE
   $ saf emasser put milestones [options]
 
 FLAGS
-  -h, --help                             Show emasser CLI help for the PUT Milestones endpoint
+  -h, --help                             Show eMASSer CLI help for the PUT Milestones endpoint
   -s, --systemId=<value>                 (required) The system identification number
   -p, --poamId=<value>                   (required) The poam identification number
   -m, --milestoneId=<value>              (required) Unique milestone identifier
@@ -2224,7 +2224,7 @@ USAGE
   $ saf emasser delete poams [options]
 
 FLAGS
-  -h, --help                Show emasser CLI help for the DELETE POA&M endpoint
+  -h, --help                Show eMASSer CLI help for the DELETE POA&M endpoint
   -s, --systemId=<value>    (required) The system identification number
   -P, --poamsId=<value>...  (required) Unique POA&M identification number, can have multiple (space separated)
 
@@ -2251,7 +2251,7 @@ USAGE
   $ saf emasser delete milestones [options]
 
 FLAGS
-  -h, --help                     Show emasser CLI help for the DELETE Milestones endpoint
+  -h, --help                     Show eMASSer CLI help for the DELETE Milestones endpoint
   -s, --systemId=<value>         (required) The system identification number
   -p, --poamId=<value>           (required) The poam identification number
   -M, --milestonesId=<value>...  (required) Unique milestone identifier, can have multiple (space separated)
@@ -2278,7 +2278,7 @@ USAGE
   $ saf emasser delete artifacts [options]
 
 FLAGS
-  -h, --help                 Show emasser CLI help for the DELETE POA&M endpoint
+  -h, --help                 Show eMASSer CLI help for the DELETE POA&M endpoint
   -s, --systemId=<value>     (required) The system identification number
   -F, --fileName=<value>...  (required) The artifact file name to remove, can have multiple (space separated)
 

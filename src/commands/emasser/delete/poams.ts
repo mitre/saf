@@ -7,7 +7,7 @@ import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 import {POAMApi} from '@mitre/emass_client'
-import {PoamResponseDelete,
+import {PoamResponsePostPutDelete,
   PoamRequestDeleteBodyInner as PoamDeleteBody} from '@mitre/emass_client/dist/api'
 
 export default class EmasserDeletePoams extends Command {
@@ -18,7 +18,7 @@ export default class EmasserDeletePoams extends Command {
   static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-P,--poamsId]'];
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the DELETE POA&M endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the DELETE POA&M endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
@@ -32,7 +32,8 @@ export default class EmasserDeletePoams extends Command {
       requestBodyArray.push({poamId: poamId}) // skipcq: JS-0240
     })
 
-    delPoam.deletePoam(flags.systemId, requestBodyArray).then((response: PoamResponseDelete) => {
+    // was PoamResponseDelete
+    delPoam.deletePoam(flags.systemId, requestBodyArray).then((response: PoamResponsePostPutDelete) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
   }

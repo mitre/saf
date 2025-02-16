@@ -10,8 +10,35 @@ import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
 
 import {ControlsApi} from '@mitre/emass_client'
-import {ControlsResponsePut,
-  ControlsGet as Controls} from '@mitre/emass_client/dist/api'
+// import {ControlsResponsePut,
+//   ControlsGet as Controls} from '@mitre/emass_client/dist/api'
+import {ControlsResponsePut} from '@mitre/emass_client/dist/api'
+
+interface Controls  {
+  acronym?: string
+  responsibleEntities?: string
+  controlDesignation?: string
+  estimatedCompletionDate?: string
+  implementationNarrative?: string
+  commonControlProvider?: string
+  naJustification?: string
+  slcmCriticality?: string
+  slcmFrequency?: string
+  slcmMethod?: string
+  slcmReporting?: string
+  slcmTracking?: string
+  slcmComments?: string
+  implementationStatus?: string
+  severity?: string
+  vulnerabiltySummary?: string
+  recommendations?: string
+  relevanceOfThreat?: string
+  likelihood?: string
+  impact?: string
+  impactDescription?: string
+  residualRiskLevel?: string
+  testMethod?: string
+}
 
 function printHelpMsg() {
   console.log('\x1B[93m', '\nInvoke saf emasser put controls [-h, --help] for additional help', '\x1B[0m')

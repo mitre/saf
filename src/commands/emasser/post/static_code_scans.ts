@@ -10,7 +10,7 @@ import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
 
 import {StaticCodeScansApi} from '@mitre/emass_client'
-import {StaticCodeApplication, StaticCodeResponsePost,
+import {StaticCodeApplicationPost, StaticCodeResponsePost,
   StaticCodeRequestPostBody as StaticCodeRequest,
   StaticCodeRequestPostBodyApplication as ApplicationRequestBody} from '@mitre/emass_client/dist/api'
 
@@ -50,12 +50,12 @@ function addApplicationToRequestBody(dataObj: StaticCodeRequest): StaticCodeRequ
 }
 
 function addApplicationFindingsFields(bodyObject: StaticCodeRequest, dataObj: StaticCodeRequest): void {
-  const findingsArray: StaticCodeApplication[] = []
+  const findingsArray: StaticCodeApplicationPost[] = []
 
   try {
-    let findingsObj: StaticCodeApplication = {}
+    let findingsObj: StaticCodeApplicationPost = {}
     let i = 0
-    dataObj.applicationFindings?.forEach((appFindings: StaticCodeApplication) => {
+    dataObj.applicationFindings?.forEach((appFindings: StaticCodeApplicationPost) => {
       if (Object.prototype.hasOwnProperty.call(appFindings, 'clearFindings')) {
         findingsObj.clearFindings = appFindings.clearFindings
         findingsArray.push(findingsObj)

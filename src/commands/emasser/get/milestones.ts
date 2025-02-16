@@ -20,7 +20,7 @@ export default class EmasserGetMilestones extends Command {
   static examples = getExamplesForEndpoint(process.argv, endpoint);
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Milestones endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Milestones endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

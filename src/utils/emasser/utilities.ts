@@ -1,6 +1,8 @@
 import _ from 'lodash'
 import {Flags} from '@oclif/core'
 import {BooleanFlag, OptionFlag} from '@oclif/core/interfaces'
+import * as fs from 'fs'
+import path from 'path'
 
 interface CliArgs {
   requestType: string;
@@ -25,16 +27,17 @@ export interface FlagOptions {
   includeDitprMetrics?: BooleanFlag<boolean|undefined>;
   includeDecommissioned?: BooleanFlag<boolean|undefined>;
   reportsForScorecard?: BooleanFlag<boolean|undefined>;
-  acronyms?: BooleanFlag<boolean|undefined>;
   latestOnly?: BooleanFlag<boolean|undefined>;
   systemOnly?: BooleanFlag<boolean|undefined>;
   compress?: BooleanFlag<boolean|undefined>;
+  printToStdOut?: BooleanFlag<boolean|undefined>;
   policy?: OptionFlag<string|undefined>;
   registrationType?: OptionFlag<string|undefined>;
   ditprId?: OptionFlag<string|undefined>;
   coamsId?: OptionFlag<string|undefined>;
   roleCategory?: OptionFlag<string>;
   role?: OptionFlag<string>;
+  acronyms?: OptionFlag<string|undefined>;
   controlAcronyms?: OptionFlag<string|undefined>;
   ccis?: OptionFlag<string|undefined>;
   sinceDate?: OptionFlag<string|any>;
@@ -127,7 +130,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'controls': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            acronyms: Flags.boolean({char: 'A', description: 'The system acronym(s) e.g "AC-1, AC-2" - if not provided all controls for systemId are returned', allowNo: true, required: false}),
+            acronyms: Flags.string({char: 'A', description: 'The system acronym(s) e.g "AC-1, AC-2" - if not provided all controls for systemId are returned', required: false}),
           }
           break
         }
@@ -207,6 +210,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
               systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
               filename: Flags.string({char: 'f', description: 'The artifact file name', required: true}),
               compress: Flags.boolean({char: 'C', description: 'Boolean - Compress true or false', allowNo: true, required: false}),
+              printToStdOut: Flags.boolean({char: 'P', description: 'Boolean - Print to standard output', allowNo: true, required: false}),
             }
           }
 
@@ -561,18 +565,68 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
             break
           }
 
+          case 'terms_conditions_summary': {
+            description = 'Get systems terms/conditions summary dashboard information'
+            break
+          }
+
+          case 'terms_conditions_details': {
+            description = 'Get systems terms/conditions details dashboard information'
+            break
+          }
+
+          case 'connectivity_ccsd_summary': {
+            description = 'Get systems connectivity/CCSD summary dashboard information'
+            break
+          }
+
+          case 'connectivity_ccsd_details': {
+            description = 'Get systems connectivity/CCSD details dashboard information'
+            break
+          }
+
+          case 'atc_iatc_details': {
+            description = 'Get systems ATC/IATC details dashboard information'
+            break
+          }
+
+          case 'questionnaire_summary': {
+            description = 'Get systems questionnaire summary dashboard information'
+            break
+          }
+
+          case 'questionnaire_details': {
+            description = 'Get systems questionnaire details dashboard information'
+            break
+          }
+
+          case 'workflows_history_summary': {
+            description = 'Get systems workflow history summary dashboard information'
+            break
+          }
+
+          case 'workflows_history_details': {
+            description = 'Get systems workflow history details dashboard information'
+            break
+          }
+
+          case 'workflows_history_stage_details': {
+            description = 'Get systems workflow history stage details dashboard information'
+            break
+          }
+
           case 'control_compliance_summary': {
-            description = 'Get enterprise systems control compliance summary dashboard information'
+            description = 'Get systems control compliance summary dashboard information'
             break
           }
 
           case 'security_control_details': {
-            description = 'Get enterprise systems security control details dashboard information'
+            description = 'Get systems security control details dashboard information'
             break
           }
 
           case 'assessment_procedures_details': {
-            description = 'Get enterprise systems assessment procedures details dashboard information'
+            description = 'Get systems assessment procedures details dashboard information'
             break
           }
 
@@ -616,6 +670,61 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
             break
           }
 
+          case 'software_summary': {
+            description = 'Get system software baseline summary dashboard information'
+            break
+          }
+
+          case 'software_details': {
+            description = 'Get systems software baseline details dashboard information'
+            break
+          }
+
+          case 'sensor_software_summary': {
+            description = 'Get system sensor-based software summary dashboard information'
+            break
+          }
+
+          case 'sensor_software_details': {
+            description = 'Get system sensor-based software details dashboard information'
+            break
+          }
+
+          case 'sensor_software_counts': {
+            description = 'Get system sensor-based software counts dashboard information'
+            break
+          }
+
+          case 'critical_assets_summary': {
+            description = 'Get system critical assets summary dashboard information'
+            break
+          }
+
+          case 'vulnerability_summary': {
+            description = 'Get system vulnerability summary dashboard information'
+            break
+          }
+
+          case 'device_findings_summary': {
+            description = 'Get system device findings summary dashboard information'
+            break
+          }
+
+          case 'device_findings_details': {
+            description = 'Get system device findings details dashboard information'
+            break
+          }
+
+          case 'application_findings_summary': {
+            description = 'Get system application findings summary dashboard information'
+            break
+          }
+
+          case 'application_findings_details': {
+            description = 'Get system application findings details dashboard information'
+            break
+          }
+
           case 'ports_protocols_summary': {
             description = 'Get system ports and protocols summary dashboard information'
             break
@@ -626,13 +735,38 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
             break
           }
 
+          case 'integration_status_summary': {
+            description = 'Get system  CONMON integration status summary dashboard information'
+            break
+          }
+
           case 'associations_details': {
             description = 'Get system associations details dashboard information'
             break
           }
 
-          case 'assignments_details': {
+          case 'user_assignments_details': {
             description = 'Get user system assignments details dashboard information'
+            break
+          }
+
+          case 'org_migration_status': {
+            description = 'Get organization migration status summary dashboard information'
+            break
+          }
+
+          case 'system_migration_status': {
+            description = 'Get system migration status summary dashboard information'
+            break
+          }
+
+          case 'fisma_metrics': {
+            description = 'Get system FISMA metrics dashboard information'
+            break
+          }
+
+          case 'coast_guard_fisma_metrics': {
+            description = 'Get Coast Guard system FISMA metrics dashboard information'
             break
           }
 
@@ -645,6 +779,10 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
             description = 'Get VA OMB-FISMA SAOP summary dashboard information'
             break
           }
+
+
+
+
 
           case 'va_aa_summary': {
             description = 'Get VA system A&A summary dashboard information'
@@ -764,7 +902,10 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
           }
 
           default: {
-            exampleArray.push(`${baseCmd} forSystem [-s, --systemId] <value> [options]`, `${baseCmd} export [-s, --systemId] <value> [-f, --filename] <value> [options]`)
+            exampleArray.push(
+              `${baseCmd} forSystem [-s, --systemId] <value> [options]`,
+              `${baseCmd} export [-s, --systemId] <value> [-f, --filename] <value> [options]`,
+            )
             break
           }
         }
@@ -818,6 +959,56 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
         switch (args.argument) {
           case 'status_details': {
             exampleArray.push(`${baseCmd} status_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'terms_conditions_summary': {
+            exampleArray.push(`${baseCmd} terms_conditions_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'terms_conditions_details': {
+            exampleArray.push(`${baseCmd} terms_conditions_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'connectivity_ccsd_summary': {
+            exampleArray.push(`${baseCmd} connectivity_ccsd_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'connectivity_ccsd_details': {
+            exampleArray.push(`${baseCmd} connectivity_ccsd_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'atc_iatc_details': {
+            exampleArray.push(`${baseCmd} atc_iatc_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'questionnaire_summary': {
+            exampleArray.push(`${baseCmd} questionnaire_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'questionnaire_details': {
+            exampleArray.push(`${baseCmd} questionnaire_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'workflows_history_summary': {
+            exampleArray.push(`${baseCmd} workflows_history_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'workflows_history_details': {
+            exampleArray.push(`${baseCmd} workflows_history_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'workflows_history_stage_details': {
+            exampleArray.push(`${baseCmd} workflows_history_stage_details [-o, --orgId] <value> [options]`)
             break
           }
 
@@ -876,6 +1067,61 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
             break
           }
 
+          case 'software_summary': {
+            exampleArray.push(`${baseCmd} software_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'software_details': {
+            exampleArray.push(`${baseCmd} software_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'sensor_software_summary': {
+            exampleArray.push(`${baseCmd} sensor_software_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'sensor_software_details': {
+            exampleArray.push(`${baseCmd} sensor_software_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'sensor_software_counts': {
+            exampleArray.push(`${baseCmd} sensor_software_counts [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'critical_assets_summary': {
+            exampleArray.push(`${baseCmd} critical_assets_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'vulnerability_summary': {
+            exampleArray.push(`${baseCmd} vulnerability_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'device_findings_summary': {
+            exampleArray.push(`${baseCmd} device_findings_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'device_findings_details': {
+            exampleArray.push(`${baseCmd} device_findings_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'application_findings_summary': {
+            exampleArray.push(`${baseCmd} application_findings_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'application_findings_details': {
+            exampleArray.push(`${baseCmd} application_findings_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
           case 'ports_protocols_summary': {
             exampleArray.push(`${baseCmd} ports_protocols_summary [-o, --orgId] <value> [options]`)
             break
@@ -886,13 +1132,38 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
             break
           }
 
+          case 'integration_status_summary': {
+            exampleArray.push(`${baseCmd} integration_status_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
           case 'associations_details': {
             exampleArray.push(`${baseCmd} associations_details [-o, --orgId] <value> [options]`)
             break
           }
 
-          case 'assignments_details': {
-            exampleArray.push(`${baseCmd} assignments_details [-o, --orgId] <value> [options]`)
+          case 'user_assignments_details': {
+            exampleArray.push(`${baseCmd} user_assignments_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'org_migration_status': {
+            exampleArray.push(`${baseCmd} org_migration_status [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'system_migration_status': {
+            exampleArray.push(`${baseCmd} system_migration_status [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'fisma_metrics': {
+            exampleArray.push(`${baseCmd} fisma_metrics [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'coast_guard_fisma_metrics': {
+            exampleArray.push(`${baseCmd} coast_guard_fisma_metrics [-o, --orgId] <value> [options]`)
             break
           }
 
@@ -906,6 +1177,8 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
             break
           }
 
+
+          
           case 'va_aa_summary': {
             exampleArray.push(`${baseCmd} va_aa_summary [-o, --orgId] <value> [options]`)
             break
@@ -1178,4 +1451,18 @@ export function getJsonExamples(endpoint?: string): string[] {
   }
 
   return []
+}
+
+export function saveFile(dir: string, filename: string, data: any): void {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir)
+  }
+
+  // Save to file
+  const outDir = path.join(dir, filename)
+  fs.writeFile(outDir, data, err => {
+    if (err) {
+      console.error(`Error saving file to: ${outDir}. Cause: ${err}`)
+    }
+  })
 }

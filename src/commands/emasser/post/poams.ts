@@ -10,8 +10,38 @@ import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
 
 import {POAMApi} from '@mitre/emass_client'
-import {MilestonesGet, PoamResponsePost,
-  PoamGet as Poams} from '@mitre/emass_client/dist/api'
+// import {MilestonesGet, PoamResponsePost,
+//  PoamGet as Poams} from '@mitre/emass_client/dist/api'
+import {MilestonesGet, PoamResponsePostPutDelete} from '@mitre/emass_client/dist/api'
+
+interface Poams {
+  status?: string
+  vulnerabilityDescription?: string
+  sourceIdentVuln?: string
+  pocOrganization?: string
+  resources?: string
+  mitigation?: string
+  pocFirstName?: string
+  pocLastName?: string
+  pocEmail?: string
+  pocPhoneNumber?: string
+  severity?: string
+  externalUid?: string
+  controlAcronym?: string
+  cci?: string
+  securityChecks?: string
+  rawSeverity?: string
+  relevanceOfThreat?: string
+  likelihood?: string
+  impact?: string
+  impactDescription?: string
+  residualRiskLevel?: string
+  recommendations?: string
+  comments?: string
+  scheduledCompletionDate?: string
+  completionDate?: string
+  milestones?: Array<MilestonesGet>
+}
 
 function printHelpMsg(msg: string) {
   console.log('\x1B[93m', msg, '\x1B[0m')
@@ -305,7 +335,7 @@ export default class EmasserPostPoams extends Command {
       process.exit(1)
     }
 
-    addPoam.addPoamBySystemId(flags.systemId, requestBodyArray).then((response: PoamResponsePost) => {
+    addPoam.addPoamBySystemId(flags.systemId, requestBodyArray).then((response: PoamResponsePostPutDelete) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
   }

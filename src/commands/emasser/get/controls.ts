@@ -8,14 +8,14 @@ import {outputError} from '../../../utils/emasser/outputError'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetControls extends Command {
-  static usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [options]'
 
-  static description = 'Get system Security Control information for both the Implementation Plan and Risk Assessment'
+  static readonly description = 'Get system Security Control information for both the Implementation Plan and Risk Assessment'
 
-  static examples = ['<%= config.bin %> <%= command.id %> --systemId <value> [option]']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> --systemId <value> [option]']
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Controls endpoint'}),
+  static readonly flags = {
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Controls endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
@@ -28,5 +28,14 @@ export default class EmasserGetControls extends Command {
     getControls.getSystemControls(flags.systemId, flags.acronyms).then((response: CacResponseGet) => {
       console.log(colorize(outputFormat(response)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
+  }
+
+  async catch(error: any) { // skipcq: JS-0116
+    if (error.message) {
+      this.warn(error.message)
+    } else {
+      const suggestions = 'get controls [-h or --help]'
+      this.warn('Invalid arguments\nTry this:\n\t' + suggestions)
+    }
   }
 }
