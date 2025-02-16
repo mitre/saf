@@ -1316,7 +1316,7 @@ convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall D
 
 ### eMASS API CLI
 
-The SAF CLI implements the eMASS REST API capabilities by incorporating the eMASSer CLI into the SAF CLI. Please references the [emasser Features](https://saf-cli.mitre.org/docs/emasser) 📜 for additional information
+The SAF CLI implements the eMASS REST API capabilities by incorporating the eMASSer CLI into the SAF CLI. Please references the [eMASSer Features](https://saf-cli.mitre.org/docs/emasser) 📜 for additional information
 
 To get top level help execute the following commad:
 
