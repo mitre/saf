@@ -8,13 +8,13 @@ import {getFlagsForEndpoint, FlagOptions} from '../../../utils/emasser/utilities
 import {SystemsResponse} from '@mitre/emass_client/dist/api'
 
 export default class EmasserGetSystems extends Command {
-  static usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [FLAGS]'
 
-  static description = 'Get available systems filter on provided options'
+  static readonly description = 'Get available systems filter on provided options'
 
-  static examples = ['<%= config.bin %> <%= command.id %> [options]']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [options]']
 
-  static flags = {
+  static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Systems endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
@@ -28,5 +28,14 @@ export default class EmasserGetSystems extends Command {
     getSystems.getSystems(flags.includePackage, flags.registrationType, flags.ditprId, flags.coamsId, flags.policy, flags.includeDitprMetrics, flags.includeDecommissioned, flags.reportsForScorecard).then((response: SystemsResponse) => {
       console.log(colorize(outputFormat(response)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
+  }
+
+  async catch(error: any) { // skipcq: JS-0116
+    if (error.message) {
+      this.warn(error.message)
+    } else {
+      const suggestions = 'get systems [-h or --help]'
+      this.warn('Invalid arguments\nTry this 👇:\n\t' + suggestions)
+    }
   }
 }

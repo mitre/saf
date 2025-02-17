@@ -23,7 +23,6 @@ export interface FlagOptions {
   excludeInherited?: BooleanFlag<boolean|undefined>;
   includeInactive?: BooleanFlag<boolean|undefined>;
   isTemplate?: BooleanFlag<boolean>;
-  includePackage?: BooleanFlag<boolean|undefined>;
   includeDitprMetrics?: BooleanFlag<boolean|undefined>;
   includeDecommissioned?: BooleanFlag<boolean|undefined>;
   reportsForScorecard?: BooleanFlag<boolean|undefined>;
@@ -39,6 +38,7 @@ export interface FlagOptions {
   role?: OptionFlag<string>;
   acronyms?: OptionFlag<string|undefined>;
   controlAcronyms?: OptionFlag<string|undefined>;
+  assessmentProcedures?: OptionFlag<string|undefined>;
   ccis?: OptionFlag<string|undefined>;
   sinceDate?: OptionFlag<string|any>;
   scheduledCompletionDateStart?: OptionFlag<string|undefined>;
@@ -92,7 +92,6 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'system': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            includePackage: Flags.boolean({char: 'I', description: 'Boolean - include system packages', allowNo: true, required: false}),
             policy: Flags.string({char: 'p', description: 'Filter on policy', required: false, options: ['diacap', 'rmf', 'reporting']}),
           }
           break
@@ -105,7 +104,6 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             ditprId: Flags.string({char: 't', description: 'DoD Information Technology (IT) Portfolio Repository (DITPR) string Id', required: false}),
             coamsId: Flags.string({char: 'c', description: 'Cyber Operational Attributes Management System (COAMS) string Id', required: false}),
             policy: Flags.string({char: 'p', description: 'Filter on policy', options: ['diacap', 'rmf', 'reporting'], required: false}),
-            includePackage: Flags.boolean({char: 'I', description: 'Boolean - include system packages', allowNo: true, required: false}),
             includeDitprMetrics: Flags.boolean({char: 'M', description: 'Boolean - include DoD Information Technology metrics', allowNo: true, required: false}),
             includeDecommissioned: Flags.boolean({char: 'D', description: 'Boolean - include decommissioned systems', allowNo: true, required: false}),
             reportsForScorecard: Flags.boolean({char: 'S', description: 'Boolean - include score card', allowNo: true, required: false}),
@@ -117,8 +115,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           if (args.argument === 'byCategory') {
             flagObj = {
               roleCategory: Flags.string({char: 'c', description: 'Filter on role category', options: ['CAC', 'PAC', 'Other'], required: true}),
-              role: Flags.string({char: 'r', description: 'Filter on role type',
-                options: ['AO', 'Auditor', 'Artifact Manager', 'C&A Team', 'IAO', 'ISSO', 'PM/IAM', 'SCA', 'User Rep', 'Validator'], required: true}),
+              role: Flags.string({char: 'r', description: 'Accepts single value from options available at base system-roles endpoint e.g., SCA', required: true}),
               policy: Flags.string({char: 'p', description: 'Filter on policy', options: ['diacap', 'rmf', 'reporting'], required: false}),
               includeDecommissioned: Flags.boolean({char: 'D', description: 'Boolean - include decommissioned systems', allowNo: true, required: false}),
             }
@@ -161,6 +158,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
+            assessmentProcedures: Flags.string({char: 'p', description: 'The system Security Control Assessment Procedure e.g "AC-1.1,AC-1.2', required: false}),
             ccis: Flags.string({char: 'c', description: 'The system CCIS string numerical value', required: false}),
             latestOnly: Flags.boolean({char: 'L', description: 'Boolean - Filter on latest only', allowNo: true, required: false}),
           }
@@ -169,7 +167,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
 
         case 'workflow_definitions': {
           flagObj = {
-            includeInactive: Flags.boolean({char: 'i', description: 'Boolean - Include inactive workflows', allowNo: true, required: false}),
+            includeInactive: Flags.boolean({char: 'I', description: 'Boolean - Include inactive workflows', allowNo: true, required: false}),
             registrationType: Flags.string({char: 'r', description: 'The registration type - must be a valid type',
               options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false}),
           }
@@ -180,9 +178,10 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           if (args.argument === 'forSystem') {
             flagObj = {
               systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-              scheduledCompletionDateStart: Flags.string({description: 'The completion start date', required: false}),
-              scheduledCompletionDateEnd: Flags.string({description: 'The completion end date', required: false}),
+              scheduledCompletionDateStart: Flags.string({char: 'd', description: 'The scheduled completion start date', required: false}),
+              scheduledCompletionDateEnd: Flags.string({char: 'e', description: 'The scheduled completion end date', required: false}),
               controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
+              assessmentProcedures: Flags.string({char: 'p', description: 'The system Security Control Assessment Procedure e.g "AC-1.1,AC-1.2', required: false}),
               ccis: Flags.string({char: 'c', description: 'The system CCIS string numerical value', required: false}),
               systemOnly: Flags.boolean({char: 'Y', description: 'Boolean - Return only systems', allowNo: true, required: false}),
             }
@@ -202,6 +201,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
               systemId: Flags.integer({char: 's', description: 'Unique system identifier', required: true}),
               filename: Flags.string({char: 'f', description: 'The artifact file name', required: false}),
               controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
+              assessmentProcedures: Flags.string({char: 'p', description: 'The system Security Control Assessment Procedure e.g "AC-1.1,AC-1.2', required: false}),
               ccis: Flags.string({char: 'c', description: 'The system CCIS string numerical value', required: false}),
               systemOnly: Flags.boolean({char: 'y', description: 'Boolean - Return only systems', allowNo: true, required: false}),
             }
@@ -503,7 +503,7 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
           }
 
           case 'export': {
-            description = 'Retrieves the artifact file (if compress is true the file binary contents are returned, otherwise the file textual contents are returned.)'
+            description = 'Retrieves an artifact file for selected system\n(file is sent to EMASSER_DOWNLOAD_DIR (defaults to eMasserDownloads) if flag [-P, --printToStdOut] not provided)'
             break
           }
 
@@ -780,9 +780,10 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
             break
           }
 
-
-
-
+          case 'va_icamp_tableau_poam_details': {
+            description = 'Get VA system ICAMP Tableau POA&M details dashboard information'
+            break
+          }
 
           case 'va_aa_summary': {
             description = 'Get VA system A&A summary dashboard information'
@@ -799,12 +800,12 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
             break
           }
 
-          case 'fisma_inventory_summary': {
+          case 'va_fisma_inventory_summary': {
             description = 'Get VA system FISMA inventory summary dashboard information'
             break
           }
 
-          case 'fisma_inventory_crypto_summary': {
+          case 'va_fisma_inventory_crypto_summary': {
             description = 'Get VA system FISMA inventory crypto summary dashboard information'
             break
           }
@@ -821,6 +822,26 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
 
           case 'va_threat_architecture_details': {
             description = 'Get VA threat architecture details dashboard information'
+            break
+          }
+
+          case 'cmmc_status_summary': {
+            description = 'Get CMMC assessment status summary dashboard information'
+            break
+          }
+
+          case 'cmmc_compliance_summary': {
+            description = 'Get CMMC assessment requirements compliance summary dashboard information'
+            break
+          }
+
+          case 'cmmc_security_requirements_details': {
+            description = 'Get CMMC assessment security requirements details dashboard information'
+            break
+          }
+
+          case 'cmmc_requirement_objectives_details': {
+            description = 'Get CMMC assessment requirement objectives details dashboard information'
             break
           }
 
@@ -1177,8 +1198,11 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
             break
           }
 
+          case 'va_icamp_tableau_poam_details': {
+            exampleArray.push(`${baseCmd} va_icamp_tableau_poam_details [-o, --orgId] <value> [options]`)
+            break
+          }
 
-          
           case 'va_aa_summary': {
             exampleArray.push(`${baseCmd} va_aa_summary [-o, --orgId] <value> [options]`)
             break
@@ -1194,13 +1218,13 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
             break
           }
 
-          case 'fisma_inventory_summary': {
-            exampleArray.push(`${baseCmd} fisma_inventory_summary [-o, --orgId] <value> [options]`)
+          case 'va_fisma_inventory_summary': {
+            exampleArray.push(`${baseCmd} va_fisma_inventory_summary [-o, --orgId] <value> [options]`)
             break
           }
 
-          case 'fisma_inventory_crypto_summary': {
-            exampleArray.push(`${baseCmd} fisma_inventory_crypto_summary [-o, --orgId] <value> [options]`)
+          case 'va_fisma_inventory_crypto_summary': {
+            exampleArray.push(`${baseCmd} va_fisma_inventory_crypto_summary [-o, --orgId] <value> [options]`)
             break
           }
 
@@ -1219,8 +1243,28 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
             break
           }
 
+          case 'cmmc_status_summary': {
+            exampleArray.push(`${baseCmd} cmmc_status_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'cmmc_compliance_summary': {
+            exampleArray.push(`${baseCmd} cmmc_compliance_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'cmmc_security_requirements_details': {
+            exampleArray.push(`${baseCmd} cmmc_security_requirements_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'cmmc_requirement_objectives_details': {
+            exampleArray.push(`${baseCmd} cmmc_requirement_objectives_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
           default: {
-            exampleArray.push(`${baseCmd} [dashboard name] [options]`)
+            exampleArray.push(`${baseCmd} [dashboard name] [-o, --orgId] <value> [options]`)
             break
           }
         }

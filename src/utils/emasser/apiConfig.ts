@@ -10,7 +10,7 @@ function printRedMsg(msg: string) {
 }
 
 function printHelpMessage() {
-  printYellowMsg('Use the emasser CLI command "saf emasser configure" to generate or update an eMASS configuration file.')
+  printYellowMsg('Use the eMASSer CLI command "saf emasser configure" to generate or update an eMASS configuration file.')
   printYellowMsg('If the configuration file is generated, it is placed in the directory where the emasser command is executed.')
 }
 

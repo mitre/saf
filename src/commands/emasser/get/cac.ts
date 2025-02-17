@@ -8,11 +8,11 @@ import {outputError} from '../../../utils/emasser/outputError'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetCac extends Command {
-  static readonly usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [FLAGS]'
 
   static readonly description = 'View one or many Control Approval Chain (CAC) in a system specified system ID'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> --systemId <value>']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s, --systemId] <value>']
 
   static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET CAC endpoint'}),

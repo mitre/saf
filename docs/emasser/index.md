@@ -1,7 +1,7 @@
-# emasser CLI Features and Capabilities
+# SA CLI eMASSer Features and Capabilities
 
 ## Environment Variables
-To facilitate setting the required environment variables the `emasser ` SAF CLI utilized the zero-dependency module to load these variables from a `.env` file.  See [Generating an eMASS Configuration File](#generating-an-emass-configuration-file)
+To facilitate setting the required environment variables the `SAF CLI eMASSer` utilizes a zero-dependency module to load Required/Optional variables from a `.env` file.  See [Generating an eMASS Configuration File](#generating-an-emass-configuration-file)
 
 ### Configuring the `.env` File
 An `.env-example` file is provided with the required and optional fields.
@@ -27,6 +27,7 @@ The following environment variables are *optional:
 * EMASSER_DEBUGGING=`<set debugging - true or false (default false)>`
 * EMASSER_CLI_DISPLAY_NULL=`<display null value fields - true or false (default true)>`
 * EMASSER_EPOCH_TO_DATETIME=`<convert epoch to data/time value - true or false (default false)>`
+* EMASSER_DOWNLOAD_DIR=`<directory where exported files are saved (default eMasserDownloads)>`
   
 \* If not provided defaults are used
 
@@ -36,13 +37,13 @@ The proper format to set these variables in the `.env` files is as follows:
 ```
 ***NOTE***
 
-The `emasser` commands requires access to an eMASS instance. Authentication and authorization to an eMASS instance is **not** a function of `emasser` and needs to be accomplished with the eMASS instance owner organization. Further information about eMASS credential requirements refer to [Defense Counterintelligence and Security Agency](https://www.dcsa.mil/is/emass/) about eMASS access.
+The `eMASSer` commands requires access to an eMASS instance. Authentication and authorization to an eMASS instance is **not** a function of `eMASSer CLI` and needs to be accomplished with the eMASS instance owner organization. Further information about eMASS credential requirements refer to [Defense Counterintelligence and Security Agency](https://www.dcsa.mil/is/emass/) about eMASS access.
 
 Fo instruction on how to request an eMASS visit [eMASS Account Process Request and API Registration](https://github.com/mitre/emasser/wiki/eMASS-Account-Process-Request-and-API-Registration)
 
 ---
-## Common emasser Endpoint Requests Information
-  - The eMASS API provides the capability of updating multiple entries within several endpoints, however the `SAF CLI emasser`, in some cases only supports updating one entry at the time.
+## Common eMASSer Endpoint Requests Information
+  - The eMASS API provides the capability of updating multiple entries within several endpoints, however the `SAF CLI eMASSer`, in some cases only supports updating one entry at the time.
 
 ## API Endpoints Provided
 
@@ -65,35 +66,7 @@ Fo instruction on how to request an eMASS visit [eMASS Account Process Request a
 * [/api/cmmc-assessments](#get-cmmc)
 * [/api/workflow-definitions](#get-workflow_definitions)
 * [/api/systems/{systemId}/workflow-instances](#get-workflow_instances)
-* [/api/dashboards/system-status-details](#get-dashboards)
-* [/api/dashboards/system-control-compliance-summary](#get-dashboards)
-* [/api/dashboards/system-security-controls-details](#get-dashboards)
-* [/api/dashboards/system-assessment-procedures-details](#get-dashboards)
-* [/api/dashboards/system-poam-summary](#get-dashboards)
-* [/api/dashboards/system-poam-details](#get-dashboards)
-* [/api/dashboards/system-artifacts-summary](#get-dashboards)
-* [/api/dashboards/system-artifacts-details](#get-dashboards)
-* [/api/dashboards/system-hardware-summary](#get-dashboards)
-* [/api/dashboards/system-hardware-details](#get-dashboards)
-* [/api/dashboards/system-sensor-hardware-summary](#get-dashboards)
-* [/api/dashboards/system-sensor-hardware-details](#get-dashboards)
-* [/api/dashboards/system-software-summary](#get-dashboards)
-* [/api/dashboards/system-software-details](#get-dashboards)
-* [/api/dashboards/system-ports-protocols-summary](#get-dashboards)
-* [/api/dashboards/system-ports-protocols-details](#get-dashboards)
-* [/api/dashboards/system-conmon-integration-status-summary](#get-dashboards)
-* [/api/dashboards/system-associations-details](#get-dashboards)
-* [/api/dashboards/user-system-assignments-details](#get-dashboards)
-* [/api/dashboards/system-privacy-summary](#get-dashboards)
-* [/api/dashboards/va-omb-fisma-saop-summary](#get-dashboards)
-* [/api/dashboards/va-system-aa-summary](#get-dashboards)
-* [/api/dashboards/va-system-a2-summary](#get-dashboards)
-* [/api/dashboards/va-system-pl-109-reporting-summary](#get-dashboards)
-* [/api/dashboards/va-system-fisma-inventory-summary](#get-dashboards)
-* [/api/dashboards/va-system-fisma-inventory-crypto-summary](#get-dashboards)
-* [/api/dashboards/va-system-threat-risks-summary](#get-dashboards)
-* [/api/dashboards/va-system-threat-sources-details](#get-dashboards)
-* [/api/dashboards/va-system-threat-architecture-details](#get-dashboards)
+* [/api/dashboards/{endpoint}](#get-dashboards)
   
 ### POST
 * [/api/systems/{systemId}/test-results](#post-test_results)
@@ -144,6 +117,7 @@ DESCRIPTION
   EMASSER_DEBUGGING           <Set debugging on (true) or off (false) (default false)>
   EMASSER_CLI_DISPLAY_NULL    <Display null value fields - true or false (default true)>
   EMASSER_EPOCH_TO_DATETIME   <Convert epoch to data/time value - true or false (default false)>
+  EMASSER_DOWNLOAD_DIR        <Directory where exported files are saved (default eMasserDownloads)>
 
 EXAMPLES
   $ saf emasser configure
@@ -925,124 +899,6 @@ All endpoint calls utilize the same parameter values, they are:
     |--excludeInherited |BOOLEAN - If no value is specified, includes inherited data    |
     |--pageIndex        |Integer - The index of the starting page (default first page 0)|
     |--pageSize         |Integer - The number of entries per page (default 20000)       |
-
-Available commands are:
-  - Get systems status detail dashboard information
-    ```
-    $ saf emasser get dashboards status_details [-o, --orgId] <value> [options]
-    ```
-  - Get systems control compliance summary dashboard information    
-    ```
-    $ saf emasser get dashboards control_compliance_summary [-o, --orgId] <value> [options]
-    ```
-  - Get systems security control details dashboard information
-    ```
-    $ saf emasser get dashboards security_control_details [-o, --orgId] <value> [options]
-    ```
-  - Get systems assessment procedures details dashboard information
-    ```
-    $ saf emasser get dashboards assessment_procedures_details [-o, --orgId] <value> [options]
-    ```
-  - Get systems POA&Ms summary dashboard information
-    ```
-    $ saf emasser get dashboards poam_summary [-o, --orgId] <value> [options]
-    ```
-  - Get system POA&Ms details dashboard information
-    ```
-    $ saf emasser get dashboards poam_details [-o, --orgId] <value> [options]
-    ```
-  - Get artifacts summary dashboard information
-    ```
-    $ saf emasser get dashboards artifacts_summary [-o, --orgId] <value> [options]
-    ```
-  - Get artifacts details dashboard information
-    ```
-    $ saf emasser get dashboards artifacts_details [-o, --orgId] <value> [options]
-    ```
-  - Get system hardware summary dashboard information
-    ```
-    $ saf emasser get dashboards hardware_summary [-o, --orgId] <value> [options]
-    ```
-  - Get system hardware details dashboard information
-    ```
-    $ saf emasser get dashboards hardware_details [-o, --orgId] <value> [options]
-    ```
-  - Get sensor hardware summary dashboard information
-    ```
-    $ saf emasser get dashboards sensor_hardware_summary [-o, --orgId] <value> [options]
-    ```
-  - Get sensor hardware details dashboard information
-    ```
-    $ saf emasser get dashboards sensor_hardware_details [-o, --orgId] <value> [options]
-    ```
-  - Get software baseline summary dashboard information
-    ```
-    $ saf emasser get dashboards software_summary [-o, --orgId] <value> [options]
-    ```
-  - Get software baseline details dashboard information
-    ```
-    $ saf emasser get dashboards software_details [-o, --orgId] <value> [options]
-    ```
-  - Get ports and protocols summary dashboard information
-    ```
-    $ saf emasser get dashboards ports_protocols_summary [-o, --orgId] <value> [options]
-    ```
-  - Get ports and protocols details dashboard information
-    ```
-    $ saf emasser get dashboards ports_protocols_details [-o, --orgId] <value> [options]
-    ```
-  - Get CONMON integration status summary dashboard information
-    ```
-    $ saf emasser get dashboards integration_status_summary [-o, --orgId] <value> [options]
-    ```
-  - Get system associations details dashboard information
-    ```
-    $ saf emasser get dashboards associations_details [-o, --orgId] <value> [options]
-    ```
-  - Get user system assignments details dashboard information
-    ```
-    $ saf emasser get dashboards assignments_details [-o, --orgId] <value> [options]
-    ```
-  - Get user system privacy summary dashboard information
-    ```
-    $ saf emasser get dashboards privacy_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA OMB-FISMA SAOP summary dashboard information
-    ```
-    $ saf emasser get dashboards fisma_saop_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA system A&A summary dashboard information
-    ```
-    $ saf emasser get dashboards va_aa_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA system A2.0 summary dashboard information
-    ```
-    $ saf emasser get dashboards va_a2_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA System P.L. 109 reporting summary dashboard information
-    ```
-    $ saf emasser get dashboards va_pl_109_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA system FISMA inventory summary dashboard information
-    ```
-    $ saf emasser get dashboards fisma_inventory_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA system FISMA inventory summary dashboard information
-    ```
-    $ saf emasser get dashboards fisma_inventory_crypto_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA threat risk summary dashboard information
-    ```
-    $ saf emasser get dashboards va_threat_risk_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA threat source details dashboard information
-    ```
-    $ saf emasser get dashboards va_threat_source_details [-o, --orgId] <value> [options]
-    ```
-  - Get VA threat architecture details dashboard information
-    ```
-    $ saf emasser get dashboards va_threat_architecture_details [-o, --orgId] <value> [options]
-    ```
 
 [top](#api-endpoints-provided)
 

@@ -8,13 +8,13 @@ import {outputError} from '../../../utils/emasser/outputError'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetTestResults extends Command {
-  static usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [FLAGS]'
 
-  static description = 'Get test results for a specific system defined by ID (systemId)'
+  static readonly description = 'Get test results for a specific system defined by ID (systemId)'
 
-  static examples = ['<%= config.bin %> <%= command.id %> --systemId <value> [options]']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s, --systemId] <value> [options]']
 
-  static flags = {
+  static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Test Results endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
@@ -28,5 +28,14 @@ export default class EmasserGetTestResults extends Command {
     getTestResults.getSystemTestResults(flags.systemId, flags.controlAcronyms, flags.ccis, flags.latestOnly).then((response: TestResultsResponseGet) => {
       console.log(colorize(outputFormat(response)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
+  }
+
+  async catch(error: any) { // skipcq: JS-0116
+    if (error.message) {
+      this.warn(error.message)
+    } else {
+      const suggestions = 'get test_results [-h or --help]'
+      this.warn('Invalid arguments\nTry this 👇:\n\t' + suggestions)
+    }
   }
 }

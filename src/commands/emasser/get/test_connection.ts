@@ -7,13 +7,13 @@ import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {outputError} from '../../../utils/emasser/outputError'
 
 export default class EmasserGetTestConnection extends Command {
-  static usage = '<%= command.id %>'
+  static readonly usage = '<%= command.id %>'
 
-  static description = 'Test if eMASS url is set to a correct host'
+  static readonly description = 'Test if eMASSer is properly configure to a valid eMASS URL\nUse the eMASSer CLI command "saf emasser configure" to generate or update an eMASS configuration file.'
 
-  static examples = ['<%= config.bin %> <%= command.id %>']
+  static readonly examples = ['<%= config.bin %> <%= command.id %>']
 
-  static flags = {
+  static readonly flags = {
     help: Flags.help({char: 'h', description: 'Test connection to configured eMASS URL'}),
   }
 
@@ -24,5 +24,14 @@ export default class EmasserGetTestConnection extends Command {
     getTestApi.testConnection().then((response: Test) => {
       console.log(colorize(outputFormat(response)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
+  }
+
+  async catch(error: any) { // skipcq: JS-0116
+    if (error.message) {
+      this.warn(error.message)
+    } else {
+      const suggestions = 'get test_connection [-h or --help]'
+      this.warn('Invalid arguments\nTry this 👇:\n\t' + suggestions)
+    }
   }
 }

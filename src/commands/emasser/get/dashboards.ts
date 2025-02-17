@@ -35,12 +35,14 @@ import {
   CoastGuardSystemFISMAMetricsDashboardApi,
   SystemPrivacyDashboardApi,
   VAOMBFISMADashboardApi,
+  VASystemDashboardsApi,
+  CMMCAssessmentDashboardsApi,
 } from '@mitre/emass_client'
 
 const endpoint = 'dashboards'
 
 export default class EmasserGetDashboards extends Command {
-  static readonly usage = '<%= command.id %> [ARGUMENT] \n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m';
+  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS] \n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m';
 
   static readonly description = getDescriptionForEndpoint(process.argv, endpoint);
 
@@ -55,13 +57,13 @@ export default class EmasserGetDashboards extends Command {
   //       dashboard is being called, and provides the appropriate description.
   // Only args.name is used, there is, it contains the argument listed by the user, the dashboard name.
   // Example: If the command is invoked (saf emasser get dashboards status_details), args.name is set to status_details
-  static args = {
+  static readonly args = {
     name: Args.string({name: 'name', required: false, hidden: true}),
     // System Status Dashboard
-    status_details: Args.string({name: 'status_details', description: 'Get systems status detail dashboard information', required: false}),
+    status_details: Args.string({name: 'status_details', description: 'Get systems status detail dashboard information', required: false, defaultHelp: 'System Status Details'}),
     // System Terms and Conditions Dashboard
-    terms_conditions_summary: Args.string({name: 'terms_conditions_summary', description: 'Get system terms and conditions summary dashboard information', required: false}),    
-    terms_conditions_details: Args.string({name: 'terms_conditions_details', description: 'Get system terms and conditions details dashboard information', required: false}),
+    terms_conditions_summary: Args.string({name: 'terms_conditions_summary', description: 'Get system terms and conditions summary dashboard information', required: false, defaultHelp: 'System Terms and Conditions Dashboard'}),
+    terms_conditions_details: Args.string({name: 'terms_conditions_details', description: 'Get system terms and conditions details dashboard information', required: false, defaultHelp: 'System Terms and Conditions Dashboard'}),
     // System Connectivity CCSD Dashboard
     connectivity_ccsd_summary: Args.string({name: 'connectivity_ccsd_summary', description: 'Get system connectivity CCSD summary dashboard information', required: false}),
     connectivity_ccsd_details: Args.string({name: 'connectivity_ccsd_details', description: 'Get system connectivity CCSD details dashboard information', required: false}),
@@ -128,28 +130,26 @@ export default class EmasserGetDashboards extends Command {
     privacy_summary: Args.string({name: 'privacy_summary', description: 'Get system privacy summary dashboard information', required: false}),
     // VA OMB-FISMA SAOP Summary Dashboard
     fisma_saop_summary: Args.string({name: 'fisma_saop_summary', description: 'Get VA OMB-FISMA SAOP summary dashboard information', required: false}),
-    
-    
-    
-    // System A&A Summary Dashboard
+    // VA Systems Dashboards
+    va_icamp_tableau_poam_details: Args.string({name: 'va_icamp_tableau_poam_details', description: 'Get VA system ICAMP Tableau POA&M details dashboard information', required: false}),
     va_aa_summary: Args.string({name: 'va_aa_summary', description: 'Get VA system A&A summary dashboard information', required: false}),
-    // System A2.0 Summary Dashboard
     va_a2_summary: Args.string({name: 'va_a2_summary', description: 'Get VA system A2.0 summary dashboard information', required: false}),
-    // System P.L. 109 Reporting Summary Dashboard
     va_pl_109_summary: Args.string({name: 'va_pl_109_summary', description: 'Get VA System P.L. 109 reporting summary dashboard information', required: false}),
-    // FISMA Inventory Summary Dashboard
-    fisma_inventory_summary: Args.string({name: 'fisma_inventory_summary', description: 'Get VA system FISMA inventory summary dashboard information', required: false}),
-    fisma_inventory_crypto_summary: Args.string({name: 'fisma_inventory_crypto_summary', description: 'Get VA system FISMA inventory summary dashboard information', required: false}),
-    // Threat Risks Dashboard
+    va_fisma_inventory_summary: Args.string({name: 'fisma_inventory_summary', description: 'Get VA system FISMA inventory summary dashboard information', required: false}),
+    va_fisma_inventory_crypto_summary: Args.string({name: 'fisma_inventory_crypto_summary', description: 'Get VA system FISMA inventory summary dashboard information', required: false}),
     va_threat_risk_summary: Args.string({name: 'va_threat_risk_summary', description: 'Get VA threat risk summary dashboard information', required: false}),
     va_threat_source_details: Args.string({name: 'va_threat_source_details', description: 'Get VA threat source details dashboard information', required: false}),
     va_threat_architecture_details: Args.string({name: 'va_threat_architecture_details', description: 'Get VA threat architecture details dashboard information', required: false}),
+    // CMMC Assessment Dashboard
+    cmmc_status_summary: Args.string({name: 'cmmc_status_summary', description: 'Get CMMC assessment status summary dashboard information', required: false}),
+    cmmc_compliance_summary: Args.string({name: 'cmmc_compliance_summary', description: 'Get CMMC assessment requirements compliance summary dashboard information', required: false}),
+    cmmc_security_requirements_details: Args.string({name: 'cmmc_security_requirements_details', description: 'Get CMMC assessment security requirements details dashboard information', required: false}),
+    cmmc_requirement_objectives_details: Args.string({name: 'cmmc_requirement_objectives_details', description: 'Get CMMC assessment requirement objectives details dashboard information', required: false}),
   };
 
   async run(): Promise<void> { // skipcq: JS-0044
     const {args, flags} = await this.parse(EmasserGetDashboards)
     const apiCxn = new ApiConnection()
-    // const getDashboards = new DashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
 
     switch (args.name) {
       case 'status_details': {
@@ -592,81 +592,139 @@ export default class EmasserGetDashboards extends Command {
         break
       }
 
-      // case 'va_aa_summary': {
-      //   // Order is important here
-      //   getDashboards.getVaSystemAaSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
-      //     console.log(colorize(outputFormat(response)))
-      //   }).catch((error:any) => console.error(colorize(outputError(error))))
+      case 'va_icamp_tableau_poam_details': {
+        const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+        // Order is important here
+        getDashboard.getVaSystemIcampTableauPoamDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
 
-      //   break
-      // }
+        break
+      }
 
-      // case 'va_a2_summary': {
-      //   // Order is important here
-      //   getDashboards.getVaSystemA2Summary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
-      //     console.log(colorize(outputFormat(response)))
-      //   }).catch((error:any) => console.error(colorize(outputError(error))))
+      case 'va_aa_summary': {
+        const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+        // Order is important here
+        getDashboard.getVaSystemAaSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
 
-      //   break
-      // }
+        break
+      }
 
-      // case 'va_pl_109_summary': {
-      //   // Order is important here
-      //   getDashboards.getVaSystemPl109ReportingSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
-      //     console.log(colorize(outputFormat(response)))
-      //   }).catch((error:any) => console.error(colorize(outputError(error))))
+      case 'va_a2_summary': {
+        const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+        // Order is important here
+        getDashboard.getVaSystemA2Summary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
 
-      //   break
-      // }
+        break
+      }
 
-      // case 'fisma_inventory_summary': {
-      //   // Order is important here
-      //   getDashboards.getVaSystemFismaInvetorySummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
-      //     console.log(colorize(outputFormat(response)))
-      //   }).catch((error:any) => console.error(colorize(outputError(error))))
+      case 'va_pl_109_summary': {
+        const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+        // Order is important here
+        getDashboard.getVaSystemPl109ReportingSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
 
-      //   break
-      // }
+        break
+      }
 
-      // case 'fisma_inventory_crypto_summary': {
-      //   // Order is important here
-      //   getDashboards.getVaSystemFismaInvetoryCryptoSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
-      //     console.log(colorize(outputFormat(response)))
-      //   }).catch((error:any) => console.error(colorize(outputError(error))))
+      case 'va_fisma_inventory_summary': {
+        const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+        // Order is important here
+        getDashboard.getVaSystemFismaInvetorySummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
 
-      //   break
-      // }
+        break
+      }
 
-      // case 'va_threat_risk_summary': {
-      //   // Order is important here
-      //   getDashboards.getVaSystemThreatRiskSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
-      //     console.log(colorize(outputFormat(response)))
-      //   }).catch((error:any) => console.error(colorize(outputError(error))))
+      case 'va_fisma_inventory_crypto_summary': {
+        const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+        // Order is important here
+        getDashboard.getVaSystemFismaInvetoryCryptoSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
 
-      //   break
-      // }
+        break
+      }
 
-      // case 'va_threat_source_details': {
-      //   // Order is important here
-      //   getDashboards.getVaSystemThreatSourceDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
-      //     console.log(colorize(outputFormat(response)))
-      //   }).catch((error:any) => console.error(colorize(outputError(error))))
+      case 'va_threat_risk_summary': {
+        const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+        // Order is important here
+        getDashboard.getVaSystemThreatRiskSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
 
-      //   break
-      // }
+        break
+      }
 
-      // case 'va_threat_architecture_details': {
-      //   // Order is important here
-      //   getDashboards.getVaSystemThreatArchitectureDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
-      //     console.log(colorize(outputFormat(response)))
-      //   }).catch((error:any) => console.error(colorize(outputError(error))))
+      case 'va_threat_source_details': {
+        const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+        // Order is important here
+        getDashboard.getVaSystemThreatSourceDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
 
-      //   break
-      // }
+        break
+      }
 
-      // default: {
-      //   throw this.error
-      // }
+      case 'va_threat_architecture_details': {
+        const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+        // Order is important here
+        getDashboard.getVaSystemThreatArchitectureDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
+
+        break
+      }
+
+      case 'cmmc_status_summary': {
+        const getDashboard = new CMMCAssessmentDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+        // Order is important here
+        getDashboard.getCmmcAssessmentStatusSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
+
+        break
+      }
+
+      case 'cmmc_compliance_summary': {
+        const getDashboard = new CMMCAssessmentDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+        // Order is important here
+        getDashboard.getCmmcAssessmentRequirementsComplianceSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
+
+        break
+      }
+
+      case 'cmmc_security_requirements_details': {
+        const getDashboard = new CMMCAssessmentDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+        // Order is important here
+        getDashboard.getCmmcAssessmentSecurityRequirementsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
+
+        break
+      }
+
+      case 'cmmc_requirement_objectives_details': {
+        const getDashboard = new CMMCAssessmentDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+        // Order is important here
+        getDashboard.getCmmcAssessmentRequirementObjectivesDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+          console.log(colorize(outputFormat(response)))
+        }).catch((error:any) => console.error(colorize(outputError(error))))
+
+        break
+      }
+
+      default: {
+        throw this.error
+      }
     }
   }
 
@@ -677,5 +735,24 @@ export default class EmasserGetDashboards extends Command {
       const suggestions = 'get dashboards [-h or --help] for available arguments'
       this.warn('Invalid arguments\nTry this:\n\t' + suggestions)
     }
+  }
+
+  // Override showHelp to customize argument grouping
+  // This is the help message that is displayed when the user runs the command with the --help flag
+  // Not working because we're overriding the run method in the package.json to properly format the output
+  async showHelp() {
+    this.log(`
+USAGE
+  $ saf emasser get dashboards [ARGUMENT]
+  NOTE: see EXAMPLES for argument case format
+
+ARGUMENTS
+  System Status Dashboard:
+    status_details    Get systems status detail dashboard information
+
+  System Terms/Conditions Dashboards:
+    terms_conditions_summary  Get system terms and conditions summary dashboard information
+    terms_conditions_details  Get system terms and conditions details dashboard information
+    `)
   }
 }

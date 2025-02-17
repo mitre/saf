@@ -8,11 +8,11 @@ import {outputError} from '../../../utils/emasser/outputError'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetControls extends Command {
-  static readonly usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [FLAGS]'
 
   static readonly description = 'Get system Security Control information for both the Implementation Plan and Risk Assessment'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> --systemId <value> [option]']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s, --systemId] <value> [option]']
 
   static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Controls endpoint'}),

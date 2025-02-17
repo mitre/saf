@@ -15,7 +15,7 @@ import {FlagOptions,
 const endpoint = 'artifacts'
 
 export default class EmasserGetArtifacts extends Command {
-  static readonly usage = '<%= command.id %> [ARGUMENT] \n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m';
+  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m';
 
   static readonly description = getDescriptionForEndpoint(process.argv, endpoint);
 
@@ -51,7 +51,7 @@ export default class EmasserGetArtifacts extends Command {
       // Order is important here
       getArtifactsExport.getSystemArtifactsExport(flags.systemId, flags.filename, flags.compress).then((response: any) => {
         const fileName = response.config.url.split('=')[1]
-        // Zip and compress file date is of type of string output to download directory
+        // Zip and compress file data is of type of string output to download directory
         try {
           if (typeof response.data === 'string') {
             const conf = new ApiConfig()

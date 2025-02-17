@@ -14,7 +14,7 @@ import {FlagOptions,
 const endpoint = 'workflow_instances'
 
 export default class EmasserGetWorkflowInstances extends Command {
-  static usage = '<%= command.id %> [ARGUMENT] \n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m';
+  static usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m';
 
   static description = getDescriptionForEndpoint(process.argv, endpoint);
 
@@ -57,10 +57,10 @@ export default class EmasserGetWorkflowInstances extends Command {
 
   async catch(error: any) { // skipcq: JS-0116
     if (error.message) {
-      this.error(error)
+      this.warn(error)
     } else {
       const suggestions = 'get workflow_instances [-h or --help]\n\tget workflow_instances all\n\tget workflow_instances byInstanceId'
-      this.warn('Invalid arguments\nTry this:\n\t' + suggestions)
+      this.warn('Invalid arguments\nTry this 👇:\n\t' + suggestions)
     }
   }
 }

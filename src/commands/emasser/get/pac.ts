@@ -8,13 +8,13 @@ import {outputError} from '../../../utils/emasser/outputError'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetPac extends Command {
-  static usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [FLAG]'
 
-  static description = 'View one or many Package Approval Chain (PAC) in a system specified system ID'
+  static readonly description = 'View one or many Package Approval Chain (PAC) in a system specified system ID'
 
-  static examples = ['<%= config.bin %> <%= command.id %> --systemId <value>']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s, --systemId] <value>']
 
-  static flags = {
+  static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET PAC endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
@@ -28,5 +28,14 @@ export default class EmasserGetPac extends Command {
     getPac.getSystemPac(flags.systemId).then((response: PacResponseGet) => {
       console.log(colorize(outputFormat(response)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
+  }
+
+  async catch(error: any) { // skipcq: JS-0116
+    if (error.message) {
+      this.warn(error.message)
+    } else {
+      const suggestions = 'get pac [-h or --help]'
+      this.warn('Invalid arguments\nTry this:\n\t' + suggestions)
+    }
   }
 }
