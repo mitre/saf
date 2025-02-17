@@ -48,7 +48,7 @@ export class ApiConfig {
 
     // Option Environment Variable
     // The userUid is required by some eMASS instances for actionable requests (post,put,delete)
-    this.userUid = this.getRequiredEnv('EMASSER_USER_UID')
+    this.userUid = this.getOptionalEnv('EMASSER_USER_UID', '')
     this.port = this.getOptionalEnv('EMASSER_PORT', 443)
     this.sslVerify = this.getOptionalEnv('EMASSER_REJECT_UNAUTHORIZED', false)
     this.reqCert = this.getOptionalEnv('EMASSER_REQUEST_CERT', false)
@@ -73,6 +73,8 @@ export class ApiConfig {
 
       process.exit(0)
     }
+
+    // console.log(`eMASSer Configuration: ${JSON.stringify(this, null, 2)}`)
   }
 
   getRequiredEnv(key: string): string | any {

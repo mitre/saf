@@ -283,7 +283,7 @@ export default class EmasserPutControls extends Command {
 
   static description = 'Update Security Control information of a system for both the Implementation Plan and Risk Assessment.'
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--controlsFile]',
+  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f, --dataFile]',
     'The input file should be a well formed JSON containing the Security Control information based on defined business rules.',
     'Required JSON parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('controls-required'), null, 2)),
@@ -305,10 +305,10 @@ export default class EmasserPutControls extends Command {
     const requestBodyArray: Controls[] = []
 
     // Check if a Security Control information json file was provided
-    if (fs.existsSync(flags.controlFile)) {
+    if (fs.existsSync(flags.dataFile)) {
       let data: any
       try {
-        data = JSON.parse(await readFile(flags.controlFile, 'utf8'))
+        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
       } catch (error: any) {
         if (error.code === 'ENOENT') {
           console.log('Security Control information JSON file not found!')
@@ -332,7 +332,7 @@ export default class EmasserPutControls extends Command {
         requestBodyArray.push(generateBodyObj(dataObject))
       }
     } else {
-      console.error('Invalid or Security Control information JSON file not found on the provided directory:', flags.controlFile)
+      console.error('Invalid or Security Control information JSON file not found on the provided directory:', flags.dataFile)
       process.exit(1)
     }
 

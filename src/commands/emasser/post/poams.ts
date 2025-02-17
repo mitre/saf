@@ -282,7 +282,7 @@ export default class EmasserPostPoams extends Command {
 
   static description = 'Add a Plan of Action and Milestones (POA&M) into a systems.'
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--poamFile]',
+  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing the POA&M information based on defined business rules.',
     'Required JSON parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('poams-post-required'), null, 2)),
@@ -292,7 +292,7 @@ export default class EmasserPostPoams extends Command {
     colorize(JSON.stringify(getJsonExamples('poams-post-put-optional'), null, 2))]
 
   static flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) a Plan of Action and Milestones (POA&M) item(s) in a system. See emasser Features (emasserFeatures.md) for additional information.'}),
+    help: Flags.help({char: 'h', description: 'Post (add) a Plan of Action and Milestones (POA&M) item(s) in a system. See eMASSer Features for additional information.'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
@@ -304,10 +304,10 @@ export default class EmasserPostPoams extends Command {
     const requestBodyArray: Poams[] = []
 
     // Check if a POA&Ms json file was provided
-    if (fs.existsSync(flags.poamFile)) {
+    if (fs.existsSync(flags.dataFile)) {
       let data: any
       try {
-        data = JSON.parse(await readFile(flags.poamFile, 'utf8'))
+        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
       } catch (error: any) {
         if (error.code === 'ENOENT') {
           console.log('POA&Ms JSON file not found!')
@@ -331,12 +331,22 @@ export default class EmasserPostPoams extends Command {
         requestBodyArray.push(generateBodyObj(dataObject))
       }
     } else {
-      console.error('Invalid or POA&M JSON file not found on the provided directory:', flags.poamFile)
+      console.error('Invalid or POA&M JSON file not found on the provided directory:', flags.dataFile)
       process.exit(1)
     }
 
     addPoam.addPoamBySystemId(flags.systemId, requestBodyArray).then((response: PoamResponsePostPutDelete) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
+  }
+
+  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+    // If error message is for missing flags, display what fields
+    // are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('with --help', 'with: \x1B[93memasser post poams -h or --help\x1B[0m'))
+    } else {
+      this.warn(err)
+    }
   }
 }

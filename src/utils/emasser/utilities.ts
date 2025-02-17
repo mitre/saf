@@ -55,11 +55,12 @@ export interface FlagOptions {
   pageSize?: OptionFlag<number|undefined>;
   input?: OptionFlag<string[]>;
   fileName?: OptionFlag<string[]>;
-  poamFile?: OptionFlag<string>;
-  controlFile?: OptionFlag<string>;
-  cloudResourceFile?: OptionFlag<string>;
-  statiCodeScanFile?: OptionFlag<string>;
-  containerCodeScanFile?: OptionFlag<string>;
+  dataFile?: OptionFlag<string>;
+  // poamFile?: OptionFlag<string>;
+  // controlFile?: OptionFlag<string>;
+  // cloudResourceFile?: OptionFlag<string>;
+  // statiCodeScanFile?: OptionFlag<string>;
+  // containerCodeScanFile?: OptionFlag<string>;
   type?: OptionFlag<string|any>;
   category?: OptionFlag<string|any>;
   refPageNumber?: OptionFlag<string|undefined>;
@@ -117,7 +118,6 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
               roleCategory: Flags.string({char: 'c', description: 'Filter on role category', options: ['CAC', 'PAC', 'Other'], required: true}),
               role: Flags.string({char: 'r', description: 'Accepts single value from options available at base system-roles endpoint e.g., SCA', required: true}),
               policy: Flags.string({char: 'p', description: 'Filter on policy', options: ['diacap', 'rmf', 'reporting'], required: false}),
-              includeDecommissioned: Flags.boolean({char: 'D', description: 'Boolean - include decommissioned systems', allowNo: true, required: false}),
             }
           }
 
@@ -132,28 +132,6 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           break
         }
 
-        case 'cac': {
-          flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
-          }
-          break
-        }
-
-        case 'pac': {
-          flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-          }
-          break
-        }
-
-        case 'cmmc': {
-          flagObj = {
-            sinceDate: Flags.string({char: 'd', description: 'The CMMC date. Unix date format', required: true}),
-          }
-          break
-        }
-
         case 'test_results': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
@@ -161,15 +139,6 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             assessmentProcedures: Flags.string({char: 'p', description: 'The system Security Control Assessment Procedure e.g "AC-1.1,AC-1.2', required: false}),
             ccis: Flags.string({char: 'c', description: 'The system CCIS string numerical value', required: false}),
             latestOnly: Flags.boolean({char: 'L', description: 'Boolean - Filter on latest only', allowNo: true, required: false}),
-          }
-          break
-        }
-
-        case 'workflow_definitions': {
-          flagObj = {
-            includeInactive: Flags.boolean({char: 'I', description: 'Boolean - Include inactive workflows', allowNo: true, required: false}),
-            registrationType: Flags.string({char: 'r', description: 'The registration type - must be a valid type',
-              options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false}),
           }
           break
         }
@@ -189,6 +158,25 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             flagObj = {
               systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
               poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
+            }
+          }
+
+          break
+        }
+
+        case 'milestones': {
+          if (args.argument === 'byPoamId') {
+            flagObj = {
+              systemId: Flags.integer({char: 's', description: 'Unique system identifier', required: true}),
+              poamId: Flags.integer({char: 'p', description: 'Unique poam identifier', required: true}),
+              scheduledCompletionDateStart: Flags.string({char: 't', description: 'Unix time format (e.g. 1499644800)', required: false}),
+              scheduledCompletionDateEnd: Flags.string({char: 'c', description: 'Unix time format (e.g. 1499990400)', required: false}),
+            }
+          } else if (args.argument === 'byMilestoneId') {
+            flagObj = {
+              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+              poamId: Flags.integer({char: 'p', description: 'The POAM identification number', required: true}),
+              milestoneId: Flags.integer({char: 'm', description: 'Unique milestone identifier', required: true}),
             }
           }
 
@@ -217,22 +205,37 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           break
         }
 
-        case 'milestones': {
-          if (args.argument === 'byPoamId') {
-            flagObj = {
-              systemId: Flags.integer({char: 's', description: 'Unique system identifier', required: true}),
-              poamId: Flags.integer({char: 'p', description: 'Unique poam identifier', required: true}),
-              scheduledCompletionDateStart: Flags.string({char: 't', description: 'Unix time format (e.g. 1499644800)', required: false}),
-              scheduledCompletionDateEnd: Flags.string({char: 'c', description: 'Unix time format (e.g. 1499990400)', required: false}),
-            }
-          } else if (args.argument === 'byMilestoneId') {
-            flagObj = {
-              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-              poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
-              milestoneId: Flags.integer({char: 'm', description: 'Unique milestone identifier', required: true}),
-            }
+        case 'cac': {
+          flagObj = {
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+            controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
           }
+          break
+        }
 
+        case 'pac': {
+          flagObj = {
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+          }
+          break
+        }
+
+        case 'hardware':
+        case 'software': {
+          flagObj = {
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+            pageIndex: Flags.integer({char: 'i', description: 'The index of the starting page (default first page 0)', required: false}),
+            pageSize: Flags.integer({char: 'S', description: 'The number of entries per page (default 20000)', required: false}),
+          }
+          break
+        }
+
+        case 'workflow_definitions': {
+          flagObj = {
+            includeInactive: Flags.boolean({char: 'I', description: 'Boolean - Include inactive workflows', allowNo: true, required: false}),
+            registrationType: Flags.string({char: 'r', description: 'The registration type - must be a valid type',
+              options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false}),
+          }
           break
         }
 
@@ -241,7 +244,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             flagObj = {
               includeComments: Flags.boolean({char: 'C', description: 'Boolean - Include transition comments', allowNo: true, required: false}),
               includeDecommissionSystems: Flags.boolean({char: 'D', description: 'Boolean - Include decommissioned systems', allowNo: true, required: false}),
-              pageIndex: Flags.integer({char: 'i', description: 'The page number to query', required: false}),
+              pageIndex: Flags.integer({char: 'i', description: 'The page number to query (default first page 0)', required: false}),
               sinceDate: Flags.string({char: 'd', description: 'The Workflow Instance date. Unix date format', required: false}),
               status: Flags.string({char: 's', description: 'The Workflow status - must be a valid status. if not provided includes all systems', options: ['active', 'inactive', 'all'], required: false}),
             }
@@ -251,6 +254,13 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             }
           }
 
+          break
+        }
+
+        case 'cmmc': {
+          flagObj = {
+            sinceDate: Flags.string({char: 'd', description: 'The CMMC date. Unix date format', required: true}),
+          }
           break
         }
 
@@ -282,6 +292,14 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           }
           break
         }
+
+        // case 'poams': {
+        //   flagObj = {
+        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+        //     poamFile: Flags.string({char: 'f', description: 'A well formed JSON file with the POA&M(s) to add. It can ba a single object or an array of objects.', required: true}),
+        //   }
+        //   break
+        // }
 
         case 'milestones': {
           flagObj = {
@@ -325,37 +343,42 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           break
         }
 
-        case 'poams': {
-          flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            poamFile: Flags.string({char: 'f', description: 'A well formed JSON file with the POA&M(s) to add. It can ba a single object or an array of objects.', required: true}),
-          }
-          break
-        }
-
-        case 'cloud_resources': {
-          flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            cloudResourceFile: Flags.string({char: 'f', description: 'A well formed JSON file with the cloud resources and their scan results. It can ba a single object or an array of objects.', required: true}),
-          }
-          break
-        }
-
-        case 'static_code_scans': {
-          flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            statiCodeScanFile: Flags.string({char: 'f', description: 'A well formed JSON file with application scan findings. It can ba a single object or an array of objects.', required: true}),
-          }
-          break
-        }
-
+        case 'poams':
+        case 'hardware':
+        case 'software':
+        case 'cloud_resources':
+        case 'static_code_scans':
         case 'container_scans': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            containerCodeScanFile: Flags.string({char: 'f', description: 'A well formed JSON file with container scan results. It can ba a single object or an array of objects.', required: true}),
+            dataFile: Flags.string({char: 'f', description: 'A well formed JSON file containing the data to add. It can ba a single object or an array of objects.', required: true}),
           }
           break
         }
+
+        // case 'cloud_resources': {
+        //   flagObj = {
+        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+        //     cloudResourceFile: Flags.string({char: 'f', description: 'A well formed JSON file with the cloud resources and their scan results. It can ba a single object or an array of objects.', required: true}),
+        //   }
+        //   break
+        // }
+
+        // case 'static_code_scans': {
+        //   flagObj = {
+        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+        //     statiCodeScanFile: Flags.string({char: 'f', description: 'A well formed JSON file with application scan findings. It can ba a single object or an array of objects.', required: true}),
+        //   }
+        //   break
+        // }
+
+        // case 'container_scans': {
+        //   flagObj = {
+        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+        //     containerCodeScanFile: Flags.string({char: 'f', description: 'A well formed JSON file with container scan results. It can ba a single object or an array of objects.', required: true}),
+        //   }
+        //   break
+        // }
       }
 
       break
@@ -392,21 +415,30 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           break
         }
 
-        case 'poams': {
+        case 'poams':
+        case 'controls': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            poamFile: Flags.string({char: 'f', description: 'A well formed JSON file with the POA&M(s) to updated the specified system. It can ba a single object or an array of objects.', required: true}),
+            dataFile: Flags.string({char: 'f', description: 'A well formed JSON file containing the data to be updated. It can ba a single object or an array of objects.', required: true}),
           }
           break
         }
 
-        case 'controls': {
-          flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            controlFile: Flags.string({char: 'f', description: 'A well formed JSON file with the Security Control information to updated the specified system. It can ba a single object or an array of objects.', required: true}),
-          }
-          break
-        }
+        // case 'poams': {
+        //   flagObj = {
+        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+        //     poamFile: Flags.string({char: 'f', description: 'A well formed JSON file with the POA&M(s) to updated the specified system. It can ba a single object or an array of objects.', required: true}),
+        //   }
+        //   break
+        // }
+
+        // case 'controls': {
+        //   flagObj = {
+        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+        //     controlFile: Flags.string({char: 'f', description: 'A well formed JSON file with the Security Control information to updated the specified system. It can ba a single object or an array of objects.', required: true}),
+        //   }
+        //   break
+        // }
       }
 
       break
@@ -417,7 +449,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'artifacts': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            fileName: Flags.string({char: 'F', description: 'The artifact file name to remove, can have multiple (space separated)', required: true, multiple: true}),
+            fileName: Flags.string({char: 'f', description: 'The artifact file name to remove, can have multiple (space separated)', required: true, multiple: true}),
           }
           break
         }

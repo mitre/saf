@@ -295,7 +295,7 @@ export default class EmasserPutPoams extends Command {
 
   static description = 'Update a Plan of Action and Milestones (POA&M) into a systems.'
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--poamFile]',
+  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing the POA&M information based on defined business rules.',
     'Required JSON parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('poams-put-required'), null, 2)),
@@ -317,10 +317,10 @@ export default class EmasserPutPoams extends Command {
     const requestBodyArray: Poams[] = []
 
     // Check if a POA&Ms json file was provided
-    if (fs.existsSync(flags.poamFile)) {
+    if (fs.existsSync(flags.dataFile)) {
       let data: any
       try {
-        data = JSON.parse(await readFile(flags.poamFile, 'utf8'))
+        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
       } catch (error: any) {
         if (error.code === 'ENOENT') {
           console.log('POA&Ms JSON file not found!')
@@ -344,7 +344,7 @@ export default class EmasserPutPoams extends Command {
         requestBodyArray.push(generateBodyObj(dataObject))
       }
     } else {
-      console.error('Invalid or POA&M JSON file not found on the provided directory:', flags.poamFile)
+      console.error('Invalid or POA&M JSON file not found on the provided directory:', flags.dataFile)
       process.exit(1)
     }
 

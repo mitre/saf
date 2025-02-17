@@ -14,13 +14,13 @@ import {FlagOptions,
 const endpoint = 'workflow_instances'
 
 export default class EmasserGetWorkflowInstances extends Command {
-  static usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m';
+  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m'
 
-  static description = getDescriptionForEndpoint(process.argv, endpoint);
+  static readonly description = getDescriptionForEndpoint(process.argv, endpoint)
 
-  static examples = getExamplesForEndpoint(process.argv);
+  static readonly examples = getExamplesForEndpoint(process.argv)
 
-  static flags = {
+  static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Workflow Instances endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }

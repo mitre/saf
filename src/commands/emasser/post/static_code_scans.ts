@@ -92,9 +92,9 @@ function addApplicationFindingsFields(bodyObject: StaticCodeRequest, dataObj: St
 export default class EmasserPostStaticCodeScans extends Command {
   static usage = '<%= command.id %> [options]'
 
-  static description = "upload application scan findings into a system's assets module"
+  static description = "Upload application scan findings into a system's assets module"
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--cloudResourceFile]',
+  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing application scan findings.',
     'Required "application" JSON object parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('scan_findings-application'), null, 2)),
@@ -116,10 +116,10 @@ export default class EmasserPostStaticCodeScans extends Command {
     const requestBodyArray: StaticCodeRequest[] = []
 
     // Check if a Cloud Resource json file was provided
-    if (fs.existsSync(flags.statiCodeScanFile)) {
+    if (fs.existsSync(flags.dataFile)) {
       let data: any
       try {
-        data = JSON.parse(await readFile(flags.statiCodeScanFile, 'utf8'))
+        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
       } catch (error: any) {
         if (error.code === 'ENOENT') {
           console.log('Scan Findings JSON file not found!')
@@ -157,7 +157,7 @@ export default class EmasserPostStaticCodeScans extends Command {
         }
       }
     } else {
-      console.error('Invalid or Scan Findings JSON file not found on the provided directory:', flags.statiCodeScanFile)
+      console.error('Invalid or Scan Findings JSON file not found on the provided directory:', flags.dataFile)
       process.exit(1)
     }
 

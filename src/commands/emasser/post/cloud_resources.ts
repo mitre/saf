@@ -177,7 +177,7 @@ export default class EmasserPostCloudResources extends Command {
 
   static description = 'Add a cloud resource and their scan results in the assets module for a system'
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--cloudResourceFile]',
+  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing the cloud resources and their scan results information.',
     'Required JSON parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('cloud_resources-required'), null, 2)),
@@ -197,10 +197,10 @@ export default class EmasserPostCloudResources extends Command {
     const requestBodyArray: CloudResource[] = []
 
     // Check if a Cloud Resource json file was provided
-    if (fs.existsSync(flags.cloudResourceFile)) {
+    if (fs.existsSync(flags.dataFile)) {
       let data: any
       try {
-        data = JSON.parse(await readFile(flags.cloudResourceFile, 'utf8'))
+        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
       } catch (error: any) {
         if (error.code === 'ENOENT') {
           console.log('Cloud Resource JSON file not found!')
@@ -250,7 +250,7 @@ export default class EmasserPostCloudResources extends Command {
         }
       }
     } else {
-      console.error('Invalid or Cloud Resource JSON file not found on the provided directory:', flags.cloudResourceFile)
+      console.error('Invalid or Cloud Resource JSON file not found on the provided directory:', flags.dataFile)
       process.exit(1)
     }
 
