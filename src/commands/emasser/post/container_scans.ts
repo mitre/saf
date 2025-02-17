@@ -186,7 +186,7 @@ export default class EmasserContainerScans extends Command {
 
   static description = 'Upload containers and their scan results in the assets module for a system'
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--containerCodeScanFile]',
+  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing the container scan results information.',
     'Required JSON parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('container_scans-required'), null, 2)),
@@ -205,10 +205,10 @@ export default class EmasserContainerScans extends Command {
     const requestBodyArray: ContainerResource[] = []
 
     // Check if a Cloud Resource json file was provided
-    if (fs.existsSync(flags.containerCodeScanFile)) {
+    if (fs.existsSync(flags.dataFile)) {
       let data: any
       try {
-        data = JSON.parse(await readFile(flags.containerCodeScanFile, 'utf8'))
+        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
       } catch (error: any) {
         if (error.code === 'ENOENT') {
           console.log('Container Scan Results JSON file not found!')
@@ -256,7 +256,7 @@ export default class EmasserContainerScans extends Command {
         }
       }
     } else {
-      console.error('Invalid or Container Scan Results JSON file not found on the provided directory:', flags.containerCodeScanFile)
+      console.error('Invalid or Container Scan Results JSON file not found on the provided directory:', flags.dataFile)
       process.exit(1)
     }
 

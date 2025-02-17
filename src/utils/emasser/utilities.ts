@@ -1,6 +1,8 @@
 import _ from 'lodash'
 import {Flags} from '@oclif/core'
 import {BooleanFlag, OptionFlag} from '@oclif/core/interfaces'
+import * as fs from 'fs'
+import path from 'path'
 
 interface CliArgs {
   requestType: string;
@@ -21,21 +23,22 @@ export interface FlagOptions {
   excludeInherited?: BooleanFlag<boolean|undefined>;
   includeInactive?: BooleanFlag<boolean|undefined>;
   isTemplate?: BooleanFlag<boolean>;
-  includePackage?: BooleanFlag<boolean|undefined>;
   includeDitprMetrics?: BooleanFlag<boolean|undefined>;
   includeDecommissioned?: BooleanFlag<boolean|undefined>;
   reportsForScorecard?: BooleanFlag<boolean|undefined>;
-  acronyms?: BooleanFlag<boolean|undefined>;
   latestOnly?: BooleanFlag<boolean|undefined>;
   systemOnly?: BooleanFlag<boolean|undefined>;
   compress?: BooleanFlag<boolean|undefined>;
+  printToStdOut?: BooleanFlag<boolean|undefined>;
   policy?: OptionFlag<string|undefined>;
   registrationType?: OptionFlag<string|undefined>;
   ditprId?: OptionFlag<string|undefined>;
   coamsId?: OptionFlag<string|undefined>;
   roleCategory?: OptionFlag<string>;
   role?: OptionFlag<string>;
+  acronyms?: OptionFlag<string|undefined>;
   controlAcronyms?: OptionFlag<string|undefined>;
+  assessmentProcedures?: OptionFlag<string|undefined>;
   ccis?: OptionFlag<string|undefined>;
   sinceDate?: OptionFlag<string|any>;
   scheduledCompletionDateStart?: OptionFlag<string|undefined>;
@@ -52,11 +55,12 @@ export interface FlagOptions {
   pageSize?: OptionFlag<number|undefined>;
   input?: OptionFlag<string[]>;
   fileName?: OptionFlag<string[]>;
-  poamFile?: OptionFlag<string>;
-  controlFile?: OptionFlag<string>;
-  cloudResourceFile?: OptionFlag<string>;
-  statiCodeScanFile?: OptionFlag<string>;
-  containerCodeScanFile?: OptionFlag<string>;
+  dataFile?: OptionFlag<string>;
+  // poamFile?: OptionFlag<string>;
+  // controlFile?: OptionFlag<string>;
+  // cloudResourceFile?: OptionFlag<string>;
+  // statiCodeScanFile?: OptionFlag<string>;
+  // containerCodeScanFile?: OptionFlag<string>;
   type?: OptionFlag<string|any>;
   category?: OptionFlag<string|any>;
   refPageNumber?: OptionFlag<string|undefined>;
@@ -89,7 +93,6 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'system': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            includePackage: Flags.boolean({char: 'I', description: 'Boolean - include system packages', allowNo: true, required: false}),
             policy: Flags.string({char: 'p', description: 'Filter on policy', required: false, options: ['diacap', 'rmf', 'reporting']}),
           }
           break
@@ -102,7 +105,6 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             ditprId: Flags.string({char: 't', description: 'DoD Information Technology (IT) Portfolio Repository (DITPR) string Id', required: false}),
             coamsId: Flags.string({char: 'c', description: 'Cyber Operational Attributes Management System (COAMS) string Id', required: false}),
             policy: Flags.string({char: 'p', description: 'Filter on policy', options: ['diacap', 'rmf', 'reporting'], required: false}),
-            includePackage: Flags.boolean({char: 'I', description: 'Boolean - include system packages', allowNo: true, required: false}),
             includeDitprMetrics: Flags.boolean({char: 'M', description: 'Boolean - include DoD Information Technology metrics', allowNo: true, required: false}),
             includeDecommissioned: Flags.boolean({char: 'D', description: 'Boolean - include decommissioned systems', allowNo: true, required: false}),
             reportsForScorecard: Flags.boolean({char: 'S', description: 'Boolean - include score card', allowNo: true, required: false}),
@@ -114,10 +116,8 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           if (args.argument === 'byCategory') {
             flagObj = {
               roleCategory: Flags.string({char: 'c', description: 'Filter on role category', options: ['CAC', 'PAC', 'Other'], required: true}),
-              role: Flags.string({char: 'r', description: 'Filter on role type',
-                options: ['AO', 'Auditor', 'Artifact Manager', 'C&A Team', 'IAO', 'ISSO', 'PM/IAM', 'SCA', 'User Rep', 'Validator'], required: true}),
+              role: Flags.string({char: 'r', description: 'Accepts single value from options available at base system-roles endpoint e.g., SCA', required: true}),
               policy: Flags.string({char: 'p', description: 'Filter on policy', options: ['diacap', 'rmf', 'reporting'], required: false}),
-              includeDecommissioned: Flags.boolean({char: 'D', description: 'Boolean - include decommissioned systems', allowNo: true, required: false}),
             }
           }
 
@@ -127,8 +127,81 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'controls': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            acronyms: Flags.boolean({char: 'A', description: 'The system acronym(s) e.g "AC-1, AC-2" - if not provided all controls for systemId are returned', allowNo: true, required: false}),
+            acronyms: Flags.string({char: 'A', description: 'The system acronym(s) e.g "AC-1, AC-2" - if not provided all controls for systemId are returned', required: false}),
           }
+          break
+        }
+
+        case 'test_results': {
+          flagObj = {
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+            controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
+            assessmentProcedures: Flags.string({char: 'p', description: 'The system Security Control Assessment Procedure e.g "AC-1.1,AC-1.2', required: false}),
+            ccis: Flags.string({char: 'c', description: 'The system CCIS string numerical value', required: false}),
+            latestOnly: Flags.boolean({char: 'L', description: 'Boolean - Filter on latest only', allowNo: true, required: false}),
+          }
+          break
+        }
+
+        case 'poams': {
+          if (args.argument === 'forSystem') {
+            flagObj = {
+              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+              scheduledCompletionDateStart: Flags.string({char: 'd', description: 'The scheduled completion start date', required: false}),
+              scheduledCompletionDateEnd: Flags.string({char: 'e', description: 'The scheduled completion end date', required: false}),
+              controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
+              assessmentProcedures: Flags.string({char: 'p', description: 'The system Security Control Assessment Procedure e.g "AC-1.1,AC-1.2', required: false}),
+              ccis: Flags.string({char: 'c', description: 'The system CCIS string numerical value', required: false}),
+              systemOnly: Flags.boolean({char: 'Y', description: 'Boolean - Return only systems', allowNo: true, required: false}),
+            }
+          } else if (args.argument === 'byPoamId') {
+            flagObj = {
+              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+              poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
+            }
+          }
+
+          break
+        }
+
+        case 'milestones': {
+          if (args.argument === 'byPoamId') {
+            flagObj = {
+              systemId: Flags.integer({char: 's', description: 'Unique system identifier', required: true}),
+              poamId: Flags.integer({char: 'p', description: 'Unique poam identifier', required: true}),
+              scheduledCompletionDateStart: Flags.string({char: 't', description: 'Unix time format (e.g. 1499644800)', required: false}),
+              scheduledCompletionDateEnd: Flags.string({char: 'c', description: 'Unix time format (e.g. 1499990400)', required: false}),
+            }
+          } else if (args.argument === 'byMilestoneId') {
+            flagObj = {
+              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+              poamId: Flags.integer({char: 'p', description: 'The POAM identification number', required: true}),
+              milestoneId: Flags.integer({char: 'm', description: 'Unique milestone identifier', required: true}),
+            }
+          }
+
+          break
+        }
+
+        case 'artifacts': {
+          if (args.argument === 'forSystem') {
+            flagObj = {
+              systemId: Flags.integer({char: 's', description: 'Unique system identifier', required: true}),
+              filename: Flags.string({char: 'f', description: 'The artifact file name', required: false}),
+              controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
+              assessmentProcedures: Flags.string({char: 'p', description: 'The system Security Control Assessment Procedure e.g "AC-1.1,AC-1.2', required: false}),
+              ccis: Flags.string({char: 'c', description: 'The system CCIS string numerical value', required: false}),
+              systemOnly: Flags.boolean({char: 'y', description: 'Boolean - Return only systems', allowNo: true, required: false}),
+            }
+          } else if (args.argument === 'export') {
+            flagObj = {
+              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+              filename: Flags.string({char: 'f', description: 'The artifact file name', required: true}),
+              compress: Flags.boolean({char: 'C', description: 'Boolean - Compress true or false', allowNo: true, required: false}),
+              printToStdOut: Flags.boolean({char: 'P', description: 'Boolean - Print to standard output', allowNo: true, required: false}),
+            }
+          }
+
           break
         }
 
@@ -147,88 +220,22 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           break
         }
 
-        case 'cmmc': {
-          flagObj = {
-            sinceDate: Flags.string({char: 'd', description: 'The CMMC date. Unix date format', required: true}),
-          }
-          break
-        }
-
-        case 'test_results': {
+        case 'hardware':
+        case 'software': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
-            ccis: Flags.string({char: 'c', description: 'The system CCIS string numerical value', required: false}),
-            latestOnly: Flags.boolean({char: 'L', description: 'Boolean - Filter on latest only', allowNo: true, required: false}),
+            pageIndex: Flags.integer({char: 'i', description: 'The index of the starting page (default first page 0)', required: false}),
+            pageSize: Flags.integer({char: 'S', description: 'The number of entries per page (default 20000)', required: false}),
           }
           break
         }
 
         case 'workflow_definitions': {
           flagObj = {
-            includeInactive: Flags.boolean({char: 'i', description: 'Boolean - Include inactive workflows', allowNo: true, required: false}),
+            includeInactive: Flags.boolean({char: 'I', description: 'Boolean - Include inactive workflows', allowNo: true, required: false}),
             registrationType: Flags.string({char: 'r', description: 'The registration type - must be a valid type',
               options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false}),
           }
-          break
-        }
-
-        case 'poams': {
-          if (args.argument === 'forSystem') {
-            flagObj = {
-              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-              scheduledCompletionDateStart: Flags.string({description: 'The completion start date', required: false}),
-              scheduledCompletionDateEnd: Flags.string({description: 'The completion end date', required: false}),
-              controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
-              ccis: Flags.string({char: 'c', description: 'The system CCIS string numerical value', required: false}),
-              systemOnly: Flags.boolean({char: 'Y', description: 'Boolean - Return only systems', allowNo: true, required: false}),
-            }
-          } else if (args.argument === 'byPoamId') {
-            flagObj = {
-              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-              poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
-            }
-          }
-
-          break
-        }
-
-        case 'artifacts': {
-          if (args.argument === 'forSystem') {
-            flagObj = {
-              systemId: Flags.integer({char: 's', description: 'Unique system identifier', required: true}),
-              filename: Flags.string({char: 'f', description: 'The artifact file name', required: false}),
-              controlAcronyms: Flags.string({char: 'a', description: 'The system acronym(s) e.g "AC-1, AC-2"', required: false}),
-              ccis: Flags.string({char: 'c', description: 'The system CCIS string numerical value', required: false}),
-              systemOnly: Flags.boolean({char: 'y', description: 'Boolean - Return only systems', allowNo: true, required: false}),
-            }
-          } else if (args.argument === 'export') {
-            flagObj = {
-              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-              filename: Flags.string({char: 'f', description: 'The artifact file name', required: true}),
-              compress: Flags.boolean({char: 'C', description: 'Boolean - Compress true or false', allowNo: true, required: false}),
-            }
-          }
-
-          break
-        }
-
-        case 'milestones': {
-          if (args.argument === 'byPoamId') {
-            flagObj = {
-              systemId: Flags.integer({char: 's', description: 'Unique system identifier', required: true}),
-              poamId: Flags.integer({char: 'p', description: 'Unique poam identifier', required: true}),
-              scheduledCompletionDateStart: Flags.string({char: 't', description: 'Unix time format (e.g. 1499644800)', required: false}),
-              scheduledCompletionDateEnd: Flags.string({char: 'c', description: 'Unix time format (e.g. 1499990400)', required: false}),
-            }
-          } else if (args.argument === 'byMilestoneId') {
-            flagObj = {
-              systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-              poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
-              milestoneId: Flags.integer({char: 'm', description: 'Unique milestone identifier', required: true}),
-            }
-          }
-
           break
         }
 
@@ -237,7 +244,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             flagObj = {
               includeComments: Flags.boolean({char: 'C', description: 'Boolean - Include transition comments', allowNo: true, required: false}),
               includeDecommissionSystems: Flags.boolean({char: 'D', description: 'Boolean - Include decommissioned systems', allowNo: true, required: false}),
-              pageIndex: Flags.integer({char: 'i', description: 'The page number to query', required: false}),
+              pageIndex: Flags.integer({char: 'i', description: 'The page number to query (default first page 0)', required: false}),
               sinceDate: Flags.string({char: 'd', description: 'The Workflow Instance date. Unix date format', required: false}),
               status: Flags.string({char: 's', description: 'The Workflow status - must be a valid status. if not provided includes all systems', options: ['active', 'inactive', 'all'], required: false}),
             }
@@ -247,6 +254,13 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             }
           }
 
+          break
+        }
+
+        case 'cmmc': {
+          flagObj = {
+            sinceDate: Flags.string({char: 'd', description: 'The CMMC date. Unix date format', required: true}),
+          }
           break
         }
 
@@ -278,6 +292,14 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           }
           break
         }
+
+        // case 'poams': {
+        //   flagObj = {
+        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+        //     poamFile: Flags.string({char: 'f', description: 'A well formed JSON file with the POA&M(s) to add. It can ba a single object or an array of objects.', required: true}),
+        //   }
+        //   break
+        // }
 
         case 'milestones': {
           flagObj = {
@@ -321,37 +343,42 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           break
         }
 
-        case 'poams': {
-          flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            poamFile: Flags.string({char: 'f', description: 'A well formed JSON file with the POA&M(s) to add. It can ba a single object or an array of objects.', required: true}),
-          }
-          break
-        }
-
-        case 'cloud_resources': {
-          flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            cloudResourceFile: Flags.string({char: 'f', description: 'A well formed JSON file with the cloud resources and their scan results. It can ba a single object or an array of objects.', required: true}),
-          }
-          break
-        }
-
-        case 'static_code_scans': {
-          flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            statiCodeScanFile: Flags.string({char: 'f', description: 'A well formed JSON file with application scan findings. It can ba a single object or an array of objects.', required: true}),
-          }
-          break
-        }
-
+        case 'poams':
+        case 'hardware':
+        case 'software':
+        case 'cloud_resources':
+        case 'static_code_scans':
         case 'container_scans': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            containerCodeScanFile: Flags.string({char: 'f', description: 'A well formed JSON file with container scan results. It can ba a single object or an array of objects.', required: true}),
+            dataFile: Flags.string({char: 'f', description: 'A well formed JSON file containing the data to add. It can ba a single object or an array of objects.', required: true}),
           }
           break
         }
+
+        // case 'cloud_resources': {
+        //   flagObj = {
+        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+        //     cloudResourceFile: Flags.string({char: 'f', description: 'A well formed JSON file with the cloud resources and their scan results. It can ba a single object or an array of objects.', required: true}),
+        //   }
+        //   break
+        // }
+
+        // case 'static_code_scans': {
+        //   flagObj = {
+        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+        //     statiCodeScanFile: Flags.string({char: 'f', description: 'A well formed JSON file with application scan findings. It can ba a single object or an array of objects.', required: true}),
+        //   }
+        //   break
+        // }
+
+        // case 'container_scans': {
+        //   flagObj = {
+        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+        //     containerCodeScanFile: Flags.string({char: 'f', description: 'A well formed JSON file with container scan results. It can ba a single object or an array of objects.', required: true}),
+        //   }
+        //   break
+        // }
       }
 
       break
@@ -388,21 +415,30 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           break
         }
 
-        case 'poams': {
+        case 'poams':
+        case 'controls': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            poamFile: Flags.string({char: 'f', description: 'A well formed JSON file with the POA&M(s) to updated the specified system. It can ba a single object or an array of objects.', required: true}),
+            dataFile: Flags.string({char: 'f', description: 'A well formed JSON file containing the data to be updated. It can ba a single object or an array of objects.', required: true}),
           }
           break
         }
 
-        case 'controls': {
-          flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            controlFile: Flags.string({char: 'f', description: 'A well formed JSON file with the Security Control information to updated the specified system. It can ba a single object or an array of objects.', required: true}),
-          }
-          break
-        }
+        // case 'poams': {
+        //   flagObj = {
+        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+        //     poamFile: Flags.string({char: 'f', description: 'A well formed JSON file with the POA&M(s) to updated the specified system. It can ba a single object or an array of objects.', required: true}),
+        //   }
+        //   break
+        // }
+
+        // case 'controls': {
+        //   flagObj = {
+        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+        //     controlFile: Flags.string({char: 'f', description: 'A well formed JSON file with the Security Control information to updated the specified system. It can ba a single object or an array of objects.', required: true}),
+        //   }
+        //   break
+        // }
       }
 
       break
@@ -413,7 +449,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'artifacts': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            fileName: Flags.string({char: 'F', description: 'The artifact file name to remove, can have multiple (space separated)', required: true, multiple: true}),
+            fileName: Flags.string({char: 'f', description: 'The artifact file name to remove, can have multiple (space separated)', required: true, multiple: true}),
           }
           break
         }
@@ -499,7 +535,7 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
           }
 
           case 'export': {
-            description = 'Retrieves the artifact file (if compress is true the file binary contents are returned, otherwise the file textual contents are returned.)'
+            description = 'Retrieves an artifact file for selected system\n(file is sent to EMASSER_DOWNLOAD_DIR (defaults to eMasserDownloads) if flag [-P, --printToStdOut] not provided)'
             break
           }
 
@@ -561,18 +597,68 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
             break
           }
 
+          case 'terms_conditions_summary': {
+            description = 'Get systems terms/conditions summary dashboard information'
+            break
+          }
+
+          case 'terms_conditions_details': {
+            description = 'Get systems terms/conditions details dashboard information'
+            break
+          }
+
+          case 'connectivity_ccsd_summary': {
+            description = 'Get systems connectivity/CCSD summary dashboard information'
+            break
+          }
+
+          case 'connectivity_ccsd_details': {
+            description = 'Get systems connectivity/CCSD details dashboard information'
+            break
+          }
+
+          case 'atc_iatc_details': {
+            description = 'Get systems ATC/IATC details dashboard information'
+            break
+          }
+
+          case 'questionnaire_summary': {
+            description = 'Get systems questionnaire summary dashboard information'
+            break
+          }
+
+          case 'questionnaire_details': {
+            description = 'Get systems questionnaire details dashboard information'
+            break
+          }
+
+          case 'workflows_history_summary': {
+            description = 'Get systems workflow history summary dashboard information'
+            break
+          }
+
+          case 'workflows_history_details': {
+            description = 'Get systems workflow history details dashboard information'
+            break
+          }
+
+          case 'workflows_history_stage_details': {
+            description = 'Get systems workflow history stage details dashboard information'
+            break
+          }
+
           case 'control_compliance_summary': {
-            description = 'Get enterprise systems control compliance summary dashboard information'
+            description = 'Get systems control compliance summary dashboard information'
             break
           }
 
           case 'security_control_details': {
-            description = 'Get enterprise systems security control details dashboard information'
+            description = 'Get systems security control details dashboard information'
             break
           }
 
           case 'assessment_procedures_details': {
-            description = 'Get enterprise systems assessment procedures details dashboard information'
+            description = 'Get systems assessment procedures details dashboard information'
             break
           }
 
@@ -616,6 +702,61 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
             break
           }
 
+          case 'software_summary': {
+            description = 'Get system software baseline summary dashboard information'
+            break
+          }
+
+          case 'software_details': {
+            description = 'Get systems software baseline details dashboard information'
+            break
+          }
+
+          case 'sensor_software_summary': {
+            description = 'Get system sensor-based software summary dashboard information'
+            break
+          }
+
+          case 'sensor_software_details': {
+            description = 'Get system sensor-based software details dashboard information'
+            break
+          }
+
+          case 'sensor_software_counts': {
+            description = 'Get system sensor-based software counts dashboard information'
+            break
+          }
+
+          case 'critical_assets_summary': {
+            description = 'Get system critical assets summary dashboard information'
+            break
+          }
+
+          case 'vulnerability_summary': {
+            description = 'Get system vulnerability summary dashboard information'
+            break
+          }
+
+          case 'device_findings_summary': {
+            description = 'Get system device findings summary dashboard information'
+            break
+          }
+
+          case 'device_findings_details': {
+            description = 'Get system device findings details dashboard information'
+            break
+          }
+
+          case 'application_findings_summary': {
+            description = 'Get system application findings summary dashboard information'
+            break
+          }
+
+          case 'application_findings_details': {
+            description = 'Get system application findings details dashboard information'
+            break
+          }
+
           case 'ports_protocols_summary': {
             description = 'Get system ports and protocols summary dashboard information'
             break
@@ -626,13 +767,38 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
             break
           }
 
+          case 'integration_status_summary': {
+            description = 'Get system  CONMON integration status summary dashboard information'
+            break
+          }
+
           case 'associations_details': {
             description = 'Get system associations details dashboard information'
             break
           }
 
-          case 'assignments_details': {
+          case 'user_assignments_details': {
             description = 'Get user system assignments details dashboard information'
+            break
+          }
+
+          case 'org_migration_status': {
+            description = 'Get organization migration status summary dashboard information'
+            break
+          }
+
+          case 'system_migration_status': {
+            description = 'Get system migration status summary dashboard information'
+            break
+          }
+
+          case 'fisma_metrics': {
+            description = 'Get system FISMA metrics dashboard information'
+            break
+          }
+
+          case 'coast_guard_fisma_metrics': {
+            description = 'Get Coast Guard system FISMA metrics dashboard information'
             break
           }
 
@@ -643,6 +809,11 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
 
           case 'fisma_saop_summary': {
             description = 'Get VA OMB-FISMA SAOP summary dashboard information'
+            break
+          }
+
+          case 'va_icamp_tableau_poam_details': {
+            description = 'Get VA system ICAMP Tableau POA&M details dashboard information'
             break
           }
 
@@ -661,12 +832,12 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
             break
           }
 
-          case 'fisma_inventory_summary': {
+          case 'va_fisma_inventory_summary': {
             description = 'Get VA system FISMA inventory summary dashboard information'
             break
           }
 
-          case 'fisma_inventory_crypto_summary': {
+          case 'va_fisma_inventory_crypto_summary': {
             description = 'Get VA system FISMA inventory crypto summary dashboard information'
             break
           }
@@ -683,6 +854,26 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
 
           case 'va_threat_architecture_details': {
             description = 'Get VA threat architecture details dashboard information'
+            break
+          }
+
+          case 'cmmc_status_summary': {
+            description = 'Get CMMC assessment status summary dashboard information'
+            break
+          }
+
+          case 'cmmc_compliance_summary': {
+            description = 'Get CMMC assessment requirements compliance summary dashboard information'
+            break
+          }
+
+          case 'cmmc_security_requirements_details': {
+            description = 'Get CMMC assessment security requirements details dashboard information'
+            break
+          }
+
+          case 'cmmc_requirement_objectives_details': {
+            description = 'Get CMMC assessment requirement objectives details dashboard information'
             break
           }
 
@@ -764,7 +955,10 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
           }
 
           default: {
-            exampleArray.push(`${baseCmd} forSystem [-s, --systemId] <value> [options]`, `${baseCmd} export [-s, --systemId] <value> [-f, --filename] <value> [options]`)
+            exampleArray.push(
+              `${baseCmd} forSystem [-s, --systemId] <value> [options]`,
+              `${baseCmd} export [-s, --systemId] <value> [-f, --filename] <value> [options]`,
+            )
             break
           }
         }
@@ -818,6 +1012,56 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
         switch (args.argument) {
           case 'status_details': {
             exampleArray.push(`${baseCmd} status_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'terms_conditions_summary': {
+            exampleArray.push(`${baseCmd} terms_conditions_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'terms_conditions_details': {
+            exampleArray.push(`${baseCmd} terms_conditions_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'connectivity_ccsd_summary': {
+            exampleArray.push(`${baseCmd} connectivity_ccsd_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'connectivity_ccsd_details': {
+            exampleArray.push(`${baseCmd} connectivity_ccsd_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'atc_iatc_details': {
+            exampleArray.push(`${baseCmd} atc_iatc_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'questionnaire_summary': {
+            exampleArray.push(`${baseCmd} questionnaire_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'questionnaire_details': {
+            exampleArray.push(`${baseCmd} questionnaire_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'workflows_history_summary': {
+            exampleArray.push(`${baseCmd} workflows_history_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'workflows_history_details': {
+            exampleArray.push(`${baseCmd} workflows_history_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'workflows_history_stage_details': {
+            exampleArray.push(`${baseCmd} workflows_history_stage_details [-o, --orgId] <value> [options]`)
             break
           }
 
@@ -876,6 +1120,61 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
             break
           }
 
+          case 'software_summary': {
+            exampleArray.push(`${baseCmd} software_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'software_details': {
+            exampleArray.push(`${baseCmd} software_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'sensor_software_summary': {
+            exampleArray.push(`${baseCmd} sensor_software_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'sensor_software_details': {
+            exampleArray.push(`${baseCmd} sensor_software_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'sensor_software_counts': {
+            exampleArray.push(`${baseCmd} sensor_software_counts [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'critical_assets_summary': {
+            exampleArray.push(`${baseCmd} critical_assets_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'vulnerability_summary': {
+            exampleArray.push(`${baseCmd} vulnerability_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'device_findings_summary': {
+            exampleArray.push(`${baseCmd} device_findings_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'device_findings_details': {
+            exampleArray.push(`${baseCmd} device_findings_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'application_findings_summary': {
+            exampleArray.push(`${baseCmd} application_findings_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'application_findings_details': {
+            exampleArray.push(`${baseCmd} application_findings_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
           case 'ports_protocols_summary': {
             exampleArray.push(`${baseCmd} ports_protocols_summary [-o, --orgId] <value> [options]`)
             break
@@ -886,13 +1185,38 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
             break
           }
 
+          case 'integration_status_summary': {
+            exampleArray.push(`${baseCmd} integration_status_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
           case 'associations_details': {
             exampleArray.push(`${baseCmd} associations_details [-o, --orgId] <value> [options]`)
             break
           }
 
-          case 'assignments_details': {
-            exampleArray.push(`${baseCmd} assignments_details [-o, --orgId] <value> [options]`)
+          case 'user_assignments_details': {
+            exampleArray.push(`${baseCmd} user_assignments_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'org_migration_status': {
+            exampleArray.push(`${baseCmd} org_migration_status [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'system_migration_status': {
+            exampleArray.push(`${baseCmd} system_migration_status [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'fisma_metrics': {
+            exampleArray.push(`${baseCmd} fisma_metrics [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'coast_guard_fisma_metrics': {
+            exampleArray.push(`${baseCmd} coast_guard_fisma_metrics [-o, --orgId] <value> [options]`)
             break
           }
 
@@ -903,6 +1227,11 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
 
           case 'fisma_saop_summary': {
             exampleArray.push(`${baseCmd} fisma_saop_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'va_icamp_tableau_poam_details': {
+            exampleArray.push(`${baseCmd} va_icamp_tableau_poam_details [-o, --orgId] <value> [options]`)
             break
           }
 
@@ -921,13 +1250,13 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
             break
           }
 
-          case 'fisma_inventory_summary': {
-            exampleArray.push(`${baseCmd} fisma_inventory_summary [-o, --orgId] <value> [options]`)
+          case 'va_fisma_inventory_summary': {
+            exampleArray.push(`${baseCmd} va_fisma_inventory_summary [-o, --orgId] <value> [options]`)
             break
           }
 
-          case 'fisma_inventory_crypto_summary': {
-            exampleArray.push(`${baseCmd} fisma_inventory_crypto_summary [-o, --orgId] <value> [options]`)
+          case 'va_fisma_inventory_crypto_summary': {
+            exampleArray.push(`${baseCmd} va_fisma_inventory_crypto_summary [-o, --orgId] <value> [options]`)
             break
           }
 
@@ -946,8 +1275,28 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
             break
           }
 
+          case 'cmmc_status_summary': {
+            exampleArray.push(`${baseCmd} cmmc_status_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'cmmc_compliance_summary': {
+            exampleArray.push(`${baseCmd} cmmc_compliance_summary [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'cmmc_security_requirements_details': {
+            exampleArray.push(`${baseCmd} cmmc_security_requirements_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
+          case 'cmmc_requirement_objectives_details': {
+            exampleArray.push(`${baseCmd} cmmc_requirement_objectives_details [-o, --orgId] <value> [options]`)
+            break
+          }
+
           default: {
-            exampleArray.push(`${baseCmd} [dashboard name] [options]`)
+            exampleArray.push(`${baseCmd} [dashboard name] [-o, --orgId] <value> [options]`)
             break
           }
         }
@@ -1178,4 +1527,18 @@ export function getJsonExamples(endpoint?: string): string[] {
   }
 
   return []
+}
+
+export function saveFile(dir: string, filename: string, data: any): void {
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir)
+  }
+
+  // Save to file
+  const outDir = path.join(dir, filename)
+  fs.writeFile(outDir, data, err => {
+    if (err) {
+      console.error(`Error saving file to: ${outDir}. Cause: ${err}`)
+    }
+  })
 }

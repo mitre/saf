@@ -11,7 +11,7 @@
     "@azure/identity": "^4.3.0",
     "@microsoft/microsoft-graph-client": "^3.0.7",
     "@microsoft/microsoft-graph-types": "^2.40.0",
-    "@mitre/emass_client": "3.10.0",
+    "@mitre/emass_client": "file:mitre-emass_client-3.22.0.tgz",
     "@mitre/hdf-converters": "2.11.2",
     "@mitre/heimdall-lite": "2.11.2",
     "@mitre/inspec-objects": "2.0.1",

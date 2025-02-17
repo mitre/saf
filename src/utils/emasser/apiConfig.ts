@@ -10,7 +10,7 @@ function printRedMsg(msg: string) {
 }
 
 function printHelpMessage() {
-  printYellowMsg('Use the emasser CLI command "saf emasser configure" to generate or update an eMASS configuration file.')
+  printYellowMsg('Use the eMASSer CLI command "saf emasser configure" to generate or update an eMASS configuration file.')
   printYellowMsg('If the configuration file is generated, it is placed in the directory where the emasser command is executed.')
 }
 
@@ -29,6 +29,7 @@ export class ApiConfig {
   public debugging: string;
   public displayNulls: string;
   public displayDateTime: string;
+  public downloadDir: string;
 
   constructor() {
     try {
@@ -46,17 +47,19 @@ export class ApiConfig {
     }
 
     // Option Environment Variable
+    // The userUid is required by some eMASS instances for actionable requests (post,put,delete)
+    this.userUid = this.getOptionalEnv('EMASSER_USER_UID', '')
     this.port = this.getOptionalEnv('EMASSER_PORT', 443)
     this.sslVerify = this.getOptionalEnv('EMASSER_REJECT_UNAUTHORIZED', false)
     this.reqCert = this.getOptionalEnv('EMASSER_REQUEST_CERT', false)
     this.debugging = this.getOptionalEnv('EMASSER_DEBUGGING', false)
     this.displayNulls = this.getOptionalEnv('EMASSER_CLI_DISPLAY_NULL', true)
     this.displayDateTime = this.getOptionalEnv('EMASSER_EPOCH_TO_DATETIME', false)
+    this.downloadDir = this.getOptionalEnv('EMASSER_DOWNLOAD_DIR', 'eMASSerDownloads')
 
     // Required Environment Variables
     try {
       this.apiKey = this.getRequiredEnv('EMASSER_API_KEY')
-      this.userUid = this.getRequiredEnv('EMASSER_USER_UID')
       this.url = this.getRequiredEnv('EMASSER_HOST_URL')
       this.keyCert = this.getRequiredEnv('EMASSER_KEY_FILE_PATH')
       this.clientCert = this.getRequiredEnv('EMASSER_CERT_FILE_PATH')
@@ -70,6 +73,8 @@ export class ApiConfig {
 
       process.exit(0)
     }
+
+    // console.log(`eMASSer Configuration: ${JSON.stringify(this, null, 2)}`)
   }
 
   getRequiredEnv(key: string): string | any {

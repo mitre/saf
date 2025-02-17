@@ -10,8 +10,40 @@ import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
 
 import {POAMApi} from '@mitre/emass_client'
-import {MilestonesGet, PoamResponsePut,
-  PoamGet as Poams} from '@mitre/emass_client/dist/api'
+// import {MilestonesGet, PoamResponsePut,
+//   PoamGet as Poams} from '@mitre/emass_client/dist/api'
+import {MilestonesGet, PoamResponsePostPutDelete} from '@mitre/emass_client/dist/api'
+
+interface Poams {
+  poamId?: number
+  displayPoamId?: string
+  status?: string
+  vulnerabilityDescription?: string
+  sourceIdentVuln?: string
+  pocOrganization?: string
+  resources?: string
+  mitigation?: string
+  comments?: string
+  scheduledCompletionDate?: string
+  completionDate?: string
+  milestones?: MilestonesGet[]
+  pocFirstName?: string
+  pocLastName?: string
+  pocEmail?: string
+  pocPhoneNumber?: string
+  severity?: string
+  externalUid?: string
+  controlAcronym?: string
+  cci?: string
+  securityChecks?: string
+  rawSeverity?: string
+  relevanceOfThreat?: string
+  likelihood?: string
+  impact?: string
+  impactDescription?: string
+  residualRiskLevel?: string
+  recommendations?: string
+ }
 
 function printRedMsg(msg: string) {
   console.log('\x1B[91m', msg, '\x1B[0m')
@@ -263,7 +295,7 @@ export default class EmasserPutPoams extends Command {
 
   static description = 'Update a Plan of Action and Milestones (POA&M) into a systems.'
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--poamFile]',
+  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing the POA&M information based on defined business rules.',
     'Required JSON parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('poams-put-required'), null, 2)),
@@ -285,10 +317,10 @@ export default class EmasserPutPoams extends Command {
     const requestBodyArray: Poams[] = []
 
     // Check if a POA&Ms json file was provided
-    if (fs.existsSync(flags.poamFile)) {
+    if (fs.existsSync(flags.dataFile)) {
       let data: any
       try {
-        data = JSON.parse(await readFile(flags.poamFile, 'utf8'))
+        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
       } catch (error: any) {
         if (error.code === 'ENOENT') {
           console.log('POA&Ms JSON file not found!')
@@ -312,11 +344,11 @@ export default class EmasserPutPoams extends Command {
         requestBodyArray.push(generateBodyObj(dataObject))
       }
     } else {
-      console.error('Invalid or POA&M JSON file not found on the provided directory:', flags.poamFile)
+      console.error('Invalid or POA&M JSON file not found on the provided directory:', flags.dataFile)
       process.exit(1)
     }
 
-    updatePoam.updatePoamBySystemId(flags.systemId, requestBodyArray).then((response: PoamResponsePut) => {
+    updatePoam.updatePoamBySystemId(flags.systemId, requestBodyArray).then((response: PoamResponsePostPutDelete) => {
       console.log(colorize(outputFormat(response)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
   }

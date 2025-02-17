@@ -10,8 +10,35 @@ import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
 
 import {ControlsApi} from '@mitre/emass_client'
-import {ControlsResponsePut,
-  ControlsGet as Controls} from '@mitre/emass_client/dist/api'
+// import {ControlsResponsePut,
+//   ControlsGet as Controls} from '@mitre/emass_client/dist/api'
+import {ControlsResponsePut} from '@mitre/emass_client/dist/api'
+
+interface Controls  {
+  acronym?: string
+  responsibleEntities?: string
+  controlDesignation?: string
+  estimatedCompletionDate?: string
+  implementationNarrative?: string
+  commonControlProvider?: string
+  naJustification?: string
+  slcmCriticality?: string
+  slcmFrequency?: string
+  slcmMethod?: string
+  slcmReporting?: string
+  slcmTracking?: string
+  slcmComments?: string
+  implementationStatus?: string
+  severity?: string
+  vulnerabiltySummary?: string
+  recommendations?: string
+  relevanceOfThreat?: string
+  likelihood?: string
+  impact?: string
+  impactDescription?: string
+  residualRiskLevel?: string
+  testMethod?: string
+}
 
 function printHelpMsg() {
   console.log('\x1B[93m', '\nInvoke saf emasser put controls [-h, --help] for additional help', '\x1B[0m')
@@ -256,7 +283,7 @@ export default class EmasserPutControls extends Command {
 
   static description = 'Update Security Control information of a system for both the Implementation Plan and Risk Assessment.'
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--controlsFile]',
+  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f, --dataFile]',
     'The input file should be a well formed JSON containing the Security Control information based on defined business rules.',
     'Required JSON parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('controls-required'), null, 2)),
@@ -278,10 +305,10 @@ export default class EmasserPutControls extends Command {
     const requestBodyArray: Controls[] = []
 
     // Check if a Security Control information json file was provided
-    if (fs.existsSync(flags.controlFile)) {
+    if (fs.existsSync(flags.dataFile)) {
       let data: any
       try {
-        data = JSON.parse(await readFile(flags.controlFile, 'utf8'))
+        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
       } catch (error: any) {
         if (error.code === 'ENOENT') {
           console.log('Security Control information JSON file not found!')
@@ -305,7 +332,7 @@ export default class EmasserPutControls extends Command {
         requestBodyArray.push(generateBodyObj(dataObject))
       }
     } else {
-      console.error('Invalid or Security Control information JSON file not found on the provided directory:', flags.controlFile)
+      console.error('Invalid or Security Control information JSON file not found on the provided directory:', flags.dataFile)
       process.exit(1)
     }
 
