@@ -100,13 +100,21 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
     for (const totalMinimum of totalMin) {
       const [statusName] = totalMinimum.split('.')
       if (_.get(thresholds, totalMinimum) !== undefined) {
-        exitNonZeroIfTrue(
-          Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName)) <
-            _.get(thresholds, totalMinimum),
-          ),
-          `${totalMinimum}: Threshold not met. Number of received total ${totalMinimum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${totalMinimum.split('.')[0]} controls (${_.get(thresholds, totalMinimum)})`,
-        )
+        if (Boolean(
+              _.get(overallStatusCounts, renameStatusName(statusName)) <
+              _.get(thresholds, totalMinimum),
+            )) {
+              //this.exit(1)
+              this.error('local saf cli fail msg', {exit: 1})
+            }
+        
+              // exitNonZeroIfTrue(
+        //   Boolean(
+        //     _.get(overallStatusCounts, renameStatusName(statusName)) <
+        //     _.get(thresholds, totalMinimum),
+        //   ),
+        //   `${totalMinimum}: Threshold not met. Number of received total ${totalMinimum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${totalMinimum.split('.')[0]} controls (${_.get(thresholds, totalMinimum)})`,
+        // )
       }
     }
 
