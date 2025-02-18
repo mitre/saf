@@ -1,5 +1,4 @@
 import {Args, Command, Flags, Interfaces} from '@oclif/core'
-import {CLIError} from '@oclif/core/errors'
 
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<typeof BaseCommand['baseFlags'] & T['flags']>
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>
