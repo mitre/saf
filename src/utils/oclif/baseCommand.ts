@@ -1,4 +1,5 @@
 import {Args, Command, Flags, Interfaces} from '@oclif/core'
+import {CLIError} from '@oclif/core/errors'
 
 export type Flags<T extends typeof Command> = Interfaces.InferredFlags<typeof BaseCommand['baseFlags'] & T['flags']>
 export type Args<T extends typeof Command> = Interfaces.InferredArgs<T['args']>
@@ -61,8 +62,8 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('--help', `\x1B[93m${process.argv.at(-2)} ${process.argv.at(-1)} -h or --help\x1B[0m`))
     } else {
-      throw new Error(err.message, {exit: err.exitCode || 1})
-      // this.error(err, {exit: err.exitCode || 1})
+      console.error(err.message)
+      process.exit(1)
     }
   }
 
