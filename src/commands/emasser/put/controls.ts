@@ -40,12 +40,12 @@ interface Controls  {
   testMethod?: string
 }
 
-function printHelpMsg() {
-  console.log('\x1B[93m', '\nInvoke saf emasser put controls [-h, --help] for additional help', '\x1B[0m')
+function printHelpMsg(msg: string) {
+  console.log('\x1B[93m\n→', msg, '\x1B[0m')
 }
 
 function printRedMsg(msg: string) {
-  console.log('\x1B[91m', msg, '\x1B[0m')
+  console.log('\x1B[91m»', msg, '\x1B[0m')
 }
 
 function assertParamExists(object: string, value: string|number|undefined|null): void {
@@ -169,7 +169,7 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
   // "Inherited"          Only the following fields can be updated:
   //                      controlDesignation, commonnControlProvider
   //----------------------------------------------------------------------------------------
-
+  const HELP_MSG = 'Invoke saf emasser put controls [-h, --help] for additional help'
   // Only process if we have an Implementation Status
   if (Object.prototype.hasOwnProperty.call(dataObj, 'implementationStatus')) {
     // The implementation Status is always required in any of these cases
@@ -186,7 +186,7 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
           printRedMsg('Missing one of these parameters/fields:')
           printRedMsg('    responsibleEntities, slcmCriticality, slcmFrequency,')
           printRedMsg('    slcmMethod,slcmReporting, slcmTracking, slcmComments')
-          printHelpMsg()
+          printHelpMsg(HELP_MSG)
           process.exit(1)
         } else {
           bodyObject.responsibleEntities = dataObj.responsibleEntities
@@ -209,7 +209,7 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
         } else {
           printRedMsg('Missing one of these parameters/fields:')
           printRedMsg('    naJustification, responsibleEntities')
-          printHelpMsg()
+          printHelpMsg(HELP_MSG)
           process.exit(1)
         }
 
@@ -225,7 +225,7 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
           printRedMsg('Missing one of these parameters/fields:')
           printRedMsg('    commonControlProvider, responsibleEntities, slcmCriticality,')
           printRedMsg('    slcmFrequency, slcmMethod, slcmReporting, slcmTracking, slcmComments')
-          printHelpMsg()
+          printHelpMsg(HELP_MSG)
           process.exit(1)
         } else {
           bodyObject.commonControlProvider = dataObj.commonControlProvider
@@ -247,7 +247,7 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
           bodyObject.commonControlProvider = dataObj.commonControlProvider
         } else {
           printRedMsg('When implementationStatus value is "Inherited" the following field is required: commonControlProvider')
-          printHelpMsg()
+          printHelpMsg(HELP_MSG)
           process.exit(1)
         }
 
@@ -310,14 +310,9 @@ export default class EmasserPutControls extends Command {
       try {
         data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
       } catch (error: any) {
-        if (error.code === 'ENOENT') {
-          console.log('Security Control information JSON file not found!')
-          process.exit(1)
-        } else {
-          console.log('Error reading Security Control information file, possible malformed json. Please use the -h flag for help.')
-          console.log('Error message was:', error.message)
-          process.exit(1)
-        }
+        console.error('\x1B[91m» Error reading Security Control(s) data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
+        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+        process.exit(1)
       }
 
       // Security Control information json file provided, check if we have multiple content to process
@@ -332,7 +327,7 @@ export default class EmasserPutControls extends Command {
         requestBodyArray.push(generateBodyObj(dataObject))
       }
     } else {
-      console.error('Invalid or Security Control information JSON file not found on the provided directory:', flags.dataFile)
+      console.error('\x1B[91m» The provided Security Control(s) data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
       process.exit(1)
     }
 

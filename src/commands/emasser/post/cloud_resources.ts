@@ -4,23 +4,25 @@ import {CloudResourceResultsApi} from '@mitre/emass_client'
 import {CloudResourcesResponsePost} from '@mitre/emass_client/dist/api'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
+import {FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg} from '../../../utils/emasser/utilities'
 import {outputError} from '../../../utils/emasser/outputError'
 import {readFile} from 'fs/promises'
 import _ from 'lodash'
 import fs from 'fs'
 
 interface CloudResource {
+  // Required
   provider: string,
   resourceId: string,
   resourceName: string,
   resourceType: string,
+  complianceResults: ComplianceResults[]
+  // Optional
   cspAccountId?: string,
   cspRegion?: string,
   initiatedBy?: string,
   isBaseline?: boolean,
   tags?: Tags|any,
-  complianceResults: ComplianceResults[]
 }
 
 interface Tags {
@@ -28,11 +30,13 @@ interface Tags {
 }
 
 interface ComplianceResults {
+  // Required
   cspPolicyDefinitionId: string,
   isCompliant: boolean,
   policyDefinitionTitle: string,
+  // Optional
   assessmentProcedure?: string,
-  complianceCheckTimestamp?: string,
+  complianceCheckTimestamp?: number,
   complianceReason?: string,
   control?: string,
   policyDeploymentName?: string,
@@ -40,8 +44,13 @@ interface ComplianceResults {
   severity?: string
 }
 
-function printRedMsg(msg: string) {
-  console.log('\x1B[91m', msg, '\x1B[0m')
+function getAllJsonExamples(): string {
+  return JSON.stringify(
+    _.merge({},
+      getJsonExamples('cloud_resources-required'),
+      getJsonExamples('cloud_resources-optional'),
+    ),
+  )
 }
 
 function assertParamExists(object: string, value: string|boolean|undefined|null): void {
@@ -172,17 +181,22 @@ function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): v
   bodyObject.complianceResults = complianceResultsArray
 }
 
+const CMD_HELP = 'saf emasser post cloud_resources -h or --help'
 export default class EmasserPostCloudResources extends Command {
   static usage = '<%= command.id %> [options]'
 
   static description = 'Add a cloud resource and their scan results in the assets module for a system'
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
+  static examples = [
+    '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing the cloud resources and their scan results information.',
     'Required JSON parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('cloud_resources-required'), null, 2)),
     'Optional JSON parameters/fields are:',
-    colorize(JSON.stringify(getJsonExamples('cloud_resources-optional'), null, 2))]
+    colorize(JSON.stringify(getJsonExamples('cloud_resources-optional'), null, 2)),
+    '\x1B[1m\x1B[32mAll accepted parameters/fields are:\x1B[0m',
+    colorize(getAllJsonExamples()),
+  ]
 
   static flags = {
     help: Flags.help({char: 'h', description: 'Post (add) cloud resources and their scan results in the assets module for a system'}),
@@ -202,14 +216,9 @@ export default class EmasserPostCloudResources extends Command {
       try {
         data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
       } catch (error: any) {
-        if (error.code === 'ENOENT') {
-          console.log('Cloud Resource JSON file not found!')
-          process.exit(1)
-        } else {
-          console.log('Error reading Cloud Resource file, possible malformed json. Please use the -h flag for help.')
-          console.log('Error message was:', error.message)
-          process.exit(1)
-        }
+        console.error('\x1B[91m» Error reading Cloud Resource data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
+        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+        process.exit(1)
       }
 
       // Create request body based on key/pair values provide in the input file
@@ -250,12 +259,23 @@ export default class EmasserPostCloudResources extends Command {
         }
       }
     } else {
-      console.error('Invalid or Cloud Resource JSON file not found on the provided directory:', flags.dataFile)
+      console.error('\x1B[91m» Cloud Resource data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
       process.exit(1)
     }
 
+    // Call the endpoint
     addCloudResource.addCloudResourcesBySystemId(flags.systemId, requestBodyArray).then((response: CloudResourcesResponsePost) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
+  }
+
+  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+    // If error message is for missing flags, display
+    // what fields are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('with --help', `with: \x1B[93m${CMD_HELP}\x1B[0m`))
+    } else {
+      this.warn(err)
+    }
   }
 }

@@ -45,7 +45,7 @@ export interface FlagOptions {
   scheduledCompletionDateEnd?: OptionFlag<string|undefined>;
   filename?: OptionFlag<string|any>;
   status?: OptionFlag<string|undefined>;
-  cci?: OptionFlag<string>;
+  assessmentProcedure?: OptionFlag<string>;
   testedBy?: OptionFlag<string>;
   testDate?: OptionFlag<string>;
   description?: OptionFlag<string|any>;
@@ -53,8 +53,8 @@ export interface FlagOptions {
   scheduledCompletionDate?: OptionFlag<string|any>;
   orgId?:OptionFlag<number>;
   pageSize?: OptionFlag<number|undefined>;
-  input?: OptionFlag<string[]>;
   fileName?: OptionFlag<string[]>;
+  resourceId?: OptionFlag<string[]>;
   dataFile?: OptionFlag<string>;
   // poamFile?: OptionFlag<string>;
   // controlFile?: OptionFlag<string>;
@@ -283,11 +283,11 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'test_results': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            cci: Flags.string({char: 'c', description: 'The system CCI string numerical value', required: true}),
+            assessmentProcedure: Flags.string({char: 'a', description: 'The Security Control Assessment Procedure being assessed', required: true}),
             testedBy: Flags.string({char: 'b', description: 'The person that conducted the test (Last Name, First)', required: true}),
             testDate: Flags.string({char: 't', description: 'The date test was conducted, Unix time format', required: true}),
             description: Flags.string({char: 'd', description: 'The description of test result. 4000 Characters', required: true}),
-            complianceStatus: Flags.string({char: 'S', description: 'The system CCI string numerical value',
+            complianceStatus: Flags.string({char: 'S', description: 'The compliance status of the test result',
               options: ['Compliant', 'Non-Compliant', 'Not Applicable'], required: true}),
           }
           break
@@ -314,11 +314,10 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'artifacts': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            input: Flags.string({char: 'i', description: 'Artifact file(s) to post to the given system, can have multiple (space separated)', required: true, multiple: true}),
-            isTemplate: Flags.boolean({char: 'T', description: 'Boolean - Indicates whether an artifact is a template.', allowNo: true, required: false}),
-            type: Flags.string({char: 't', description: 'Artifact file type',
-              options: ['Procedure', 'Diagram', 'Policy', 'Labor', 'Document', 'Image', 'Other', 'Scan Result', 'Auditor Report'], required: false}),
-            category: Flags.string({char: 'c', description: 'Artifact category', options: ['Implementation Guidance', 'Evidence'], required: false}),
+            fileName: Flags.string({char: 'f', description: 'Artifact file(s) to post to the given system, can have multiple (space separated)', required: true, multiple: true}),
+            isTemplate: Flags.boolean({char: 'T', description: 'Boolean - Indicates whether an artifact is a template.', allowNo: true, required: false, default: false}),
+            type: Flags.string({char: 't', description: 'Various artifact file type are accepted (defined by the eMASS administrator)', required: false, default: 'Other'}),
+            category: Flags.string({char: 'c', description: 'Various artifact category are accepted (defined by the eMASS administrator)',  required: false, default: 'Evidence'}),
           }
           break
         }
@@ -344,8 +343,8 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         }
 
         case 'poams':
-        case 'hardware':
-        case 'software':
+        case 'hardware_baseline':
+        case 'software_baseline':
         case 'cloud_resources':
         case 'static_code_scans':
         case 'container_scans': {
@@ -467,6 +466,14 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             poamsId: Flags.integer({char: 'P', description: 'Unique POA&M identification number, can have multiple (space separated)', required: true, multiple: true}),
+          }
+          break
+        }
+
+        case 'cloud_resources': {
+          flagObj = {
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+            resourceId: Flags.string({char: 'r', description: 'Unique identifier/resource namespace for policy compliance result', required: true, multiple: true}),
           }
           break
         }
@@ -1314,10 +1321,26 @@ export function getJsonExamples(endpoint?: string): string[] {
     const data = '{ ' +
       '"status":  "One of the following: [Ongoing, Risk Accepted, Completed, Not Applicable]",' +
       '"vulnerabilityDescription": "POA&M vulnerability description",' +
-      '"sourceIdentVuln": "Source that identifies the vulnerability",' +
+      '"sourceIdentifyingVulnerability": "Source that identifies the vulnerability",' +
       '"pocOrganization": "Organization/Office represented",' +
-      '"mitigation": "Include mitigation explanation",' +
       '"resources": "List of resources used"' +
+      '}'
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'poams-post-required-va') {
+    const data = '{ ' +
+      '"identifiedInCFOAuditOrOtherReview":  "If not specified, this field will be set to false because it does not accept a null value (Required for VA. Optional for Army and USCG)",' +
+      '"personnelResourcesFundedBaseHours": "Hours for personnel resources that are founded (Required for VA. Optional for Army and USCG)",' +
+      '"personnelResourcesCostCode": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",' +
+      '"personnelResourcesUnfundedBaseHours": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",' +
+      '"personnelResourcesNonfundingObstacle": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",' +
+      '"personnelResourcesNonfundingObstacleOtherReason": "Reason (text 2,000 char) (Required for VA. Optional for Army and USCG)",' +
+      '"nonPersonnelResourcesFundedAmount": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",' +
+      '"nonPersonnelResourcesCostCode": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",' +
+      '"nonPersonnelResourcesUnfundedAmount": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",' +
+      '"nonPersonnelResourcesNonfundingObstacle": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",' +
+      '"nonPersonnelResourcesNonfundingObstacleOtherReason": "Reason (text 2,000 char) (Required for VA. Optional for Army and USCG)"' +
       '}'
     return JSON.parse(data)
   }
@@ -1327,14 +1350,14 @@ export function getJsonExamples(endpoint?: string): string[] {
       '"milestones": [{' +
       '"description": "The milestone description",' +
       '"scheduledCompletionDate": "Milestone scheduled completion date (Unix format)"}],' +
-      '"pocFirstName": "The system acronym(s) e.g AC-1, AC-2",' +
-      '"pocLastName": "The system CCIS string numerical value",' +
-      '"pocEmail": "Security Checks that are associated with the POA&M",' +
-      '"pocPhoneNumber": "One of the following [I, II, III]",' +
+      '"pocFirstName": "First name of POC",' +
+      '"pocLastName": "Last name of POC",' +
+      '"pocEmail": "Email address of POC",' +
+      '"pocPhoneNumber": "Phone number of POC",' +
       '"severity": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"scheduledCompletionDate": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"completionDate": "Description of Security Control impact",' +
-      '"comments": "Description of the security control impact"' +
+      '"scheduledCompletionDate": "Required for ongoing and completed POA&M items",' +
+      '"completionDate": "Field is required for completed POA&M items",' +
+      '"comments": "Field is required for completed and risk accepted POA&M items"' +
       '}'
     return JSON.parse(data)
   }
@@ -1375,16 +1398,20 @@ export function getJsonExamples(endpoint?: string): string[] {
     const data = '{ ' +
       '"externalUid": "External ID associated with the POA&M",' +
       '"controlAcronym": "The system acronym(s) e.g AC-1, AC-2",' +
-      '"cci": "The system CCIS string numerical value",' +
+      '"assessmentProcedure": "The Security Control Assessment Procedures being associated with the POA&M Item",' +
       '"securityChecks": "Security Checks that are associated with the POA&M",' +
-      '"rawSeverity": "One of the following [I, II, III]",' +
+      '"rawSeverity": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
       '"relevanceOfThreat": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
       '"likelihood": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
       '"impact": "Description of Security Control impact",' +
       '"impactDescription": "Description of the security control impact",' +
       '"residualRiskLevel": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
       '"recommendations": "Any recommendations content",' +
-      '"mitigation": "Mitigation explanation"' +
+      '"mitigations": "Mitigation explanation",' +
+      '"resultingResidualRiskLevelAfterProposedMitigations": "One of the following [Very Low, Low, Moderate, High, Very High] (Navy only)",' +
+      '"predisposingConditions": "Conditions (Navy only)",' +
+      '"threatDescription": "Threat description (Navy only)",' +
+      '"devicesAffected": "List of affected devices by hostname. If all devices are affected, use `system` or `all` (Navy only)"' +
       '}'
     return JSON.parse(data)
   }
@@ -1425,8 +1452,101 @@ export function getJsonExamples(endpoint?: string): string[] {
       '"impact": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
       '"impactDescription": "Include description of Security Controls impact",' +
       '"residualRiskLevel": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"testMethod": "One of the following [Test, Interview, Examine, Test,Interview, Test,Examine, Interview,Examine, Test,Interview,Examine]"' +
+      '"testMethod": "One of the following [Test, Interview, Examine, Test,Interview, Test,Examine, Interview,Examine, Test,Interview,Examine]",' +
+      '"mitigations": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"applicationLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)",' +
+      '"databaseLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)",' +
+      '"operatingSystemLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)"' +
       '}'
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'hardware-post-required') {
+    const data = '{ ' +
+    '"assetName":  "Name of the hardware asset"' +
+    '}'
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'hardware-post-put-conditional') {
+    const data = '{ ' +
+    '"publicFacingFqdn": "Public facing FQDN. Only applicable if Public Facing is set to true",' +
+    '"publicFacingIpAddress": "Public facing IP address. Only applicable if Public Facing is set to true",' +
+    '"publicFacingUrls":  "Public facing URL(s). Only applicable if Public Facing is set to true"' +
+    '}'
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'hardware-post-put-optional') {
+    const data = '{ ' +
+    '"componentType": "Public facing FQDN. Only applicable if Public Facing is set to true",' +
+    '"nickname": "Public facing IP address. Only applicable if Public Facing is set to true",' +
+    '"assetIpAddress": "IP address of the hardware asset",' +
+    '"publicFacing": "Public facing is defined as any asset that is accessible from a commercial connection",' +
+    '"virtualAsset": "Determine if this is a virtual hardware asset",' +
+    '"manufacturer": "Manufacturer of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",' +
+    '"modelNumber": "Model number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",' +
+    '"serialNumber": "Serial number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",' +
+    '"OsIosFwVersion": "OS/iOS/FW version of the hardware asset",' +
+    '"memorySizeType": "Memory size / type of the hardware asset",' +
+    '"location": "Location of the hardware asset",' +
+    '"approvalStatus": "Approval status of the hardware asset",' +
+    '"criticalAsset":  "Indicates whether the asset is a critical information system asset"' +
+    '}'
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'software-post-required') {
+    const data = '{ ' +
+    '"softwareVendor":  "Vendor of the software asset",' +
+    '"softwareName":  "Name of the software asset",' +
+    '"version":  "Version of the software asset"' +
+    '}'
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'software-post-put-conditional') {
+    const data = '{ ' +
+    '"approvalDate": "Approval date of the software asset. If Approval Status is set to “Unapproved” or “In Progress”, Approval Date will be set to null"' +
+    '}'
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'software-post-put-optional') {
+    const data = '{ ' +
+    '"softwareType": "Type of the software asset",' +
+    '"parentSystem": "Parent system of the software asset",' +
+    '"subsystem": "Subsystem of the software asset",' +
+    '"network": "Network of the software asset",' +
+    '"hostingEnvironment": "Hosting environment of the software asset",' +
+    '"softwareDependencies": "Dependencies for the software asset",' +
+    '"cryptographicHash": "Cryptographic hash for the software asset",' +
+    '"inServiceData": "Date the sotware asset was added to the network",' +
+    '"itBudgetUii": "IT budget UII for the software asset",' +
+    '"fiscalYear": "Fiscal year (FY) for the software asset",' +
+    '"popEndDate": "Period of performance (POP) end date for the software asset",' +
+    '"licenseOrContract": "License or contract for the software asset",' +
+    '"licenseTerm":  "License term for the software asset",' +
+    '"costPerLicense": "Cost per license for the software asset",' +
+    '"totalLicenses": "Number of total licenses for the software asset",' +
+    '"totalLicenseCost": "Total cost of the licenses for the software asset",' +
+    '"licensesUsed": "Number of licenses used for the software asset",' +
+    '"licensePoc": "Point of contact (POC) for the software asset",' +
+    '"licenseRenewalDate": "License renewal date for the software asset",' +
+    '"licenseExpirationDate": "License expiration date for the software asset",' +
+    '"approvalStatus": "Approval status of the software asset",' +
+    '"releaseDate": "Release date of the software asset",' +
+    '"maintenanceDate": "Maintenance date of the software asset",' +
+    '"retirementDate": "Retirement date of the software asset",' +
+    '"endOfLifeSupportDate":  "End of life/support date of the software asset",' +
+    '"extendedEndOfLifeSupportDate": "Extended End of Life/Support Date cannot occur prior to the End of Life/Support Date",' +
+    '"criticalAsset": "Indicates whether the asset is a critical information system asset",' +
+    '"location": "Location of the software asset",' +
+    '"purpose": "Purpose of the software asset",' +
+    '"unsupportedOperatingSystem": "Unsupported operating system (VA only)",' +
+    '"unapprovedSoftwareFromTrm": "Unapproved software from TRM (VA only)",' +
+    '"approvedWaiver":  "Approved waiver (VA only)"' +
+    '}'
     return JSON.parse(data)
   }
 
@@ -1541,4 +1661,12 @@ export function saveFile(dir: string, filename: string, data: any): void {
       console.error(`Error saving file to: ${outDir}. Cause: ${err}`)
     }
   })
+}
+
+export function printHelpMsg(msg: string) {
+  console.log('\x1B[93m\n→', msg, '\x1B[0m')
+}
+
+export function printRedMsg(msg: string) {
+  console.log('\x1B[91m»', msg, '\x1B[0m')
 }

@@ -122,11 +122,11 @@ export default class EmasserPostStaticCodeScans extends Command {
         data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
       } catch (error: any) {
         if (error.code === 'ENOENT') {
-          console.log('Scan Findings JSON file not found!')
+          console.error('\x1B[91m» ERROR: Scan Findings JSON file not found!\x1B[0m')
           process.exit(1)
         } else {
-          console.log('Error reading Scan Findings file, possible malformed json. Please use the -h flag for help.')
-          console.log('Error message was:', error.message)
+          console.error('\x1B[91m» Error reading Scan Findings file, possible malformed json. Please use the -h flag for help.\x1B[0m')
+          console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
           process.exit(1)
         }
       }
@@ -157,7 +157,7 @@ export default class EmasserPostStaticCodeScans extends Command {
         }
       }
     } else {
-      console.error('Invalid or Scan Findings JSON file not found on the provided directory:', flags.dataFile)
+      console.error('\x1B[91m» The provided Scan Findings JSON file is invalid or does not exist, provided:', flags.dataFile, '\x1B[0m')
       process.exit(1)
     }
 

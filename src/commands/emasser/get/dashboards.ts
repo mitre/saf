@@ -42,7 +42,7 @@ import {
 const endpoint = 'dashboards'
 
 export default class EmasserGetDashboards extends Command {
-  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS] \n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m';
+  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m'
 
   static readonly description = getDescriptionForEndpoint(process.argv, endpoint);
 

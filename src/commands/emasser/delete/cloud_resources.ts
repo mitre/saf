@@ -6,17 +6,19 @@ import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
-import {ArtifactsApi} from '@mitre/emass_client'
-import {ArtifactsResponseDel,
-  ArtifactsRequestDeleteBodyInner as ArtifactDeleteBody} from '@mitre/emass_client/dist/api'
+import {CloudResourceResultsApi} from '@mitre/emass_client'
+import {
+  CloudResourcesDeleteBodyInner,
+  CloudResourcesPostDelete,
+} from '@mitre/emass_client/dist/api'
 
-const CMD_HELP = 'saf emasser delete artifacts -h or --help'
-export default class EmasserDeleteArtifacts extends Command {
+const CMD_HELP = 'saf emasser delete cloud_resources -h or --help'
+export default class EmasserDeleteCloudResources extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]';
 
-  static readonly description = 'Remove one or many artifacts in a system identified by system Id';
+  static readonly description = 'Remove one or multiple cloud resources in a system identified by system Id';
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--fileName] <path-to-file1> <path-to-file2> ...']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-r,--resourceId] <resource-id> <resource-id> ...']
 
   static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the DELETE POA&M endpoint'}),
@@ -24,16 +26,17 @@ export default class EmasserDeleteArtifacts extends Command {
   }
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserDeleteArtifacts)
+    const {flags} = await this.parse(EmasserDeleteCloudResources)
     const apiCxn = new ApiConnection()
-    const delArtifact = new ArtifactsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+    const delArtifact = new CloudResourceResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
 
-    const requestBodyArray: ArtifactDeleteBody[] = []
-    flags.fileName.forEach((filename: string) => {
-      requestBodyArray.push({filename: filename.replace(',', '')})
+    const requestBodyArray: Array<CloudResourcesDeleteBodyInner> = []
+    flags.resourceId.forEach((resourceId: string) => {
+      requestBodyArray.push({resourceId: resourceId.replace(',', '')})
     })
 
-    delArtifact.deleteArtifact(flags.systemId, requestBodyArray).then((response: ArtifactsResponseDel) => {
+    // Call the API
+    delArtifact.deleteCloudResources(flags.systemId, requestBodyArray).then((response: CloudResourcesPostDelete) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
   }

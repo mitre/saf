@@ -45,12 +45,12 @@ interface Poams {
   recommendations?: string
  }
 
-function printRedMsg(msg: string) {
-  console.log('\x1B[91m', msg, '\x1B[0m')
+function printHelpMsg(msg: string) {
+  console.log('\x1B[93m\n→', msg, '\x1B[0m')
 }
 
-function printHelpMsg(msg: string) {
-  console.log('\x1B[93m', msg, '\x1B[0m')
+function printRedMsg(msg: string) {
+  console.log('\x1B[91m»', msg, '\x1B[0m')
 }
 
 function assertParamExists(object: string, value: string|number|undefined|null): void {
@@ -167,7 +167,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
   //                   completionDate, milestones (at least 1)
   // "Not Applicable"  POAM can not be created
   //-----------------------------------------------------------------------------
-  const HELP_MSG = '\nInvoke saf emasser post poams [-h, --help] for additional help'
+  const HELP_MSG = 'Invoke saf emasser post poams [-h, --help] for additional help'
   switch (dataObj.status) {
     case 'Risk Accepted': {
       if (dataObj.comments === undefined) {
@@ -250,6 +250,12 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
       break
     }
 
+    case 'Not Applicable': {
+      printRedMsg('POA&M Items with a status of "Not Applicable" will be updated through test result creation.')
+      process.exit(0)
+      break
+    }
+
     case 'Archived': {
       printHelpMsg('Archived POA&M Items cannot be updated')
       process.exit(0)
@@ -322,14 +328,9 @@ export default class EmasserPutPoams extends Command {
       try {
         data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
       } catch (error: any) {
-        if (error.code === 'ENOENT') {
-          console.log('POA&Ms JSON file not found!')
-          process.exit(1)
-        } else {
-          console.log('Error reading POA&Ms file, possible malformed json. Please use the -h flag for help.')
-          console.log('Error message was:', error.message)
-          process.exit(1)
-        }
+        console.error('\x1B[91m» Error reading POA&Ms data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
+        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+        process.exit(1)
       }
 
       // POA&Ms json file provided, check if we have multiple POA&Ms to process
@@ -344,7 +345,7 @@ export default class EmasserPutPoams extends Command {
         requestBodyArray.push(generateBodyObj(dataObject))
       }
     } else {
-      console.error('Invalid or POA&M JSON file not found on the provided directory:', flags.dataFile)
+      console.error('\x1B[91m» POA&M(s) data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
       process.exit(1)
     }
 
