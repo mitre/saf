@@ -118,6 +118,9 @@
   "oclif": {
     "commands": "./lib/commands",
     "helpClass": "./lib/utils/oclif/help/help",
+    "hooks": {
+      "command_not_found": "./lib/utils/oclif/hooks/command_not_found"
+    },
     "theme": "./oclif-theme.json",
     "additionalHelpFlags": [
       "-h",

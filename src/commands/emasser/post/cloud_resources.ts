@@ -1,3 +1,4 @@
+/* eslint-disable valid-jsdoc */
 import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 import {CloudResourceResultsApi} from '@mitre/emass_client'
@@ -10,6 +11,23 @@ import {readFile} from 'fs/promises'
 import _ from 'lodash'
 import fs from 'fs'
 
+/**
+ * Represents a cloud resource with compliance results.
+ *
+ * @interface CloudResource
+ *
+ * @property {string} provider - The cloud service provider (e.g., AWS, Azure, GCP).
+ * @property {string} resourceId - The unique identifier of the resource.
+ * @property {string} resourceName - The name of the resource.
+ * @property {string} resourceType - The type of the resource (e.g., VM, Storage, Database).
+ * @property {ComplianceResults[]} complianceResults - An array of compliance results associated with the resource.
+ *
+ * @property {string} [cspAccountId] - (Optional) The cloud service provider account ID.
+ * @property {string} [cspRegion] - (Optional) The region where the resource is located.
+ * @property {string} [initiatedBy] - (Optional) The entity or user who initiated the resource.
+ * @property {boolean} [isBaseline] - (Optional) Indicates if the resource is a baseline.
+ * @property {Tags|any} [tags] - (Optional) Tags associated with the resource.
+ */
 interface CloudResource {
   // Required
   provider: string,
@@ -25,6 +43,13 @@ interface CloudResource {
   tags?: Tags|any,
 }
 
+/**
+ * Represents a collection of tags where each tag is a key-value pair.
+ *
+ * @interface Tags
+ * @property {string} [key] - The key of the tag.
+ * @property {string} value - The value associated with the tag key.
+ */
 interface Tags {
   [key: string]: string;
 }
@@ -44,6 +69,12 @@ interface ComplianceResults {
   severity?: string
 }
 
+/**
+ * Combines JSON examples for 'cloud_resources-required' and 'cloud_resources-optional'
+ * into a single JSON string.
+ *
+ * @returns {string} A JSON string that merges the required and optional cloud resources examples.
+ */
 function getAllJsonExamples(): string {
   return JSON.stringify(
     _.merge({},
@@ -53,6 +84,13 @@ function getAllJsonExamples(): string {
   )
 }
 
+/**
+ * Asserts that a required parameter exists and is not undefined.
+ *
+ * @param object - The name of the parameter or field being checked.
+ * @param value - The value of the parameter or field to check. Can be a string, boolean, undefined, or null.
+ * @throws {Error} Throws an error if the value is undefined.
+ */
 function assertParamExists(object: string, value: string|boolean|undefined|null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
@@ -60,6 +98,16 @@ function assertParamExists(object: string, value: string|boolean|undefined|null)
   }
 }
 
+/**
+ * Adds required fields to the request body for a CloudResource object.
+ *
+ * This function ensures that all required fields are present in the provided
+ * CloudResource object. If any required field is missing, an error is thrown.
+ *
+ * @param dataObj - The CloudResource object containing the data to be validated and added to the request body.
+ * @returns A new CloudResource object with all required fields populated.
+ * @throws Will throw an error if any required field is missing in the provided dataObj.
+ */
 function addRequiredFieldsToRequestBody(dataObj: CloudResource): CloudResource {
   const bodyObj: CloudResource = {
     provider: '',
@@ -108,6 +156,29 @@ function addRequiredFieldsToRequestBody(dataObj: CloudResource): CloudResource {
   return bodyObj
 }
 
+/**
+ * Adds optional fields from the `dataObj` to the `bodyObject` if they exist.
+ *
+ * @param bodyObject - The target object to which optional fields will be added.
+ * @param dataObj - The source object containing optional fields.
+ *
+ * @remarks
+ * This function checks for the presence of optional fields in the `dataObj` and
+ * adds them to the `bodyObject` if they exist.
+ * It handles the following optional fields:
+ * - `cspAccountId`
+ * - `cspRegion`
+ * - `initiatedBy`
+ * - `isBaseline`
+ * - `tags`
+ * - `complianceResults`
+ *
+ * For the `tags` field, it creates a new `Tags` object and copies the key-value
+ * pairs from `dataObj.tags`.
+ *
+ * For the `complianceResults` field, it creates a new array of `ComplianceResults`
+ * objects and copies the properties from `dataObj.complianceResults`.
+ */
 function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): void {
   // Add object optional entries
   if (Object.prototype.hasOwnProperty.call(dataObj, 'cspAccountId')) {
@@ -183,11 +254,11 @@ function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): v
 
 const CMD_HELP = 'saf emasser post cloud_resources -h or --help'
 export default class EmasserPostCloudResources extends Command {
-  static usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command usages\x1B[0m'
 
-  static description = 'Add a cloud resource and their scan results in the assets module for a system'
+  static readonly description = 'Add a cloud resource and their scan results in the assets module for a system'
 
-  static examples = [
+  static readonly examples = [
     '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing the cloud resources and their scan results information.',
     'Required JSON parameter/fields are: ',
@@ -198,8 +269,8 @@ export default class EmasserPostCloudResources extends Command {
     colorize(getAllJsonExamples()),
   ]
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) cloud resources and their scan results in the assets module for a system'}),
+  static readonly flags = {
+    help: Flags.help({char: 'h', description: 'Post (add) cloud resources and their scan results. See eMASSer Features for additional information.'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

@@ -35,7 +35,7 @@ export default class EmasserPostMilestones extends Command {
       scheduledCompletionDate: Number.parseFloat(flags.scheduledCompletionDate),
     })
 
-    console.log(`requestBodyArray: ${JSON.stringify(requestBodyArray)}`)
+    // Call the endpoint
     addMilestone.addMilestoneBySystemIdAndPoamId(flags.systemId, flags.poamId, requestBodyArray).then((response: MilestoneResponsePost) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error:any) => console.error(colorize(outputError(error))))

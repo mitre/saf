@@ -10,14 +10,15 @@ import {MilestonesApi} from '@mitre/emass_client'
 import {MilestonesPutPostDelete,
   MilestonesRequestDeleteBodyInner as MilestoneDeleteBody} from '@mitre/emass_client/dist/api'
 
+const CMD_HELP = 'saf emasser delete milestones -h or --help'
 export default class EmasserDeleteMilestones extends Command {
-  static usage = '<%= command.id %> [options]';
+  static readonly usage = '<%= command.id %> [FLAGS]';
 
-  static description = 'Remove milestones in a system for one or many POA&M items identified by system, poam, and milestone Id';
+  static readonly description = 'Remove milestones in a system for one or many POA&M items identified by system, poam, and milestone Id';
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-M,--milestonesId]'];
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-m,--milestonesId]'];
 
-  static flags = {
+  static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the DELETE Milestones endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
@@ -32,8 +33,19 @@ export default class EmasserDeleteMilestones extends Command {
       requestBodyArray.push({milestoneId: milestoneId}) // skipcq: JS-0240
     })
 
+    // Call the endpoint
     delMilestones.deleteMilestone(flags.systemId, flags.poamId, requestBodyArray).then((response: MilestonesPutPostDelete) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
+  }
+
+  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+    // If error message is for missing flags, display
+    // what fields are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('with --help', `with: \x1B[93m${CMD_HELP}\x1B[0m`))
+    } else {
+      this.warn(err)
+    }
   }
 }

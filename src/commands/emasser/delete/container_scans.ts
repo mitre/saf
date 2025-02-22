@@ -6,37 +6,37 @@ import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
-import {CloudResourceResultsApi} from '@mitre/emass_client'
+import {ContainerScanResultsApi} from '@mitre/emass_client'
 import {
-  CloudResourcesDeleteBodyInner,
-  CloudResourcesPostDelete,
+  ContainerResourcesDeleteBodyInner,
+  ContainersResourcesPostDelete,
 } from '@mitre/emass_client/dist/api'
 
-const CMD_HELP = 'saf emasser delete cloud_resources -h or --help'
-export default class EmasserDeleteCloudResources extends Command {
+const CMD_HELP = 'saf emasser delete container_scans -h or --help'
+export default class EmasserContainerScans extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]';
 
   static readonly description = 'Remove one or multiple containers in a system identified by system Id';
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-r,--resourceId] <resource-id> <resource-id> ...']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-c,--containerId] <container-id> <container-id> ...']
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help to DELETE Cloud Resources endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help to DELETE Containers endpoint'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserDeleteCloudResources)
+    const {flags} = await this.parse(EmasserContainerScans)
     const apiCxn = new ApiConnection()
-    const cloudResource = new CloudResourceResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+    const containerScan = new ContainerScanResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
 
-    const requestBodyArray: Array<CloudResourcesDeleteBodyInner> = []
-    flags.resourceId.forEach((resourceId: string) => {
-      requestBodyArray.push({resourceId: resourceId.replace(',', '')})
+    const requestBodyArray: Array<ContainerResourcesDeleteBodyInner> = []
+    flags.containerId.forEach((containerId: string) => {
+      requestBodyArray.push({containerId: containerId.replace(',', '')})
     })
 
     // Call the API
-    cloudResource.deleteCloudResources(flags.systemId, requestBodyArray).then((response: CloudResourcesPostDelete) => {
+    containerScan.deleteContainerSans(flags.systemId, requestBodyArray).then((response: ContainersResourcesPostDelete) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
   }

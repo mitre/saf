@@ -11,8 +11,6 @@ import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
 
 import {POAMApi} from '@mitre/emass_client'
-// import {MilestonesGet, PoamResponsePost,
-//  PoamGet as Poams} from '@mitre/emass_client/dist/api'
 import {MilestonesGet, PoamResponsePostPutDelete} from '@mitre/emass_client/dist/api'
 
 /**
@@ -129,7 +127,7 @@ function getAllJsonExamples(): string {
 
   exampleBodyObj = {
     ...getJsonExamples('poams-post-required'),
-    ...getJsonExamples('poams-post-required-va'),
+    ...getJsonExamples('poams-post-put-required-va'),
     ...getJsonExamples('poams-post-conditional'),
     ...getJsonExamples('poams-post-put-optional'),
   }
@@ -358,6 +356,7 @@ function addOptionalFields(bodyObject: Poams, dataObj: Poams): void {
  * - "Not Applicable":
  *   - POAMs cannot be created with this status.
  *
+ *
  * If any required fields are missingFields or invalid, the function prints an error message and exits the process.
  *
  * Additionally, if any POC (Point of Contact) information is provided, all POC fields (`pocFirstName`, `pocLastName`, `pocEmail`, `pocPhoneNumber`) are required.
@@ -370,13 +369,15 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
   const HELP_MSG = 'Invoke saf emasser post poams [-h, --help] for additional help'
   switch (dataObj.status) {
     case 'Risk Accepted': {
+      // Risk Accepted POA&M Item require a comments field
       if (dataObj.comments === undefined) {
-        printRedMsg('When status is "Risk Accepted" the following parameters/fields are required:')
+        printRedMsg('When status is "Risk Accepted" the following parameter/field is required:')
         printRedMsg('    comments')
         printHelpMsg(HELP_MSG)
         process.exit(1)
+      // Risk Accepted POA&M Item cannot be saved with a Scheduled Completion Date or Milestones.
       } else if (Object.prototype.hasOwnProperty.call(dataObj, 'scheduledCompletionDate') || Object.prototype.hasOwnProperty.call(dataObj, 'milestones')) {
-        printRedMsg('When status is "Risk Accepted" POA&Ms CAN NOT be saved with the following parameters/field:')
+        printRedMsg('When status is "Risk Accepted" POA&Ms CAN NOT be saved with the following parameters/fields:')
         printRedMsg('    scheduledCompletionDate, or milestones')
         printHelpMsg(HELP_MSG)
         process.exit(1)
@@ -388,14 +389,16 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
     }
 
     case 'Ongoing': {
+      // POA&M Items that have a status of “Ongoing” cannot be saved without Milestones or Scheduled Completion.
       if (!(Object.prototype.hasOwnProperty.call(dataObj, 'scheduledCompletionDate') && Object.prototype.hasOwnProperty.call(dataObj, 'milestones'))) {
         printRedMsg('When status is "Ongoing" the following parameters/fields are required:')
         printRedMsg('    scheduledCompletionDate, milestones')
         printHelpMsg(HELP_MSG)
         process.exit(1)
+      // If we have a milestone, ensure the required fields are provided.
       } else if (!(_.some(dataObj.milestones, 'description')) || !(_.some(dataObj.milestones, 'scheduledCompletionDate'))) {
-        printRedMsg('At least one milestone parameters/fields object must be defined:')
-        printRedMsg('    "milestones": [{"description": "The milestone description", "scheduledCompletionDate": 1637342288 }], ')
+        printRedMsg('Milestone object requires the following fields:')
+        printRedMsg('    "milestones": [{"description": "The milestone description", "scheduledCompletionDate": Unix date format }], ')
         process.exit(1)
       } else {
         // Add the POA&M completion date
@@ -416,6 +419,8 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
     }
 
     case 'Completed': {
+      // Completed POA&M Item require the completionDate, comments, and Milestones.
+      // Given that this is a POST and the POA&M is completed, the scheduledCompletionDate is acceptable
       if (!(Object.prototype.hasOwnProperty.call(dataObj, 'scheduledCompletionDate')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'comments')) ||
            !(Object.prototype.hasOwnProperty.call(dataObj, 'completionDate')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'milestones'))) {
         printRedMsg('When status is "Completed" the following parameters/fields are required:')
@@ -501,7 +506,7 @@ export default class EmasserPostPoams extends Command {
     '\x1B[1mRequired JSON parameter/fields are:\x1B[0m',
     colorize(JSON.stringify(getJsonExamples('poams-post-required'), null, 2)),
     '\x1B[1mRequired for VA but Conditional for Army and USCG JSON parameters/fields are:\x1B[0m',
-    colorize(JSON.stringify(getJsonExamples('poams-post-required-va'), null, 2)),
+    colorize(JSON.stringify(getJsonExamples('poams-post-put-required-va'), null, 2)),
     '\x1B[1mConditional JSON parameters/fields are:\x1B[0m',
     colorize(JSON.stringify(getJsonExamples('poams-post-conditional'), null, 2)),
     '\x1B[1mOptional JSON parameters/fields are:\x1B[0m',

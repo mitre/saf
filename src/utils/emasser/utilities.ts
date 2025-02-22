@@ -1,15 +1,85 @@
+/* eslint-disable valid-jsdoc */
 import _ from 'lodash'
 import {Flags} from '@oclif/core'
 import {BooleanFlag, OptionFlag} from '@oclif/core/interfaces'
 import * as fs from 'fs'
 import path from 'path'
 
+/**
+ * Interface representing the command line arguments.
+ *
+ * @property {string} requestType - The type of request to be made.
+ * @property {string} endpoint - The endpoint to which the request is directed.
+ * @property {string} argument - Additional argument for the request.
+ */
 interface CliArgs {
   requestType: string;
   endpoint: string;
   argument: string;
 }
 
+/**
+ * Interface representing various flag options for a system.
+ *
+ * @interface FlagOptions
+ *
+ * @property {OptionFlag<number>} [systemId] - The ID of the system.
+ * @property {OptionFlag<number>} [poamId] - The ID of the POAM (Plan of Action and Milestones).
+ * @property {OptionFlag<number[]>} [poamsId] - The IDs of multiple POAMs.
+ * @property {OptionFlag<number>} [milestoneId] - The ID of the milestone.
+ * @property {OptionFlag<number[]>} [milestonesId] - The IDs of multiple milestones.
+ * @property {OptionFlag<number>} [workflowInstanceId] - The ID of the workflow instance.
+ * @property {OptionFlag<number|undefined>} [pageIndex] - The index of the page.
+ * @property {BooleanFlag<boolean|undefined>} [includeComments] - Flag to include comments.
+ * @property {BooleanFlag<boolean|undefined>} [includeDecommissionSystems] - Flag to include decommissioned systems.
+ * @property {BooleanFlag<boolean|undefined>} [excludeInherited] - Flag to exclude inherited items.
+ * @property {BooleanFlag<boolean|undefined>} [includeInactive] - Flag to include inactive items.
+ * @property {BooleanFlag<boolean>} [isTemplate] - Flag to indicate if it is a template.
+ * @property {BooleanFlag<boolean|undefined>} [includeDitprMetrics] - Flag to include DITPR metrics.
+ * @property {BooleanFlag<boolean|undefined>} [includeDecommissioned] - Flag to include decommissioned items.
+ * @property {BooleanFlag<boolean|undefined>} [reportsForScorecard] - Flag to include reports for scorecard.
+ * @property {BooleanFlag<boolean|undefined>} [latestOnly] - Flag to include only the latest items.
+ * @property {BooleanFlag<boolean|undefined>} [systemOnly] - Flag to include only system items.
+ * @property {BooleanFlag<boolean|undefined>} [compress] - Flag to compress the output.
+ * @property {BooleanFlag<boolean|undefined>} [printToStdOut] - Flag to print to standard output.
+ * @property {OptionFlag<string|undefined>} [policy] - The policy option.
+ * @property {OptionFlag<string|undefined>} [registrationType] - The registration type.
+ * @property {OptionFlag<string|undefined>} [ditprId] - The DITPR ID.
+ * @property {OptionFlag<string|undefined>} [coamsId] - The COAMS ID.
+ * @property {OptionFlag<string>} [roleCategory] - The role category.
+ * @property {OptionFlag<string>} [role] - The role.
+ * @property {OptionFlag<string|undefined>} [acronyms] - The acronyms.
+ * @property {OptionFlag<string|undefined>} [controlAcronyms] - The control acronyms.
+ * @property {OptionFlag<string|undefined>} [assessmentProcedures] - The assessment procedures.
+ * @property {OptionFlag<string|undefined>} [ccis] - The CCIs.
+ * @property {OptionFlag<string|any>} [sinceDate] - The date since which the items are considered.
+ * @property {OptionFlag<string|undefined>} [scheduledCompletionDateStart] - The start date for scheduled completion.
+ * @property {OptionFlag<string|undefined>} [scheduledCompletionDateEnd] - The end date for scheduled completion.
+ * @property {OptionFlag<string|any>} [filename] - The filename.
+ * @property {OptionFlag<string|undefined>} [status] - The status.
+ * @property {OptionFlag<string>} [assessmentProcedure] - The assessment procedure.
+ * @property {OptionFlag<string>} [testedBy] - The tested by field.
+ * @property {OptionFlag<string>} [testDate] - The test date.
+ * @property {OptionFlag<string|any>} [description] - The description.
+ * @property {OptionFlag<string|any>} [complianceStatus] - The compliance status.
+ * @property {OptionFlag<string|any>} [scheduledCompletionDate] - The scheduled completion date.
+ * @property {OptionFlag<number>} [orgId] - The organization ID.
+ * @property {OptionFlag<number|undefined>} [pageSize] - The size of the page.
+ * @property {OptionFlag<string[]>} [fileName] - The file names.
+ * @property {OptionFlag<string[]>} [resourceId] - The resource IDs.
+ * @property {OptionFlag<string[]>} [containerId] - The container IDs.
+ * @property {OptionFlag<string>} [dataFile] - The data file.
+ * @property {OptionFlag<string|any>} [type] - The type.
+ * @property {OptionFlag<string|any>} [category] - The category.
+ * @property {OptionFlag<string|undefined>} [refPageNumber] - The reference page number.
+ * @property {OptionFlag<string|undefined>} [controls] - The controls.
+ * @property {OptionFlag<string|any>} [artifactExpirationDate] - The artifact expiration date.
+ * @property {OptionFlag<string|any>} [lastReviewDate] - The last review date.
+ * @property {OptionFlag<string|any>} [controlAcronym] - The control acronym.
+ * @property {OptionFlag<string|any>} [comments] - The comments.
+ * @property {OptionFlag<string|any>} [workflow] - The workflow.
+ * @property {OptionFlag<string|any>} [name] - The name.
+ */
 export interface FlagOptions {
   systemId?: OptionFlag<number>;
   poamId?: OptionFlag<number>;
@@ -55,12 +125,8 @@ export interface FlagOptions {
   pageSize?: OptionFlag<number|undefined>;
   fileName?: OptionFlag<string[]>;
   resourceId?: OptionFlag<string[]>;
+  containerId?: OptionFlag<string[]>;
   dataFile?: OptionFlag<string>;
-  // poamFile?: OptionFlag<string>;
-  // controlFile?: OptionFlag<string>;
-  // cloudResourceFile?: OptionFlag<string>;
-  // statiCodeScanFile?: OptionFlag<string>;
-  // containerCodeScanFile?: OptionFlag<string>;
   type?: OptionFlag<string|any>;
   category?: OptionFlag<string|any>;
   refPageNumber?: OptionFlag<string|undefined>;
@@ -73,7 +139,13 @@ export interface FlagOptions {
   name?: OptionFlag<string|any>;
 }
 
-// Supporting Function
+/**
+ * Parses command line arguments to extract the request type, endpoint, and additional argument.
+ *
+ * @param argv - An array of command line arguments.
+ * @param endpointValue - An optional endpoint value to override the one in the command line arguments.
+ * @returns An object containing the request type, endpoint, and additional argument.
+ */
 function getArgs(argv: string[], endpointValue?: string): CliArgs {
   const requestTypeIndex = argv.findIndex(arg => (arg === 'get' || arg === 'post' || arg === 'put' || arg === 'delete'))
   return {
@@ -83,6 +155,23 @@ function getArgs(argv: string[], endpointValue?: string): CliArgs {
   }
 }
 
+/**
+ * Generates flag options for a given endpoint based on the provided command line arguments.
+ *
+ * @param argv - The command line arguments.
+ * @returns An object containing the flag options for the specified endpoint.
+ *
+ * The function processes different request types (`get`, `post`, `put`, `delete`) and endpoints
+ * to generate the appropriate flag options. Each endpoint has its own set of flags with specific
+ * descriptions and requirements.
+ *
+ * Example usage:
+ * ```typescript
+ * const flags = getFlagsForEndpoint(['get', 'system']);
+ * ```
+ *
+ * The returned `FlagOptions` object will vary based on the endpoint and request type.
+ */
 export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS-0044
   const args: CliArgs = getArgs(argv)
   let flagObj: FlagOptions = {}
@@ -293,14 +382,6 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           break
         }
 
-        // case 'poams': {
-        //   flagObj = {
-        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-        //     poamFile: Flags.string({char: 'f', description: 'A well formed JSON file with the POA&M(s) to add. It can ba a single object or an array of objects.', required: true}),
-        //   }
-        //   break
-        // }
-
         case 'milestones': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
@@ -457,7 +538,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
-            milestonesId: Flags.integer({char: 'M', description: 'Unique milestone identifier, can have multiple (space separated)', required: true, multiple: true}),
+            milestonesId: Flags.integer({char: 'm', description: 'Unique milestone identifier, can have multiple (space separated)', required: true, multiple: true}),
           }
           break
         }
@@ -465,7 +546,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'poams': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            poamsId: Flags.integer({char: 'P', description: 'Unique POA&M identification number, can have multiple (space separated)', required: true, multiple: true}),
+            poamsId: Flags.integer({char: 'p', description: 'Unique POA&M identification number, can have multiple (space separated)', required: true, multiple: true}),
           }
           break
         }
@@ -474,6 +555,14 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             resourceId: Flags.string({char: 'r', description: 'Unique identifier/resource namespace for policy compliance result', required: true, multiple: true}),
+          }
+          break
+        }
+
+        case 'container_scans': {
+          flagObj = {
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+            containerId: Flags.string({char: 'c', description: 'Unique identifier of the container', required: true, multiple: true}),
           }
           break
         }
@@ -486,6 +575,13 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
   return flagObj
 }
 
+/**
+ * Retrieves a description for a given endpoint based on the provided arguments.
+ *
+ * @param argv - The command line arguments passed to the function.
+ * @param endpoint - The endpoint for which the description is to be retrieved.
+ * @returns A string description for the specified endpoint and arguments.
+ */
 export function getDescriptionForEndpoint(argv: string[], endpoint: string): string { // skipcq: JS-0044
   const args: CliArgs = getArgs(argv, endpoint)
   let description = ''
@@ -898,6 +994,13 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
   return description
 }
 
+/**
+ * Generates example command strings for a given endpoint and arguments.
+ *
+ * @param argv - The array of command-line arguments.
+ * @param endpoint - The optional endpoint to generate examples for.
+ * @returns An array of example command strings.
+ */
 export function getExamplesForEndpoint(argv: string[], endpoint?: string): string[] { // skipcq: JS-0044
   const args: CliArgs = getArgs(argv, endpoint)
   // <%= config.bin %> resolves to the executable name
@@ -1316,6 +1419,36 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
   return exampleArray
 }
 
+/**
+ * Retrieves JSON examples based on the specified endpoint.
+ *
+ * @param {string} [endpoint] - The endpoint for which to retrieve JSON examples.
+ * @returns {string[]} An array of JSON examples corresponding to the specified endpoint.
+ *
+ * The following endpoints are supported:
+ * - 'poams-post-required': Returns JSON example for POA&M post required fields.
+ * - 'poams-post-put-required-va': Returns JSON example for POA&M post required fields specific to VA.
+ * - 'poams-post-conditional': Returns JSON example for POA&M post conditional fields.
+ * - 'poams-put-required': Returns JSON example for POA&M put required fields.
+ * - 'poams-put-conditional': Returns JSON example for POA&M put conditional fields.
+ * - 'poams-post-put-optional': Returns JSON example for POA&M post/put optional fields.
+ * - 'controls-required': Returns JSON example for controls required fields.
+ * - 'controls-conditional': Returns JSON example for controls conditional fields.
+ * - 'controls-optional': Returns JSON example for controls optional fields.
+ * - 'hardware-post-required': Returns JSON example for hardware post required fields.
+ * - 'hardware-post-put-conditional': Returns JSON example for hardware post/put conditional fields.
+ * - 'hardware-post-put-optional': Returns JSON example for hardware post/put optional fields.
+ * - 'software-post-required': Returns JSON example for software post required fields.
+ * - 'software-post-put-conditional': Returns JSON example for software post/put conditional fields.
+ * - 'software-post-put-optional': Returns JSON example for software post/put optional fields.
+ * - 'cloud_resources-required': Returns JSON example for cloud resources required fields.
+ * - 'cloud_resources-optional': Returns JSON example for cloud resources optional fields.
+ * - 'scan_findings-application': Returns JSON example for scan findings application fields.
+ * - 'scan_findings-applicationFindings': Returns JSON example for scan findings application findings fields.
+ * - 'scan_findings-clearFindings': Returns JSON example for clearing scan findings.
+ * - 'container_scans-required': Returns JSON example for container scans required fields.
+ * - 'container_scans-optional': Returns JSON example for container scans optional fields.
+ */
 export function getJsonExamples(endpoint?: string): string[] {
   if (endpoint === 'poams-post-required') {
     const data = '{ ' +
@@ -1328,7 +1461,56 @@ export function getJsonExamples(endpoint?: string): string[] {
     return JSON.parse(data)
   }
 
-  if (endpoint === 'poams-post-required-va') {
+  if (endpoint === 'poams-post-conditional') {
+    const data = '{ ' +
+      '"milestones": [{' +
+      '"description": "The milestone description",' +
+      '"scheduledCompletionDate": "Milestone scheduled completion date (Unix format)"}],' +
+      '"pocFirstName": "First name of POC (only if Last Name, Email, or Phone Number have data)",' +
+      '"pocLastName": "Last name of POC (only if First Name, Email, or Phone Number have data)",' +
+      '"pocEmail": "Email address of POC (only if First Name, Last Name, or Phone Number have data)",' +
+      '"pocPhoneNumber": "Phone number of POC (only if First Name, Last Name, or Email have data)",' +
+      '"severity": "Risk Analysis field, maybe required by certain eMASS instances. Required for approved items",' +
+      '"scheduledCompletionDate": "Required for ongoing and completed POA&M items",' +
+      '"completionDate": "Field is required for completed POA&M items",' +
+      '"comments": "Field is required for completed and risk accepted POA&M items"' +
+      '}'
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'poams-put-required') {
+    const data = '{ ' +
+      '"poamId": "Unique identifier representing the nth POAM item entered into the site database.",' +
+      '"displayPoamId": "Globally unique identifier for individual POA&M Items, seen on the front-end as ID",' +
+      '"status":  "One of the following: [Ongoing, Risk Accepted, Completed, Not Applicable]",' +
+      '"vulnerabilityDescription": "POA&M vulnerability description",' +
+      '"sourceIdentifyingVulnerability": "Source that identifies the vulnerability",' +
+      '"pocOrganization": "Organization/Office represented",' +
+      '"resources": "List of resources used"' +
+      '}'
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'poams-put-conditional') {
+    const data = '{ ' +
+        '"milestones": [{' +
+        '"milestoneId": "Unique milestone identifier",' +
+        '"description": "The milestone description",' +
+        '"scheduledCompletionDate": "Milestone scheduled completion date (Unix format)",' +
+        '"isActive": "To prevent uploading duplicate/undesired milestones through the POA&M PUT include the isActive=false. If absent or set to true a new Milestone is created"}],' +
+        '"pocFirstName": "First name of POC (only if Last Name, Email, or Phone Number have data)",' +
+        '"pocLastName": "Last name of POC (only if First Name, Email, or Phone Number have data)",' +
+        '"pocEmail": "Email address of POC (only if First Name, Last Name, or Phone Number have data)",' +
+        '"pocPhoneNumber": "Phone number of POC (only if First Name, Last Name, or Email have data)",' +
+        '"severity": "Risk Analysis field, maybe required by certain eMASS instances. Required for approved items",' +
+        '"scheduledCompletionDate": "POA&M Items with a review status of “Approved” and a status of “Completed” or “Ongoing” cannot update Scheduled Completion Date.",' +
+        '"completionDate": "Field is required for completed POA&M items",' +
+        '"comments": "Field is required for completed and risk accepted POA&M items"' +
+        '}'
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'poams-post-put-required-va') {
     const data = '{ ' +
       '"identifiedInCFOAuditOrOtherReview":  "If not specified, this field will be set to false because it does not accept a null value (Required for VA. Optional for Army and USCG)",' +
       '"personnelResourcesFundedBaseHours": "Hours for personnel resources that are founded (Required for VA. Optional for Army and USCG)",' +
@@ -1345,55 +1527,6 @@ export function getJsonExamples(endpoint?: string): string[] {
     return JSON.parse(data)
   }
 
-  if (endpoint === 'poams-post-conditional') {
-    const data = '{ ' +
-      '"milestones": [{' +
-      '"description": "The milestone description",' +
-      '"scheduledCompletionDate": "Milestone scheduled completion date (Unix format)"}],' +
-      '"pocFirstName": "First name of POC",' +
-      '"pocLastName": "Last name of POC",' +
-      '"pocEmail": "Email address of POC",' +
-      '"pocPhoneNumber": "Phone number of POC",' +
-      '"severity": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"scheduledCompletionDate": "Required for ongoing and completed POA&M items",' +
-      '"completionDate": "Field is required for completed POA&M items",' +
-      '"comments": "Field is required for completed and risk accepted POA&M items"' +
-      '}'
-    return JSON.parse(data)
-  }
-
-  if (endpoint === 'poams-put-required') {
-    const data = '{ ' +
-      '"poamId": "Unique identifier representing the nth POAM item entered into the site database.",' +
-      '"displayPoamId": "Globally unique identifier for individual POA&M Items, seen on the front-end as ID",' +
-      '"status":  "One of the following: [Ongoing, Risk Accepted, Completed, Not Applicable]",' +
-      '"vulnerabilityDescription": "POA&M vulnerability description",' +
-      '"sourceIdentVuln": "Source that identifies the vulnerability",' +
-      '"pocOrganization": "Organization/Office represented",' +
-      '"resources": "List of resources used"' +
-      '}'
-    return JSON.parse(data)
-  }
-
-  if (endpoint === 'poams-put-conditional') {
-    const data = '{ ' +
-        '"milestones": [{' +
-        '"milestoneId": "Unique milestone identifier",' +
-        '"description": "The milestone description",' +
-        '"scheduledCompletionDate": "Milestone scheduled completion date (Unix format)",' +
-        '"isActive": "To prevent uploading duplicate/undesired milestones through the POA&M PUT you must include an isActive field for the milestone and set it to equal to false"}],' +
-        '"pocFirstName": "The system acronym(s) e.g AC-1, AC-2",' +
-        '"pocLastName": "The system CCIS string numerical value",' +
-        '"pocEmail": "Security Checks that are associated with the POA&M",' +
-        '"pocPhoneNumber": "One of the following [I, II, III]",' +
-        '"severity": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-        '"scheduledCompletionDate": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-        '"completionDate": "Description of Security Control impact",' +
-        '"comments": "Description of the security control impact"' +
-        '}'
-    return JSON.parse(data)
-  }
-
   if (endpoint === 'poams-post-put-optional') {
     const data = '{ ' +
       '"externalUid": "External ID associated with the POA&M",' +
@@ -1401,13 +1534,13 @@ export function getJsonExamples(endpoint?: string): string[] {
       '"assessmentProcedure": "The Security Control Assessment Procedures being associated with the POA&M Item",' +
       '"securityChecks": "Security Checks that are associated with the POA&M",' +
       '"rawSeverity": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"relevanceOfThreat": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"likelihood": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"impact": "Description of Security Control impact",' +
+      '"relevanceOfThreat": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"likelihood": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"impact": "Risk Analysis field, maybe required by certain eMASS instances. Description of Security Control impact",' +
+      '"residualRiskLevel": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"mitigations": "Risk Analysis field, maybe required by certain eMASS instances. Mitigation explanation",' +
       '"impactDescription": "Description of the security control impact",' +
-      '"residualRiskLevel": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
       '"recommendations": "Any recommendations content",' +
-      '"mitigations": "Mitigation explanation",' +
       '"resultingResidualRiskLevelAfterProposedMitigations": "One of the following [Very Low, Low, Moderate, High, Very High] (Navy only)",' +
       '"predisposingConditions": "Conditions (Navy only)",' +
       '"threatDescription": "Threat description (Navy only)",' +
@@ -1584,36 +1717,6 @@ export function getJsonExamples(endpoint?: string): string[] {
     return JSON.parse(data)
   }
 
-  if (endpoint === 'scan_findings-application') {
-    const data = '{ ' +
-      '"application": {' +
-      '"applicationName": "Name of the software application that was assessed",' +
-      '"version": "The version of the application"}' +
-      '}'
-    return JSON.parse(data)
-  }
-
-  if (endpoint === 'scan_findings-applicationFindings') {
-    const data = '{ ' +
-      '"applicationFindings": [{' +
-      '"codeCheckName": "Name of the software vulnerability or weakness",' +
-      '"scanDate": "The scan date, Unix date format",' +
-      '"resourceName":  "Friendly name of Cloud resource",' +
-      '"cweId": "The Common Weakness Enumerator (CWE) identifier",' +
-      '"count": "Number of instances observed for a specified finding",' +
-      '"rawSeverity": "OPTIONAL - One of the following [Low, Medium, Moderate, High, Critical]"}]' +
-      '}'
-    return JSON.parse(data)
-  }
-
-  if (endpoint === 'scan_findings-clearFindings') {
-    const data = '{ ' +
-      '"applicationFindings": [{' +
-      '"clearFindings": "To clear an application\'s findings, use only the field clearFindings and set it to true."}]' +
-      '}'
-    return JSON.parse(data)
-  }
-
   if (endpoint === 'container_scans-required') {
     const data = '{ ' +
       '"containerId": "Unique identifier of the container",' +
@@ -1639,6 +1742,8 @@ export function getJsonExamples(endpoint?: string): string[] {
       '"test": "Informational tags associated to results for other metadata" },' +
       '"benchmarks": [{' +
       '"isBaseline": "True/false flag for providing results as baseline. If true, all existing compliance results for the provided benchmark within the container will be replaced by results in the current call", ' +
+      '"verion": "The benchmark version", ' +
+      '"release": "The benchmark release", ' +
       '"results": [{' +
       '"message": "Comments for the result"}]' +
       '}]' +
@@ -1646,9 +1751,50 @@ export function getJsonExamples(endpoint?: string): string[] {
     return JSON.parse(data)
   }
 
+  if (endpoint === 'scan_findings-application') {
+    const data = '{ ' +
+      '"application": {' +
+      '"applicationName": "Name of the software application that was assessed",' +
+      '"version": "The version of the application"}' +
+      '}'
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'scan_findings-applicationFindings') {
+    const data = '{ ' +
+      '"applicationFindings": [{' +
+      '"codeCheckName": "Name of the software vulnerability or weakness",' +
+      '"scanDate": "The scan date, Unix date format",' +
+      '"cweId": "The Common Weakness Enumerator (CWE) identifier",' +
+      '"count": "Number of instances observed for a specified finding",' +
+      '"rawSeverity": "OPTIONAL - One of the following [Low, Medium, Moderate, High, Critical]"}]' +
+      '}'
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'scan_findings-clearFindings') {
+    const data = '{ ' +
+      '"applicationFindings": [{' +
+      '"clearFindings": "To clear an application\'s findings, use only the field clearFindings and set it to true."}]' +
+      '}'
+    return JSON.parse(data)
+  }
+
   return []
 }
 
+/**
+ * Saves data to a specified file within a given directory. If the directory does not exist, it will be created.
+ *
+ * @param dir - The directory where the file will be saved.
+ * @param filename - The name of the file to save the data to.
+ * @param data - The data to be saved in the file.
+ *
+ * @remarks
+ * This function checks if the specified directory exists, and if not, it creates the directory.
+ * It then writes the provided data to a file within that directory. If an error occurs during
+ * the file writing process, an error message is logged to the console.
+ */
 export function saveFile(dir: string, filename: string, data: any): void {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir)
@@ -1663,10 +1809,22 @@ export function saveFile(dir: string, filename: string, data: any): void {
   })
 }
 
+/**
+ * Prints a help message to the console with a specific format.
+ *
+ * The message is prefixed with an arrow (→) and displayed in yellow color.
+ *
+ * @param msg - The help message to be printed.
+ */
 export function printHelpMsg(msg: string) {
   console.log('\x1B[93m\n→', msg, '\x1B[0m')
 }
 
+/**
+ * Prints a message to the console in red color.
+ *
+ * @param msg - The message to be printed.
+ */
 export function printRedMsg(msg: string) {
   console.log('\x1B[91m»', msg, '\x1B[0m')
 }
