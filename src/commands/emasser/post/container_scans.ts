@@ -298,7 +298,7 @@ export default class EmasserContainerScans extends Command {
   ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) container scans and their scan results. See eMASSer Features for additional information.'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Container Scan Results command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

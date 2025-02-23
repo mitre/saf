@@ -172,7 +172,7 @@ export default class EmasserPostStaticCodeScans extends Command {
   ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Post (upload) static code scans, can also clear application\'s findings'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Static Code Scans command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

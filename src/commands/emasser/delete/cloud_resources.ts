@@ -21,7 +21,7 @@ export default class EmasserDeleteCloudResources extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-r,--resourceId] <resource-id> <resource-id> ...']
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help to DELETE Cloud Resources endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show help for the SAF CLI eMASSer DELETE Cloud Resources command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

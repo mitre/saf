@@ -20,7 +20,7 @@ export default class EmasserGetRoles extends Command {
   static readonly examples = getExamplesForEndpoint(process.argv, endpoint);
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Roles endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Roles command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

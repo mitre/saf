@@ -21,7 +21,7 @@ export default class EmasserGetWorkflowInstances extends Command {
   static readonly examples = getExamplesForEndpoint(process.argv)
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Workflow Instances endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Workflow Instances command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

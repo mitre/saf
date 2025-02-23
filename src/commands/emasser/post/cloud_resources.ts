@@ -270,7 +270,7 @@ export default class EmasserPostCloudResources extends Command {
   ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) cloud resources and their scan results. See eMASSer Features for additional information.'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Cloud Resource Results command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

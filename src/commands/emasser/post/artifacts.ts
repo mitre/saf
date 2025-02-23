@@ -36,7 +36,7 @@ export default class EmasserPostArtifacts extends Command {
   ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) artifact file(s) to a system'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Artifacts command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

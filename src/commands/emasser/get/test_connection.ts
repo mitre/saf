@@ -14,7 +14,7 @@ export default class EmasserGetTestConnection extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %>']
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Test connection to configured eMASS URL'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Test Connection command'}),
   }
 
   async run(): Promise<void> { // skipcq: JS-0105, JS-0116

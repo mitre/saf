@@ -49,7 +49,7 @@ export default class EmasserGetDashboards extends Command {
   static readonly examples = getExamplesForEndpoint(process.argv, endpoint);
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Dashboards endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Dashboards command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   };
 
@@ -147,6 +147,7 @@ export default class EmasserGetDashboards extends Command {
     cmmc_requirement_objectives_details: Args.string({name: 'cmmc_requirement_objectives_details', description: 'Get CMMC assessment requirement objectives details dashboard information', required: false}),
   };
 
+  // skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
   async run(): Promise<void> { // skipcq: JS-0044
     const {args, flags} = await this.parse(EmasserGetDashboards)
     const apiCxn = new ApiConnection()
@@ -735,24 +736,5 @@ export default class EmasserGetDashboards extends Command {
       const suggestions = 'get dashboards [-h or --help] for available arguments'
       this.warn('Invalid arguments\nTry this:\n\t' + suggestions)
     }
-  }
-
-  // Override showHelp to customize argument grouping
-  // This is the help message that is displayed when the user runs the command with the --help flag
-  // Not working because we're overriding the run method in the package.json to properly format the output
-  async showHelp() {
-    this.log(`
-USAGE
-  $ saf emasser get dashboards [ARGUMENT]
-  NOTE: see EXAMPLES for argument case format
-
-ARGUMENTS
-  System Status Dashboard:
-    status_details    Get systems status detail dashboard information
-
-  System Terms/Conditions Dashboards:
-    terms_conditions_summary  Get system terms and conditions summary dashboard information
-    terms_conditions_details  Get system terms and conditions details dashboard information
-    `)
   }
 }

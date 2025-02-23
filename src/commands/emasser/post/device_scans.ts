@@ -6,7 +6,7 @@ import {DeviceScanResultsResponsePost} from '@mitre/emass_client/dist/api'
 import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import * as fs from 'fs'
+import fs from 'fs'
 import path from 'path'
 
 const CMD_HELP = 'saf emasser post device_scans -h or --help'
@@ -33,7 +33,7 @@ export default class EmasserPostDeviceScans extends Command {
   ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Device Scan Results endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Device Scan Results command'}),
     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
     filename: Flags.string({char: 'f', description: 'The device scan result file to be uploaded.', required: true}),
     scanType: Flags.string({char: 'S', description: 'The type of scan being uploaded', required: true,
@@ -77,7 +77,6 @@ export default class EmasserPostDeviceScans extends Command {
       process.exit(1)
     }
 
-    console.log('GOT HERE')
     const fileStream: fs.ReadStream = fs.createReadStream(flags.filename)
 
     addDeviceScans.addScanResultsBySystemId(flags.systemId, flags.scanType, fileStream, flags.isBaseline).then((response: DeviceScanResultsResponsePost) => {

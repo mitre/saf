@@ -19,7 +19,7 @@ export default class EmasserPostCac extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-a,--controlAcronym] [options]']
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) control to second stage of CAC'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST CAC command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

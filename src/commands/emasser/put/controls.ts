@@ -7,7 +7,7 @@ import {Command, Flags} from '@oclif/core'
 import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
+import {FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
 
 import {ControlsApi} from '@mitre/emass_client'
 // import {ControlsResponsePut,
@@ -15,11 +15,14 @@ import {ControlsApi} from '@mitre/emass_client'
 import {ControlsResponsePut} from '@mitre/emass_client/dist/api'
 
 interface Controls  {
+  // Required Fields
   acronym?: string
   responsibleEntities?: string
   controlDesignation?: string
   estimatedCompletionDate?: string
   implementationNarrative?: string
+
+  // Conditional Fields
   commonControlProvider?: string
   naJustification?: string
   slcmCriticality?: string
@@ -28,6 +31,8 @@ interface Controls  {
   slcmReporting?: string
   slcmTracking?: string
   slcmComments?: string
+
+  // Optional Fields
   implementationStatus?: string
   severity?: string
   vulnerabiltySummary?: string
@@ -38,14 +43,22 @@ interface Controls  {
   impactDescription?: string
   residualRiskLevel?: string
   testMethod?: string
+  mitigations?: string
+  applicationLayer?: string
+  databaseLayer?: string
+  operatingSystemLayer?: string
 }
 
-function printHelpMsg(msg: string) {
-  console.log('\x1B[93m\n→', msg, '\x1B[0m')
-}
+function getAllJsonExamples(): string {
+  let exampleBodyObj: any = {}
 
-function printRedMsg(msg: string) {
-  console.log('\x1B[91m»', msg, '\x1B[0m')
+  exampleBodyObj = {
+    ...getJsonExamples('controls-required'),
+    ...getJsonExamples('controls-conditional'),
+    ...getJsonExamples('controls-optional'),
+  }
+
+  return exampleBodyObj
 }
 
 function assertParamExists(object: string, value: string|number|undefined|null): void {
@@ -152,6 +165,22 @@ function addOptionalFields(bodyObject: Controls, dataObj: Controls): void {
   if (Object.prototype.hasOwnProperty.call(dataObj, 'testMethod')) {
     bodyObject.testMethod = dataObj.testMethod
   }
+
+  if (Object.prototype.hasOwnProperty.call(dataObj, 'mitigations')) {
+    bodyObject.mitigations = dataObj.mitigations
+  }
+
+  if (Object.prototype.hasOwnProperty.call(dataObj, 'applicationLayer')) {
+    bodyObject.applicationLayer = dataObj.applicationLayer
+  }
+
+  if (Object.prototype.hasOwnProperty.call(dataObj, 'databaseLayer')) {
+    bodyObject.databaseLayer = dataObj.databaseLayer
+  }
+
+  if (Object.prototype.hasOwnProperty.call(dataObj, 'operatingSystemLayer')) {
+    bodyObject.operatingSystemLayer = dataObj.operatingSystemLayer
+  }
 }
 
 function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { // skipcq: JS-0044
@@ -170,7 +199,7 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
   //                      controlDesignation, commonnControlProvider
   //----------------------------------------------------------------------------------------
   const HELP_MSG = 'Invoke saf emasser put controls [-h, --help] for additional help'
-  // Only process if we have an Implementation Status
+  // Only process if we have an Implementation Status (optional field)
   if (Object.prototype.hasOwnProperty.call(dataObj, 'implementationStatus')) {
     // The implementation Status is always required in any of these cases
     bodyObject.implementationStatus = dataObj.implementationStatus
@@ -278,22 +307,27 @@ function generateBodyObj(dataObject: Controls): Controls {
   return bodyObj
 }
 
+const CMD_HELP = 'saf emasser put controls -h or --help'
 export default class EmasserPutControls extends Command {
-  static usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command usages\x1B[0m'
 
-  static description = 'Update Security Control information of a system for both the Implementation Plan and Risk Assessment.'
+  static readonly description = 'Update Security Control information of a system for both the Implementation Plan and Risk Assessment.'
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f, --dataFile]',
+  static readonly examples = [
+    '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f, --dataFile]',
     'The input file should be a well formed JSON containing the Security Control information based on defined business rules.',
     'Required JSON parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('controls-required'), null, 2)),
     'Conditional JSON parameters/fields are: ',
     colorize(JSON.stringify(getJsonExamples('controls-conditional'), null, 2)),
     'Optional JSON parameters/fields are:',
-    colorize(JSON.stringify(getJsonExamples('controls-optional'), null, 2))]
+    colorize(JSON.stringify(getJsonExamples('controls-optional'), null, 2)),
+    '\x1B[1m\x1B[32mAll accepted parameters/fields are:\x1B[0m',
+    colorize(getAllJsonExamples()),
+  ]
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Put (update) control information in a system for one or many controls. See emasser Features (emasserFeatures.md) for additional information.'}),
+  static readonly flags = {
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the PUT Controls command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
@@ -334,5 +368,15 @@ export default class EmasserPutControls extends Command {
     updateControl.updateControlBySystemId(flags.systemId, requestBodyArray).then((response: ControlsResponsePut) => {
       console.log(colorize(outputFormat(response)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
+  }
+
+  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+    // If error message is for missing flags, display
+    // what fields are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('with --help', `with: \x1B[93m${CMD_HELP}\x1B[0m`))
+    } else {
+      this.warn(err)
+    }
   }
 }

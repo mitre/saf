@@ -19,7 +19,7 @@ export default class EmasserDeleteArtifacts extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--fileName] <path-to-file1> <path-to-file2> ...']
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the DELETE POA&M endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show help for the SAF CLI eMASSer DELETE Artifacts command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

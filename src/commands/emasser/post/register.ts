@@ -14,7 +14,7 @@ export default class EmasserPostRegister extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %>']
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Register a certificate & obtain the API-key - The certificate is provided in the environment configuration file (.env)'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the Register (POST) a certificate & obtain the API-key'}),
   }
 
   async run(): Promise<void> { // skipcq: JS-0116, JS-0105

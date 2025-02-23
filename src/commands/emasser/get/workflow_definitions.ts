@@ -15,7 +15,7 @@ export default class EmasserGetWorkflowDefinitions extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %> [options]']
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Workflow Definitions endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Workflow Definitions command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

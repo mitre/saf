@@ -24,7 +24,7 @@ export default class EmasserGetHardwareBaseline extends Command {
   ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Hardware Baseline endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Hardware Baseline command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

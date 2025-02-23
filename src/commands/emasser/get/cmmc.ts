@@ -15,7 +15,7 @@ export default class EmasserGetCmmc extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-d, --sinceDate] <value>']
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET CMMC endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET CMMC command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

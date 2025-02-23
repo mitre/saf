@@ -168,6 +168,7 @@ function addConditionalFields(bodyObject: Software, dataObj: Software): void {
  * @param bodyObject - The target object to which optional fields will be added.
  * @param dataObj - The source object from which optional fields will be copied.
  */
+// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
 function addOptionalFields(bodyObject: Software, dataObj: Software): void {
   if (Object.prototype.hasOwnProperty.call(dataObj, 'softwareType')) {
     bodyObject.softwareType = dataObj.softwareType
@@ -345,7 +346,7 @@ export default class EmasserSoftwareBaseline extends Command {
   ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) software assets in a system. See eMASSer Features for additional information.'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Software Baseline command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

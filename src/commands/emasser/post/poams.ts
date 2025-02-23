@@ -224,6 +224,7 @@ function addConditionalFields(bodyObject: Poams, dataObj: Poams): void {
  * @param bodyObject - The target object to which optional fields will be added.
  * @param dataObj - The source object containing optional fields.
  */
+// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
 function addOptionalFields(bodyObject: Poams, dataObj: Poams): void {
   if (Object.prototype.hasOwnProperty.call(dataObj, 'externalUid')) {
     bodyObject.externalUid = dataObj.externalUid
@@ -365,6 +366,7 @@ function addOptionalFields(bodyObject: Poams, dataObj: Poams): void {
  * The function uses `printRedMsg` to display error messages and `printHelpMsg` to display help messages.
  * It exits the process with a status code of 1 if any validation fails.
  */
+// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
 function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skipcq: JS-0044
   const HELP_MSG = 'Invoke saf emasser post poams [-h, --help] for additional help'
   switch (dataObj.status) {
@@ -516,7 +518,7 @@ export default class EmasserPostPoams extends Command {
   ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) a Plan of Action and Milestones (POA&M) item(s) in a system. See eMASSer Features for additional information.'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST POA&Ms command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

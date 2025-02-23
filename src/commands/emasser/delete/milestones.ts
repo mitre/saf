@@ -19,7 +19,7 @@ export default class EmasserDeleteMilestones extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-m,--milestonesId]'];
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the DELETE Milestones endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show help for the SAF CLI eMASSer DELETE Milestones command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
@@ -33,7 +33,7 @@ export default class EmasserDeleteMilestones extends Command {
       requestBodyArray.push({milestoneId: milestoneId}) // skipcq: JS-0240
     })
 
-    // Call the endpoint
+    // Call API endpoint
     delMilestones.deleteMilestone(flags.systemId, flags.poamId, requestBodyArray).then((response: MilestonesPutPostDelete) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error:any) => console.error(colorize(outputError(error))))

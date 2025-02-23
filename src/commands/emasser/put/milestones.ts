@@ -10,15 +10,16 @@ import {MilestonesApi} from '@mitre/emass_client'
 import {MilestoneResponsePut,
   MilestonesGet as Milestones} from '@mitre/emass_client/dist/api'
 
+const CMD_HELP = 'saf emasser put milestones -h or --help'
 export default class EmasserPutMilestones extends Command {
-  static usage = '<%= command.id %> [options]';
+  static readonly usage = '<%= command.id %> [options]';
 
-  static description = 'Update milestone(s) for specified system, poam, and milestone Id';
+  static readonly description = 'Update milestone(s) for specified system, poam, and milestone Id';
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-m,--milestoneId] [-d,--description] [-c,--scheduledCompletionDate]'];
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-m,--milestoneId] [-d,--description] [-c,--scheduledCompletionDate]'];
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the PUT Milestones endpoint'}),
+  static readonly flags = {
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the PUT Milestones command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
@@ -34,8 +35,19 @@ export default class EmasserPutMilestones extends Command {
       scheduledCompletionDate: Number.parseFloat(flags.scheduledCompletionDate),
     })
 
+    // Call API endpoint
     putMilestones.updateMilestoneBySystemIdAndPoamId(flags.systemId, flags.poamId, requestBodyArray).then((response: MilestoneResponsePut) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
+  }
+
+  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+    // If error message is for missing flags, display
+    // what fields are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('with --help', `with: \x1B[93m${CMD_HELP}\x1B[0m`))
+    } else {
+      this.warn(err)
+    }
   }
 }

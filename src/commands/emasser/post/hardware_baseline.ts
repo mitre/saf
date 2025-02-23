@@ -248,7 +248,7 @@ export default class EmasserHardwareBaseline extends Command {
   ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) hardware assets in a system. See eMASSer Features for additional information.'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Hardware Baseline command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

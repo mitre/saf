@@ -21,7 +21,7 @@ export default class EmasserContainerScans extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-c,--containerId] <container-id> <container-id> ...']
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help to DELETE Containers endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show help for the SAF CLI eMASSer DELETE Container Scans command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

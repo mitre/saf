@@ -1,5 +1,5 @@
 import {colorize} from 'json-colorizer'
-import {Command} from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 
 import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
@@ -21,6 +21,7 @@ export default class EmasserPostMilestones extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-d,--description] [-c,--scheduledCompletionDate]']
 
   static readonly flags = {
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Milestones command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

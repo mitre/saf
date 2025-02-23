@@ -6,7 +6,8 @@ export default class EmasserSayHello extends Command {
   static hidden = true
 
   async run(): Promise<void> { // skipcq: JS-0116, JS-0105
-    let user = 'rookie'
+    const users = ['rookie', 'greenhorn', 'novice', 'expert', 'oracle', 'maestro']
+    let user = users[Math.floor(Math.random() * 6)]
     try {
       user = os.userInfo().username
     } finally {

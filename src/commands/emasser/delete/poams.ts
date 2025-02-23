@@ -19,7 +19,7 @@ export default class EmasserDeletePoams extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamsId]'];
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the DELETE POA&M endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show help for the SAF CLI eMASSer DELETE POA&Ms command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

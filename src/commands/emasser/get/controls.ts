@@ -15,7 +15,7 @@ export default class EmasserGetControls extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s, --systemId] <value> [option]']
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Controls endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Controls command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

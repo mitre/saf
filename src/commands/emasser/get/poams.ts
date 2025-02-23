@@ -20,7 +20,7 @@ export default class EmasserGetPoams extends Command {
   static readonly examples = getExamplesForEndpoint(process.argv, endpoint);
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET POA&Ms endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET POA&Ms command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

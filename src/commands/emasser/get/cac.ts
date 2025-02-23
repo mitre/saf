@@ -15,7 +15,7 @@ export default class EmasserGetCac extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s, --systemId] <value>']
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET CAC endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET CAC command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

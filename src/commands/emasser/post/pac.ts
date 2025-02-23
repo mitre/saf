@@ -19,7 +19,7 @@ export default class EmasserPostPac extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-w,--workflow] [-n,--name] [-c,--comments]']
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) a Package Approval Chain (PAC) item in a system'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Package Approval Chain (PAC) command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

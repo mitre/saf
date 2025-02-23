@@ -2,7 +2,7 @@
 import _ from 'lodash'
 import {Flags} from '@oclif/core'
 import {BooleanFlag, OptionFlag} from '@oclif/core/interfaces'
-import * as fs from 'fs'
+import fs from 'fs'
 import path from 'path'
 
 /**
@@ -18,68 +18,6 @@ interface CliArgs {
   argument: string;
 }
 
-/**
- * Interface representing various flag options for a system.
- *
- * @interface FlagOptions
- *
- * @property {OptionFlag<number>} [systemId] - The ID of the system.
- * @property {OptionFlag<number>} [poamId] - The ID of the POAM (Plan of Action and Milestones).
- * @property {OptionFlag<number[]>} [poamsId] - The IDs of multiple POAMs.
- * @property {OptionFlag<number>} [milestoneId] - The ID of the milestone.
- * @property {OptionFlag<number[]>} [milestonesId] - The IDs of multiple milestones.
- * @property {OptionFlag<number>} [workflowInstanceId] - The ID of the workflow instance.
- * @property {OptionFlag<number|undefined>} [pageIndex] - The index of the page.
- * @property {BooleanFlag<boolean|undefined>} [includeComments] - Flag to include comments.
- * @property {BooleanFlag<boolean|undefined>} [includeDecommissionSystems] - Flag to include decommissioned systems.
- * @property {BooleanFlag<boolean|undefined>} [excludeInherited] - Flag to exclude inherited items.
- * @property {BooleanFlag<boolean|undefined>} [includeInactive] - Flag to include inactive items.
- * @property {BooleanFlag<boolean>} [isTemplate] - Flag to indicate if it is a template.
- * @property {BooleanFlag<boolean|undefined>} [includeDitprMetrics] - Flag to include DITPR metrics.
- * @property {BooleanFlag<boolean|undefined>} [includeDecommissioned] - Flag to include decommissioned items.
- * @property {BooleanFlag<boolean|undefined>} [reportsForScorecard] - Flag to include reports for scorecard.
- * @property {BooleanFlag<boolean|undefined>} [latestOnly] - Flag to include only the latest items.
- * @property {BooleanFlag<boolean|undefined>} [systemOnly] - Flag to include only system items.
- * @property {BooleanFlag<boolean|undefined>} [compress] - Flag to compress the output.
- * @property {BooleanFlag<boolean|undefined>} [printToStdOut] - Flag to print to standard output.
- * @property {OptionFlag<string|undefined>} [policy] - The policy option.
- * @property {OptionFlag<string|undefined>} [registrationType] - The registration type.
- * @property {OptionFlag<string|undefined>} [ditprId] - The DITPR ID.
- * @property {OptionFlag<string|undefined>} [coamsId] - The COAMS ID.
- * @property {OptionFlag<string>} [roleCategory] - The role category.
- * @property {OptionFlag<string>} [role] - The role.
- * @property {OptionFlag<string|undefined>} [acronyms] - The acronyms.
- * @property {OptionFlag<string|undefined>} [controlAcronyms] - The control acronyms.
- * @property {OptionFlag<string|undefined>} [assessmentProcedures] - The assessment procedures.
- * @property {OptionFlag<string|undefined>} [ccis] - The CCIs.
- * @property {OptionFlag<string|any>} [sinceDate] - The date since which the items are considered.
- * @property {OptionFlag<string|undefined>} [scheduledCompletionDateStart] - The start date for scheduled completion.
- * @property {OptionFlag<string|undefined>} [scheduledCompletionDateEnd] - The end date for scheduled completion.
- * @property {OptionFlag<string|any>} [filename] - The filename.
- * @property {OptionFlag<string|undefined>} [status] - The status.
- * @property {OptionFlag<string>} [assessmentProcedure] - The assessment procedure.
- * @property {OptionFlag<string>} [testedBy] - The tested by field.
- * @property {OptionFlag<string>} [testDate] - The test date.
- * @property {OptionFlag<string|any>} [description] - The description.
- * @property {OptionFlag<string|any>} [complianceStatus] - The compliance status.
- * @property {OptionFlag<string|any>} [scheduledCompletionDate] - The scheduled completion date.
- * @property {OptionFlag<number>} [orgId] - The organization ID.
- * @property {OptionFlag<number|undefined>} [pageSize] - The size of the page.
- * @property {OptionFlag<string[]>} [fileName] - The file names.
- * @property {OptionFlag<string[]>} [resourceId] - The resource IDs.
- * @property {OptionFlag<string[]>} [containerId] - The container IDs.
- * @property {OptionFlag<string>} [dataFile] - The data file.
- * @property {OptionFlag<string|any>} [type] - The type.
- * @property {OptionFlag<string|any>} [category] - The category.
- * @property {OptionFlag<string|undefined>} [refPageNumber] - The reference page number.
- * @property {OptionFlag<string|undefined>} [controls] - The controls.
- * @property {OptionFlag<string|any>} [artifactExpirationDate] - The artifact expiration date.
- * @property {OptionFlag<string|any>} [lastReviewDate] - The last review date.
- * @property {OptionFlag<string|any>} [controlAcronym] - The control acronym.
- * @property {OptionFlag<string|any>} [comments] - The comments.
- * @property {OptionFlag<string|any>} [workflow] - The workflow.
- * @property {OptionFlag<string|any>} [name] - The name.
- */
 export interface FlagOptions {
   systemId?: OptionFlag<number>;
   poamId?: OptionFlag<number>;
@@ -119,6 +57,7 @@ export interface FlagOptions {
   testedBy?: OptionFlag<string>;
   testDate?: OptionFlag<string>;
   description?: OptionFlag<string|any>;
+  artifactDescription?: OptionFlag<string|any>;
   complianceStatus?: OptionFlag<string|any>;
   scheduledCompletionDate?: OptionFlag<string|any>;
   orgId?:OptionFlag<number>;
@@ -131,7 +70,8 @@ export interface FlagOptions {
   category?: OptionFlag<string|any>;
   refPageNumber?: OptionFlag<string|undefined>;
   controls?: OptionFlag<string|undefined>;
-  artifactExpirationDate?: OptionFlag<string|any>;
+  signedDate?: OptionFlag<string|any>;
+  expirationDate?: OptionFlag<string|any>;
   lastReviewDate?: OptionFlag<string|any>;
   controlAcronym?: OptionFlag<string|any>;
   comments?: OptionFlag<string|any>;
@@ -172,6 +112,7 @@ function getArgs(argv: string[], endpointValue?: string): CliArgs {
  *
  * The returned `FlagOptions` object will vary based on the endpoint and request type.
  */
+// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
 export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS-0044
   const args: CliArgs = getArgs(argv)
   let flagObj: FlagOptions = {}
@@ -435,30 +376,6 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           }
           break
         }
-
-        // case 'cloud_resources': {
-        //   flagObj = {
-        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-        //     cloudResourceFile: Flags.string({char: 'f', description: 'A well formed JSON file with the cloud resources and their scan results. It can ba a single object or an array of objects.', required: true}),
-        //   }
-        //   break
-        // }
-
-        // case 'static_code_scans': {
-        //   flagObj = {
-        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-        //     statiCodeScanFile: Flags.string({char: 'f', description: 'A well formed JSON file with application scan findings. It can ba a single object or an array of objects.', required: true}),
-        //   }
-        //   break
-        // }
-
-        // case 'container_scans': {
-        //   flagObj = {
-        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-        //     containerCodeScanFile: Flags.string({char: 'f', description: 'A well formed JSON file with container scan results. It can ba a single object or an array of objects.', required: true}),
-        //   }
-        //   break
-        // }
       }
 
       break
@@ -466,35 +383,40 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
 
     case 'put': {
       switch (args.endpoint) { // skipcq: JS-0047
-        case 'artifacts': {
-          flagObj = {
-            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            filename: Flags.string({char: 'f', description: 'Artifact file name to update for the given system', required: true}),
-            isTemplate: Flags.boolean({char: 'T', description: 'Boolean - Indicates whether an artifact is a template.', allowNo: true, required: true}),
-            type: Flags.string({char: 't', description: 'Artifact file type',
-              options: ['Procedure', 'Diagram', 'Policy', 'Labor', 'Document', 'Image', 'Other', 'Scan Result', 'Auditor Report'], required: true}),
-            category: Flags.string({char: 'g', description: 'Artifact category', options: ['Implementation Guidance', 'Evidence'], required: true}),
-            description: Flags.string({char: 'd', description: 'The artifact(s) description', required: false}),
-            refPageNumber: Flags.string({char: 'p', description: 'Artifact reference page number', required: false}),
-            ccis: Flags.string({char: 'c', description: 'CCIs associated with artifact', required: false}),
-            controls: Flags.string({char: 'C', description: 'Control acronym associated with the artifact. NIST SP 800-53 Revision 4 defined.', required: false}),
-            artifactExpirationDate: Flags.string({char: 'D', description: 'Date artifact expires and requires review', required: false}),
-            lastReviewDate: Flags.string({char: 'R', description: 'Date artifact was last reviewed', required: false}),
-          }
-          break
-        }
+        // case 'artifacts': {
+        //   flagObj = {
+        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+        //     filename: Flags.string({char: 'f', description: 'Artifact file name to update for the given system', required: true}),
+        //     isTemplate: Flags.boolean({char: 'T', description: 'Boolean - Indicates whether an artifact is a template.', allowNo: true, required: true, default: false}),
+        //     type: Flags.string({char: 't', required: true, default: 'Other',
+        //       description: 'The type of artifact. Possible values are: Procedure, Diagram, Policy, Labor, Document, Image,' +
+        //                    'Other, Scan Result, Auditor Report. May accept other values set by system administrators'}),
+        //     category: Flags.string({char: 'g', required: true,
+        //       description: 'Artifact category. Possible values are: Implementation Guidance or Evidence. May accept other values set by system administrators'}),
+        //     name: Flags.string({char: 'n', description: 'The artifact name', required: false}),
+        //     artifactDescription: Flags.string({char: 'a', description: 'The artifact(s) description', required: false}),
+        //     refPageNumber: Flags.string({char: 'r', description: 'Artifact reference page number', required: false}),
+        //     controls: Flags.string({char: 'c', description: 'Control acronym associated with the artifact. NIST SP 800-53 Revision 4 defined.', required: false}),
+        //     assessmentProcedures: Flags.string({char: 'p', description: 'The Security Control Assessment Procedure being associated with the artifact', required: false}),
+        //     expirationDate: Flags.string({char: 'e', description: 'Date artifact expires and requires review.', required: false}),
+        //     lastReviewDate: Flags.string({char: 'l', description: 'Date artifact was last reviewed', required: false}),
+        //     signedDate: Flags.string({char: 'd', description: 'Date artifact was signed', required: false}),
+        //   }
+        //   break
+        // }
 
         case 'milestones': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             poamId: Flags.integer({char: 'p', description: 'The poam identification number', required: true}),
             milestoneId: Flags.integer({char: 'm', description: 'Unique milestone identifier', required: true}),
-            description: Flags.string({char: 'd', description: 'The milestone description', required: false}),
+            description: Flags.string({char: 'd', description: 'The milestone description', required: true}),
             scheduledCompletionDate: Flags.string({char: 'c', description: 'The scheduled completion date - Unix time format', required: false}),
           }
           break
         }
 
+        case 'artifacts':
         case 'poams':
         case 'controls': {
           flagObj = {
@@ -503,22 +425,6 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           }
           break
         }
-
-        // case 'poams': {
-        //   flagObj = {
-        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-        //     poamFile: Flags.string({char: 'f', description: 'A well formed JSON file with the POA&M(s) to updated the specified system. It can ba a single object or an array of objects.', required: true}),
-        //   }
-        //   break
-        // }
-
-        // case 'controls': {
-        //   flagObj = {
-        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-        //     controlFile: Flags.string({char: 'f', description: 'A well formed JSON file with the Security Control information to updated the specified system. It can ba a single object or an array of objects.', required: true}),
-        //   }
-        //   break
-        // }
       }
 
       break
@@ -582,6 +488,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
  * @param endpoint - The endpoint for which the description is to be retrieved.
  * @returns A string description for the specified endpoint and arguments.
  */
+// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
 export function getDescriptionForEndpoint(argv: string[], endpoint: string): string { // skipcq: JS-0044
   const args: CliArgs = getArgs(argv, endpoint)
   let description = ''
@@ -1001,6 +908,7 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
  * @param endpoint - The optional endpoint to generate examples for.
  * @returns An array of example command strings.
  */
+// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
 export function getExamplesForEndpoint(argv: string[], endpoint?: string): string[] { // skipcq: JS-0044
   const args: CliArgs = getArgs(argv, endpoint)
   // <%= config.bin %> resolves to the executable name
@@ -1450,6 +1358,51 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
  * - 'container_scans-optional': Returns JSON example for container scans optional fields.
  */
 export function getJsonExamples(endpoint?: string): string[] {
+  if (endpoint === 'controls-required') {
+    const data = '{ ' +
+      '"acronym": "System acronym, required to match the NIST SP 800-53 Revision 4.",' +
+      '"responsibleEntities": "Include written description of Responsible Entities that are responsible for the Security Control.",' +
+      '"controlDesignation":  "One of the following: [Common, System-Specific, Hybrid]",' +
+      '"estimatedCompletionDate": "Estimation completion date - Field is required for Implementation Plan",' +
+      '"implementationNarrative": "Includes Security Control comments"' +
+      '}'
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'controls-conditional') {
+    const data = '{ ' +
+      '"commonControlProvider": "Indicate the type of Common Control Provider for an “Inherited” Security Control. One of the following [DoD, Component, Enclave]",' +
+      '"naJustification": "Provide justification for Security Controls deemed Not Applicable to the system",' +
+      '"slcmCriticality": "Criticality of Security Control regarding system-level continuous monitoring (SLCM) ",' +
+      '"slcmFrequency": "One of the following [Constantly,Daily,Weekly,Monthly,Quarterly,Semi-Annually,Annually,Every Two Years,Every Three Years,Undetermined]",' +
+      '"slcmMethod": "One of the following [Automated, Semi-Automated, Manual, Undetermined]",' +
+      '"slcmReporting": "Organization/Office represented",' +
+      '"slcmTracking": "The System-Level Continuous Monitoring tracking",' +
+      '"slcmComments":" Additional comments for Security Control regarding SLCM"' +
+      '}'
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'controls-optional') {
+    const data = '{ ' +
+      '"implementationStatus": "One of the following [Planned,Implemented,Inherited,Not Applicable,Manually Inherited]",' +
+      '"severity": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"vulnerabilitySummary": "Include vulnerability summary",' +
+      '"recommendations": "The include recommendations",' +
+      '"relevanceOfThreat": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"likelihood": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"impact": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"impactDescription": "Include description of Security Controls impact",' +
+      '"residualRiskLevel": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"testMethod": "One of the following [Test, Interview, Examine, Test,Interview, Test,Examine, Interview,Examine, Test,Interview,Examine]",' +
+      '"mitigations": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
+      '"applicationLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)",' +
+      '"databaseLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)",' +
+      '"operatingSystemLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)"' +
+      '}'
+    return JSON.parse(data)
+  }
+
   if (endpoint === 'poams-post-required') {
     const data = '{ ' +
       '"status":  "One of the following: [Ongoing, Risk Accepted, Completed, Not Applicable]",' +
@@ -1549,47 +1502,26 @@ export function getJsonExamples(endpoint?: string): string[] {
     return JSON.parse(data)
   }
 
-  if (endpoint === 'controls-required') {
+  if (endpoint === 'artifacts-put-required') {
     const data = '{ ' +
-      '"acronym": "System acronym, required to match the NIST SP 800-53 Revision 4.",' +
-      '"responsibleEntities": "Include written description of Responsible Entities that are responsible for the Security Control.",' +
-      '"controlDesignation":  "One of the following: [Common, System-Specific, Hybrid]",' +
-      '"estimatedCompletionDate": "Field is required for Implementation Plan",' +
-      '"implementationNarrative": "Includes Security Control comments"' +
+      '"filename": "Artifact file name to update for the given system",' +
+      '"isTemplate": "Indicates whether an artifact is a template",' +
+      '"type":  "The type of artifact. Possible values are: Procedure, Diagram, Policy, Labor, Document, Image, Other, Scan Result, Auditor Report. May accept other values set by system administrators",' +
+      '"category": "Artifact category. Possible values are: Implementation Guidance or Evidence. May accept other values set by system administrators"' +
       '}'
     return JSON.parse(data)
   }
 
-  if (endpoint === 'controls-conditional') {
+  if (endpoint === 'artifacts-put-optional') {
     const data = '{ ' +
-      '"commonControlProvider": "One of the following [DoD, Component, Enclave]",' +
-      '"naJustification": "Provide justification for Security Controls deemed Not Applicable to the system",' +
-      '"slcmCriticality": "Criticality of Security Control regarding SLCM",' +
-      '"slcmFrequency": "One of the following [Constantly,Daily,Weekly,Monthly,Quarterly,Semi-Annually,Annually,Every Two Years,Every Three Years,Undetermined]",' +
-      '"slcmMethod": "One of the following [Automated, Semi-Automated, Manual, Undetermined]",' +
-      '"slcmReporting": "Organization/Office represented",' +
-      '"slcmTracking": "The System-Level Continuous Monitoring tracking",' +
-      '"slcmComments":" Additional comments for Security Control regarding SLCM"' +
-      '}'
-    return JSON.parse(data)
-  }
-
-  if (endpoint === 'controls-optional') {
-    const data = '{ ' +
-      '"implementationStatus": "One of the following [Planned,Implemented,Inherited,Not Applicable,Manually Inherited]",' +
-      '"severity": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"vulnerabilitySummary": "Include vulnerability summary",' +
-      '"recommendations": "The include recommendations",' +
-      '"relevanceOfThreat": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"likelihood": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"impact": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"impactDescription": "Include description of Security Controls impact",' +
-      '"residualRiskLevel": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"testMethod": "One of the following [Test, Interview, Examine, Test,Interview, Test,Examine, Interview,Examine, Test,Interview,Examine]",' +
-      '"mitigations": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"applicationLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)",' +
-      '"databaseLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)",' +
-      '"operatingSystemLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)"' +
+      '"name": "The artifact name",' +
+      '"artifactDescription": "The artifact(s) description",' +
+      '"refPageNumber": "Artifact reference page number",' +
+      '"controls": "Control acronym associated with the artifact. NIST SP 800-53 Revision 4 defined",' +
+      '"assessmentProcedures": "The Security Control Assessment Procedure being associated with the artifact",' +
+      '"expirationDate": "Date artifact expires and requires review",' +
+      '"lastReviewDate": "Date artifact was last reviewed",' +
+      '"signedDate": "Date artifact was signed"' +
       '}'
     return JSON.parse(data)
   }

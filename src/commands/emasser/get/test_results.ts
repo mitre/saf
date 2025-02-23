@@ -15,7 +15,7 @@ export default class EmasserGetTestResults extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s, --systemId] <value> [options]']
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Test Results endpoint'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Test Results command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 

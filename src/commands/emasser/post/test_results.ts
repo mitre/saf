@@ -20,7 +20,7 @@ export default class EmasserPostTestResults extends Command {
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-a,--assessmentProcedure] [-b,--testedBy] [-t,--testDate] [-d,--description] [-S,--complianceStatus]']
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) test results to a system\'s Assessment Procedures (CCIs)'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Test Results command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
