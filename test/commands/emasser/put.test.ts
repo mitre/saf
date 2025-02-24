@@ -2,7 +2,7 @@ import {expect} from 'chai'
 import {InitMockServer} from './mock.server'
 import {ArtifactsApi, ControlsApi, MilestonesApi, POAMApi} from '@mitre/emass_client'
 import {ArtifactsResponsePutPost, ControlsResponsePut,
-  MilestoneResponsePut, PoamResponsePut} from '@mitre/emass_client/dist/api'
+  MilestoneResponsePut, PoamResponsePostPutDelete} from '@mitre/emass_client/dist/api'
 
 describe('Test eMASS API CLI (put) commands', () => {
   const mocSer = new InitMockServer()
@@ -59,7 +59,7 @@ describe('Test eMASS API CLI (put) commands', () => {
 
   it('Successfully tested endpoint - poams', async () => {
     const updatePoam = new POAMApi(mocSer.configuration, mocSer.basePath, mocSer.axiosInstances)
-    await updatePoam.updatePoamBySystemId(123, []).then((response: PoamResponsePut) => {
+    await updatePoam.updatePoamBySystemId(123, []).then((response: PoamResponsePostPutDelete) => {
       responseDataObj = new Map(Object.entries(response))
     }).catch((error:any) => {
       if (error.message.includes('unexpected end of file') === false) {

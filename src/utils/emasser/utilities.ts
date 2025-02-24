@@ -18,6 +18,11 @@ interface CliArgs {
   argument: string;
 }
 
+/**
+ * Interface representing various flag options used in the application.
+ * Property are listed here as optional but are set to required based
+ * on what endpoint being supported (see getFlagsForEndpoint)
+ */
 export interface FlagOptions {
   systemId?: OptionFlag<number>;
   poamId?: OptionFlag<number>;
@@ -65,6 +70,8 @@ export interface FlagOptions {
   fileName?: OptionFlag<string[]>;
   resourceId?: OptionFlag<string[]>;
   containerId?: OptionFlag<string[]>;
+  assetsHardwareId?: OptionFlag<string[]>;
+  assetsSoftwareId?: OptionFlag<string[]>;
   dataFile?: OptionFlag<string>;
   type?: OptionFlag<string|any>;
   category?: OptionFlag<string|any>;
@@ -383,28 +390,6 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
 
     case 'put': {
       switch (args.endpoint) { // skipcq: JS-0047
-        // case 'artifacts': {
-        //   flagObj = {
-        //     systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-        //     filename: Flags.string({char: 'f', description: 'Artifact file name to update for the given system', required: true}),
-        //     isTemplate: Flags.boolean({char: 'T', description: 'Boolean - Indicates whether an artifact is a template.', allowNo: true, required: true, default: false}),
-        //     type: Flags.string({char: 't', required: true, default: 'Other',
-        //       description: 'The type of artifact. Possible values are: Procedure, Diagram, Policy, Labor, Document, Image,' +
-        //                    'Other, Scan Result, Auditor Report. May accept other values set by system administrators'}),
-        //     category: Flags.string({char: 'g', required: true,
-        //       description: 'Artifact category. Possible values are: Implementation Guidance or Evidence. May accept other values set by system administrators'}),
-        //     name: Flags.string({char: 'n', description: 'The artifact name', required: false}),
-        //     artifactDescription: Flags.string({char: 'a', description: 'The artifact(s) description', required: false}),
-        //     refPageNumber: Flags.string({char: 'r', description: 'Artifact reference page number', required: false}),
-        //     controls: Flags.string({char: 'c', description: 'Control acronym associated with the artifact. NIST SP 800-53 Revision 4 defined.', required: false}),
-        //     assessmentProcedures: Flags.string({char: 'p', description: 'The Security Control Assessment Procedure being associated with the artifact', required: false}),
-        //     expirationDate: Flags.string({char: 'e', description: 'Date artifact expires and requires review.', required: false}),
-        //     lastReviewDate: Flags.string({char: 'l', description: 'Date artifact was last reviewed', required: false}),
-        //     signedDate: Flags.string({char: 'd', description: 'Date artifact was signed', required: false}),
-        //   }
-        //   break
-        // }
-
         case 'milestones': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
@@ -416,9 +401,11 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           break
         }
 
-        case 'artifacts':
         case 'poams':
-        case 'controls': {
+        case 'controls':
+        case 'artifacts':
+        case 'hardware_baseline':
+        case 'software_baseline': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
             dataFile: Flags.string({char: 'f', description: 'A well formed JSON file containing the data to be updated. It can ba a single object or an array of objects.', required: true}),
@@ -457,10 +444,26 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
           break
         }
 
+        case 'hardware_baseline': {
+          flagObj = {
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+            assetsHardwareId: Flags.string({char: 'a', description: 'Unique GUID identifying a specific hardware asset, can have multiple (space separated)', required: true, multiple: true}),
+          }
+          break
+        }
+
+        case 'software_baseline': {
+          flagObj = {
+            systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
+            assetsSoftwareId: Flags.string({char: 'a', description: 'Unique GUID identifying a specific software asset, can have multiple (space separated)', required: true, multiple: true}),
+          }
+          break
+        }
+
         case 'cloud_resources': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            resourceId: Flags.string({char: 'r', description: 'Unique identifier/resource namespace for policy compliance result', required: true, multiple: true}),
+            resourceId: Flags.string({char: 'r', description: 'Unique identifier/resource namespace for policy compliance result, can have multiple (space separated)', required: true, multiple: true}),
           }
           break
         }
@@ -468,7 +471,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'container_scans': {
           flagObj = {
             systemId: Flags.integer({char: 's', description: 'The system identification number', required: true}),
-            containerId: Flags.string({char: 'c', description: 'Unique identifier of the container', required: true, multiple: true}),
+            containerId: Flags.string({char: 'c', description: 'Unique identifier of the container, can have multiple (space separated)', required: true, multiple: true}),
           }
           break
         }
@@ -1533,6 +1536,14 @@ export function getJsonExamples(endpoint?: string): string[] {
     return JSON.parse(data)
   }
 
+  if (endpoint === 'hardware-put-required') {
+    const data = '{ ' +
+    '"hardwareId":  "GUID identifying the specific hardware asset",' +
+    '"assetName":  "Name of the hardware asset"' +
+    '}'
+    return JSON.parse(data)
+  }
+
   if (endpoint === 'hardware-post-put-conditional') {
     const data = '{ ' +
     '"publicFacingFqdn": "Public facing FQDN. Only applicable if Public Facing is set to true",' +
@@ -1552,7 +1563,7 @@ export function getJsonExamples(endpoint?: string): string[] {
     '"manufacturer": "Manufacturer of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",' +
     '"modelNumber": "Model number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",' +
     '"serialNumber": "Serial number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",' +
-    '"OsIosFwVersion": "OS/iOS/FW version of the hardware asset",' +
+    '"osIosFwVersion": "OS/iOS/FW version of the hardware asset",' +
     '"memorySizeType": "Memory size / type of the hardware asset",' +
     '"location": "Location of the hardware asset",' +
     '"approvalStatus": "Approval status of the hardware asset",' +
@@ -1566,6 +1577,16 @@ export function getJsonExamples(endpoint?: string): string[] {
     '"softwareVendor":  "Vendor of the software asset",' +
     '"softwareName":  "Name of the software asset",' +
     '"version":  "Version of the software asset"' +
+    '}'
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'software-put-required') {
+    const data = '{ ' +
+    '"softwareId": "GUID identifying the specific software asset",' +
+    '"softwareVendor": "Vendor of the software asset",' +
+    '"softwareName": "Name of the software asset",' +
+    '"version": "Version of the software asset"' +
     '}'
     return JSON.parse(data)
   }

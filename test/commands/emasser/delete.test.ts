@@ -1,7 +1,7 @@
 import {expect} from 'chai'
 import {InitMockServer} from './mock.server'
 import {ArtifactsApi, POAMApi, MilestonesApi} from '@mitre/emass_client'
-import {ArtifactsResponseDel, PoamResponseDelete,
+import {ArtifactsResponseDel, PoamResponsePostPutDelete,
   MilestonesPutPostDelete} from '@mitre/emass_client/dist/api'
 
 describe('Test eMASS API CLI (delete) commands', () => {
@@ -29,7 +29,7 @@ describe('Test eMASS API CLI (delete) commands', () => {
 
   it('Successfully tested endpoint - poams', async () => {
     const delPoam = new POAMApi(mocSer.configuration, mocSer.basePath, mocSer.axiosInstances)
-    await delPoam.deletePoam(34, []).then((response: PoamResponseDelete) => {
+    await delPoam.deletePoam(34, []).then((response: PoamResponsePostPutDelete) => {
       responseDataObj = new Map(Object.entries(response))
     }).catch((error:any) => {
       if (error.message.includes('unexpected end of file') === false) {

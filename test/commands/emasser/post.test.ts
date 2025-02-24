@@ -4,7 +4,7 @@ import {CACApi, PACApi, CloudResourceResultsApi, ContainerScanResultsApi,
   MilestonesApi, POAMApi, RegistrationApi, StaticCodeScansApi,
   TestResultsApi} from '@mitre/emass_client'
 import {CacResponsePost, PacResponsePost, CloudResourcesResponsePost,
-  ContainersResponsePost, MilestoneResponsePost, PoamResponsePost,
+  ContainersResponsePost, MilestoneResponsePost, PoamResponsePostPutDelete,
   Register, StaticCodeResponsePost, TestResultsResponsePost} from '@mitre/emass_client/dist/api'
 
 describe('Test eMASS API CLI (post) commands', () => {
@@ -92,7 +92,7 @@ describe('Test eMASS API CLI (post) commands', () => {
 
   it('Successfully tested endpoint - poams', async () => {
     const addPoam = new POAMApi(mocSer.configuration, mocSer.basePath, mocSer.axiosInstances)
-    await addPoam.addPoamBySystemId(123, []).then((response: PoamResponsePost) => {
+    await addPoam.addPoamBySystemId(123, []).then((response: PoamResponsePostPutDelete) => {
       responseDataObj = new Map(Object.entries(response))
     }).catch((error:any) => {
       if (error.message.includes('unexpected end of file') === false) {

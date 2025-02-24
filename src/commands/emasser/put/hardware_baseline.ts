@@ -1,16 +1,17 @@
 /* eslint-disable valid-jsdoc */
+
 import fs from 'fs'
 import _ from 'lodash'
 import {readFile} from 'fs/promises'
 import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
+
 import {
   FlagOptions,
   getFlagsForEndpoint,
   getJsonExamples,
   printRedMsg,
 } from '../../../utils/emasser/utilities'
-
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {outputError} from '../../../utils/emasser/outputError'
@@ -19,33 +20,35 @@ import {HardwareBaselineApi} from '@mitre/emass_client'
 import {HwBaselineResponsePostPut as HwBaselineResponse} from '@mitre/emass_client/dist/api'
 
 /**
- * Represents a hardware asset with various attributes.
+ * Represents the hardware baseline configuration for an asset.
  *
  * @interface Hardware
- *
- * @property {string} [assetName] - The name of the asset. This is a required field.
- *
+ * Required properties
+ * @property {string} [assetName] - The name of the asset.
+ * @property {string} [hardwareId] - The unique identifier for the hardware.
+ * Conditional properties
  * @property {string} [publicFacingFqdn] - The fully qualified domain name if the asset is public-facing.
  * @property {string} [publicFacingIpAddress] - The IP address if the asset is public-facing.
  * @property {string} [publicFacingUrls] - The URLs if the asset is public-facing.
- *
- * @property {string} [componentType] - The type of component.
- * @property {string} [nickname] - A nickname for the asset.
+ * Optional properties
+ * @property {string} [componentType] - The type of the component.
+ * @property {string} [nickname] - The nickname for the asset.
  * @property {string} [assetIpAddress] - The IP address of the asset.
  * @property {boolean} [publicFacing] - Indicates if the asset is public-facing.
  * @property {boolean} [virtualAsset] - Indicates if the asset is virtual.
- * @property {string} [manufacturer] - The manufacturer of the asset.
- * @property {string} [modelNumber] - The model number of the asset.
- * @property {string} [serialNumber] - The serial number of the asset.
- * @property {string} [OsIosFwVersion] - The OS/IOS/Firmware version of the asset.
- * @property {string} [memorySizeType] - The memory size and type of the asset.
- * @property {string} [location] - The location of the asset.
- * @property {string} [approvalStatus] - The approval status of the asset.
+ * @property {string} [manufacturer] - The manufacturer of the hardware.
+ * @property {string} [modelNumber] - The model number of the hardware.
+ * @property {string} [serialNumber] - The serial number of the hardware.
+ * @property {string} [osIosFwVersion] - The operating system, iOS, or firmware version of the hardware.
+ * @property {string} [memorySizeType] - The size and type of the memory.
+ * @property {string} [location] - The physical location of the hardware.
+ * @property {string} [approvalStatus] - The approval status of the hardware.
  * @property {boolean} [criticalAsset] - Indicates if the asset is critical.
  */
 interface Hardware {
   // Required field
   assetName?: string,
+  hardwareId?: string,
   // Conditional Fields
   publicFacingFqdn?: string,
   publicFacingIpAddress?: string,
@@ -59,7 +62,7 @@ interface Hardware {
   manufacturer?: string,
   modelNumber?: string,
   serialNumber?: string,
-  OsIosFwVersion?: string,
+  osIosFwVersion?: string,
   memorySizeType?: string,
   location?: string,
   approvalStatus?: string,
@@ -70,16 +73,16 @@ interface Hardware {
  * Combines JSON examples from multiple sources into a single object.
  *
  * This function aggregates JSON examples by merging the results of
- * `getJsonExamples` for 'hardware-post-required', 'hardware-post-put-conditional',
- * and 'hardware-post-put-optional' into one object.
+ * `getJsonExamples` calls for 'hardware-put-required', 'hardware-post-put-conditional',
+ * and 'hardware-post-put-optional' into a single object.
  *
- * @returns {string} A string representation of the combined JSON examples.
+ * @returns {string} A stringified JSON object containing the combined examples.
  */
 function getAllJsonExamples(): string {
   let exampleBodyObj: any = {}
 
   exampleBodyObj = {
-    ...getJsonExamples('hardware-post-required'),
+    ...getJsonExamples('hardware-put-required'),
     ...getJsonExamples('hardware-post-put-conditional'),
     ...getJsonExamples('hardware-post-put-optional'),
   }
@@ -88,10 +91,10 @@ function getAllJsonExamples(): string {
 }
 
 /**
- * Asserts that a required parameter exists and is not undefined.
+ * Asserts that a required parameter exists.
  *
  * @param object - The name of the parameter or field being checked.
- * @param value - The value of the parameter or field to check.
+ * @param value - The value of the parameter or field. Can be a string, undefined, or null.
  * @throws Will throw an error if the value is undefined.
  */
 function assertParamExists(object: string, value: string|undefined|null): void {
@@ -104,26 +107,28 @@ function assertParamExists(object: string, value: string|undefined|null): void {
 /**
  * Adds required fields to the request body for a hardware object.
  *
- * This function ensures that the required fields are present in the request body.
- * If the required field `assetName` is missing, an error is thrown and an example
- * JSON structure is logged to the console.
+ * This function ensures that the required fields `hardwareId` and `assetName`
+ * are present in the provided `dataObj`. If any of these fields are missing,
+ * an error is thrown and an example JSON structure is logged.
  *
  * @param dataObj - The hardware object containing the data to be validated and added to the request body.
- * @returns The hardware object with the required fields added.
- * @throws Will throw an error if the required field `assetName` is missing.
+ * @returns A new hardware object containing only the required fields.
+ * @throws Will throw an error if `hardwareId` or `assetName` are missing from `dataObj`.
  */
 function addRequiredFieldsToRequestBody(dataObj: Hardware): Hardware {
   const bodyObj: Hardware = {}
 
   try {
+    assertParamExists('hardwareId', dataObj.hardwareId)
     assertParamExists('assetName', dataObj.assetName)
   } catch (error) {
-    console.log('Required JSON field is:')
-    console.log(colorize(JSON.stringify(getJsonExamples('hardware-post-required'), null, 2)))
+    console.log('Required JSON fields are:')
+    console.log(colorize(JSON.stringify(getJsonExamples('hardware-put-required'), null, 2)))
     throw error
   }
 
   // The required parameter "systemId" is validated by oclif
+  bodyObj.hardwareId = dataObj.hardwareId
   bodyObj.assetName = dataObj.assetName
 
   return bodyObj
@@ -150,10 +155,10 @@ function addConditionalFields(bodyObject: Hardware, dataObj: Hardware): void {
 }
 
 /**
- * Adds optional fields from the `dataObj` to the `bodyObject` if they exist.
+ * Adds optional fields from the data object to the body object if they exist.
  *
  * @param bodyObject - The target object to which optional fields will be added.
- * @param dataObj - The source object from which optional fields will be copied.
+ * @param dataObj - The source object containing optional fields.
  */
 function addOptionalFields(bodyObject: Hardware, dataObj: Hardware): void {
   if (Object.prototype.hasOwnProperty.call(dataObj, 'componentType')) {
@@ -188,8 +193,8 @@ function addOptionalFields(bodyObject: Hardware, dataObj: Hardware): void {
     bodyObject.serialNumber = dataObj.serialNumber
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'OsIosFwVersion')) {
-    bodyObject.OsIosFwVersion = dataObj.OsIosFwVersion
+  if (Object.prototype.hasOwnProperty.call(dataObj, 'osIosFwVersion')) {
+    bodyObject.osIosFwVersion = dataObj.osIosFwVersion
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'memorySizeType')) {
@@ -210,14 +215,11 @@ function addOptionalFields(bodyObject: Hardware, dataObj: Hardware): void {
 }
 
 /**
- * Generates a body object for a hardware baseline.
+ * Generates a body object for a hardware request by adding required, conditional, and optional fields.
  *
- * This function takes a `Hardware` object as input and creates a new `Hardware` object
- * with required, conditional, and optional fields populated based on the input object.
- * If any error occurs during the process, the function will terminate the process with an exit code of 1.
- *
- * @param dataObject - The input `Hardware` object containing the data to populate the body object.
- * @returns The generated `Hardware` body object.
+ * @param dataObject - The hardware data object to be processed.
+ * @returns The generated body object with the necessary fields.
+ * @throws Will exit the process with code 1 if an error occurs during the generation.
  */
 function generateBodyObj(dataObject: Hardware): Hardware {
   let bodyObj: Hardware = {}
@@ -237,7 +239,7 @@ const CMD_HELP = 'saf emasser post hardware_baseline -h or --help'
 export default class EmasserHardwareBaseline extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command usages\x1B[0m'
 
-  static readonly description = 'Add one or many hardware assets to a system.\n' +
+  static readonly description = 'Update one or many hardware assets to a system.\n' +
     'The CLI expects an input JSON file containing the required, conditional\n' +
     'and optional fields for the hardware asset(s) being added to the system.'
 
@@ -245,7 +247,7 @@ export default class EmasserHardwareBaseline extends Command {
     '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing Hardware Assets.',
     '\x1B[1mRequired JSON parameter/field is:\x1B[0m',
-    colorize(JSON.stringify(getJsonExamples('hardware-post-required'), null, 2)),
+    colorize(JSON.stringify(getJsonExamples('hardware-put-required'), null, 2)),
     '\x1B[1mConditional JSON parameters/fields are:\x1B[0m',
     colorize(JSON.stringify(getJsonExamples('hardware-post-put-conditional'), null, 2)),
     '\x1B[1mOptional JSON parameters/fields are:\x1B[0m',
@@ -255,7 +257,7 @@ export default class EmasserHardwareBaseline extends Command {
   ]
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Hardware Baseline command'}),
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the PUT Hardware Baseline command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
@@ -280,12 +282,12 @@ export default class EmasserHardwareBaseline extends Command {
       // Process the Hardware data file
       if (Array.isArray(data)) {
         data.forEach((dataObject: Hardware) => {
-          // Generate the post request object based on business logic
+          // Generate the put request object
           requestBodyArray.push(generateBodyObj(dataObject))
         })
       } else if (typeof data === 'object') {
         const dataObject: Hardware = data
-        // Generate the post request object based on business logic
+        // Generate the put request object
         requestBodyArray.push(generateBodyObj(dataObject))
       }
     } else {
@@ -294,7 +296,7 @@ export default class EmasserHardwareBaseline extends Command {
     }
 
     // Call the endpoint
-    hwBaseline.addHwBaselineAssets(flags.systemId, requestBodyArray).then((response: HwBaselineResponse) => {
+    hwBaseline.updateHwBaselineAssets(flags.systemId, requestBodyArray).then((response: HwBaselineResponse) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error: any) => console.error(colorize(outputError(error))))
   }
