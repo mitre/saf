@@ -1360,6 +1360,7 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
  * - 'container_scans-required': Returns JSON example for container scans required fields.
  * - 'container_scans-optional': Returns JSON example for container scans optional fields.
  */
+// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
 export function getJsonExamples(endpoint?: string): string[] {
   if (endpoint === 'controls-required') {
     const data = '{ ' +
