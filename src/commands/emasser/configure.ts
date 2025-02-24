@@ -28,8 +28,8 @@ export default class EmasserBuildConfig extends Command {
   // configure axios to use a CA certificate - can be .pem or crt
   // configure Axios to use a key and client certificate (.pem)
 
-  // skipcq: JS-0116, JS-0105, JS-0328
+  // skipcq: JS-0116, JS-0105
   async run(): Promise<void> {
-    generateConfig()
+    generateConfig() // skipcq: JS-0328
   }
 }
