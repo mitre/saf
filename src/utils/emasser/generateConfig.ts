@@ -1,6 +1,5 @@
 /* eslint-disable valid-jsdoc */
 import fse from 'fs-extra'
-import fs from 'fs'
 import dotenv from 'dotenv'
 import _ from 'lodash'
 // eslint-disable-next-line no-restricted-imports
@@ -359,7 +358,7 @@ function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: { [x: 
       const trimmedLine = line.trim()
 
       // Check if the line contains a key-value pair (e.g., key=value)
-      const [key, value] = trimmedLine.split('=')
+      const [key, value] = trimmedLine.split('=') // skipcq: JS-0356
 
       // If the key exists in the updates object, update the value
       if (Object.prototype.hasOwnProperty.call(updates, key)) {
