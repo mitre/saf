@@ -78,7 +78,7 @@ For detail information about development, testing , and contributing to the SAF 
 
 ### eMASSer Client
 
-  * [eMASS API CLI](#emass-api-cli)
+  * [eMASSer API CLI](#emasser-api-cli)
 
 ### View HDF Summaries and Data
 
@@ -1314,7 +1314,7 @@ convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall D
 
 ---
 
-### eMASS API CLI
+### eMASSer API CLI
 
 The SAF CLI implements the eMASS REST API capabilities by incorporating the eMASSer CLI into the SAF CLI. Please references the [eMASSer Features](https://saf-cli.mitre.org/docs/emasser) 📜 for additional information
 

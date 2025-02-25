@@ -70,10 +70,12 @@ export class ApiConfig {
 
     // Get provided certificate(s). Require either a .pfx certificate,
     // or a client and key .pem certificates
-    if (Object.prototype.hasOwnProperty.call(this.envConfig, 'EMASSER_CA_FILE_PATH')) {
-      this.caCert = this.envConfig.EMASSER_CA_FILE_PATH // || ''
-    } else if (Object.prototype.hasOwnProperty.call(this.envConfig, 'EMASSER_KEY_FILE_PATH') &&
-      Object.prototype.hasOwnProperty.call(this.envConfig, 'EMASSER_CERT_FILE_PATH')) {
+    if (Object.prototype.hasOwnProperty.call(this.envConfig, 'EMASSER_CA_FILE_PATH') && this.envConfig.EMASSER_CA_FILE_PATH !== '') {
+      console.log('CA')
+      this.caCert = this.envConfig.EMASSER_CA_FILE_PATH
+    } else if (Object.prototype.hasOwnProperty.call(this.envConfig, 'EMASSER_KEY_FILE_PATH') && this.envConfig.EMASSER_KEY_FILE_PATH !== '' &&
+      Object.prototype.hasOwnProperty.call(this.envConfig, 'EMASSER_CERT_FILE_PATH') && this.envConfig.EMASSER_CERT_FILE_PATH !== '') {
+      console.log('NOT CA')
       // We have the .pem certificate files
       this.keyCert = this.envConfig.EMASSER_KEY_FILE_PATH
       this.clientCert = this.envConfig.EMASSER_CERT_FILE_PATH

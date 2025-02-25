@@ -176,7 +176,7 @@ export default class EmasserGetDashboards extends Command {
       case 'terms_conditions_summary': {
         const getDashboard = new SystemTermsConditionsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
         // Order is important here
-        getDashboard.getSystemTermsConditionsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        getDashboard.getSystemTermsConditionsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
         }).catch((error:any) => console.error(colorize(outputError(error))))
 

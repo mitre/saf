@@ -89,11 +89,14 @@ export function outputFormat(data: object, doConversion = true): string {
     // When debugging is on, output the entire content returned from
     // the server. Output text in yellow and revert back to default
     console.log('\x1B[93m', 'Debugging is on', '\x1B[0m')
+    console.log('\x1B[96m', 'Start Debug =================================================================', '\x1B[0m')
     try {
       console.log(JSON.stringify(data, null, 2))
     } catch {
       console.log(data)
     }
+
+    console.log('\x1B[96m', 'End Debug ===============================================================', '\x1B[0m')
   }
 
   try {

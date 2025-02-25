@@ -548,7 +548,7 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
           }
 
           case 'export': {
-            description = 'Retrieves an artifact file for selected system\n(file is sent to EMASSER_DOWNLOAD_DIR (defaults to eMasserDownloads) if flag [-P, --printToStdOut] not provided)'
+            description = 'Retrieves an artifact file for selected system\n(file is sent to EMASSER_DOWNLOAD_DIR (defaults to eMASSerDownloads) if flag [-P, --printToStdOut] not provided)'
             break
           }
 

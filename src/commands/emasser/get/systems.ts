@@ -1,10 +1,10 @@
 import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {SystemsApi} from '@mitre/emass_client'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {outputError} from '../../../utils/emasser/outputError'
 import {getFlagsForEndpoint, FlagOptions} from '../../../utils/emasser/utilities'
+import {SystemsApi} from '@mitre/emass_client'
 import {SystemsResponse} from '@mitre/emass_client/dist/api'
 
 export default class EmasserGetSystems extends Command {
@@ -25,7 +25,11 @@ export default class EmasserGetSystems extends Command {
     const getSystems = new SystemsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
 
     // Order is important here
-    getSystems.getSystems(flags.includePackage, flags.registrationType, flags.ditprId, flags.coamsId, flags.policy, flags.includeDitprMetrics, flags.includeDecommissioned, flags.reportsForScorecard).then((response: SystemsResponse) => {
+    getSystems.getSystems(
+      // eslint-disable-next-line function-call-argument-newline
+      flags.includePackage, flags.registrationType, flags.ditprId, flags.coamsId,
+      flags.policy, flags.includeDitprMetrics, flags.includeDecommissioned, flags.reportsForScorecard,
+    ).then((response: SystemsResponse) => {
       console.log(colorize(outputFormat(response)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
   }

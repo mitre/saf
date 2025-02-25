@@ -13,12 +13,15 @@ Place the file on the  path where the `emasser` command is executed.
 ### Required Environment Variables
 The following environment variables are required:
 * EMASSER_API_KEY=`<API key>`
-* EMASSER_USER_UID=`<unique identifier for the API Key`
 * EMASSER_HOST_URL=`<FQDN of the eMASS server>`
-* EMASSER_KEY_FILE_PATH=`<path to your eMASS key in PEM format>`
-* EMASSER_CERT_FILE_PATH=`<path to your eMASS certificate in PEM format>`
-* EMASSER_KEY_FILE_PASSWORD=`<password for the key given in EMASSER_KEY_FILE_PATH>`
+* EMASSER_KEY_FILE_PATH=`<<The eMASS key.pem private key file in PEM format (if provided the CERT is required)>>`
+* EMASSER_CERT_FILE_PATH=`<The eMASS client.pem certificate file in PEM format (if provided the KEY is required)>`
+* EMASSER_CA_FILE_PATH=`<The eMASS CA certificate (if provided no Key or Client PEM is needed)>`
+* EMASSER_KEY_FILE_PASSWORD=`<The certificate passphrase>`
 
+### Optional but required by most eMASS integrations
+* EMASSER_USER_UID=`<Unique user identifier associated with the API Key (api-key)`
+  
 ### Optional Environment Variables
 The following environment variables are *optional:
 * EMASSER_PORT=`<The server communication port number (default is 443)`
@@ -27,7 +30,7 @@ The following environment variables are *optional:
 * EMASSER_DEBUGGING=`<set debugging - true or false (default false)>`
 * EMASSER_CLI_DISPLAY_NULL=`<display null value fields - true or false (default true)>`
 * EMASSER_EPOCH_TO_DATETIME=`<convert epoch to data/time value - true or false (default false)>`
-* EMASSER_DOWNLOAD_DIR=`<directory where exported files are saved (default eMasserDownloads)>`
+* EMASSER_DOWNLOAD_DIR=`<directory where exported files are saved (default eMASSerDownloads)>`
   
 \* If not provided defaults are used
 
@@ -117,7 +120,7 @@ DESCRIPTION
   EMASSER_DEBUGGING           <Set debugging on (true) or off (false) (default false)>
   EMASSER_CLI_DISPLAY_NULL    <Display null value fields - true or false (default true)>
   EMASSER_EPOCH_TO_DATETIME   <Convert epoch to data/time value - true or false (default false)>
-  EMASSER_DOWNLOAD_DIR        <Directory where exported files are saved (default eMasserDownloads)>
+  EMASSER_DOWNLOAD_DIR        <Directory where exported files are saved (default eMASSerDownloads)>
 
 EXAMPLES
   $ saf emasser configure
