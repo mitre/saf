@@ -118,8 +118,7 @@ echo
 # Update MITRE dependencies to latest version
 PrintColor "Yellow" "Update MITRE dependencies to latest version..."
 # List of MITRE packages to be checked - Add as needed
-# NOTE: Do not update @mitre/emass_client until further notice
-packages=("@mitre/hdf-converters" "@mitre/heimdall-lite" "@mitre/inspec-objects")
+packages=("@mitre/hdf-converters" "@mitre/heimdall-lite" "@mitre/inspec-objects" "@mitre/emass_client")
 
 # Iterate over each package
 for package in "${packages[@]}"; do

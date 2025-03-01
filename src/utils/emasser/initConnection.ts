@@ -6,6 +6,37 @@ import {Configuration} from '@mitre/emass_client/dist/configuration'
 // import globalAxios, {AxiosInstance, AxiosRequestConfig} from '@mitre/emass_client/node_modules/axios'
 import globalAxios, {AxiosInstance, AxiosRequestConfig} from 'axios'
 
+/**
+ * Initializes and configures Axios instances for making HTTP requests.
+ *
+ * @class InitConnections
+ *
+ * @property {AxiosRequestConfig} axiosRequestConfig - The Axios request configuration.
+ * @property {Configuration} configuration - The configuration for the API.
+ * @property {AxiosInstance} axiosInstances - The Axios instance used for making HTTP requests.
+ *
+ * @constructor
+ * @param {ApiConfig} conf - The API configuration object.
+ *
+ * @example
+ * const apiConfig: ApiConfig = {
+ *   url: 'https://api.example.com',
+ *   reqCert: true,
+ *   sslVerify: true,
+ *   keyCert: '/path/to/keyCert',
+ *   clientCert: '/path/to/clientCert',
+ *   apiPassPhrase: 'yourPassPhrase',
+ *   port: 443,
+ *   apiKey: 'yourApiKey',
+ *   userUid: 'yourUserUid',
+ *   caCert: '/path/to/caCert'
+ * };
+ * const initConnections = new InitConnections(apiConfig);
+ *
+ * @remarks
+ * This class handles the creation of an Axios instance with custom HTTPS agent settings.
+ * It supports client certificate authentication and allows configuring SSL verification.
+ */
 export class InitConnections {
   private axiosRequestConfig: AxiosRequestConfig;
   public configuration: Configuration;
@@ -26,6 +57,7 @@ export class InitConnections {
     //   and Infinity, in which case Connection: close will be used. Default: false.
     // requestCert <boolean> true to specify whether a server should request a certificate from a connecting client. Only applies when isServer is true.
     // rejectUnauthorized <boolean> If not false a server automatically reject clients with invalid certificates. Only applies when isServer is true.
+
     this.axiosRequestConfig = conf.caCert === undefined ? {
       httpsAgent: new https.Agent({
         keepAlive: true,

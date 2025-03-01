@@ -7,6 +7,34 @@ function printHelpMessage() {
   printHelpMsg('If a configuration file exists, it is placed in the directory where the emasser command is executed.')
 }
 
+// eslint-disable-next-line valid-jsdoc
+/**
+ * The `ApiConfig` class is responsible for loading and managing the configuration
+ * settings required for connecting to the eMASS API. It reads environment variables
+ * from a `.env` file and provides methods to retrieve required and optional configuration
+ * values.
+ *
+ * @class ApiConfig
+ * @property {string} url - The URL of the eMASS API host.
+ * @property {number | any} port - The port number for the eMASS API.
+ * @property {string | undefined} caCert - The path to the CA certificate file.
+ * @property {string | undefined} keyCert - The path to the key certificate file.
+ * @property {string | undefined} clientCert - The path to the client certificate file.
+ * @property {string} apiPassPhrase - The passphrase for the API key file.
+ * @property {string} apiKey - The API key for authenticating requests.
+ * @property {string} userUid - The user UID required for actionable requests.
+ * @property {boolean} sslVerify - Whether to verify SSL certificates.
+ * @property {boolean} reqCert - Whether to request a certificate.
+ * @property {string} debugging - Debugging mode flag.
+ * @property {string} displayNulls - Flag to display null values.
+ * @property {string} displayDateTime - Flag to display date and time.
+ * @property {string} downloadDir - The directory for downloads.
+ *
+ * @constructor
+ * Initializes a new instance of the `ApiConfig` class. Loads environment variables
+ * from a `.env` file and sets the configuration properties. If required environment
+ * variables are missing, it prints an error message and exits the process.
+ */
 export class ApiConfig {
   private envConfig: {[key: string]: string | undefined};
 

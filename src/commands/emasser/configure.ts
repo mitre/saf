@@ -17,7 +17,7 @@ export default class EmasserBuildConfig extends Command {
    ${colors.blue('\tEMASSER_KEY_FILE_PATH') + colors.green('     <The eMASS key.pem private key file in PEM format (if provided the CERT is required)>')}
    ${colors.blue('\tEMASSER_CERT_FILE_PATH') + colors.green('    <The eMASS client.pem certificate file in PEM format (if provided the KEY is required)>')}
    ${colors.blue('\tEMASSER_CA_FILE_PATH') + colors.green('      <The eMASS CA certificate (if provided no Key or Client PEM is needed)>')}
-   ${colors.blue('\tEMASSER_KEY_FILE_PASSWORD') + colors.green(' <The password for the private encryption key.pem file>')}
+   ${colors.blue('\tEMASSER_KEY_FILE_PASSWORD') + colors.green(' <Secret phrase used to protect the encryption key>')}
    ${colors.yellow('Certain eMASS integrations may not require (most do) this variable:')}
    ${colors.blue('\tEMASSER_USER_UID') + colors.green('          <The eMASS User Unique Identifier (user-uid)>\b')}   
    

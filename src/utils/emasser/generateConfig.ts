@@ -13,7 +13,7 @@ const PROMPT_MESSAGE = [
   'Provide the eMASS private encrypting file (key.pem) - include the path (EMASSER_KEY_FILE_PATH)):',
   'Provide the eMASS client certificate file (cert.pem) - include the path (EMASSER_CERT_FILE_PATH):',
   'Provide the eMASS CA certificate file (.cer, crt, or .pem) - include the path (EMASSER_CA_FILE_PATH):',
-  'Provide the password for the private encryption key.pem file (EMASSER_KEY_FILE_PASSWORD):',
+  'Provide the secret phrase used to protect the encryption key:',
   'Provide the eMASS User unique identifier (EMASSER_USER_UID):',
   'Provide the server communication port number (default is 443):',
   'Server requests a certificate from connecting clients - true or false (default true):',
