@@ -62,6 +62,8 @@ describe('Test validate threshold - using inline values', () => {
       '-i', path.resolve('./test/sample_data/HDF/input/rhel-8_hardened.json'),
       '--templateInline', '"{compliance.min: 66}, {passed.critical.min: 0}, {failed.medium.min: 0}"',
     ])
+    console.log(`stdout is: ${stdout}`)
+    console.log(`stderr is: ${stderr}`)
     expect(stdout).to.equal('All validation tests passed\n')
     expect(stderr).to.equal('')
   })
