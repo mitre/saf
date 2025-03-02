@@ -1090,38 +1090,27 @@ Add (POST) test results CLI usage
 
   ```shell
   USAGE
-    $ saf emasser post test_results [options]
+    $ saf emasser post test_results [FLAGS]
 
   FLAGS
-    -h, --help                       Post (add) test results to a system's Assessment Procedures (CCIs)
-    -s, --systemId=<value>           (required) The system identification number
-    -t, --testDate=<value>           (required) The date test was conducted, Unix time format  
-    -b, --testedBy=<value>           (required) The person that conducted the test (Last Name, First)
-    -c, --cci=<value>                (required) The system CCI string numerical value
-    -d, --description=<value>        (required) The description of test result. 4000 Characters    
-    -S, --complianceStatus=<option>  (required) The system CCI string numerical value
-                                    <options: Compliant|Non-Compliant|Not Applicable>
+    -h, --help                         Show eMASSer CLI help for the POST Test Results command  
+    -s, --systemId=<value>             (required) The system identification number
+    -a, --assessmentProcedure=<value>  (required) The Security Control Assessment Procedure being assessed    
+    -b, --testedBy=<value>             (required) The person that conducted the test (Last Name, First)    
+    -t, --testDate=<value>             (required) The date test was conducted, Unix time format    
+    -d, --description=<value>          (required) The description of test result. 4000 Characters
+    -S, --complianceStatus=<option>    (required) The compliance status of the test result
+                                        <options: Compliant|Non-Compliant|Not Applicable>
 
   DESCRIPTION
-    Add test results for a system's Assessment Procedures (CCIs) which determine Security Control compliance
+    Add test results for a system's Assessment Procedures which determine Security Control compliance
+    See the FLAGS section for required fields and acceptable values
 
   EXAMPLES
-    $ saf emasser post test_results [-s,--systemId] [-c,--cci] [-b,--testedBy] [-t,--testDate] [-d,--description] [-S,--complianceStatus]
+    $ saf emasser post test_results [-s,--systemId] [-a,--assessmentProcedure] [-b,--testedBy] [-t,--testDate] [-d,--description] [-S,--complianceStatus]
   ```
 Note: If no POA&Ms or AP exist for the control (system), the following message is returned:
 "You have entered a Non-Compliant Test Result. You must create a POA&M Item for this Control and/or AP if one does not already exist."
-
-  - required parameter are:
-
-    |parameter          | type or values                                              |
-    |-------------------|:------------------------------------------------------------|
-    |--systemId         |Integer - Unique system identifier                           |
-    |--cci              |String - CCI associated with the test result. e.g "00221"    |
-    |--testedBy         |String - Last Name, First Name. 100 Characters.              |
-    |--testDate         |Date - Unix time format (e.g. 1499990400)                    |
-    |--description      |String - Include description of test result. 4000 Characters |
-    |--complianceStatus |Possible values: Compliant, Non-Compliant, Not Applicable    |
-
 
 [top](#post)
 
@@ -1351,15 +1340,6 @@ DESCRIPTION
 EXAMPLES
   $ saf emasser post milestones [-s,--systemId] [-p,--poamId] [-d,--description] [-c,--scheduledCompletionDate]
 ```
-  - required parameter are:
-
-    |parameter                  | type or values                                      |
-    |---------------------------|:----------------------------------------------------|
-    |--systemId                 |Integer - Unique system identifier                   |
-    |--poamId                   |Integer - Unique item identifier                     |
-    |--description              |String - Milestone item description. 2000 Characters |
-    |--scheduledCompletionDate  |Date - Schedule completion date. Unix date format    |
-
 
 [top](#post)
 
@@ -1429,22 +1409,6 @@ EXAMPLES
     $ saf emasser post artifacts [-s,--systemId] [-f,--fileName] <path-to-zip-file> [FLAGS]
 ```
 
-- required parameter are:
-
-  |parameter       | type or values                                      |
-  |----------------|:----------------------------------------------------|
-  |-s, --systemId      |Integer - Unique system identifier                   |
-  |-f, --filename      |String - File names (to include path) to be uploaded into eMASS as artifacts |
-
-- optional parameter are:
-
-  |parameter          | type or values                                        |
-  |-------------------|:------------------------------------------------------| 
-  |-T, --isTemplate   |Boolean - Indicates whether an artifact is a template|
-  |-t, --type         |String - [default: Other] Various artifact file type are accepted (defined by the eMASS administrator)|
-  |-c, --category     |String - [default: Evidence] Various artifact category are accepted (defined by the eMASS administrator) |
-
-
 [top](#post)
 
 ### ``post cac``
@@ -1457,7 +1421,7 @@ Add a Control Approval Chain (CAC) items in a system
 
 #### Add (POST) CAC CLI usages
 
- ```
+ ```shell
 USAGE
   $ saf emasser post cac [FLAGS]
 
@@ -1474,19 +1438,6 @@ EXAMPLES
   $ saf emasser post cac [-s,--systemId] [-a,--controlAcronym] [options]
 
  ```
-  - required parameter are:
-
-    |parameter          | type or values                                              |
-    |-------------------|:------------------------------------------------------------|
-    |-s, --systemId         |Integer - Unique system identifier                           |
-    |-a, --controlAcronym   |String - Control acronym associated with the POA&M Item. NIST SP 800-53 Revision 4 defined |
-
-  - conditional flag (parameter):
-
-    |parameter          | type or values                             |
-    |-------------------|:-------------------------------------------|
-    |-c, --comments         |String -The control approval chain comments |
-
 
 [top](#post)
 
@@ -1514,15 +1465,6 @@ DESCRIPTION
 EXAMPLES
   $ saf emasser post pac [-s,--systemId] [-w,--workflow] [-n,--name] [-c,--comments]
 ```
-  - required parameter are:
-
-    |parameter     | type or values                                                            |
-    |--------------|:--------------------------------------------------------------------------|
-    |-s, --systemId    |Integer - Unique system identifier                                         |
-    |-w, --workflow    |Possible Values: Assess and Authorize, Assess Only, Security Plan Approval |
-    |-n, --name        |String - Package name. 100 Characters                                      |
-    |-c, --comments    |String - Comments submitted upon initiation of the indicated workflow, 4,000 character|
-
 
 [top](#post)
 
