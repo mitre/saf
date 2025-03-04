@@ -1,6 +1,0 @@
-{
-    "sonarlint.connectedMode.project": {
-        "connectionId": "SAF",
-        "projectKey": "mitre_saf"
-    }
-}

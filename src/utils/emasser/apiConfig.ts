@@ -83,8 +83,6 @@ export class ApiConfig {
     try {
       this.apiKey = this.getRequiredEnv('EMASSER_API_KEY')
       this.url = this.getRequiredEnv('EMASSER_HOST_URL')
-      // this.keyCert = this.getRequiredEnv('EMASSER_KEY_FILE_PATH')
-      // this.clientCert = this.getRequiredEnv('EMASSER_CERT_FILE_PATH')
       this.apiPassPhrase = this.getRequiredEnv('EMASSER_KEY_FILE_PASSWORD')
     } catch (error: any) {
       if (error.name === 'EVNF') {
