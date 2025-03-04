@@ -1,8 +1,9 @@
-import {Flags} from '@oclif/core'
-import YAML from 'yaml'
 import fs from 'fs'
-import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import _ from 'lodash'
+import YAML from 'yaml'
+import {expect} from 'chai'
+import {Flags} from '@oclif/core'
+import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import {ThresholdValues} from '../../types/threshold'
 import {calculateCompliance,
   exitNonZeroIfTrue,
@@ -13,7 +14,6 @@ import {calculateCompliance,
   statusSeverityPaths,
   totalMax,
   totalMin} from '../../utils/threshold'
-import {expect} from 'chai'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 let flat: any
@@ -75,11 +75,15 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
 
     const parsedExecJSON = convertFileContextual(fs.readFileSync(flags.input, 'utf8'))
     const overallStatusCounts = extractStatusCounts(parsedExecJSON.contains[0] as ContextualizedProfile)
-
     if (thresholds.compliance) {
       const overallCompliance = calculateCompliance(overallStatusCounts)
-      exitNonZeroIfTrue(Boolean(thresholds.compliance.min && overallCompliance < thresholds.compliance.min), 'Overall compliance minimum was not satisfied') // Compliance Minimum
-      exitNonZeroIfTrue(Boolean(thresholds.compliance.max && overallCompliance > thresholds.compliance.max), 'Overall compliance maximum was not satisfied') // Compliance Maximum
+      try {
+        exitNonZeroIfTrue(Boolean(thresholds.compliance.min && overallCompliance < thresholds.compliance.min), 'Overall compliance minimum was not satisfied') // Compliance Minimum
+        exitNonZeroIfTrue(Boolean(thresholds.compliance.max && overallCompliance > thresholds.compliance.max), 'Overall compliance maximum was not satisfied') // Compliance Maximum
+      } catch {
+        process.exitCode = 1
+        return
+      }
     }
 
     // Total Pass/Fail/Skipped/No Impact/Error
@@ -87,39 +91,54 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
     for (const statusThreshold of targets) {
       const [statusName, _total] = statusThreshold.split('.')
       if (_.get(thresholds, statusThreshold) !== undefined && typeof _.get(thresholds, statusThreshold) !== 'object') {
-        exitNonZeroIfTrue(
-          Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName)) !==
-            _.get(thresholds, statusThreshold),
-          ),
-          `${statusThreshold}: Threshold not met. Number of received total ${statusThreshold.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is not equal to your set threshold for the number of ${statusThreshold.split('.')[0]} controls (${_.get(thresholds, statusThreshold)})`,
-        )
+        try {
+          exitNonZeroIfTrue(
+            Boolean(
+              _.get(overallStatusCounts, renameStatusName(statusName)) !==
+              _.get(thresholds, statusThreshold),
+            ),
+            `${statusThreshold}: Threshold not met. Number of received total ${statusThreshold.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is not equal to your set threshold for the number of ${statusThreshold.split('.')[0]} controls (${_.get(thresholds, statusThreshold)})`,
+          )
+        } catch {
+          process.exitCode = 1
+          return
+        }
       }
     }
 
     for (const totalMinimum of totalMin) {
       const [statusName] = totalMinimum.split('.')
       if (_.get(thresholds, totalMinimum) !== undefined) {
-        exitNonZeroIfTrue(
-          Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName)) <
-            _.get(thresholds, totalMinimum),
-          ),
-          `${totalMinimum}: Threshold not met. Number of received total ${totalMinimum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${totalMinimum.split('.')[0]} controls (${_.get(thresholds, totalMinimum)})`,
-        )
+        try {
+          exitNonZeroIfTrue(
+            Boolean(
+              _.get(overallStatusCounts, renameStatusName(statusName)) <
+              _.get(thresholds, totalMinimum),
+            ),
+            `${totalMinimum}: Threshold not met. Number of received total ${totalMinimum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${totalMinimum.split('.')[0]} controls (${_.get(thresholds, totalMinimum)})`,
+          )
+        } catch {
+          process.exitCode = 1
+          return
+        }
       }
     }
 
     for (const totalMaximum of totalMax) {
       const [statusName] = totalMaximum.split('.')
       if (_.get(thresholds, totalMaximum) !== undefined) {
-        exitNonZeroIfTrue(
-          Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName)) >
-            _.get(thresholds, totalMaximum),
-          ),
-          `${totalMaximum}: Threshold not met. Number of received total ${totalMaximum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${totalMaximum.split('.')[0]} controls (${_.get(thresholds, totalMaximum)})`,
-        )
+        try {
+          exitNonZeroIfTrue(
+            Boolean(
+              _.get(overallStatusCounts, renameStatusName(statusName)) >
+              _.get(thresholds, totalMaximum),
+            ),
+            `${totalMaximum}: Threshold not met. Number of received total ${totalMaximum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${totalMaximum.split('.')[0]} controls (${_.get(thresholds, totalMaximum)})`,
+          )
+        } catch {
+          process.exitCode = 1
+          return
+        }
       }
     }
 
@@ -129,19 +148,29 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
       for (const statusCountThreshold of targetPaths) {
         const [statusName, _total, thresholdType] = statusCountThreshold.split('.')
         if (thresholdType === 'min' && _.get(thresholds, statusCountThreshold) !== undefined) {
-          exitNonZeroIfTrue(
-            Boolean(
-              _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold),
-            ),
-            `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
-          )
+          try {
+            exitNonZeroIfTrue(
+              Boolean(
+                _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold),
+              ),
+              `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
+            )
+          } catch {
+            process.exitCode = 1
+            return
+          }
         } else if (thresholdType === 'max' && _.get(thresholds, statusCountThreshold) !== undefined) {
-          exitNonZeroIfTrue(
-            Boolean(
-              _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold),
-            ),
-            `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
-          )
+          try {
+            exitNonZeroIfTrue(
+              Boolean(
+                _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold),
+              ),
+              `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
+            )
+          } catch {
+            process.exitCode = 1
+            return
+          }
         }
       }
     }
@@ -157,14 +186,24 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
             try {
               expect(actualControlIds).to.contain(expectedControlId)
             } catch {
-              exitNonZeroIfTrue(true, `Expected ${targetPath} to contain ${expectedControlId} controls but it only contained [${actualControlIds?.join(', ')}]`) // Chai doesn't print the actual object diff anymore
+              try {
+                exitNonZeroIfTrue(true, `Expected ${targetPath} to contain ${expectedControlId} controls but it only contained [${actualControlIds?.join(', ')}]`) // Chai doesn't print the actual object diff anymore
+              } catch {
+                process.exitCode = 1
+                return
+              }
             }
           }
 
           try {
             expect(expectedControlIds.length).to.equal(actualControlIds?.length)
           } catch {
-            exitNonZeroIfTrue(true, `Expected ${targetPath} to contain ${expectedControlIds.length} controls but it contained ${actualControlIds?.length}`)
+            try {
+              exitNonZeroIfTrue(true, `Expected ${targetPath} to contain ${expectedControlIds.length} controls but it contained ${actualControlIds?.length}`)
+            } catch {
+              process.exitCode = 1
+              return
+            }
           }
         }
       }
