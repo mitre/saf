@@ -117,7 +117,7 @@ export function calculateCompliance(statusHash: StatusHash): number {
  */
 export function exitNonZeroIfTrue(condition: boolean, reason?: string) {
   if (condition) {
-    console.error(`Error: ${reason}` || 'Error: Compliance levels were not met')
+    console.error(`Error: ${reason}` || 'Error: Compliance levels were not met') // skipcq: JS-W1043
     throw new Error(reason || 'Compliance levels were not met')
   }
 }

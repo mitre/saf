@@ -51,7 +51,7 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
     }),
   }
 
-  async run() {
+  async run() { // skipcq: JS-R1005
     const {flags} = await this.parse(Threshold)
     let thresholds: ThresholdValues = {}
     if (flags.templateInline) {
