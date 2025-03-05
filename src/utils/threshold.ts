@@ -106,14 +106,15 @@ export function calculateCompliance(statusHash: StatusHash): number {
 
 /**
  * This function does not exit the process, it rather evaluates if a error occurred
+ * logs an error message to the console and throws an error with the provided reason.
+ *
  * It is the responsibility of the caller to catch the error and exit accordantly.
  *
- * @param condition - The condition to evaluate. If true, the process will trow an error.
- * @param reason - An optional reason for exiting. This will be logged as an error message.
+ * @param condition - The condition to evaluate. If true, the process will exit with an error.
+ * @param reason - Optional. The reason for the error. If not provided, a default message will be used.
+ * @throws Will throw an error with the provided reason or a default message if the condition is true.
  *
  * @returns - does not return, it simply trows an error if condition is satisfied (true)
- *
- * @throws {Error} Throws an error with the provided reason or a default message if the condition is true.
  */
 export function exitNonZeroIfTrue(condition: boolean, reason?: string) {
   if (condition) {
