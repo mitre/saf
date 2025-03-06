@@ -1,6 +1,6 @@
 import {Flags} from '@oclif/core'
 import fs from 'fs'
-import parser from 'fast-xml-parser'
+import {XMLParser} from 'fast-xml-parser'
 import {InSpecMetaData, InspecReadme} from '../../types/inspec'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
@@ -110,7 +110,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
       ignoreAttributes: false,
       attributeNamePrefix: '@_',
     }
-    const xmlDoc = new parser.XMLParser(options).parse(xccdf)
+    const xmlDoc = new XMLParser(options).parse(xccdf)
     let outDir = ''
     if (flags.output === 'profile') {
       const benchmarkTitle = (benchmarkType === 'cis') ?

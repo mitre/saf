@@ -11,7 +11,7 @@
     "@azure/identity": "^4.3.0",
     "@microsoft/microsoft-graph-client": "^3.0.7",
     "@microsoft/microsoft-graph-types": "^2.40.0",
-    "@mitre/emass_client": "3.10.0",
+    "@mitre/emass_client": "3.22.0",
     "@mitre/hdf-converters": "2.11.3",
     "@mitre/heimdall-lite": "2.11.3",
     "@mitre/inspec-objects": "2.0.1",
@@ -21,7 +21,7 @@
     "@oclif/plugin-version": "^2.0.11",
     "@oclif/plugin-warn-if-update-available": "^3.0.15",
     "@smithy/node-http-handler": "^4.0.0",
-    "@types/chai": "^5",
+    "@types/chai": "4.3.3",
     "@types/express": "^5.0.0",
     "@types/fs-extra": "^11.0.1",
     "@types/get-installed-path": "^4.0.1",
@@ -39,7 +39,7 @@
     "ajv": "^8.12.0",
     "app-root-path": "^3.1.0",
     "axios": "^1.5.0",
-    "chai": "^5",
+    "chai": "4.5.0",
     "chalk": "^5.4.1",
     "colors": "^1.4.0",
     "csv-parse": "^4.16.0",
@@ -118,14 +118,15 @@
   "oclif": {
     "commands": "./lib/commands",
     "helpClass": "./lib/utils/oclif/help/help",
+    "hooks": {
+      "command_not_found": "./lib/utils/oclif/hooks/command_not_found"
+    },
     "theme": "./oclif-theme.json",
     "additionalHelpFlags": [
-      "-h",
-      "--tell-me-more",
-      "--explain"
+      "-h", "-H", "--tell-me-more", "--explain"
     ],
     "additionalVersionFlags": [
-      "-v"
+      "-v", "-V", "--version", "--Version"
     ],
     "bin": "saf",
     "plugins": [

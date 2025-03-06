@@ -13,14 +13,14 @@ import {FlagOptions,
 const endpoint = 'roles'
 
 export default class EmasserGetRoles extends Command {
-  static usage = '<%= command.id %> [ARGUMENT] \n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m';
+  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m';
 
-  static description = getDescriptionForEndpoint(process.argv, endpoint);
+  static readonly description = getDescriptionForEndpoint(process.argv, endpoint);
 
-  static examples = getExamplesForEndpoint(process.argv, endpoint);
+  static readonly examples = getExamplesForEndpoint(process.argv, endpoint);
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Roles endpoint'}),
+  static readonly flags = {
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Roles command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
@@ -28,7 +28,7 @@ export default class EmasserGetRoles extends Command {
   //       the available arguments with associate description.
   // Only args.name is used, there is, it contains the argument listed by the user.
   // Example: If the user uses the command (saf emasser get roles byCategory), args.name is set to byCategory
-  static args = {
+  static readonly args = {
     name: Args.string({name: 'name', required: false, hidden: true}),
     all: Args.string({name: 'all', description: 'Retrieves all available system roles', required: false}),
     byCategory: Args.string({name: 'byCategory', description: 'Retrieves role(s) - filtered by [options] params', required: false}),
@@ -56,10 +56,10 @@ export default class EmasserGetRoles extends Command {
 
   async catch(error: any) { // skipcq: JS-0116
     if (error.message) {
-      this.error(error)
+      this.warn(error.message)
     } else {
       const suggestions = 'get roles [-h or --help]\n\tget roles all\n\tget roles byCategory'
-      this.warn('Invalid arguments\nTry this:\n\t' + suggestions)
+      this.warn('Invalid arguments\nTry this 👇:\n\t' + suggestions)
     }
   }
 }

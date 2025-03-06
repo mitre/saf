@@ -10,15 +10,17 @@ import {TestResultsApi} from '@mitre/emass_client'
 import {TestResultsResponsePost,
   TestResultsGet as TestResult} from '@mitre/emass_client/dist/api'
 
+const CMD_HELP = 'saf emasser post test_results -h or --help'
 export default class EmasserPostTestResults extends Command {
-  static usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [FLAGS]'
 
-  static description = "Add test results for a system's Assessment Procedures (CCIs) which determine Security Control compliance"
+  static readonly description = "Add test results for a system's Assessment Procedures which determine Security Control compliance\n" +
+    'See the FLAGS section for required fields and acceptable values'
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-c,--cci] [-b,--testedBy] [-t,--testDate] [-d,--description] [-S,--complianceStatus]']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-a,--assessmentProcedure] [-b,--testedBy] [-t,--testDate] [-d,--description] [-S,--complianceStatus]']
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) test results to a system\'s Assessment Procedures (CCIs)'}),
+  static readonly flags = {
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Test Results command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
@@ -29,7 +31,7 @@ export default class EmasserPostTestResults extends Command {
 
     const requestBodyArray: TestResult[] = []
     requestBodyArray.push({
-      cci: flags.cci,
+      assessmentProcedure: flags.assessmentProcedure,
       testedBy: flags.testedBy,
       testDate: Number.parseFloat(flags.testDate),
       description: flags.description,
@@ -38,6 +40,16 @@ export default class EmasserPostTestResults extends Command {
 
     addTestResults.addTestResultsBySystemId(flags.systemId, requestBodyArray).then((response: TestResultsResponsePost) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    }).catch((error: any) => console.error(colorize(outputError(error))))
+  }
+
+  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+    // If error message is for missing flags, display
+    // what fields are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('with --help', `with: \x1B[93m${CMD_HELP}\x1B[0m`))
+    } else {
+      this.warn(err)
+    }
   }
 }

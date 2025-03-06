@@ -61,8 +61,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('--help', `\x1B[93m${process.argv.at(-2)} ${process.argv.at(-1)} -h or --help\x1B[0m`))
     } else {
-      console.error(err.message)
-      process.exit(1)
+      this.warn(err)
     }
   }
 
