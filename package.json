@@ -123,12 +123,10 @@
     },
     "theme": "./oclif-theme.json",
     "additionalHelpFlags": [
-      "-h",
-      "--tell-me-more",
-      "--explain"
+      "-h", "-H", "--tell-me-more", "--explain"
     ],
     "additionalVersionFlags": [
-      "-v"
+      "-v", "-V", "--version", "--Version"
     ],
     "bin": "saf",
     "plugins": [

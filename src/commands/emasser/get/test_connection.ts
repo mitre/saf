@@ -9,7 +9,7 @@ import {outputError} from '../../../utils/emasser/outputError'
 export default class EmasserGetTestConnection extends Command {
   static readonly usage = '<%= command.id %>'
 
-  static readonly description = 'Test if eMASSer is properly configure to a valid eMASS URL\nUse the eMASSer CLI command "saf emasser configure" to generate or update an eMASS configuration file.'
+  static readonly description = 'Test if eMASSer is properly configured to a valid eMASS URL\nUse the eMASSer CLI command "saf emasser configure" to generate or update an eMASS configuration file.'
 
   static readonly examples = ['<%= config.bin %> <%= command.id %>']
 

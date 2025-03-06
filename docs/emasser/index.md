@@ -1,4 +1,4 @@
-# SA CLI eMASSer Features and Capabilities
+# SAF CLI eMASSer Features and Capabilities
 
 ## Environment Variables
 To facilitate setting the required environment variables the `SAF CLI eMASSer` utilizes a zero-dependency module to load Required/Optional variables from a `.env` file.  See [Generating an eMASS Configuration File](#generating-an-emass-configuration-file)
@@ -14,8 +14,8 @@ Place the file on the  path where the `emasser` command is executed.
 The following environment variables are required:
 * EMASSER_API_KEY=`<API key>`
 * EMASSER_HOST_URL=`<FQDN of the eMASS server>`
-* EMASSER_KEY_FILE_PATH=`<<The eMASS key.pem private key file in PEM format (if provided the CERT is required)>>`
-* EMASSER_CERT_FILE_PATH=`<The eMASS client.pem certificate file in PEM format (if provided the KEY is required)>`
+* EMASSER_KEY_FILE_PATH=`<<The eMASS key.pem private key file in PEM format (if provided, the CERT is required)>>`
+* EMASSER_CERT_FILE_PATH=`<The eMASS client.pem certificate file in PEM format (if provided, the KEY is required)>`
 * EMASSER_CA_FILE_PATH=`<The eMASS CA certificate (if provided no Key or Client PEM is needed)>`
 * EMASSER_KEY_FILE_PASSWORD=`<The certificate passphrase>`
 
@@ -188,7 +188,7 @@ Each CLI endpoint command have several layers of help.
       emasser get software              View all software baseline for a system available on the eMASS instance
       emasser get system                Get system information for a specific system defined by ID (systemId)
       emasser get systems               Get available systems filter on provided options
-      emasser get test_connection       Test if eMASSer is properly configure to a valid eMASS URL
+      emasser get test_connection       Test if eMASSer is properly configured to a valid eMASS URL
       emasser get test_results          Get test results for a specific system defined by ID (systemId)
       emasser get workflow_definitions  View all workflow schemas available on the eMASS instance
       emasser get workflow_instances    Retrieve all workflow instances or workflow instances noted by workflowInstanceID
@@ -257,7 +257,7 @@ The Test Connection endpoint provides the ability to verify connection to the we
 
     $ emasser get test_connection
 
-A return of success from the call indicates that the CLI can reach the configure server URL.
+A return of success from the call indicates that the CLI can reach the configured server URL.
 References [Required Environment Variables](#required-environment-variables) for the necessary environment variables.
 
 [top](#api-endpoints-provided)
@@ -1963,10 +1963,6 @@ EXAMPLES
 ```
 [top](#post)
 
-
-
-
-
 ### ``post static_code_scans``
 ----
 To add (POST) static code scans use the following command:
@@ -2072,45 +2068,6 @@ To add (POST) static code scans use the following command:
 \*The clearFindings field is an optional field, but required with a value of "True" to clear out all application findings for a single application/version pairing.
 
 [top](#post)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 ## Usage - PUT
 

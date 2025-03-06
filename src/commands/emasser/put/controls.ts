@@ -10,8 +10,6 @@ import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
 
 import {ControlsApi} from '@mitre/emass_client'
-// import {ControlsResponsePut,
-//   ControlsGet as Controls} from '@mitre/emass_client/dist/api'
 import {ControlsResponsePut} from '@mitre/emass_client/dist/api'
 
 interface Controls  {

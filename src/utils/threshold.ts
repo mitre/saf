@@ -105,7 +105,7 @@ export function calculateCompliance(statusHash: StatusHash): number {
 }
 
 /**
- * This function does not exit the process, it rather evaluates if a error occurred
+ * This function does not exit the process, it rather evaluates if an error occurred
  * logs an error message to the console and throws an error with the provided reason.
  *
  * It is the responsibility of the caller to catch the error and exit accordantly.
