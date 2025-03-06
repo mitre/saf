@@ -91,7 +91,7 @@
     "@typescript-eslint/eslint-plugin": "~7.18.0",
     "eslint": "^8.48.0",
     "eslint-config-oclif": "^4.0",
-    "eslint-config-oclif-typescript": "^1.0.3",
+    "eslint-config-oclif-typescript": "^3.1.14",
     "eslint-plugin-unicorn": "^56.0.0",
     "jsdom": "^26.0.0",
     "marked": "^15.0.0",
