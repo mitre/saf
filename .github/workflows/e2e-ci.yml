@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies on ${{ matrix.platform }}
         run: npm ci
         
-      - name: Install cinc-auditor/Compile/Run Tests on ${{ matrix.platform }}
+      - name: Install cinc-auditor on ${{ matrix.platform }}
         if: ${{ matrix.platform == 'windows' }}
         shell: pwsh
         run: |
@@ -35,18 +35,13 @@ jobs:
           . { iwr -useb https://omnitruck.cinc.sh/install.ps1 } | iex; install -project cinc-auditor
           $env:Path = $env:Path + ';C:\cinc-project\cinc-auditor\bin' + ';C:\cinc-project\cinc-auditor\embedded\bin'
           cinc-auditor -v
-          npm run prepack
-          npm run test
 
-      - name: Install cinc-auditor/Compile/Run Tests on ${{ matrix.platform }}
+      - name: Install cinc-auditor on ${{ matrix.platform }}
         if: ${{ matrix.platform == 'ubuntu' || matrix.platform == 'macos' }}
         run: |
           curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
+
+      - name: Compile and run tests on ${{ matrix.platform }}
+        run: |
           npm run prepack
           npm run test
-
-      # - name: Prepack (compile) on ${{ matrix.platform }}
-      #   run: npm run prepack
-
-      # - name: Run e2e tests on ${{ matrix.platform }}
-      #   run: npm run test
