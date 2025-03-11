@@ -9,3 +9,12 @@ updates:
       time: "20:00"
       timezone: America/New_York
     open-pull-requests-limit: 99
+    ignore:
+    # Chai dependency major version 5 does not support common js modules
+    - dependency-name: chai
+      versions:
+      - ^4.5.0
+    # Chai dependency major version 5 does not support common js modules
+    - dependency-name: "@types/chai"
+      versions:
+      - ^4.3.3
