@@ -28,7 +28,7 @@ jobs:
         run: npm ci
         
       - name: Install cinc-auditor/Compile/Run Tests on ${{ matrix.platform }}
-        if: ${{ matrix.platform == 'windows-latest' }}
+        if: ${{ matrix.platform == 'windows' }}
         shell: pwsh
         run: |
           Start-Process powershell -Verb RunAs
@@ -39,7 +39,7 @@ jobs:
           npm run test
 
       - name: Install cinc-auditor/Compile/Run Tests on ${{ matrix.platform }}
-        if: ${{ matrix.platform == 'ubuntu-latest' || matrix.platform == 'macos-latest' }}
+        if: ${{ matrix.platform == 'ubuntu' || matrix.platform == 'macos' }}
         run: |
           curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
           npm run prepack
