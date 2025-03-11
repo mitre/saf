@@ -27,7 +27,7 @@ jobs:
       - name: Install dependencies on ${{ matrix.platform }}
         run: npm ci
         
-      - name: Install cinc-auditor on ${{ matrix.platform }}
+      - name: Install cinc-auditor on windows
         if: ${{ matrix.platform == 'windows' }}
         shell: pwsh
         run: |
@@ -36,7 +36,7 @@ jobs:
           $env:Path = $env:Path + ';C:\cinc-project\cinc-auditor\bin' + ';C:\cinc-project\cinc-auditor\embedded\bin'
           cinc-auditor -v
 
-      - name: Install cinc-auditor on ${{ matrix.platform }}
+      - name: Install cinc-auditor on ubuntu or macos
         if: ${{ matrix.platform == 'ubuntu' || matrix.platform == 'macos' }}
         run: |
           curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
