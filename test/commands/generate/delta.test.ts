@@ -102,9 +102,10 @@ describe('Test generate delta command', () => {
       '-c', path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2022_v1r3_mini_controls/'),
     ])
 
-    expect(stdout).to.includes('Total Controls Available for Delta:  5')
-    expect(stdout).to.includes('Total Controls Found on XCCDF:  5')
-    expect(stdout).to.includes('Match Controls:  5')
+    console.log(stdout)
+    expect(stdout).to.include('Total Controls Available for Delta:  5')
+    expect(stdout).to.include('Total Controls Found on XCCDF:  5')
+    expect(stdout).to.include('Match Controls:  5')
     expect(stdout).to.include('Mapping (From --> To):  V-93369 --> SV-254238')
     expect(stdout).to.include('Mapping (From --> To):  V-93473 --> SV-254239')
     expect(stdout).to.include('Mapping (From --> To):  V-93205 --> SV-254240')
