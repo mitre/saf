@@ -36,7 +36,7 @@ function printHelpMessage() {
  * variables are missing, it prints an error message and exits the process.
  */
 export class ApiConfig {
-  private envConfig: {[key: string]: string | undefined};
+  private envConfig: {[key: string]: string | undefined}; // skipcq: JS-0368
 
   public url: string;
   public port: number|any;

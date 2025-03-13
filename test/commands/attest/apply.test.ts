@@ -1,40 +1,41 @@
-/* eslint-disable array-bracket-newline */
+
 /* eslint-disable array-element-newline */
-import { expect } from 'chai';
-import { runCommand } from '@oclif/test';
-import tmp from 'tmp';
-import path from 'path';
-import fs from 'fs';
-import { omitHDFChangingFields } from '../utils';
+import {expect} from 'chai'
+import {before, after} from 'mocha'
+import {runCommand} from '@oclif/test'
+import tmp from 'tmp'
+import path from 'path'
+import fs from 'fs'
+import {omitHDFChangingFields} from '../utils'
+
+function readAndParseJSON(filePath: string): any {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8').replaceAll(/\r/gi, ''))
+}
 
 describe('Test attest apply', () => {
-  let tmpobj;
+  let tmpobj: tmp.DirResult
 
   before(() => {
-    tmpobj = tmp.dirSync({ unsafeCleanup: true });
-  });
+    tmpobj = tmp.dirSync({unsafeCleanup: true})
+  })
 
   after(() => {
-    tmpobj.removeCallback();
-  });
+    tmpobj.removeCallback()
+  })
 
   const captureOpts = {
     print: true,
     stripAnsi: false,
-  };
+  }
 
-  const readAndParseJSON = (filePath) => {
-    return JSON.parse(fs.readFileSync(filePath, 'utf8').replaceAll(/\r/gi, ''));
-  };
+  const runAndValidate = async (commandArgs: string | string[], outputFilePath: string, expectedFilePath: string) => {
+    const {stderr} = await runCommand(commandArgs, undefined, captureOpts)
+    const output = readAndParseJSON(outputFilePath)
+    const expected = readAndParseJSON(expectedFilePath)
 
-  const runAndValidate = async (commandArgs, outputFilePath, expectedFilePath) => {
-    const { stderr } = await runCommand(commandArgs, undefined, captureOpts);
-    const output = readAndParseJSON(outputFilePath);
-    const expected = readAndParseJSON(expectedFilePath);
-
-    expect(omitHDFChangingFields(output)).to.eql(omitHDFChangingFields(expected));
-    expect(stderr).to.be.empty;
-  };
+    expect(omitHDFChangingFields(output)).to.eql(omitHDFChangingFields(expected))
+    expect(stderr).to.be.empty // skipcq: JS-0354
+  }
 
   it('Successfully applies a JSON attestations file', async () => {
     await runAndValidate(
@@ -45,9 +46,9 @@ describe('Test attest apply', () => {
         '-o', `${tmpobj.name}/rhel8_attestations_jsonOutput.json`,
       ],
       `${tmpobj.name}/rhel8_attestations_jsonOutput.json`,
-      path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json')
-    );
-  });
+      path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json'),
+    )
+  })
 
   it('Successfully applies an XLSX attestations file', async () => {
     await runAndValidate(
@@ -58,9 +59,9 @@ describe('Test attest apply', () => {
         '-o', `${tmpobj.name}/rhel8_attestations_xlsxOutput.json`,
       ],
       `${tmpobj.name}/rhel8_attestations_xlsxOutput.json`,
-      path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json')
-    );
-  });
+      path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json'),
+    )
+  })
 
   it('Successfully applies a YAML attestations file', async () => {
     await runAndValidate(
@@ -71,9 +72,9 @@ describe('Test attest apply', () => {
         '-o', `${tmpobj.name}/rhel8_attestations_yamlOutput.json`,
       ],
       `${tmpobj.name}/rhel8_attestations_yamlOutput.json`,
-      path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json')
-    );
-  });
+      path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json'),
+    )
+  })
 
   it('Successfully applies JSON attestations file to an overlay profile', async () => {
     await runAndValidate(
@@ -84,9 +85,9 @@ describe('Test attest apply', () => {
         '-o', `${tmpobj.name}/triple_overlay_attested.json`,
       ],
       `${tmpobj.name}/triple_overlay_attested.json`,
-      path.resolve('./test/sample_data/attestations/triple_overlay_attested.json')
-    );
-  });
+      path.resolve('./test/sample_data/attestations/triple_overlay_attested.json'),
+    )
+  })
 
   it('Successfully applies a YAML attestations file to an overlay profile', async () => {
     await runAndValidate(
@@ -97,7 +98,7 @@ describe('Test attest apply', () => {
         '-o', `${tmpobj.name}/triple_overlay_attested_with_yml.json`,
       ],
       `${tmpobj.name}/triple_overlay_attested_with_yml.json`,
-      path.resolve('./test/sample_data/attestations/triple_overlay_attested.json')
-    );
-  });
-});
+      path.resolve('./test/sample_data/attestations/triple_overlay_attested.json'),
+    )
+  })
+})
