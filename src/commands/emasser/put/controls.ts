@@ -7,18 +7,56 @@ import {Command, Flags} from '@oclif/core'
 import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
+import {FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
 
 import {ControlsApi} from '@mitre/emass_client'
-import {ControlsResponsePut,
-  ControlsGet as Controls} from '@mitre/emass_client/dist/api'
+import {ControlsResponsePut} from '@mitre/emass_client/dist/api'
 
-function printHelpMsg() {
-  console.log('\x1B[93m', '\nInvoke saf emasser put controls [-h, --help] for additional help', '\x1B[0m')
+interface Controls  {
+  // Required Fields
+  acronym?: string
+  responsibleEntities?: string
+  controlDesignation?: string
+  estimatedCompletionDate?: string
+  implementationNarrative?: string
+
+  // Conditional Fields
+  commonControlProvider?: string
+  naJustification?: string
+  slcmCriticality?: string
+  slcmFrequency?: string
+  slcmMethod?: string
+  slcmReporting?: string
+  slcmTracking?: string
+  slcmComments?: string
+
+  // Optional Fields
+  implementationStatus?: string
+  severity?: string
+  vulnerabiltySummary?: string
+  recommendations?: string
+  relevanceOfThreat?: string
+  likelihood?: string
+  impact?: string
+  impactDescription?: string
+  residualRiskLevel?: string
+  testMethod?: string
+  mitigations?: string
+  applicationLayer?: string
+  databaseLayer?: string
+  operatingSystemLayer?: string
 }
 
-function printRedMsg(msg: string) {
-  console.log('\x1B[91m', msg, '\x1B[0m')
+function getAllJsonExamples(): string {
+  let exampleBodyObj: any = {}
+
+  exampleBodyObj = {
+    ...getJsonExamples('controls-required'),
+    ...getJsonExamples('controls-conditional'),
+    ...getJsonExamples('controls-optional'),
+  }
+
+  return exampleBodyObj
 }
 
 function assertParamExists(object: string, value: string|number|undefined|null): void {
@@ -125,6 +163,22 @@ function addOptionalFields(bodyObject: Controls, dataObj: Controls): void {
   if (Object.prototype.hasOwnProperty.call(dataObj, 'testMethod')) {
     bodyObject.testMethod = dataObj.testMethod
   }
+
+  if (Object.prototype.hasOwnProperty.call(dataObj, 'mitigations')) {
+    bodyObject.mitigations = dataObj.mitigations
+  }
+
+  if (Object.prototype.hasOwnProperty.call(dataObj, 'applicationLayer')) {
+    bodyObject.applicationLayer = dataObj.applicationLayer
+  }
+
+  if (Object.prototype.hasOwnProperty.call(dataObj, 'databaseLayer')) {
+    bodyObject.databaseLayer = dataObj.databaseLayer
+  }
+
+  if (Object.prototype.hasOwnProperty.call(dataObj, 'operatingSystemLayer')) {
+    bodyObject.operatingSystemLayer = dataObj.operatingSystemLayer
+  }
 }
 
 function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { // skipcq: JS-0044
@@ -142,8 +196,8 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
   // "Inherited"          Only the following fields can be updated:
   //                      controlDesignation, commonnControlProvider
   //----------------------------------------------------------------------------------------
-
-  // Only process if we have an Implementation Status
+  const HELP_MSG = 'Invoke saf emasser put controls [-h, --help] for additional help'
+  // Only process if we have an Implementation Status (optional field)
   if (Object.prototype.hasOwnProperty.call(dataObj, 'implementationStatus')) {
     // The implementation Status is always required in any of these cases
     bodyObject.implementationStatus = dataObj.implementationStatus
@@ -159,7 +213,7 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
           printRedMsg('Missing one of these parameters/fields:')
           printRedMsg('    responsibleEntities, slcmCriticality, slcmFrequency,')
           printRedMsg('    slcmMethod,slcmReporting, slcmTracking, slcmComments')
-          printHelpMsg()
+          printHelpMsg(HELP_MSG)
           process.exit(1)
         } else {
           bodyObject.responsibleEntities = dataObj.responsibleEntities
@@ -182,7 +236,7 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
         } else {
           printRedMsg('Missing one of these parameters/fields:')
           printRedMsg('    naJustification, responsibleEntities')
-          printHelpMsg()
+          printHelpMsg(HELP_MSG)
           process.exit(1)
         }
 
@@ -198,7 +252,7 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
           printRedMsg('Missing one of these parameters/fields:')
           printRedMsg('    commonControlProvider, responsibleEntities, slcmCriticality,')
           printRedMsg('    slcmFrequency, slcmMethod, slcmReporting, slcmTracking, slcmComments')
-          printHelpMsg()
+          printHelpMsg(HELP_MSG)
           process.exit(1)
         } else {
           bodyObject.commonControlProvider = dataObj.commonControlProvider
@@ -220,7 +274,7 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
           bodyObject.commonControlProvider = dataObj.commonControlProvider
         } else {
           printRedMsg('When implementationStatus value is "Inherited" the following field is required: commonControlProvider')
-          printHelpMsg()
+          printHelpMsg(HELP_MSG)
           process.exit(1)
         }
 
@@ -251,22 +305,27 @@ function generateBodyObj(dataObject: Controls): Controls {
   return bodyObj
 }
 
+const CMD_HELP = 'saf emasser put controls -h or --help'
 export default class EmasserPutControls extends Command {
-  static usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command usages\x1B[0m'
 
-  static description = 'Update Security Control information of a system for both the Implementation Plan and Risk Assessment.'
+  static readonly description = 'Update Security Control information of a system for both the Implementation Plan and Risk Assessment.'
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--controlsFile]',
+  static readonly examples = [
+    '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f, --dataFile]',
     'The input file should be a well formed JSON containing the Security Control information based on defined business rules.',
     'Required JSON parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('controls-required'), null, 2)),
     'Conditional JSON parameters/fields are: ',
     colorize(JSON.stringify(getJsonExamples('controls-conditional'), null, 2)),
     'Optional JSON parameters/fields are:',
-    colorize(JSON.stringify(getJsonExamples('controls-optional'), null, 2))]
+    colorize(JSON.stringify(getJsonExamples('controls-optional'), null, 2)),
+    '\x1B[1m\x1B[32mAll accepted parameters/fields are:\x1B[0m',
+    colorize(getAllJsonExamples()),
+  ]
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Put (update) control information in a system for one or many controls. See emasser Features (emasserFeatures.md) for additional information.'}),
+  static readonly flags = {
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the PUT Controls command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
@@ -278,19 +337,14 @@ export default class EmasserPutControls extends Command {
     const requestBodyArray: Controls[] = []
 
     // Check if a Security Control information json file was provided
-    if (fs.existsSync(flags.controlFile)) {
+    if (fs.existsSync(flags.dataFile)) {
       let data: any
       try {
-        data = JSON.parse(await readFile(flags.controlFile, 'utf8'))
+        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
       } catch (error: any) {
-        if (error.code === 'ENOENT') {
-          console.log('Security Control information JSON file not found!')
-          process.exit(1)
-        } else {
-          console.log('Error reading Security Control information file, possible malformed json. Please use the -h flag for help.')
-          console.log('Error message was:', error.message)
-          process.exit(1)
-        }
+        console.error('\x1B[91m» Error reading Security Control(s) data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
+        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+        process.exit(1)
       }
 
       // Security Control information json file provided, check if we have multiple content to process
@@ -305,12 +359,22 @@ export default class EmasserPutControls extends Command {
         requestBodyArray.push(generateBodyObj(dataObject))
       }
     } else {
-      console.error('Invalid or Security Control information JSON file not found on the provided directory:', flags.controlFile)
+      console.error('\x1B[91m» The provided Security Control(s) data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
       process.exit(1)
     }
 
     updateControl.updateControlBySystemId(flags.systemId, requestBodyArray).then((response: ControlsResponsePut) => {
       console.log(colorize(outputFormat(response)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
+  }
+
+  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+    // If error message is for missing flags, display
+    // what fields are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('with --help', `with: \x1B[93m${CMD_HELP}\x1B[0m`))
+    } else {
+      this.warn(err)
+    }
   }
 }

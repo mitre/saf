@@ -7,18 +7,19 @@ import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 import {POAMApi} from '@mitre/emass_client'
-import {PoamResponseDelete,
+import {PoamResponsePostPutDelete,
   PoamRequestDeleteBodyInner as PoamDeleteBody} from '@mitre/emass_client/dist/api'
 
+const CMD_HELP = 'saf emasser delete poams -h or --help'
 export default class EmasserDeletePoams extends Command {
-  static usage = '<%= command.id %> [options]';
+  static readonly usage = '<%= command.id %> [FLAGS]';
 
-  static description = 'Remove one or many POA&M items in a system identified by system and poam Id';
+  static readonly description = 'Remove one or many POA&M items in a system identified by system and poam Id';
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-P,--poamsId]'];
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamsId] <poam-id> <poam-id> ...'];
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the DELETE POA&M endpoint'}),
+  static readonly flags = {
+    help: Flags.help({char: 'h', description: 'Show help for the SAF CLI eMASSer DELETE POA&Ms command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
@@ -32,8 +33,19 @@ export default class EmasserDeletePoams extends Command {
       requestBodyArray.push({poamId: poamId}) // skipcq: JS-0240
     })
 
-    delPoam.deletePoam(flags.systemId, requestBodyArray).then((response: PoamResponseDelete) => {
+    // Call the endpoint
+    delPoam.deletePoam(flags.systemId, requestBodyArray).then((response: PoamResponsePostPutDelete) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
+  }
+
+  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+    // If error message is for missing flags, display
+    // what fields are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('with --help', `with: \x1B[93m${CMD_HELP}\x1B[0m`))
+    } else {
+      this.warn(err)
+    }
   }
 }

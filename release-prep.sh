@@ -43,8 +43,8 @@ PrintColor "Yellow" "#    - Commit previously staged files with 'signoff' tag (n
 PrintColor "Yellow" "#    - Tag the commit with new release version                                 "
 PrintColor "Yellow" "#    - Push and updated the repository three references (new version number)   "
 PrintColor "Yellow" "# Prerequisites:                                                               "
-PrintColor "Yellow" "#    - Before executing the preparatory script ensure that the you're on a     "
-PrintColor "Yellow" "#      directory containing the most recent commit of the SAF CLI.             "
+PrintColor "Red"    "#    - Before executing the preparatory script ensure that the you're on a     "
+PrintColor "Red"    "#      directory containing the most recent commit of the SAF CLI.             "
 PrintColor "Yellow" "#------------------------------------------------------------------------------"
 
 #------------------------------------------------------------------------------

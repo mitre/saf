@@ -1,19 +1,25 @@
 import {expect} from 'chai'
 import {InitMockServer} from './mock.server'
-import {ArtifactsApi, POAMApi, MilestonesApi} from '@mitre/emass_client'
-import {ArtifactsResponseDel, PoamResponseDelete,
-  MilestonesPutPostDelete} from '@mitre/emass_client/dist/api'
+import {
+  ArtifactsApi, POAMApi,
+  MilestonesApi, CloudResourceResultsApi,
+  ContainerScanResultsApi, HardwareBaselineApi,
+  SoftwareBaselineApi,
+} from '@mitre/emass_client'
+import {
+  ArtifactsResponseDel, PoamResponsePostPutDelete,
+  MilestonesPutPostDelete, ContainersResourcesPostDelete,
+  CloudResourcesPostDelete, HwBaselineResponseDelete,
+  SwBaselineResponseDelete,
+} from '@mitre/emass_client/dist/api'
 
-describe('Test eMASS API CLI (delete) commands', () => {
-  const mocSer = new InitMockServer()
+describe('Test eMASSer API CLI (DELETE) commands', () => {
+  const mocServer = new InitMockServer()
   let responseDataObj: Map<string, any>
-  const testOk =  {
-    status: 200,
-    statusText: 'OK',
-  }
+  const testOk =  {status: 200, statusText: 'OK'}
 
-  it('Successfully tested endpoint - artifacts', async () => {
-    const delArtifact = new ArtifactsApi(mocSer.configuration, mocSer.basePath, mocSer.axiosInstances)
+  it('Successfully tested endpoint - Artifacts', async () => {
+    const delArtifact = new ArtifactsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await delArtifact.deleteArtifact(123, []).then((response: ArtifactsResponseDel) => {
       responseDataObj = new Map(Object.entries(response))
     }).catch((error:any) => {
@@ -27,9 +33,9 @@ describe('Test eMASS API CLI (delete) commands', () => {
     expect(responseDataObj.get('statusText')).to.equal('OK')
   })
 
-  it('Successfully tested endpoint - poams', async () => {
-    const delPoam = new POAMApi(mocSer.configuration, mocSer.basePath, mocSer.axiosInstances)
-    await delPoam.deletePoam(34, []).then((response: PoamResponseDelete) => {
+  it('Successfully tested endpoint - Cloud Resources', async () => {
+    const delCloudResources = new CloudResourceResultsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
+    await delCloudResources.deleteCloudResources(123, []).then((response: CloudResourcesPostDelete) => {
       responseDataObj = new Map(Object.entries(response))
     }).catch((error:any) => {
       if (error.message.includes('unexpected end of file') === false) {
@@ -42,9 +48,69 @@ describe('Test eMASS API CLI (delete) commands', () => {
     expect(responseDataObj.get('statusText')).to.equal('OK')
   })
 
-  it('Successfully tested endpoint - milestones', async () => {
-    const delMilestones = new MilestonesApi(mocSer.configuration, mocSer.basePath, mocSer.axiosInstances)
+  it('Successfully tested endpoint - Container Scans', async () => {
+    const delContainerScans = new ContainerScanResultsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
+    await delContainerScans.deleteContainerSans(123, []).then((response: ContainersResourcesPostDelete) => {
+      responseDataObj = new Map(Object.entries(response))
+    }).catch((error:any) => {
+      if (error.message.includes('unexpected end of file') === false) {
+        console.error(error)
+      }
+
+      responseDataObj = new Map(Object.entries(testOk))
+    })
+    expect(responseDataObj.get('status')).to.equal(200)
+    expect(responseDataObj.get('statusText')).to.equal('OK')
+  })
+
+  it('Successfully tested endpoint - Hardware Baseline', async () => {
+    const delHwBaseline = new HardwareBaselineApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
+    await delHwBaseline.deleteHwBaselineAssets(123, []).then((response: HwBaselineResponseDelete) => {
+      responseDataObj = new Map(Object.entries(response))
+    }).catch((error:any) => {
+      if (error.message.includes('unexpected end of file') === false) {
+        console.error(error)
+      }
+
+      responseDataObj = new Map(Object.entries(testOk))
+    })
+    expect(responseDataObj.get('status')).to.equal(200)
+    expect(responseDataObj.get('statusText')).to.equal('OK')
+  })
+
+  it('Successfully tested endpoint - Software Baseline', async () => {
+    const delSwBaseline = new SoftwareBaselineApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
+    await delSwBaseline.deleteSwBaselineAssets(123, []).then((response: SwBaselineResponseDelete) => {
+      responseDataObj = new Map(Object.entries(response))
+    }).catch((error:any) => {
+      if (error.message.includes('unexpected end of file') === false) {
+        console.error(error)
+      }
+
+      responseDataObj = new Map(Object.entries(testOk))
+    })
+    expect(responseDataObj.get('status')).to.equal(200)
+    expect(responseDataObj.get('statusText')).to.equal('OK')
+  })
+
+  it('Successfully tested endpoint - Milestones', async () => {
+    const delMilestones = new MilestonesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await delMilestones.deleteMilestone(36, 76, []).then((response: MilestonesPutPostDelete) => {
+      responseDataObj = new Map(Object.entries(response))
+    }).catch((error:any) => {
+      if (error.message.includes('unexpected end of file') === false) {
+        console.error(error)
+      }
+
+      responseDataObj = new Map(Object.entries(testOk))
+    })
+    expect(responseDataObj.get('status')).to.equal(200)
+    expect(responseDataObj.get('statusText')).to.equal('OK')
+  })
+
+  it('Successfully tested endpoint - POA&Ms', async () => {
+    const delPoam = new POAMApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
+    await delPoam.deletePoam(34, []).then((response: PoamResponsePostPutDelete) => {
       responseDataObj = new Map(Object.entries(response))
     }).catch((error:any) => {
       if (error.message.includes('unexpected end of file') === false) {
