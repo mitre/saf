@@ -84,22 +84,27 @@
   },
   "devDependencies": {
     "@e965/xlsx": "^0.20.0",
+    "@eslint/js": "^9.22.0",
     "@oclif/test": "^4.1.0",
     "@types/js-yaml": "^4.0.9",
     "@types/jsdom": "^21.1.7",
     "@types/mock-fs": "^4.13.4",
-    "@typescript-eslint/eslint-plugin": "~7.18.0",
-    "eslint": "^8.48.0",
+    "@typescript-eslint/eslint-plugin": "^8.26.1",
+    "@typescript-eslint/parser": "^8.26.1",
+    "eslint": "^8.57.1",
     "eslint-config-oclif": "^4.0",
-    "eslint-config-oclif-typescript": "^1.0.3",
-    "eslint-plugin-unicorn": "^56.0.0",
+    "eslint-config-oclif-typescript": "^3.1.14",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-unicorn": "^56.0.1",
+    "globals": "^16.0.0",
     "jsdom": "^26.0.0",
     "marked": "^15.0.0",
     "mocha": "^11",
     "mock-fs": "^5.2.0",
     "oclif": "^4.8.8",
     "tmp": "^0.2.1",
-    "ts-mocha": "^11.1.0"
+    "ts-mocha": "^11.1.0",
+    "typescript-eslint": "^8.26.1"
   },
   "engines": {
     "node": "^22.0.0"
@@ -201,7 +206,8 @@
   "repository": "mitre/saf",
   "scripts": {
     "lint": "eslint \"src/**/*.ts\" --fix",
-    "lint:ci": "eslint \"src/**/*.ts\" --max-warnings 0",
+    "lint:ci": "eslint \"src/**/*.ts\" --max-warnings 0 --debug",
+    "lint:fix": "eslint \"src/**/*.ts\" --fix",
     "dev": "run-script-os",
     "dev:win32": "(IF EXIST lib rmdir /s /q lib) && tsc && node bin/run",
     "dev:darwin:linux": "rm -rf lib && tsc && node bin/run",

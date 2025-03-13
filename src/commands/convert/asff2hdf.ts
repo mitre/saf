@@ -23,7 +23,7 @@ const API_MAX_RESULTS = 100
 
 export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
   static readonly usage =
-   '<%= command.id %> -o <hdf-output-folder> [--interactive] [-L info|warn|debug|verbose]' +
+    '<%= command.id %> -o <hdf-output-folder> [--interactive] [-L info|warn|debug|verbose]' +
    ' [-i <asff-json> | -a | -r <region> | -I | -C <certificate> | -t <target>...] [-H <additional-input-files>...]'
 
   static readonly description =

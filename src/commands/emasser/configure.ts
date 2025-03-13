@@ -10,7 +10,7 @@ export default class EmasserBuildConfig extends Command {
     'most eMASS integration, however certain integrations, the user-uid is not required'
 
   static readonly description =
-  `
+    `
    ${colors.yellow('Required eMASS configuration variables 👇')}
    ${colors.blue('\tEMASSER_API_KEY') + colors.green('           <The eMASS API key (api-key) - valid key is > 30 alpha numeric characters>\b')}
    ${colors.blue('\tEMASSER_HOST_URL') + colors.green('          <The Full Qualified Domain Name (FQDN) for the eMASS server>')}
