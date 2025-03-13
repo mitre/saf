@@ -13,14 +13,14 @@ import {FlagOptions,
 const endpoint = 'poams'
 
 export default class EmasserGetPoams extends Command {
-  static usage = '<%= command.id %> [ARGUMENT] \n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m';
+  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m';
 
-  static description = getDescriptionForEndpoint(process.argv, endpoint);
+  static readonly description = getDescriptionForEndpoint(process.argv, endpoint);
 
-  static examples = getExamplesForEndpoint(process.argv, endpoint);
+  static readonly examples = getExamplesForEndpoint(process.argv, endpoint);
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET POA&Ms endpoint'}),
+  static readonly flags = {
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET POA&Ms command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
@@ -28,7 +28,7 @@ export default class EmasserGetPoams extends Command {
   //       the available arguments with associate description.
   // Only args.name is used, there is, it contains the argument listed by the user.
   // Example: If the user uses the command (saf emasser get poams byPoamId), args.name is set to byPoamId
-  static args = {
+  static readonly args = {
     name: Args.string({name: 'name', required: false, hidden: true}),
     forSystem: Args.string({name: 'forSystem', description: 'Retrieves Poams for specified system ID', required: false}),
     byPoamId: Args.string({name: 'byPoamId', description: 'Retrieves Poams for specified system and poam ID', required: false}),
@@ -56,7 +56,7 @@ export default class EmasserGetPoams extends Command {
 
   async catch(error: any) { // skipcq: JS-0116
     if (error.message) {
-      this.error(error)
+      this.warn(error.message)
     } else {
       const suggestions = 'get poams [-h or --help]\n\tget poams forSystem\n\tget poams byPoamId'
       this.warn('Invalid arguments\nTry this:\n\t' + suggestions)

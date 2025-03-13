@@ -10,15 +10,16 @@ import {PACApi} from '@mitre/emass_client'
 import {PacResponsePost,
   PacGet as PAC} from '@mitre/emass_client/dist/api'
 
+const CMD_HELP = 'saf emasser post pac -h or --help'
 export default class EmasserPostPac extends Command {
-  static usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [FLAGS]'
 
-  static description = 'Add new Package Approval Chain (PAC) workflow(s) for a system'
+  static readonly description = 'Add new Package Approval Chain (PAC) workflow(s) for a system'
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-w,--workflow] [-n,--name] [-c,--comments]']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-w,--workflow] [-n,--name] [-c,--comments]']
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) a Package Approval Chain (PAC) item in a system'}),
+  static readonly flags = {
+    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Package Approval Chain (PAC) command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
@@ -37,5 +38,15 @@ export default class EmasserPostPac extends Command {
     addPac.addSystemPac(flags.systemId, requestBodyArray).then((response: PacResponsePost) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error:any) => console.error(colorize(outputError(error))))
+  }
+
+  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+    // If error message is for missing flags, display
+    // what fields are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('with --help', `with: \x1B[93m${CMD_HELP}\x1B[0m`))
+    } else {
+      this.warn(err)
+    }
   }
 }

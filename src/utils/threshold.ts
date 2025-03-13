@@ -104,8 +104,21 @@ export function calculateCompliance(statusHash: StatusHash): number {
   return Math.round((100 * statusHash.Passed) / total)
 }
 
+/**
+ * This function does not exit the process, it rather evaluates if an error occurred
+ * logs an error message to the console and throws an error with the provided reason.
+ *
+ * It is the responsibility of the caller to catch the error and exit accordantly.
+ *
+ * @param condition - The condition to evaluate. If true, the process will exit with an error.
+ * @param reason - Optional. The reason for the error. If not provided, a default message will be used.
+ * @throws Will throw an error with the provided reason or a default message if the condition is true.
+ *
+ * @returns - does not return, it simply trows an error if condition is satisfied (true)
+ */
 export function exitNonZeroIfTrue(condition: boolean, reason?: string) {
   if (condition) {
+    console.error(`Error: ${reason}` || 'Error: Compliance levels were not met') // skipcq: JS-W1043
     throw new Error(reason || 'Compliance levels were not met')
   }
 }

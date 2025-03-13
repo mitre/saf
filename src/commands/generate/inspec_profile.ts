@@ -1,15 +1,13 @@
 import {Flags} from '@oclif/core'
 import fs from 'fs'
-import parser from 'fast-xml-parser'
+import {XMLParser} from 'fast-xml-parser'
 import {InSpecMetaData, InspecReadme} from '../../types/inspec'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
-import {processOVAL, processXCCDF} from '@mitre/inspec-objects'
-import Profile from '@mitre/inspec-objects/lib/objects/profile'
+import {processOVAL, processXCCDF, Profile} from '@mitre/inspec-objects'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 import {Logger} from 'winston'
 import _ from 'lodash'
-import YAML from 'yaml'
 
 export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
   static readonly usage =
@@ -112,7 +110,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
       ignoreAttributes: false,
       attributeNamePrefix: '@_',
     }
-    const xmlDoc = new parser.XMLParser(options).parse(xccdf)
+    const xmlDoc = new XMLParser(options).parse(xccdf)
     let outDir = ''
     if (flags.output === 'profile') {
       const benchmarkTitle = (benchmarkType === 'cis') ?
@@ -629,25 +627,7 @@ ${contentObj.profileType === 'CIS' ?
 }
 
 function generateYaml(profile: Profile, outDir: string, logger: Logger) {
-  // ----------------------------------------------------------------------
-  // NOTE: Not using the profile.createInspecYaml() as it does not wrap the
-  //       inspect_version in double quotes (the format is ~>#.#). Use this
-  //       function until ts-object.ts method is fixed
-
-  const inspecYmlContent = YAML.stringify({
-    name: profile.name,
-    title: profile.title,
-    maintainer: profile.maintainer,
-    copyright: profile.copyright,
-    copyright_email: profile.copyright_email,
-    license: profile.license,
-    summary: profile.summary,
-    description: profile.description,
-    version: profile.version,
-    supports: profile.supports,
-    depends: profile.depends,
-    inspec_version: YAML.stringify(`${profile.inspec_version}`, {defaultStringType: 'QUOTE_DOUBLE'}),
-  }) +
+  const inspecYmlContent = profile.createInspecYaml() +
 `
 
 ### INPUTS ###
