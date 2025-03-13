@@ -5,7 +5,7 @@ import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
 import path from 'path'
 import fs from 'fs'
-import parse from 'csv-parse/lib/sync'
+import {parse} from 'csv-parse/sync'
 
 describe('Test hdf2csv triple_overlay_profile_example', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
