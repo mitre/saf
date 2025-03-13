@@ -37,8 +37,8 @@ Write-Output "#    - Commit previously staged files with 'signoff' tag (new vers
 Write-Output "#    - Tag the commit with new release version                                 " | Yellow
 Write-Output "#    - Push and updated the repository three references (new version number)   " | Yellow
 Write-Output "# Prerequisites:                                                               " | Yellow
-Write-Output "#    - Before executing the preparatory script ensure that the you're on a     " | Yellow
-Write-Output "#      directory containing the most recent commit of the SAF CLI.             " | Yellow
+Write-Output "#    - Before executing the preparatory script ensure that the you're on a     " | Red
+Write-Output "#      directory containing the most recent commit of the SAF CLI.             " | Red
 Write-Output "#    - Windows PowerShell 6. PowerShell version less than 6.0.0 will malformed " | Red
 Write-Output "#      the output, pretty print does not work properly.                        " | Red
 Write-Output "#      (see PowerShell Prettier formatting for ConvertTo-Json output PR #2736) " | Red
@@ -120,7 +120,7 @@ Write-Output "$CYAN Setting SAF CLI version to: $nextVersion" | Green
 # 4. Update the package.json and VERSION files
 $jsonObject.version = $nextVersion 
 $jsonObject | ConvertTo-Json -Depth 3 | Set-Content -Path "package.json"
-[System.IO.File]::WriteAllText("VERSION", $nextVersion)
+$nextVersion | Out-File -FilePath "VERSION"
 Write-Output "Done" | Green
 Write-Host
 
