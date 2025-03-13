@@ -127,8 +127,7 @@ Write-Host
 # Update MITRE dependencies to latest version
 Write-Output "Update MITRE dependencies to latest version..." | Yellow
 # List of MITRE packages to be checked - Add as needed
-# NOTE: Do not update @mitre/emass_client until further notice
-$packages = "@mitre/hdf-converters", "@mitre/heimdall-lite", "@mitre/inspec-objects"
+$packages = "@mitre/hdf-converters", "@mitre/heimdall-lite", "@mitre/inspec-objects", "@mitre/emass_client"
 foreach ($package in $packages) {
   Write-Output "  Processing package: $package" | Cyan
   # Get the latest version of the package from npm
