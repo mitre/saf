@@ -49,6 +49,16 @@ describe('Test Trufflehog', () => {
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/trufflehog/trufflehog-saf-hdf.json'), 'utf8'))
     expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
+  
+  it('hdf-converter output test - ndjson and duplicate finding', async () => {
+    await runCommand<{name: string}>(['convert trufflehog2hdf',
+      '-i', path.resolve('./test/sample_data/trufflehog/sample_input_report/trufflehog_dup.ndjson'),
+      '-o', `${tmpobj.name}/trufflehog.json`,
+    ])
+    const converted = JSON.parse(fs.readFileSync(`${tmpobj.name}/trufflehog.json`, 'utf8'))
+    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/trufflehog/trufflehog-ndjson-dup-hdf.json'), 'utf8'))
+    expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
+  })
 })
 
 describe('Test Trufflehog using withraw flag', () => {

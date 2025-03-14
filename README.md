@@ -76,9 +76,9 @@ For detail information about development, testing , and contributing to the SAF 
       * [XCCDF Results to HDF](#xccdf-results-to-hdf)
       * [OWASP ZAP to HDF](#owasp-zap-to-hdf)
 
-### eMasser Client
+### eMASSer Client
 
-  * [eMASS API CLI](#emass-api-cli)
+  * [eMASSer API CLI](#emasser-api-cli)
 
 ### View HDF Summaries and Data
 
@@ -443,7 +443,7 @@ convert hdf2ckl               Translate a Heimdall Data Format JSON file into a
                               DISA checklist file
 
   USAGE
-    $ saf convert hdf2ckl saf convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [--profilename <value>] [--profiletitle <value>] [--version <value>] [--releasenumber <value>] [--releasedate <value>] [--marking <value>] [-H <value>] [-I <value>] [-M <value>] [-F <value>] [--targetcomment <value>] [--role Domain Controller|Member Server|None|Workstation] [--assettype Computing|Non-Computing] [--techarea |Application Review|Boundary Security|CDS Admin Review|CDS Technical Review|Database Review|Domain Name System (DNS)|Exchange Server|Host Based System Security (HBSS)|Internal Network|Mobility|Other Review|Releasable Networks (REL)|Releaseable Networks (REL)|Traditional Security|UNIX OS|VVOIP Review|Web Review|Windows OS] [--stigguid <value>] [--targetkey <value>] [--webdbsite <value> --webordatabase] [--webdbinstance <value> ] [--vulidmapping gid|id]
+    $ saf convert hdf2ckl -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] [--profilename <value>] [--profiletitle <value>] [--version <value>] [--releasenumber <value>] [--releasedate <value>] [--marking <value>] [-H <value>] [-I <value>] [-M <value>] [-F <value>] [--targetcomment <value>] [--role Domain Controller|Member Server|None|Workstation] [--assettype Computing|Non-Computing] [--techarea |Application Review|Boundary Security|CDS Admin Review|CDS Technical Review|Database Review|Domain Name System (DNS)|Exchange Server|Host Based System Security (HBSS)|Internal Network|Mobility|Other Review|Releasable Networks (REL)|Releaseable Networks (REL)|Traditional Security|UNIX OS|VVOIP Review|Web Review|Windows OS] [--stigguid <value>] [--targetkey <value>] [--webdbsite <value> --webordatabase] [--webdbinstance <value> ] [--vulidmapping gid|id]
 
   FLAGS
     -h, --help            Show CLI help.
@@ -1314,9 +1314,9 @@ convert zap2hdf               Translate a OWASP ZAP results JSON to a Heimdall D
 
 ---
 
-### eMASS API CLI
+### eMASSer API CLI
 
-The SAF CLI implements the eMASS REST API capabilities via the emasser CLI incorporated here with the SAF CLI. Please references the [emasser Features](https://saf-cli.mitre.org/docs/emasser) 📜 for additional information
+The SAF CLI implements the eMASS REST API capabilities by incorporating the eMASSer CLI into the SAF CLI. Please references the [eMASSer Features](https://saf-cli.mitre.org/docs/emasser) 📜 for additional information
 
 To get top level help execute the following commad:
 

@@ -1,7 +1,7 @@
 import {Flags} from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
-import parse from 'csv-parse/lib/sync'
+import {parse} from 'csv-parse/sync'
 import {InSpecControl, InSpecMetaData} from '../../types/inspec'
 import YAML from 'yaml'
 import XlsxPopulate from 'xlsx-populate'
