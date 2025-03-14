@@ -1,8 +1,7 @@
 import {Flags} from '@oclif/core'
 import {ContextualizedEvaluation, contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
-import fs from 'fs'
-import {promises as fse} from 'fs'
+import fs, {promises as fse} from 'fs'
 import stringify from 'csv-stringify'
 import {ControlSetRows} from '../../types/csv'
 import {convertRow, csvExportFields} from '../../utils/csv'
@@ -225,9 +224,9 @@ async function saveCSV(filename: fs.PathLike | fs.promises.FileHandle, data: str
  * @param options - Optional configuration options for the CSV stringification process.
  * @returns A promise that resolves to the CSV string output or rejects with an error.
  */
-function convertToCSV(data: stringify.Input, options: stringify.Options | undefined) {
+function convertToCSV(data: stringify.Input, options: stringify.Options | undefined): Promise<string> {
   return new Promise((resolve, reject) => {
-    stringify(data, options, (err, output) => {
+    stringify.stringify(data, options, (err, output) => {
       if (err) reject(err)
       else resolve(output)
     })
