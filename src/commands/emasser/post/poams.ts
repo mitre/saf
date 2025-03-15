@@ -1,4 +1,3 @@
-/* eslint-disable valid-jsdoc */
 import fs from 'fs'
 import _ from 'lodash'
 import {readFile} from 'fs/promises'

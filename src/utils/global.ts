@@ -65,7 +65,6 @@ export function dataURLtoU8Array(dataURL: string): Uint8Array {
   const u8arr = new Uint8Array(n)
 
   while (n--) {
-    // eslint-disable-next-line unicorn/prefer-code-point
     u8arr[n] = bstr.charCodeAt(n)
   }
 

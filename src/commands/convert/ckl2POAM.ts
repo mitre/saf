@@ -52,7 +52,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> -i checklist_file.ckl -o output-folder -d abcdefg -s 2',
-  ];
+  ]
 
   static readonly flags = {
     help: Flags.help({char: 'h'}),
@@ -86,7 +86,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
       required: true,
       description: 'Path to output PO&M File(s)',
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(CKL2POAM)

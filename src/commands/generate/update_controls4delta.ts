@@ -10,7 +10,7 @@ import {
   processXCCDF,
   Profile,
 } from '@mitre/inspec-objects'
-import colors from 'colors' // eslint-disable-line no-restricted-imports
+import colors from 'colors'  
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 import {
   printGreen,
@@ -155,7 +155,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
           logger.debug(`  Found ${files.length} Controls in the controls directory`)
           if (flags.backupControls) {
             // Create the backup directory inside the parent controls directory
-            // eslint-disable-next-line max-depth
+             
             if (fs.existsSync(GenerateUpdateControls.backupDir)) {
               fs.rmSync(GenerateUpdateControls.backupDir, {recursive: true, force: true})
             }
@@ -464,7 +464,7 @@ function getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: 
   return controlData
 }
 
-/* eslint-disable-next-line max-params */
+ 
 function saveControl(filePath: string, newXCCDFControlNumber: string,
   currentControlNumber: string, updatedControl: string,
   backupControls: boolean, renamedControl: boolean) {

@@ -1,10 +1,7 @@
-/* eslint-disable valid-jsdoc */
 import fse from 'fs-extra'
 import dotenv from 'dotenv'
 import _ from 'lodash'
-// eslint-disable-next-line no-restricted-imports
 import colors from 'colors'
-// eslint-disable-next-line node/no-extraneous-import
 import {input, confirm, password, select} from '@inquirer/prompts'
 
 const PROMPT_MESSAGE = [
@@ -164,7 +161,7 @@ async function processPrompt() {
   }
 
   // Add required content to the collection
-  // eslint-disable-next-line guard-for-in
+   
   for (const tagName in requiredContent) {
     const answerValue = _.get(requiredContent, tagName)
     if (answerValue !== null) {
@@ -223,7 +220,7 @@ async function processPrompt() {
   }
 
   // Add certs content to the collection
-  // eslint-disable-next-line guard-for-in
+   
   for (const tagName in requiredCerts) {
     const answerValue = _.get(requiredCerts, tagName)
     if (answerValue !== null) {
@@ -302,7 +299,7 @@ async function processPrompt() {
   }
 
   // Add optional content to the collection
-  // eslint-disable-next-line guard-for-in
+   
   for (const tagName in optionalContent) {
     const answerValue = _.get(optionalContent, tagName)
     if (answerValue !== null) {

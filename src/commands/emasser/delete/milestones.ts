@@ -12,11 +12,11 @@ import {MilestonesPutPostDelete,
 
 const CMD_HELP = 'saf emasser delete milestones -h or --help'
 export default class EmasserDeleteMilestones extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]';
+  static readonly usage = '<%= command.id %> [FLAGS]'
 
-  static readonly description = 'Remove milestones in a system for one or many POA&M items identified by system, poam, and milestone Id';
+  static readonly description = 'Remove milestones in a system for one or many POA&M items identified by system, poam, and milestone Id'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-m,--milestonesId] <milestone-id> <milestone-id> ...'];
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-m,--milestonesId] <milestone-id> <milestone-id> ...']
 
   static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show help for the SAF CLI eMASSer DELETE Milestones command'}),

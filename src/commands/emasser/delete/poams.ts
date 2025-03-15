@@ -12,11 +12,11 @@ import {PoamResponsePostPutDelete,
 
 const CMD_HELP = 'saf emasser delete poams -h or --help'
 export default class EmasserDeletePoams extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]';
+  static readonly usage = '<%= command.id %> [FLAGS]'
 
-  static readonly description = 'Remove one or many POA&M items in a system identified by system and poam Id';
+  static readonly description = 'Remove one or many POA&M items in a system identified by system and poam Id'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamsId] <poam-id> <poam-id> ...'];
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamsId] <poam-id> <poam-id> ...']
 
   static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show help for the SAF CLI eMASSer DELETE POA&Ms command'}),

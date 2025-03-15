@@ -6,14 +6,14 @@ import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Veracode2HDF extends BaseCommand<typeof Veracode2HDF> {
   static readonly usage =
-    '<%= command.id %> -i <veracode-xml> -o <hdf-scan-results-json> [-h]';
+    '<%= command.id %> -i <veracode-xml> -o <hdf-scan-results-json> [-h]'
 
   static readonly description =
-    'Translate a Veracode XML file into a Heimdall Data Format JSON file';
+    'Translate a Veracode XML file into a Heimdall Data Format JSON file'
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> -i veracode_results.xml -o output-hdf-name.json',
-  ];
+  ]
 
   static readonly flags = {
     input: Flags.string({
@@ -26,7 +26,7 @@ export default class Veracode2HDF extends BaseCommand<typeof Veracode2HDF> {
       required: true,
       description: 'Output HDF JSON File',
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(Veracode2HDF)

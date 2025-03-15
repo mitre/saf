@@ -15,16 +15,16 @@ import {FlagOptions,
 const endpoint = 'artifacts'
 
 export default class EmasserGetArtifacts extends Command {
-  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m';
+  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m'
 
-  static readonly description = getDescriptionForEndpoint(process.argv, endpoint);
+  static readonly description = getDescriptionForEndpoint(process.argv, endpoint)
 
-  static readonly examples = getExamplesForEndpoint(process.argv);
+  static readonly examples = getExamplesForEndpoint(process.argv)
 
   static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Artifacts command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
-  };
+  }
 
   // NOTE: The way args are being implemented are mainly for the purposes of help clarity, there is, displays
   //       the available arguments with associate description.
@@ -34,7 +34,7 @@ export default class EmasserGetArtifacts extends Command {
     name: Args.string({name: 'name', required: false, hidden: true}),
     forSystem: Args.string({name: 'forSystem', description: 'Retrieves available milestones for provided system (Id)', required: false}),
     export: Args.string({name: 'export', description: 'Exports the milestone(s) for provided system (Id) and file name', required: false}),
-  };
+  }
 
   async run(): Promise<void> {
     const {args, flags} = await this.parse(EmasserGetArtifacts)

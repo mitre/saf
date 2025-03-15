@@ -31,7 +31,7 @@ export default class DBProtect2HDF extends BaseCommand<typeof DBProtect2HDF> {
       required: false,
       description: 'Include raw input file in HDF JSON file',
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(DBProtect2HDF)

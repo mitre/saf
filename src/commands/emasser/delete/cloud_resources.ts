@@ -14,9 +14,9 @@ import {
 
 const CMD_HELP = 'saf emasser delete cloud_resources -h or --help'
 export default class EmasserDeleteCloudResources extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]';
+  static readonly usage = '<%= command.id %> [FLAGS]'
 
-  static readonly description = 'Remove one or multiple containers in a system identified by system Id';
+  static readonly description = 'Remove one or multiple containers in a system identified by system Id'
 
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-r,--resourceId] <resource-id> <resource-id> ...']
 

@@ -31,7 +31,7 @@ export default class CycloneDXSBOM2HDF extends BaseCommand<typeof CycloneDXSBOM2
       required: false,
       description: 'Include raw input file in HDF JSON file',
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(CycloneDXSBOM2HDF)

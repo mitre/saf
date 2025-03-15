@@ -35,7 +35,7 @@ declare module '@mitre/splunk-sdk-no-env' {
     }
 
     class Index {
-      name: string;
+      name: string
 
       submitEvent(
         event: string,
@@ -80,7 +80,7 @@ declare module '@mitre/splunk-sdk-no-env' {
 
       requestOptions: {
         strictSSL: boolean;
-      };
+      }
     }
   }
 

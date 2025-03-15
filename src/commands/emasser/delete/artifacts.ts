@@ -12,9 +12,9 @@ import {ArtifactsResponseDel,
 
 const CMD_HELP = 'saf emasser delete artifacts -h or --help'
 export default class EmasserDeleteArtifacts extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]';
+  static readonly usage = '<%= command.id %> [FLAGS]'
 
-  static readonly description = 'Remove one or many artifacts in a system identified by system Id';
+  static readonly description = 'Remove one or many artifacts in a system identified by system Id'
 
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--fileName] <path-to-file1> <path-to-file2> ...']
 

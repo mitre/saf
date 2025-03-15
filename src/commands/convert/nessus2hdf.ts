@@ -34,7 +34,7 @@ export default class Nessus2HDF extends BaseCommand<typeof Nessus2HDF> {
       required: false,
       description: 'Include raw input file in HDF JSON file',
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(Nessus2HDF)

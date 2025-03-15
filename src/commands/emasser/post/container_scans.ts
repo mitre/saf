@@ -1,4 +1,3 @@
-/* eslint-disable valid-jsdoc */
 import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 import {ContainerScanResultsApi} from '@mitre/emass_client'
@@ -95,6 +94,7 @@ export declare const StatusEnum: {
  * Represents the possible status values for the StatusEnum type.
  * This type is derived from the keys of the StatusEnum object.
  */
+// eslint-disable-next-line no-redeclare
 export declare type StatusEnum = typeof StatusEnum[keyof typeof StatusEnum]
 
 /**

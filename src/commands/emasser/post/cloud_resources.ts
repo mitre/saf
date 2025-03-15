@@ -1,4 +1,3 @@
-/* eslint-disable valid-jsdoc */
 import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 import {CloudResourceResultsApi} from '@mitre/emass_client'

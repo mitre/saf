@@ -55,7 +55,7 @@ export default class AWSConfig2HDF extends BaseCommand<typeof AWSConfig2HDF> {
       required: true,
       description: 'Output HDF JSON File',
     }),
-  };
+  }
 
   // Refs may not be defined if no resources were found
   ensureRefs(output: ExecJSON.Execution): ExecJSON.Execution {

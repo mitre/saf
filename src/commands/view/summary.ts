@@ -80,7 +80,7 @@ export default class Summary extends Command {
     'title-table': Flags.boolean({char: 't', description: 'Add titles to the markdown table(s)', helpGroup: FORMATTING_GROUP, default: true, allowNo: true}),
     logLevel: Flags.string({char: 'l', description: 'Set log level', helpGroup: 'debugging', default: DEFAULT_LOG_LEVEL}),
     help: Flags.help({char: 'h', description: 'Show help information', helpGroup: 'help'}),
-  };
+  }
 
   static readonly examples = [
     // Basic usage
@@ -115,7 +115,7 @@ export default class Summary extends Command {
    * Holds the parsed command line flags.
    * @type {CommandFlags}
    */
-  private parsedFlags!: CommandFlags;
+  private parsedFlags!: CommandFlags
 
   /**
    * This is the main function that runs when the 'summary' command is invoked.
