@@ -1,5 +1,3 @@
-/* eslint-disable valid-jsdoc */
-import _ from 'lodash'
 import {Flags} from '@oclif/core'
 import {BooleanFlag, OptionFlag} from '@oclif/core/interfaces'
 import fs from 'fs'

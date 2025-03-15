@@ -6,7 +6,7 @@ import {calculateCompliance, extractStatusCounts, renameStatusName, severityTarg
 import {createWinstonLogger} from '../logging'
 
 let flat: any
-// eslint-disable-next-line unicorn/prefer-top-level-await -- node/ts versions don't support top level await
+
 (async () => {
   flat = await import('flat')
 })()

@@ -18,8 +18,8 @@ import {InitConnections} from './initConnection'
  * ```
  */
 export class ApiConnection {
-  public configuration: Configuration;
-  public basePath: Configuration['basePath'];
+  public configuration: Configuration
+  public basePath: Configuration['basePath']
   public axiosInstances: AxiosInstance
 
   constructor() {

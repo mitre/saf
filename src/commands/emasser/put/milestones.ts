@@ -12,11 +12,11 @@ import {MilestoneResponsePut,
 
 const CMD_HELP = 'saf emasser put milestones -h or --help'
 export default class EmasserPutMilestones extends Command {
-  static readonly usage = '<%= command.id %> [options]';
+  static readonly usage = '<%= command.id %> [options]'
 
-  static readonly description = 'Update milestone(s) for specified system, poam, and milestone Id';
+  static readonly description = 'Update milestone(s) for specified system, poam, and milestone Id'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-m,--milestoneId] [-d,--description] [-c,--scheduledCompletionDate]'];
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-m,--milestoneId] [-d,--description] [-c,--scheduledCompletionDate]']
 
   static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the PUT Milestones command'}),

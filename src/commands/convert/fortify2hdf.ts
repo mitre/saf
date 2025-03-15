@@ -15,7 +15,7 @@ export default class Fortify2HDF extends BaseCommand<typeof Fortify2HDF> {
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> -i audit.fvdl -o output-hdf-name.json',
-  ];
+  ]
 
   static readonly flags = {
     input: Flags.string({
@@ -33,7 +33,7 @@ export default class Fortify2HDF extends BaseCommand<typeof Fortify2HDF> {
       required: false,
       description: 'Include raw input file in HDF JSON file',
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(Fortify2HDF)

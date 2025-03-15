@@ -44,14 +44,14 @@ const endpoint = 'dashboards'
 export default class EmasserGetDashboards extends Command {
   static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m'
 
-  static readonly description = getDescriptionForEndpoint(process.argv, endpoint);
+  static readonly description = getDescriptionForEndpoint(process.argv, endpoint)
 
-  static readonly examples = getExamplesForEndpoint(process.argv, endpoint);
+  static readonly examples = getExamplesForEndpoint(process.argv, endpoint)
 
   static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Dashboards command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
-  };
+  }
 
   // NOTE: The way args are being implemented are mainly for the purposes of identifying which
   //       dashboard is being called, and provides the appropriate description.
@@ -145,7 +145,7 @@ export default class EmasserGetDashboards extends Command {
     cmmc_compliance_summary: Args.string({name: 'cmmc_compliance_summary', description: 'Get CMMC assessment requirements compliance summary dashboard information', required: false}),
     cmmc_security_requirements_details: Args.string({name: 'cmmc_security_requirements_details', description: 'Get CMMC assessment security requirements details dashboard information', required: false}),
     cmmc_requirement_objectives_details: Args.string({name: 'cmmc_requirement_objectives_details', description: 'Get CMMC assessment requirement objectives details dashboard information', required: false}),
-  };
+  }
 
   // skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
   async run(): Promise<void> { // skipcq: JS-0044

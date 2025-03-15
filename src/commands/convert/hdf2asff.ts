@@ -83,7 +83,7 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
       required: false,
       description: 'Trusted signing certificate file',
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(HDF2ASFF)

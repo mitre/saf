@@ -1,4 +1,3 @@
-
 import {Command, Flags} from '@oclif/core'
 import express from 'express'
 import fs from 'fs'
@@ -27,7 +26,7 @@ export default class Heimdall extends Command {
     // Doing a normal dynamic import in typescript doesn't work because typescript will
     // still translate the import into a require.  This library works around that issue
     // by preventing that translation from occurring.
-    const openDynamicImport = await dynamicImport('open', module) // eslint-disable-line unicorn/prefer-module
+    const openDynamicImport = await dynamicImport('open', module)
     const open = openDynamicImport.default
 
     const {flags} = await this.parse(Heimdall)

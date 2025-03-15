@@ -47,9 +47,9 @@ function getInputFilename(): string {
 // export default class Convert extends Command {
 export default class Convert extends BaseCommand<typeof Convert> {
   static readonly description =
-    'The generic convert command translates any supported file-based security results set into the Heimdall Data Format';
+    'The generic convert command translates any supported file-based security results set into the Heimdall Data Format'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i input -o output'];
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i input -o output']
 
   static readonly flags = {
     input: Flags.string({
@@ -63,9 +63,9 @@ export default class Convert extends BaseCommand<typeof Convert> {
       description: 'Output results sets',
     }),
     ...Convert.getFlagsForInputFile(getInputFilename()),
-  };
+  }
 
-  static detectedType: string;
+  static detectedType: string
 
   static getFlagsForInputFile(filePath: string) {
     if (filePath) {

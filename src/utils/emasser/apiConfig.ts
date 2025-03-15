@@ -7,7 +7,7 @@ function printHelpMessage() {
   printHelpMsg('If a configuration file exists, it is placed in the directory where the emasser command is executed.')
 }
 
-// eslint-disable-next-line valid-jsdoc
+
 /**
  * The `ApiConfig` class is responsible for loading and managing the configuration
  * settings required for connecting to the eMASS API. It reads environment variables
@@ -36,22 +36,22 @@ function printHelpMessage() {
  * variables are missing, it prints an error message and exits the process.
  */
 export class ApiConfig {
-  private envConfig: {[key: string]: string | undefined};
+  private envConfig: {[key: string]: string | undefined}
 
-  public url: string;
-  public port: number|any;
-  public caCert: string | undefined;
-  public keyCert: string | undefined;
-  public clientCert: string | undefined;
-  public apiPassPhrase: string;
-  public apiKey: string;
-  public userUid: string;
-  public sslVerify: boolean;
-  public reqCert: boolean;
-  public debugging: string;
-  public displayNulls: string;
-  public displayDateTime: string;
-  public downloadDir: string;
+  public url: string
+  public port: number|any
+  public caCert: string | undefined
+  public keyCert: string | undefined
+  public clientCert: string | undefined
+  public apiPassPhrase: string
+  public apiKey: string
+  public userUid: string
+  public sslVerify: boolean
+  public reqCert: boolean
+  public debugging: string
+  public displayNulls: string
+  public displayDateTime: string
+  public downloadDir: string
 
   constructor() {
     try {

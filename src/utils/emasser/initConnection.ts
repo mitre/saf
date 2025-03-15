@@ -37,8 +37,8 @@ import globalAxios, {AxiosInstance, AxiosRequestConfig} from 'axios'
  * It supports client certificate authentication and allows configuring SSL verification.
  */
 export class InitConnections {
-  private axiosRequestConfig: AxiosRequestConfig;
-  public configuration: Configuration;
+  private axiosRequestConfig: AxiosRequestConfig
+  public configuration: Configuration
   public axiosInstances: AxiosInstance
 
   constructor(conf: ApiConfig) {

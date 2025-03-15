@@ -23,11 +23,11 @@ const API_MAX_RESULTS = 100
 
 export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
   static readonly usage =
-   '<%= command.id %> -o <hdf-output-folder> [--interactive] [-L info|warn|debug|verbose]' +
+    '<%= command.id %> -o <hdf-output-folder> [--interactive] [-L info|warn|debug|verbose]' +
    ' [-i <asff-json> | -a | -r <region> | -I | -C <certificate> | -t <target>...] [-H <additional-input-files>...]'
 
   static readonly description =
-    'Translate a AWS Security Finding Format JSON into a Heimdall Data Format JSON file(s)';
+    'Translate a AWS Security Finding Format JSON into a Heimdall Data Format JSON file(s)'
 
   static readonly examples = [
     {
@@ -43,7 +43,7 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
       command: '<%= config.bin %> <%= command.id %> --aws -o out -r us-west-2 --target rhel7',
     },
 
-  ];
+  ]
 
   static readonly flags = {
     input: Flags.string({
@@ -98,7 +98,7 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
         'Target ID(s) to pull from Security Hub (maximum 10), leave blank for non-HDF findings',
       exclusive: ['input'],
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(ASFF2HDF)

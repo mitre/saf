@@ -26,7 +26,7 @@ export default class Conveyor2HDF extends BaseCommand<typeof Conveyor2HDF> {
       required: true,
       description: 'Output HDF JSON Folder',
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(Conveyor2HDF)

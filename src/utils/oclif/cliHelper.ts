@@ -1,5 +1,5 @@
 import fs from 'fs'
-import colors from 'colors' // eslint-disable-line no-restricted-imports
+import colors from 'colors'  
 
 const processLogData: Array<string> = []
 let logFileName = ''

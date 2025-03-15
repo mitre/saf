@@ -12,11 +12,11 @@ import {HwBaselineResponseDelete,
 
 const CMD_HELP = 'saf emasser delete hardware_baseline -h or --help'
 export default class EmasserDeleteHardwareBaseline extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]';
+  static readonly usage = '<%= command.id %> [FLAGS]'
 
-  static readonly description = 'Remove one or many Hardware items in a system identified by system and hardware Id';
+  static readonly description = 'Remove one or many Hardware items in a system identified by system and hardware Id'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-a,--assetsHardwareId] <hardware-id> <hardware-id> ...'];
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-a,--assetsHardwareId] <hardware-id> <hardware-id> ...']
 
   static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show help for the SAF CLI eMASSer DELETE Hardware Baseline command'}),

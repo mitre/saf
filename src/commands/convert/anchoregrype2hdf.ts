@@ -6,14 +6,14 @@ import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class AnchoreGrype2HDF extends BaseCommand<typeof AnchoreGrype2HDF> {
   static readonly usage =
-    '<%= command.id %> -i <anchoregrype-json> -o <hdf-scan-results-json>';
+    '<%= command.id %> -i <anchoregrype-json> -o <hdf-scan-results-json>'
 
   static readonly description =
-    'Translate an Anchore Grype output file into an HDF results set';
+    'Translate an Anchore Grype output file into an HDF results set'
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> -i anchoregrype.json -o output-hdf-name.json',
-  ];
+  ]
 
   static readonly flags = {
     input: Flags.string({
@@ -31,7 +31,7 @@ export default class AnchoreGrype2HDF extends BaseCommand<typeof AnchoreGrype2HD
       required: false,
       description: 'Include raw data from the input Anchore Grype file',
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(AnchoreGrype2HDF)

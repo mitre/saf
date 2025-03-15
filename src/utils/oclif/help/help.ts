@@ -1,7 +1,5 @@
 import _ from 'lodash'
-/* eslint-disable unicorn/import-style */
 import * as util from 'util' // skipcq: JS-C1003 - util does not expose itself as an ES Module.
-/* eslint-enable unicorn/import-style */
 import {Command, Help} from '@oclif/core'
 
 /*

@@ -7,14 +7,14 @@ import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Prisma2HDF extends BaseCommand<typeof Prisma2HDF> {
   static readonly usage =
-    '<%= command.id %> -i <prisma-cloud-csv> -o <hdf-output-folder> [-h]';
+    '<%= command.id %> -i <prisma-cloud-csv> -o <hdf-output-folder> [-h]'
 
   static readonly description =
-    'Translate a Prisma Cloud Scan Report CSV file into Heimdall Data Format JSON files';
+    'Translate a Prisma Cloud Scan Report CSV file into Heimdall Data Format JSON files'
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> -i prismacloud-report.csv -o output-hdf-name.json',
-  ];
+  ]
 
   static readonly flags = {
     input: Flags.string({
@@ -27,7 +27,7 @@ export default class Prisma2HDF extends BaseCommand<typeof Prisma2HDF> {
       required: true,
       description: 'Output HDF JSON File',
     }),
-  };
+  }
 
   async run() {
     const {flags} = await this.parse(Prisma2HDF)

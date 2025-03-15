@@ -12,11 +12,11 @@ import {SwBaselineResponseDelete,
 
 const CMD_HELP = 'saf emasser delete software_baseline -h or --help'
 export default class EmasserDeleteSoftwareBaseline extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]';
+  static readonly usage = '<%= command.id %> [FLAGS]'
 
-  static readonly description = 'Remove one or many Software items in a system identified by system and software Id';
+  static readonly description = 'Remove one or many Software items in a system identified by system and software Id'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-a,--assetsSoftwareId] <software-id> <software-id> ...'];
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-a,--assetsSoftwareId] <software-id> <software-id> ...']
 
   static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show help for the SAF CLI eMASSer DELETE Software Baseline command'}),

@@ -83,22 +83,23 @@
   },
   "devDependencies": {
     "@e965/xlsx": "^0.20.0",
+    "@eslint/js": "^9.22.0",
     "@oclif/test": "^4.1.0",
     "@types/js-yaml": "^4.0.9",
     "@types/jsdom": "^21.1.7",
     "@types/mock-fs": "^4.13.4",
-    "@typescript-eslint/eslint-plugin": "~7.18.0",
-    "eslint": "^8.48.0",
-    "eslint-config-oclif": "^4.0",
-    "eslint-config-oclif-typescript": "^1.0.3",
-    "eslint-plugin-unicorn": "^56.0.0",
+    "@typescript-eslint/eslint-plugin": "~8.26.1",
+    "@typescript-eslint/parser": "^8.26.1",
+    "eslint": "^9.22.0",
+    "eslint-plugin-unicorn": "^57.0.0",
     "jsdom": "^26.0.0",
     "marked": "^15.0.0",
     "mocha": "^11",
     "mock-fs": "^5.2.0",
     "oclif": "^4.8.8",
     "tmp": "^0.2.1",
-    "ts-mocha": "^11.1.0"
+    "ts-mocha": "^11.1.0",
+    "typescript-eslint": "^8.26.1"
   },
   "engines": {
     "node": "^22.0.0"
