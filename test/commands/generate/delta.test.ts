@@ -1,6 +1,5 @@
-/* eslint-disable array-bracket-newline */
-/* eslint-disable array-element-newline */
-import {expect} from 'chai'
+
+import {expect, assert} from 'chai'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
 import path from 'path'
@@ -78,7 +77,9 @@ describe('Test generate delta command', () => {
       '-o', `${tmpobj.name}/RHEL_7`,
       '-r', `${tmpobj.name}/RHEL_7/my-report.md`,
     ])
-    expect(fs.lstatSync((`${tmpobj.name}/RHEL_7/my-report.md`)).isFile()).to.be.true // skipcq: JS-0354
+    const isReportFile = fs.lstatSync((`${tmpobj.name}/RHEL_7/my-report.md`)).isFile()
+    assert.isTrue(isReportFile)
+    // expect(fs.lstatSync((`${tmpobj.name}/RHEL_7/my-report.md`)).isFile()).to.be.true
   })
 
   // should generate a report for the delta process, place the report on default directory
@@ -89,7 +90,9 @@ describe('Test generate delta command', () => {
       '-o', `${tmpobj.name}`,
       '-r', `${tmpobj.name}`,
     ])
-    expect(fs.lstatSync((`${tmpobj.name}/delta.md`)).isFile()).to.be.true // skipcq: JS-0354
+    const isFile = fs.lstatSync((`${tmpobj.name}/delta.md`)).isFile()
+    assert.isTrue(isFile)
+    // expect(fs.lstatSync((`${tmpobj.name}/delta.md`)).isFile()).to.be.true
   })
 
   // should process delta using the fuzzy logic

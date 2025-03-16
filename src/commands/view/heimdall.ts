@@ -1,5 +1,5 @@
 import {Command, Flags} from '@oclif/core'
-import express from 'express'
+import express, {Request, Response, NextFunction} from 'express'
 import fs from 'fs'
 import path from 'path'
 import {dynamicImport} from 'tsimportlib'
@@ -30,7 +30,7 @@ export default class Heimdall extends Command {
     const open = openDynamicImport.default
 
     const {flags} = await this.parse(Heimdall)
-    let parsedJSONs: Record<string, any>[] = []
+    let parsedJSONs: Record<string, unknown>[] = []
 
     // Is the defined port valid?
     if (Number.isNaN(flags.port) || flags.port < 1 || flags.port >= 65536) {
@@ -51,22 +51,38 @@ export default class Heimdall extends Command {
     }
 
     // Provide Heimdall with a path to grab our Data from
-    const predefinedLoadJSON = (req: Record<string, any>, res: Record<string, any>, next: () => void) => { // skipcq: JS-0045
+    // (Express expects middleware functions with this specific signature)
+    // We explicitly Type the Return Value as void | Response, to preclude
+    // TypeScript from inferring a Response<any, Record<string, any>> | undefined
+    const predefinedLoadJSON = (req: Request, res: Response, next: NextFunction): void => {
       if (req.originalUrl.toLowerCase() === '/dynamic/predefinedload.json' && flags.files) {
-        return res.json(parsedJSONs)
+        res.json(parsedJSONs)
+        return
       }
 
       next()
     }
 
-    flags.files ? console.log(`Serving Heimdall at http://localhost:${flags.port}/?predefinedLoad=true`) : console.log(`Serving Heimdall at http://localhost:${flags.port}`)
+    if (flags.files) {
+      console.log(`Serving Heimdall at http://localhost:${flags.port}/?predefinedLoad=true`)
+    } else {
+      console.log(`Serving Heimdall at http://localhost:${flags.port}`)
+    }
 
     // Open the browser
     if (!flags.noOpenBrowser) {
       if (flags.port) {
-        flags.files ? open(`http://localhost:${flags.port}/?predefinedLoad=true`) : open(`http://localhost:${flags.port}/`)
+        if (flags.files) {
+          open(`http://localhost:${flags.port}/?predefinedLoad=true`)
+        } else {
+          open(`http://localhost:${flags.port}/`)
+        }
       } else {
-        flags.files ? open('http://localhost:3000/?predefinedLoad=true') : open('http://localhost:3000/')
+        if (flags.files) {
+          open('http://localhost:3000/?predefinedLoad=true')
+        } else {
+          open('http://localhost:3000/')
+        }
       }
     }
 
@@ -75,6 +91,8 @@ export default class Heimdall extends Command {
     express()
       .use(predefinedLoadJSON)
       .use(express.static(path.join(installedPath, 'node_modules/@mitre/heimdall-lite/dist')))
-      .listen(flags.port)
+      .listen(flags.port, () => {
+        console.log(`Server running on port ${flags.port}`)
+      })
   }
 }

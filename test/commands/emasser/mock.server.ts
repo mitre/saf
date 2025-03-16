@@ -4,10 +4,10 @@ import globalAxios, {AxiosInstance, AxiosRequestConfig} from 'axios'
 import FormData from 'form-data'
 
 export class InitMockServer {
-  readonly axiosRequestConfig: AxiosRequestConfig;
-  public configuration: Configuration;
-  public axiosInstances: AxiosInstance;
-  public basePath: Configuration['basePath'];
+  readonly axiosRequestConfig: AxiosRequestConfig
+  public configuration: Configuration
+  public axiosInstances: AxiosInstance
+  public basePath: Configuration['basePath']
 
   constructor() {
     this.configuration = new Configuration({

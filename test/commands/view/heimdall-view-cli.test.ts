@@ -1,11 +1,10 @@
-import {expect} from 'chai'
+import {expect, assert} from 'chai'
 import {runCommand} from '@oclif/test'
 import path from 'path'
-
 import axios from 'axios'
 import express from 'express'
 import {Server} from 'http'
-import {getInstalledPath} from '../../../src/utils/global'
+import {getErrorMessage, getInstalledPath} from '../../../src/utils/global'
 import {JSDOM} from 'jsdom'
 
 describe('Test heimdall SAF CLI Command', () => {
@@ -25,7 +24,7 @@ describe('Test Heimdall Embedded', () => {
     server = express()
       .use(predefinedLoadJSON)
       .use(express.static(staticFilesDirectory))
-      .use((_err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+      .use((_err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
         res.status(500).send('Something broke!')
       })
       .listen(3000, () => {
@@ -46,9 +45,10 @@ describe('Test Heimdall Embedded', () => {
       const response = await axios.get('http://localhost:3000')
       const dom = new JSDOM(response.data)
       const text = dom.window.document.body.textContent
-      expect(text).to.not.be.null // skipcq: JS-0354
-    } catch (error: any) {
-      expect(error.message).to.equal('Request failed with status code 404')
+      // expect(text).to.not.be.null // skipcq: JS-0354
+      assert.isNotNull(text)
+    } catch (error: unknown) {
+      expect(getErrorMessage(error)).to.equal('Request failed with status code 404')
     }
   })
 
@@ -57,9 +57,10 @@ describe('Test Heimdall Embedded', () => {
       const response = await axios.get('http://localhost:3000')
       const dom = new JSDOM(response.data)
       const appDiv = dom.window.document.querySelector('#app')
-      expect(appDiv).to.not.be.null // skipcq: JS-0354
-    } catch (error: any) {
-      expect(error.message).to.equal('Request failed with status code 404')
+      // expect(appDiv).to.not.be.null // skipcq: JS-0354
+      assert.isNotNull(appDiv)
+    } catch (error: unknown) {
+      expect(getErrorMessage(error)).to.equal('Request failed with status code 404')
     }
   })
 })

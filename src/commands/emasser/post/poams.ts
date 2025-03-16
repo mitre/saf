@@ -11,6 +11,7 @@ import {FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRe
 
 import {POAMApi} from '@mitre/emass_client'
 import {MilestonesGet, PoamResponsePostPutDelete} from '@mitre/emass_client/dist/api'
+import {getErrorMessage} from '../../../utils/global'
 
 /**
  * Interface representing a Plan of Action and Milestones (POAMs) object.
@@ -122,16 +123,14 @@ interface Poams {
  * @returns {string} A string representation of the combined JSON examples.
  */
 function getAllJsonExamples(): string {
-  let exampleBodyObj: any = {}
-
-  exampleBodyObj = {
+  const exampleBodyObj: Record<string, unknown> = {
     ...getJsonExamples('poams-post-required'),
     ...getJsonExamples('poams-post-put-required-va'),
     ...getJsonExamples('poams-post-conditional'),
     ...getJsonExamples('poams-post-put-optional'),
   }
 
-  return exampleBodyObj
+  return JSON.stringify(exampleBodyObj)
 }
 
 /**
@@ -530,12 +529,12 @@ export default class EmasserPostPoams extends Command {
 
     // Check if a POA&Ms json file was provided
     if (fs.existsSync(flags.dataFile)) {
-      let data: any
+      let data
       try {
         data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('\x1B[91m» Error reading POA&Ms data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
-        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+        console.error('\x1B[93m→ Error message was:', getErrorMessage(error), '\x1B[0m')
         process.exit(1)
       }
 
@@ -558,10 +557,16 @@ export default class EmasserPostPoams extends Command {
     // Call the endpoint
     addPoam.addPoamBySystemId(flags.systemId, requestBodyArray).then((response: PoamResponsePostPutDelete) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error: any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => {
+      if (error instanceof Error) {
+        console.error(colorize(outputError(error)).red)
+      } else {
+        console.error(colorize(`Error calling addPoamBySystemId: ${String(error)}`).red)
+      }
+    })
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

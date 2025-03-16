@@ -22,9 +22,7 @@ export const escapeQuotes = (s: string) => s.replaceAll('\\', '\\\\').replaceAll
 export const escapeDoubleQuotes = (s: string) => s.replaceAll('\\', '\\\\').replaceAll('"', String.raw`\"`) // Escape backslashes and double quotes
 export const wrapAndEscapeQuotes = (s: string, lineLength?: number) => escapeDoubleQuotes(wrap(s, lineLength)) // Escape backslashes and quotes, and wrap long lines
 
-export function convertEncodedXmlIntoJson(
-  encodedXml: string,
-): any {
+export function convertEncodedXmlIntoJson(encodedXml: string): unknown {
   const options = {
     ignoreAttributes: false,
     attributeNamePrefix: '@_',

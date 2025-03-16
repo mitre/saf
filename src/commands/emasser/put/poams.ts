@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs'
 import _ from 'lodash'
 import {readFile} from 'fs/promises'
@@ -169,7 +170,7 @@ function assertParamExists(object: string, value: string|number|undefined|null):
  * @throws Will throw an error if any required field is missing in the input `dataObj`.
  */
 function addRequiredFieldsToRequestBody(dataObj: Poams): Poams {
-  const bodyObj: Poams  = {}
+  const bodyObj: Poams = {}
   try {
     assertParamExists('poamId', dataObj.poamId)
     assertParamExists('displayPoamId', dataObj.displayPoamId)

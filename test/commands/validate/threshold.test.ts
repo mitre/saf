@@ -1,5 +1,5 @@
-/* eslint-disable array-element-newline */
-/* eslint-disable array-bracket-newline */
+
+
 import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import path from 'path'

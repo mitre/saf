@@ -28,8 +28,12 @@ export default class EmasserPostRegister extends Command {
 
     registerAPI.registerUser().then((response: Register) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error: any) => {
-      console.error(colorize(outputError(error)).red)
+    }).catch((error: unknown) => {
+      if (error instanceof Error) {
+        console.error(colorize(outputError(error)).red)
+      } else {
+        console.error(colorize(`An error occurred registering the certificate: ${String(error)}`).red)
+      }
     })
   }
 }

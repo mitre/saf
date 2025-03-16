@@ -121,7 +121,7 @@ async function processPrompt() {
   }
 
   // Variable used to store the prompts (question and answers)
-  const interactiveValues: {[key: string]: any} = {}
+  const interactiveValues: {[key: string]: string | number} = {}
   // Reset the certificates as the user will choose what cert type to use
   interactiveValues.EMASSER_KEY_FILE_PATH = ''
   interactiveValues.EMASSER_CERT_FILE_PATH = ''
@@ -161,11 +161,12 @@ async function processPrompt() {
   }
 
   // Add required content to the collection
-   
   for (const tagName in requiredContent) {
-    const answerValue = _.get(requiredContent, tagName)
-    if (answerValue !== null) {
-      interactiveValues[tagName] = answerValue
+    if (Object.prototype.hasOwnProperty.call(requiredContent, tagName)) {
+      const answerValue = _.get(requiredContent, tagName)
+      if (answerValue !== null) {
+        interactiveValues[tagName] = answerValue
+      }
     }
   }
 
@@ -220,11 +221,12 @@ async function processPrompt() {
   }
 
   // Add certs content to the collection
-   
   for (const tagName in requiredCerts) {
-    const answerValue = _.get(requiredCerts, tagName)
-    if (answerValue !== null) {
-      interactiveValues[tagName] = answerValue
+    if (Object.prototype.hasOwnProperty.call(requiredCerts, tagName)) {
+      const answerValue = _.get(requiredCerts, tagName)
+      if (answerValue !== null) {
+        interactiveValues[tagName] = answerValue
+      }
     }
   }
 
@@ -299,14 +301,14 @@ async function processPrompt() {
   }
 
   // Add optional content to the collection
-   
   for (const tagName in optionalContent) {
-    const answerValue = _.get(optionalContent, tagName)
-    if (answerValue !== null) {
-      interactiveValues[tagName] = answerValue
+    if (Object.prototype.hasOwnProperty.call(optionalContent, tagName)) {
+      const answerValue = _.get(optionalContent, tagName)
+      if (answerValue !== null) {
+        interactiveValues[tagName] = answerValue
+      }
     }
   }
-
   // Save content to the .env file
   updateKeyValuePairs('.env', interactiveValues)
 
@@ -334,14 +336,15 @@ async function processPrompt() {
  * Updates key-value pairs in a file based on the provided updates object.
  *
  * @param filePath - The path to the file to be updated.
- * @param updates - An object containing key-value pairs to update in the file.
- *                   The keys represent the keys in the file, and the values represent the new values to be set.
- *                   If the value is a string, it will be wrapped in single quotes.
+ * @param updates  - An object containing key-value pairs to update in the file.
+ *                   The keys represent the keys in the file, and the values
+ *                   represent the new values to be set. If the value is a
+ *                   string, it will be wrapped in single quotes.
  *
  * @throws Will throw an error if there is an issue reading or writing the file.
  *
  */
-function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: { [x: string]: any; hasOwnProperty: (arg0: string) => any }) {
+function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: Record<string, string | number | boolean>): void {
   try {
     // Read the file content
     const fileContent = fse.readFileSync(filePath, 'utf8')
@@ -355,12 +358,16 @@ function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: { [x: 
       const trimmedLine = line.trim()
 
       // Check if the line contains a key-value pair (e.g., key=value)
-      const [key, value] = trimmedLine.split('=') // skipcq: JS-0356
+      const [key, _value_] = trimmedLine.split('=') // skipcq: JS-0356
 
       // If the key exists in the updates object, update the value
       if (Object.prototype.hasOwnProperty.call(updates, key)) {
         // wrap string values with single-quotes
-        return isNumeric(updates[key]) ? `${key}=${updates[key]}` : ((typeof updates[key] === 'string') ? `${key}='${updates[key]}'` : `${key}=${updates[key]}`)
+        return isNumeric(updates[key])
+          ? `${key}=${updates[key]}`
+          : ((typeof updates[key] === 'string')
+            ? `${key}='${updates[key]}'`
+            : `${key}=${updates[key]}`)
       }
 
       // Return the original line if no update is needed
@@ -389,8 +396,11 @@ function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: { [x: 
  * @param value - The value to be checked. It can be a string or a number.
  * @returns `true` if the value is numeric, otherwise `false`.
  */
-function isNumeric(value: string | number) {
-  return /^-?\d+(\.\d+)?$/.test(value.toString())
+// function isNumeric(value: string | number) {
+//   return /^-?\d+(\.\d+)?$/.test(value.toString())
+// }
+function isNumeric(value: unknown): boolean {
+  return typeof value === 'number' || (!isNaN(Number(value)) && typeof value === 'string')
 }
 
 /**

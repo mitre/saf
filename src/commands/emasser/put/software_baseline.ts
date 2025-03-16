@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs'
 import _ from 'lodash'
 import {readFile} from 'fs/promises'
@@ -273,7 +274,7 @@ function addOptionalFields(bodyObject: Software, dataObj: Software): void {
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'licenseExpirationDate ')) {
-    bodyObject.licenseExpirationDate  = dataObj.licenseExpirationDate
+    bodyObject.licenseExpirationDate = dataObj.licenseExpirationDate
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'approvalStatus')) {

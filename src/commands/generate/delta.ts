@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {Flags} from '@oclif/core'
 import winston from 'winston'
 import fs from 'fs'
@@ -34,7 +35,7 @@ import {
 } from '../../utils/oclif/cliHelper'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 import {EventEmitter} from 'events'
- 
+
 import colors from 'colors'
 import {input, confirm, select} from '@inquirer/prompts'
 
@@ -213,8 +214,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     // Validate that the provided XCDDF containing the new/updated profile
     // guidance is actually an XCCDF XML file by checking the XML schema
     // location and name space
-     
-    // TODO: Use an XML parser to determine if the provided XCCDF file is an
+
+    // TODO: Use an XML parser to determine if the provided XCCDF file is an // skipcq: JS-0099
     //       XCCDF by checking the schema location (xsi:schemaLocation) includes xccdf
     //       and that includes an XCCDF namespace (xmlns)
     logger.info('Checking if the provided XCCDF is valid...')
@@ -314,8 +315,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // This is needed because when we re-generate the new profile summary we need the controls
         // to have the new name/Id. So, for each control, modify the control file in the old controls
         // directory with the proper name and Id, than regenerate json profile summary.
-         
-        for (const key in controls) {
+
+        for (const key in controls) { // skipcq: JS-0051
           const sourceShortControlFile = path.join(shortProfileDir, `${controls[key]}.rb`)
           const mappedShortControlFile = path.join(shortMappedDir, `${controls[key]}.rb`)
 
@@ -358,8 +359,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               printYellowGreen('    Processed control: ', `${mappedShortControlFile}`)
               fs.writeFileSync(mappedControlFile, lines.join('\n'))
 
-               
-              // TODO: Maybe copy files from the source directory and rename for duplicates and to preserve source files
+
+              // TODO: Maybe copy files from the source directory and rename for duplicates and to preserve source files // skipcq: JS-0099
               printYellowGreen('  Mapped control file: ', `${sourceShortControlFile} to reference ID ${key}`)
               printYellowBgGreen('     New control name: ', `${key}.rb\n`)
             }
@@ -463,8 +464,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           const controls = existingProfile.controls
 
           let index = -1
-           
-          for (const i in controls) {
+
+          for (const i in controls) { // skipcq: JS-0051
             const controlLine = controls[i].code.split('\n')[0]
             // NOTE: The control.id can be in the form of V-123456 or SV-123456
             //       check the entire value or just the numeric value for a match
@@ -482,8 +483,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // the describe block (code). Using the updateControl method with the new
           // control so we can get the code with the new metadata.
 
-             
-            // TODO: Can use the getExistingDescribeFromControl(existingProfile.controls[index])
+
+            // TODO: Can use the getExistingDescribeFromControl(existingProfile.controls[index]) // skipcq: JS-0099
             //       method from inspect-objects
             const newControl = updateControl(existingProfile.controls[index], control, logger)
 
@@ -608,8 +609,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     const controlIdToScoreMap = new Map()
     for (const newControl of newControls) {
       // Check for existence of title, remove non-displayed characters
-       
-      // TODO: Determine whether removing symbols other than non-displayed characters is helpful
+
+      // TODO: Determine whether removing symbols other than non-displayed characters is helpful // skipcq: JS-0099
       // words separated by newlines don't have spaces between them
       if (newControl.title) {
         // Regex: [\w\s]     -> match word characters and whitespace
@@ -648,8 +649,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             // words exchange that could alter the entire meaning of the title.
 
             if (result[0].score > 0.1) {
-               
-              // TODO: modify output report or logger to show potential mismatches
+
+              // TODO: modify output report or logger to show potential mismatches // skipcq: JS-0099
               // alternatively: add a match decision feature for high-scoring results
               printBgRed('** Potential Mismatch **')
               GenerateDelta.posMisMatch++
@@ -856,12 +857,14 @@ async function getFlags(): Promise<any> {
   }
 
   addToProcessLogData('Process Flags ============================================')
-   
+
   for (const tagName in requiredAnswers) {
-    const answerValue = _.get(requiredAnswers, tagName)
-    if (answerValue !== null) {
-      addToProcessLogData(tagName + '=' + answerValue)
-      interactiveValues[tagName] = answerValue
+    if (Object.prototype.hasOwnProperty.call(requiredAnswers, tagName)) {
+      const answerValue = _.get(requiredAnswers, tagName)
+      if (answerValue !== null) {
+        addToProcessLogData(tagName + '=' + answerValue)
+        interactiveValues[tagName] = answerValue
+      }
     }
   }
 
@@ -931,14 +934,16 @@ async function getFlags(): Promise<any> {
     addToProcessLogData('generateReport=true')
     interactiveValues.generateReport = true
 
-     
     for (const tagName in answers) {
-      const answerValue = _.get(answers, tagName)
-      if (answerValue !== null) {
-        addToProcessLogData(tagName + '=' + answerValue)
-        interactiveValues[tagName] = answerValue
+      if (Object.prototype.hasOwnProperty.call(answers, tagName)) {
+        const answerValue = _.get(answers, tagName)
+        if (answerValue !== null) {
+          addToProcessLogData(tagName + '=' + answerValue)
+          interactiveValues[tagName] = answerValue
+        }
       }
     }
+
   } else {
     addToProcessLogData('generateReport=false')
     interactiveValues.generateReport = false
@@ -968,12 +973,13 @@ async function getFlags(): Promise<any> {
     }),
   }
 
-   
   for (const tagName in answers) {
-    const answerValue = _.get(answers, tagName)
-    if (answerValue !== null) {
-      addToProcessLogData(tagName + '=' + answerValue)
-      interactiveValues[tagName] = answerValue
+    if (Object.prototype.hasOwnProperty.call(answers, tagName)) {
+      const answerValue = _.get(answers, tagName)
+      if (answerValue !== null) {
+        addToProcessLogData(tagName + '=' + answerValue)
+        interactiveValues[tagName] = answerValue
+      }
     }
   }
 

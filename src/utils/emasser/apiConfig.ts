@@ -2,11 +2,12 @@ import fs from 'fs'
 import dotenv from 'dotenv'
 import {printHelpMsg, printRedMsg} from './utilities'
 
-function printHelpMessage() {
+function printHelpMessage(showLocation: boolean) {
   printHelpMsg('Use the eMASSer CLI command "saf emasser configure" to generate or update an eMASS configuration file.')
-  printHelpMsg('If a configuration file exists, it is placed in the directory where the emasser command is executed.')
+  if (showLocation) {
+    printHelpMsg('If a configuration file exists, it should be placed in the directory where the emasser command is executed.')
+  }
 }
-
 
 /**
  * The `ApiConfig` class is responsible for loading and managing the configuration
@@ -36,10 +37,10 @@ function printHelpMessage() {
  * variables are missing, it prints an error message and exits the process.
  */
 export class ApiConfig {
-  private envConfig: {[key: string]: string | undefined}
+  private readonly envConfig: {[key: string]: string | undefined}
 
   public url: string
-  public port: number|any
+  public port: number| 443
   public caCert: string | undefined
   public keyCert: string | undefined
   public clientCert: string | undefined
@@ -48,24 +49,25 @@ export class ApiConfig {
   public userUid: string
   public sslVerify: boolean
   public reqCert: boolean
-  public debugging: string
-  public displayNulls: string
-  public displayDateTime: string
+  public debugging: boolean
+  public displayNulls: boolean
+  public displayDateTime: boolean
   public downloadDir: string
 
   constructor() {
     try {
       this.envConfig = dotenv.parse(fs.readFileSync('.env'))
-    } catch (error: any) {
-      if (error.code === 'ENOENT') {
-        this.envConfig = {}
-        // File probably does not exist
-        printRedMsg('An eMASS variables configuration file (.env) was not found.')
-        printHelpMessage()
-        process.exit(0)
-      } else {
-        throw error
+    } catch (error: unknown) {
+      if (error instanceof Error && 'code' in error && typeof (error as { code?: unknown }).code === 'string') {
+        if ((error as { code: string }).code === 'ENOENT') {
+          this.envConfig = {}
+          // File probably does not exist
+          printRedMsg('An eMASS configuration file (.env) was not found.')
+          printHelpMessage(true)
+          process.exit(0)
+        }
       }
+      throw error // Rethrow if it's not an expected error
     }
 
     // Option Environment Variable
@@ -84,13 +86,14 @@ export class ApiConfig {
       this.apiKey = this.getRequiredEnv('EMASSER_API_KEY')
       this.url = this.getRequiredEnv('EMASSER_HOST_URL')
       this.apiPassPhrase = this.getRequiredEnv('EMASSER_KEY_FILE_PASSWORD')
-    } catch (error: any) {
-      if (error.name === 'EVNF') {
-        printHelpMessage()
-      } else {
+    } catch (error: unknown) {
+      if (error instanceof Error && error.name === 'EVNF') {
+        printHelpMessage(false)
+      } else if (error instanceof Error) {
         console.error(error.message)
+      } else {
+        console.error('An unknown error occurred:', error)
       }
-
       process.exit(0)
     }
 
@@ -112,35 +115,50 @@ export class ApiConfig {
   }
 
   /**
-   * Retrieves the value of the specified environment variable from the configuration.
-   * If the environment variable is not found, an error is thrown.
+   * Retrieves the value of the specified environment variable key from the configuration.
+   * If the key is not found or the value is not a string, an error is thrown.
    *
-   * @param {string} key - The key of the environment variable to retrieve.
-   * @returns {string | any} - The value of the environment variable.
-   * @throws {Error} - Throws an error if the environment variable is not found.
+   * @param key - The environment variable key to retrieve.
+   * @returns The value of the specified environment variable key.
+   * @throws {Error} If the environment variable is not found or its value is not a string.
+   * The error will have a name property set to 'EVNF'.
    */
-  getRequiredEnv(key: string): string | any {
-    if (Object.prototype.hasOwnProperty.call(this.envConfig, key)) {
-      return this.envConfig[key]
-    }  // skipcq: JS-0056
+  getRequiredEnv(key: string): string {
+    if (this.envConfig && Object.prototype.hasOwnProperty.call(this.envConfig, key)) {
+      const value = this.envConfig[key]
 
-    printRedMsg('No configuration was provided for variable: ' + key)
+      if (typeof value === 'string') {
+        return value
+      }
+    }
+
+    printRedMsg(`No configuration was provided for variable: ${key}`)
     const err = new Error('Environment variable not found')
     err.name = 'EVNF'
     throw err
   }
 
   /**
-   * Retrieves the value of an environment variable if it exists, otherwise returns a default value.
+   * Retrieves an optional environment variable from the configuration.
+   * If the variable is not found or its type does not match the default
+   * value's type, the default value is returned.
    *
-   * @param key - The key of the environment variable to retrieve.
-   * @param defaultValue - The default value to return if the environment variable does not exist.
-   * @returns The value of the environment variable if it exists, otherwise the default value.
+   * @template T - The type of the default value and the expected type of
+   *               the environment variable.
+   * @param {string} key - The key of the environment variable to retrieve.
+   * @param {T} defaultValue - The default value to return if the environment
+   *                           variable is not found or its type does not match.
+   * @returns {T} - The value of the environment variable if found and its type
+   *                matches the default value's type, otherwise the default value.
    */
-  getOptionalEnv(key: string, defaultValue: any): string | any {
-    if (Object.prototype.hasOwnProperty.call(this.envConfig, key)) {
-      return this.envConfig[key]
-    }  // skipcq: JS-0056
+  getOptionalEnv<T>(key: string, defaultValue: T): T {
+    if (this.envConfig && Object.prototype.hasOwnProperty.call(this.envConfig, key)) {
+      const value = this.envConfig[key]
+
+      if (typeof value === typeof defaultValue) {
+        return value as T
+      }
+    }
 
     return defaultValue
   }

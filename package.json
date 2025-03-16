@@ -91,6 +91,7 @@
     "@typescript-eslint/eslint-plugin": "~8.26.1",
     "@typescript-eslint/parser": "^8.26.1",
     "eslint": "^9.22.0",
+    "eslint-formatter-stylish": "^8.40.0",
     "eslint-plugin-unicorn": "^57.0.0",
     "jsdom": "^26.0.0",
     "marked": "^15.0.0",
@@ -200,8 +201,8 @@
   },
   "repository": "mitre/saf",
   "scripts": {
-    "lint": "eslint \"src/**/*.ts\" --fix",
-    "lint:ci": "eslint \"src/**/*.ts\" --max-warnings 0",
+    "lint": "eslint \"src/**/*.ts\" \"test/commands/**/*.ts\" --fix --format ./src/utils/linter-formatter.js",
+    "lint:ci": "eslint \"src/**/*.ts\" \"test/commands/**/*.ts\" --max-warnings 0 --format ./src/utils/linter-formatter.js",
     "dev": "run-script-os",
     "dev:win32": "(IF EXIST lib rmdir /s /q lib) && tsc && node bin/run",
     "dev:darwin:linux": "rm -rf lib && tsc && node bin/run",

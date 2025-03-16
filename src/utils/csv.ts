@@ -58,7 +58,7 @@ function segmentsToString(segments: HDFControlSegment[] | undefined): string {
       result += segment.message ?
         `${segment.status.toUpperCase()} -- Test: ${
           segment.code_desc
-        }\r\nMessage: ${segment.message}\r\n\r\n`        :
+        }\r\nMessage: ${segment.message}\r\n\r\n` :
         `${segment.status.toUpperCase()} -- Test: ${
           segment.code_desc
         }\r\n\r\n`

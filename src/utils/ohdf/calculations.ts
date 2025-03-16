@@ -5,6 +5,7 @@ import {ContextualizedEvaluation, ContextualizedProfile} from 'inspecjs'
 import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../threshold'
 import {createWinstonLogger} from '../logging'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let flat: any
 
 (async () => {

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {Flags} from '@oclif/core'
 import {BooleanFlag, OptionFlag} from '@oclif/core/interfaces'
 import fs from 'fs'
@@ -344,7 +345,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             fileName: Flags.string({char: 'f', description: 'Artifact file(s) to post to the given system, can have multiple (space separated)', required: true, multiple: true}),
             isTemplate: Flags.boolean({char: 'T', description: 'Boolean - Indicates whether an artifact is a template.', allowNo: true, required: false, default: false}),
             type: Flags.string({char: 't', description: 'Various artifact file type are accepted (defined by the eMASS administrator)', required: false, default: 'Other'}),
-            category: Flags.string({char: 'c', description: 'Various artifact category are accepted (defined by the eMASS administrator)',  required: false, default: 'Evidence'}),
+            category: Flags.string({char: 'c', description: 'Various artifact category are accepted (defined by the eMASS administrator)', required: false, default: 'Evidence'}),
           }
           break
         }

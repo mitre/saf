@@ -141,6 +141,7 @@ export function arrayNeededPaths(typeOfPath: string, values: string | string[]):
  * @returns {any} The extracted value. If `pathOrNumber` is a string or array, it's processed by `arrayNeededPaths`.
  *                If `pathOrNumber` is a number, it's returned as is.
  */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNumber: string | string[] | number, data: Record<string, any>): any {
   // Maps paths from mapping file to target value
   if (typeof pathOrNumber === 'string') {
@@ -284,4 +285,23 @@ export function checkInput(guessOptions: { data: string, filename: string }, des
     throw new Error(`Unable to process input file\
       \nDetected input type: ${detectedType === '' ? 'unknown or none' : `${detectedType} - did you mean to run the ${detectedType} to HDF converter instead?`}\
       \nPlease ensure the input is a valid ${desiredFormat}`)
+}
+
+/**
+ * Retrieves the error message from an unknown error object.
+ *
+ * @param error - The error object to extract the message from (any type).
+ * @returns The error message as a string. If the error is an instance of
+ *          `Error`, it returns the error's message. If the error is not an
+ *          instance of `Error`, it attempts to stringify the error object.
+ *          If stringification fails (e.g., due to circular references), it
+ *          falls back to converting the error to a string.
+ */
+export function getErrorMessage(error: unknown): string {
+  if (error instanceof Error) return error.message
+  try {
+    return JSON.stringify(error)
+  } catch {
+    return String(error) // Fallback for circular references
+  }
 }

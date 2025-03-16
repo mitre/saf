@@ -26,7 +26,7 @@ export default class EmasserGetSystems extends Command {
 
     // Order is important here
     getSystems.getSystems(
-       
+
       flags.includePackage, flags.registrationType, flags.ditprId, flags.coamsId,
       flags.policy, flags.includeDitprMetrics, flags.includeDecommissioned, flags.reportsForScorecard,
     ).then((response: SystemsResponse) => {

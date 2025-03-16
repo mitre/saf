@@ -37,10 +37,16 @@ export default class EmasserPostPac extends Command {
 
     addPac.addSystemPac(flags.systemId, requestBodyArray).then((response: PacResponsePost) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => {
+      if (error instanceof Error) {
+        console.error(colorize(outputError(error)).red)
+      } else {
+        console.error(colorize(`Error calling addSystemPac: ${String(error)}`).red)
+      }
+    })
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

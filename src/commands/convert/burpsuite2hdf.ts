@@ -4,7 +4,7 @@ import {BurpSuiteMapper as Mapper} from '@mitre/hdf-converters'
 import {checkInput, checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-export default class Burpsuite2HDF extends  BaseCommand<typeof Burpsuite2HDF> {
+export default class Burpsuite2HDF extends BaseCommand<typeof Burpsuite2HDF> {
   static readonly usage =
     '<%= command.id %> -i <burpsuite-xml> -o <hdf-scan-results-json> [-h] [-w]'
 

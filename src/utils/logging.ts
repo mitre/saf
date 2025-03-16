@@ -1,6 +1,6 @@
 import {createLogger, format, transports, transport, Logger} from 'winston'
 import {ContextualizedControl, contextualizeEvaluation, ExecJSON} from 'inspecjs'
-import colors from 'colors'  
+import colors from 'colors'
 
 /**
  * Summary type represents a summary of an HDF execution.

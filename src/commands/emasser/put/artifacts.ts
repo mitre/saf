@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {colorize} from 'json-colorizer'
 import fs from 'fs'
 import {readFile} from 'fs/promises'
@@ -31,7 +32,7 @@ function assertParamExists(object: string, value: string|number|boolean|undefine
 }
 
 function addRequiredFieldsToRequestBody(dataObj: Artifacts): Artifacts {
-  const bodyObj: Artifacts  = {}
+  const bodyObj: Artifacts = {}
   try {
     assertParamExists('filename', dataObj.filename)
     assertParamExists('isTemplate', dataObj.isTemplate)

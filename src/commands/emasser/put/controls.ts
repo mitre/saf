@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs'
 import _ from 'lodash'
 import {readFile} from 'fs/promises'
@@ -12,7 +13,7 @@ import {FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRe
 import {ControlsApi} from '@mitre/emass_client'
 import {ControlsResponsePut} from '@mitre/emass_client/dist/api'
 
-interface Controls  {
+interface Controls {
   // Required Fields
   acronym?: string
   responsibleEntities?: string
@@ -67,7 +68,7 @@ function assertParamExists(object: string, value: string|number|undefined|null):
 }
 
 function addRequiredFieldsToRequestBody(dataObj: Controls): Controls {
-  const bodyObj: Controls  = {}
+  const bodyObj: Controls = {}
   try {
     assertParamExists('acronym', dataObj.acronym)
     assertParamExists('responsibleEntities', dataObj.responsibleEntities)

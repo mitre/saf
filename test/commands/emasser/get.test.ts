@@ -36,19 +36,21 @@ import {
   WorkflowInstancesResponseGet, WorkflowInstanceResponseGet,
   CmmcResponseGet,
 } from '@mitre/emass_client/dist/api'
+import {getErrorMessage} from '../../../src/utils/global'
 
 describe('Test eMASSer API CLI (GET) commands', () => {
   const mocServer = new InitMockServer()
-  let responseDataObj: Map<string, any>
-  const testOk =  {status: 200, statusText: 'OK'}
+  let responseDataObj: Map<string, unknown>
+  const testOk = {status: 200, statusText: 'OK'}
 
   it('Successfully tested endpoint - Test Connection', async () => {
     const getTestApi = new TestApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await getTestApi.testConnection().then((response: SystemResponse) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -61,9 +63,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const getSystems = new SystemsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await getSystems.getSystem(123).then((response: SystemResponse) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -76,9 +79,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const getSystems = new SystemsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await getSystems.getSystems().then((response: SystemsResponse) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -91,9 +95,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const getSystemRoles = new SystemRolesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await getSystemRoles.getSystemRoles().then((response: SystemRolesResponse) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -106,9 +111,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const getControls = new ControlsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await getControls.getSystemControls(34, 'acronym').then((response: CacResponseGet) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -121,9 +127,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const getControls = new TestResultsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await getControls.getSystemTestResults(34, 'acronym').then((response: TestResultsResponseGet) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -136,9 +143,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const getPoams = new POAMApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await getPoams.getSystemPoams(34, 56).then((response: PoamResponseGetSystems) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -151,9 +159,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const getPoams = new POAMApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await getPoams.getSystemPoamsByPoamId(34, 56).then((response: PoamResponseGetPoams) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -166,9 +175,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const getMilestones = new MilestonesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await getMilestones.getSystemMilestonesByPoamId(36, 76, 89).then((response: MilestoneResponseGet) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -181,9 +191,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const getMilestones = new MilestonesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await getMilestones.getSystemMilestonesByPoamIdAndMilestoneId(36, 76, 89).then((response: MilestoneResponseGetMilestone) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -196,9 +207,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const getArtifacs = new ArtifactsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await getArtifacs.getSystemArtifacts(34, 56).then((response: ArtifactsResponseGet) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -209,11 +221,16 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - Artifacts (export)', async () => {
     const getArtifacs = new ArtifactsExportApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
-    await getArtifacs.getSystemArtifactsExport(34, 'thisfile', false).then((response: any) => {
-      responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    await getArtifacs.getSystemArtifactsExport(34, 'thisfile', false).then((response: unknown) => {
+      if (typeof response === 'object' && response !== null) {
+        responseDataObj = new Map(Object.entries(response as Record<string, unknown>))
+      } else {
+        throw new Error('Unexpected response type')
+      }
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -226,9 +243,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const getCac = new CACApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await getCac.getSystemCac(34, 'acronym').then((response: CacResponseGet) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -241,9 +259,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const getPac = new PACApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await getPac.getSystemPac(34).then((response: PacResponseGet) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -256,9 +275,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const hardware = new HardwareBaselineApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await hardware.getSystemHwBaseline(1, 2, 3).then((response: HwBaselineResponseGet) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -271,9 +291,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const software = new SoftwareBaselineApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await software.getSystemSwBaseline(34).then((response: SwBaselineResponseGet) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -286,9 +307,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const apiCon = new WorkflowDefinitionsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await apiCon.getWorkflowDefinitions(false, 'type').then((response: WorkflowDefinitionResponseGet) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -301,9 +323,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const apiCon = new WorkflowInstancesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await apiCon.getSystemWorkflowInstances(false, false, 1, 2).then((response: WorkflowInstancesResponseGet) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -316,9 +339,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const apiCon = new WorkflowInstancesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await apiCon.getSystemWorkflowInstancesByWorkflowInstanceId(2).then((response: WorkflowInstanceResponseGet) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -331,9 +355,10 @@ describe('Test eMASSer API CLI (GET) commands', () => {
     const apiCon = new CMMCAssessmentsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await apiCon.getCmmcAssessments(34).then((response: CmmcResponseGet) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -404,14 +429,15 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   for (const [key, values] of dashboardsMap) {
     it(`Successfully tested endpoint - Dashboard (${key})`, async () => {
-      // eslint-disable-next-line no-eval
+
       const DashboardClass = eval(values[0])
       const getDashboard = new DashboardClass(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
       await getDashboard[values[1]](45, false, 1, 2000).then((response: object) => {
         responseDataObj = new Map(Object.entries(response))
-      }).catch((error:any) => {
-        if (error.message.includes('unexpected end of file') === false) {
-          console.error(error.message)
+      }).catch((error: unknown) => {
+        const errorMsg = getErrorMessage(error)
+        if (errorMsg.includes('unexpected end of file') === false) {
+          console.error(errorMsg)
         }
 
         responseDataObj = new Map(Object.entries(testOk))

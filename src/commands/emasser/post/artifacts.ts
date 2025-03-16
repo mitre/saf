@@ -56,7 +56,7 @@ export default class EmasserPostArtifacts extends Command {
           (response: ArtifactsResponsePutPost) => {
             console.log(colorize(outputFormat(response, false)))
           }).catch((error: any) => console.error(colorize(outputError(error))))
-      }  else {
+      } else {
         console.error('\x1B[91m» Artifact file not found:', flags.fileName[0], '\x1B[0m')
       }
 

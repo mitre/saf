@@ -13,13 +13,13 @@ import {FlagOptions,
 const endpoint = 'milestones'
 
 export default class EmasserGetMilestones extends Command {
-  static  readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS] \n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m'
+  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS] \n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m'
 
-  static  readonly description = getDescriptionForEndpoint(process.argv, endpoint)
+  static readonly description = getDescriptionForEndpoint(process.argv, endpoint)
 
-  static  readonly examples = getExamplesForEndpoint(process.argv, endpoint)
+  static readonly examples = getExamplesForEndpoint(process.argv, endpoint)
 
-  static  readonly flags = {
+  static readonly flags = {
     help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the GET Milestones command'}),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
@@ -28,7 +28,7 @@ export default class EmasserGetMilestones extends Command {
   //       the available arguments with associate description.
   // Only args.name is used, there is, it contains the argument listed by the user.
   // Example: If the user uses the command (saf emasser get milestones byPoamId), args.name is set to byPoamId
-  static  readonly args = {
+  static readonly args = {
     name: Args.string({name: 'name', required: false, hidden: true}),
     byPoamId: Args.string({name: 'byPoamId', description: 'Retrieves milestone(s) for specified system and poam Id', required: false}),
     byMilestoneId: Args.string({name: 'byMilestoneId', description: 'Retrieves milestone(s) for specified system, poam, and milestone Id', required: false}),

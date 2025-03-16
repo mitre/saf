@@ -30,7 +30,7 @@ export default class CreateAttestations extends BaseCommand<typeof CreateAttesta
   }
 
   promptForever(promptValue: string): string { // skipcq: JS-0105
-    while (true) {
+    while (true) { // skipcq: JS-0003
       const ret = prompt(promptValue)
       if (ret.trim() !== '') {
         return ret
@@ -41,7 +41,7 @@ export default class CreateAttestations extends BaseCommand<typeof CreateAttesta
   getStatus(): 'passed' | 'failed' { // skipcq: JS-0105
     const validPassResponses = new Set(['p', 'passed', 'pass'])
     const validFailResponses = new Set(['f', 'failed', 'fail', 'failure'])
-    while (true) {
+    while (true) { // skipcq: JS-0003
       const input = prompt('Enter status ((p)assed/(f)ailed): ') || ''
       if (validPassResponses.has(input.trim().toLowerCase())) {
         return 'passed'
@@ -95,7 +95,7 @@ export default class CreateAttestations extends BaseCommand<typeof CreateAttesta
         }
       }
     } else {
-      while (true) {
+      while (true) { // skipcq: JS-0003
         const input = prompt("Enter a control ID or enter 'q' to exit: ")
         if (input.trim().toLowerCase() === 'q') {
           break

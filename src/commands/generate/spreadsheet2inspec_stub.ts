@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {Flags} from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
@@ -22,7 +23,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
   static readonly examples = ['<%= config.bin %> <%= command.id %> -i spreadsheet.xlsx -o profile']
 
   static readonly flags = {
-    input: Flags.string({char: 'i', required: true}),
+    input: Flags.string({char: 'i', required: true, description: 'The CSV STIGs or CIS XLSX benchmarks file'}),
     controlNamePrefix: Flags.string({char: 'c', required: false, default: '', description: 'Prefix for all control IDs'}),
     format: Flags.string({char: 'f', required: false, default: 'general', options: ['cis', 'disa', 'general']}),
     encodingHeader: Flags.boolean({char: 'e', required: false, default: false, description: 'Add the "# encoding: UTF-8" comment at the top of each control'}),

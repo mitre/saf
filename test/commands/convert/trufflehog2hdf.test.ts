@@ -1,5 +1,5 @@
-/* eslint-disable array-bracket-newline */
-/* eslint-disable array-element-newline */
+
+
 import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
@@ -49,7 +49,7 @@ describe('Test Trufflehog', () => {
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/trufflehog/trufflehog-saf-hdf.json'), 'utf8'))
     expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
-  
+
   it('hdf-converter output test - ndjson and duplicate finding', async () => {
     await runCommand<{name: string}>(['convert trufflehog2hdf',
       '-i', path.resolve('./test/sample_data/trufflehog/sample_input_report/trufflehog_dup.ndjson'),
