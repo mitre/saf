@@ -1,10 +1,9 @@
 import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 
-import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
+import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 import {ContainerScanResultsApi} from '@mitre/emass_client'
 import {
@@ -38,10 +37,10 @@ export default class EmasserContainerScans extends Command {
     // Call the API
     containerScan.deleteContainerSans(flags.systemId, requestBodyArray).then((response: ContainersResourcesPostDelete) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => displayError(error, 'Container Scans'))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

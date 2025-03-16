@@ -40,7 +40,7 @@ export class ApiConfig {
   private readonly envConfig: {[key: string]: string | undefined}
 
   public url: string
-  public port: number| 443
+  public port: number
   public caCert: string | undefined
   public keyCert: string | undefined
   public clientCert: string | undefined
@@ -139,27 +139,39 @@ export class ApiConfig {
   }
 
   /**
-   * Retrieves an optional environment variable from the configuration.
-   * If the variable is not found or its type does not match the default
-   * value's type, the default value is returned.
+   * Retrieves an environment variable value from the `envConfig` object.
+   * If the key exists in `envConfig`, it attempts to parse the value to a
+   * boolean or number if applicable. If the parsed value matches the type of
+   * the provided default value and is not zero or an empty string, it returns
+   * the parsed value. Otherwise, it returns the default value.
    *
-   * @template T - The type of the default value and the expected type of
-   *               the environment variable.
+   * NOTE: The library dotenv, by default returns all environment variables as
+   *       strings. We evaluate if the casting of the variables is either a
+   *       string, number, of boolean to properly process the provided value.
+   *
+   * @template T - The type of the default value.
    * @param {string} key - The key of the environment variable to retrieve.
-   * @param {T} defaultValue - The default value to return if the environment
-   *                           variable is not found or its type does not match.
-   * @returns {T} - The value of the environment variable if found and its type
-   *                matches the default value's type, otherwise the default value.
+   * @param {T} defaultValue - The default value to return if the environment variable is not found or is invalid.
+   * @returns {T} - The environment variable value if valid, otherwise the default value.
    */
   getOptionalEnv<T>(key: string, defaultValue: T): T {
     if (this.envConfig && Object.prototype.hasOwnProperty.call(this.envConfig, key)) {
-      const value = this.envConfig[key]
+      const envValue = this.envConfig[key]
+      const value = envValue === 'true'
+        ? true : envValue === 'false'
+          ? false : isNaN(Number(envValue))
+            ? envValue : Number(envValue)
 
-      if (typeof value === typeof defaultValue) {
+      const isNotZeroOrEmpty = (value: string | number | boolean | undefined): boolean => {
+        return value !== 0 && value !== ''
+      }
+
+      if (typeof value === typeof defaultValue && isNotZeroOrEmpty(value)) {
         return value as T
+      } else {
+        return defaultValue
       }
     }
-
     return defaultValue
   }
 }

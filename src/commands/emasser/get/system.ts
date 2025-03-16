@@ -4,8 +4,7 @@ import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {SystemsApi} from '@mitre/emass_client'
 import {SystemResponse} from '@mitre/emass_client/dist/api'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
-import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
+import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetSystem extends Command {
   static readonly usage = '<%= command.id %> [FLAG]'
@@ -27,11 +26,11 @@ export default class EmasserGetSystem extends Command {
     // Order is important here
     getSystems.getSystem(flags.systemId, flags.includePackage, flags.policy).then((response: SystemResponse) => {
       console.log(colorize(outputFormat(response)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => displayError(error, 'Systems'))
   }
 
-  async catch(error: any) { // skipcq: JS-0116
-    if (error.message) {
+  async catch(error: unknown) {
+    if (error instanceof Error) {
       this.warn(error.message)
     } else {
       const suggestions = 'get system [-h or --help]'

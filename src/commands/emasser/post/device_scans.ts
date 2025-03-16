@@ -3,11 +3,11 @@ import {Command, Flags} from '@oclif/core'
 import {CLIError} from '@oclif/core/errors'
 import {DeviceScanResultsApi} from '@mitre/emass_client'
 import {DeviceScanResultsResponsePost} from '@mitre/emass_client/dist/api'
-import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import fs from 'fs'
 import path from 'path'
+import {displayError} from '../../../utils/emasser/utilities'
 
 const CMD_HELP = 'saf emasser post device_scans -h or --help'
 export default class EmasserPostDeviceScans extends Command {
@@ -81,10 +81,10 @@ export default class EmasserPostDeviceScans extends Command {
 
     addDeviceScans.addScanResultsBySystemId(flags.systemId, flags.scanType, fileStream, flags.isBaseline).then((response: DeviceScanResultsResponsePost) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => displayError(error, 'Device Scans'))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

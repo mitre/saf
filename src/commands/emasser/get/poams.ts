@@ -4,8 +4,7 @@ import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {POAMApi} from '@mitre/emass_client'
 import {PoamResponseGetSystems, PoamResponseGetPoams} from '@mitre/emass_client/dist/api'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
-import {FlagOptions,
+import {displayError, FlagOptions,
   getDescriptionForEndpoint,
   getExamplesForEndpoint,
   getFlagsForEndpoint} from '../../../utils/emasser/utilities'
@@ -43,19 +42,19 @@ export default class EmasserGetPoams extends Command {
       // Order is important here
       getPoams.getSystemPoams(flags.systemId, flags.scheduledCompletionDateStart, flags.scheduledCompletionDateEnd, flags.controlAcronyms, flags.ccis, flags.systemOnly).then((response: PoamResponseGetSystems) => {
         console.log(colorize(outputFormat(response)))
-      }).catch((error:any) => console.error(colorize(outputError(error))))
+      }).catch((error: unknown) => displayError(error, 'POA&Ms'))
     } else if (args.name === 'byPoamId') {
       // Order is important here
       getPoams.getSystemPoamsByPoamId(flags.systemId, flags.poamId).then((response: PoamResponseGetPoams) => {
         console.log(colorize(outputFormat(response)))
-      }).catch((error:any) => console.error(colorize(outputError(error))))
+      }).catch((error: unknown) => displayError(error, 'POA&Ms'))
     } else {
       throw this.error
     }
   }
 
-  async catch(error: any) { // skipcq: JS-0116
-    if (error.message) {
+  async catch(error: unknown) {
+    if (error instanceof Error) {
       this.warn(error.message)
     } else {
       const suggestions = 'get poams [-h or --help]\n\tget poams forSystem\n\tget poams byPoamId'

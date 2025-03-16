@@ -4,8 +4,7 @@ import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {MilestonesApi} from '@mitre/emass_client'
 import {MilestoneResponseGet, MilestoneResponseGetMilestone} from '@mitre/emass_client/dist/api'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
-import {FlagOptions,
+import {displayError, FlagOptions,
   getDescriptionForEndpoint,
   getExamplesForEndpoint,
   getFlagsForEndpoint} from '../../../utils/emasser/utilities'
@@ -43,19 +42,19 @@ export default class EmasserGetMilestones extends Command {
       // Order is important here
       getMilestones.getSystemMilestonesByPoamId(flags.systemId, flags.poamId, flags.scheduledCompletionDateStart, flags.scheduledCompletionDateEnd).then((response: MilestoneResponseGet) => {
         console.log(colorize(outputFormat(response)))
-      }).catch((error:any) => console.error(colorize(outputError(error))))
+      }).catch((error: unknown) => displayError(error, 'Milestones'))
     } else if (args.name === 'byMilestoneId') {
       // Order is important here
       getMilestones.getSystemMilestonesByPoamIdAndMilestoneId(flags.systemId, flags.poamId, flags.milestoneId).then((response: MilestoneResponseGetMilestone) => {
         console.log(colorize(outputFormat(response)))
-      }).catch((error:any) => console.error(colorize(outputError(error))))
+      }).catch((error: unknown) => displayError(error, 'Milestones'))
     } else {
       throw this.error
     }
   }
 
-  async catch(error: any) { // skipcq: JS-0116
-    if (error.message) {
+  async catch(error: unknown) {
+    if (error instanceof Error) {
       this.warn(error.message)
     } else {
       const suggestions = 'get milestones [-h or --help]\n\tget milestones byPoamId\n\tget milestones byMilestoneId'

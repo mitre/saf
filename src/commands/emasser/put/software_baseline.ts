@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs'
 import _ from 'lodash'
 import {readFile} from 'fs/promises'
@@ -109,24 +108,21 @@ interface Software {
 }
 
 /**
- * Combines JSON examples from multiple sources into a single object.
+ * Retrieves a combined set of JSON examples from multiple sources.
  *
- * This function aggregates JSON examples from three different sources:
- * 'software-put-required', 'software-post-put-conditional', and 'software-post-put-optional'.
- * It merges these examples into a single object and returns it as a string.
+ * This function aggregates JSON examples from three different categories:
+ * - `software-put-required`
+ * - `software-post-put-conditional`
+ * - `software-post-put-optional`
  *
- * @returns {string} A string representation of the combined JSON examples.
+ * @returns {Record<string, unknown>} An object containing the combined JSON examples.
  */
-function getAllJsonExamples(): string {
-  let exampleBodyObj: any = {}
-
-  exampleBodyObj = {
+function getAllJsonExamples(): Record<string, unknown> {
+  return {
     ...getJsonExamples('software-put-required'),
     ...getJsonExamples('software-post-put-conditional'),
     ...getJsonExamples('software-post-put-optional'),
   }
-
-  return exampleBodyObj
 }
 
 /**
@@ -417,7 +413,7 @@ export default class EmasserSoftwareBaseline extends Command {
     }).catch((error: any) => console.error(colorize(outputError(error))))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

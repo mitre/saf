@@ -396,9 +396,6 @@ function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: Record
  * @param value - The value to be checked. It can be a string or a number.
  * @returns `true` if the value is numeric, otherwise `false`.
  */
-// function isNumeric(value: string | number) {
-//   return /^-?\d+(\.\d+)?$/.test(value.toString())
-// }
 function isNumeric(value: unknown): boolean {
   return typeof value === 'number' || (!isNaN(Number(value)) && typeof value === 'string')
 }

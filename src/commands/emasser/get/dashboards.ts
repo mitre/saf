@@ -2,41 +2,43 @@ import {colorize} from 'json-colorizer'
 import {Args, Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
-import {FlagOptions,
-  getDescriptionForEndpoint,
-  getExamplesForEndpoint,
-  getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 import {
-  SystemStatusDashboardApi,
-  SystemTermsConditionsDashboardsApi,
-  SystemConnectivityCCSDDashboardsApi,
-  SystemATCIATCDashboardApi,
-  SystemQuestionnaireDashboardsApi,
-  SystemWorkflowsDashboardsApi,
-  SystemSecurityControlsDashboardsApi,
+  FlagOptions,
+  displayError,
+  getFlagsForEndpoint,
+  getExamplesForEndpoint,
+  getDescriptionForEndpoint,
+} from '../../../utils/emasser/utilities'
+import {
+  VASystemDashboardsApi,
+  VAOMBFISMADashboardApi,
   SystemPOAMDashboardsApi,
-  SystemArtifactsDashboardsApi,
+  SystemStatusDashboardApi,
+  SystemPrivacyDashboardApi,
+  SystemATCIATCDashboardApi,
+  CMMCAssessmentDashboardsApi,
   SystemHardwareDashboardsApi,
-  SystemSensorHardwareDashboardsApi,
   SystemSoftwareDashboardsApi,
-  SystemSensorSoftwareDashboardsApi,
-  SystemCriticalAssetsDashboardApi,
+  SystemArtifactsDashboardsApi,
+  SystemWorkflowsDashboardsApi,
+  SystemFISMAMetricsDashboardApi,
+  SystemAssociationsDashboardApi,
   SystemVulnerabilityDashboardApi,
+  SystemCriticalAssetsDashboardApi,
+  SystemQuestionnaireDashboardsApi,
   SystemDeviceFindingsDashboardsApi,
-  SystemApplicationFindingsDashboardsApi,
+  SystemSensorSoftwareDashboardsApi,
+  SystemSensorHardwareDashboardsApi,
+  SystemMigrationStatusDashboardApi,
   SystemPortsProtocolsDashboardsApi,
   UserSystemAssignmentsDashboardApi,
-  SystemAssociationsDashboardApi,
-  SystemCONMONIntegrationStatusDashboardApi,
+  SystemTermsConditionsDashboardsApi,
+  SystemConnectivityCCSDDashboardsApi,
+  SystemSecurityControlsDashboardsApi,
+  SystemApplicationFindingsDashboardsApi,
   OrganizationMigrationStatusDashboardApi,
-  SystemMigrationStatusDashboardApi,
-  SystemFISMAMetricsDashboardApi,
   CoastGuardSystemFISMAMetricsDashboardApi,
-  SystemPrivacyDashboardApi,
-  VAOMBFISMADashboardApi,
-  VASystemDashboardsApi,
-  CMMCAssessmentDashboardsApi,
+  SystemCONMONIntegrationStatusDashboardApi,
 } from '@mitre/emass_client'
 
 const endpoint = 'dashboards'
@@ -158,7 +160,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemStatusDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -168,7 +170,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemTermsConditionsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -178,7 +180,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemTermsConditionsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -188,7 +190,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemConnectivityCcsdDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -198,7 +200,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemConnectivityCcsdSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -208,7 +210,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemAtcIatcDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -218,7 +220,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemQuestionnaireSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -228,7 +230,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemQuestionnaireDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -238,7 +240,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemWorkflowsHistorySummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -248,7 +250,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemWorkflowsHistoryDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -258,7 +260,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemWorkflowsHistoryStageDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -268,7 +270,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemControlComplianceSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -278,7 +280,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemSecurityControlDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -288,7 +290,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemAssessmentProceduresDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -298,7 +300,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemPoamSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -308,7 +310,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemPoamDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -318,7 +320,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemArtifactsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -328,7 +330,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemArtifactsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -338,7 +340,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemHardwareSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -348,7 +350,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemHardwareDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -358,7 +360,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemSensorHardwareSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -368,7 +370,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemSensorHardwareDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -378,7 +380,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemSoftwareSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -388,7 +390,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemSoftwareDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -398,7 +400,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemSensorSoftwareSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -408,7 +410,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemSensorSoftwareDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -418,7 +420,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemSensorSoftwareCounts(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -428,7 +430,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemCriticalAssetsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -438,7 +440,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemVulnerabilitySummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -448,7 +450,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemDeviceFindingsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -458,7 +460,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemDeviceFindingsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -468,7 +470,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemApplicationFindingsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -478,7 +480,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemApplicationFindingsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -488,7 +490,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemPortsProtocolsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -498,7 +500,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemPortsProtocolsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -508,7 +510,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemCommonIntegrationStatusSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -518,7 +520,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemAssociationsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -528,7 +530,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getUserSystemAssignmentsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -538,7 +540,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getOrganizationMigrationStatusSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -548,7 +550,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemMigrationStatusSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -558,7 +560,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemFismaMetrics(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -568,7 +570,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getCoastGuardSystemFismaMetrics(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -578,7 +580,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getSystemPrivacySummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -588,7 +590,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getVaOmbFsmaSaopSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -598,7 +600,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getVaSystemIcampTableauPoamDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -608,7 +610,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getVaSystemAaSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -618,7 +620,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getVaSystemA2Summary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -628,7 +630,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getVaSystemPl109ReportingSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -638,7 +640,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getVaSystemFismaInvetorySummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -648,7 +650,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getVaSystemFismaInvetoryCryptoSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -658,7 +660,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getVaSystemThreatRiskSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -668,7 +670,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getVaSystemThreatSourceDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -678,7 +680,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getVaSystemThreatArchitectureDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -688,7 +690,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getCmmcAssessmentStatusSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -698,7 +700,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getCmmcAssessmentRequirementsComplianceSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -708,7 +710,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getCmmcAssessmentSecurityRequirementsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -718,7 +720,7 @@ export default class EmasserGetDashboards extends Command {
         // Order is important here
         getDashboard.getCmmcAssessmentRequirementObjectivesDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Dashboard'))
 
         break
       }
@@ -729,8 +731,8 @@ export default class EmasserGetDashboards extends Command {
     }
   }
 
-  async catch(error: any) { // skipcq: JS-0116
-    if (error.message) {
+  async catch(error: unknown) {
+    if (error instanceof Error) {
       this.warn(error.message)
     } else {
       const suggestions = 'get dashboards [-h or --help] for available arguments'

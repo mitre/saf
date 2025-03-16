@@ -71,18 +71,14 @@ export default class Heimdall extends Command {
 
     // Open the browser
     if (!flags.noOpenBrowser) {
-      if (flags.port) {
-        if (flags.files) {
-          open(`http://localhost:${flags.port}/?predefinedLoad=true`)
-        } else {
-          open(`http://localhost:${flags.port}/`)
-        }
+      if (flags.port && flags.files) {
+        open(`http://localhost:${flags.port}/?predefinedLoad=true`)
+      } else if (flags.port && !flags.files) {
+        open(`http://localhost:${flags.port}/`)
+      } else if (!flags.port && flags.files) {
+        open('http://localhost:3000/?predefinedLoad=true')
       } else {
-        if (flags.files) {
-          open('http://localhost:3000/?predefinedLoad=true')
-        } else {
-          open('http://localhost:3000/')
-        }
+        open('http://localhost:3000/')
       }
     }
 

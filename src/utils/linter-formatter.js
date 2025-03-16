@@ -12,40 +12,40 @@ const stylish = require("eslint-formatter-stylish"); // Use the official package
  */
 // module.exports = function customFormatter(results) {
   module.exports = (results) => {
-  const totalFiles = results.length;
-  let totalFixes = 0;
+  const totalFiles = results.length
+  let totalFixes = 0
   let errorCount = 0
-  let hasIssues = false;
-  let wasFixed = false;
+  let hasIssues = false
+  let wasFixed = false
 
   results.forEach((result) => {
-    totalFixes += result.fixableErrorCount + result.fixableWarningCount;
-    errorCount += result.errorCount;
+    totalFixes += result.fixableErrorCount + result.fixableWarningCount
+    errorCount += result.errorCount
     if (result.output) {
-      wasFixed = true; // If output exists, ESLint applied fixes
+      wasFixed = true // If output exists, ESLint applied fixes
     }
 
     if (result.errorCount > 0 || result.warningCount > 0) {
-      hasIssues = true;
+      hasIssues = true
     }
-  });
+  })
 
-  console.log(`\x1B[94m✔  ESLint total scanned files: ${totalFiles}\x1B[0m`);
+  console.log(`\x1B[94m✔  ESLint total scanned files: ${totalFiles}\x1B[0m`)
   
   //if (hasIssues) {
   if (totalFixes > 0) {
-    console.log(`\x1B[93m🔧 Fixable issues: ${totalFixes}\x1B[0m`);
+    console.log(`\x1B[93m🔧 Fixable issues: ${totalFixes}\x1B[0m`)
   }
   
   if (errorCount > 0) {
-    console.log(`\x1B[91m❌ Linting issues found: ${errorCount}\x1B[0m`);
+    console.log(`\x1B[91m❌ Linting issues found: ${errorCount}\x1B[0m`)
   }
 
   if (wasFixed) {
-    console.log(`\x1B[92m✅ Some issues were automatically fixed (via --fix).\x1B[0m`);
+    console.log('\x1B[92m✅ Some issues were automatically fixed (via --fix).\x1B[0m')
   } else if (!hasIssues) {
-    console.log('\x1B[92m✅ No linting issues found.\x1B[0m');
+    console.log('\x1B[92m✅ No linting issues found.\x1B[0m')
   }
 
-  return stylish(results); // Use the standard stylish formatter for output
-};
+  return stylish(results) // Use the standard stylish formatter for output
+}

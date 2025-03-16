@@ -4,8 +4,7 @@ import {CloudResourceResultsApi} from '@mitre/emass_client'
 import {CloudResourcesResponsePost} from '@mitre/emass_client/dist/api'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg} from '../../../utils/emasser/utilities'
-import {outputError} from '../../../utils/emasser/outputError'
+import {displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg} from '../../../utils/emasser/utilities'
 import {readFile} from 'fs/promises'
 import _ from 'lodash'
 import fs from 'fs'
@@ -39,7 +38,7 @@ interface CloudResource {
   cspRegion?: string,
   initiatedBy?: string,
   isBaseline?: boolean,
-  tags?: Tags|any,
+  tags?: Tags,
 }
 
 /**
@@ -197,12 +196,11 @@ function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): v
   }
 
   // Add optional tags objects if available
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'tags')) {
-    const tagsObj: Tags = {};
-    (Object.keys(dataObj.tags) as (keyof typeof dataObj.tags)[]).forEach(key => {
-      tagsObj[key.toString()] = dataObj.tags[key]
+  if (dataObj.tags && typeof dataObj.tags === 'object') {
+    const tagsObj: Tags = {}
+    Object.keys(dataObj.tags).forEach((key) => {
+      tagsObj[key] = dataObj.tags?.[key] as string // Ensure type safety
     })
-
     bodyObject.tags = tagsObj
   }
 
@@ -282,51 +280,48 @@ export default class EmasserPostCloudResources extends Command {
 
     // Check if a Cloud Resource json file was provided
     if (fs.existsSync(flags.dataFile)) {
-      let data: any
+      let data: unknown
+
       try {
-        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
-      } catch (error: any) {
-        console.error('\x1B[91m» Error reading Cloud Resource data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
-        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+        const fileContent = await readFile(flags.dataFile, 'utf8')
+        data = JSON.parse(fileContent)
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error('\x1B[91m» Error reading Cloud Resource data file, possible malformed JSON. Please use the -h flag for help.\x1B[0m')
+          console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+        } else {
+          console.error('\x1B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\x1B[0m')
+        }
         process.exit(1)
       }
 
       // Create request body based on key/pair values provide in the input file
       if (Array.isArray(data)) {
-        data.forEach((dataObject: CloudResource) => {
-          let bodyObj: CloudResource = {
-            provider: '',
-            resourceId: '',
-            resourceName: '',
-            resourceType: '',
-            complianceResults: [],
+        data.forEach((item) => {
+          if (!isValidCloudResource(item)) {
+            console.error('\x1B[91m» Invalid Cloud Resource entry in array.\x1B[0m')
+            process.exit(1)
           }
-          // Add required fields to request array object based on business logic
+
           try {
-            bodyObj = addRequiredFieldsToRequestBody(dataObject)
-            addOptionalFields(bodyObj, dataObject)
+            const bodyObj: CloudResource = addRequiredFieldsToRequestBody(item)
+            addOptionalFields(bodyObj, item)
             requestBodyArray.push(bodyObj)
           } catch {
             process.exit(1)
           }
         })
-      } else if (typeof data === 'object') {
-        const dataObject: CloudResource = data
-        let bodyObj: CloudResource = {
-          provider: '',
-          resourceId: '',
-          resourceName: '',
-          resourceType: '',
-          complianceResults: [],
-        }
-        // Add required fields to request array object based on business logic
+      } else if (isValidCloudResource(data)) {
         try {
-          bodyObj = addRequiredFieldsToRequestBody(dataObject)
-          addOptionalFields(bodyObj, dataObject)
+          const bodyObj: CloudResource = addRequiredFieldsToRequestBody(data)
+          addOptionalFields(bodyObj, data)
           requestBodyArray.push(bodyObj)
         } catch {
           process.exit(1)
         }
+      } else {
+        console.error('\x1B[91m» Invalid Cloud Resource data format.\x1B[0m')
+        process.exit(1)
       }
     } else {
       console.error('\x1B[91m» Cloud Resource data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
@@ -336,10 +331,17 @@ export default class EmasserPostCloudResources extends Command {
     // Call the endpoint
     addCloudResource.addCloudResourcesBySystemId(flags.systemId, requestBodyArray).then((response: CloudResourcesResponsePost) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => displayError(error, 'Cloud Resources'))
+
+    // Helper function to check if an object matches CloudResource type
+    function isValidCloudResource(obj: unknown): obj is CloudResource {
+      if (typeof obj !== 'object' || obj === null) return false
+      const requiredFields = ['provider', 'resourceId', 'resourceName', 'resourceType', 'complianceResults']
+      return requiredFields.every(field => field in obj)
+    }
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

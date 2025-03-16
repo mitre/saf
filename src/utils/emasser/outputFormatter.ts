@@ -81,9 +81,9 @@ function convertEpochToDateTime(dataObject: object): object {
  */
 export function outputFormat(data: object, doConversion = true): string {
   const conf = new ApiConfig()
-  const hideNulls: boolean = conf.displayNulls !== true
-  const showEpoch: boolean = (conf.displayDateTime === true)
-  const debugging: boolean = (conf.debugging === true)
+  const hideNulls: boolean = !conf.displayNulls
+  const showEpoch: boolean = conf.displayDateTime
+  const debugging: boolean = conf.debugging
   let formatDataObj: object = data
 
   if (debugging) {

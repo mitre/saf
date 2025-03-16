@@ -160,7 +160,7 @@ export default class EmasserPutArtifacts extends Command {
     }).catch((error:any) => console.error(colorize(outputError(error))))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

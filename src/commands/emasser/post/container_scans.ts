@@ -4,8 +4,7 @@ import {ContainerScanResultsApi} from '@mitre/emass_client'
 import {ContainersResponsePost} from '@mitre/emass_client/dist/api'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg} from '../../../utils/emasser/utilities'
-import {outputError} from '../../../utils/emasser/outputError'
+import {displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg} from '../../../utils/emasser/utilities'
 import {readFile} from 'fs/promises'
 import _ from 'lodash'
 import fs from 'fs'
@@ -34,7 +33,7 @@ interface ContainerResource {
   podName?: string,
   podIp?: string,
   namespace?: string,
-  tags?: Tags|any,
+  tags?: Tags,
 }
 
 /**
@@ -231,10 +230,10 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
   }
 
   // Add optional tags objects if available
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'tags')) {
-    const tagsObj: Tags = {};
-    (Object.keys(dataObj.tags) as (keyof typeof dataObj.tags)[]).forEach(key => {
-      tagsObj[key.toString()] = dataObj.tags[key]
+  if (dataObj.tags && typeof dataObj.tags === 'object') {
+    const tagsObj: Tags = {}
+    Object.keys(dataObj.tags).forEach((key) => {
+      tagsObj[key] = dataObj.tags?.[key] as string // Ensure type safety
     })
     bodyObject.tags = tagsObj
   }
@@ -310,53 +309,77 @@ export default class EmasserContainerScans extends Command {
     const requestBodyArray: ContainerResource[] = []
 
     // Check if a Cloud Resource json file was provided
-    if (fs.existsSync(flags.dataFile)) {
-      let data: any
-      try {
-        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
-      } catch (error: any) {
-        console.error('\x1B[91m» Error reading Container Scan Results data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
-        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
-        process.exit(1)
-      }
+    if (!fs.existsSync(flags.dataFile)) {
+      console.error(`\x1B[91m» Container Scan Results data file (.json) not found or invalid: ${flags.dataFile}\x1B[0m`)
+      process.exit(1)
+    }
 
-      // Create request body based on key/pair values provide in the input file
+    try {
+      const fileContent = await readFile(flags.dataFile, 'utf8')
+      const data: unknown = JSON.parse(fileContent)
+
       if (Array.isArray(data)) {
-        data.forEach((dataObject: ContainerResource) => {
-          let bodyObj: ContainerResource = {containerId: '', containerName: '', time: 0, benchmarks: []}
-          // Add required fields to request array object based on business logic
-          try {
-            bodyObj = addRequiredFieldsToRequestBody(dataObject)
-            addOptionalFields(bodyObj, dataObject)
-            requestBodyArray.push(bodyObj)
-          } catch {
+        data.forEach((item) => {
+          if (isValidContainerResource(item)) {
+            processContainerResource(item)
+          } else {
+            console.error('\x1B[91m» Invalid container resource format detected.\x1B[0m')
             process.exit(1)
           }
         })
-      } else if (typeof data === 'object') {
-        const dataObject: ContainerResource = data
-        let bodyObj: ContainerResource = {containerId: '', containerName: '', time: 0, benchmarks: []}
-        // Add required fields to request array object based on business logic
-        try {
-          bodyObj = addRequiredFieldsToRequestBody(dataObject)
-          addOptionalFields(bodyObj, dataObject)
-          requestBodyArray.push(bodyObj)
-        } catch {
-          process.exit(1)
-        }
+      } else if (typeof data === 'object' && data !== null && isValidContainerResource(data)) {
+        processContainerResource(data)
+      } else {
+        console.error('\x1B[91m» Invalid data format in Container Scan Results JSON file.\x1B[0m')
+        process.exit(1)
       }
-    } else {
-      console.error('\x1B[91m» Container Scan Results data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('\x1B[91m» Error reading Container Scan Results data file, possible malformed JSON. Please use the -h flag for help.\x1B[0m')
+        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+      } else {
+        console.error('\x1B[91m» Unknown error occurred while reading the file.\x1B[0m')
+      }
       process.exit(1)
+    }
+
+    /**
+    * Validates if the provided object matches the `ContainerResource` type.
+    */
+    function isValidContainerResource(obj: unknown): obj is ContainerResource {
+      return typeof obj === 'object' &&
+        obj !== null &&
+        'containerId' in obj &&
+        'containerName' in obj &&
+        'time' in obj &&
+        'benchmarks' in obj &&
+        typeof (obj as ContainerResource).containerId === 'string' &&
+        typeof (obj as ContainerResource).containerName === 'string' &&
+        typeof (obj as ContainerResource).time === 'number' &&
+        Array.isArray((obj as ContainerResource).benchmarks)
+    }
+
+    /**
+    * Processes a single container resource object and adds it to the request body array.
+    */
+    function processContainerResource(dataObject: ContainerResource): void {
+      try {
+        const bodyObj: ContainerResource = addRequiredFieldsToRequestBody(dataObject)
+        addOptionalFields(bodyObj, dataObject)
+        requestBodyArray.push(bodyObj)
+      } catch (error: unknown) {
+        console.error('\x1B[91m» Error processing container resource.\x1B[0m')
+        process.exit(1)
+      }
     }
 
     // Call the API endpoint
     addContainer.addContainerSansBySystemId(flags.systemId, requestBodyArray).then((response: ContainersResponsePost) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => displayError(error, 'Container Scans'))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

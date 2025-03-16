@@ -2,8 +2,7 @@ import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
-import {getFlagsForEndpoint, FlagOptions} from '../../../utils/emasser/utilities'
+import {getFlagsForEndpoint, FlagOptions, displayError} from '../../../utils/emasser/utilities'
 import {SystemsApi} from '@mitre/emass_client'
 import {SystemsResponse} from '@mitre/emass_client/dist/api'
 
@@ -31,11 +30,11 @@ export default class EmasserGetSystems extends Command {
       flags.policy, flags.includeDitprMetrics, flags.includeDecommissioned, flags.reportsForScorecard,
     ).then((response: SystemsResponse) => {
       console.log(colorize(outputFormat(response)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => displayError(error, 'Systems'))
   }
 
-  async catch(error: any) { // skipcq: JS-0116
-    if (error.message) {
+  async catch(error: unknown) {
+    if (error instanceof Error) {
       this.warn(error.message)
     } else {
       const suggestions = 'get systems [-h or --help]'

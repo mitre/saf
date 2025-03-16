@@ -4,6 +4,7 @@ import {readFile} from 'fs/promises'
 import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 import {
+  displayError,
   FlagOptions,
   getFlagsForEndpoint,
   getJsonExamples,
@@ -12,7 +13,6 @@ import {
 
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
 
 import {HardwareBaselineApi} from '@mitre/emass_client'
 import {HwBaselineResponsePostPut as HwBaselineResponse} from '@mitre/emass_client/dist/api'
@@ -66,24 +66,21 @@ interface Hardware {
 }
 
 /**
- * Combines JSON examples from multiple sources into a single object.
+ * Retrieves all JSON examples by merging the results of multiple example sets.
  *
- * This function aggregates JSON examples by merging the results of
- * `getJsonExamples` for 'hardware-post-required', 'hardware-post-put-conditional',
- * and 'hardware-post-put-optional' into one object.
+ * This function combines the JSON examples from three different categories:
+ * - Required hardware post examples
+ * - Conditional hardware post/put examples
+ * - Optional hardware post/put examples
  *
- * @returns {string} A string representation of the combined JSON examples.
+ * @returns {Record<string, unknown>} An object containing all merged JSON examples.
  */
-function getAllJsonExamples(): string {
-  let exampleBodyObj: any = {}
-
-  exampleBodyObj = {
+function getAllJsonExamples(): Record<string, unknown> {
+  return {
     ...getJsonExamples('hardware-post-required'),
     ...getJsonExamples('hardware-post-put-conditional'),
     ...getJsonExamples('hardware-post-put-optional'),
   }
-
-  return exampleBodyObj
 }
 
 /**
@@ -265,40 +262,77 @@ export default class EmasserHardwareBaseline extends Command {
 
     const requestBodyArray: Hardware[] = []
 
-    // Check if a Hardware json file was provided
-    if (fs.existsSync(flags.dataFile)) {
-      let data: any
-      try {
-        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
-      } catch (error: any) {
-        console.error('\x1B[91m» Error reading Hardware data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
-        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
-        process.exit(1)
-      }
+    // // Check if a Hardware json file was provided
+    // if (fs.existsSync(flags.dataFile)) {
+    //   let data: any
+    //   try {
+    //     data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
+    //   } catch (error: any) {
+    //     console.error('\x1B[91m» Error reading Hardware data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
+    //     console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+    //     process.exit(1)
+    //   }
 
-      // Process the Hardware data file
-      if (Array.isArray(data)) {
-        data.forEach((dataObject: Hardware) => {
-          // Generate the post request object based on business logic
-          requestBodyArray.push(generateBodyObj(dataObject))
-        })
-      } else if (typeof data === 'object') {
-        const dataObject: Hardware = data
-        // Generate the post request object based on business logic
-        requestBodyArray.push(generateBodyObj(dataObject))
-      }
-    } else {
-      console.error('\x1B[91m» Hardware data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
+    //   // Process the Hardware data file
+    //   if (Array.isArray(data)) {
+    //     data.forEach((dataObject: Hardware) => {
+    //       // Generate the post request object based on business logic
+    //       requestBodyArray.push(generateBodyObj(dataObject))
+    //     })
+    //   } else if (typeof data === 'object') {
+    //     const dataObject: Hardware = data
+    //     // Generate the post request object based on business logic
+    //     requestBodyArray.push(generateBodyObj(dataObject))
+    //   }
+    // } else {
+    //   console.error('\x1B[91m» Hardware data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
+    //   process.exit(1)
+    // }
+
+    // Check if a Hardware JSON file was provided
+    if (!fs.existsSync(flags.dataFile)) {
+      console.error(`\x1B[91m» Hardware data file (.json) not found or invalid: ${flags.dataFile}\x1B[0m`)
       process.exit(1)
+    }
+
+    try {
+      const fileContent = await readFile(flags.dataFile, 'utf8')
+      const data: unknown = JSON.parse(fileContent)
+
+      if (Array.isArray(data)) {
+        data.forEach((dataObject) => {
+          if (isHardware(dataObject)) {
+            requestBodyArray.push(generateBodyObj(dataObject))
+          }
+        })
+      } else if (isHardware(data)) {
+        requestBodyArray.push(generateBodyObj(data))
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('\x1B[91m» Error reading Hardware data file, possible malformed JSON. Please use the -h flag for help.\x1B[0m')
+        console.error(`\x1B[93m→ Error message was: ${error.message}\x1B[0m`)
+      } else {
+        console.error(`\x1B[91m» Unknown error occurred while reading the file: ${flags.dataFile}.\x1B[0m`)
+      }
+      process.exit(1)
+    }
+
+    // Type guard
+    function isHardware(obj: unknown): obj is Hardware {
+      if (typeof obj !== 'object' || obj === null) {
+        return false
+      }
+      return true
     }
 
     // Call the endpoint
     hwBaseline.addHwBaselineAssets(flags.systemId, requestBodyArray).then((response: HwBaselineResponse) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error: any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => displayError(error, 'Hardware Baseline'))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

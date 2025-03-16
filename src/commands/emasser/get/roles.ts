@@ -4,8 +4,7 @@ import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {SystemRolesApi} from '@mitre/emass_client'
 import {SystemRolesResponse, SystemRolesCategoryResponse} from '@mitre/emass_client/dist/api'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
-import {FlagOptions,
+import {displayError, FlagOptions,
   getDescriptionForEndpoint,
   getExamplesForEndpoint,
   getFlagsForEndpoint} from '../../../utils/emasser/utilities'
@@ -43,19 +42,19 @@ export default class EmasserGetRoles extends Command {
       // Order is important here
       getSystemRoles.getSystemRoles().then((response: SystemRolesResponse) => {
         console.log(colorize(outputFormat(response)))
-      }).catch((error:any) => console.error(colorize(outputError(error))))
+      }).catch((error: unknown) => displayError(error, 'Roles'))
     } else if (args.name === 'byCategory') {
       // Order is important here
       getSystemRoles.getSystemRolesByCategoryId(flags.roleCategory, flags.role, flags.policy, flags.includeDecommissioned).then((response: SystemRolesCategoryResponse) => {
         console.log(colorize(outputFormat(response)))
-      }).catch((error:any) => console.error(colorize(outputError(error))))
+      }).catch((error: unknown) => displayError(error, 'Roles'))
     } else {
       throw this.error
     }
   }
 
-  async catch(error: any) { // skipcq: JS-0116
-    if (error.message) {
+  async catch(error: unknown) {
+    if (error instanceof Error) {
       this.warn(error.message)
     } else {
       const suggestions = 'get roles [-h or --help]\n\tget roles all\n\tget roles byCategory'
