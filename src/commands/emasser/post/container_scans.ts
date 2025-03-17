@@ -378,7 +378,7 @@ export default class EmasserContainerScans extends Command {
         const bodyObj: ContainerResource = addRequiredFieldsToRequestBody(dataObject)
         addOptionalFields(bodyObj, dataObject)
         requestBodyArray.push(bodyObj)
-      } catch (error: unknown) {
+      } catch {
         console.error('\x1B[91m» Error processing container resource.\x1B[0m')
         process.exit(1)
       }

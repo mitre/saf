@@ -1,8 +1,3 @@
-const eslint = require("@eslint/js")
-const tsPlugin = require("@typescript-eslint/eslint-plugin")
-const tsParser = require("@typescript-eslint/parser")
-// const chaiPlugin = require("eslint-plugin-chai-friendly")
-
 //-----------------------------------------------------------------------------
 // NOTE: The following plugins have been removed from the package.json file
 // eslint-plugin-oclif linter repo has been archived
@@ -61,10 +56,19 @@ const tsParser = require("@typescript-eslint/parser")
 //   "quotes": ["error", "never"], // Disallows quotes (uses backticks when possible)
 //   "array-bracket-newline": ["error", { "minItems": 3 }] Forces newline for arrays with 3+ items
 
+const eslint = require('@eslint/js')
+const tsPlugin = require('@typescript-eslint/eslint-plugin')
+const tsParser = require('@typescript-eslint/parser')
+// const chaiPlugin = require("eslint-plugin-chai-friendly")
 
-//-----------------------------------------------------------------------------
-// Export the config
 module.exports = [
+  // Core ESLint settings
+  {
+    languageOptions: {
+      ecmaVersion: "latest",
+      sourceType: "module",
+    },
+  },
   eslint.configs.recommended, // Recommended JS rules
   
   {
@@ -74,6 +78,7 @@ module.exports = [
     },
     plugins: {
       "@typescript-eslint": tsPlugin,
+      // unicorn: unicorn.default, // Use `.default` because it's an ESM module
       // "chai-friendly": chaiPLugin
     },
     ignores: [
@@ -81,7 +86,7 @@ module.exports = [
       '/lib',           // Ignore build output
     ],
     rules: {
-      "@typescript-eslint/no-explicit-any": "warn", // Disallow 'any'      
+      "@typescript-eslint/no-explicit-any": "warn", // Disallow 'any'
       "@typescript-eslint/no-unused-vars": "off",
       "@typescript-eslint/typedef": "error",
       // "array-bracket-newline": ["warn", "never"],
@@ -101,20 +106,49 @@ module.exports = [
       "no-undef": "off",
       "no-unused-vars": "off",
       "no-unused-expressions": "error",
-      "no-await-in-loop": "off",      
+      "no-await-in-loop": "off",
       "object-curly-spacing": ["warn", "never"],
       "quotes": ["error", "single", { "avoidEscape": true }], // Allows double quotes (") when escaping single quotes
       "semi": ["warn", "never"],
-      "unicorn/filename-case": "off",
-      "unicorn/prefer-node-protocol": "off",
-      "unicorn/numeric-separators-style": "off",
-      "unicorn/no-hex-escape": "off",
-      "unicorn/better-regex": "off",
-      "unicorn/no-zero-fractions": "off",
-      "unicorn/no-array-for-each": "off",
-      "unicorn/explicit-length-check": "off",
-      "unicorn/no-process-exit": "off",
-      "unicorn/prefer-json-parse-buffer": "off",
     },
   },
-];
+  // Possible refactor to use unicorn (eslint-plugin-unicorn is an ESM-only module)
+  // without having to import() dynamically inside an async function. This causes
+  // node to display this warning:
+  // (node:11996) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+  // This is cause by: const unicorn = await import("eslint-plugin-unicorn")
+
+  // Load unicorn plugin dynamically (comment the code out to preclude unicorn linting)
+  (async () => {
+    const unicorn = await import("eslint-plugin-unicorn")
+    return {
+      plugins: {
+        unicorn: unicorn.default, // Use `.default` because it's an ESM module
+      },
+      rules: {
+        // Ensure that recommended rules exist before accessing them
+        ...(unicorn.default.configs?.recommended?.rules || {}),
+        "unicorn/better-regex": "off",
+        "unicorn/consistent-function-scoping": "off",         
+        "unicorn/explicit-length-check": "off",        
+        "unicorn/filename-case": "off",
+        "unicorn/import-style": "off",
+        "unicorn/numeric-separators-style": "off",        
+        "unicorn/prefer-node-protocol": "off",
+        "unicorn/prefer-module": "off",
+        "unicorn/prefer-code-point": "off",
+        "unicorn/prefer-json-parse-buffer": "off",
+        "unicorn/prefer-top-level-await": "off",
+        "unicorn/prefer-number-properties": "off",  
+        "unicorn/prevent-abbreviations": "off",
+        "unicorn/no-null": "off",        
+        "unicorn/no-hex-escape": "off",
+        "unicorn/no-zero-fractions": "off",
+        "unicorn/no-array-for-each": "off",       
+        "unicorn/no-process-exit": "off",
+        "unicorn/no-nested-ternary": "off",     
+        "unicorn/no-named-default": "off",      
+      },
+    };
+  })(),
+]

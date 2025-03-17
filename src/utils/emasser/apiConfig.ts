@@ -58,14 +58,12 @@ export class ApiConfig {
     try {
       this.envConfig = dotenv.parse(fs.readFileSync('.env'))
     } catch (error: unknown) {
-      if (error instanceof Error && 'code' in error && typeof (error as { code?: unknown }).code === 'string') {
-        if ((error as { code: string }).code === 'ENOENT') {
-          this.envConfig = {}
-          // File probably does not exist
-          printRedMsg('An eMASS configuration file (.env) was not found.')
-          printHelpMessage(true)
-          process.exit(0)
-        }
+      if (error instanceof Error && 'code' in error && typeof (error as { code?: unknown }).code === 'string' && (error as { code: string }).code === 'ENOENT') {
+        this.envConfig = {}
+        // File probably does not exist
+        printRedMsg('An eMASS configuration file (.env) was not found.')
+        printHelpMessage(true)
+        process.exit(0)
       }
       throw error // Rethrow if it's not an expected error
     }
@@ -166,11 +164,7 @@ export class ApiConfig {
         return value !== 0 && value !== ''
       }
 
-      if (typeof value === typeof defaultValue && isNotZeroOrEmpty(value)) {
-        return value as T
-      } else {
-        return defaultValue
-      }
+      return typeof value === typeof defaultValue && isNotZeroOrEmpty(value) ? value as T : defaultValue
     }
     return defaultValue
   }
