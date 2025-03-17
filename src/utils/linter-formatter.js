@@ -30,7 +30,7 @@ const stylish = require("eslint-formatter-stylish"); // Use the official package
     }
   })
 
-  console.log(`\x1B[94m✔  ESLint total scanned files: ${totalFiles}\x1B[0m`)
+  console.log(`\x1B[94m✔  ESLint total file(s) scanned: ${totalFiles}\x1B[0m`)
   
   //if (hasIssues) {
   if (totalFixes > 0) {

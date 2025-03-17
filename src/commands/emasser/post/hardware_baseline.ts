@@ -235,7 +235,6 @@ function generateBodyObj(dataObject: Hardware): Hardware {
  * @param obj - The object to check.
  * @returns `true` if the object is of type `Hardware`, otherwise `false`.
  */
-// skipcq: JS-W1041 - Skip complex boolean return
 function isHardware(obj: unknown): obj is Hardware {
   if (typeof obj !== 'object' || obj === null) {
     return false
@@ -243,6 +242,7 @@ function isHardware(obj: unknown): obj is Hardware {
 
   const hardwareObj = obj as Partial<Hardware>
   // Check that required fields, if present, have the correct type
+  // skipcq: JS-W1041 - Skip complex boolean return
   if (hardwareObj.assetName !== undefined && typeof hardwareObj.assetName !== 'string') {
     return false
   }
