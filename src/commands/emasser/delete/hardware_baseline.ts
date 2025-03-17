@@ -40,7 +40,8 @@ export default class EmasserDeleteHardwareBaseline extends Command {
     }).catch((error: unknown) => displayError(error, 'Hardware Baseline'))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

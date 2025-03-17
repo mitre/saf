@@ -26,6 +26,7 @@ export default class EmasserGetTestConnection extends Command {
     }).catch((error: unknown) => displayError(error, 'Test Connection'))
   }
 
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async
   async catch(error: unknown) {
     if (error instanceof Error) {
       this.warn(error.message)

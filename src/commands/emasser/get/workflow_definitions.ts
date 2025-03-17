@@ -18,6 +18,7 @@ export default class EmasserGetWorkflowDefinitions extends Command {
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
   }
 
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async
   async run(): Promise<void> {
     const {flags} = await this.parse(EmasserGetWorkflowDefinitions)
     const apiCxn = new ApiConnection()

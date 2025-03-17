@@ -4,10 +4,9 @@ import {readFile} from 'fs/promises'
 import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 
-import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
+import {displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
 
 import {POAMApi} from '@mitre/emass_client'
 import {MilestonesGet, PoamResponsePostPutDelete} from '@mitre/emass_client/dist/api'
@@ -557,16 +556,11 @@ export default class EmasserPostPoams extends Command {
     // Call the endpoint
     addPoam.addPoamBySystemId(flags.systemId, requestBodyArray).then((response: PoamResponsePostPutDelete) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error: unknown) => {
-      if (error instanceof Error) {
-        console.error(colorize(outputError(error)).red)
-      } else {
-        console.error(colorize(`Error calling addPoamBySystemId: ${String(error)}`).red)
-      }
-    })
+    }).catch((error: unknown) => displayError(error, 'POA&Ms'))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

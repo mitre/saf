@@ -249,6 +249,18 @@ function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): v
   bodyObject.complianceResults = complianceResultsArray
 }
 
+/**
+ * Checks if the given object is a valid CloudResource.
+ *
+ * @param obj - The object to check.
+ * @returns True if the object is a CloudResource, false otherwise.
+ */
+function isValidCloudResource(obj: unknown): obj is CloudResource {
+  if (typeof obj !== 'object' || obj === null) return false
+  const requiredFields = ['provider', 'resourceId', 'resourceName', 'resourceType', 'complianceResults']
+  return requiredFields.every(field => field in obj)
+}
+
 const CMD_HELP = 'saf emasser post cloud_resources -h or --help'
 export default class EmasserPostCloudResources extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command usages\x1B[0m'
@@ -279,21 +291,14 @@ export default class EmasserPostCloudResources extends Command {
     const requestBodyArray: CloudResource[] = []
 
     // Check if a Cloud Resource json file was provided
-    if (fs.existsSync(flags.dataFile)) {
-      let data: unknown
+    if (!fs.existsSync(flags.dataFile)) {
+      console.error('\x1B[91m» Cloud Resource data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
+      process.exit(1)
+    }
 
-      try {
-        const fileContent = await readFile(flags.dataFile, 'utf8')
-        data = JSON.parse(fileContent)
-      } catch (error: unknown) {
-        if (error instanceof Error) {
-          console.error('\x1B[91m» Error reading Cloud Resource data file, possible malformed JSON. Please use the -h flag for help.\x1B[0m')
-          console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
-        } else {
-          console.error('\x1B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\x1B[0m')
-        }
-        process.exit(1)
-      }
+    try {
+      const fileContent = await readFile(flags.dataFile, 'utf8')
+      const data: unknown = JSON.parse(fileContent)
 
       // Create request body based on key/pair values provide in the input file
       if (Array.isArray(data)) {
@@ -323,8 +328,13 @@ export default class EmasserPostCloudResources extends Command {
         console.error('\x1B[91m» Invalid Cloud Resource data format.\x1B[0m')
         process.exit(1)
       }
-    } else {
-      console.error('\x1B[91m» Cloud Resource data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('\x1B[91m» Error reading Cloud Resource data file, possible malformed JSON. Please use the -h flag for help.\x1B[0m')
+        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+      } else {
+        console.error('\x1B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\x1B[0m')
+      }
       process.exit(1)
     }
 
@@ -332,16 +342,10 @@ export default class EmasserPostCloudResources extends Command {
     addCloudResource.addCloudResourcesBySystemId(flags.systemId, requestBodyArray).then((response: CloudResourcesResponsePost) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error: unknown) => displayError(error, 'Cloud Resources'))
-
-    // Helper function to check if an object matches CloudResource type
-    function isValidCloudResource(obj: unknown): obj is CloudResource {
-      if (typeof obj !== 'object' || obj === null) return false
-      const requiredFields = ['provider', 'resourceId', 'resourceName', 'resourceType', 'complianceResults']
-      return requiredFields.every(field => field in obj)
-    }
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

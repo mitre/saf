@@ -229,6 +229,27 @@ function generateBodyObj(dataObject: Hardware): Hardware {
   return bodyObj
 }
 
+/**
+ * Type guard function to check if an object is of type `Hardware`.
+ *
+ * @param obj - The object to check.
+ * @returns `true` if the object is of type `Hardware`, otherwise `false`.
+ */
+// skipcq: JS-W1041 - Skip complex boolean return
+function isHardware(obj: unknown): obj is Hardware {
+  if (typeof obj !== 'object' || obj === null) {
+    return false
+  }
+
+  const hardwareObj = obj as Partial<Hardware>
+  // Check that required fields, if present, have the correct type
+  if (hardwareObj.assetName !== undefined && typeof hardwareObj.assetName !== 'string') {
+    return false
+  }
+
+  return true
+}
+
 const CMD_HELP = 'saf emasser post hardware_baseline -h or --help'
 export default class EmasserHardwareBaseline extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command usages\x1B[0m'
@@ -262,33 +283,6 @@ export default class EmasserHardwareBaseline extends Command {
 
     const requestBodyArray: Hardware[] = []
 
-    // // Check if a Hardware json file was provided
-    // if (fs.existsSync(flags.dataFile)) {
-    //   let data: any
-    //   try {
-    //     data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
-    //   } catch (error: any) {
-    //     console.error('\x1B[91m» Error reading Hardware data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
-    //     console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
-    //     process.exit(1)
-    //   }
-
-    //   // Process the Hardware data file
-    //   if (Array.isArray(data)) {
-    //     data.forEach((dataObject: Hardware) => {
-    //       // Generate the post request object based on business logic
-    //       requestBodyArray.push(generateBodyObj(dataObject))
-    //     })
-    //   } else if (typeof data === 'object') {
-    //     const dataObject: Hardware = data
-    //     // Generate the post request object based on business logic
-    //     requestBodyArray.push(generateBodyObj(dataObject))
-    //   }
-    // } else {
-    //   console.error('\x1B[91m» Hardware data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
-    //   process.exit(1)
-    // }
-
     // Check if a Hardware JSON file was provided
     if (!fs.existsSync(flags.dataFile)) {
       console.error(`\x1B[91m» Hardware data file (.json) not found or invalid: ${flags.dataFile}\x1B[0m`)
@@ -318,21 +312,14 @@ export default class EmasserHardwareBaseline extends Command {
       process.exit(1)
     }
 
-    // Type guard
-    function isHardware(obj: unknown): obj is Hardware {
-      if (typeof obj !== 'object' || obj === null) {
-        return false
-      }
-      return true
-    }
-
     // Call the endpoint
     hwBaseline.addHwBaselineAssets(flags.systemId, requestBodyArray).then((response: HwBaselineResponse) => {
       console.log(colorize(outputFormat(response, false)))
     }).catch((error: unknown) => displayError(error, 'Hardware Baseline'))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

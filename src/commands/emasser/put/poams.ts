@@ -1,14 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs'
 import _ from 'lodash'
 import {readFile} from 'fs/promises'
 import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 
-import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
+import {displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
 
 import {POAMApi} from '@mitre/emass_client'
 // import {MilestonesGet, PoamResponsePut,
@@ -120,28 +118,13 @@ interface Poams {
   nonPersonnelResourcesNonfundingObstacleOtherReason?: string
  }
 
-/**
- * Retrieves a combined JSON example object by merging multiple JSON examples.
- *
- * The function combines JSON examples from the following sources:
- * - 'poams-put-required'
- * - 'poams-post-put-required-va'
- * - 'poams-put-conditional'
- * - 'poams-post-put-optional'
- *
- * @returns {string} A combined JSON example object as a string.
- */
-function getAllJsonExamples(): string {
-  let exampleBodyObj: any = {}
-
-  exampleBodyObj = {
+function getAllJsonExamples(): Record<string, unknown> {
+  return {
     ...getJsonExamples('poams-put-required'),
     ...getJsonExamples('poams-post-put-required-va'),
     ...getJsonExamples('poams-put-conditional'),
     ...getJsonExamples('poams-post-put-optional'),
   }
-
-  return exampleBodyObj
 }
 
 /**
@@ -581,15 +564,15 @@ export default class EmasserPutPoams extends Command {
     const requestBodyArray: Poams[] = []
 
     // Check if a POA&Ms json file was provided
-    if (fs.existsSync(flags.dataFile)) {
-      let data: any
-      try {
-        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
-      } catch (error: any) {
-        console.error('\x1B[91m» Error reading POA&Ms data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
-        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
-        process.exit(1)
-      }
+    if (!fs.existsSync(flags.dataFile)) {
+      console.error('\x1B[91m» POA&M(s) data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
+      process.exit(1)
+    }
+
+    try {
+      // Read and parse the JSON file
+      const fileContent = await readFile(flags.dataFile, 'utf8')
+      const data: unknown = JSON.parse(fileContent)
 
       // POA&Ms json file provided, check if we have multiple POA&Ms to process
       if (Array.isArray(data)) {
@@ -597,23 +580,32 @@ export default class EmasserPutPoams extends Command {
           // Generate the put request object based on business logic
           requestBodyArray.push(generateBodyObj(dataObject))
         })
-      } else if (typeof data === 'object') {
+      } else if (typeof data === 'object' && data !== null) {
         const dataObject: Poams = data
         // Generate the put request object based on business logic
         requestBodyArray.push(generateBodyObj(dataObject))
+      } else {
+        console.error('\x1B[91m» Invalid data format in POA&Ms file\x1B[0m')
+        process.exit(1)
       }
-    } else {
-      console.error('\x1B[91m» POA&M(s) data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('\x1B[91m» Error reading POA&Ms data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
+        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+      } else {
+        console.error('\x1B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\x1B[0m')
+      }
       process.exit(1)
     }
 
     // Call the endpoint
     updatePoam.updatePoamBySystemId(flags.systemId, requestBodyArray).then((response: PoamResponsePostPutDelete) => {
       console.log(colorize(outputFormat(response)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => displayError(error, 'POA&Ms'))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

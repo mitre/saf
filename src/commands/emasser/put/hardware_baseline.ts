@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs'
 import _ from 'lodash'
 import {readFile} from 'fs/promises'
@@ -6,6 +5,7 @@ import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 
 import {
+  displayError,
   FlagOptions,
   getFlagsForEndpoint,
   getJsonExamples,
@@ -13,7 +13,6 @@ import {
 } from '../../../utils/emasser/utilities'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
 
 import {HardwareBaselineApi} from '@mitre/emass_client'
 import {HwBaselineResponsePostPut as HwBaselineResponse} from '@mitre/emass_client/dist/api'
@@ -68,25 +67,12 @@ interface Hardware {
   criticalAsset?: boolean
 }
 
-/**
- * Combines JSON examples from multiple sources into a single object.
- *
- * This function aggregates JSON examples by merging the results of
- * `getJsonExamples` calls for 'hardware-put-required', 'hardware-post-put-conditional',
- * and 'hardware-post-put-optional' into a single object.
- *
- * @returns {string} A stringified JSON object containing the combined examples.
- */
-function getAllJsonExamples(): string {
-  let exampleBodyObj: any = {}
-
-  exampleBodyObj = {
+function getAllJsonExamples(): Record<string, unknown> {
+  return {
     ...getJsonExamples('hardware-put-required'),
     ...getJsonExamples('hardware-post-put-conditional'),
     ...getJsonExamples('hardware-post-put-optional'),
   }
-
-  return exampleBodyObj
 }
 
 /**
@@ -268,39 +254,48 @@ export default class EmasserHardwareBaseline extends Command {
     const requestBodyArray: Hardware[] = []
 
     // Check if a Hardware json file was provided
-    if (fs.existsSync(flags.dataFile)) {
-      let data: any
-      try {
-        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
-      } catch (error: any) {
-        console.error('\x1B[91m» Error reading Hardware data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
-        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
-        process.exit(1)
-      }
+    if (!fs.existsSync(flags.dataFile)) {
+      console.error('\x1B[91m» Hardware data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
+      process.exit(1)
+    }
 
-      // Process the Hardware data file
+    try {
+      // Read and parse the JSON file
+      const fileContent = await readFile(flags.dataFile, 'utf8')
+      const data: unknown = JSON.parse(fileContent)
+
+      // Security Control information json file provided, check if we have multiple content to process
       if (Array.isArray(data)) {
         data.forEach((dataObject: Hardware) => {
           // Generate the put request object
           requestBodyArray.push(generateBodyObj(dataObject))
         })
-      } else if (typeof data === 'object') {
+      } else if (typeof data === 'object' && data !== null) {
         const dataObject: Hardware = data
         // Generate the put request object
         requestBodyArray.push(generateBodyObj(dataObject))
+      } else {
+        console.error('\x1B[91m» Invalid data format in Hardware Baseline file\x1B[0m')
+        process.exit(1)
       }
-    } else {
-      console.error('\x1B[91m» Hardware data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('\x1B[91m» Error reading Hardware Baseline data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
+        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+      } else {
+        console.error('\x1B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\x1B[0m')
+      }
       process.exit(1)
     }
 
     // Call the endpoint
     hwBaseline.updateHwBaselineAssets(flags.systemId, requestBodyArray).then((response: HwBaselineResponse) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error: any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => displayError(error, 'Hardware Baseline'))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

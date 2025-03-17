@@ -1,14 +1,12 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import fs from 'fs'
 import _ from 'lodash'
 import {readFile} from 'fs/promises'
 import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 
-import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
+import {displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
 
 import {ControlsApi} from '@mitre/emass_client'
 import {ControlsResponsePut} from '@mitre/emass_client/dist/api'
@@ -48,16 +46,12 @@ interface Controls {
   operatingSystemLayer?: string
 }
 
-function getAllJsonExamples(): string {
-  let exampleBodyObj: any = {}
-
-  exampleBodyObj = {
+function getAllJsonExamples(): Record<string, unknown> {
+  return {
     ...getJsonExamples('controls-required'),
     ...getJsonExamples('controls-conditional'),
     ...getJsonExamples('controls-optional'),
   }
-
-  return exampleBodyObj
 }
 
 function assertParamExists(object: string, value: string|number|undefined|null): void {
@@ -338,15 +332,15 @@ export default class EmasserPutControls extends Command {
     const requestBodyArray: Controls[] = []
 
     // Check if a Security Control information json file was provided
-    if (fs.existsSync(flags.dataFile)) {
-      let data: any
-      try {
-        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
-      } catch (error: any) {
-        console.error('\x1B[91m» Error reading Security Control(s) data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
-        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
-        process.exit(1)
-      }
+    if (!fs.existsSync(flags.dataFile)) {
+      console.error('\x1B[91m» Security Control(s) data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
+      process.exit(1)
+    }
+
+    try {
+      // Read and parse the JSON file
+      const fileContent = await readFile(flags.dataFile, 'utf8')
+      const data: unknown = JSON.parse(fileContent)
 
       // Security Control information json file provided, check if we have multiple content to process
       if (Array.isArray(data)) {
@@ -354,22 +348,31 @@ export default class EmasserPutControls extends Command {
           // Generate the put request object based on business logic
           requestBodyArray.push(generateBodyObj(dataObject))
         })
-      } else if (typeof data === 'object') {
+      } else if (typeof data === 'object' && data !== null) {
         const dataObject: Controls = data
         // Generate the put request object based on business logic
         requestBodyArray.push(generateBodyObj(dataObject))
+      } else {
+        console.error('\x1B[91m» Invalid data format in Security Controls file\x1B[0m')
+        process.exit(1)
       }
-    } else {
-      console.error('\x1B[91m» The provided Security Control(s) data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('\x1B[91m» Error reading Security Control(s) data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
+        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+      } else {
+        console.error('\x1B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\x1B[0m')
+      }
       process.exit(1)
     }
 
     updateControl.updateControlBySystemId(flags.systemId, requestBodyArray).then((response: ControlsResponsePut) => {
       console.log(colorize(outputFormat(response)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => displayError(error, 'Controls'))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

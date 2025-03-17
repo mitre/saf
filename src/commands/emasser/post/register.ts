@@ -4,7 +4,7 @@ import {RegistrationApi} from '@mitre/emass_client'
 import {Register} from '@mitre/emass_client/dist/api'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
+import {displayError} from '../../../utils/emasser/utilities'
 
 export default class EmasserPostRegister extends Command {
   static readonly usage = '<%= command.id %>'
@@ -17,7 +17,8 @@ export default class EmasserPostRegister extends Command {
     help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the Register (POST) a certificate & obtain the API-key'}),
   }
 
-  async run(): Promise<void> { // skipcq: JS-0116, JS-0105
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
+  async run(): Promise<void> { // skipcq: JS-0105
     const apiCxn = new ApiConnection()
     const headers = {
       'Content-Type': 'application/json',
@@ -28,12 +29,6 @@ export default class EmasserPostRegister extends Command {
 
     registerAPI.registerUser().then((response: Register) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error: unknown) => {
-      if (error instanceof Error) {
-        console.error(colorize(outputError(error)).red)
-      } else {
-        console.error(colorize(`An error occurred registering the certificate: ${String(error)}`).red)
-      }
-    })
+    }).catch((error: unknown) => displayError(error, 'Register Certificate'))
   }
 }

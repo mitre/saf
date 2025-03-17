@@ -5,6 +5,7 @@ import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 
 import {
+  displayError,
   FlagOptions,
   getFlagsForEndpoint,
   getJsonExamples,
@@ -12,7 +13,6 @@ import {
 } from '../../../utils/emasser/utilities'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
 
 import {SoftwareBaselineApi} from '@mitre/emass_client'
 import {SwBaselineResponsePostPut as SwBaselineResponse} from '@mitre/emass_client/dist/api'
@@ -381,39 +381,48 @@ export default class EmasserSoftwareBaseline extends Command {
     const requestBodyArray: Software[] = []
 
     // Check if a Software json file was provided
-    if (fs.existsSync(flags.dataFile)) {
-      let data: any
-      try {
-        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
-      } catch (error: any) {
-        console.error('\x1B[91m» Error reading Software data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
-        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
-        process.exit(1)
-      }
+    if (!fs.existsSync(flags.dataFile)) {
+      console.error('\x1B[91m» Software data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
+      process.exit(1)
+    }
 
-      // Process the Software data file
+    try {
+      // Read and parse the JSON file
+      const fileContent = await readFile(flags.dataFile, 'utf8')
+      const data: unknown = JSON.parse(fileContent)
+
+      // Software Baseline json file provided, check if we have multiples process
       if (Array.isArray(data)) {
         data.forEach((dataObject: Software) => {
           // Generate the put request object
           requestBodyArray.push(generateBodyObj(dataObject))
         })
-      } else if (typeof data === 'object') {
+      } else if (typeof data === 'object' && data !== null) {
         const dataObject: Software = data
         // Generate the put request object
         requestBodyArray.push(generateBodyObj(dataObject))
+      } else {
+        console.error('\x1B[91m» Invalid data format in Software Baseline file\x1B[0m')
+        process.exit(1)
       }
-    } else {
-      console.error('\x1B[91m» Software data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('\x1B[91m» Error reading Software Baseline data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
+        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+      } else {
+        console.error('\x1B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\x1B[0m')
+      }
       process.exit(1)
     }
 
     // Call the endpoint
     swBaseline.updateSwBaselineAssets(flags.systemId, requestBodyArray).then((response: SwBaselineResponse) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error: any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => displayError(error, 'Software Baseline'))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

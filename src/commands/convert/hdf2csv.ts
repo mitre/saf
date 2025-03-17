@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {Flags} from '@oclif/core'
 import {ContextualizedEvaluation, contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'

@@ -279,6 +279,33 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
   bodyObject.benchmarks = benchmarksArray
 }
 
+/**
+ * Checks if the given object is a valid ContainerResource.
+ *
+ * A valid ContainerResource is an object that:
+ * - Is of type 'object' and not null.
+ * - Contains the properties 'containerId', 'containerName', 'time', and 'benchmarks'.
+ * - The 'containerId' property is a string.
+ * - The 'containerName' property is a string.
+ * - The 'time' property is a number.
+ * - The 'benchmarks' property is an array.
+ *
+ * @param obj - The object to check.
+ * @returns True if the object is a valid ContainerResource, false otherwise.
+ */
+function isValidContainerResource(obj: unknown): obj is ContainerResource {
+  return typeof obj === 'object' &&
+    obj !== null &&
+    'containerId' in obj &&
+    'containerName' in obj &&
+    'time' in obj &&
+    'benchmarks' in obj &&
+    typeof (obj as ContainerResource).containerId === 'string' &&
+    typeof (obj as ContainerResource).containerName === 'string' &&
+    typeof (obj as ContainerResource).time === 'number' &&
+    Array.isArray((obj as ContainerResource).benchmarks)
+}
+
 const CMD_HELP = 'saf emasser post container_scans -h or --help'
 export default class EmasserContainerScans extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command usages\x1B[0m'
@@ -308,7 +335,7 @@ export default class EmasserContainerScans extends Command {
 
     const requestBodyArray: ContainerResource[] = []
 
-    // Check if a Cloud Resource json file was provided
+    // Check if a Container Scans json file was provided
     if (!fs.existsSync(flags.dataFile)) {
       console.error(`\x1B[91m» Container Scan Results data file (.json) not found or invalid: ${flags.dataFile}\x1B[0m`)
       process.exit(1)
@@ -344,22 +371,6 @@ export default class EmasserContainerScans extends Command {
     }
 
     /**
-    * Validates if the provided object matches the `ContainerResource` type.
-    */
-    function isValidContainerResource(obj: unknown): obj is ContainerResource {
-      return typeof obj === 'object' &&
-        obj !== null &&
-        'containerId' in obj &&
-        'containerName' in obj &&
-        'time' in obj &&
-        'benchmarks' in obj &&
-        typeof (obj as ContainerResource).containerId === 'string' &&
-        typeof (obj as ContainerResource).containerName === 'string' &&
-        typeof (obj as ContainerResource).time === 'number' &&
-        Array.isArray((obj as ContainerResource).benchmarks)
-    }
-
-    /**
     * Processes a single container resource object and adds it to the request body array.
     */
     function processContainerResource(dataObject: ContainerResource): void {
@@ -379,7 +390,8 @@ export default class EmasserContainerScans extends Command {
     }).catch((error: unknown) => displayError(error, 'Container Scans'))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

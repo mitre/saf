@@ -112,6 +112,7 @@ export default class CreateAttestations extends BaseCommand<typeof CreateAttesta
       }
 
       case 'xlsx': {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         XlsxPopulate.fromDataAsync(dataURLtoU8Array(files.AttestationTemplate.data)).then((workBook: any) => {
           const sheet = workBook.sheet(0) // Attestations worksheet
           let currentRow = 2

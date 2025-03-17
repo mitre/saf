@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {Flags} from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
