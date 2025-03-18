@@ -96,7 +96,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
   static backupDir = ''
 
   // skipcq: JS-R1005
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, complexity
   async run(): Promise<any> { // skipcq: JS-0044
     const {flags} = await this.parse(GenerateUpdateControls)
     const logger = createWinstonLogger('generate:update_controls', flags.logLevel)
@@ -137,7 +137,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        const errorCode = (error as { code?: string }).code // Type-safe access to `code`
+        const errorCode = (error as {code?: string}).code // Type-safe access to `code`
         if (errorCode === 'ENOENT') {
           logger.error(
             `ERROR: No entity found for: ${flags.xccdfXmlFile}. Run the --help command for more information on expected input files.`
@@ -210,7 +210,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         }
       } catch (error: unknown) {
         if (error instanceof Error) {
-          const errorCode = (error as { code?: string }).code // Safe access to `code`
+          const errorCode = (error as {code?: string}).code // Safe access to `code`
           if (errorCode === 'ENOENT') {
             logger.error(`ERROR: No entity found for: ${flags.inspecJsonFile}. Run the --help command for more information on expected input files.`)
             throw error

@@ -1,17 +1,22 @@
 /* eslint-disable no-undef */
 const stylish = require("eslint-formatter-stylish"); // Use the official package
-
+const fs = require('fs')
+const path = require('node:path')
 /**
- * Custom ESLint formatter used to output results to the console.
+ * Formats the results of an ESLint run and logs summary information to the console.
+ *
+ * @param {Array<Object>} results - An array of result objects from ESLint.
+ * @param {number} results[].errorCount - The number of errors found in the file.
+ * @param {number} results[].warningCount - The number of warnings found in the file.
+ * @param {number} results[].fixableErrorCount - The number of fixable errors found in the file.
+ * @param {number} results[].fixableWarningCount - The number of fixable warnings found in the file.
+ * @param {string} [results[].output] - The fixed source code, if any fixes were applied.
+ * @returns {string} The formatted results using the standard stylish formatter.
  * 
- * @param {Array} results ESLint results
- * @returns {String} Formatted results
- * @see https://eslint.org/docs/developer-guide/working-with-custom-formatters
  * @see https://eslint.org/docs/developer-guide/working-with-formatters
- * 
+ * @see https://eslint.org/docs/developer-guide/working-with-custom-formatters
  */
-// module.exports = function customFormatter(results) {
-  module.exports = (results) => {
+const linterFormatter = (results) => {
   const totalFiles = results.length
   let totalFixes = 0
   let errorCount = 0
@@ -19,8 +24,13 @@ const stylish = require("eslint-formatter-stylish"); // Use the official package
   let wasFixed = false
 
   results.forEach((result) => {
+    if (result.usedDeprecatedRules.length > 0) {
+      console.log(`processing: ${path.basename(result.filePath)}`)
+      fs.writeFileSync(path.join('lint_files', path.basename(result.filePath) + '.json'), JSON.stringify(result), 'utf8')
+    }
     totalFixes += result.fixableErrorCount + result.fixableWarningCount
     errorCount += result.errorCount
+
     if (result.output) {
       wasFixed = true // If output exists, ESLint applied fixes
     }
@@ -28,11 +38,10 @@ const stylish = require("eslint-formatter-stylish"); // Use the official package
     if (result.errorCount > 0 || result.warningCount > 0) {
       hasIssues = true
     }
-  })
+   })
 
   console.log(`\x1B[94m✔  ESLint total file(s) scanned: ${totalFiles}\x1B[0m`)
   
-  //if (hasIssues) {
   if (totalFixes > 0) {
     console.log(`\x1B[93m🔧 Fixable issues: ${totalFixes}\x1B[0m`)
   }
@@ -42,10 +51,12 @@ const stylish = require("eslint-formatter-stylish"); // Use the official package
   }
 
   if (wasFixed) {
-    console.log('\x1B[92m✅ Some issues were automatically fixed (via --fix).\x1B[0m')
+    console.log(`\x1B[92m✅ Some issues were automatically fixed (via --fix).\x1B[0m`)
   } else if (!hasIssues) {
     console.log('\x1B[92m✅ No linting issues found.\x1B[0m')
   }
 
   return stylish(results) // Use the standard stylish formatter for output
 }
+
+module.exports = linterFormatter;

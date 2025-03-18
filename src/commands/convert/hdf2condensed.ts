@@ -19,9 +19,7 @@ export default class HDF2Condensed extends BaseCommand<typeof HDF2Condensed> {
   static readonly description =
     'Condensed format used by some community members to pre-process data for elasticsearch and custom dashboards'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i rhel7-results.json -o rhel7-condensed.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i rhel7-results.json -o rhel7-condensed.json',]
 
   static readonly flags = {
     input: Flags.string({

@@ -11,7 +11,8 @@ describe('Test NeuVector', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test on mitre/caldera', async () => {
-    await runCommand<{name: string}>(['convert neuvector2hdf',
+    await runCommand<{name: string}>([
+      'convert neuvector2hdf',
       '-i', path.resolve('./test/sample_data/neuvector/sample_input_report/neuvector-mitre-caldera.json'),
       '-o', `${tmpobj.name}/neuvectortest.json`,
     ])
@@ -26,7 +27,8 @@ describe('Test NeuVector', () => {
   })
 
   it('hdf-converter output test on mitre/heimdall', async () => {
-    await runCommand<{name: string}>(['convert neuvector2hdf',
+    await runCommand<{name: string}>([
+      'convert neuvector2hdf',
       '-i', path.resolve('./test/sample_data/neuvector/sample_input_report/neuvector-mitre-heimdall.json'),
       '-o', `${tmpobj.name}/neuvectortest.json`,
     ])
@@ -41,7 +43,8 @@ describe('Test NeuVector', () => {
   })
 
   it('hdf-converter output test on mitre/heimdall2', async () => {
-    await runCommand<{name: string}>(['convert neuvector2hdf',
+    await runCommand<{name: string}>([
+      'convert neuvector2hdf',
       '-i', path.resolve('./test/sample_data/neuvector/sample_input_report/neuvector-mitre-heimdall2.json'),
       '-o', `${tmpobj.name}/neuvectortest.json`,
     ])
@@ -56,7 +59,8 @@ describe('Test NeuVector', () => {
   })
 
   it('hdf-converter output test on mitre/vulcan', async () => {
-    await runCommand<{name: string}>(['convert neuvector2hdf',
+    await runCommand<{name: string}>([
+      'convert neuvector2hdf',
       '-i', path.resolve('./test/sample_data/neuvector/sample_input_report/neuvector-mitre-vulcan.json'),
       '-o', `${tmpobj.name}/neuvectortest.json`,
     ])
@@ -75,7 +79,8 @@ describe('Test NeuVector withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter with raw output test on mitre/caldera', async () => {
-    await runCommand<{name: string}>(['convert neuvector2hdf',
+    await runCommand<{name: string}>([
+      'convert neuvector2hdf',
       '-i', path.resolve('./test/sample_data/neuvector/sample_input_report/neuvector-mitre-caldera.json'),
       '-o', `${tmpobj.name}/neuvectortest.json`, '-w',
     ])
@@ -90,7 +95,8 @@ describe('Test NeuVector withraw flag', () => {
   })
 
   it('hdf-converter with raw output test on mitre/heimdall', async () => {
-    await runCommand<{name: string}>(['convert neuvector2hdf',
+    await runCommand<{name: string}>([
+      'convert neuvector2hdf',
       '-i', path.resolve('./test/sample_data/neuvector/sample_input_report/neuvector-mitre-heimdall.json'),
       '-o', `${tmpobj.name}/neuvectortest.json`, '-w',
     ])
@@ -105,7 +111,8 @@ describe('Test NeuVector withraw flag', () => {
   })
 
   it('hdf-converter with raw output test on mitre/heimdall2', async () => {
-    await runCommand<{name: string}>(['convert neuvector2hdf',
+    await runCommand<{name: string}>([
+      'convert neuvector2hdf',
       '-i', path.resolve('./test/sample_data/neuvector/sample_input_report/neuvector-mitre-heimdall2.json'),
       '-o', `${tmpobj.name}/neuvectortest.json`, '-w',
     ])
@@ -120,7 +127,8 @@ describe('Test NeuVector withraw flag', () => {
   })
 
   it('hdf-converter with raw output test on mitre/vulcan', async () => {
-    await runCommand<{name: string}>(['convert neuvector2hdf',
+    await runCommand<{name: string}>([
+      'convert neuvector2hdf',
       '-i', path.resolve('./test/sample_data/neuvector/sample_input_report/neuvector-mitre-vulcan.json'),
       '-o', `${tmpobj.name}/neuvectortest.json`, '-w',
     ])

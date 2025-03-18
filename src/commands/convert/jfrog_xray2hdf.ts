@@ -11,9 +11,7 @@ export default class JfrogXray2HDF extends BaseCommand<typeof JfrogXray2HDF> {
   static readonly description =
     'Translate a JFrog Xray results JSON file into a Heimdall Data Format JSON file'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i xray_results.json -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i xray_results.json -o output-hdf-name.json',]
 
   static readonly flags = {
     input: Flags.string({

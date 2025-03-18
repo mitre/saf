@@ -147,7 +147,7 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     }
   }
 
-  requiredFlagsProvided(flags: { input: any; output: any }): boolean {
+  requiredFlagsProvided(flags: {input: any; output: any}): boolean {
     let missingFlags = false
     let strMsg = 'Warning: The following errors occurred:\n'
 

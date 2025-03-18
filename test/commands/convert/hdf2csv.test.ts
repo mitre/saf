@@ -11,7 +11,8 @@ describe('Test hdf2csv triple_overlay_profile_example', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert hdf2csv',
+    await runCommand<{name: string}>([
+      'convert hdf2csv',
       '-i', path.resolve('./test/sample_data/HDF/input/triple_overlay_profile_example.json'),
       '-o', `${tmpobj.name}/triple_overlay_profile_example.csv`,
     ])
@@ -25,7 +26,8 @@ describe('Test hdf2csv red_hat_good', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert hdf2csv',
+    await runCommand<{name: string}>([
+      'convert hdf2csv',
       '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'),
       '-o', `${tmpobj.name}/red_hat_good.csv`,
     ])

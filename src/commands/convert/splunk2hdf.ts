@@ -150,9 +150,7 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
       logger.error('Please provide an output HDF folder')
       throw new Error('Please provide an output HDF folder')
     } else {
-      const availableExecutionsTable: string[][] = [
-        ['File Name', 'GUID', 'Imported At'],
-      ]
+      const availableExecutionsTable: string[][] = [['File Name', 'GUID', 'Imported At'],]
 
       const executionsAvailable = await this.searchExecutions(mapper, '*')
 

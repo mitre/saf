@@ -11,9 +11,7 @@ export default class Veracode2HDF extends BaseCommand<typeof Veracode2HDF> {
   static readonly description =
     'Translate a Veracode XML file into a Heimdall Data Format JSON file'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i veracode_results.xml -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i veracode_results.xml -o output-hdf-name.json',]
 
   static readonly flags = {
     input: Flags.string({

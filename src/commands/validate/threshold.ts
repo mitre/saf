@@ -52,6 +52,7 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
     }),
   }
 
+  // eslint-disable-next-line complexity
   async run() { // skipcq: JS-R1005
     const {flags} = await this.parse(Threshold)
     let thresholds: ThresholdValues = {}

@@ -116,7 +116,7 @@ interface Poams {
   nonPersonnelResourcesUnfundedAmount?: number
   nonPersonnelResourcesNonfundingObstacle?: string
   nonPersonnelResourcesNonfundingObstacleOtherReason?: string
- }
+}
 
 function getAllJsonExamples(): Record<string, unknown> {
   return {

@@ -11,7 +11,8 @@ describe('Test jfrog_xray', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert jfrog_xray2hdf',
+    await runCommand<{name: string}>([
+      'convert jfrog_xray2hdf',
       '-i', path.resolve('./test/sample_data/jfrog_xray/sample_input_report/jfrog_xray_sample.json'),
       '-o', `${tmpobj.name}/jfrogtest.json`,
     ])
@@ -25,7 +26,8 @@ describe('Test jfrog_xray using withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter with raw output test', async () => {
-    await runCommand<{name: string}>(['convert jfrog_xray2hdf',
+    await runCommand<{name: string}>([
+      'convert jfrog_xray2hdf',
       '-i', path.resolve('./test/sample_data/jfrog_xray/sample_input_report/jfrog_xray_sample.json'),
       '-o', `${tmpobj.name}/jfrogtest.json`, '-w',
     ])

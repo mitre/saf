@@ -192,6 +192,7 @@ function addConditionalFields(bodyObject: Software, dataObj: Software): void {
  * @param dataObj - The source object containing optional fields.
  */
 // skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
+// eslint-disable-next-line complexity
 function addOptionalFields(bodyObject: Software, dataObj: Software): void {
   if (Object.prototype.hasOwnProperty.call(dataObj, 'softwareType')) {
     bodyObject.softwareType = dataObj.softwareType

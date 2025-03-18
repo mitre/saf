@@ -279,7 +279,7 @@ export function getDescription(
  * @returns {void} This function doesn't return a value. Its purpose is to validate
  *                 the file type and throw an error if the validation fails.
  */
-export function checkInput(guessOptions: { data: string, filename: string }, desiredType: string, desiredFormat: string): void {
+export function checkInput(guessOptions: {data: string, filename: string}, desiredType: string, desiredFormat: string): void {
   const detectedType = fingerprint({data: guessOptions.data, filename: convertFullPathToFilename(guessOptions.filename)})
   if (!(detectedType === desiredType))
     throw new Error(`Unable to process input file\

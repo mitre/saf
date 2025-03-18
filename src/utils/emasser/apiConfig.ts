@@ -58,7 +58,7 @@ export class ApiConfig {
     try {
       this.envConfig = dotenv.parse(fs.readFileSync('.env'))
     } catch (error: unknown) {
-      if (error instanceof Error && 'code' in error && typeof (error as { code?: unknown }).code === 'string' && (error as { code: string }).code === 'ENOENT') {
+      if (error instanceof Error && 'code' in error && typeof (error as {code?: unknown}).code === 'string' && (error as {code: string}).code === 'ENOENT') {
         this.envConfig = {}
         // File probably does not exist
         printRedMsg('An eMASS configuration file (.env) was not found.')

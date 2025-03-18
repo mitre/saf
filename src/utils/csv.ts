@@ -24,7 +24,7 @@ export const csvExportFields = [
 function descriptionsToString(
   descriptions?:
     | ExecJSON.ControlDescription[]
-    | { [key: string]: unknown }
+    | {[key: string]: unknown}
     | null,
 ): string {
   let result = ''

@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {Flags} from '@oclif/core'
 import {BooleanFlag, OptionFlag} from '@oclif/core/interfaces'
@@ -1784,12 +1785,13 @@ export function printRedMsg(msg: string) {
   console.log('\x1B[91m»', msg, '\x1B[0m')
 }
 
+
 /**
  * Displays an error message to the console.
  *
  * If the error is an instance of `Error`, it will be formatted and colorized
- * before being logged to the console. Otherwise, a generic error message
- * including the endpoint will be logged.
+ * before being logged. Otherwise, a generic error message will be displayed,
+ * indicating the endpoint that caused the error.
  *
  * @param error - The error to display. Can be of any type.
  * @param endpoint - The endpoint that was being called when the error occurred.

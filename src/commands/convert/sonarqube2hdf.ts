@@ -13,9 +13,7 @@ export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
     'Pull SonarQube vulnerabilities for the specified project name and optional branch \n' +
     'or pull/merge request ID name from an API and convert into a Heimdall Data Format JSON file'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -n sonar_project_key -u http://sonar:9000 --auth abcdefg -p 123 -o scan_results.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -n sonar_project_key -u http://sonar:9000 --auth abcdefg -p 123 -o scan_results.json',]
 
   static readonly flags = {
     auth: Flags.string({

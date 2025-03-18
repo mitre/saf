@@ -12,9 +12,7 @@ export default class AWSConfig2HDF extends BaseCommand<typeof AWSConfig2HDF> {
   static readonly description =
     'Pull Configuration findings from AWS Config and convert into a Heimdall Data Format JSON file'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json',]
 
   static readonly flags = {
     accessKeyId: Flags.string({

@@ -12,9 +12,7 @@ export default class Nikto2HDF extends BaseCommand<typeof Nikto2HDF> {
     'Translate a Nikto results JSON file into a Heimdall Data Format JSON file\n' +
     'Note: Current this mapper only supports single target Nikto Scans'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i nikto-results.json -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i nikto-results.json -o output-hdf-name.json',]
 
   static readonly flags = {
     input: Flags.string({

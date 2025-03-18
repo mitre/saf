@@ -11,7 +11,8 @@ describe('Test zap', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test - webgoat', async () => {
-    await runCommand<{name: string}>(['convert zap2hdf',
+    await runCommand<{name: string}>([
+      'convert zap2hdf',
       '-i', path.resolve('./test/sample_data/zap/sample_input_report/webgoat.json'),
       '-n', 'http://mymac.com:8191',
       '-o', `${tmpobj.name}/zaptest-webgoat.json`,
@@ -22,7 +23,8 @@ describe('Test zap', () => {
   })
 
   it('hdf-converter output test - zero.webappsecurity', async () => {
-    await runCommand<{name: string}>(['convert zap2hdf',
+    await runCommand<{name: string}>([
+      'convert zap2hdf',
       '-i', path.resolve('./test/sample_data/zap/sample_input_report/zero.webappsecurity.json'),
       '-n', 'http://zero.webappsecurity.com',
       '-o', `${tmpobj.name}/zaptest-webappsecurity.json`,
@@ -37,7 +39,8 @@ describe('Test zap using withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter with raw output test - webgoat', async () => {
-    await runCommand<{name: string}>(['convert zap2hdf',
+    await runCommand<{name: string}>([
+      'convert zap2hdf',
       '-i', path.resolve('./test/sample_data/zap/sample_input_report/webgoat.json'),
       '-n', 'http://mymac.com:8191',
       '-o', `${tmpobj.name}/zaptest-webgoat.json`, '-w',
@@ -48,7 +51,8 @@ describe('Test zap using withraw flag', () => {
   })
 
   it('hdf-converter with raw output test - zero.webappsecurity', async () => {
-    await runCommand<{name: string}>(['convert zap2hdf',
+    await runCommand<{name: string}>([
+      'convert zap2hdf',
       '-i', path.resolve('./test/sample_data/zap/sample_input_report/zero.webappsecurity.json'),
       '-n', 'http://zero.webappsecurity.com',
       '-o', `${tmpobj.name}/zaptest-webappsecurity.json`, '-w',

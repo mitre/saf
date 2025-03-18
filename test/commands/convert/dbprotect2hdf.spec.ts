@@ -11,7 +11,8 @@ describe('Test dbprotect', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test - check results', async () => {
-    await runCommand<{name: string}>(['convert dbprotect2hdf',
+    await runCommand<{name: string}>([
+      'convert dbprotect2hdf',
       '-i', path.resolve('./test/sample_data/dbprotect/sample_input_report/DbProtect-Check-Results-Details-XML-Sample.xml'),
       '-o', `${tmpobj.name}/dbprotecttest.json`,
     ])
@@ -21,7 +22,8 @@ describe('Test dbprotect', () => {
   })
 
   it('hdf-converter output test - findings results', async () => {
-    await runCommand<{name: string}>(['convert dbprotect2hdf',
+    await runCommand<{name: string}>([
+      'convert dbprotect2hdf',
       '-i', path.resolve('./test/sample_data/dbprotect/sample_input_report/DbProtect-Findings-Detail-XML-Sample.xml'),
       '-o', `${tmpobj.name}/dbprotecttest.json`,
     ])
@@ -35,7 +37,8 @@ describe('Test dbprotect using withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter with raw output test - check results', async () => {
-    await runCommand<{name: string}>(['convert dbprotect2hdf',
+    await runCommand<{name: string}>([
+      'convert dbprotect2hdf',
       '-i', path.resolve('./test/sample_data/dbprotect/sample_input_report/DbProtect-Check-Results-Details-XML-Sample.xml'),
       '-o', `${tmpobj.name}/dbprotecttest.json`, '-w',
     ])
@@ -45,7 +48,8 @@ describe('Test dbprotect using withraw flag', () => {
   })
 
   it('hdf-converter with raw output test - findings results', async () => {
-    await runCommand<{name: string}>(['convert dbprotect2hdf',
+    await runCommand<{name: string}>([
+      'convert dbprotect2hdf',
       '-i', path.resolve('./test/sample_data/dbprotect/sample_input_report/DbProtect-Findings-Detail-XML-Sample.xml'),
       '-o', `${tmpobj.name}/dbprotecttest.json`, '-w',
     ])

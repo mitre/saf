@@ -11,7 +11,8 @@ describe('Test twistlock', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert twistlock2hdf',
+    await runCommand<{name: string}>([
+      'convert twistlock2hdf',
       '-i', path.resolve('./test/sample_data/twistlock/sample_input_report/twistlock-twistcli-sample-1.json'),
       '-o', `${tmpobj.name}/twistlock.json`,
     ])
@@ -21,7 +22,8 @@ describe('Test twistlock', () => {
   })
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert twistlock2hdf',
+    await runCommand<{name: string}>([
+      'convert twistlock2hdf',
       '-i', path.resolve('./test/sample_data/twistlock/sample_input_report/twistlock-twistcli-coderepo-scan-sample.json'),
       '-o', `${tmpobj.name}/twistlock.json`,
     ])
@@ -35,7 +37,8 @@ describe('Test twistlock using withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter with raw output test - standard', async () => {
-    await runCommand<{name: string}>(['convert twistlock2hdf',
+    await runCommand<{name: string}>([
+      'convert twistlock2hdf',
       '-i', path.resolve('./test/sample_data/twistlock/sample_input_report/twistlock-twistcli-sample-1.json'),
       '-o', `${tmpobj.name}/twistlock.json`, '-w',
     ])
@@ -45,7 +48,8 @@ describe('Test twistlock using withraw flag', () => {
   })
 
   it('hdf-converter with raw output test - code repo', async () => {
-    await runCommand<{name: string}>(['convert twistlock2hdf',
+    await runCommand<{name: string}>([
+      'convert twistlock2hdf',
       '-i', path.resolve('./test/sample_data/twistlock/sample_input_report/twistlock-twistcli-coderepo-scan-sample.json'),
       '-o', `${tmpobj.name}/twistlock.json`, '-w',
     ])

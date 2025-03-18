@@ -11,9 +11,7 @@ export default class DBProtect2HDF extends BaseCommand<typeof DBProtect2HDF> {
   static readonly description =
     'Translate a DBProtect report in "Check Results Details" XML format into a Heimdall Data Format JSON file'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i check_results_details_report.xml -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i check_results_details_report.xml -o output-hdf-name.json',]
 
   static readonly flags = {
     input: Flags.string({

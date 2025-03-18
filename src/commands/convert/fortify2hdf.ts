@@ -13,9 +13,7 @@ export default class Fortify2HDF extends BaseCommand<typeof Fortify2HDF> {
     'the FVDL file is an XML that can be extracted from the Fortify FPR project file ' +
     'using standard file compression tools'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i audit.fvdl -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i audit.fvdl -o output-hdf-name.json',]
 
   static readonly flags = {
     input: Flags.string({

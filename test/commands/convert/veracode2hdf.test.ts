@@ -11,7 +11,8 @@ describe('Test veracode', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert veracode2hdf',
+    await runCommand<{name: string}>([
+      'convert veracode2hdf',
       '-i', path.resolve('./test/sample_data/veracode/sample_input_report/veracode.xml'),
       '-o', `${tmpobj.name}/veracodetest.json`,
     ])

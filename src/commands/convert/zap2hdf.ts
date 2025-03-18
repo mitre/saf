@@ -11,9 +11,7 @@ export default class Zap2HDF extends BaseCommand<typeof Zap2HDF> {
   static readonly description =
     'Translate a OWASP ZAP results JSON to a Heimdall Data Format JSON file'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i zap_results.json -n mitre.org -o scan_results.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i zap_results.json -n mitre.org -o scan_results.json',]
 
   static readonly flags = {
     input: Flags.string({

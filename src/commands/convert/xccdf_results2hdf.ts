@@ -11,9 +11,7 @@ export default class XCCDFResults2HDF extends BaseCommand<typeof XCCDFResults2HD
   static readonly description =
     'Translate a SCAP client XCCDF-Results XML report to a Heimdall Data Format JSON file'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i results-xccdf.xml -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i results-xccdf.xml -o output-hdf-name.json',]
 
   static readonly flags = {
     input: Flags.string({

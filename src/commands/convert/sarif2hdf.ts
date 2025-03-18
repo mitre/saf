@@ -17,9 +17,7 @@ export default class Sarif2HDF extends BaseCommand<typeof Sarif2HDF> {
     'SARIF level none -> HDF impact 0.1\n' +
     'SARIF level not provided -> HDF impact 0.1 as default'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i sarif-results.json -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i sarif-results.json -o output-hdf-name.json',]
 
   static readonly flags = {
     input: Flags.string({

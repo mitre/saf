@@ -11,7 +11,8 @@ describe('Test nikto', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert nikto2hdf',
+    await runCommand<{name: string}>([
+      'convert nikto2hdf',
       '-i', path.resolve('./test/sample_data/nikto/sample_input_report/zero.webappsecurity.json'),
       '-o', `${tmpobj.name}/niktotest.json`,
     ])
@@ -25,7 +26,8 @@ describe('Test nikto using withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter with raw output test', async () => {
-    await runCommand<{name: string}>(['convert nikto2hdf',
+    await runCommand<{name: string}>([
+      'convert nikto2hdf',
       '-i', path.resolve('./test/sample_data/nikto/sample_input_report/zero.webappsecurity.json'),
       '-o', `${tmpobj.name}/niktotest.json`, '-w',
     ])

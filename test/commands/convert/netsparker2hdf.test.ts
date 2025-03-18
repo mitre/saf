@@ -11,7 +11,8 @@ describe('Test Netsparker', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert netsparker2hdf',
+    await runCommand<{name: string}>([
+      'convert netsparker2hdf',
       '-i', path.resolve('./test/sample_data/netsparker/sample_input_report/sample-netsparker-invicti.xml'),
       '-o', `${tmpobj.name}/netsparkertest.json`,
     ])
@@ -25,7 +26,8 @@ describe('Test Netsparker using withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter with raw output test', async () => {
-    await runCommand<{name: string}>(['convert netsparker2hdf',
+    await runCommand<{name: string}>([
+      'convert netsparker2hdf',
       '-i', path.resolve('./test/sample_data/netsparker/sample_input_report/sample-netsparker-invicti.xml'),
       '-o', `${tmpobj.name}/netsparkertest.json`, '-w',
     ])

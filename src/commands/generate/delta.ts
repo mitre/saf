@@ -111,6 +111,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   static oldControlsLength = 0
   static newControlsLength = 0
 
+  // eslint-disable-next-line complexity
   async run() { // skipcq: JS-0044, JS-R1005
     const {flags} = await this.parse(GenerateDelta)
 
@@ -299,7 +300,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
         // Iterate through each mapped control
         // key = new control, controls[key] = old control
-        const controls: { [key: string]: any } = mappedControls
+        const controls: {[key: string]: any} = mappedControls
 
         // Create a directory where we are storing the newly created mapped controls
         // Do not over right the original controls in the directory (controlsDir)
@@ -597,7 +598,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       // fieldNormWeight: 1,
       keys: ['title'],
     }
-    const controlMappings: { [key: string]: string } = {}
+    const controlMappings: {[key: string]: string} = {}
 
     printCyan('Mapping Process ===========================================================================')
     // Create fuse object for searching through matchList

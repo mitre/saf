@@ -11,7 +11,8 @@ describe('Test scoutsuite', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert scoutsuite2hdf',
+    await runCommand<{name: string}>([
+      'convert scoutsuite2hdf',
       '-i', path.resolve('./test/sample_data/scoutsuite/sample_input_report/scoutsuite_sample.js'),
       '-o', `${tmpobj.name}/scoutsuitetest.json`,
     ])
@@ -25,7 +26,8 @@ describe('Test scoutsuite using withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter with raw output test', async () => {
-    await runCommand<{name: string}>(['convert scoutsuite2hdf',
+    await runCommand<{name: string}>([
+      'convert scoutsuite2hdf',
       '-i', path.resolve('./test/sample_data/scoutsuite/sample_input_report/scoutsuite_sample.js'),
       '-o', `${tmpobj.name}/scoutsuitetest.json`, '-w',
     ])

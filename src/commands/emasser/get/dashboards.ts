@@ -150,6 +150,7 @@ export default class EmasserGetDashboards extends Command {
   }
 
   // skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
+  // eslint-disable-next-line complexity
   async run(): Promise<void> { // skipcq: JS-0044
     const {args, flags} = await this.parse(EmasserGetDashboards)
     const apiCxn = new ApiConnection()

@@ -12,9 +12,7 @@ export default class Scoutsuite2HDF extends BaseCommand<typeof Scoutsuite2HDF> {
     'Translate a ScoutSuite results from a Javascript object into a Heimdall Data Format JSON file\n' +
     'Note: Currently this mapper only supports AWS.'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i scoutsuite-results.js -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i scoutsuite-results.js -o output-hdf-name.json',]
 
   static readonly flags = {
     input: Flags.string({

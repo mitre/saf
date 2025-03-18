@@ -10,7 +10,8 @@ describe('Test hdf2caat two RHEL HDF and a RHEL triple overlay HDF', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert hdf2caat',
+    await runCommand<{name: string}>([
+      'convert hdf2caat',
       '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'),
       path.resolve('./test/sample_data/HDF/input/red_hat_good.json'),
       path.resolve('./test/sample_data/HDF/input/triple_overlay_profile_example.json'),
