@@ -1,7 +1,6 @@
 /* eslint-disable no-undef */
 const stylish = require("eslint-formatter-stylish"); // Use the official package
-const fs = require('fs')
-const path = require('node:path')
+
 /**
  * Formats the results of an ESLint run and logs summary information to the console.
  *

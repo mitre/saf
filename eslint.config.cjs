@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-useless-fallback-in-spread */
 /* eslint-disable no-undef */
 //-----------------------------------------------------------------------------
 // NOTE: The following plugins have been removed from the package.json file
