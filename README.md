@@ -6,8 +6,11 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
 ## Terminology
 
-- "[Heimdall](https://github.com/mitre/heimdall2)" - Our visualizer for all security result data
-- "[Heimdall Data Format (HDF)](https://saf.mitre.org/#/normalize)" - Our common data format to preserve and transform security data
+- ["Heimdall"](https://github.com/mitre/heimdall2) - Our visualizer for all security result data
+- ["OASIS Heimdall Data Format (OHDF) - aka HDF"](https://saf.mitre.org/#/normalize) - Our common data format to preserve and transform security data
+
+>[!NOTE]
+> All mentioning of HDF in this document references the OHDF
 
 ## Installation
 
@@ -21,7 +24,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Update via Windows Installer](#update-via-windows-installer)
 
 ## Developers 
-For detail information about development, testing , and contributing to the SAF project refer to [MITRE SAF Develpment](https://github.com/mitre/saf/blob/main/docs/contributors-guide.md)
+For detail information about development, testing , and contributing to the SAF project refer to [MITRE SAF Development](https://github.com/mitre/saf/blob/main/docs/contributors-guide.md)
 
 ## Usage
 
@@ -30,10 +33,11 @@ For detail information about development, testing , and contributing to the SAF 
   * [Attest](#attest)
       * [Create Attestations](#create-attestations)
       * [Apply Attestations](#apply-attestations)
-  
+
+### [Get Help with Converts](#converts)
+
 ### Convert HDF to Other Formats
 
-  * [Get Help with Convert](#convert)
   * [Convert From HDF](#convert-from-hdf)
       * [HDF to ASFF](#hdf-to-asff)
       * [HDF to Splunk](#hdf-to-splunk)
@@ -287,13 +291,13 @@ EXAMPLES
   $ saf attest apply -i hdf1.json hdf2.json attestation.xlsx -o outputDir
 ```
 [top](#usage)
-### Convert
+### Converts
 
 Translating your data to and from Heimdall Data Format (HDF) is done using the `saf convert` command.
 
-Want to Recommend or Help Develop a Converter? See [the wiki](https://github.com/mitre/saf/wiki/How-to-recommend-development-of-a-mapper) 📰 on how to get started.
+Want to Recommend or Help Develop a Converter? See [on how to get started](https://github.com/mitre/saf/wiki/How-to-recommend-development-of-a-mapper) 📰
 
-
+[top](#get-help-with-converts)
 ### Convert From HDF
 
 [top](#convert-other-formats-to-hdf)
@@ -318,8 +322,7 @@ convert anchoregrype2hdf         Translate a Anchore Grype output file into an H
   EXAMPLES
     $ saf convert anchoregrype2hdf -i anchoregrype.json -o output-hdf-name.json
 ```
-
-
+[top](#convert-hdf-to-other-formats)
 #### HDF to ASFF
 
 ***Note:*** Uploading findings into AWS Security hub requires configuration of the AWS CLI, see 👉 [the AWS documentation](https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-configure.html) or configuration of environment variables via Docker.

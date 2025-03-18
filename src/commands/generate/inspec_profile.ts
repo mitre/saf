@@ -596,7 +596,7 @@ ${contentObj.profileType === 'CIS' ?
 
 ## NOTICE
 
-© 2018-2025 The MITRE Corporation.
+© 2018-${new Date().getFullYear()} The MITRE Corporation.
 
 Approved for Public Release; Distribution Unlimited. Case Number 18-3678.
 
