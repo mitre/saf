@@ -24,10 +24,6 @@ const linterFormatter = (results) => {
   let wasFixed = false
 
   results.forEach((result) => {
-    if (result.usedDeprecatedRules.length > 0) {
-      console.log(`processing: ${path.basename(result.filePath)}`)
-      fs.writeFileSync(path.join('lint_files', path.basename(result.filePath) + '.json'), JSON.stringify(result), 'utf8')
-    }
     totalFixes += result.fixableErrorCount + result.fixableWarningCount
     errorCount += result.errorCount
 
@@ -51,7 +47,7 @@ const linterFormatter = (results) => {
   }
 
   if (wasFixed) {
-    console.log(`\x1B[92m✅ Some issues were automatically fixed (via --fix).\x1B[0m`)
+    console.log('\x1B[92m✅ Some issues were automatically fixed (via --fix).\x1B[0m')
   } else if (!hasIssues) {
     console.log('\x1B[92m✅ No linting issues found.\x1B[0m')
   }
