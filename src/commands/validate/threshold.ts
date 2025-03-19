@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import fs from 'fs'
 import _ from 'lodash'
 import YAML from 'yaml'
@@ -16,6 +18,7 @@ import {calculateCompliance,
   totalMin} from '../../utils/threshold'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 let flat: any
 
 (async () => {
@@ -51,6 +54,7 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
     }),
   }
 
+  // eslint-disable-next-line complexity
   async run() { // skipcq: JS-R1005
     const {flags} = await this.parse(Threshold)
     let thresholds: ThresholdValues = {}

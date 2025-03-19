@@ -10,7 +10,7 @@ import {
   processXCCDF,
   Profile,
 } from '@mitre/inspec-objects'
-import colors from 'colors'  
+import colors from 'colors'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 import {
   printGreen,
@@ -96,6 +96,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
   static backupDir = ''
 
   // skipcq: JS-R1005
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, complexity
   async run(): Promise<any> { // skipcq: JS-0044
     const {flags} = await this.parse(GenerateUpdateControls)
     const logger = createWinstonLogger('generate:update_controls', flags.logLevel)
@@ -134,14 +135,22 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       } else {
         throw new Error('No benchmark (XCCDF) file was provided.')
       }
-    } catch (error: any) {
-      if (error.code === 'ENOENT') {
-        logger.error(`ERROR: No entity found for: ${flags.xccdfXmlFile}. Run the --help command to more information on expected input files.`)
-        throw error
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        const errorCode = (error as {code?: string}).code // Type-safe access to `code`
+        if (errorCode === 'ENOENT') {
+          logger.error(
+            `ERROR: No entity found for: ${flags.xccdfXmlFile}. Run the --help command for more information on expected input files.`
+          )
+          throw error
+        }
+        logger.error(
+          `ERROR: Unable to process the XCCDF XML file ${flags.xccdfXmlFile} because: ${error.message}`
+        )
       } else {
-        logger.error(`ERROR: Unable to process the XCCDF XML file ${flags.xccdfXmlFile} because: ${error}`)
-        throw error
+        logger.error('ERROR: An unexpected error occurred.')
       }
+      throw error
     }
 
     //-------------------------------------------------------------------------
@@ -155,7 +164,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
           logger.debug(`  Found ${files.length} Controls in the controls directory`)
           if (flags.backupControls) {
             // Create the backup directory inside the parent controls directory
-             
+
             if (fs.existsSync(GenerateUpdateControls.backupDir)) {
               fs.rmSync(GenerateUpdateControls.backupDir, {recursive: true, force: true})
             }
@@ -167,9 +176,14 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
           logger.error(`No controls were found in the provide directory: ${flags.controlsDir}`)
           throw new Error(`No controls were found in the provide directory: ${flags.controlsDir}`)
         }
-      } catch (error: any) {
-        logger.error(`ERROR: Checking if controls directory is empty, received: ${error.message}`)
-        throw new Error(`Error checking controls directory, error: ${error.message}`)
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          logger.error(`ERROR: Checking if controls directory is empty, received: ${error.message}`)
+          throw new Error(`Error checking controls directory, error: ${error.message}`)
+        } else {
+          logger.error('ERROR: An unknown error occurred while checking the controls directory.')
+          throw new Error('Error checking controls directory. Unknown error encountered.')
+        }
       }
     } else {
       throw new Error('Controls folder not specified or does not exist')
@@ -194,14 +208,19 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
           throw new Error(`Input execution/profile JSON file not found: ${path.basename(flags.inspecJsonFile)}.\n` +
             'Run the --help command to more information on expected input files.')
         }
-      } catch (error: any) {
-        if (error.code === 'ENOENT') {
-          logger.error(`ERROR: No entity found for: ${flags.inspecJsonFile}. Run the --help command to more information on expected input files.`)
-          throw error
-        } else {
-          logger.error(`ERROR: Unable to process Input execution/profile JSON ${flags.inspecJsonFile} because: ${error}`)
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          const errorCode = (error as {code?: string}).code // Safe access to `code`
+          if (errorCode === 'ENOENT') {
+            logger.error(`ERROR: No entity found for: ${flags.inspecJsonFile}. Run the --help command for more information on expected input files.`)
+            throw error
+          }
+          logger.error(`ERROR: Unable to process Input execution/profile JSON ${flags.inspecJsonFile} because: ${error.message}`)
           throw error
         }
+        // Fallback for non-Error objects
+        logger.error(`ERROR: An unknown error occurred while processing Input execution/profile JSON ${flags.inspecJsonFile}.`)
+        throw new Error('Unknown error occurred while processing the input JSON.')
       }
     } else {
       // Generate the profile json
@@ -213,9 +232,14 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
 
         logger.info('Generating InSpec Profiles from InSpec JSON summary')
         inspecProfile = processInSpecProfile(inspecJsonFile)
-      } catch (error: any) {
-        logger.error(`ERROR: Unable to generate the profile json because: ${error}`)
-        throw error
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          logger.error(`ERROR: Unable to generate the profile JSON because: ${error.message}`)
+          throw error
+        }
+        // Handle cases where error is not an instance of Error
+        logger.error('ERROR: An unknown error occurred while generating the profile JSON.')
+        throw new Error('Unknown error occurred while generating the profile JSON.')
       }
     }
 
@@ -346,7 +370,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     // Iterate trough all files processing ony control files, have a .rb extension
     const skippedControls: string[] = []
     const skipMetadataUpdate: string[] = []
-    const isCorrectControlMap  = new Map()
+    const isCorrectControlMap = new Map()
     const controlsProcessedMap = new Map()
 
     for (const file of files) {
@@ -355,8 +379,8 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         logger.info(`Processing Control (file): ${file}`)
         const currentFileFullPath = path.join(controlsDir, file)
         const currentControlNumber = path.parse(file).name
-        const newXCCDFControlNumber = xccdfLegacyToControlMap.get(currentControlNumber)   // old control Id to new control Id
-        const xccdfNewControlNumber = xccdfControlsMap.get(currentControlNumber)          // new control Id to new control Id
+        const newXCCDFControlNumber = xccdfLegacyToControlMap.get(currentControlNumber) // old control Id to new control Id
+        const xccdfNewControlNumber = xccdfControlsMap.get(currentControlNumber) // new control Id to new control Id
         const xccdfLegacyControlNumber = xccdfLegacyControlsMap.get(currentControlNumber) // old control Id to old control Id
         let updatedControl
 
@@ -408,7 +432,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     }
 
     let newControls = 0
-    const newControlsFound: any[] = []
+    const newControlsFound: unknown[] = []
     for (const newControl of xccdfControlsMap.values()) {
       if (!controlsProcessedMap.has(newControl) && !isCorrectControlMap.has(newControl)) {
         newControls++
@@ -464,7 +488,7 @@ function getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: 
   return controlData
 }
 
- 
+
 function saveControl(filePath: string, newXCCDFControlNumber: string,
   currentControlNumber: string, updatedControl: string,
   backupControls: boolean, renamedControl: boolean) {

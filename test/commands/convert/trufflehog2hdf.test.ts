@@ -1,5 +1,3 @@
-/* eslint-disable array-bracket-newline */
-/* eslint-disable array-element-newline */
 import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
@@ -11,7 +9,8 @@ describe('Test Trufflehog', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test - standard', async () => {
-    await runCommand<{name: string}>(['convert trufflehog2hdf',
+    await runCommand<{name: string}>([
+      'convert trufflehog2hdf',
       '-i', path.resolve('./test/sample_data/trufflehog/sample_input_report/trufflehog.json'),
       '-o', `${tmpobj.name}/trufflehog.json`,
     ])
@@ -21,7 +20,8 @@ describe('Test Trufflehog', () => {
   })
 
   it('hdf-converter output test - docker', async () => {
-    await runCommand<{name: string}>(['convert trufflehog2hdf',
+    await runCommand<{name: string}>([
+      'convert trufflehog2hdf',
       '-i', path.resolve('./test/sample_data/trufflehog/sample_input_report/trufflehog_docker_example.json'),
       '-o', `${tmpobj.name}/trufflehog.json`,
     ])
@@ -31,7 +31,8 @@ describe('Test Trufflehog', () => {
   })
 
   it('hdf-converter output test - report', async () => {
-    await runCommand<{name: string}>(['convert trufflehog2hdf',
+    await runCommand<{name: string}>([
+      'convert trufflehog2hdf',
       '-i', path.resolve('./test/sample_data/trufflehog/sample_input_report/trufflehog_report_example.json'),
       '-o', `${tmpobj.name}/trufflehog.json`,
     ])
@@ -41,7 +42,8 @@ describe('Test Trufflehog', () => {
   })
 
   it('hdf-converter output test - saf', async () => {
-    await runCommand<{name: string}>(['convert trufflehog2hdf',
+    await runCommand<{name: string}>([
+      'convert trufflehog2hdf',
       '-i', path.resolve('./test/sample_data/trufflehog/sample_input_report/trufflehog_saf_example.json'),
       '-o', `${tmpobj.name}/trufflehog.json`,
     ])
@@ -49,9 +51,10 @@ describe('Test Trufflehog', () => {
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/trufflehog/trufflehog-saf-hdf.json'), 'utf8'))
     expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
-  
+
   it('hdf-converter output test - ndjson and duplicate finding', async () => {
-    await runCommand<{name: string}>(['convert trufflehog2hdf',
+    await runCommand<{name: string}>([
+      'convert trufflehog2hdf',
       '-i', path.resolve('./test/sample_data/trufflehog/sample_input_report/trufflehog_dup.ndjson'),
       '-o', `${tmpobj.name}/trufflehog.json`,
     ])
@@ -65,7 +68,8 @@ describe('Test Trufflehog using withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter with raw output test - standard', async () => {
-    await runCommand<{name: string}>(['convert trufflehog2hdf',
+    await runCommand<{name: string}>([
+      'convert trufflehog2hdf',
       '-i', path.resolve('./test/sample_data/trufflehog/sample_input_report/trufflehog.json'),
       '-o', `${tmpobj.name}/trufflehog.json`, '-w',
     ])
@@ -75,7 +79,8 @@ describe('Test Trufflehog using withraw flag', () => {
   })
 
   it('hdf-converter with raw output test - docker', async () => {
-    await runCommand<{name: string}>(['convert trufflehog2hdf',
+    await runCommand<{name: string}>([
+      'convert trufflehog2hdf',
       '-i', path.resolve('./test/sample_data/trufflehog/sample_input_report/trufflehog_docker_example.json'),
       '-o', `${tmpobj.name}/trufflehog.json`, '-w',
     ])
@@ -85,7 +90,8 @@ describe('Test Trufflehog using withraw flag', () => {
   })
 
   it('hdf-converter with raw output test - report', async () => {
-    await runCommand<{name: string}>(['convert trufflehog2hdf',
+    await runCommand<{name: string}>([
+      'convert trufflehog2hdf',
       '-i', path.resolve('./test/sample_data/trufflehog/sample_input_report/trufflehog_report_example.json'),
       '-o', `${tmpobj.name}/trufflehog.json`, '-w',
     ])
@@ -95,7 +101,8 @@ describe('Test Trufflehog using withraw flag', () => {
   })
 
   it('hdf-converter with raw output test - saf', async () => {
-    await runCommand<{name: string}>(['convert trufflehog2hdf',
+    await runCommand<{name: string}>([
+      'convert trufflehog2hdf',
       '-i', path.resolve('./test/sample_data/trufflehog/sample_input_report/trufflehog_saf_example.json'),
       '-o', `${tmpobj.name}/trufflehog.json`, '-w',
     ])

@@ -11,9 +11,7 @@ export default class Trufflehog2HDF extends BaseCommand<typeof Trufflehog2HDF> {
   static readonly description =
     'Translate a Trufflehog output file into an HDF results set'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i trufflehog.json -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i trufflehog.json -o output-hdf-name.json',]
 
   static readonly flags = {
     input: Flags.string({

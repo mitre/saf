@@ -11,9 +11,7 @@ export default class CycloneDXSBOM2HDF extends BaseCommand<typeof CycloneDXSBOM2
   static readonly description =
     'Translate a CycloneDX SBOM report into an HDF results set'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i cyclonedx_sbom.json -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i cyclonedx_sbom.json -o output-hdf-name.json',]
 
   static readonly flags = {
     input: Flags.string({

@@ -1,5 +1,5 @@
-/* eslint-disable array-bracket-newline */
-/* eslint-disable array-element-newline */
+
+
 import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
@@ -12,7 +12,8 @@ describe('Test supplement target', () => {
   fs.copyFileSync(path.resolve('./test/sample_data/HDF/input/minimal_hdf.json'), path.resolve(`${tmpobj.name}/minimal_hdf.json`))
 
   it('Successfully writes a target json to an HDF and makes a new output file', async () => {
-    await runCommand<{name: string}>(['supplement target write',
+    await runCommand<{name: string}>([
+      'supplement target write',
       '-i', path.resolve('./test/sample_data/HDF/input/minimal_hdf.json'),
       '-f', path.resolve('./test/sample_data/target/target-object.json'),
       '-o', `${tmpobj.name}/minimal-hdf-target-object.json`,
@@ -24,7 +25,8 @@ describe('Test supplement target', () => {
   })
 
   it('Successfully writes a target json to an HDF inline', async () => {
-    await runCommand<{name: string}>(['supplement target write',
+    await runCommand<{name: string}>([
+      'supplement target write',
       '-i', path.resolve(`${tmpobj.name}/minimal_hdf.json`),
       '-f', path.resolve('./test/sample_data/target/target-object.json'),
     ])
@@ -35,7 +37,8 @@ describe('Test supplement target', () => {
   })
 
   it('Successfully writes target data to an HDF and makes a new output file', async () => {
-    await runCommand<{name: string}>(['supplement target write',
+    await runCommand<{name: string}>([
+      'supplement target write',
       '-i', path.resolve('./test/sample_data/HDF/input/minimal_hdf.json'),
       '-d', '"test string"', '-o', `${tmpobj.name}/minimal-hdf-target-nonobject.json`,
     ])
@@ -46,7 +49,8 @@ describe('Test supplement target', () => {
   })
 
   it('Successfully reads target data from an HDF and writes it to a file', async () => {
-    await runCommand<{name: string}>(['supplement target read',
+    await runCommand<{name: string}>([
+      'supplement target read',
       '-i', path.resolve('./test/sample_data/target/minimal-hdf-target-object.json'),
       '-o', `${tmpobj.name}/target-object.json`,
     ])
@@ -57,7 +61,8 @@ describe('Test supplement target', () => {
   })
 
   it('Successfully reads target data from an HDF and writes it to stdout', async () => {
-    const {stdout} = await runCommand<{name: string}>(['supplement target read',
+    const {stdout} = await runCommand<{name: string}>([
+      'supplement target read',
       '-i', path.resolve('./test/sample_data/target/minimal-hdf-target-object.json'),
     ])
     const output = JSON.parse(stdout)

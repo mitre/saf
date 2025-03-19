@@ -1,14 +1,15 @@
 import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 
-import {outputError} from '../../../utils/emasser/outputError'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
+import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 import {MilestonesApi} from '@mitre/emass_client'
-import {MilestonesPutPostDelete,
-  MilestonesRequestDeleteBodyInner as MilestoneDeleteBody} from '@mitre/emass_client/dist/api'
+import {
+  MilestonesPutPostDelete,
+  MilestonesRequestDeleteBodyInner as MilestoneDeleteBody
+} from '@mitre/emass_client/dist/api'
 
 const CMD_HELP = 'saf emasser delete milestones -h or --help'
 export default class EmasserDeleteMilestones extends Command {
@@ -36,10 +37,11 @@ export default class EmasserDeleteMilestones extends Command {
     // Call API endpoint
     delMilestones.deleteMilestone(flags.systemId, flags.poamId, requestBodyArray).then((response: MilestonesPutPostDelete) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => displayError(error, 'Milestones'))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

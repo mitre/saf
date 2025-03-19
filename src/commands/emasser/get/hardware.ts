@@ -4,8 +4,7 @@ import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {HardwareBaselineApi} from '@mitre/emass_client'
 import {HwBaselineResponseGet} from '@mitre/emass_client/dist/api'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
-import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
+import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetHardwareBaseline extends Command {
   static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m'
@@ -47,14 +46,15 @@ export default class EmasserGetHardwareBaseline extends Command {
       getHardwareBaseline.getSystemHwBaseline(flags.systemId, flags.pageIndex, flags.pageSize)
         .then((response: HwBaselineResponseGet) => {
           console.log(colorize(outputFormat(response)))
-        }).catch((error:any) => console.error(colorize(outputError(error))))
+        }).catch((error: unknown) => displayError(error, 'Hardware'))
     } else {
       throw this.error
     }
   }
 
-  async catch(error: any) { // skipcq: JS-0116
-    if (error.message) {
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async
+  async catch(error: unknown) {
+    if (error instanceof Error) {
       this.warn(error)
     } else {
       const suggestions = 'get hardware [-h or --help]\n\tget hardware baseline'

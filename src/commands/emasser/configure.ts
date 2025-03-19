@@ -1,4 +1,4 @@
-import colors from 'colors'  
+import colors from 'colors'
 import {Command} from '@oclif/core'
 import {generateConfig} from '../../utils/emasser/generateConfig'
 

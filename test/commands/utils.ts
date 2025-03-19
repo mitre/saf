@@ -34,11 +34,15 @@ export function omitChecklistChangingFields(input: string) {
     .replace(/<!--Heimdall Version :: \S+-->/, '')
 }
 
-export function removeUUIDs(obj: any) {
+export function removeUUIDs(obj: Record<string, unknown>): void {
   for (const key in obj) {
-    if (obj[key] && typeof obj[key] === 'object') {
-      removeUUIDs(obj[key])
-    } else if (typeof obj[key] === 'string' && isUUID(obj[key])) {
+    if (!Object.prototype.hasOwnProperty.call(obj, key)) continue // Ensure it's own property
+
+    const value = obj[key]
+
+    if (value && typeof value === 'object') {
+      removeUUIDs(value as Record<string, unknown>) // Recursively call for nested objects
+    } else if (typeof value === 'string' && isUUID(value)) {
       delete obj[key] // skipcq: JS-0320
     }
   }

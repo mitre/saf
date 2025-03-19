@@ -39,7 +39,11 @@ export default class WritePassthrough extends BaseCommand<typeof WritePassthroug
       try {
         passthrough = JSON.parse(fs.readFileSync(flags.passthroughFile, 'utf8'))
       } catch (error: unknown) {
-        throw new Error(`Couldn't parse passthrough data: ${error}`)
+        throw new Error(
+          `Couldn't parse passthrough data: ${
+            error instanceof Error ? error.message : JSON.stringify(error)
+          }`
+        )
       }
     } else if (flags.passthroughData) {
       try {

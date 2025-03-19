@@ -11,9 +11,7 @@ export default class Twistlock2HDF extends BaseCommand<typeof Twistlock2HDF> {
   static readonly description =
     'Translate a Twistlock CLI output file into an HDF results set'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i twistlock.json -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i twistlock.json -o output-hdf-name.json',]
 
   static readonly flags = {
     input: Flags.string({

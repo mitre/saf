@@ -4,7 +4,7 @@ import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {TestApi} from '@mitre/emass_client'
 import {Test} from '@mitre/emass_client/dist/api'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
+import {displayError} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetTestConnection extends Command {
   static readonly usage = '<%= command.id %>'
@@ -23,11 +23,12 @@ export default class EmasserGetTestConnection extends Command {
 
     getTestApi.testConnection().then((response: Test) => {
       console.log(colorize(outputFormat(response)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => displayError(error, 'Test Connection'))
   }
 
-  async catch(error: any) { // skipcq: JS-0116
-    if (error.message) {
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async
+  async catch(error: unknown) {
+    if (error instanceof Error) {
       this.warn(error.message)
     } else {
       const suggestions = 'get test_connection [-h or --help]'

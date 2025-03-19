@@ -1,7 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {Flags} from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
-import _ from 'lodash'
 import {createLogger, format, transports} from 'winston'
 import xml2js from 'xml2js'
 import {STIG, Vulnerability, STIGHolder} from '../../types/STIG'
@@ -50,9 +50,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
 
   static readonly aliases = ['convert:ckl2poam']
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i checklist_file.ckl -o output-folder -d abcdefg -s 2',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i checklist_file.ckl -o output-folder -d abcdefg -s 2',]
 
   static readonly flags = {
     help: Flags.help({char: 'h'}),

@@ -1,5 +1,3 @@
-/* eslint-disable array-bracket-newline */
-/* eslint-disable array-element-newline */
 import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
@@ -11,7 +9,8 @@ describe('Test fortify', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert fortify2hdf',
+    await runCommand<{name: string}>([
+      'convert fortify2hdf',
       '-i', path.resolve('./test/sample_data/fortify/sample_input_report/fortify_webgoat_results.fvdl'),
       '-o', `${tmpobj.name}/fortify.json`,
     ])
@@ -25,7 +24,8 @@ describe('Test fortify using withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter with raw output test', async () => {
-    await runCommand<{name: string}>(['convert fortify2hdf',
+    await runCommand<{name: string}>([
+      'convert fortify2hdf',
       '-i', path.resolve('./test/sample_data/fortify/sample_input_report/fortify_webgoat_results.fvdl'),
       '-o', `${tmpobj.name}/fortify.json`, '-w',
     ])

@@ -1,5 +1,3 @@
-/* eslint-disable array-bracket-newline */
-/* eslint-disable array-element-newline */
 import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
@@ -11,7 +9,8 @@ describe('Test prisma', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert prisma2hdf',
+    await runCommand<{name: string}>([
+      'convert prisma2hdf',
       '-i', path.resolve('./test/sample_data/prisma/sample_input_report/prismacloud_sample.csv'),
       '-o', `${tmpobj.name}/prismatest`,
     ])

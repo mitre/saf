@@ -12,9 +12,7 @@ export default class Prisma2HDF extends BaseCommand<typeof Prisma2HDF> {
   static readonly description =
     'Translate a Prisma Cloud Scan Report CSV file into Heimdall Data Format JSON files'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i prismacloud-report.csv -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i prismacloud-report.csv -o output-hdf-name.json',]
 
   static readonly flags = {
     input: Flags.string({

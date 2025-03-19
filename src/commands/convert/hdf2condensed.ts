@@ -19,9 +19,7 @@ export default class HDF2Condensed extends BaseCommand<typeof HDF2Condensed> {
   static readonly description =
     'Condensed format used by some community members to pre-process data for elasticsearch and custom dashboards'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i rhel7-results.json -o rhel7-condensed.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i rhel7-results.json -o rhel7-condensed.json',]
 
   static readonly flags = {
     input: Flags.string({
@@ -54,6 +52,7 @@ export default class HDF2Condensed extends BaseCommand<typeof HDF2Condensed> {
     )) {
       const severityStatusCounts = extractStatusCounts(parsedProfile, severity)
       for (const severityTarget of severityTargets) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
         const [statusName, _severity, thresholdType] =
           severityTarget.split('.')
         _.set(

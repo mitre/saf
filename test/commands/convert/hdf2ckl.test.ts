@@ -1,5 +1,3 @@
-/* eslint-disable array-bracket-newline */
-/* eslint-disable array-element-newline */
 import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
@@ -11,7 +9,8 @@ describe('Test hdf2checklist', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test - defaults', async () => {
-    await runCommand<{name: string}>(['convert hdf2ckl',
+    await runCommand<{name: string}>([
+      'convert hdf2ckl',
       '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'),
       '-o', `${tmpobj.name}/hdf2ckl_test.ckl`,
     ])
@@ -21,7 +20,8 @@ describe('Test hdf2checklist', () => {
   })
 
   it('hdf-converter output test - inspec results from profile with dependent profiles', async () => {
-    await runCommand<{name: string}>(['convert hdf2ckl',
+    await runCommand<{name: string}>([
+      'convert hdf2ckl',
       '-i', path.resolve('./test/sample_data/HDF/input/vSphere8_report.json'),
       '-o', `${tmpobj.name}/hdf2ckl_test.ckl`,
     ])
@@ -31,7 +31,8 @@ describe('Test hdf2checklist', () => {
   })
 
   it('hdf-converter output test - with metadata file', async () => {
-    await runCommand<{name: string}>(['convert hdf2ckl',
+    await runCommand<{name: string}>([
+      'convert hdf2ckl',
       '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'),
       '-o', `${tmpobj.name}/hdf2ckl_metadata_test.ckl`,
       '-m', path.resolve('./test/sample_data/checklist/metadata.json'),
@@ -43,7 +44,8 @@ describe('Test hdf2checklist', () => {
 
   // NOTE: May have to wrap the string parameter in double quotes
   it('hdf-converter output test - with metadata flags', async () => {
-    await runCommand<{name: string}>(['convert hdf2ckl',
+    await runCommand<{name: string}>([
+      'convert hdf2ckl',
       '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'),
       '-o', `${tmpobj.name}/hdf2ckl_metadata_test.ckl`,
       '--profilename', 'Red Hat Enterprise Linux 7 STIG', '--version', '2',
@@ -58,7 +60,8 @@ describe('Test hdf2checklist', () => {
   })
 
   it('hdf-converter output test - with severity overrides', async () => {
-    await runCommand<{name: string}>(['convert hdf2ckl',
+    await runCommand<{name: string}>([
+      'convert hdf2ckl',
       '-i', path.resolve('./test/sample_data/HDF/input/RHEL7_overrides_hdf.json'),
       '-o', `${tmpobj.name}/hdf2ckl_overrides_test.ckl`,
     ])
@@ -68,7 +71,8 @@ describe('Test hdf2checklist', () => {
   })
 
   it('hdf-converter output test - throws error when using invalid checklist metadata (Asset Type)', async () => {
-    const {stderr} = await runCommand<{name: string}>(['convert hdf2ckl',
+    const {stderr} = await runCommand<{name: string}>([
+      'convert hdf2ckl',
       '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'),
       '-o', `${tmpobj.name}/hdf2ckl_metadata_error_test.json`,
       '-m', path.resolve('test/sample_data/checklist/sample_input_report/invalid_metadata.json'),
@@ -77,7 +81,8 @@ describe('Test hdf2checklist', () => {
   })
 
   it('hdf-converter output test - throws error when using invalid checklist metadata (Host IP)', async () => {
-    const {stderr} = await runCommand<{name: string}>(['convert hdf2ckl',
+    const {stderr} = await runCommand<{name: string}>([
+      'convert hdf2ckl',
       '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'),
       '-o', `${tmpobj.name}/hdf2ckl_metadata_error_test.json`,
       '--ip', '"bad ip address"',

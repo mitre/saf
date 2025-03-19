@@ -9,19 +9,21 @@ import {
   MilestoneResponsePut, PoamResponsePostPutDelete,
   HwBaselineResponsePostPut, SwBaselineResponsePostPut,
 } from '@mitre/emass_client/dist/api'
+import {getErrorMessage} from '../../../src/utils/global'
 
 describe('Test eMASSer API CLI (PUT) commands', () => {
   const mocServer = new InitMockServer()
-  let responseDataObj: Map<string, any>
+  let responseDataObj: Map<string, unknown>
   const testOk = {status: 200, statusText: 'OK'}
 
   it('Successfully tested endpoint - Artifacts', async () => {
     const artifactApi = new ArtifactsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await artifactApi.updateArtifactBySystemId(123, []).then((response: ArtifactsResponsePutPost) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -34,9 +36,10 @@ describe('Test eMASSer API CLI (PUT) commands', () => {
     const updateControl = new ControlsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await updateControl.updateControlBySystemId(123, []).then((response: ControlsResponsePut) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -49,9 +52,10 @@ describe('Test eMASSer API CLI (PUT) commands', () => {
     const hwBaseline = new HardwareBaselineApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await hwBaseline.updateHwBaselineAssets(123, []).then((response: HwBaselineResponsePostPut) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -64,9 +68,10 @@ describe('Test eMASSer API CLI (PUT) commands', () => {
     const putMilestones = new MilestonesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await putMilestones.updateMilestoneBySystemIdAndPoamId(123, 456, []).then((response: MilestoneResponsePut) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -79,9 +84,10 @@ describe('Test eMASSer API CLI (PUT) commands', () => {
     const updatePoam = new POAMApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await updatePoam.updatePoamBySystemId(123, []).then((response: PoamResponsePostPutDelete) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))
@@ -94,9 +100,10 @@ describe('Test eMASSer API CLI (PUT) commands', () => {
     const swBaseline = new SoftwareBaselineApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
     await swBaseline.updateSwBaselineAssets(123, []).then((response: SwBaselineResponsePostPut) => {
       responseDataObj = new Map(Object.entries(response))
-    }).catch((error:any) => {
-      if (error.message.includes('unexpected end of file') === false) {
-        console.error(error)
+    }).catch((error: unknown) => {
+      const errorMsg = getErrorMessage(error)
+      if (errorMsg.includes('unexpected end of file') === false) {
+        console.error(errorMsg)
       }
 
       responseDataObj = new Map(Object.entries(testOk))

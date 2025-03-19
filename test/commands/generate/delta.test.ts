@@ -1,6 +1,5 @@
-/* eslint-disable array-bracket-newline */
-/* eslint-disable array-element-newline */
-import {expect} from 'chai'
+
+import {expect, assert} from 'chai'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
 import path from 'path'
@@ -12,7 +11,8 @@ describe('Test generate delta command', () => {
 
   // should process delta request with rule id type
   it('should generate the controls for delta request with "rule" id type', async () => {
-    await runCommand<{name: string}>(['generate delta',
+    await runCommand<{name: string}>([
+      'generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}`,
@@ -24,7 +24,8 @@ describe('Test generate delta command', () => {
 
   // should process delta request with group id type
   it('should generate the controls for delta request with "group" id type', async () => {
-    await runCommand<{name: string}>(['generate delta',
+    await runCommand<{name: string}>([
+      'generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}`,
@@ -36,7 +37,8 @@ describe('Test generate delta command', () => {
 
   // should process delta request with cis id type
   it('should generate the controls for delta request with "cis" id type', async () => {
-    await runCommand<{name: string}>(['generate delta',
+    await runCommand<{name: string}>([
+      'generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}`,
@@ -48,7 +50,8 @@ describe('Test generate delta command', () => {
 
   // should process delta request with version id type
   it('should generate the controls for delta request with "version" id type', async () => {
-    await runCommand<{name: string}>(['generate delta',
+    await runCommand<{name: string}>([
+      'generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}/controls`,
@@ -61,7 +64,8 @@ describe('Test generate delta command', () => {
   // should process delta request with the default id type, generate the
   // output folder, and place new controls in the generated out folder
   it('should generate the output folder, place new controls on the output folder for review', async () => {
-    await runCommand<{name: string}>(['generate delta',
+    await runCommand<{name: string}>([
+      'generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}/RHEL_7`,
@@ -72,24 +76,29 @@ describe('Test generate delta command', () => {
 
   // should generate a report for the delta process, place the report on specified directory
   it('should generate a report with given file name and place it on the specified directory', async () => {
-    await runCommand<{name: string}>(['generate delta',
+    await runCommand<{name: string}>([
+      'generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}/RHEL_7`,
       '-r', `${tmpobj.name}/RHEL_7/my-report.md`,
     ])
-    expect(fs.lstatSync((`${tmpobj.name}/RHEL_7/my-report.md`)).isFile()).to.be.true // skipcq: JS-0354
+    const isReportFile = fs.lstatSync((`${tmpobj.name}/RHEL_7/my-report.md`)).isFile()
+    assert.isTrue(isReportFile)
+    // expect(fs.lstatSync((`${tmpobj.name}/RHEL_7/my-report.md`)).isFile()).to.be.true
   })
 
   // should generate a report for the delta process, place the report on default directory
   it('should generate a report name delta.md and place it in the default directory', async () => {
-    await runCommand<{name: string}>(['generate delta',
+    await runCommand<{name: string}>([
+      'generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}`,
       '-r', `${tmpobj.name}`,
     ])
-    expect(fs.lstatSync((`${tmpobj.name}/delta.md`)).isFile()).to.be.true // skipcq: JS-0354
+    const isFile = fs.lstatSync((`${tmpobj.name}/delta.md`)).isFile()
+    assert.isTrue(isFile)
   })
 
   // should process delta using the fuzzy logic

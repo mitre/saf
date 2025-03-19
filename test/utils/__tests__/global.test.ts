@@ -137,9 +137,7 @@ describe('getInstalledPath', () => {
       path: '/generic/app/root/path',
     }))
 
-    // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
     const {getInstalledPath} = require('../../../src/utils/global') // skipcq: JS-0359
-    // eslint-disable-next-line unicorn/prefer-module
     const {getInstalledPathSync} = require('get-installed-path') // skipcq: JS-0359
 
     const result = getInstalledPath('module-name')
@@ -158,7 +156,6 @@ describe('getInstalledPath', () => {
       path: '/generic/app/root/path',
     }))
 
-    // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
     const {getInstalledPath} = require('../../../src/utils/global') // skipcq: JS-0359
     // eslint-disable-next-line unicorn/prefer-module
     const {getInstalledPathSync} = require('get-installed-path') // skipcq: JS-0359
@@ -339,7 +336,6 @@ describe('checkInput', () => {
     const {fingerprint} = require('@mitre/hdf-converters') // skipcq: JS-0359
     fingerprint.mockReturnValue('text')
 
-    // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
     const {checkInput} = require('../../../src/utils/global') // skipcq: JS-0359
 
     const guessOptions = {data: 'file data', filename: 'file.txt'}
@@ -354,7 +350,6 @@ describe('checkInput', () => {
     const {fingerprint} = require('@mitre/hdf-converters') // skipcq: JS-0359
     fingerprint.mockReturnValue('image')
 
-    // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
     const {checkInput} = require('../../../src/utils/global') // skipcq: JS-0359
 
     const guessOptions = {data: 'file data', filename: 'file.txt'}
@@ -369,7 +364,6 @@ describe('checkInput', () => {
     const {fingerprint} = require('@mitre/hdf-converters') // skipcq: JS-0359
     fingerprint.mockReturnValue(null)
 
-    // eslint-disable-next-line node/no-missing-require, unicorn/prefer-module
     const {checkInput} = require('../../../src/utils/global') // skipcq: JS-0359
 
     const guessOptions = {data: 'file data', filename: 'file.txt'}

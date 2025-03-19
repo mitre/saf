@@ -1,7 +1,11 @@
+/* eslint-disable complexity */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {Flags} from '@oclif/core'
 import {BooleanFlag, OptionFlag} from '@oclif/core/interfaces'
 import fs from 'fs'
 import path from 'path'
+import {colorize} from 'json-colorizer'
+import {outputError} from './outputError'
 
 /**
  * Interface representing the command line arguments.
@@ -344,7 +348,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             fileName: Flags.string({char: 'f', description: 'Artifact file(s) to post to the given system, can have multiple (space separated)', required: true, multiple: true}),
             isTemplate: Flags.boolean({char: 'T', description: 'Boolean - Indicates whether an artifact is a template.', allowNo: true, required: false, default: false}),
             type: Flags.string({char: 't', description: 'Various artifact file type are accepted (defined by the eMASS administrator)', required: false, default: 'Other'}),
-            category: Flags.string({char: 'c', description: 'Various artifact category are accepted (defined by the eMASS administrator)',  required: false, default: 'Evidence'}),
+            category: Flags.string({char: 'c', description: 'Various artifact category are accepted (defined by the eMASS administrator)', required: false, default: 'Evidence'}),
           }
           break
         }
@@ -1779,4 +1783,23 @@ export function printHelpMsg(msg: string) {
  */
 export function printRedMsg(msg: string) {
   console.log('\x1B[91m»', msg, '\x1B[0m')
+}
+
+
+/**
+ * Displays an error message to the console.
+ *
+ * If the error is an instance of `Error`, it will be formatted and colorized
+ * before being logged. Otherwise, a generic error message will be displayed,
+ * indicating the endpoint that caused the error.
+ *
+ * @param error - The error to display. Can be of any type.
+ * @param endpoint - The endpoint that was being called when the error occurred.
+ */
+export function displayError(error: unknown, endpoint: string) {
+  if (error instanceof Error) {
+    console.error(colorize(outputError(error)))
+  } else {
+    console.error(`\x1B[91mError calling the ${endpoint} endpoint: ${String(error)}\x1B[0m`)
+  }
 }

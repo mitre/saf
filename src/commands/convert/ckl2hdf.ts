@@ -11,9 +11,7 @@ export default class CKL2HDF extends BaseCommand<typeof CKL2HDF> {
   static readonly description =
     'Translate a Checklist XML file into a Heimdall Data Format JSON file'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i ckl_results.xml -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i ckl_results.xml -o output-hdf-name.json',]
 
   static readonly flags = {
     input: Flags.string({

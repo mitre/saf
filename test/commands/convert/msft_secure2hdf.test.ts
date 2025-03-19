@@ -1,5 +1,3 @@
-/* eslint-disable array-bracket-newline */
-/* eslint-disable array-element-newline */
 import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
@@ -11,7 +9,8 @@ describe('Test msft_secure from pre-downloaded inputs', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert msft_secure2hdf',
+    await runCommand<{name: string}>([
+      'convert msft_secure2hdf',
       '-r', path.resolve('./test/sample_data/msft_secure/sample_input_report/secureScore.json'),
       '-p', path.resolve('./test/sample_data/msft_secure/sample_input_report/profiles.json'),
       '-o', `${tmpobj.name}/msft-secure.json`,
@@ -26,7 +25,8 @@ describe('Test msft_secure using withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter withraw output test', async () => {
-    await runCommand<{name: string}>(['convert msft_secure2hdf',
+    await runCommand<{name: string}>([
+      'convert msft_secure2hdf',
       '-r', path.resolve('./test/sample_data/msft_secure/sample_input_report/secureScore.json'),
       '-p', path.resolve('./test/sample_data/msft_secure/sample_input_report/profiles.json'),
       '-o', `${tmpobj.name}/msft-secure.json`, '-w',
@@ -41,7 +41,8 @@ describe('Test msft_secure from combined input', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert msft_secure2hdf',
+    await runCommand<{name: string}>([
+      'convert msft_secure2hdf',
       '-i', path.resolve('./test/sample_data/msft_secure/sample_input_report/combined.json'),
       '-o', `${tmpobj.name}/msft-secure.json`,
     ])

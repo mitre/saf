@@ -5,7 +5,7 @@ import {ControlDescription} from 'inspecjs/lib/generated_parsers/v_1_0/exec-json
 
 export const severityTargetsObject = {
   critical: ['passed.critical.min', 'passed.critical.max', 'failed.critical.min', 'failed.critical.max', 'skipped.critical.min', 'skipped.critical.max', 'error.critical.min', 'error.critical.max', 'no_impact.critical.min', 'no_impact.critical.max'],
-  high: ['passed.high.min', 'passed.high.max', 'failed.high.min', 'failed.high.max', 'skipped.high.min', 'skipped.high.max', 'error.high.min',  'error.high.max', 'no_impact.high.min', 'no_impact.high.max'],
+  high: ['passed.high.min', 'passed.high.max', 'failed.high.min', 'failed.high.max', 'skipped.high.min', 'skipped.high.max', 'error.high.min', 'error.high.max', 'no_impact.high.min', 'no_impact.high.max'],
   medium: ['passed.medium.min', 'passed.medium.max', 'failed.medium.min', 'failed.medium.max', 'skipped.medium.min', 'skipped.medium.max', 'error.medium.min', 'error.medium.max', 'no_impact.medium.min', 'no_impact.medium.max'],
   low: ['passed.low.min', 'passed.low.max', 'failed.low.min', 'failed.low.max', 'skipped.low.min', 'skipped.low.max', 'error.low.min', 'error.low.max', 'no_impact.low.min', 'no_impact.low.max'],
   none: ['no_impact.none.min', 'no_impact.none.max'],
@@ -196,17 +196,21 @@ export function getControlIdMap(profile: ContextualizedProfile, thresholds?: Thr
   return thresholds
 }
 
-function getDescriptionContentsOrUndefined(label: string, descriptions?: ControlDescription[] | {[key: string]: any} | null) {
-  let found
-  if (descriptions) {
-    descriptions.forEach((description: any) => {
+export function getDescriptionContentsOrUndefined(
+  label: string,
+  descriptions?: ControlDescription[] | Record<string, unknown> | null
+): unknown {
+  if (!descriptions) return undefined
+
+  if (Array.isArray(descriptions)) {
+    for (const description of descriptions) {
       if (description.label === label) {
-        found = description.data
+        return description.data
       }
-    })
+    }
   }
 
-  return found
+  return undefined
 }
 
 function cklControlStatus(control: ContextualizedControl, for_summary?: boolean): 'Not_Applicable' | 'Profile_Error' | 'Open' | 'NotAFinding' | 'Not_Reviewed' {
@@ -256,7 +260,7 @@ function controlFindingDetails(control: {message: string[]}, controlCKLStatus: '
 }
 
 export function extractControlSummariesBySeverity(profile: ContextualizedProfile): Record<string, Record<string, Record<string, string | string[] | number | undefined>>> {
-  const result: Record<string, Record<string, Record<string, string | string[] | number | undefined>>>  = {
+  const result: Record<string, Record<string, Record<string, string | string[] | number | undefined>>> = {
     failed: {},
     passed: {},
     no_impact: {},
@@ -266,7 +270,7 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
   for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
     const control = c.root
     const status: ControlStatus = control.hdf.status
-    const extracted: Record<string, string | string[] | undefined> & {message: string[]}  = {
+    const extracted: Record<string, string | string[] | undefined> & {message: string[]} = {
       vuln_num: control.data.id,
       rule_title: control.data.title || undefined,
       vuln_discuss: control.data.desc || undefined,
@@ -277,8 +281,8 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
       rule_ver: control.data.tags.stig_id,
       cci_ref: control.data.tags.cci,
       nist: (control.data.tags.nist || []).join(' '),
-      check_content: getDescriptionContentsOrUndefined('check', control.data.descriptions),
-      fix_text: getDescriptionContentsOrUndefined('fix', control.data.descriptions),
+      check_content: getDescriptionContentsOrUndefined('check', control.data.descriptions) as string | string[] | undefined,
+      fix_text: getDescriptionContentsOrUndefined('fix', control.data.descriptions) as string | string[] | undefined,
       impact: control.data.impact.toString() || undefined,
       profile_name: profile.data.name,
       profile_shasum: profile.data.sha256,

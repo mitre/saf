@@ -1,3 +1,4 @@
+
 import {colorize} from 'json-colorizer'
 import fs from 'fs'
 import {readFile} from 'fs/promises'
@@ -9,18 +10,13 @@ import {ArtifactsResponseGetDataInner as Artifacts} from '@mitre/emass_client/di
 
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg} from '../../../utils/emasser/utilities'
-import {outputError} from '../../../utils/emasser/outputError'
+import {displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg} from '../../../utils/emasser/utilities'
 
-function getAllJsonExamples(): string {
-  let exampleBodyObj: any = {}
-
-  exampleBodyObj = {
+function getAllJsonExamples(): Record<string, unknown> {
+  return {
     ...getJsonExamples('artifacts-put-required'),
     ...getJsonExamples('artifacts-put-optional'),
   }
-
-  return exampleBodyObj
 }
 
 function assertParamExists(object: string, value: string|number|boolean|undefined|null): void {
@@ -31,7 +27,7 @@ function assertParamExists(object: string, value: string|number|boolean|undefine
 }
 
 function addRequiredFieldsToRequestBody(dataObj: Artifacts): Artifacts {
-  const bodyObj: Artifacts  = {}
+  const bodyObj: Artifacts = {}
   try {
     assertParamExists('filename', dataObj.filename)
     assertParamExists('isTemplate', dataObj.isTemplate)
@@ -127,39 +123,48 @@ export default class EmasserPutArtifacts extends Command {
     const requestBodyArray: Artifacts[] = []
 
     // Check if a Artifacts json file was provided
-    if (fs.existsSync(flags.dataFile)) {
-      let data: any
-      try {
-        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
-      } catch (error: any) {
-        console.error('\x1B[91m» Error reading Artifacts data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
-        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
-        process.exit(1)
-      }
+    if (!fs.existsSync(flags.dataFile)) {
+      console.error('\x1B[91m» Artifacts data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
+      process.exit(1)
+    }
 
-      // Artifacts json file provided, check if we have multiple Artifacts to process
+    try {
+      // Read and parse the JSON file
+      const fileContent = await readFile(flags.dataFile, 'utf8')
+      const data: unknown = JSON.parse(fileContent)
+
+      // Process the Artifacts data
       if (Array.isArray(data)) {
         data.forEach((dataObject: Artifacts) => {
-          // Generate the put request object based on business logic
+          // Generate the PUT request object based on business logic
           requestBodyArray.push(generateBodyObj(dataObject))
         })
-      } else if (typeof data === 'object') {
+      } else if (typeof data === 'object' && data !== null) {
         const dataObject: Artifacts = data
-        // Generate the put request object based on business logic
+        // Generate the PUT request object based on business logic
         requestBodyArray.push(generateBodyObj(dataObject))
+      } else {
+        console.error('\x1B[91m» Invalid data format in Artifacts file\x1B[0m')
+        process.exit(1)
       }
-    } else {
-      console.error('\x1B[91m» Artifacts data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('\x1B[91m» Error reading Artifacts data file, possible malformed JSON. Please use the -h flag for help.\x1B[0m')
+        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+      } else {
+        console.error('\x1B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\x1B[0m')
+      }
       process.exit(1)
     }
 
     // Call API endpoint
     artifactApi.updateArtifactBySystemId(flags.systemId, requestBodyArray).then((response: ArtifactsResponsePutPost) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => displayError(error, 'Artifacts'))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

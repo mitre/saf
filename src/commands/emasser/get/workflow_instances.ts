@@ -5,8 +5,7 @@ import {WorkflowInstancesApi} from '@mitre/emass_client'
 import {WorkflowInstancesResponseGet,
   WorkflowInstanceResponseGet} from '@mitre/emass_client/dist/api'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
-import {FlagOptions,
+import {displayError, FlagOptions,
   getDescriptionForEndpoint,
   getExamplesForEndpoint,
   getFlagsForEndpoint} from '../../../utils/emasser/utilities'
@@ -44,19 +43,20 @@ export default class EmasserGetWorkflowInstances extends Command {
       // Order is important here
       getWorkflowInstances.getSystemWorkflowInstances(flags.includeComments, flags.includeDecommissionSystems, flags.pageIndex, flags.sinceDate, flags.status).then((response: WorkflowInstancesResponseGet) => {
         console.log(colorize(outputFormat(response)))
-      }).catch((error:any) => console.error(colorize(outputError(error))))
+      }).catch((error: unknown) => displayError(error, 'Workflow Instances'))
     } else if (args.name === 'byInstanceId') {
       // Order is important here
       getWorkflowInstances.getSystemWorkflowInstancesByWorkflowInstanceId(flags.workflowInstanceId).then((response: WorkflowInstanceResponseGet) => {
         console.log(colorize(outputFormat(response)))
-      }).catch((error:any) => console.error(colorize(outputError(error))))
+      }).catch((error: unknown) => displayError(error, 'Workflow Instances'))
     } else {
       throw this.error
     }
   }
 
-  async catch(error: any) { // skipcq: JS-0116
-    if (error.message) {
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async
+  async catch(error: unknown) {
+    if (error instanceof Error) {
       this.warn(error)
     } else {
       const suggestions = 'get workflow_instances [-h or --help]\n\tget workflow_instances all\n\tget workflow_instances byInstanceId'

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {ApiConfig} from './apiConfig'
 import _ from 'lodash'
 
@@ -80,9 +81,9 @@ function convertEpochToDateTime(dataObject: object): object {
  */
 export function outputFormat(data: object, doConversion = true): string {
   const conf = new ApiConfig()
-  const hideNulls: boolean = conf.displayNulls !== 'true'
-  const showEpoch: boolean = (conf.displayDateTime === 'true')
-  const debugging: boolean = (conf.debugging === 'true')
+  const hideNulls = !conf.displayNulls
+  const showEpoch = conf.displayDateTime
+  const debugging = conf.debugging
   let formatDataObj: object = data
 
   if (debugging) {
@@ -253,13 +254,13 @@ export function outputFormat(data: object, doConversion = true): string {
 
     if (typeof formatDataObj === 'string') {
       return formatDataObj
-    }  // skipcq: JS-0056
+    } // skipcq: JS-0056
 
     return JSON.stringify(formatDataObj, null, 2)
   } catch {
     if (typeof formatDataObj === 'string') {
       return formatDataObj
-    }  // skipcq: JS-0056
+    } // skipcq: JS-0056
 
     return JSON.stringify(formatDataObj, null, 2)
   }

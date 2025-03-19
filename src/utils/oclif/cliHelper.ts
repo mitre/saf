@@ -1,5 +1,5 @@
 import fs from 'fs'
-import colors from 'colors'  
+import colors from 'colors'
 
 const processLogData: Array<string> = []
 let logFileName = ''
@@ -8,7 +8,7 @@ export function setProcessLogFileName(fileName: string) {
   logFileName = fileName
 }
 
-export function getProcessLogData():  Array<string> {
+export function getProcessLogData(): Array<string> {
   return processLogData
 }
 

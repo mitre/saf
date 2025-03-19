@@ -12,9 +12,7 @@ export default class Netsparker2HDF extends BaseCommand<typeof Netsparker2HDF> {
     'Translate a Netsparker XML results file into a Heimdall Data Format JSON file\n' +
     'The current iteration only works with Netsparker Enterprise Vulnerabilities Scan.'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i netsparker_results.xml -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i netsparker_results.xml -o output-hdf-name.json',]
 
   static readonly flags = {
     input: Flags.string({

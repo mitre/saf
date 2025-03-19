@@ -1,5 +1,3 @@
-/* eslint-disable array-bracket-newline */
-/* eslint-disable array-element-newline */
 import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
@@ -11,7 +9,8 @@ describe('Test sbom', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test - dropwizard no vulns', async () => {
-    await runCommand<{name: string}>(['convert cyclonedx_sbom2hdf',
+    await runCommand<{name: string}>([
+      'convert cyclonedx_sbom2hdf',
       '-i', path.resolve('./test/sample_data/cyclonedx_sbom/sample_input_report/dropwizard-no-vulns.json'),
       '-o', `${tmpobj.name}/cyclonedx_sbom.json`,
     ])
@@ -20,7 +19,8 @@ describe('Test sbom', () => {
     expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
   it('hdf-converter output test - dropwizard vex', async () => {
-    await runCommand<{name: string}>(['convert cyclonedx_sbom2hdf',
+    await runCommand<{name: string}>([
+      'convert cyclonedx_sbom2hdf',
       '-i', path.resolve('./test/sample_data/cyclonedx_sbom/sample_input_report/dropwizard-vex.json'),
       '-o', `${tmpobj.name}/cyclonedx_sbom.json`,
     ])
@@ -29,7 +29,8 @@ describe('Test sbom', () => {
     expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
   it('hdf-converter output test - dropwizard w/ vulns', async () => {
-    await runCommand<{name: string}>(['convert cyclonedx_sbom2hdf',
+    await runCommand<{name: string}>([
+      'convert cyclonedx_sbom2hdf',
       '-i', path.resolve('./test/sample_data/cyclonedx_sbom/sample_input_report/dropwizard-vulns.json'),
       '-o', `${tmpobj.name}/cyclonedx_sbom.json`,
     ])
@@ -38,7 +39,8 @@ describe('Test sbom', () => {
     expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
   it('hdf-converter output test - saf', async () => {
-    await runCommand<{name: string}>(['convert cyclonedx_sbom2hdf',
+    await runCommand<{name: string}>([
+      'convert cyclonedx_sbom2hdf',
       '-i', path.resolve('./test/sample_data/cyclonedx_sbom/sample_input_report/generated-saf-sbom.json'),
       '-o', `${tmpobj.name}/cyclonedx_sbom.json`,
     ])
@@ -47,7 +49,8 @@ describe('Test sbom', () => {
     expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
   it('hdf-converter output test - vex', async () => {
-    await runCommand<{name: string}>(['convert cyclonedx_sbom2hdf',
+    await runCommand<{name: string}>([
+      'convert cyclonedx_sbom2hdf',
       '-i', path.resolve('./test/sample_data/cyclonedx_sbom/sample_input_report/vex.json'),
       '-o', `${tmpobj.name}/cyclonedx_sbom.json`,
     ])
@@ -56,7 +59,8 @@ describe('Test sbom', () => {
     expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
   it('hdf-converter output test - spdx converted cyclonedx', async () => {
-    await runCommand<{name: string}>(['convert cyclonedx_sbom2hdf',
+    await runCommand<{name: string}>([
+      'convert cyclonedx_sbom2hdf',
       '-i', path.resolve('./test/sample_data/cyclonedx_sbom/sample_input_report/spdx-to-cyclonedx.json'),
       '-o', `${tmpobj.name}/cyclonedx_sbom.json`,
     ])
@@ -65,7 +69,8 @@ describe('Test sbom', () => {
     expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
   it('hdf-converter output test - syft-generated alpine container', async () => {
-    await runCommand<{name: string}>(['convert cyclonedx_sbom2hdf',
+    await runCommand<{name: string}>([
+      'convert cyclonedx_sbom2hdf',
       '-i', path.resolve('./test/sample_data/cyclonedx_sbom/sample_input_report/syft-scan-alpine-container.json'),
       '-o', `${tmpobj.name}/cyclonedx_sbom.json`,
     ])
@@ -79,7 +84,8 @@ describe('Test sbom using withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter with raw output test - dropwizard no vulns', async () => {
-    await runCommand<{name: string}>(['convert cyclonedx_sbom2hdf',
+    await runCommand<{name: string}>([
+      'convert cyclonedx_sbom2hdf',
       '-i', path.resolve('./test/sample_data/cyclonedx_sbom/sample_input_report/dropwizard-no-vulns.json'),
       '-o', `${tmpobj.name}/cyclonedx_sbom.json`, '-w',
     ])
@@ -88,7 +94,8 @@ describe('Test sbom using withraw flag', () => {
     expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
   it('hdf-converter with raw output test - dropwizard vex', async () => {
-    await runCommand<{name: string}>(['convert cyclonedx_sbom2hdf',
+    await runCommand<{name: string}>([
+      'convert cyclonedx_sbom2hdf',
       '-i', path.resolve('./test/sample_data/cyclonedx_sbom/sample_input_report/dropwizard-vex.json'),
       '-o', `${tmpobj.name}/cyclonedx_sbom.json`, '-w',
     ])
@@ -97,7 +104,8 @@ describe('Test sbom using withraw flag', () => {
     expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
   it('hdf-converter with raw output test - dropwizard w/ vulns', async () => {
-    await runCommand<{name: string}>(['convert cyclonedx_sbom2hdf',
+    await runCommand<{name: string}>([
+      'convert cyclonedx_sbom2hdf',
       '-i', path.resolve('./test/sample_data/cyclonedx_sbom/sample_input_report/dropwizard-vulns.json'),
       '-o', `${tmpobj.name}/cyclonedx_sbom.json`, '-w',
     ])
@@ -106,7 +114,8 @@ describe('Test sbom using withraw flag', () => {
     expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
   it('hdf-converter with raw output test - saf', async () => {
-    await runCommand<{name: string}>(['convert cyclonedx_sbom2hdf',
+    await runCommand<{name: string}>([
+      'convert cyclonedx_sbom2hdf',
       '-i', path.resolve('./test/sample_data/cyclonedx_sbom/sample_input_report/generated-saf-sbom.json'),
       '-o', `${tmpobj.name}/cyclonedx_sbom.json`, '-w',
     ])
@@ -115,7 +124,8 @@ describe('Test sbom using withraw flag', () => {
     expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
   it('hdf-converter with raw output test - vex', async () => {
-    await runCommand<{name: string}>(['convert cyclonedx_sbom2hdf',
+    await runCommand<{name: string}>([
+      'convert cyclonedx_sbom2hdf',
       '-i', path.resolve('./test/sample_data/cyclonedx_sbom/sample_input_report/vex.json'),
       '-o', `${tmpobj.name}/cyclonedx_sbom.json`, '-w',
     ])
@@ -124,7 +134,8 @@ describe('Test sbom using withraw flag', () => {
     expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
   it('hdf-converter with raw output test - spdx converted cyclonedx', async () => {
-    await runCommand<{name: string}>(['convert cyclonedx_sbom2hdf',
+    await runCommand<{name: string}>([
+      'convert cyclonedx_sbom2hdf',
       '-i', path.resolve('./test/sample_data/cyclonedx_sbom/sample_input_report/spdx-to-cyclonedx.json'),
       '-o', `${tmpobj.name}/cyclonedx_sbom.json`, '-w',
     ])
@@ -133,7 +144,8 @@ describe('Test sbom using withraw flag', () => {
     expect(omitHDFChangingFields(converted)).to.eql(omitHDFChangingFields(sample))
   })
   it('hdf-converter with raw output test - syft-generated alpine container', async () => {
-    await runCommand<{name: string}>(['convert cyclonedx_sbom2hdf',
+    await runCommand<{name: string}>([
+      'convert cyclonedx_sbom2hdf',
       '-i', path.resolve('./test/sample_data/cyclonedx_sbom/sample_input_report/syft-scan-alpine-container.json'),
       '-o', `${tmpobj.name}/cyclonedx_sbom.json`, '-w',
     ])

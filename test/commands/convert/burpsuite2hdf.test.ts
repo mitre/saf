@@ -1,5 +1,3 @@
-/* eslint-disable array-bracket-newline */
-/* eslint-disable array-element-newline */
 import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
@@ -11,7 +9,8 @@ describe('Test burpsuite', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert burpsuite2hdf',
+    await runCommand<{name: string}>([
+      'convert burpsuite2hdf',
       '-i', path.resolve('./test/sample_data/burpsuite/sample_input_report/zero.webappsecurity.com.min'),
       '-o', `${tmpobj.name}/burpsuitetest.json`,
     ])
@@ -25,7 +24,8 @@ describe('Test burpsuite using withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter with raw output test', async () => {
-    await runCommand<{name: string}>(['convert burpsuite2hdf',
+    await runCommand<{name: string}>([
+      'convert burpsuite2hdf',
       '-i', path.resolve('./test/sample_data/burpsuite/sample_input_report/zero.webappsecurity.com.min'),
       '-o', `${tmpobj.name}/burpsuitetest.json`, '-w',
     ])
@@ -39,7 +39,8 @@ describe('Test using space topic separator using burpsuite case', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert burpsuite2hdf',
+    await runCommand<{name: string}>([
+      'convert burpsuite2hdf',
       '-i', path.resolve('./test/sample_data/burpsuite/sample_input_report/zero.webappsecurity.com.min'),
       '-o', `${tmpobj.name}/burpsuitetest.json`,
     ])

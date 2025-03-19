@@ -14,9 +14,7 @@ export default class Nessus2HDF extends BaseCommand<typeof Nessus2HDF> {
     "The current iteration maps all plugin families except 'Policy Compliance'\n" +
     'A separate HDF JSON is generated for each host reported in the Nessus Report.'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i nessus_results.xml -o output-hdf-name.json',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i nessus_results.xml -o output-hdf-name.json',]
 
   static readonly flags = {
     input: Flags.string({

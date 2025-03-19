@@ -1,5 +1,3 @@
-/* eslint-disable array-bracket-newline */
-/* eslint-disable array-element-newline */
 import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
@@ -11,7 +9,8 @@ describe('Test anchore grype', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert anchoregrype2hdf',
+    await runCommand<{name: string}>([
+      'convert anchoregrype2hdf',
       '-i', path.resolve('./test/sample_data/anchoregrype/sample_input_report/anchore_grype.json'),
       '-o', `${tmpobj.name}/anchore-grype-hdf.json`,
     ])
@@ -29,7 +28,8 @@ describe('Test anchore grype with raw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter withraw output test', async () => {
-    await runCommand<{name: string}>(['convert anchoregrype2hdf',
+    await runCommand<{name: string}>([
+      'convert anchoregrype2hdf',
       '-i', path.resolve('./test/sample_data/anchoregrype/sample_input_report/anchore_grype.json'),
       '-o', `${tmpobj.name}/anchore-grype-withraw.json`, '-w',
     ])
@@ -47,7 +47,8 @@ describe('Test amazon anchore grype', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert anchoregrype2hdf',
+    await runCommand<{name: string}>([
+      'convert anchoregrype2hdf',
       '-i', path.resolve('./test/sample_data/anchoregrype/sample_input_report/amazon.json'),
       '-o', `${tmpobj.name}/amazon-grype-hdf.json`,
     ])
@@ -66,7 +67,8 @@ describe('Test amazon anchore grype withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter with raw output test', async () => {
-    await runCommand<{name: string}>(['convert anchoregrype2hdf',
+    await runCommand<{name: string}>([
+      'convert anchoregrype2hdf',
       '-i', path.resolve('./test/sample_data/anchoregrype/sample_input_report/amazon.json'),
       '-o', `${tmpobj.name}/amazon-grype-withraw.json`, '-w',
     ])
@@ -85,7 +87,8 @@ describe('Test tensorflow anchore grype', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert anchoregrype2hdf',
+    await runCommand<{name: string}>([
+      'convert anchoregrype2hdf',
       '-i', path.resolve('./test/sample_data/anchoregrype/sample_input_report/tensorflow.json'),
       '-o', `${tmpobj.name}/tensorflow-grype-hdf.json`,
     ])
@@ -104,7 +107,8 @@ describe('Test tensorflow anchore grype withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter with raw output test', async () => {
-    await runCommand<{name: string}>(['convert anchoregrype2hdf',
+    await runCommand<{name: string}>([
+      'convert anchoregrype2hdf',
       '-i', path.resolve('./test/sample_data/anchoregrype/sample_input_report/tensorflow.json'),
       '-o', `${tmpobj.name}/tensorflow-grype-withraw.json`, '-w',
     ])

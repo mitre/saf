@@ -39,7 +39,11 @@ export default class WriteTarget extends BaseCommand<typeof WriteTarget> {
       try {
         target = JSON.parse(fs.readFileSync(flags.targetFile, 'utf8'))
       } catch (error: unknown) {
-        throw new Error(`Couldn't parse target data: ${error}`)
+        throw new Error(
+          `Couldn't parse target data: ${
+            error instanceof Error ? error.message : JSON.stringify(error)
+          }`
+        )
       }
     } else if (flags.targetData) {
       try {

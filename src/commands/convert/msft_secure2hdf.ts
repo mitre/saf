@@ -15,7 +15,6 @@ import {
   SecureScoreControlProfile,
 } from '@microsoft/microsoft-graph-types'
 import {TokenCredentialAuthenticationProvider} from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials'
-import _ from 'lodash'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 function processInputs(

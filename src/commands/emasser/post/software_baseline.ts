@@ -1,14 +1,13 @@
 import fs from 'fs'
-import _ from 'lodash'
 import {readFile} from 'fs/promises'
 import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
-import {FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg} from '../../../utils/emasser/utilities'
+import {displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg} from '../../../utils/emasser/utilities'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {SoftwareBaselineApi} from '@mitre/emass_client'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
 import {SwBaselineResponsePostPut} from '@mitre/emass_client/dist/api'
+import {getErrorMessage} from '../../../utils/global'
 
 /**
  * Interface representing software details.
@@ -103,15 +102,13 @@ interface Software {
  * @returns {string} A string representation of the combined JSON examples.
  */
 function getAllJsonExamples(): string {
-  let exampleBodyObj: any = {}
-
-  exampleBodyObj = {
+  const exampleBodyObj: Record<string, unknown> = {
     ...getJsonExamples('software-post-required'),
     ...getJsonExamples('software-post-put-conditional'),
     ...getJsonExamples('software-post-put-optional'),
   }
 
-  return exampleBodyObj
+  return JSON.stringify(exampleBodyObj)
 }
 
 /**
@@ -179,6 +176,7 @@ function addConditionalFields(bodyObject: Software, dataObj: Software): void {
  * @param dataObj - The source object from which optional fields will be copied.
  */
 // skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
+// eslint-disable-next-line complexity
 function addOptionalFields(bodyObject: Software, dataObj: Software): void {
   if (Object.prototype.hasOwnProperty.call(dataObj, 'softwareType')) {
     bodyObject.softwareType = dataObj.softwareType
@@ -257,7 +255,7 @@ function addOptionalFields(bodyObject: Software, dataObj: Software): void {
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'licenseExpirationDate ')) {
-    bodyObject.licenseExpirationDate  = dataObj.licenseExpirationDate
+    bodyObject.licenseExpirationDate = dataObj.licenseExpirationDate
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'approvalStatus')) {
@@ -369,12 +367,12 @@ export default class EmasserSoftwareBaseline extends Command {
 
     // Check if a Software json file was provided
     if (fs.existsSync(flags.dataFile)) {
-      let data: any
+      let data
       try {
         data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
-      } catch (error: any) {
+      } catch (error: unknown) {
         console.error('\x1B[91m» Error reading Software data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
-        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+        console.error('\x1B[93m→ Error message was:', getErrorMessage(error), '\x1B[0m')
         process.exit(1)
       }
 
@@ -397,10 +395,11 @@ export default class EmasserSoftwareBaseline extends Command {
     // Call the endpoint
     swBaseline.addSwBaselineAssets(flags.systemId, requestBodyArray).then((response: SwBaselineResponsePostPut) => {
       console.log(colorize(outputFormat(response, false)))
-    }).catch((error: any) => console.error(colorize(outputError(error))))
+    }).catch((error: unknown) => displayError(error, 'Software Baseline'))
   }
 
-  protected async catch(err: Error & {exitCode?: number}): Promise<any> { // skipcq: JS-0116
+  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
+  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {

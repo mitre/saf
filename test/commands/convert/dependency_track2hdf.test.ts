@@ -1,5 +1,3 @@
-/* eslint-disable array-bracket-newline */
-/* eslint-disable array-element-newline */
 import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
@@ -11,7 +9,8 @@ describe('Test Dependency-Track', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert dependency_track2hdf',
+    await runCommand<{name: string}>([
+      'convert dependency_track2hdf',
       '-i', path.resolve('./test/sample_data/dependency_track/sample_input_report/fpf-default.json'),
       '-o', `${tmpobj.name}/dependencytracktest.json`,
     ])
@@ -30,7 +29,8 @@ describe('Test Dependency-Track withraw flag', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter with raw output test', async () => {
-    await runCommand<{name: string}>(['convert dependency_track2hdf',
+    await runCommand<{name: string}>([
+      'convert dependency_track2hdf',
       '-i', path.resolve('./test/sample_data/dependency_track/sample_input_report/fpf-default.json'),
       '-o', `${tmpobj.name}/dependencytracktest.json`, '-w',
     ])
@@ -53,7 +53,8 @@ describe('Test Dependency-Track optional attributes (e.g. vulnerability.cwes, an
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert dependency_track2hdf',
+    await runCommand<{name: string}>([
+      'convert dependency_track2hdf',
       '-i', path.resolve('./test/sample_data/dependency_track/sample_input_report/fpf-optional-attributes.json'),
       '-o', `${tmpobj.name}/dependencytracktest.json`,
     ])
@@ -73,7 +74,8 @@ describe('Test Dependency-Track no vulnerabilities', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert dependency_track2hdf',
+    await runCommand<{name: string}>([
+      'convert dependency_track2hdf',
       '-i', path.resolve('./test/sample_data/dependency_track/sample_input_report/fpf-no-vulnerabilities.json'),
       '-o', `${tmpobj.name}/dependencytracktest.json`,
     ])
@@ -93,7 +95,8 @@ describe('Test Dependency-Track with attributions', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert dependency_track2hdf',
+    await runCommand<{name: string}>([
+      'convert dependency_track2hdf',
       '-i', path.resolve('./test/sample_data/dependency_track/sample_input_report/fpf-with-attributions.json'),
       '-o', `${tmpobj.name}/dependencytracktest.json`,
     ])
@@ -113,7 +116,8 @@ describe('Test Dependency-Track info vulnerability', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
 
   it('hdf-converter output test', async () => {
-    await runCommand<{name: string}>(['convert dependency_track2hdf',
+    await runCommand<{name: string}>([
+      'convert dependency_track2hdf',
       '-i', path.resolve('./test/sample_data/dependency_track/sample_input_report/fpf-info-vulnerability.json'),
       '-o', `${tmpobj.name}/dependencytracktest.json`,
     ])

@@ -1,3 +1,4 @@
+/* eslint-disable complexity */
 import {
   AnchoreGrypeMapper,
   ASFFResults,

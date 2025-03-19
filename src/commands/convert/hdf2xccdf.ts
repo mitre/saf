@@ -10,9 +10,7 @@ export default class HDF2XCCDF extends BaseCommand<typeof HDF2XCCDF> {
 
   static readonly description = 'Translate an HDF file into an XCCDF XML file'
 
-  static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -i hdf_input.json -o xccdf-results.xml',
-  ]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i hdf_input.json -o xccdf-results.xml',]
 
   static readonly flags = {
     input: Flags.string({

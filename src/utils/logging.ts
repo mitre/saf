@@ -1,6 +1,6 @@
 import {createLogger, format, transports, transport, Logger} from 'winston'
 import {ContextualizedControl, contextualizeEvaluation, ExecJSON} from 'inspecjs'
-import colors from 'colors'  
+import colors from 'colors'
 
 /**
  * Summary type represents a summary of an HDF execution.
@@ -45,9 +45,7 @@ const syslogColors = {
  */
 
 export function createWinstonLogger(mapperName: string, level = 'info'): Logger {
-  const transportList: transport[] = [
-    new transports.File({filename: 'saf-cli.log'}),
-  ]
+  const transportList: transport[] = [new transports.File({filename: 'saf-cli.log'})]
 
   if ((process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') || level === 'verbose') {
     transportList.push(new transports.Console({

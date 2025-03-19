@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {Flags} from '@oclif/core'
 import {ContextualizedEvaluation, contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
@@ -16,7 +17,7 @@ import {
   printYellow,
   saveProcessLogData} from '../../utils/oclif/cliHelper'
 import {EventEmitter} from 'events'
- 
+
 import colors from 'colors'
 import {checkbox, input, select} from '@inquirer/prompts'
 
@@ -38,7 +39,7 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     },
   ]
 
-   
+
   /*
       TODO: Find a way to make certain flags required when not using --interactive.
             In this CLI the -i and -o are required fields, but if required: is set
@@ -146,7 +147,7 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     }
   }
 
-  requiredFlagsProvided(flags: { input: any; output: any }): boolean {
+  requiredFlagsProvided(flags: {input: any; output: any}): boolean {
     let missingFlags = false
     let strMsg = 'Warning: The following errors occurred:\n'
 
@@ -199,9 +200,9 @@ function convertRows(evaluation: ContextualizedEvaluation, filename: string, fie
 async function saveCSV(filename: fs.PathLike | fs.promises.FileHandle, data: stringify.Input) {
   // CSV options
   const options = {
-    header: true,                  // Include column headers
+    header: true, // Include column headers
     columns: Object.keys(data[0]), // Ensure consistent column order
-    delimiter: ',',                // Customize delimiter (using standard comma)
+    delimiter: ',', // Customize delimiter (using standard comma)
   }
 
   try {
@@ -225,7 +226,7 @@ async function saveCSV(filename: fs.PathLike | fs.promises.FileHandle, data: str
  */
 function convertToCSV(data: stringify.Input, options: stringify.Options | undefined): Promise<string> {
   return new Promise((resolve, reject) => {
-    stringify.stringify(data, options, (err, output) => {
+    stringify.stringify(data, options, (err, output: string | PromiseLike<string>) => {
       if (err) reject(err)
       else resolve(output)
     })
@@ -326,11 +327,13 @@ async function getFlags(): Promise<any> {
   }
 
   addToProcessLogData('Process Flags ============================================')
-   
+
   for (const tagName in answers) {
-    const answerValue = _.get(answers, tagName)
-    if (answerValue !== null) {
-      addToProcessLogData(tagName + '=' + answerValue)
+    if (Object.prototype.hasOwnProperty.call(answers, tagName)) {
+      const answerValue = _.get(answers, tagName)
+      if (answerValue !== null) {
+        addToProcessLogData(tagName + '=' + answerValue)
+      }
     }
   }
 
