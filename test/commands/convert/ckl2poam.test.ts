@@ -32,6 +32,7 @@ describe('Test ckl2POAM RHEL8 example', () => {
 
     // Get the stats for the first matched file
     const fileStats = await fse.stat(path.resolve(tmpobj.name, matchingFiles[0]))
-    expect(fileStats.size).to.equal(87033) // Compare the file size (adjust as needed)
+    // Compare the file size varies between OS (87033 - 87035)
+    expect(fileStats.size).to.be.within(87000, 88000) 
   })
 })

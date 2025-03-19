@@ -75,7 +75,6 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     const {flags} = await this.parse(InspecProfile)
 
     const logger = createWinstonLogger('generate:inspect_profile', flags.logLevel)
-    const benchmarkType = flags.idType.toLocaleLowerCase()
 
     // Process the XCCDF XML file containing the profile guidance
     let xccdf: any = {}
