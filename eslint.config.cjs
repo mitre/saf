@@ -47,7 +47,7 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// TODO: May need to use the chai plugin in the future
+// TODO: May need to use the chai plugin in the future // skipcq: JS-0099
 // npm install --save-dev eslint-plugin-chai-friendly
 // And configure it into plugins: { "chai-friendly": chaiPLugin }
 //-----------------------------------------------------------------------------
