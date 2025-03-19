@@ -24,6 +24,7 @@ describe('Test Heimdall Embedded', () => {
     server = express()
       .use(predefinedLoadJSON)
       .use(express.static(staticFilesDirectory))
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
       .use((_err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
         res.status(500).send('Something broke!')
       })
@@ -45,7 +46,6 @@ describe('Test Heimdall Embedded', () => {
       const response = await axios.get('http://localhost:3000')
       const dom = new JSDOM(response.data)
       const text = dom.window.document.body.textContent
-      // expect(text).to.not.be.null // skipcq: JS-0354
       assert.isNotNull(text)
     } catch (error: unknown) {
       expect(getErrorMessage(error)).to.equal('Request failed with status code 404')
@@ -57,7 +57,6 @@ describe('Test Heimdall Embedded', () => {
       const response = await axios.get('http://localhost:3000')
       const dom = new JSDOM(response.data)
       const appDiv = dom.window.document.querySelector('#app')
-      // expect(appDiv).to.not.be.null // skipcq: JS-0354
       assert.isNotNull(appDiv)
     } catch (error: unknown) {
       expect(getErrorMessage(error)).to.equal('Request failed with status code 404')

@@ -1,4 +1,4 @@
-import {expect, assert} from 'chai'
+import {expect} from 'chai'
 import {before, after} from 'mocha'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
@@ -32,8 +32,7 @@ describe('Test attest apply', () => {
     const expected = readAndParseJSON(expectedFilePath)
 
     expect(omitHDFChangingFields(output)).to.eql(omitHDFChangingFields(expected))
-    assert.isEmpty(stderr)
-    //expect(stderr).to.be.empty
+    expect(stderr).to.be.empty.equal('')
   }
 
   it('Successfully applies a JSON attestations file', async () => {

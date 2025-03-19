@@ -358,6 +358,7 @@ function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: Record
       const trimmedLine = line.trim()
 
       // Check if the line contains a key-value pair (e.g., key=value)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
       const [key, _value_] = trimmedLine.split('=') // skipcq: JS-0356
 
       // If the key exists in the updates object, update the value

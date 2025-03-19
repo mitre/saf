@@ -2,6 +2,7 @@ import {ControlStatus} from 'inspecjs'
 
 // The hash that we will generally be working with herein
 export type ControlStatusHash = {
+  // eslint-disable-next-line no-unused-vars
   [key in ControlStatus | 'Waived']: number;
 }
 

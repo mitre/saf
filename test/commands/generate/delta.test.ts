@@ -99,7 +99,6 @@ describe('Test generate delta command', () => {
     ])
     const isFile = fs.lstatSync((`${tmpobj.name}/delta.md`)).isFile()
     assert.isTrue(isFile)
-    // expect(fs.lstatSync((`${tmpobj.name}/delta.md`)).isFile()).to.be.true
   })
 
   // should process delta using the fuzzy logic

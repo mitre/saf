@@ -52,6 +52,7 @@ export default class HDF2Condensed extends BaseCommand<typeof HDF2Condensed> {
     )) {
       const severityStatusCounts = extractStatusCounts(parsedProfile, severity)
       for (const severityTarget of severityTargets) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
         const [statusName, _severity, thresholdType] =
           severityTarget.split('.')
         _.set(

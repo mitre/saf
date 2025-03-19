@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import fs from 'fs'
 import _ from 'lodash'
 import YAML from 'yaml'

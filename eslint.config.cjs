@@ -47,7 +47,7 @@
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
-// May need to use the chai plugin in the future
+// TODO: May need to use the chai plugin in the future
 // npm install --save-dev eslint-plugin-chai-friendly
 // And configure it into plugins: { "chai-friendly": chaiPLugin }
 //-----------------------------------------------------------------------------
@@ -109,7 +109,7 @@ module.exports = [
     ],
     rules: {
       "@typescript-eslint/no-explicit-any": "error", // Disallow 'any'
-      "@typescript-eslint/no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": "warn",
       "@typescript-eslint/typedef": "error",
       
       // stylistic rules
@@ -132,7 +132,7 @@ module.exports = [
       "no-console": "off",
       "no-constant-condition": "warn",
       "no-undef": "off",
-      "no-unused-vars": "off",
+      "no-unused-vars": "warn",
       "no-unused-expressions": "error",
       "no-await-in-loop": "off",
 

@@ -6,11 +6,11 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
 
 ## Terminology
 
-- ["Heimdall"](https://github.com/mitre/heimdall2) - Our visualizer for all security result data
-- ["OASIS Heimdall Data Format (OHDF) - aka HDF"](https://saf.mitre.org/#/normalize) - Our common data format to preserve and transform security data
+- ["Heimdall"](https://github.com/mitre/heimdall2) - A visualizer for all security result data
+- ["OASIS Heimdall Data Format (OHDF) - aka HDF"](https://saf.mitre.org/#/normalize) - A common data format to preserve and transform security data
 
 >[!NOTE]
-> All mentioning of HDF in this document references the OHDF
+> All mention of HDF in this document refers to the OHDF.
 
 ## Installation
 
@@ -24,7 +24,7 @@ The SAF CLI is the successor to [Heimdall Tools](https://github.com/mitre/heimda
       * [Update via Windows Installer](#update-via-windows-installer)
 
 ## Developers 
-For detail information about development, testing , and contributing to the SAF project refer to [MITRE SAF Development](https://github.com/mitre/saf/blob/main/docs/contributors-guide.md)
+For detailed information about development, testing , and contributing to the SAF project refer to [MITRE SAF Development](https://github.com/mitre/saf/blob/main/docs/contributors-guide.md)
 
 ## Usage
 
@@ -34,7 +34,7 @@ For detail information about development, testing , and contributing to the SAF 
       * [Create Attestations](#create-attestations)
       * [Apply Attestations](#apply-attestations)
 
-### [Get Help with Converts](#converts)
+### [Get Help with Convert Command](#convert-command)
 
 ### Convert HDF to Other Formats
 
@@ -291,13 +291,13 @@ EXAMPLES
   $ saf attest apply -i hdf1.json hdf2.json attestation.xlsx -o outputDir
 ```
 [top](#usage)
-### Converts
+### Convert Command
 
 Translating your data to and from Heimdall Data Format (HDF) is done using the `saf convert` command.
 
-Want to Recommend or Help Develop a Converter? See [on how to get started](https://github.com/mitre/saf/wiki/How-to-recommend-development-of-a-mapper) 📰
+Want to Recommend or Help Develop a Converter? See [how to get started](https://github.com/mitre/saf/wiki/How-to-recommend-development-of-a-mapper) 📰
 
-[top](#get-help-with-converts)
+[top](#get-help-with-convert-command)
 ### Convert From HDF
 
 [top](#convert-other-formats-to-hdf)

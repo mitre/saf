@@ -94,6 +94,7 @@ export function calculateSeverityCounts(summary: Record<string, Record<string, n
   for (const [severity, severityTargets] of Object.entries(severityTargetsObject)) {
     const severityStatusCounts = extractStatusCounts(parsedProfile, severity)
     for (const severityTarget of severityTargets) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
       const [statusName, _severity, thresholdType] = severityTarget.split('.')
       _.set(summary, severityTarget.replace(`.${thresholdType}`, ''), _.get(severityStatusCounts, renameStatusName(statusName)))
     }

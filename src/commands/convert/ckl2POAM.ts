@@ -2,7 +2,6 @@
 import {Flags} from '@oclif/core'
 import fs from 'fs'
 import path from 'path'
-import _ from 'lodash'
 import {createLogger, format, transports} from 'winston'
 import xml2js from 'xml2js'
 import {STIG, Vulnerability, STIGHolder} from '../../types/STIG'
