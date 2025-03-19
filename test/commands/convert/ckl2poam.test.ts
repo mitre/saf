@@ -34,11 +34,11 @@ describe('Test ckl2POAM RHEL8 example', () => {
   it('generates the POAM successfully', async () => {
     expect(matchingFiles).to.have.lengthOf.above(0, 'No file found matching the pattern')
   })
-  
+
   it('provides the correct output', async () => {
     // Get the stats for the first matched file
     const fileStats = await fse.stat(path.resolve(tmpobj.name, matchingFiles[0]))
     // Compare the file size, varies between OS (87033 - 87035)
-    expect(fileStats.size).to.be.within(87000, 88000) 
+    expect(fileStats.size).to.be.within(87000, 88000)
   })
 })
