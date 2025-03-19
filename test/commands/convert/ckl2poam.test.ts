@@ -1,5 +1,5 @@
 import {expect} from 'chai'
-import {before, after} from 'mocha'
+import {before} from 'mocha'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
 import path from 'path'
@@ -12,17 +12,16 @@ function delay(ms: number) {
 
 describe('Test ckl2POAM RHEL8 example', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
-  let stdout: string | string[], stderr
   let matchingFiles: string[]
 
   before(async () => {
-    ({stdout, stderr} = await runCommand<{name: string}>([
+    await runCommand<{name: string}>([
       'convert ckl2POAM',
       '-i', path.resolve('./test/sample_data/checklist/sample_input_report/converted-RHEL8V1R3.ckl'),
       '-o', `${tmpobj.name}`,
       '-d test',
       '-O testOrg',
-    ]))
+    ])
 
     await delay(1500)
     const filePattern = /^converted-RHEL8V1R3.ckl-\d{4}-\d{2}-\d{2}-\d{4}.xlsm$/
