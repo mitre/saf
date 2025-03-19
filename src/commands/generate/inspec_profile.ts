@@ -76,8 +76,6 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     const {flags} = await this.parse(InspecProfile)
 
     const logger = createWinstonLogger('generate:inspect_profile', flags.logLevel)
-    const benchmarkType = flags.idType.toLocaleLowerCase()
-    logger.info(`Processing Benchmark Type: ${(benchmarkType === 'cis') ? 'CIS' : 'STIG'}`)
 
     // Process the XCCDF XML file containing the profile guidance
     let xccdf: any = {}
@@ -113,14 +111,13 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     }
     const xmlDoc = new XMLParser(options).parse(xccdf)
     let outDir = ''
+    const isSTIG = (_.get(xmlDoc, 'xccdf:Benchmark.xccdf:title.#text') === undefined)
+    logger.info(`Processing Benchmark Type: ${(isSTIG) ? 'STIG' : 'CIS'}`)
     if (flags.output === 'profile') {
-      const benchmarkTitle = (benchmarkType === 'cis') ?
-        _.get(xmlDoc, 'xccdf:Benchmark.xccdf:title.#text') :
-        _.get(xmlDoc, 'Benchmark.title')
-      outDir = (benchmarkTitle === undefined) ?
-        flags.output :
-        benchmarkTitle.replace('Security Technical Implementation Guide', 'stig-baseline')
-          .replaceAll(' ', '-').toLowerCase()
+      const benchmarkTitle = isSTIG ? _.get(xmlDoc, 'Benchmark.title') : _.get(xmlDoc, 'xccdf:Benchmark.xccdf:title.#text')
+      outDir = (benchmarkTitle === undefined)
+        ? flags.output
+        : benchmarkTitle.replace('Security Technical Implementation Guide', 'stig-baseline').replaceAll(' ', '-').toLowerCase()
     } else {
       outDir = flags.output
     }
@@ -179,9 +176,9 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
 
     // Set profile default values (values used to generate the inspect.yml file)
     logger.info('Generating markdown and yaml files...')
-    const readmeObj = (benchmarkType === 'cis') ?
-      getCISReadmeContent(xmlDoc) :
-      getDISAReadmeContent(xmlDoc)
+    const readmeObj = (isSTIG)
+      ? getDISAReadmeContent(xmlDoc)
+      : getCISReadmeContent(xmlDoc)
 
     // Set default values for the inspec.yml file
     profile.name = readmeObj.profileName
