@@ -137,10 +137,10 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     // -------------------------------------------------------------------------
     // Check if we have a XCCDF XML or URL file containing the new/updated
     // profile guidance - Must provide either File or URL
-    let xccdfXmlFile: string = ''
-    let xccdfContent: string = ''
+    let xccdfXmlFile = ''
+    let xccdfContent = ''
     if (flags.xccdfXmlFile) {
-      xccdfXmlFile = path.basename(xccdfXmlFile)
+      xccdfXmlFile = path.basename(flags.xccdfXmlFile)
       logger.info(`Verifying that the XCCDF file is valid: ${xccdfXmlFile}...`)
       if (isXccdfFile(flags.xccdfXmlFile, logger)) {
         xccdfContent = fs.readFileSync(flags.xccdfXmlFile, 'utf8')
@@ -166,16 +166,18 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         if (!zipFile) {
           throw new Error('Failed to extract zip file name from URL')
         }
-        xccdfXmlFile = zipFile
+
         const zipFilePath = path.join(tmpobj.name, zipFile)
 
         try {
           await downloadFile(url, zipFilePath)
           logger.debug('  Valid XCCDF URL provided')
           const fileNameToExtract = '-xccdf.xml'
-          fileBuffer = extractFileFromZip(zipFilePath, fileNameToExtract)
+          const result = extractFileFromZip(zipFilePath, fileNameToExtract)
+          fileBuffer = result[0]
+          xccdfXmlFile = result[1].split('/')[1]
           if (fileBuffer) {
-            logger.debug(`  Extracted XCCDF file from: ${zipFile}`)
+            logger.debug(`  Extracted XCCDF file from: ${xccdfXmlFile}`)
             xccdfContent = fileBuffer.toString()
           }
         } catch (error) {
@@ -219,7 +221,8 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         }
       }
     } else {
-      throw new Error('Controls folder not specified or does not exist')
+      logger.error(`Profile Controls directory (folder) not specified or does not exist: ${flags.controlsDir}`)
+      process.exit(1)
     }
 
     // Shorten the controls directory to sow the 'controls' directory and its parent

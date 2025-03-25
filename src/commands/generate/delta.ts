@@ -801,31 +801,31 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     return !missingFlags
   }
 
-  async getXccdfContent(type: string, from: string): Promise<{xccdfFIle: string, xccdfContent: string}> {
+  async getXccdfContent(xccdfType: string, xccdfInput: string): Promise<{xccdfFIle: string, xccdfContent: string}> {
     let xccdfFIle = ''
     let xccdfContent = ''
 
-    if (type === 'File') {
-      xccdfFIle = path.basename(from)
+    if (xccdfType === 'File') {
+      xccdfFIle = path.basename(xccdfInput)
       this.logThis(`Verifying that the XCCDF file is valid: ${xccdfFIle}...`, 'info')
-      if (isXccdfFile(from)) {
-        xccdfContent = fs.readFileSync(from, 'utf8')
+      if (isXccdfFile(xccdfInput)) {
+        xccdfContent = fs.readFileSync(xccdfInput, 'utf8')
         this.logThis(`  Retrieved XCCDF from: ${xccdfFIle}`, 'debug')
       } else {
         saveLogs('Processing XCCDF JSON Summary file failed.')
         await sleep(2000).then(() => process.exit(1))
       }
     } else {
-      this.logThis(`Verifying that the URL contains a valid XCCDF: ${from}...`, 'info')
+      this.logThis(`Verifying that the URL contains a valid XCCDF: ${xccdfInput}...`, 'info')
       const tmpobj = tmp.dirSync({unsafeCleanup: true})
       let fileBuffer: Buffer | null = null
 
-      if (from === undefined) {
+      if (xccdfInput === undefined) {
         saveLogs('URL flag is undefined or invalid.')
         await sleep(2000).then(() => process.exit(1))
       }
 
-      let url = from
+      const url = xccdfInput
       await (async () => {
         const zipFile = url.split('/').pop() // Extracts the last segment
 
@@ -833,15 +833,17 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           throw new Error('Failed to extract zip file name from URL')
         }
         const zipFilePath = path.join(tmpobj.name, zipFile)
-        xccdfFIle = zipFile
 
         try {
           await downloadFile(url, zipFilePath)
           this.logThis('  Valid XCCDF URL provided', 'debug')
           const fileNameToExtract = '-xccdf.xml'
-          fileBuffer = extractFileFromZip(zipFilePath, fileNameToExtract)
+          // fileBuffer = extractFileFromZip(zipFilePath, fileNameToExtract)
+          const result = extractFileFromZip(zipFilePath, fileNameToExtract)
+          fileBuffer = result[0]
+          xccdfFIle = result[1].split('/')[1]
           if (fileBuffer) {
-            this.logThis(`  Extracted XCCDF from: ${zipFile}`, 'debug')
+            this.logThis(`  Extracted XCCDF from: ${xccdfFIle}`, 'debug')
             xccdfContent = fileBuffer.toString()
           }
         } catch (error) {
@@ -875,7 +877,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     return mappedDir
   }
 
-  logThis(logMsg: string, logLevel: string) {
+  logThis(logMsg: string, logLevel: string) { // skipcp: JS-0105
     switch (logLevel) {
       case 'info': {
         GenerateDelta.logger.info(logMsg)
@@ -889,6 +891,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       }
       case 'error': {
         GenerateDelta.logger.error(logMsg)
+        addToProcessLogData(logMsg)
+        break
+      }
+      default: {
+        GenerateDelta.logger.warn(logMsg)
         addToProcessLogData(logMsg)
         break
       }

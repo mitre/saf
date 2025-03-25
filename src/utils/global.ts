@@ -355,7 +355,8 @@ export async function downloadFile(url: string | undefined, outputPath: string):
  * @param fileName - The name of the file to extract from the ZIP archive.
  * @returns The content of the extracted file as a Buffer, or null if the file is not found or an error occurs.
  */
-export function extractFileFromZip(zipPath: string, fileName: string): Buffer | null {
+// export function extractFileFromZip(zipPath: string, fileName: string): Buffer | null {
+export function extractFileFromZip(zipPath: string, fileName: string): [Buffer | null, string] {
   try {
     const zip = new AdmZip(zipPath)
     const zipEntries = zip.getEntries()
@@ -363,17 +364,12 @@ export function extractFileFromZip(zipPath: string, fileName: string): Buffer | 
     // Look for the file (it will cycle trough all files to include sub-folders)
     for (const entry of zipEntries) {
       if (entry.entryName.endsWith(fileName)) {
-        // console.log(`Found file: ${entry.entryName}`)
-        return entry.getData() // Returns file content as a Buffer
+        // Returns file content as a Buffer and file name
+        return [entry.getData(), entry.entryName]
       }
     }
-
-    // console.log(`File "${fileName}" not found in the ZIP archive.`)
-    // return null
     throw new Error(`File not found in the ZIP archived: ${fileName}`)
   } catch (error) {
-    // console.error('Error extracting file:', getErrorMessage(error))
-    // return null
     throw new Error(`Error extracting file -> ${getErrorMessage(error)}`)
   }
 }
