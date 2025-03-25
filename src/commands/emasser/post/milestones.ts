@@ -13,9 +13,9 @@ const CMD_HELP = 'saf emasser post milestones -h or --help'
 export default class EmasserPostMilestones extends Command {
   static readonly usage = '<%= command.id %> -s <value> -p <value> -d <description> -c <completion-date>'
 
-  static readonly description = 'Add milestones to one or many POA&M items in a system\n' +
-    'Milestones provide specific information about the status\n' +
-    'of processes used to mitigate risks and weakness findings.\n'
+  static readonly description = 'Add milestones to one or many POA&M items in a system\n'
+    + 'Milestones provide specific information about the status\n'
+    + 'of processes used to mitigate risks and weakness findings.\n'
 
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-d,--description] [-c,--scheduledCompletionDate]']
 

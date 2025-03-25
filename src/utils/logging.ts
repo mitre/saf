@@ -14,13 +14,13 @@ import colors from 'colors'
  */
 
 export type Summary = {
-  profileNames: string[];
-  controlCount: number;
-  passedCount: number;
-  failedCount: number;
-  notApplicableCount: number;
-  notReviewedCount: number;
-  errorCount: number;
+  profileNames: string[]
+  controlCount: number
+  passedCount: number
+  failedCount: number
+  notApplicableCount: number
+  notReviewedCount: number
+  errorCount: number
 }
 
 // Use user defined colors. Used by the console log transporter
@@ -91,13 +91,13 @@ export function getHDFSummary(hdf: ExecJSON.Execution): string {
     errorCount: 0,
   }
   const contextualizedEvaluation = contextualizeEvaluation(hdf)
-  contextualizedEvaluation.contains.forEach(profile => {
+  contextualizedEvaluation.contains.forEach((profile) => {
     summaryObject.profileNames.push(profile.data.name)
   })
   const controls: readonly ContextualizedControl[] = contextualizedEvaluation.contains.flatMap(
     profile => profile.contains,
   )
-  controls.forEach(control => {
+  controls.forEach((control) => {
     switch (control.hdf.status) {
       case 'Passed': {
         summaryObject.passedCount += 1

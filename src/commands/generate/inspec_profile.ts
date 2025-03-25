@@ -11,12 +11,12 @@ import {Logger} from 'winston'
 import _ from 'lodash'
 
 export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
-  static readonly usage =
-    '<%= command.id %> -X <[stig or cis]-xccdf-xml> [--interactive] [-L info|warn|debug|verbose] ' +
-    '[-m <metadata-json>] [-s] [-T rule|group|cis|version] [-O <oval-xccdf-xml>] [-o <output-folder>]'
+  static readonly usage
+    = '<%= command.id %> -X <[stig or cis]-xccdf-xml> [--interactive] [-L info|warn|debug|verbose] '
+      + '[-m <metadata-json>] [-s] [-T rule|group|cis|version] [-O <oval-xccdf-xml>] [-o <output-folder>]'
 
-  static readonly description =
-    'Generate a new skeleton profile based on a (STIG or CIS) XCCDF benchmark file'
+  static readonly description
+    = 'Generate a new skeleton profile based on a (STIG or CIS) XCCDF benchmark file'
 
   static readonly examples = [
     {
@@ -40,9 +40,9 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     metadata: Flags.string({
       char: 'm',
       required: false,
-      description: 'Path to a JSON file with additional metadata for the inspec.yml\n' +
-        'The metadata Json is of the following format:\n' +
-        '  {"maintainer": string, "copyright": string, "copyright_email": string, "license": string, "version": string}',
+      description: 'Path to a JSON file with additional metadata for the inspec.yml\n'
+        + 'The metadata Json is of the following format:\n'
+        + '  {"maintainer": string, "copyright": string, "copyright_email": string, "license": string, "version": string}',
     }),
     singleFile: Flags.boolean({
       char: 's',
@@ -55,9 +55,9 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
       required: false,
       default: 'rule',
       options: ['rule', 'group', 'cis', 'version'],
-      description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'),\n" +
-       "'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1),\n" +
-       "'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
+      description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'),\n"
+        + "'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1),\n"
+        + "'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
     }),
     ovalDefinitions: Flags.string({
       char: 'O',
@@ -227,7 +227,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
         controls,
       )
     } else {
-      profile.controls.forEach(control => {
+      profile.controls.forEach((control) => {
         logger.debug(`Writing control to: ${path.join(outDir, 'controls', control.id + '.rb')}`)
         fs.writeFileSync(
           path.join(outDir, 'controls', control.id + '.rb'),
@@ -263,8 +263,8 @@ function getDISAReadmeContent(_xmlDoc: any): InspecReadme {
 
   // releaseInfoObj is in the form of:
   // {"#text":"Release: 1 Benchmark Date: 24 Jul 2024","@_id":"release-info"}
-  const releaseInfoObj = Array.isArray(plainTextObj) ?
-    _.find(plainTextObj, {'@_id': 'release-info'}) : plainTextObj
+  const releaseInfoObj = Array.isArray(plainTextObj)
+    ? _.find(plainTextObj, {'@_id': 'release-info'}) : plainTextObj
 
   // stigRelDate is in the form of: ["Release"," 1 Benchmark Date"," 24 Jul 2024"]
   const stigRelDate = releaseInfoObj['#text'].split(':')
@@ -318,8 +318,8 @@ function getCISReadmeContent(_xmlDoc: any): InspecReadme {
 }
 
 function generateReadme(contentObj: InspecReadme, outDir: string, logger: Logger) {
-  const readmeContent =
-`# ${contentObj.profileTitle}
+  const readmeContent
+= `# ${contentObj.profileTitle}
 This InSpec Profile was created to facilitate testing and auditing of \`${contentObj.profileShortName}\`
 infrastructure and applications when validating compliancy with ${contentObj.profileCompliance}
 requirements.
@@ -583,10 +583,10 @@ Additionally both Heimdall applications can be deployed via docker, kubernetes, 
 
 [top](#table-of-contents)
 ## Authors
-${contentObj.profileType === 'CIS' ?
-    '[Center for Internet Security (CIS)](https://www.cisecurity.org/)' :
-    '[Defense Information Systems Agency (DISA)](https://www.disa.mil/)\n\n' +
-  '[STIG support by DISA Risk Management Team and Cyber Exchange](https://public.cyber.mil/)'
+${contentObj.profileType === 'CIS'
+    ? '[Center for Internet Security (CIS)](https://www.cisecurity.org/)'
+    : '[Defense Information Systems Agency (DISA)](https://www.disa.mil/)\n\n'
+      + '[STIG support by DISA Risk Management Team and Cyber Exchange](https://public.cyber.mil/)'
 }
 
 [MITRE Security Automation Framework Team](https://saf.mitre.org)
@@ -610,12 +610,12 @@ No other use other than that granted to the U. S. Government, or to those acting
 For further information, please contact The MITRE Corporation, Contracts Management Office, 7515 Colshire Drive, McLean, VA  22102-7539, (703) 983-6000.
 
 ## NOTICE
-${contentObj.profileType === 'CIS' ?
-    '[CIS Benchmarks are published by Center for Internet Security](https://www.cisecurity.org/cis-benchmarks)' :
-    '[DISA STIGs are published by DISA IASE](https://public.cyber.mil/stigs/)'
+${contentObj.profileType === 'CIS'
+    ? '[CIS Benchmarks are published by Center for Internet Security](https://www.cisecurity.org/cis-benchmarks)'
+    : '[DISA STIGs are published by DISA IASE](https://public.cyber.mil/stigs/)'
 }
 `
-  fs.writeFile(path.join(outDir, 'README.md'), readmeContent, err => {
+  fs.writeFile(path.join(outDir, 'README.md'), readmeContent, (err) => {
     if (err) {
       logger.error(`Error saving the README.md file to: ${outDir}. Cause: ${err}`)
     } else {
@@ -625,8 +625,8 @@ ${contentObj.profileType === 'CIS' ?
 }
 
 function generateYaml(profile: Profile, outDir: string, logger: Logger) {
-  const inspecYmlContent = profile.createInspecYaml() +
-`
+  const inspecYmlContent = profile.createInspecYaml()
+    + `
 
 ### INPUTS ###
 # Inputs are variables that can be referenced by any control in the profile,
@@ -647,7 +647,7 @@ function generateYaml(profile: Profile, outDir: string, logger: Logger) {
 inputs:
 `
 
-  fs.writeFile(path.join(outDir, 'inspec.yml'), inspecYmlContent, err => {
+  fs.writeFile(path.join(outDir, 'inspec.yml'), inspecYmlContent, (err) => {
     if (err) {
       logger.error(`Error saving the inspec.yml file to: ${outDir}. Cause: ${err}`)
     } else {
@@ -657,8 +657,8 @@ inputs:
 }
 
 function generateLicense(outDir: string, logger: Logger) {
-  const licensesContent =
-`Licensed under the apache-2.0 license, except as noted below.  
+  const licensesContent
+= `Licensed under the apache-2.0 license, except as noted below.  
     
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -672,7 +672,7 @@ are permitted provided that the following conditions are met:
   used to endorse or promote products derived from this software without specific prior
   written permission.
 `
-  fs.writeFile(path.join(outDir, 'LICENSE.md'), licensesContent, err => {
+  fs.writeFile(path.join(outDir, 'LICENSE.md'), licensesContent, (err) => {
     if (err) {
       logger.error(`Error saving the LICENSE file to: ${outDir}. Cause: ${err}`)
     } else {
@@ -682,8 +682,8 @@ are permitted provided that the following conditions are met:
 }
 
 function generateNotice(outDir: string, logger: Logger) {
-  const noticeContent =
-`MITRE grants permission to reproduce, distribute, modify, and otherwise use this
+  const noticeContent
+= `MITRE grants permission to reproduce, distribute, modify, and otherwise use this
 software to the extent permitted by the licensed terms provided in the LICENSE.md
 file included with this project.
     
@@ -696,7 +696,7 @@ express written permission of The MITRE Corporation.
 For further information, please contact The MITRE Corporation, Contracts Management
 Office, 7515 Colshire Drive, McLean, VA 22102-7539, (703) 983-6000.
 `
-  fs.writeFile(path.join(outDir, 'NOTICE.md'), noticeContent, err => {
+  fs.writeFile(path.join(outDir, 'NOTICE.md'), noticeContent, (err) => {
     if (err) {
       logger.error(`Error saving the NOTICE.md file to: ${outDir}. Cause: ${err}`)
     } else {
@@ -706,8 +706,8 @@ Office, 7515 Colshire Drive, McLean, VA 22102-7539, (703) 983-6000.
 }
 
 function generateRubocopYml(outDir: string, logger: Logger) {
-  const robocopContent =
-`AllCops:
+  const robocopContent
+= `AllCops:
   NewCops: enable
   Exclude:
   - "libraries/**/*"
@@ -876,7 +876,7 @@ Style/StringChars: # new in 1.12
 Style/SwapValues: # new in 1.1
   Enabled: true
 `
-  fs.writeFile(path.join(outDir, '.rubocop.yml'), robocopContent, err => {
+  fs.writeFile(path.join(outDir, '.rubocop.yml'), robocopContent, (err) => {
     if (err) {
       logger.error(`Error saving the .rubocop.yml file to: ${outDir}. Cause: ${err}`)
     } else {
@@ -886,10 +886,10 @@ Style/SwapValues: # new in 1.1
 }
 
 function generateGemRc(outDir: string, logger: Logger) {
-  const gemRc =
-`gem: --no-document
+  const gemRc
+= `gem: --no-document
 `
-  fs.writeFile(path.join(outDir, '.gemrc'), gemRc, err => {
+  fs.writeFile(path.join(outDir, '.gemrc'), gemRc, (err) => {
     if (err) {
       logger.error(`Error saving the .gemrc file to: ${outDir}. Cause: ${err}`)
     } else {
@@ -899,8 +899,8 @@ function generateGemRc(outDir: string, logger: Logger) {
 }
 
 function generateGemFile(outDir: string, logger: Logger) {
-  const gemFileContent =
-`# frozen_string_literal: true
+  const gemFileContent
+= `# frozen_string_literal: true
 
 source 'https://rubygems.org'
 gem 'highline'
@@ -927,7 +927,7 @@ source 'https://rubygems.cinc.sh/' do
   gem 'inspec-core'
 end
 `
-  fs.writeFile(path.join(outDir, 'Gemfile'), gemFileContent, err => {
+  fs.writeFile(path.join(outDir, 'Gemfile'), gemFileContent, (err) => {
     if (err) {
       logger.error(`Error saving the Gemfile file to: ${outDir}. Cause: ${err}`)
     } else {
@@ -937,8 +937,8 @@ end
 }
 
 function generateRakeFile(outDir: string, logger: Logger) {
-  const rakefileContent =
-`# frozen_string_literal: true
+  const rakefileContent
+= `# frozen_string_literal: true
 
 # !/usr/bin/env rake
 
@@ -963,7 +963,7 @@ end
 desc 'pre-commit checks'
 task pre_commit_checks: [:lint, 'inspec:check']
 `
-  fs.writeFile(path.join(outDir, 'Rakefile'), rakefileContent, err => {
+  fs.writeFile(path.join(outDir, 'Rakefile'), rakefileContent, (err) => {
     if (err) {
       logger.error(`Error saving the Rakefile file to: ${outDir}. Cause: ${err}`)
     } else {
@@ -973,8 +973,8 @@ task pre_commit_checks: [:lint, 'inspec:check']
 }
 
 function generateGitIgnoreFile(outDir: string, logger: Logger) {
-  const gitignoreContent =
-`.DS_Store
+  const gitignoreContent
+= `.DS_Store
 *.gem
 *.rbc
 /.config
@@ -1050,7 +1050,7 @@ report.md
 check-results.txt
 kitchen.local.ec2.yml
 `
-  fs.writeFile(path.join(outDir, '.gitignore'), gitignoreContent, err => {
+  fs.writeFile(path.join(outDir, '.gitignore'), gitignoreContent, (err) => {
     if (err) {
       logger.error(`Error saving the .gitignore file to: ${outDir}. Cause: ${err}`)
     } else {

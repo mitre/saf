@@ -2,26 +2,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 declare module '@mitre/splunk-sdk-no-env' {
   export type SplunkConfig = {
-    scheme: string;
-    host: string;
-    port?: number;
-    username?: string;
-    password?: string;
-    index: string;
-    owner?: string;
-    app?: string;
-    sessionKey?: string;
-    autologin?: boolean;
-    version?: string;
-    insecure?: boolean;
+    scheme: string
+    host: string
+    port?: number
+    username?: string
+    password?: string
+    index: string
+    owner?: string
+    app?: string
+    sessionKey?: string
+    autologin?: boolean
+    version?: string
+    insecure?: boolean
   }
 
   export type jobTrackCallbacks = {
-    done?: (job: Job) => void;
-    ready?: (job: Job) => void;
-    progress?: (job: Job) => void;
-    failed?: (job: Job) => void;
-    error?: (err: any) => void;
+    done?: (job: Job) => void
+    ready?: (job: Job) => void
+    progress?: (job: Job) => void
+    failed?: (job: Job) => void
+    error?: (err: any) => void
   }
 
   class Http {
@@ -41,7 +41,7 @@ declare module '@mitre/splunk-sdk-no-env' {
 
     submitEvent(
       event: string,
-      config: {sourcetype: string; index: string},
+      config: {sourcetype: string, index: string},
       callback: (error: any) => void
     ): void
   }
@@ -66,7 +66,7 @@ declare module '@mitre/splunk-sdk-no-env' {
       params: {count: number},
       callback: (
         err: any,
-        results: {fields: string[]; rows: string[]},
+        results: {fields: string[], rows: string[]},
         job: Job
       ) => void
     ): void
@@ -81,10 +81,9 @@ declare module '@mitre/splunk-sdk-no-env' {
     jobs(): Jobs
 
     requestOptions: {
-      strictSSL: boolean;
+      strictSSL: boolean
     }
   }
 }
 
 declare module '@mitre/splunk-sdk-no-env/lib/platform/client/jquery_http';
-

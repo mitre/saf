@@ -5,14 +5,14 @@ import {checkInput, checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Scoutsuite2HDF extends BaseCommand<typeof Scoutsuite2HDF> {
-  static readonly usage =
-    '<%= command.id %> -i <scoutsuite-results-js> -o <hdf-scan-results-json> [-h] [-w]'
+  static readonly usage
+    = '<%= command.id %> -i <scoutsuite-results-js> -o <hdf-scan-results-json> [-h] [-w]'
 
-  static readonly description =
-    'Translate a ScoutSuite results from a Javascript object into a Heimdall Data Format JSON file\n' +
-    'Note: Currently this mapper only supports AWS.'
+  static readonly description
+    = 'Translate a ScoutSuite results from a Javascript object into a Heimdall Data Format JSON file\n'
+      + 'Note: Currently this mapper only supports AWS.'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i scoutsuite-results.js -o output-hdf-name.json',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i scoutsuite-results.js -o output-hdf-name.json']
 
   static readonly flags = {
     input: Flags.string({

@@ -7,7 +7,7 @@ export function extractSTIGUrl(findingDetails: string): string {
   const matches = findingDetails.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w\-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[.!/\\\w]*))?)/gs) // skipcq: JS-0113
   if (matches) {
     let match = ''
-    matches.forEach(link => {
+    matches.forEach((link) => {
       const url = new URL(link)
       if (url.host === 'dl.dod.cyber.mil') {
         match = url.pathname.split('/').pop()?.replace('.zip', '') || ''

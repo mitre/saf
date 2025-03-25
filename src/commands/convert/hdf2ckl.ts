@@ -11,20 +11,20 @@ import {
 } from '@mitre/hdf-converters'
 
 export default class HDF2CKL extends Command {
-  static readonly usage =
-    '<%= command.id %> -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] ' +
-    '[--profilename <value>] [--profiletitle <value>] [--version <value>] [--releasenumber <value>] ' +
-    '[--releasedate <value>] [--marking <value>] [-H <value>] [-I <value>] [-M <value>] [-F <value>] ' +
-    '[--targetcomment <value>] [--role Domain Controller|Member Server|None|Workstation] ' +
-    '[--assettype Computing|Non-Computing] [--techarea |Application Review|Boundary Security|' +
-    'CDS Admin Review|CDS Technical Review|Database Review|Domain Name System (DNS)|Exchange Server|' +
-    'Host Based System Security (HBSS)|Internal Network|Mobility|Other Review|Releasable Networks (REL)|' +
-    'Releaseable Networks (REL)|Traditional Security|UNIX OS|VVOIP Review|Web Review|Windows OS] ' +
-    '[--stigguid <value>] [--targetkey <value>] [--webdbsite <value> --webordatabase] ' +
-    '[--webdbinstance <value> ] [--vulidmapping gid|id]'
+  static readonly usage
+    = '<%= command.id %> -i <hdf-scan-results-json> -o <output-ckl> [-h] [-m <metadata>] '
+      + '[--profilename <value>] [--profiletitle <value>] [--version <value>] [--releasenumber <value>] '
+      + '[--releasedate <value>] [--marking <value>] [-H <value>] [-I <value>] [-M <value>] [-F <value>] '
+      + '[--targetcomment <value>] [--role Domain Controller|Member Server|None|Workstation] '
+      + '[--assettype Computing|Non-Computing] [--techarea |Application Review|Boundary Security|'
+      + 'CDS Admin Review|CDS Technical Review|Database Review|Domain Name System (DNS)|Exchange Server|'
+      + 'Host Based System Security (HBSS)|Internal Network|Mobility|Other Review|Releasable Networks (REL)|'
+      + 'Releaseable Networks (REL)|Traditional Security|UNIX OS|VVOIP Review|Web Review|Windows OS] '
+      + '[--stigguid <value>] [--targetkey <value>] [--webdbsite <value> --webordatabase] '
+      + '[--webdbinstance <value> ] [--vulidmapping gid|id]'
 
-  static readonly description =
-    'Translate a Heimdall Data Format JSON file into a DISA checklist file'
+  static readonly description
+    = 'Translate a Heimdall Data Format JSON file into a DISA checklist file'
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> -i rhel7-results.json -o rhel7.ckl --fqdn reverseproxy.example.org --hostname reverseproxy --ip 10.0.0.3 --mac 12:34:56:78:90:AB',
@@ -240,9 +240,9 @@ export default class HDF2CKL extends Command {
     }
     const inputHDF = JSON.parse(fs.readFileSync(flags.input, 'utf8'))
     let flagMetadata
-    flagMetadata = flags.metadata ?
-      JSON.parse(fs.readFileSync(flags.metadata, 'utf8')) :
-      {
+    flagMetadata = flags.metadata
+      ? JSON.parse(fs.readFileSync(flags.metadata, 'utf8'))
+      : {
         profiles: [
           {
             name: flags.profilename,

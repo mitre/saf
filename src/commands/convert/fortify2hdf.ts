@@ -5,15 +5,15 @@ import {checkSuffix, checkInput} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Fortify2HDF extends BaseCommand<typeof Fortify2HDF> {
-  static readonly usage =
-    '<%= command.id %> -i <fortify-fvdl> -o <hdf-scan-results-json> [-h] [-w]'
+  static readonly usage
+    = '<%= command.id %> -i <fortify-fvdl> -o <hdf-scan-results-json> [-h] [-w]'
 
-  static readonly description =
-    'Translate a Fortify results FVDL file into a Heimdall Data Format JSON file; ' +
-    'the FVDL file is an XML that can be extracted from the Fortify FPR project file ' +
-    'using standard file compression tools'
+  static readonly description
+    = 'Translate a Fortify results FVDL file into a Heimdall Data Format JSON file; '
+      + 'the FVDL file is an XML that can be extracted from the Fortify FPR project file '
+      + 'using standard file compression tools'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i audit.fvdl -o output-hdf-name.json',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i audit.fvdl -o output-hdf-name.json']
 
   static readonly flags = {
     input: Flags.string({

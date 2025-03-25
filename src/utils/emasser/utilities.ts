@@ -15,9 +15,9 @@ import {outputError} from './outputError'
  * @property {string} argument - Additional argument for the request.
  */
 interface CliArgs {
-  requestType: string;
-  endpoint: string;
-  argument: string;
+  requestType: string
+  endpoint: string
+  argument: string
 }
 
 /**
@@ -26,66 +26,66 @@ interface CliArgs {
  * on what endpoint being supported (see getFlagsForEndpoint)
  */
 export interface FlagOptions {
-  systemId?: OptionFlag<number>;
-  poamId?: OptionFlag<number>;
-  poamsId?: OptionFlag<number[]>;
-  milestoneId?: OptionFlag<number>;
-  milestonesId?: OptionFlag<number[]>;
-  workflowInstanceId?: OptionFlag<number>;
-  pageIndex?: OptionFlag<number|undefined>;
-  includeComments?: BooleanFlag<boolean|undefined>;
-  includeDecommissionSystems?: BooleanFlag<boolean|undefined>;
-  excludeInherited?: BooleanFlag<boolean|undefined>;
-  includeInactive?: BooleanFlag<boolean|undefined>;
-  isTemplate?: BooleanFlag<boolean>;
-  includeDitprMetrics?: BooleanFlag<boolean|undefined>;
-  includeDecommissioned?: BooleanFlag<boolean|undefined>;
-  reportsForScorecard?: BooleanFlag<boolean|undefined>;
-  latestOnly?: BooleanFlag<boolean|undefined>;
-  systemOnly?: BooleanFlag<boolean|undefined>;
-  compress?: BooleanFlag<boolean|undefined>;
-  printToStdOut?: BooleanFlag<boolean|undefined>;
-  policy?: OptionFlag<string|undefined>;
-  registrationType?: OptionFlag<string|undefined>;
-  ditprId?: OptionFlag<string|undefined>;
-  coamsId?: OptionFlag<string|undefined>;
-  roleCategory?: OptionFlag<string>;
-  role?: OptionFlag<string>;
-  acronyms?: OptionFlag<string|undefined>;
-  controlAcronyms?: OptionFlag<string|undefined>;
-  assessmentProcedures?: OptionFlag<string|undefined>;
-  ccis?: OptionFlag<string|undefined>;
-  sinceDate?: OptionFlag<string|any>;
-  scheduledCompletionDateStart?: OptionFlag<string|undefined>;
-  scheduledCompletionDateEnd?: OptionFlag<string|undefined>;
-  filename?: OptionFlag<string|any>;
-  status?: OptionFlag<string|undefined>;
-  assessmentProcedure?: OptionFlag<string>;
-  testedBy?: OptionFlag<string>;
-  testDate?: OptionFlag<string>;
-  description?: OptionFlag<string|any>;
-  artifactDescription?: OptionFlag<string|any>;
-  complianceStatus?: OptionFlag<string|any>;
-  scheduledCompletionDate?: OptionFlag<string|any>;
-  orgId?:OptionFlag<number>;
-  pageSize?: OptionFlag<number|undefined>;
-  fileName?: OptionFlag<string[]>;
-  resourceId?: OptionFlag<string[]>;
-  containerId?: OptionFlag<string[]>;
-  assetsHardwareId?: OptionFlag<string[]>;
-  assetsSoftwareId?: OptionFlag<string[]>;
-  dataFile?: OptionFlag<string>;
-  type?: OptionFlag<string|any>;
-  category?: OptionFlag<string|any>;
-  refPageNumber?: OptionFlag<string|undefined>;
-  controls?: OptionFlag<string|undefined>;
-  signedDate?: OptionFlag<string|any>;
-  expirationDate?: OptionFlag<string|any>;
-  lastReviewDate?: OptionFlag<string|any>;
-  controlAcronym?: OptionFlag<string|any>;
-  comments?: OptionFlag<string|any>;
-  workflow?: OptionFlag<string|any>;
-  name?: OptionFlag<string|any>;
+  systemId?: OptionFlag<number>
+  poamId?: OptionFlag<number>
+  poamsId?: OptionFlag<number[]>
+  milestoneId?: OptionFlag<number>
+  milestonesId?: OptionFlag<number[]>
+  workflowInstanceId?: OptionFlag<number>
+  pageIndex?: OptionFlag<number | undefined>
+  includeComments?: BooleanFlag<boolean | undefined>
+  includeDecommissionSystems?: BooleanFlag<boolean | undefined>
+  excludeInherited?: BooleanFlag<boolean | undefined>
+  includeInactive?: BooleanFlag<boolean | undefined>
+  isTemplate?: BooleanFlag<boolean>
+  includeDitprMetrics?: BooleanFlag<boolean | undefined>
+  includeDecommissioned?: BooleanFlag<boolean | undefined>
+  reportsForScorecard?: BooleanFlag<boolean | undefined>
+  latestOnly?: BooleanFlag<boolean | undefined>
+  systemOnly?: BooleanFlag<boolean | undefined>
+  compress?: BooleanFlag<boolean | undefined>
+  printToStdOut?: BooleanFlag<boolean | undefined>
+  policy?: OptionFlag<string | undefined>
+  registrationType?: OptionFlag<string | undefined>
+  ditprId?: OptionFlag<string | undefined>
+  coamsId?: OptionFlag<string | undefined>
+  roleCategory?: OptionFlag<string>
+  role?: OptionFlag<string>
+  acronyms?: OptionFlag<string | undefined>
+  controlAcronyms?: OptionFlag<string | undefined>
+  assessmentProcedures?: OptionFlag<string | undefined>
+  ccis?: OptionFlag<string | undefined>
+  sinceDate?: OptionFlag<string | any>
+  scheduledCompletionDateStart?: OptionFlag<string | undefined>
+  scheduledCompletionDateEnd?: OptionFlag<string | undefined>
+  filename?: OptionFlag<string | any>
+  status?: OptionFlag<string | undefined>
+  assessmentProcedure?: OptionFlag<string>
+  testedBy?: OptionFlag<string>
+  testDate?: OptionFlag<string>
+  description?: OptionFlag<string | any>
+  artifactDescription?: OptionFlag<string | any>
+  complianceStatus?: OptionFlag<string | any>
+  scheduledCompletionDate?: OptionFlag<string | any>
+  orgId?: OptionFlag<number>
+  pageSize?: OptionFlag<number | undefined>
+  fileName?: OptionFlag<string[]>
+  resourceId?: OptionFlag<string[]>
+  containerId?: OptionFlag<string[]>
+  assetsHardwareId?: OptionFlag<string[]>
+  assetsSoftwareId?: OptionFlag<string[]>
+  dataFile?: OptionFlag<string>
+  type?: OptionFlag<string | any>
+  category?: OptionFlag<string | any>
+  refPageNumber?: OptionFlag<string | undefined>
+  controls?: OptionFlag<string | undefined>
+  signedDate?: OptionFlag<string | any>
+  expirationDate?: OptionFlag<string | any>
+  lastReviewDate?: OptionFlag<string | any>
+  controlAcronym?: OptionFlag<string | any>
+  comments?: OptionFlag<string | any>
+  workflow?: OptionFlag<string | any>
+  name?: OptionFlag<string | any>
 }
 
 /**
@@ -1365,374 +1365,374 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
 // skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
 export function getJsonExamples(endpoint?: string): string[] {
   if (endpoint === 'controls-required') {
-    const data = '{ ' +
-      '"acronym": "System acronym, required to match the NIST SP 800-53 Revision 4.",' +
-      '"responsibleEntities": "Include written description of Responsible Entities that are responsible for the Security Control.",' +
-      '"controlDesignation":  "One of the following: [Common, System-Specific, Hybrid]",' +
-      '"estimatedCompletionDate": "Estimation completion date - Field is required for Implementation Plan",' +
-      '"implementationNarrative": "Includes Security Control comments"' +
-      '}'
+    const data = '{ '
+      + '"acronym": "System acronym, required to match the NIST SP 800-53 Revision 4.",'
+      + '"responsibleEntities": "Include written description of Responsible Entities that are responsible for the Security Control.",'
+      + '"controlDesignation":  "One of the following: [Common, System-Specific, Hybrid]",'
+      + '"estimatedCompletionDate": "Estimation completion date - Field is required for Implementation Plan",'
+      + '"implementationNarrative": "Includes Security Control comments"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'controls-conditional') {
-    const data = '{ ' +
-      '"commonControlProvider": "Indicate the type of Common Control Provider for an “Inherited” Security Control. One of the following [DoD, Component, Enclave]",' +
-      '"naJustification": "Provide justification for Security Controls deemed Not Applicable to the system",' +
-      '"slcmCriticality": "Criticality of Security Control regarding system-level continuous monitoring (SLCM) ",' +
-      '"slcmFrequency": "One of the following [Constantly,Daily,Weekly,Monthly,Quarterly,Semi-Annually,Annually,Every Two Years,Every Three Years,Undetermined]",' +
-      '"slcmMethod": "One of the following [Automated, Semi-Automated, Manual, Undetermined]",' +
-      '"slcmReporting": "Organization/Office represented",' +
-      '"slcmTracking": "The System-Level Continuous Monitoring tracking",' +
-      '"slcmComments":" Additional comments for Security Control regarding SLCM"' +
-      '}'
+    const data = '{ '
+      + '"commonControlProvider": "Indicate the type of Common Control Provider for an “Inherited” Security Control. One of the following [DoD, Component, Enclave]",'
+      + '"naJustification": "Provide justification for Security Controls deemed Not Applicable to the system",'
+      + '"slcmCriticality": "Criticality of Security Control regarding system-level continuous monitoring (SLCM) ",'
+      + '"slcmFrequency": "One of the following [Constantly,Daily,Weekly,Monthly,Quarterly,Semi-Annually,Annually,Every Two Years,Every Three Years,Undetermined]",'
+      + '"slcmMethod": "One of the following [Automated, Semi-Automated, Manual, Undetermined]",'
+      + '"slcmReporting": "Organization/Office represented",'
+      + '"slcmTracking": "The System-Level Continuous Monitoring tracking",'
+      + '"slcmComments":" Additional comments for Security Control regarding SLCM"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'controls-optional') {
-    const data = '{ ' +
-      '"implementationStatus": "One of the following [Planned,Implemented,Inherited,Not Applicable,Manually Inherited]",' +
-      '"severity": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"vulnerabilitySummary": "Include vulnerability summary",' +
-      '"recommendations": "The include recommendations",' +
-      '"relevanceOfThreat": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"likelihood": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"impact": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"impactDescription": "Include description of Security Controls impact",' +
-      '"residualRiskLevel": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"testMethod": "One of the following [Test, Interview, Examine, Test,Interview, Test,Examine, Interview,Examine, Test,Interview,Examine]",' +
-      '"mitigations": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"applicationLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)",' +
-      '"databaseLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)",' +
-      '"operatingSystemLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)"' +
-      '}'
+    const data = '{ '
+      + '"implementationStatus": "One of the following [Planned,Implemented,Inherited,Not Applicable,Manually Inherited]",'
+      + '"severity": "One of the following [Very Low, Low, Moderate, High, Very High]",'
+      + '"vulnerabilitySummary": "Include vulnerability summary",'
+      + '"recommendations": "The include recommendations",'
+      + '"relevanceOfThreat": "One of the following [Very Low, Low, Moderate, High, Very High]",'
+      + '"likelihood": "One of the following [Very Low, Low, Moderate, High, Very High]",'
+      + '"impact": "One of the following [Very Low, Low, Moderate, High, Very High]",'
+      + '"impactDescription": "Include description of Security Controls impact",'
+      + '"residualRiskLevel": "One of the following [Very Low, Low, Moderate, High, Very High]",'
+      + '"testMethod": "One of the following [Test, Interview, Examine, Test,Interview, Test,Examine, Interview,Examine, Test,Interview,Examine]",'
+      + '"mitigations": "One of the following [Very Low, Low, Moderate, High, Very High]",'
+      + '"applicationLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)",'
+      + '"databaseLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)",'
+      + '"operatingSystemLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'poams-post-required') {
-    const data = '{ ' +
-      '"status":  "One of the following: [Ongoing, Risk Accepted, Completed, Not Applicable]",' +
-      '"vulnerabilityDescription": "POA&M vulnerability description",' +
-      '"sourceIdentifyingVulnerability": "Source that identifies the vulnerability",' +
-      '"pocOrganization": "Organization/Office represented",' +
-      '"resources": "List of resources used"' +
-      '}'
+    const data = '{ '
+      + '"status":  "One of the following: [Ongoing, Risk Accepted, Completed, Not Applicable]",'
+      + '"vulnerabilityDescription": "POA&M vulnerability description",'
+      + '"sourceIdentifyingVulnerability": "Source that identifies the vulnerability",'
+      + '"pocOrganization": "Organization/Office represented",'
+      + '"resources": "List of resources used"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'poams-post-conditional') {
-    const data = '{ ' +
-      '"milestones": [{' +
-      '"description": "The milestone description",' +
-      '"scheduledCompletionDate": "Milestone scheduled completion date (Unix format)"}],' +
-      '"pocFirstName": "First name of POC (only if Last Name, Email, or Phone Number have data)",' +
-      '"pocLastName": "Last name of POC (only if First Name, Email, or Phone Number have data)",' +
-      '"pocEmail": "Email address of POC (only if First Name, Last Name, or Phone Number have data)",' +
-      '"pocPhoneNumber": "Phone number of POC (only if First Name, Last Name, or Email have data)",' +
-      '"severity": "Risk Analysis field, maybe required by certain eMASS instances. Required for approved items",' +
-      '"scheduledCompletionDate": "Required for ongoing and completed POA&M items",' +
-      '"completionDate": "Field is required for completed POA&M items",' +
-      '"comments": "Field is required for completed and risk accepted POA&M items"' +
-      '}'
+    const data = '{ '
+      + '"milestones": [{'
+      + '"description": "The milestone description",'
+      + '"scheduledCompletionDate": "Milestone scheduled completion date (Unix format)"}],'
+      + '"pocFirstName": "First name of POC (only if Last Name, Email, or Phone Number have data)",'
+      + '"pocLastName": "Last name of POC (only if First Name, Email, or Phone Number have data)",'
+      + '"pocEmail": "Email address of POC (only if First Name, Last Name, or Phone Number have data)",'
+      + '"pocPhoneNumber": "Phone number of POC (only if First Name, Last Name, or Email have data)",'
+      + '"severity": "Risk Analysis field, maybe required by certain eMASS instances. Required for approved items",'
+      + '"scheduledCompletionDate": "Required for ongoing and completed POA&M items",'
+      + '"completionDate": "Field is required for completed POA&M items",'
+      + '"comments": "Field is required for completed and risk accepted POA&M items"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'poams-put-required') {
-    const data = '{ ' +
-      '"poamId": "Unique identifier representing the nth POAM item entered into the site database.",' +
-      '"displayPoamId": "Globally unique identifier for individual POA&M Items, seen on the front-end as ID",' +
-      '"status":  "One of the following: [Ongoing, Risk Accepted, Completed, Not Applicable]",' +
-      '"vulnerabilityDescription": "POA&M vulnerability description",' +
-      '"sourceIdentifyingVulnerability": "Source that identifies the vulnerability",' +
-      '"pocOrganization": "Organization/Office represented",' +
-      '"resources": "List of resources used"' +
-      '}'
+    const data = '{ '
+      + '"poamId": "Unique identifier representing the nth POAM item entered into the site database.",'
+      + '"displayPoamId": "Globally unique identifier for individual POA&M Items, seen on the front-end as ID",'
+      + '"status":  "One of the following: [Ongoing, Risk Accepted, Completed, Not Applicable]",'
+      + '"vulnerabilityDescription": "POA&M vulnerability description",'
+      + '"sourceIdentifyingVulnerability": "Source that identifies the vulnerability",'
+      + '"pocOrganization": "Organization/Office represented",'
+      + '"resources": "List of resources used"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'poams-put-conditional') {
-    const data = '{ ' +
-        '"milestones": [{' +
-        '"milestoneId": "Unique milestone identifier",' +
-        '"description": "The milestone description",' +
-        '"scheduledCompletionDate": "Milestone scheduled completion date (Unix format)",' +
-        '"isActive": "To prevent uploading duplicate/undesired milestones through the POA&M PUT include the isActive=false. If absent or set to true a new Milestone is created"}],' +
-        '"pocFirstName": "First name of POC (only if Last Name, Email, or Phone Number have data)",' +
-        '"pocLastName": "Last name of POC (only if First Name, Email, or Phone Number have data)",' +
-        '"pocEmail": "Email address of POC (only if First Name, Last Name, or Phone Number have data)",' +
-        '"pocPhoneNumber": "Phone number of POC (only if First Name, Last Name, or Email have data)",' +
-        '"severity": "Risk Analysis field, maybe required by certain eMASS instances. Required for approved items",' +
-        '"scheduledCompletionDate": "POA&M Items with a review status of “Approved” and a status of “Completed” or “Ongoing” cannot update Scheduled Completion Date.",' +
-        '"completionDate": "Field is required for completed POA&M items",' +
-        '"comments": "Field is required for completed and risk accepted POA&M items"' +
-        '}'
+    const data = '{ '
+      + '"milestones": [{'
+      + '"milestoneId": "Unique milestone identifier",'
+      + '"description": "The milestone description",'
+      + '"scheduledCompletionDate": "Milestone scheduled completion date (Unix format)",'
+      + '"isActive": "To prevent uploading duplicate/undesired milestones through the POA&M PUT include the isActive=false. If absent or set to true a new Milestone is created"}],'
+      + '"pocFirstName": "First name of POC (only if Last Name, Email, or Phone Number have data)",'
+      + '"pocLastName": "Last name of POC (only if First Name, Email, or Phone Number have data)",'
+      + '"pocEmail": "Email address of POC (only if First Name, Last Name, or Phone Number have data)",'
+      + '"pocPhoneNumber": "Phone number of POC (only if First Name, Last Name, or Email have data)",'
+      + '"severity": "Risk Analysis field, maybe required by certain eMASS instances. Required for approved items",'
+      + '"scheduledCompletionDate": "POA&M Items with a review status of “Approved” and a status of “Completed” or “Ongoing” cannot update Scheduled Completion Date.",'
+      + '"completionDate": "Field is required for completed POA&M items",'
+      + '"comments": "Field is required for completed and risk accepted POA&M items"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'poams-post-put-required-va') {
-    const data = '{ ' +
-      '"identifiedInCFOAuditOrOtherReview":  "If not specified, this field will be set to false because it does not accept a null value (Required for VA. Optional for Army and USCG)",' +
-      '"personnelResourcesFundedBaseHours": "Hours for personnel resources that are founded (Required for VA. Optional for Army and USCG)",' +
-      '"personnelResourcesCostCode": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",' +
-      '"personnelResourcesUnfundedBaseHours": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",' +
-      '"personnelResourcesNonfundingObstacle": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",' +
-      '"personnelResourcesNonfundingObstacleOtherReason": "Reason (text 2,000 char) (Required for VA. Optional for Army and USCG)",' +
-      '"nonPersonnelResourcesFundedAmount": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",' +
-      '"nonPersonnelResourcesCostCode": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",' +
-      '"nonPersonnelResourcesUnfundedAmount": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",' +
-      '"nonPersonnelResourcesNonfundingObstacle": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",' +
-      '"nonPersonnelResourcesNonfundingObstacleOtherReason": "Reason (text 2,000 char) (Required for VA. Optional for Army and USCG)"' +
-      '}'
+    const data = '{ '
+      + '"identifiedInCFOAuditOrOtherReview":  "If not specified, this field will be set to false because it does not accept a null value (Required for VA. Optional for Army and USCG)",'
+      + '"personnelResourcesFundedBaseHours": "Hours for personnel resources that are founded (Required for VA. Optional for Army and USCG)",'
+      + '"personnelResourcesCostCode": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",'
+      + '"personnelResourcesUnfundedBaseHours": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",'
+      + '"personnelResourcesNonfundingObstacle": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",'
+      + '"personnelResourcesNonfundingObstacleOtherReason": "Reason (text 2,000 char) (Required for VA. Optional for Army and USCG)",'
+      + '"nonPersonnelResourcesFundedAmount": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",'
+      + '"nonPersonnelResourcesCostCode": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",'
+      + '"nonPersonnelResourcesUnfundedAmount": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",'
+      + '"nonPersonnelResourcesNonfundingObstacle": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",'
+      + '"nonPersonnelResourcesNonfundingObstacleOtherReason": "Reason (text 2,000 char) (Required for VA. Optional for Army and USCG)"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'poams-post-put-optional') {
-    const data = '{ ' +
-      '"externalUid": "External ID associated with the POA&M",' +
-      '"controlAcronym": "The system acronym(s) e.g AC-1, AC-2",' +
-      '"assessmentProcedure": "The Security Control Assessment Procedures being associated with the POA&M Item",' +
-      '"securityChecks": "Security Checks that are associated with the POA&M",' +
-      '"rawSeverity": "One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"relevanceOfThreat": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"likelihood": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"impact": "Risk Analysis field, maybe required by certain eMASS instances. Description of Security Control impact",' +
-      '"residualRiskLevel": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",' +
-      '"mitigations": "Risk Analysis field, maybe required by certain eMASS instances. Mitigation explanation",' +
-      '"impactDescription": "Description of the security control impact",' +
-      '"recommendations": "Any recommendations content",' +
-      '"resultingResidualRiskLevelAfterProposedMitigations": "One of the following [Very Low, Low, Moderate, High, Very High] (Navy only)",' +
-      '"predisposingConditions": "Conditions (Navy only)",' +
-      '"threatDescription": "Threat description (Navy only)",' +
-      '"devicesAffected": "List of affected devices by hostname. If all devices are affected, use `system` or `all` (Navy only)"' +
-      '}'
+    const data = '{ '
+      + '"externalUid": "External ID associated with the POA&M",'
+      + '"controlAcronym": "The system acronym(s) e.g AC-1, AC-2",'
+      + '"assessmentProcedure": "The Security Control Assessment Procedures being associated with the POA&M Item",'
+      + '"securityChecks": "Security Checks that are associated with the POA&M",'
+      + '"rawSeverity": "One of the following [Very Low, Low, Moderate, High, Very High]",'
+      + '"relevanceOfThreat": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",'
+      + '"likelihood": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",'
+      + '"impact": "Risk Analysis field, maybe required by certain eMASS instances. Description of Security Control impact",'
+      + '"residualRiskLevel": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",'
+      + '"mitigations": "Risk Analysis field, maybe required by certain eMASS instances. Mitigation explanation",'
+      + '"impactDescription": "Description of the security control impact",'
+      + '"recommendations": "Any recommendations content",'
+      + '"resultingResidualRiskLevelAfterProposedMitigations": "One of the following [Very Low, Low, Moderate, High, Very High] (Navy only)",'
+      + '"predisposingConditions": "Conditions (Navy only)",'
+      + '"threatDescription": "Threat description (Navy only)",'
+      + '"devicesAffected": "List of affected devices by hostname. If all devices are affected, use `system` or `all` (Navy only)"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'artifacts-put-required') {
-    const data = '{ ' +
-      '"filename": "Artifact file name to update for the given system",' +
-      '"isTemplate": "Indicates whether an artifact is a template",' +
-      '"type":  "The type of artifact. Possible values are: Procedure, Diagram, Policy, Labor, Document, Image, Other, Scan Result, Auditor Report. May accept other values set by system administrators",' +
-      '"category": "Artifact category. Possible values are: Implementation Guidance or Evidence. May accept other values set by system administrators"' +
-      '}'
+    const data = '{ '
+      + '"filename": "Artifact file name to update for the given system",'
+      + '"isTemplate": "Indicates whether an artifact is a template",'
+      + '"type":  "The type of artifact. Possible values are: Procedure, Diagram, Policy, Labor, Document, Image, Other, Scan Result, Auditor Report. May accept other values set by system administrators",'
+      + '"category": "Artifact category. Possible values are: Implementation Guidance or Evidence. May accept other values set by system administrators"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'artifacts-put-optional') {
-    const data = '{ ' +
-      '"name": "The artifact name",' +
-      '"artifactDescription": "The artifact(s) description",' +
-      '"refPageNumber": "Artifact reference page number",' +
-      '"controls": "Control acronym associated with the artifact. NIST SP 800-53 Revision 4 defined",' +
-      '"assessmentProcedures": "The Security Control Assessment Procedure being associated with the artifact",' +
-      '"expirationDate": "Date artifact expires and requires review",' +
-      '"lastReviewDate": "Date artifact was last reviewed",' +
-      '"signedDate": "Date artifact was signed"' +
-      '}'
+    const data = '{ '
+      + '"name": "The artifact name",'
+      + '"artifactDescription": "The artifact(s) description",'
+      + '"refPageNumber": "Artifact reference page number",'
+      + '"controls": "Control acronym associated with the artifact. NIST SP 800-53 Revision 4 defined",'
+      + '"assessmentProcedures": "The Security Control Assessment Procedure being associated with the artifact",'
+      + '"expirationDate": "Date artifact expires and requires review",'
+      + '"lastReviewDate": "Date artifact was last reviewed",'
+      + '"signedDate": "Date artifact was signed"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'hardware-post-required') {
-    const data = '{ ' +
-    '"assetName":  "Name of the hardware asset"' +
-    '}'
+    const data = '{ '
+      + '"assetName":  "Name of the hardware asset"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'hardware-put-required') {
-    const data = '{ ' +
-    '"hardwareId":  "GUID identifying the specific hardware asset",' +
-    '"assetName":  "Name of the hardware asset"' +
-    '}'
+    const data = '{ '
+      + '"hardwareId":  "GUID identifying the specific hardware asset",'
+      + '"assetName":  "Name of the hardware asset"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'hardware-post-put-conditional') {
-    const data = '{ ' +
-    '"publicFacingFqdn": "Public facing FQDN. Only applicable if Public Facing is set to true",' +
-    '"publicFacingIpAddress": "Public facing IP address. Only applicable if Public Facing is set to true",' +
-    '"publicFacingUrls":  "Public facing URL(s). Only applicable if Public Facing is set to true"' +
-    '}'
+    const data = '{ '
+      + '"publicFacingFqdn": "Public facing FQDN. Only applicable if Public Facing is set to true",'
+      + '"publicFacingIpAddress": "Public facing IP address. Only applicable if Public Facing is set to true",'
+      + '"publicFacingUrls":  "Public facing URL(s). Only applicable if Public Facing is set to true"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'hardware-post-put-optional') {
-    const data = '{ ' +
-    '"componentType": "Public facing FQDN. Only applicable if Public Facing is set to true",' +
-    '"nickname": "Public facing IP address. Only applicable if Public Facing is set to true",' +
-    '"assetIpAddress": "IP address of the hardware asset",' +
-    '"publicFacing": "Public facing is defined as any asset that is accessible from a commercial connection",' +
-    '"virtualAsset": "Determine if this is a virtual hardware asset",' +
-    '"manufacturer": "Manufacturer of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",' +
-    '"modelNumber": "Model number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",' +
-    '"serialNumber": "Serial number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",' +
-    '"osIosFwVersion": "OS/iOS/FW version of the hardware asset",' +
-    '"memorySizeType": "Memory size / type of the hardware asset",' +
-    '"location": "Location of the hardware asset",' +
-    '"approvalStatus": "Approval status of the hardware asset",' +
-    '"criticalAsset":  "Indicates whether the asset is a critical information system asset"' +
-    '}'
+    const data = '{ '
+      + '"componentType": "Public facing FQDN. Only applicable if Public Facing is set to true",'
+      + '"nickname": "Public facing IP address. Only applicable if Public Facing is set to true",'
+      + '"assetIpAddress": "IP address of the hardware asset",'
+      + '"publicFacing": "Public facing is defined as any asset that is accessible from a commercial connection",'
+      + '"virtualAsset": "Determine if this is a virtual hardware asset",'
+      + '"manufacturer": "Manufacturer of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",'
+      + '"modelNumber": "Model number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",'
+      + '"serialNumber": "Serial number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",'
+      + '"osIosFwVersion": "OS/iOS/FW version of the hardware asset",'
+      + '"memorySizeType": "Memory size / type of the hardware asset",'
+      + '"location": "Location of the hardware asset",'
+      + '"approvalStatus": "Approval status of the hardware asset",'
+      + '"criticalAsset":  "Indicates whether the asset is a critical information system asset"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'software-post-required') {
-    const data = '{ ' +
-    '"softwareVendor":  "Vendor of the software asset",' +
-    '"softwareName":  "Name of the software asset",' +
-    '"version":  "Version of the software asset"' +
-    '}'
+    const data = '{ '
+      + '"softwareVendor":  "Vendor of the software asset",'
+      + '"softwareName":  "Name of the software asset",'
+      + '"version":  "Version of the software asset"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'software-put-required') {
-    const data = '{ ' +
-    '"softwareId": "GUID identifying the specific software asset",' +
-    '"softwareVendor": "Vendor of the software asset",' +
-    '"softwareName": "Name of the software asset",' +
-    '"version": "Version of the software asset"' +
-    '}'
+    const data = '{ '
+      + '"softwareId": "GUID identifying the specific software asset",'
+      + '"softwareVendor": "Vendor of the software asset",'
+      + '"softwareName": "Name of the software asset",'
+      + '"version": "Version of the software asset"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'software-post-put-conditional') {
-    const data = '{ ' +
-    '"approvalDate": "Approval date of the software asset. If Approval Status is set to “Unapproved” or “In Progress”, Approval Date will be set to null"' +
-    '}'
+    const data = '{ '
+      + '"approvalDate": "Approval date of the software asset. If Approval Status is set to “Unapproved” or “In Progress”, Approval Date will be set to null"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'software-post-put-optional') {
-    const data = '{ ' +
-    '"softwareType": "Type of the software asset",' +
-    '"parentSystem": "Parent system of the software asset",' +
-    '"subsystem": "Subsystem of the software asset",' +
-    '"network": "Network of the software asset",' +
-    '"hostingEnvironment": "Hosting environment of the software asset",' +
-    '"softwareDependencies": "Dependencies for the software asset",' +
-    '"cryptographicHash": "Cryptographic hash for the software asset",' +
-    '"inServiceData": "Date the sotware asset was added to the network",' +
-    '"itBudgetUii": "IT budget UII for the software asset",' +
-    '"fiscalYear": "Fiscal year (FY) for the software asset",' +
-    '"popEndDate": "Period of performance (POP) end date for the software asset",' +
-    '"licenseOrContract": "License or contract for the software asset",' +
-    '"licenseTerm":  "License term for the software asset",' +
-    '"costPerLicense": "Cost per license for the software asset",' +
-    '"totalLicenses": "Number of total licenses for the software asset",' +
-    '"totalLicenseCost": "Total cost of the licenses for the software asset",' +
-    '"licensesUsed": "Number of licenses used for the software asset",' +
-    '"licensePoc": "Point of contact (POC) for the software asset",' +
-    '"licenseRenewalDate": "License renewal date for the software asset",' +
-    '"licenseExpirationDate": "License expiration date for the software asset",' +
-    '"approvalStatus": "Approval status of the software asset",' +
-    '"releaseDate": "Release date of the software asset",' +
-    '"maintenanceDate": "Maintenance date of the software asset",' +
-    '"retirementDate": "Retirement date of the software asset",' +
-    '"endOfLifeSupportDate":  "End of life/support date of the software asset",' +
-    '"extendedEndOfLifeSupportDate": "Extended End of Life/Support Date cannot occur prior to the End of Life/Support Date",' +
-    '"criticalAsset": "Indicates whether the asset is a critical information system asset",' +
-    '"location": "Location of the software asset",' +
-    '"purpose": "Purpose of the software asset",' +
-    '"unsupportedOperatingSystem": "Unsupported operating system (VA only)",' +
-    '"unapprovedSoftwareFromTrm": "Unapproved software from TRM (VA only)",' +
-    '"approvedWaiver":  "Approved waiver (VA only)"' +
-    '}'
+    const data = '{ '
+      + '"softwareType": "Type of the software asset",'
+      + '"parentSystem": "Parent system of the software asset",'
+      + '"subsystem": "Subsystem of the software asset",'
+      + '"network": "Network of the software asset",'
+      + '"hostingEnvironment": "Hosting environment of the software asset",'
+      + '"softwareDependencies": "Dependencies for the software asset",'
+      + '"cryptographicHash": "Cryptographic hash for the software asset",'
+      + '"inServiceData": "Date the sotware asset was added to the network",'
+      + '"itBudgetUii": "IT budget UII for the software asset",'
+      + '"fiscalYear": "Fiscal year (FY) for the software asset",'
+      + '"popEndDate": "Period of performance (POP) end date for the software asset",'
+      + '"licenseOrContract": "License or contract for the software asset",'
+      + '"licenseTerm":  "License term for the software asset",'
+      + '"costPerLicense": "Cost per license for the software asset",'
+      + '"totalLicenses": "Number of total licenses for the software asset",'
+      + '"totalLicenseCost": "Total cost of the licenses for the software asset",'
+      + '"licensesUsed": "Number of licenses used for the software asset",'
+      + '"licensePoc": "Point of contact (POC) for the software asset",'
+      + '"licenseRenewalDate": "License renewal date for the software asset",'
+      + '"licenseExpirationDate": "License expiration date for the software asset",'
+      + '"approvalStatus": "Approval status of the software asset",'
+      + '"releaseDate": "Release date of the software asset",'
+      + '"maintenanceDate": "Maintenance date of the software asset",'
+      + '"retirementDate": "Retirement date of the software asset",'
+      + '"endOfLifeSupportDate":  "End of life/support date of the software asset",'
+      + '"extendedEndOfLifeSupportDate": "Extended End of Life/Support Date cannot occur prior to the End of Life/Support Date",'
+      + '"criticalAsset": "Indicates whether the asset is a critical information system asset",'
+      + '"location": "Location of the software asset",'
+      + '"purpose": "Purpose of the software asset",'
+      + '"unsupportedOperatingSystem": "Unsupported operating system (VA only)",'
+      + '"unapprovedSoftwareFromTrm": "Unapproved software from TRM (VA only)",'
+      + '"approvedWaiver":  "Approved waiver (VA only)"'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'cloud_resources-required') {
-    const data = '{ ' +
-      '"provider": "Cloud service provider name",' +
-      '"resourceId": "Unique identifier/resource namespace for policy compliance result",' +
-      '"resourceName":  "Friendly name of Cloud resource",' +
-      '"resourceType": "The cloud resource type",' +
-      '"complianceResults": [{' +
-      '"cspPolicyDefinitionId": "Unique identifier/compliance namespace for CSP/Resource\'s policy definition/compliance check", ' +
-      '"isCompliant": "True/false flag for compliance status of the policy for the identified cloud resource", ' +
-      '"policyDefinitionTitle": "Friendly policy/compliance check title. Recommend short title"}]' +
-      '}'
+    const data = '{ '
+      + '"provider": "Cloud service provider name",'
+      + '"resourceId": "Unique identifier/resource namespace for policy compliance result",'
+      + '"resourceName":  "Friendly name of Cloud resource",'
+      + '"resourceType": "The cloud resource type",'
+      + '"complianceResults": [{'
+      + '"cspPolicyDefinitionId": "Unique identifier/compliance namespace for CSP/Resource\'s policy definition/compliance check", '
+      + '"isCompliant": "True/false flag for compliance status of the policy for the identified cloud resource", '
+      + '"policyDefinitionTitle": "Friendly policy/compliance check title. Recommend short title"}]'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'cloud_resources-optional') {
-    const data = '{ ' +
-      '"cspAccountId": "System/owner\'s CSP account ID/number",' +
-      '"cspRegion": "CSP region of system",' +
-      '"initiatedBy":  "Email of POC",' +
-      '"isBaseline": "True/false flag for providing results as baseline. If true, all existing compliance results for the resourceId will be replaced by results in the current call",' +
-      '"tags": {' +
-      '"test": "Informational tags associated to results for other metadata" },' +
-      '"complianceResults": [{' +
-      '"assessmentProcedure": "Comma separated correlation to Assessment Procedure (i.e. CCI number for DoD Control Set)", ' +
-      '"complianceCheckTimestamp": "Unix date format", ' +
-      '"complianceReason": "Reason/comments for compliance result", ' +
-      '"control": "Comma separated correlation to Security Control (e.g. exact NIST Control acronym)", ' +
-      '"policyDeploymentName": "Name of policy deployment", ' +
-      '"policyDeploymentVersion": "Version of policy deployment", ' +
-      '"severity": "One of the following [Low, Medium, High, Critical]"}]' +
-      '}'
+    const data = '{ '
+      + '"cspAccountId": "System/owner\'s CSP account ID/number",'
+      + '"cspRegion": "CSP region of system",'
+      + '"initiatedBy":  "Email of POC",'
+      + '"isBaseline": "True/false flag for providing results as baseline. If true, all existing compliance results for the resourceId will be replaced by results in the current call",'
+      + '"tags": {'
+      + '"test": "Informational tags associated to results for other metadata" },'
+      + '"complianceResults": [{'
+      + '"assessmentProcedure": "Comma separated correlation to Assessment Procedure (i.e. CCI number for DoD Control Set)", '
+      + '"complianceCheckTimestamp": "Unix date format", '
+      + '"complianceReason": "Reason/comments for compliance result", '
+      + '"control": "Comma separated correlation to Security Control (e.g. exact NIST Control acronym)", '
+      + '"policyDeploymentName": "Name of policy deployment", '
+      + '"policyDeploymentVersion": "Version of policy deployment", '
+      + '"severity": "One of the following [Low, Medium, High, Critical]"}]'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'container_scans-required') {
-    const data = '{ ' +
-      '"containerId": "Unique identifier of the container",' +
-      '"containerName": "Friendly name of the container",' +
-      '"time": "Datetime of scan/result. Unix date format",' +
-      '"benchmarks": [{' +
-      '"benchmark": "Identifier of the benchmark/grouping of compliance results. (e.g. for STIG results, provide the benchmark id for the STIG technology)", ' +
-      '"results": [{' +
-      '"ruleId": "Identifier for the compliance result, vulnerability, etc. the result is for. (e.g. for STIGs, use the SV-XXXrXX identifier; for CVEs, the CVE-XXXX-XXX identifier, etc.).", ' +
-      '"lastSeen": "Datetime last seen. Unix date format",' +
-      '"status": "One of the following [Pass,Fail,Other,Not Reviewed,Not Checked,Not Applicable]"}]' +
-      '}]' +
-      '}'
+    const data = '{ '
+      + '"containerId": "Unique identifier of the container",'
+      + '"containerName": "Friendly name of the container",'
+      + '"time": "Datetime of scan/result. Unix date format",'
+      + '"benchmarks": [{'
+      + '"benchmark": "Identifier of the benchmark/grouping of compliance results. (e.g. for STIG results, provide the benchmark id for the STIG technology)", '
+      + '"results": [{'
+      + '"ruleId": "Identifier for the compliance result, vulnerability, etc. the result is for. (e.g. for STIGs, use the SV-XXXrXX identifier; for CVEs, the CVE-XXXX-XXX identifier, etc.).", '
+      + '"lastSeen": "Datetime last seen. Unix date format",'
+      + '"status": "One of the following [Pass,Fail,Other,Not Reviewed,Not Checked,Not Applicable]"}]'
+      + '}]'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'container_scans-optional') {
-    const data = '{ ' +
-      '"namespace": "Namespace of container in container orchestration (e.g. Kubernetes namespace)",' +
-      '"podIp": "IP address of pod (e.g. Kubernetes assigned IP)",' +
-      '"podName":  "Name of pod (e.g. Kubernetes pod)",' +
-      '"tags": {' +
-      '"test": "Informational tags associated to results for other metadata" },' +
-      '"benchmarks": [{' +
-      '"isBaseline": "True/false flag for providing results as baseline. If true, all existing compliance results for the provided benchmark within the container will be replaced by results in the current call", ' +
-      '"verion": "The benchmark version", ' +
-      '"release": "The benchmark release", ' +
-      '"results": [{' +
-      '"message": "Comments for the result"}]' +
-      '}]' +
-      '}'
+    const data = '{ '
+      + '"namespace": "Namespace of container in container orchestration (e.g. Kubernetes namespace)",'
+      + '"podIp": "IP address of pod (e.g. Kubernetes assigned IP)",'
+      + '"podName":  "Name of pod (e.g. Kubernetes pod)",'
+      + '"tags": {'
+      + '"test": "Informational tags associated to results for other metadata" },'
+      + '"benchmarks": [{'
+      + '"isBaseline": "True/false flag for providing results as baseline. If true, all existing compliance results for the provided benchmark within the container will be replaced by results in the current call", '
+      + '"verion": "The benchmark version", '
+      + '"release": "The benchmark release", '
+      + '"results": [{'
+      + '"message": "Comments for the result"}]'
+      + '}]'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'scan_findings-application') {
-    const data = '{ ' +
-      '"application": {' +
-      '"applicationName": "Name of the software application that was assessed",' +
-      '"version": "The version of the application"}' +
-      '}'
+    const data = '{ '
+      + '"application": {'
+      + '"applicationName": "Name of the software application that was assessed",'
+      + '"version": "The version of the application"}'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'scan_findings-applicationFindings') {
-    const data = '{ ' +
-      '"applicationFindings": [{' +
-      '"codeCheckName": "Name of the software vulnerability or weakness",' +
-      '"scanDate": "The scan date, Unix date format",' +
-      '"cweId": "The Common Weakness Enumerator (CWE) identifier",' +
-      '"count": "Number of instances observed for a specified finding",' +
-      '"rawSeverity": "OPTIONAL - One of the following [Low, Medium, Moderate, High, Critical]"}]' +
-      '}'
+    const data = '{ '
+      + '"applicationFindings": [{'
+      + '"codeCheckName": "Name of the software vulnerability or weakness",'
+      + '"scanDate": "The scan date, Unix date format",'
+      + '"cweId": "The Common Weakness Enumerator (CWE) identifier",'
+      + '"count": "Number of instances observed for a specified finding",'
+      + '"rawSeverity": "OPTIONAL - One of the following [Low, Medium, Moderate, High, Critical]"}]'
+      + '}'
     return JSON.parse(data)
   }
 
   if (endpoint === 'scan_findings-clearFindings') {
-    const data = '{ ' +
-      '"applicationFindings": [{' +
-      '"clearFindings": "To clear an application\'s findings, use only the field clearFindings and set it to true."}]' +
-      '}'
+    const data = '{ '
+      + '"applicationFindings": [{'
+      + '"clearFindings": "To clear an application\'s findings, use only the field clearFindings and set it to true."}]'
+      + '}'
     return JSON.parse(data)
   }
 
@@ -1758,7 +1758,7 @@ export function saveFile(dir: string, filename: string, data: any): void {
 
   // Save to file
   const outDir = path.join(dir, filename)
-  fs.writeFile(outDir, data, err => {
+  fs.writeFile(outDir, data, (err) => {
     if (err) {
       console.error(`Error saving file to: ${outDir}. Cause: ${err}`)
     }
@@ -1784,7 +1784,6 @@ export function printHelpMsg(msg: string) {
 export function printRedMsg(msg: string) {
   console.log('\x1B[91m»', msg, '\x1B[0m')
 }
-
 
 /**
  * Displays an error message to the console.

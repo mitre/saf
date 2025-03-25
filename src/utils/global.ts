@@ -3,6 +3,9 @@ import {fingerprint} from '@mitre/hdf-converters'
 import {getInstalledPathSync} from 'get-installed-path'
 import {AnyProfile, ContextualizedEvaluation, ExecJSON} from 'inspecjs'
 import _ from 'lodash'
+import fs from 'fs'
+import axios from 'axios'
+import AdmZip from 'adm-zip'
 
 export type SpreadsheetTypes = 'cis' | 'disa' | 'general'
 
@@ -160,7 +163,7 @@ export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNu
 }
 
 interface ExtendedContextualizedEvaluation extends ContextualizedEvaluation {
-  profiles?: AnyProfile[]; // change this line
+  profiles?: AnyProfile[] // change this line
 }
 
 /**
@@ -246,7 +249,7 @@ export function getProfileInfo(evaluation: ExtendedContextualizedEvaluation, fil
 export function getDescription(
   descriptions:
     | {
-      [key: string]: string;
+      [key: string]: string
     }
     | ExecJSON.ControlDescription[],
   key: string,
@@ -303,5 +306,74 @@ export function getErrorMessage(error: unknown): string {
     return JSON.stringify(error)
   } catch {
     return String(error) // Fallback for circular references
+  }
+}
+
+/**
+ * Downloads a file from the specified URL and saves it to the given output path.
+ *
+ * @param url - The URL of the file to download. If undefined, an error is thrown.
+ * @param outputPath - The path where the downloaded file will be saved.
+ * @returns A promise that resolves when the file has been successfully downloaded and saved.
+ * @throws Will throw an error if the URL is undefined or if there is an error during the download or file writing process.
+ */
+export async function downloadFile(url: string | undefined, outputPath: string): Promise<void> {
+  if (url === undefined) {
+    throw new Error('XCCDF URL not defined')
+  }
+
+  try {
+    const response = await axios({
+      url,
+      method: 'GET',
+      responseType: 'stream',
+    })
+
+    const writer = fs.createWriteStream(outputPath)
+
+    response.data.pipe(writer)
+
+    return new Promise((resolve, reject) => {
+      writer.on('finish', () => {
+        resolve()
+      })
+
+      writer.on('error', (err) => {
+        console.error('Error writing file:', err)
+        reject(err)
+      })
+    })
+  } catch (error) {
+    throw new Error(`Error downloading file: ${getErrorMessage(error)}`)
+  }
+}
+
+/**
+ * Extracts a specific file from a ZIP archive.
+ *
+ * @param zipPath - The path to the ZIP archive.
+ * @param fileName - The name of the file to extract from the ZIP archive.
+ * @returns The content of the extracted file as a Buffer, or null if the file is not found or an error occurs.
+ */
+export function extractFileFromZip(zipPath: string, fileName: string): Buffer | null {
+  try {
+    const zip = new AdmZip(zipPath)
+    const zipEntries = zip.getEntries()
+
+    // Look for the file (it will cycle trough all files to include sub-folders)
+    for (const entry of zipEntries) {
+      if (entry.entryName.endsWith(fileName)) {
+        // console.log(`Found file: ${entry.entryName}`)
+        return entry.getData() // Returns file content as a Buffer
+      }
+    }
+
+    // console.log(`File "${fileName}" not found in the ZIP archive.`)
+    // return null
+    throw new Error(`File not found in the ZIP archived: ${fileName}`)
+  } catch (error) {
+    // console.error('Error extracting file:', getErrorMessage(error))
+    // return null
+    throw new Error(`Error extracting file -> ${getErrorMessage(error)}`)
   }
 }

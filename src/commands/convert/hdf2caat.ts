@@ -5,13 +5,13 @@ import {FromHDFToCAATMapper as Mapper} from '@mitre/hdf-converters'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class HDF2CAAT extends BaseCommand<typeof HDF2CAAT> {
-  static readonly usage =
-    '<%= command.id %> -i <hdf-scan-results-json>... -o <output-caat-xlsx> [-h]'
+  static readonly usage
+    = '<%= command.id %> -i <hdf-scan-results-json>... -o <output-caat-xlsx> [-h]'
 
-  static readonly description =
-    'Translate an HDF file into a Compliance Assessment and Audit Tracking (CAAT) XLSX file'
+  static readonly description
+    = 'Translate an HDF file into a Compliance Assessment and Audit Tracking (CAAT) XLSX file'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i hdf_input.json -o caat-results.xlsx',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i hdf_input.json -o caat-results.xlsx']
 
   static readonly flags = {
     input: Flags.string({

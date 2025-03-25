@@ -75,7 +75,7 @@ const OPTIONAL_DEFAULT_VALUES = [
  */
 function generateNewdotEnv() {
   let data = ''
-  PROMPT_NAMES_REQUIRED.forEach(element => {
+  PROMPT_NAMES_REQUIRED.forEach((element) => {
     data += element.startsWith('#') ? element + '\n' : element + "=''\n"
   })
 
@@ -353,7 +353,7 @@ function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: Record
     const lines = fileContent.split('\n')
 
     // Iterate over each line to find and update key-value pairs
-    const updatedLines = lines.map(line => {
+    const updatedLines = lines.map((line) => {
       // Trim the line to remove any leading/trailing whitespace
       const trimmedLine = line.trim()
 

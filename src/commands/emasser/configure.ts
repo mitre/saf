@@ -3,14 +3,14 @@ import {Command} from '@oclif/core'
 import {generateConfig} from '../../utils/emasser/generateConfig'
 
 export default class EmasserBuildConfig extends Command {
-  static readonly summary = 'Generate a configuration file (.env) for accessing an eMASS instances.\n' +
-    'Authentication to an eMASS instances requires a PKI-valid/trusted client\n' +
-    'certificate. The eMASSer CLI accepts a Key/Client pair certificates (.pem) or\n' +
-    'a CA certificate (.pem or .crt). A Unique user identifier (user-uid) is used by\n' +
-    'most eMASS integration, however certain integrations, the user-uid is not required'
+  static readonly summary = 'Generate a configuration file (.env) for accessing an eMASS instances.\n'
+    + 'Authentication to an eMASS instances requires a PKI-valid/trusted client\n'
+    + 'certificate. The eMASSer CLI accepts a Key/Client pair certificates (.pem) or\n'
+    + 'a CA certificate (.pem or .crt). A Unique user identifier (user-uid) is used by\n'
+    + 'most eMASS integration, however certain integrations, the user-uid is not required'
 
-  static readonly description =
-    `
+  static readonly description
+    = `
    ${colors.yellow('Required eMASS configuration variables 👇')}
    ${colors.blue('\tEMASSER_API_KEY') + colors.green('           <The eMASS API key (api-key) - valid key is > 30 alpha numeric characters>\b')}
    ${colors.blue('\tEMASSER_HOST_URL') + colors.green('          <The Full Qualified Domain Name (FQDN) for the eMASS server>')}

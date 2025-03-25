@@ -13,4 +13,3 @@ export default class Scan extends Command {
     console.log('\x1B[93mVisit https://saf.mitre.org/#/validate to explore and run inspec profiles\x1B[0m')
   }
 }
-

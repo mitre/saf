@@ -1,4 +1,3 @@
-
 import {colorize} from 'json-colorizer'
 import fs from 'fs'
 import {readFile} from 'fs/promises'
@@ -19,7 +18,7 @@ function getAllJsonExamples(): Record<string, unknown> {
   }
 }
 
-function assertParamExists(object: string, value: string|number|boolean|undefined|null): void {
+function assertParamExists(object: string, value: string | number | boolean | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')

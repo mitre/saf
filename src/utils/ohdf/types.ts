@@ -6,10 +6,10 @@
  * @property {[key: string]: unknown} - Allows for the spread operator in the `createPrintableSummary` method.
  */
 export interface PrintableSummary {
-  profileName: string;
-  resultSets: string[];
-  compliance: number;
-  [key: string]: unknown;
+  profileName: string
+  resultSets: string[]
+  compliance: number
+  [key: string]: unknown
 }
 
 /**
@@ -25,15 +25,15 @@ export interface PrintableSummary {
  * @property {number} default - The default value.
  */
 export interface Data {
-  [key: string]: Record<string, number> | number;
-  compliance: number;
-  passed: Record<string, number>;
-  failed: Record<string, number>;
-  skipped: Record<string, number>;
-  no_impact: Record<string, number>;
-  error: Record<string, number>;
-  total: number;
-  default: number;
+  [key: string]: Record<string, number> | number
+  compliance: number
+  passed: Record<string, number>
+  failed: Record<string, number>
+  skipped: Record<string, number>
+  no_impact: Record<string, number>
+  error: Record<string, number>
+  total: number
+  default: number
 }
 
 /**
@@ -65,10 +65,10 @@ export type ColumnType = 'compliance' | 'passed' | 'failed' | 'skipped' | 'no_im
  * @property {string} [output] - The path of the file to write the output to. If not provided, the output is not written to a file.
  */
 export interface PrintAndWriteOutputArgs {
-  printableSummaries: PrintableSummary[];
-  titleTable: boolean;
-  format: string;
-  printPretty: boolean;
-  stdout: boolean;
-  output?: string;
+  printableSummaries: PrintableSummary[]
+  titleTable: boolean
+  format: string
+  printPretty: boolean
+  stdout: boolean
+  output?: string
 }

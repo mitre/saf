@@ -28,17 +28,17 @@ import fs from 'fs'
  */
 interface CloudResource {
   // Required
-  provider: string,
-  resourceId: string,
-  resourceName: string,
-  resourceType: string,
+  provider: string
+  resourceId: string
+  resourceName: string
+  resourceType: string
   complianceResults: ComplianceResults[]
   // Optional
-  cspAccountId?: string,
-  cspRegion?: string,
-  initiatedBy?: string,
-  isBaseline?: boolean,
-  tags?: Tags,
+  cspAccountId?: string
+  cspRegion?: string
+  initiatedBy?: string
+  isBaseline?: boolean
+  tags?: Tags
 }
 
 /**
@@ -49,21 +49,21 @@ interface CloudResource {
  * @property {string} value - The value associated with the tag key.
  */
 interface Tags {
-  [key: string]: string;
+  [key: string]: string
 }
 
 interface ComplianceResults {
   // Required
-  cspPolicyDefinitionId: string,
-  isCompliant: boolean,
-  policyDefinitionTitle: string,
+  cspPolicyDefinitionId: string
+  isCompliant: boolean
+  policyDefinitionTitle: string
   // Optional
-  assessmentProcedure?: string,
-  complianceCheckTimestamp?: number,
-  complianceReason?: string,
-  control?: string,
-  policyDeploymentName?: string,
-  policyDeploymentVersion?: string,
+  assessmentProcedure?: string
+  complianceCheckTimestamp?: number
+  complianceReason?: string
+  control?: string
+  policyDeploymentName?: string
+  policyDeploymentVersion?: string
   severity?: string
 }
 
@@ -89,7 +89,7 @@ function getAllJsonExamples(): string {
  * @param value - The value of the parameter or field to check. Can be a string, boolean, undefined, or null.
  * @throws {Error} Throws an error if the value is undefined.
  */
-function assertParamExists(object: string, value: string|boolean|undefined|null): void {
+function assertParamExists(object: string, value: string | boolean | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')

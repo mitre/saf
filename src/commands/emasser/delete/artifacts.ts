@@ -8,7 +8,7 @@ import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/ema
 import {ArtifactsApi} from '@mitre/emass_client'
 import {
   ArtifactsResponseDel,
-  ArtifactsRequestDeleteBodyInner as ArtifactDeleteBody
+  ArtifactsRequestDeleteBodyInner as ArtifactDeleteBody,
 } from '@mitre/emass_client/dist/api'
 
 const CMD_HELP = 'saf emasser delete artifacts -h or --help'

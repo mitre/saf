@@ -51,45 +51,45 @@ import {getErrorMessage} from '../../../utils/global'
  */
 interface Software {
   // Required field
-  softwareVendor?: string,
-  softwareName?: string,
-  version?: string,
+  softwareVendor?: string
+  softwareName?: string
+  version?: string
   // Conditional Fields
-  approvalDate?: number,
+  approvalDate?: number
   // Optional Fields
-  softwareType?: string,
-  parentSystem?: string,
-  subsystem?: string,
-  network?: string,
-  hostingEnvironment?: string,
-  softwareDependencies?: string,
-  cryptographicHash?: string,
-  inServiceData?: string,
-  itBudgetUii?: string,
-  fiscalYear?: string,
-  popEndDate?:string,
-  licenseOrContract?: string,
-  licenseTerm?: string,
-  costPerLicense?: number,
-  totalLicenses?:number,
-  totalLicenseCost?:number,
-  licensesUsed?:number,
-  licensePoc?:string,
-  licenseRenewalDate?: number,
-  licenseExpirationDate?: number,
-  approvalStatus?: string,
-  releaseDate?: number,
-  maintenanceDate?: number,
-  retirementDate?: number,
-  endOfLifeSupportDate?: number,
-  extendedEndOfLifeSupportDate?: number,
-  criticalAsset?: boolean,
-  location?:string,
-  purpose?:string,
+  softwareType?: string
+  parentSystem?: string
+  subsystem?: string
+  network?: string
+  hostingEnvironment?: string
+  softwareDependencies?: string
+  cryptographicHash?: string
+  inServiceData?: string
+  itBudgetUii?: string
+  fiscalYear?: string
+  popEndDate?: string
+  licenseOrContract?: string
+  licenseTerm?: string
+  costPerLicense?: number
+  totalLicenses?: number
+  totalLicenseCost?: number
+  licensesUsed?: number
+  licensePoc?: string
+  licenseRenewalDate?: number
+  licenseExpirationDate?: number
+  approvalStatus?: string
+  releaseDate?: number
+  maintenanceDate?: number
+  retirementDate?: number
+  endOfLifeSupportDate?: number
+  extendedEndOfLifeSupportDate?: number
+  criticalAsset?: boolean
+  location?: string
+  purpose?: string
   // VA Only
-  unsupportedOperatingSystem?: boolean,
-  unapprovedSoftwareFromTrm?: boolean,
-  approvedWaiver?: boolean,
+  unsupportedOperatingSystem?: boolean
+  unapprovedSoftwareFromTrm?: boolean
+  approvedWaiver?: boolean
 }
 
 /**
@@ -118,7 +118,7 @@ function getAllJsonExamples(): string {
  * @param value - The value of the parameter or field to check.
  * @throws Will throw an error if the value is undefined.
  */
-function assertParamExists(object: string, value: string|undefined|null): void {
+function assertParamExists(object: string, value: string | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')
@@ -336,9 +336,9 @@ const CMD_HELP = 'saf emasser post software_baseline -h or --help'
 export default class EmasserSoftwareBaseline extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command usages\x1B[0m'
 
-  static readonly description = 'Add one or many software assets to a system.\n' +
-    'The CLI expects an input JSON file containing the required, conditional\n' +
-    'and optional fields for the software asset(s) being added to the system.'
+  static readonly description = 'Add one or many software assets to a system.\n'
+    + 'The CLI expects an input JSON file containing the required, conditional\n'
+    + 'and optional fields for the software asset(s) being added to the system.'
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
