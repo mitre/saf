@@ -16,6 +16,7 @@ describe('Test generate delta command', () => {
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}`,
       '-T', 'rule',
+      '-c', path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2022_v1r3_mini_controls/'),
     ])
     const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length
     expect(fileCount).to.eql(4)
@@ -29,6 +30,7 @@ describe('Test generate delta command', () => {
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}`,
       '-T', 'group',
+      '-c', path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2022_v1r3_mini_controls/'),
     ])
     const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length
     expect(fileCount).to.eql(4)
@@ -42,6 +44,7 @@ describe('Test generate delta command', () => {
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}`,
       '-T', 'cis',
+      '-c', path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2022_v1r3_mini_controls/'),
     ])
     const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length
     expect(fileCount).to.eql(4)
@@ -55,6 +58,7 @@ describe('Test generate delta command', () => {
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}/controls`,
       '-T', 'version',
+      '-c', path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2022_v1r3_mini_controls/'),
     ])
     const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length
     expect(fileCount).to.eql(4)
@@ -68,6 +72,7 @@ describe('Test generate delta command', () => {
       '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}/RHEL_7`,
+      '-c', path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2022_v1r3_mini_controls/'),
     ])
     const fileCount = fs.readdirSync(`${tmpobj.name}/RHEL_7/controls/`).length
     expect(fileCount).to.eql(4)
@@ -81,6 +86,7 @@ describe('Test generate delta command', () => {
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}/RHEL_7`,
       '-r', `${tmpobj.name}/RHEL_7/my-report.md`,
+      '-c', path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2022_v1r3_mini_controls/'),
     ])
     const isReportFile = fs.lstatSync((`${tmpobj.name}/RHEL_7/my-report.md`)).isFile()
     assert.isTrue(isReportFile)
@@ -95,6 +101,7 @@ describe('Test generate delta command', () => {
       '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o', `${tmpobj.name}`,
       '-r', `${tmpobj.name}`,
+      '-c', path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2022_v1r3_mini_controls/'),
     ])
     const isFile = fs.lstatSync((`${tmpobj.name}/delta.md`)).isFile()
     assert.isTrue(isFile)

@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {Flags} from '@oclif/core'
 import winston from 'winston'
-import fs from 'fs'
+import fs, {copyFileSync} from 'fs'
 import {
   processInSpecProfile,
   processOVAL,
@@ -52,24 +52,24 @@ import {downloadFile, extractFileFromZip, getErrorMessage} from '../../utils/glo
 *        a - report file (.md), mapping statistics (CliProcessOutput.log)
 */
 export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
-  static description = 'Update an existing InSpec profile with updated XCCDF guidance'
+  static description = 'Update an existing InSpec profile with new or updated XCCDF guidance'
 
   static flags = {
     inspecJsonFile: Flags.string({
       char: 'J', required: false, exclusive: ['interactive'],
-      description: '\x1B[31m(required if not --interactive)\x1B[34mInSpec Profiles JSON summary file - can be generated using the "[cinc-auditor or inspec] json <profile path> | jq . > profile.json" command',
+      description: 'InSpec Profile Controls JSON summary file - can be generated using the "[cinc-auditor or inspec] json <profile path> | jq . > profile.json" command',
     }),
     xccdfXmlFile: Flags.string({
       char: 'X', exclusive: ['interactive', 'xccdfUrl'],
-      description: '\x1B[31m(required [-X or -U] or --interactive)\x1B[34mThe XCCDF XML file containing the new guidance - in the form of .xml file',
+      description: '\x1B[31m(required [-X or -U] or --interactive)\x1B[34m The XCCDF File containing the new guidance (.xml or .zip)',
     }),
     xccdfUrl: Flags.url({
       char: 'U', exclusive: ['interactive', 'xccdfXmlFile'],
-      description: '\x1B[31m(required [-X or -U] or --interactive)\x1B[34mThe URL pointing to the XCCDF file containing the new guidance (DISA STIG downloads)',
+      description: '\x1B[31m(required [-X or -U] or --interactive)\x1B[34m The URL for the XCCDF package containing the new guidance (.zip, e.g., DISA STIG downloads)',
     }),
     deltaOutputDir: Flags.string({
       char: 'o', required: false, exclusive: ['interactive'],
-      description: '\x1B[31m(required if not --interactive)\x1B[34mThe output folder for the updated profile (will contain the controls that delta was applied too) - if it is not empty, it will be overwritten. Do not use the original controls directory'}),
+      description: '\x1B[31m(required if not --interactive)\x1B[34m The output folder for the updated profile (will contain the controls that delta was applied too) - if it is not empty, it will be overwritten. Do not use the original controls directory'}),
     ovalXmlFile: Flags.string({
       char: 'O', required: false, exclusive: ['interactive'],
       description: 'The OVAL XML file containing definitions used in the new guidance - in the form of .xml file'}),
@@ -90,7 +90,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     }),
     controlsDir: Flags.string({
       char: 'c', required: false, exclusive: ['interactive'],
-      description: '\x1B[31m(required with -M or -J not provided)\x1B[34mThe InSpec profile directory containing the controls being updated (controls Delta is processing)'}),
+      description: '\x1B[31m(required with -M or -J not provided)\x1B[34m The InSpec profile directory containing the controls being updated (controls Delta is processing)'}),
   }
 
   static readonly examples = [
@@ -99,16 +99,16 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       command: '<%= config.bin %> <%= command.id %> --interactive',
     },
     {
-      description: '\x1B[93mProviding a XCCDF (file), a Profile Controls Summary, and no Fuzzy matching)\x1B[0m',
-      command: '<%= config.bin %> <%= command.id %> -X <xccdf_benchmarks.xml>, -J <profile_summary.json> -c <current-controls-dir> -o <updated_controls_dir>, [options]',
+      description: '\x1B[93mProviding a XCCDF (File), a Profile Controls Summary, and no Fuzzy matching)\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -X <xccdf_benchmarks.[xml, zip]>, -J <profile_summary.json> -c <current-controls-dir> -o <updated_controls_dir>, [options]',
     },
     {
       description: '\x1B[93mProviding a XCCDF (URL), a Profile Controls Summary, and no Fuzzy matching)\x1B[0m',
       command: '<%= config.bin %> <%= command.id %> -U <URL-to-benchmark.zip>, -J <profile_summary.json> -c <current-controls-dir> -o <updated_controls_dir>, [options]',
     },
     {
-      description: '\x1B[93mProviding a XCCDF (file), a Profile Controls Summary, with Fuzzy matching)\x1B[0m',
-      command: '<%= config.bin %> <%= command.id %> -X <xccdf_benchmarks.xml>, -J <profile_summary.json> -c <current-controls-dir> -o <updated_controls_dir>, -M, [options]',
+      description: '\x1B[93mProviding a XCCDF (File), a Profile Controls Summary, with Fuzzy matching)\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -X <xccdf_benchmarks.[xml, zip]>, -J <profile_summary.json> -c <current-controls-dir> -o <updated_controls_dir>, -M, [options]',
     },
     {
       description: '\x1B[93mProviding a XCCDF (URL), a Profile Controls Summary, with Fuzzy matching)\x1B[0m',
@@ -144,7 +144,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       this.error('\x1B[31mIf not interactive and -M is provided the Controls Directory (-c) must be provided\x1B[0m')
     }
 
-    GenerateDelta.logger = createWinstonLogger('generate:delta', 'info')
+    // Set the log level to debug until we get the user selected level
+    GenerateDelta.logger = createWinstonLogger('generate:delta', 'debug')
 
     // Flag variables
     let inspecJsonFile = ''
@@ -166,15 +167,20 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     let outputProfileFolderPath = ''
     let mappedControls: any = {}
 
+    const thisLogger = GenerateDelta.logger
+    thisLogger.warn(colors.green('╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗'))
+    thisLogger.warn(colors.green('║ saf generate delta is officially released - report any questions/bugs to https://github.com/mitre/saf/issues ║'))
+    thisLogger.warn(colors.green('╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝'))
+
     addToProcessLogData('==================== Delta Process =====================')
     addToProcessLogData(`Date: ${new Date().toISOString()}`)
 
     if (flags.interactive) {
       const interactiveFlags = await getFlags()
       // Required flags
-      const dataFileContent = flags.xccdfXmlFile
+      const dataFileContent = interactiveFlags.xccdfTye === 'file'
         ? await this.getXccdfContent('File', interactiveFlags.xccdfXmlFile)
-        : flags.xccdfUrl ? await this.getXccdfContent('URL', interactiveFlags.xccdfUrl) : ''
+        : interactiveFlags.xccdfUrl ? await this.getXccdfContent('URL', interactiveFlags.xccdfUrl.toString()) : ''
       xccdfXmlFile = dataFileContent ? dataFileContent.xccdfFIle : ''
       xccdfContent = dataFileContent ? dataFileContent.xccdfContent : ''
       deltaOutputDir = interactiveFlags.deltaOutputDir
@@ -222,12 +228,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     addToProcessLogData('\n')
     GenerateDelta.logger.level = logLevel
 
-    const thisLogger = GenerateDelta.logger
-    thisLogger.warn(colors.green('╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗'))
-    thisLogger.warn(colors.green('║ saf generate delta is officially released - report any questions/bugs to https://github.com/mitre/saf/issues ║'))
-    thisLogger.warn(colors.green('╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝'))
-
-    // Shorten the controls directory to sow the 'controls' directory and its parent
+    // Shorten the controls directory to show the 'controls' directory and its parent
     const shortControlsDir = path.sep + path.basename(path.dirname(controlsDir))
       + path.sep + path.basename(controlsDir)
 
@@ -238,7 +239,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     //       existingProfile variable is re-generated as the controls change.
     this.logThis('Processing the InSpec Profiles JSON summary (generate if not provided)...', 'info')
     if (inspecJsonFile) {
-      this.logThis(`  Using execution/profile summary file: ${path.basename(inspecJsonFile)}`, 'info')
+      this.logThis(`  Using profile controls summary file: ${path.basename(inspecJsonFile)}`, 'info')
       try {
         if (fs.lstatSync(inspecJsonFile).isFile()) {
           this.logThis(`  Loading ${inspecJsonFile} as Profile JSON/Execution JSON`, 'debug')
@@ -263,8 +264,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       // Generate the profile json
       try {
         this.logThis(`  Generating the summary file on directory: ${shortControlsDir}`, 'info')
-        // Get the directory name without the trailing "controls" directory
-        const inspecJsonFile = execSync(`cinc-auditor json '${controlsDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
+        // Generate the profile controls summary from the `controlsDir` without the trailing "controls" directory
+        const inspecJsonFile = execSync(`cinc-auditor json '${path.dirname(controlsDir)}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
         this.logThis('  Generated InSpec Profiles from InSpec JSON summary', 'info')
         existingProfile = processInSpecProfile(inspecJsonFile)
       } catch (error: unknown) {
@@ -404,19 +405,22 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // Get the directory name without the trailing "controls" directory
           // Here we are using the newly updated (mapped) controls
           // const profileDir = path.dirname(controlsDir)
-          const inspecJsonFileNew = execSync(`cinc-auditor json '${mappedDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
+          const inspecJsonFileNew = execSync(`cinc-auditor json '${path.dirname(mappedDir)}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
+          // const inspecJsonFileNew = execSync(`cinc-auditor json '${mappedDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
 
           // Replace existing profile (inputted JSON of source profile to be mapped)
           // Allow delta to take care of the rest
           existingProfile = processInSpecProfile(inspecJsonFileNew)
-        } catch (error: any) {
-          saveLogs(`  ERROR: Unable to generate the profile json summary for the updated controls.  \n ${error}`)
+        } catch (error: unknown) {
+          saveLogs(`  ERROR: Unable to generate the profile json summary for the updated controls.  \n ${getErrorMessage(error)}`)
           await sleep(2000).then(() => process.exit(1))
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       saveLogs(
-        `  ERROR: Could not process runMapControls flag. Check the --help command for more information on the -o flag.\n  ${error}`)
+        '  ERROR: Could not process fuzzy search logic. Check the --help command for more '
+        + 'information on the deltaOutputDir(-o) or controlsDir(-c) flags.\n'
+        + `  ${getErrorMessage(error)}`)
       await sleep(2000).then(() => process.exit(1))
     }
 
@@ -476,7 +480,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     // -------------------------------------------------------------------------
     // If all variables have been satisfied, we can generate the delta
     // If the -M was used the delta is generated based on the mapped controls
-    // logger.info('Executing the Delta process...')
+    // NOTE: If the -M was not used and the current control numbers are different
+    //       (like V to SV) there will be not matching between current controls
+    //       (existingProfile.controls) and updatedResult variable containing
+    //       the returned values from the updateProfileUsingXCCDF(...) process.
+    //       For this UC, it is best to run the update_controls4delta where the
+    //       controls are update with values provided by the xccdf benchmark.
     this.logThis('Executing the Delta process...', 'info')
     if (existingProfile && xccdfContent) {
       let updatedResult: UpdatedProfileReturn | undefined
@@ -519,11 +528,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             // NOTE: Can use the getExistingDescribeFromControl(existingProfile.controls[index])
             //       method from inspect-objects
             const newControl = updateControl(existingProfile.controls[index], control, thisLogger)
-            this.logThis(`Writing updated control with code block for: ${control.id}.`, 'debug')
+            this.logThis(`Writing updated control with code block for: ${control.id}.`, 'info')
             fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), newControl.toRuby(processLogLevel))
           } else {
             // We didn't find a mapping for this control - Old style of updating controls
-            this.logThis(`Writing new control without code block for: ${control.id}.`, 'debug')
+            this.logThis(`Writing new control without code block for: ${control.id}.`, 'info')
             fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby(processLogLevel))
           }
         })
@@ -560,7 +569,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // Print the process output report to current directory
         addToProcessLogData('Update Results ===========================================================================\n')
         addToProcessLogData(updatedResult.markdown)
-        printGreen('\nDelta Process completed successfully\n')
+        await sleep(2000).then(() => printGreen('\nDelta Process completed successfully\n'))
+        // printGreen('\nDelta Process completed successfully\n')
         saveProcessLogData()
       } else {
         printRed('\nDelta Process failed\n')
@@ -780,10 +790,14 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         const files = fs.readdirSync(flags.controlsDir)
         // Filter the files to check if any of them have the .rd extension
         const rdFiles = files.filter(file => path.extname(file) === '.rb')
-        strMsg += colors.dim(`  No Controls found in directory: ${flags.controlsDir}\n`)
-        missingFlags = !(rdFiles.length > 0)
+        if (rdFiles.length) {
+          missingFlags = false
+        } else {
+          strMsg += colors.dim(`  No Controls found in directory: ${flags.controlsDir}\n`)
+          missingFlags = true
+        }
       } else {
-        strMsg += colors.dim(`  Profile controls directory does not exist: ${flags.controlsDir}\n`)
+        strMsg += colors.dim(`  Profile Controls directory does not exist: ${flags.controlsDir}\n`)
         missingFlags = true
       }
     }
@@ -809,8 +823,26 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       xccdfFIle = path.basename(xccdfInput)
       this.logThis(`Verifying that the XCCDF file is valid: ${xccdfFIle}...`, 'info')
       if (isXccdfFile(xccdfInput)) {
-        xccdfContent = fs.readFileSync(xccdfInput, 'utf8')
-        this.logThis(`  Retrieved XCCDF from: ${xccdfFIle}`, 'debug')
+        // Did we get a .xml file or a zip package
+        if (path.extname(xccdfInput) === '.xml') {
+          xccdfContent = fs.readFileSync(xccdfInput, 'utf8')
+          this.logThis(`  Retrieved XCCDF from zip package: ${xccdfFIle}`, 'debug')
+        } else {
+          try {
+            const fileNameToExtract = '-xccdf.xml'
+            // fileBuffer = extractFileFromZip(zipFilePath, fileNameToExtract)
+            const result = extractFileFromZip(xccdfInput, fileNameToExtract)
+            const fileBuffer = result[0]
+            xccdfFIle = result[1].split('/')[1]
+            if (fileBuffer) {
+              this.logThis(`  Retrieved XCCDF from zip package: ${xccdfFIle}`, 'debug')
+              xccdfContent = fileBuffer.toString()
+            }
+          } catch (error) {
+            saveLogs(`Processing File failed.', ${error}`)
+            await sleep(2000).then(() => process.exit(1))
+          }
+        }
       } else {
         saveLogs('Processing XCCDF JSON Summary file failed.')
         await sleep(2000).then(() => process.exit(1))
@@ -818,7 +850,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     } else {
       this.logThis(`Verifying that the URL contains a valid XCCDF: ${xccdfInput}...`, 'info')
       const tmpobj = tmp.dirSync({unsafeCleanup: true})
-      let fileBuffer: Buffer | null = null
+      // let fileBuffer: Buffer | null = null
 
       if (xccdfInput === undefined) {
         saveLogs('URL flag is undefined or invalid.')
@@ -840,7 +872,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           const fileNameToExtract = '-xccdf.xml'
           // fileBuffer = extractFileFromZip(zipFilePath, fileNameToExtract)
           const result = extractFileFromZip(zipFilePath, fileNameToExtract)
-          fileBuffer = result[0]
+          const fileBuffer = result[0]
           xccdfFIle = result[1].split('/')[1]
           if (fileBuffer) {
             this.logThis(`  Extracted XCCDF from: ${xccdfFIle}`, 'debug')
@@ -865,19 +897,41 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       .replaceAll('\v', String.raw``)
   }
 
+  /**
+   * Creates the mapped directory for controls within the specified directory path.
+   *
+   * This method performs the following steps:
+   * 1. Determines the destination file path based on the provided `controlsDir`.
+   * 2. Constructs the path for the mapped directory (`mapped_controls/controls`).
+   * 3. Deletes the mapped directory if it already exists.
+   * 4. Creates the mapped directory recursively.
+   * 5. Copies the `inspec.yml` file from the destination directory to the parent
+   *    of the mapped directory to ensure proper generation of the profile controls summary.
+   *
+   * @param controlsDir - The path to the directory containing the controls.
+   * @returns The path to the newly created mapped directory.
+   * @throws An error if any file system operation fails, with the error message extracted using `getErrorMessage`.
+   */
   createMappedDirectory(controlsDir: string): string { // skipcq: JS-0105
-    const destFilePath = path.basename(controlsDir)
-    const mappedDir = controlsDir.replace(destFilePath, 'mapped_controls')
-    if (fs.existsSync(mappedDir)) {
-      fs.rmSync(mappedDir, {recursive: true, force: true})
+    try {
+      const destFilePath = path.dirname(controlsDir)
+      const mappedDir = path.join(destFilePath, 'mapped_controls', 'controls')
+      if (fs.existsSync(mappedDir)) {
+        fs.rmSync(mappedDir, {recursive: true, force: true})
+      }
+
+      fs.mkdirSync(mappedDir, {recursive: true})
+
+      // Copy the profile inspec.yml to the mapped directory to generate the profile controls summary properly
+      copyFileSync(path.join(destFilePath, 'inspec.yml'), path.join(path.dirname(mappedDir), 'inspec.yml'))
+
+      return mappedDir
+    } catch (error: unknown) {
+      throw new Error(getErrorMessage(error))
     }
-
-    fs.mkdirSync(mappedDir)
-
-    return mappedDir
   }
 
-  logThis(logMsg: string, logLevel: string) { // skipcp: JS-0105
+  logThis(logMsg: string, logLevel: string) { // skipcq: JS-0105
     switch (logLevel) {
       case 'info': {
         GenerateDelta.logger.info(logMsg)
@@ -939,21 +993,21 @@ async function getFlags(): Promise<any> {
   printMagenta('  Optional flag - Run the approximate string matching process')
   printMagenta('  Optional flag - The InSpec profile directory containing the controls being updated (controls Delta is processing)\n')
 
+  addToProcessLogData('Process Flags ===========================================')
+
+  // Check what XCCDF to use (File or URL)
+  const xccdfType = await select({
+    message: 'Select from where to retrieve the XCCDF',
+    choices: [
+      {name: 'File', value: 'file', description: 'File (.xml) containing the XCCDF benchmark'},
+      {name: 'URL', value: 'url', description: 'URL pointing to a package (.zip) containing the XCCDF benchmark'},
+    ],
+  })
+
   // Required Flags
-  const requiredAnswers = {
-    inspecJsonFile: await fileSelector({
-      message: 'Select the Input execution/profile (list of controls the delta is being applied from) JSON file:',
-      pageSize: 15,
-      loop: true,
-      type: 'file',
-      allowCancel: true,
-      emptyText: 'Directory is empty',
-      showExcluded: false,
-      filter: file => file.isDirectory() || file.name.endsWith('.json'),
-      theme: fileSelectorTheme,
-    }),
-    xccdfXmlFile: await fileSelector({
-      message: 'Select the XCCDF XML file containing the new guidance - in the form of .xml file:',
+  if (xccdfType === 'file') {
+    const xccdfXmlFile = await fileSelector({
+      message: 'Select the XCCDF benchmark file (.xml) containing the new guidance:',
       pageSize: 15,
       loop: true,
       type: 'file',
@@ -962,29 +1016,90 @@ async function getFlags(): Promise<any> {
       showExcluded: false,
       filter: file => file.isDirectory() || file.name.endsWith('.xml'),
       theme: fileSelectorTheme,
-    }),
-    deltaOutputDir: await fileSelector({
-      message: 'Select the output folder for the updated profile control(s) (do not use the original controls directory)',
+    })
+
+    addToProcessLogData('xccdfXmlFile=' + xccdfXmlFile)
+    interactiveValues.xccdfTye = 'file'
+    interactiveValues.ovalXmlFile = xccdfXmlFile
+  } else {
+    const xccdfUrl = await input({
+      message: 'Provide an URL pointing to the XCCDF benchmark (.zip) package:',
+      validate(input: string) {
+        if (/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*\.zip$/i.test(input)) { // skipcq: JS-0113
+          return true
+        }
+        return 'Please enter a valid URL that ends with .zip'
+      },
+    })
+
+    addToProcessLogData('xccdfUrl=' + xccdfUrl)
+    interactiveValues.xccdfTye = 'url'
+    interactiveValues.xccdfUrl = xccdfUrl
+  }
+
+  // Check if Profile Controls summary is provided or auto-generate
+  const generateSummaryFile = await select({
+    message: 'Auto generate the Profile Controls summary?',
+    choices: [
+      {name: 'Yes', value: 'yes', description: 'Must provide the directory containing the profile controls'},
+      {name: 'No', value: 'no', description: 'Must provide the Profile Controls summary (.json) file'},
+    ],
+  })
+
+  if (generateSummaryFile === 'no') {
+    const inspecJsonFile = await fileSelector({
+      message: 'Select the Profile Controls summary (.json) file:',
+      pageSize: 15,
+      loop: true,
+      type: 'file',
+      allowCancel: true,
+      emptyText: 'Directory is empty',
+      showExcluded: false,
+      filter: file => file.isDirectory() || file.name.endsWith('.json'),
+      theme: fileSelectorTheme,
+    })
+
+    addToProcessLogData('inspecJsonFile=' + inspecJsonFile)
+    interactiveValues.inspecJsonFile = inspecJsonFile
+  } else {
+    addToProcessLogData('inspecJsonFile=auto-generated')
+    interactiveValues.inspecJsonFile = ''
+  }
+
+  // If we are using fuzzy logic or profile controls summary was not provided we need the controls directory
+  const useFuzzyLogic = await confirm({message: 'Run the approximate string matching process (fuzzy logic)?'})
+  if (useFuzzyLogic || generateSummaryFile === 'yes') {
+    const controlsDir = await fileSelector({
+      message: 'Select the Profile Controls directory (controls Delta is processing):',
       pageSize: 15,
       loop: true,
       type: 'directory',
       allowCancel: true,
       emptyText: 'Directory is empty',
       theme: fileSelectorTheme,
-    }),
+    })
+
+    addToProcessLogData('runMapControls=true')
+    interactiveValues.controlsDir = controlsDir
+    interactiveValues.runMapControls = useFuzzyLogic
+  } else {
+    addToProcessLogData('runMapControls=false')
+    interactiveValues.runMapControls = false
   }
 
-  addToProcessLogData('Process Flags ============================================')
+  // Get the directory where to save the delta controls
+  const deltaOutputDir = await fileSelector({
+    message: 'Select the output folder for the updated profile control(s) (do not use the original controls directory)',
+    pageSize: 15,
+    loop: true,
+    type: 'directory',
+    allowCancel: true,
+    emptyText: 'Directory is empty',
+    theme: fileSelectorTheme,
+  })
 
-  for (const tagName in requiredAnswers) {
-    if (Object.prototype.hasOwnProperty.call(requiredAnswers, tagName)) {
-      const answerValue = _.get(requiredAnswers, tagName)
-      if (answerValue !== null) {
-        addToProcessLogData(tagName + '=' + answerValue)
-        interactiveValues[tagName] = answerValue
-      }
-    }
-  }
+  addToProcessLogData('deltaOutputDir=' + deltaOutputDir)
+  interactiveValues.deltaOutputDir = deltaOutputDir
 
   // Optional - OVAL file Flag
   const useOvalFile = await confirm({message: 'Include an OVAL XML file?'})
@@ -1002,32 +1117,9 @@ async function getFlags(): Promise<any> {
     })
 
     addToProcessLogData('useOvalFile=true')
-    interactiveValues.useOvalFile = true
     interactiveValues.ovalXmlFile = ovalXmlFile
   } else {
     addToProcessLogData('useOvalFile=false')
-    interactiveValues.useOvalFile = false
-  }
-
-  // Optional - Map controls using fuzzy logic
-  const useFuzzyLogic = await confirm({message: 'Run the approximate string matching process (fuzzy logic)?'})
-  if (useFuzzyLogic) {
-    const controlsDir = await fileSelector({
-      message: 'Select the InSpec profile directory containing the controls being updated (controls Delta is processing):',
-      pageSize: 15,
-      loop: true,
-      type: 'directory',
-      allowCancel: true,
-      emptyText: 'Directory is empty',
-      theme: fileSelectorTheme,
-    })
-
-    addToProcessLogData('runMapControls=true')
-    interactiveValues.runMapControls = true
-    interactiveValues.controlsDir = controlsDir
-  } else {
-    addToProcessLogData('runMapControls=false')
-    interactiveValues.runMapControls = false
   }
 
   // Optional - Generate markdown report from Inspect-objects process
@@ -1050,7 +1142,6 @@ async function getFlags(): Promise<any> {
     }
 
     addToProcessLogData('generateReport=true')
-    interactiveValues.generateReport = true
 
     for (const tagName in answers) {
       if (Object.prototype.hasOwnProperty.call(answers, tagName)) {
@@ -1063,7 +1154,6 @@ async function getFlags(): Promise<any> {
     }
   } else {
     addToProcessLogData('generateReport=false')
-    interactiveValues.generateReport = false
   }
 
   // Optional - Select what group Id to process the controls and Log Level
@@ -1100,6 +1190,7 @@ async function getFlags(): Promise<any> {
     }
   }
 
+  console.log(`ALL SELECTIONS: ${JSON.stringify(interactiveValues)}`)
   return interactiveValues
 }
 
@@ -1108,18 +1199,24 @@ function isXccdfFile(xccdfXmlFile: string): boolean {
   try {
     if (fs.lstatSync(xccdfXmlFile).isFile()) {
       // logger.debug(`Processing the ${xccdfXmlFile} XCCDF file`)
-      const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8')
-      const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase()
-      if (inputFirstLine.includes('xccdf')) {
-        GenerateDelta.logger.debug('  Valid XCCDF file provided')
+      if (path.extname(xccdfXmlFile) === '.zip') {
+        GenerateDelta.logger.debug('  Processing a XCCDF package (.zip)')
+        isXccdf = true
       } else {
-        const err = `  ERROR: Unable to load ${xccdfXmlFile} as a valid XCCDF`
-        GenerateDelta.logger.error(err)
-        addToProcessLogData(err)
-        isXccdf = false
+        GenerateDelta.logger.debug('  Processing a XCCDF file (.xml)')
+        const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8')
+        const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase()
+        if (inputFirstLine.includes('xccdf')) {
+          GenerateDelta.logger.debug('  Valid XCCDF file provided')
+        } else {
+          const err = `  ERROR: Unable to load ${xccdfXmlFile} as a valid XCCDF`
+          GenerateDelta.logger.error(err)
+          addToProcessLogData(err)
+          isXccdf = false
+        }
       }
     } else {
-      const err = 'No benchmark (XCCDF) file was provided.'
+      const err = 'No benchmark (XCCDF) file/packages (.xml or .zip) was provided.'
       GenerateDelta.logger.error(err)
       addToProcessLogData(err)
       isXccdf = false
