@@ -228,10 +228,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     addToProcessLogData('\n')
     GenerateDelta.logger.level = logLevel
 
-    // Shorten the controls directory to show the 'controls' directory and its parent
-    const shortControlsDir = path.sep + path.basename(path.dirname(controlsDir))
-      + path.sep + path.basename(controlsDir)
-
     // -------------------------------------------------------------------------
     // Check if we have an InSpec json file, generate if not provided
     // Process the InSpec json content, convert entries into a Profile object
@@ -261,6 +257,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         }
       }
     } else {
+      // Shorten the controls directory to show the 'controls' directory and its parent
+      const shortControlsDir = path.sep + path.basename(path.dirname(controlsDir))
+        + path.sep + path.basename(controlsDir)
       // Generate the profile json
       try {
         this.logThis(`  Generating the summary file on directory: ${shortControlsDir}`, 'info')
