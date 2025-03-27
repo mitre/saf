@@ -355,7 +355,6 @@ export async function downloadFile(url: string | undefined, outputPath: string):
  * @param fileName - The name of the file to extract from the ZIP archive.
  * @returns The content of the extracted file as a Buffer, or null if the file is not found or an error occurs.
  */
-// export function extractFileFromZip(zipPath: string, fileName: string): Buffer | null {
 export function extractFileFromZip(zipPath: string, fileName: string): [Buffer | null, string] {
   try {
     const zip = new AdmZip(zipPath)
