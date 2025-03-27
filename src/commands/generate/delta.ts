@@ -69,7 +69,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     }),
     deltaOutputDir: Flags.string({
       char: 'o', required: false, exclusive: ['interactive'],
-      description: '\x1B[31m(required if not --interactive)\x1B[34m The output folder for the updated profile (will contain the controls that delta was applied too) - if it is not empty, it will be overwritten. Do not use the original controls directory'}),
+      description: '\x1B[31m(required if not --interactive)\x1B[34m The output folder for the updated profile (this will contain the new controls modified by delta) - if it is not empty, it will be overwritten. Do not use the original controls directory'}),
     ovalXmlFile: Flags.string({
       char: 'O', required: false, exclusive: ['interactive'],
       description: 'The OVAL XML file containing definitions used in the new guidance - in the form of .xml file'}),
@@ -90,7 +90,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     }),
     controlsDir: Flags.string({
       char: 'c', required: false, exclusive: ['interactive'],
-      description: '\x1B[31m(required with -M or -J not provided)\x1B[34m The InSpec profile directory containing the controls being updated (controls Delta is processing)'}),
+      description: '\x1B[31m(required with -M or -J not provided)\x1B[34m The InSpec profile directory containing the controls to update (controls Delta is processing)'}),
   }
 
   static readonly examples = [
@@ -181,7 +181,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       const dataFileContent = interactiveFlags.xccdfTye === 'file'
         ? await this.getXccdfContent('File', interactiveFlags.xccdfXmlFile)
         : interactiveFlags.xccdfUrl ? await this.getXccdfContent('URL', interactiveFlags.xccdfUrl.toString()) : ''
-      xccdfXmlFile = dataFileContent ? dataFileContent.xccdfFIle : ''
+      xccdfXmlFile = dataFileContent ? dataFileContent.xccdfFile : ''
       xccdfContent = dataFileContent ? dataFileContent.xccdfContent : ''
       deltaOutputDir = interactiveFlags.deltaOutputDir
 
@@ -201,7 +201,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       const dataFileContent = flags.xccdfXmlFile
         ? await this.getXccdfContent('File', flags.xccdfXmlFile)
         : flags.xccdfUrl ? await this.getXccdfContent('URL', flags.xccdfUrl.toString()) : ''
-      xccdfXmlFile = dataFileContent ? dataFileContent.xccdfFIle : ''
+      xccdfXmlFile = dataFileContent ? dataFileContent.xccdfFile : ''
       xccdfContent = dataFileContent ? dataFileContent.xccdfContent : ''
       deltaOutputDir = flags.deltaOutputDir as string
 
@@ -536,7 +536,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           }
         })
 
-        // logger.info(`  Writing delta file for ${existingProfile.title}`)
         this.logThis(`  Writing delta file for ${existingProfile.title}`, 'info')
         fs.writeFileSync(path.join(outputProfileFolderPath, 'delta.json'), JSON.stringify(updatedResult.diff, null, 2))
 
@@ -786,7 +785,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       // Check if the directory exists
       if (fs.existsSync(flags.controlsDir)) {
         const files = fs.readdirSync(flags.controlsDir)
-        // Filter the files to check if any of them have the .rd extension
+        // Filter the files to check if any of them have the .rb extension
         const rdFiles = files.filter(file => path.extname(file) === '.rb')
         if (rdFiles.length) {
           missingFlags = false
@@ -819,31 +818,31 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
    * @param xccdfType - The type of the XCCDF input, either 'File' or 'URL'.
    * @param xccdfInput - The path to the XCCDF file or the URL containing the XCCDF content.
    * @returns A promise that resolves to an object containing:
-   *          - `xccdfFIle`: The name of the XCCDF file.
+   *          - `xccdfFile`: The name of the XCCDF file.
    *          - `xccdfContent`: The content of the XCCDF file as a string.
    *
    * @throws Will terminate the process if the input file or URL is invalid or processing fails.
    */
-  async getXccdfContent(xccdfType: string, xccdfInput: string): Promise<{xccdfFIle: string, xccdfContent: string}> {
-    let xccdfFIle = ''
+  async getXccdfContent(xccdfType: string, xccdfInput: string): Promise<{xccdfFile: string, xccdfContent: string}> {
+    let xccdfFile = ''
     let xccdfContent = ''
 
     if (xccdfType === 'File') {
-      xccdfFIle = path.basename(xccdfInput)
-      this.logThis(`Verifying that the XCCDF file is valid: ${xccdfFIle}...`, 'info')
+      xccdfFile = path.basename(xccdfInput)
+      this.logThis(`Verifying that the XCCDF file is valid: ${xccdfFile}...`, 'info')
       if (isXccdfFile(xccdfInput)) {
         // Did we get a .xml file or a zip package
         if (path.extname(xccdfInput) === '.xml') {
           xccdfContent = fs.readFileSync(xccdfInput, 'utf8')
-          this.logThis(`  Retrieved XCCDF from zip package: ${xccdfFIle}`, 'debug')
+          this.logThis(`  Retrieved XCCDF from zip package: ${xccdfFile}`, 'debug')
         } else {
           try {
             const fileNameToExtract = '-xccdf.xml'
             const result = extractFileFromZip(xccdfInput, fileNameToExtract)
             const fileBuffer = result[0]
-            xccdfFIle = result[1].split('/')[1]
+            xccdfFile = result[1].split('/')[1]
             if (fileBuffer) {
-              this.logThis(`  Retrieved XCCDF from zip package: ${xccdfFIle}`, 'debug')
+              this.logThis(`  Retrieved XCCDF from zip package: ${xccdfFile}`, 'debug')
               xccdfContent = fileBuffer.toString()
             }
           } catch (error) {
@@ -879,9 +878,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           const fileNameToExtract = '-xccdf.xml'
           const result = extractFileFromZip(zipFilePath, fileNameToExtract)
           const fileBuffer = result[0]
-          xccdfFIle = result[1].split('/')[1]
+          xccdfFile = result[1].split('/')[1]
           if (fileBuffer) {
-            this.logThis(`  Extracted XCCDF from: ${xccdfFIle}`, 'debug')
+            this.logThis(`  Extracted XCCDF from: ${xccdfFile}`, 'debug')
             xccdfContent = fileBuffer.toString()
           }
         } catch (error) {
@@ -891,7 +890,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       })()
       tmp.setGracefulCleanup()
     }
-    return {xccdfFIle, xccdfContent}
+    return {xccdfFile, xccdfContent}
   }
 
   updateTitle(str: string): string { // skipcq: JS-0105
