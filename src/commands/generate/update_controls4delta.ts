@@ -52,7 +52,7 @@ import {Logger} from 'winston'
  */
 
 export default class GenerateUpdateControls extends BaseCommand<typeof GenerateUpdateControls> {
-  static readonly usage = '<%= command.id %> [ARGUMENTS]'
+  // static readonly usage = '<%= command.id %> [ARGUMENTS]'
 
   static readonly description = 'Update Profile Control(s) from baseline X to Y based on DISA XCCDF guidance'
 
@@ -70,12 +70,12 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
   static readonly flags = {
     xccdfXmlFile: Flags.string({
       char: 'X',
-      description: '\x1B[31m(required [-X or -U])\x1B[34mThe XCCDF XML file containing the new guidance - in the form of .xml file',
+      description: '\x1B[31m(required [-X or -U])\x1B[34m The XCCDF XML file containing the new guidance - in the form of .xml file',
       exclusive: ['xccdfUrl'],
     }),
     xccdfUrl: Flags.url({
       char: 'U',
-      description: '\x1B[31m(required [-X or -U])\x1B[34mThe URL pointing to the XCCDF file containing the new guidance (DISA STIG downloads)',
+      description: '\x1B[31m(required [-X or -U])\x1B[34m The URL pointing to the XCCDF file containing the new guidance (DISA STIG downloads)',
       exclusive: ['xccdfXmlFile'],
     }),
     inspecJsonFile: Flags.string({

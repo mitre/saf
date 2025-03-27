@@ -1471,41 +1471,51 @@ validate threshold            Validate the compliance and status counts of an HD
 
 #### Delta
 
-See the wiki for more information on 👉 [Delta](https://github.com/mitre/saf/wiki/Delta-(WIP)).
+See the wiki for more information on 👉 [Delta](https://github.com/mitre/saf/wiki/Delta).
 
 ```
 Update an existing InSpec profile with updated XCCDF guidance
 
 USAGE
-  $ saf generate delta [-L info|warn|debug|verbose] [-J <value> | --interactive] [-X <value> | ] [-o <value> | ]
-    [-O <value> | ] [-r <value> | ] [-T rule|group|cis|version | ] [-M -c <value>]
+  $ saf generate delta [-h] [-L info|warn|debug|verbose] [-J <value> | --interactive] [-X <value> | -U <value>]
+   [-o <value> | ] [-O <value> | ] [-r <value> | ] [-T rule|group|cis|version | ] [-M -c <value>]
 
 FLAGS
-  -J, --inspecJsonFile=<value>  (required if not --interactive) Input execution/profile JSON file - can be generated using the "inspec json <profile path> | jq . > profile.json" command
-  -X, --xccdfXmlFile=<value>    (required if not --interactive) The XCCDF XML file containing the new guidance - in the form of .xml file
-  -o, --deltaOutputDir=<value>  (required if not --interactive) The output folder for the updated profile - if not empty it will be overwritten
-  -O, --ovalXmlFile=<value>     The OVAL XML file containing definitions used in the new guidance - in the form of .xml file
-  -T, --idType=<option>         [default: rule] Control ID Types: 
-                                'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 
-                                'group' - Group IDs (ex. 'V-XXXXX'), 
-                                'cis' - CIS Rule IDs (ex. C-1.1.1.1), 
-                                'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
-                                <options: rule|group|cis|version>
+  -J, --inspecJsonFile=<value>  InSpec Profile Controls JSON summary file
+                                - can be generated using the "[cinc-auditor or inspec] json <profile path> | jq . > profile.json" command
   -M, --runMapControls          Run the approximate string matching process
-  -c, --controlsDir=<value>     The InSpec profile directory containing the controls being updated (controls Delta is processing)
-  -r, --report=<value>          Output markdown report file - must have an extension of .md
+  -O, --ovalXmlFile=<value>     The OVAL XML file containing definitions used in the new guidance - in the form of .xml file
+  -T, --idType=<option>         [default: rule] Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs
+                                (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)
+                                <options: rule|group|cis|version>
+  -U, --xccdfUrl=<value>        (required [-X or -U] or --interactive) The URL for the XCCDF package containing the new guidance (.zip, e.g., DISA STIG downloads)
+  -X, --xccdfXmlFile=<value>    (required [-X or -U] or --interactive) The XCCDF File containing the new guidance (.xml or .zip)
+  -c, --controlsDir=<value>     (required with -M or -J not provided) The InSpec profile directory containing the controls being updated (controls Delta is processing)
+  -o, --deltaOutputDir=<value>  (required if not --interactive) The output folder for the updated profile (will contain the controls that delta was applied too)
+                                 - if it is not empty, it will be overwritten. Do not use the original controls directory
+  -r, --reportFile=<value>      Output markdown report file - must have an extension of .md
 
 GLOBAL FLAGS
   -h, --help               Show CLI help
   -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
-                          <options: info|warn|debug|verbose>
+                           <options: info|warn|debug|verbose>
       --interactive        Collect input tags interactively (not available on all CLI commands)
 
 EXAMPLES
-  $ saf generate delta -J <profile_json_file.json> -X <xccdf_guidance_file.xml, -o <updated_controls_directory>
+  Running the CLI interactively
+    $ saf generate delta --interactive
 
-  $ saf generate delta -J <profile_json_file.json> -X <xccdf_guidance_file.xml, -o <updated_controls_directory> -M
-    -c <controls_directory_being_processed_by_delta>
+  Providing a XCCDF (File), a Profile Controls Summary, and no Fuzzy matching)
+    $ saf generate delta -X <xccdf_benchmarks.[xml, zip]>, -J <profile_summary.json> -c <current-controls-dir> -o <updated_controls_dir>, [options]
+
+  Providing a XCCDF (URL), a Profile Controls Summary, and no Fuzzy matching)
+    $ saf generate delta -U <URL-to-benchmark.zip>, -J <profile_summary.json> -c <current-controls-dir> -o <updated_controls_dir>, [options]
+
+  Providing a XCCDF (File), a Profile Controls Summary, with Fuzzy matching)
+    $ saf generate delta -X <xccdf_benchmarks.[xml, zip]>, -J <profile_summary.json> -c <current-controls-dir> -o <updated_controls_dir>, -M, [options]
+
+  Providing a XCCDF (URL), a Profile Controls Summary, with Fuzzy matching)
+    $ saf generate delta -U <URL-to-benchmark.zip>, -J <profile_summary.json> -c <current-controls-dir> -o <updated_controls_dir>, -M, [options]
 
 ```
 [top](#generate-data-reports-and-more)
@@ -1515,10 +1525,11 @@ Use this process prior of running `generate delta`. The process updates the cont
 
 ```
 USAGE
-  $ saf generate update_controls4delta -X <value> -J <value> -c <value> [-P V|VS] [--[no-]useXccdfGroupId] [--[no-]backupControls] [--[no-]formatControls] [-L info|warn|debug|verbose]
+  $ saf generate update_controls4delta [-X <value> | -U <value>] -c <value> [-J <value>] [-P V|SV] [-g] [-f] [-b] [-h] [--interactive] [-L info|warn|debug|verbose]  
 
 FLAGS
-  -X, --xccdfXmlFile=<value>    (required) The XCCDF XML file containing the new guidance - in the form of an .xml file
+  -U, --xccdfUrl=<value>        (required [-X or -U]) The URL pointing to the XCCDF file containing the new guidance (DISA STIG downloads)
+  -X, --xccdfXmlFile=<value>    (required [-X or -U]) The XCCDF XML file containing the new guidance - in the form of .xml file
   -c, --controlsDir=<value>     (required) The InSpec profile controls directory containing the profiles to be updated  
   -J, --inspecJsonFile=<value>  Input execution/profile JSON file - can be generated using the "inspec json <profile path> > profile.json"
                                 command. If not provided the `inspec` CLI must be installed
@@ -1537,11 +1548,13 @@ GLOBAL FLAGS
       --interactive        Collect input tags interactively (not available on all CLI commands)
 
 EXAMPLES
-  $ saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory -L debug
-  $ saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory -g -L debug
-  $ saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -J ./the_profile_json -c the_controls_directory -L debug
-  $ saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory --no-formatControls -P SV -L debug
-  $ saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml -c the_controls_directory --no-backupControls --no-formatControls -P SV -L debug
+  Providing an XCCDF File
+    $ saf generate update_controls4delta -X ./the_xccdf_guidance_file.xml [-J <profile_json_file.json>]
+      [-c the_controls_directory --no-backupControls --no-formatControls -P <V or SV> -g -L debug]
+
+  Providing an URL point to an ZIP XCCDF (from DISA STIG downloads)
+    $ saf generate update_controls4delta -U <URL to DISA STIGs downloads> [-J <profile_json_file.json>] 
+      [-c the_controls_directory --no-backupControls --no-formatControls -P <V or SV> -g -L debug]
 
 ```
 [top](#generate-data-reports-and-more)
@@ -1936,7 +1949,7 @@ EXAMPLES
 
 ### NOTICE
 
-© 2022 The MITRE Corporation.
+© 2022-2025 The MITRE Corporation.
 
 Approved for Public Release; Distribution Unlimited. Case Number 18-3678.
 
