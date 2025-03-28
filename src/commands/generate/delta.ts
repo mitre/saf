@@ -69,7 +69,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     }),
     deltaOutputDir: Flags.string({
       char: 'o', required: false, exclusive: ['interactive'],
-      description: '\x1B[31m(required if not --interactive)\x1B[34m The output folder for the updated profile (this will contain the new controls modified by delta) - if it is not empty, it will be overwritten. Do not use the original controls directory'}),
+      description: '\x1B[31m(required if not --interactive)\x1B[34m The output folder for the updated profile (this will contain the new controls modified by delta) - if it is not empty, it will be overwritten.'}),
     ovalXmlFile: Flags.string({
       char: 'O', required: false, exclusive: ['interactive'],
       description: 'The OVAL XML file containing definitions used in the new guidance - in the form of .xml file'}),
@@ -786,8 +786,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       if (fs.existsSync(flags.controlsDir)) {
         const files = fs.readdirSync(flags.controlsDir)
         // Filter the files to check if any of them have the .rb extension
-        const rdFiles = files.filter(file => path.extname(file) === '.rb')
-        if (rdFiles.length) {
+        const rbFiles = files.filter(file => path.extname(file) === '.rb')
+        if (rbFiles.length) {
           missingFlags = false
         } else {
           strMsg += colors.dim(`  No Controls found in directory: ${flags.controlsDir}\n`)
@@ -1127,7 +1127,7 @@ async function getFlags(): Promise<any> {
 
   // Get the directory where to save the delta controls
   const deltaOutputDir = await fileSelector({
-    message: 'Select the output folder for the updated profile control(s) (do not use the original controls directory)',
+    message: 'Select the output folder for the updated profile control(s)',
     pageSize: 15,
     loop: true,
     type: 'directory',

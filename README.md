@@ -1492,7 +1492,7 @@ FLAGS
   -X, --xccdfXmlFile=<value>    (required [-X or -U] or --interactive) The XCCDF File containing the new guidance (.xml or .zip)
   -c, --controlsDir=<value>     (required with -M or -J not provided) The InSpec profile directory containing the controls to update (controls Delta is processing)
   -o, --deltaOutputDir=<value>  (required if not --interactive) The output folder for the updated profile (this will contain the new controls modified by delta)
-                                 - if it is not empty, it will be overwritten. Do not use the original controls directory
+                                 - if it is not empty, it will be overwritten.
   -r, --reportFile=<value>      Output markdown report file - must have an extension of .md
 
 GLOBAL FLAGS
