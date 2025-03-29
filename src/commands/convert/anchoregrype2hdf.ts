@@ -5,13 +5,13 @@ import {checkInput, checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class AnchoreGrype2HDF extends BaseCommand<typeof AnchoreGrype2HDF> {
-  static readonly usage =
-    '<%= command.id %> -i <anchoregrype-json> -o <hdf-scan-results-json>'
+  static readonly usage
+    = '<%= command.id %> -i <anchoregrype-json> -o <hdf-scan-results-json>'
 
-  static readonly description =
-    'Translate an Anchore Grype output file into an HDF results set'
+  static readonly description
+    = 'Translate an Anchore Grype output file into an HDF results set'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i anchoregrype.json -o output-hdf-name.json',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i anchoregrype.json -o output-hdf-name.json']
 
   static readonly flags = {
     input: Flags.string({

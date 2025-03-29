@@ -5,13 +5,13 @@ import {checkInput, checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class CKL2HDF extends BaseCommand<typeof CKL2HDF> {
-  static readonly usage =
-    '<%= command.id %> -i <ckl-xml> -o <hdf-scan-results-json> [-r]'
+  static readonly usage
+    = '<%= command.id %> -i <ckl-xml> -o <hdf-scan-results-json> [-r]'
 
-  static readonly description =
-    'Translate a Checklist XML file into a Heimdall Data Format JSON file'
+  static readonly description
+    = 'Translate a Checklist XML file into a Heimdall Data Format JSON file'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i ckl_results.xml -o output-hdf-name.json',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i ckl_results.xml -o output-hdf-name.json']
 
   static readonly flags = {
     input: Flags.string({

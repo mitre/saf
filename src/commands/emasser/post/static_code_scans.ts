@@ -12,7 +12,7 @@ import {StaticCodeScansApi} from '@mitre/emass_client'
 import {
   StaticCodeApplicationPost, StaticCodeResponsePost,
   StaticCodeRequestPostBody as StaticCodeRequest,
-  StaticCodeRequestPostBodyApplication as ApplicationRequestBody
+  StaticCodeRequestPostBodyApplication as ApplicationRequestBody,
 } from '@mitre/emass_client/dist/api'
 
 /**
@@ -54,7 +54,7 @@ function getAllJsonExamples(action: string): string {
  * @param {string | boolean | number | undefined | null} value - The value of the parameter or field to check.
  * @throws {Error} Throws an error if the value is undefined.
  */
-function assertParamExists(object: string, value: string|boolean|number|undefined|null): void {
+function assertParamExists(object: string, value: string | boolean | number | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')

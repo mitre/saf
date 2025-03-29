@@ -47,8 +47,8 @@ function getInputFilename(): string {
 
 // export default class Convert extends Command {
 export default class Convert extends BaseCommand<typeof Convert> {
-  static readonly description =
-    'The generic convert command translates any supported file-based security results set into the Heimdall Data Format'
+  static readonly description
+    = 'The generic convert command translates any supported file-based security results set into the Heimdall Data Format'
 
   static readonly examples = ['<%= config.bin %> <%= command.id %> -i input -o output']
 
@@ -283,7 +283,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         const results = converter.toHdf()
 
         fs.mkdirSync(flags.output)
-        _.forOwn(results, result => {
+        _.forOwn(results, (result) => {
           fs.writeFileSync(
             path.join(
               flags.output,

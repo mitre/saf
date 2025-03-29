@@ -98,8 +98,8 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
         try {
           exitNonZeroIfTrue(
             Boolean(
-              _.get(overallStatusCounts, renameStatusName(statusName)) !==
-              _.get(thresholds, statusThreshold),
+              _.get(overallStatusCounts, renameStatusName(statusName))
+              !== _.get(thresholds, statusThreshold),
             ),
             `${statusThreshold}: Threshold not met. Number of received total ${statusThreshold.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is not equal to your set threshold for the number of ${statusThreshold.split('.')[0]} controls (${_.get(thresholds, statusThreshold)})`,
           )
@@ -116,8 +116,8 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
         try {
           exitNonZeroIfTrue(
             Boolean(
-              _.get(overallStatusCounts, renameStatusName(statusName)) <
-              _.get(thresholds, totalMinimum),
+              _.get(overallStatusCounts, renameStatusName(statusName))
+              < _.get(thresholds, totalMinimum),
             ),
             `${totalMinimum}: Threshold not met. Number of received total ${totalMinimum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${totalMinimum.split('.')[0]} controls (${_.get(thresholds, totalMinimum)})`,
           )
@@ -134,8 +134,8 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
         try {
           exitNonZeroIfTrue(
             Boolean(
-              _.get(overallStatusCounts, renameStatusName(statusName)) >
-              _.get(thresholds, totalMaximum),
+              _.get(overallStatusCounts, renameStatusName(statusName))
+              > _.get(thresholds, totalMaximum),
             ),
             `${totalMaximum}: Threshold not met. Number of received total ${totalMaximum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${totalMaximum.split('.')[0]} controls (${_.get(thresholds, totalMaximum)})`,
           )

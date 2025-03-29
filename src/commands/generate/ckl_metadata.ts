@@ -9,7 +9,7 @@ const prompt = promptSync()
 
 // Ensures that no empty strings are passed into the metadata
 // by returning undefined instead
-function enforceNonEmptyString(ask: string) : string | null {
+function enforceNonEmptyString(ask: string): string | null {
   const response = prompt({ask})
   if (response)
     return response

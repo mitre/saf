@@ -85,7 +85,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
         if (cisControlMatches && control.tags) {
           control.tags.cis_controls = []
           const mappedCISControlsByVersion: Record<string, string[]> = {}
-          cisControlMatches.map((cisControl => cisControl.replace(/\r?\n/, '').split(' '))).forEach(([revision, cisControl]) => {
+          cisControlMatches.map(cisControl => cisControl.replace(/\r?\n/, '').split(' ')).forEach(([revision, cisControl]) => {
             if (revision === 'v7' && cisControl in CISNistMappings) {
               control.tags?.nist?.push(_.get(CISNistMappings, cisControl))
             }
@@ -113,10 +113,10 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
   extractCCIsFromText(control: Partial<InSpecControl>): Partial<InSpecControl> {
     if (control.tags?.cci) {
       const extractedCCIs: string[] = []
-      control.tags.cci.forEach(cci => {
+      control.tags.cci.forEach((cci) => {
         const cciMatches = cci.match(/CCI-\d{4,}/g)
         if (cciMatches) {
-          cciMatches.forEach(match => {
+          cciMatches.forEach((match) => {
             extractedCCIs.push(match)
           })
         }
@@ -203,7 +203,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
           const extractedData: (string | number)[][] = usedRange.value()
           // Map the data into an object array
           const headers = extractedData[0]
-          const mappedRecords = extractedData.slice(1).map(record => {
+          const mappedRecords = extractedData.slice(1).map((record) => {
             const mappedRecord: Record<string, string> = {}
             record.forEach((record, index) => {
               if (typeof record === 'string') {
@@ -234,7 +234,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
                   severity: impactNumberToSeverityString(extractValueViaPathOrNumber('mappings.impact', mappings.impact, record)),
                 },
               }
-              Object.entries(mappings).forEach(mapping => {
+              Object.entries(mappings).forEach((mapping) => {
                 if (mapping[0] === 'id' && flags.controlNamePrefix) {
                   _.set(
                     newControl,
@@ -290,7 +290,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
             severity: impactNumberToSeverityString(extractValueViaPathOrNumber('mappings.impact', mappings.impact, record)),
           },
         }
-        Object.entries(mappings).forEach(mapping => {
+        Object.entries(mappings).forEach((mapping) => {
           if (mapping[0] === 'id') {
             const value = extractValueViaPathOrNumber(mapping[0], mapping[1], record)
             if (value) {
@@ -309,7 +309,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
 
         if (newControl.tags && newControl.tags?.cci) {
           newControl.tags.nist = []
-          newControl.tags.cci.forEach(cci => {
+          newControl.tags.cci.forEach((cci) => {
             if (cci in CciNistMappingData.data) {
               newControl.tags?.nist?.push(_.get(CciNistMappingData.data, cci))
             }
@@ -326,7 +326,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
     })
 
     // Convert all extracted controls to Ruby/InSpec code
-    inspecControls.forEach(control => {
+    inspecControls.forEach((control) => {
       fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader))
     })
   }

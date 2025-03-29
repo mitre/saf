@@ -1,17 +1,18 @@
+/* eslint-disable @stylistic/no-tabs */
 /* eslint-disable unicorn/no-useless-fallback-in-spread */
 /* eslint-disable no-undef */
-//-----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // NOTE: The following plugins have been removed from the package.json file
 // eslint-plugin-oclif linter repo has been archived
 // eslint-config-oclif-typescript linter repo has been archived
 
-// -----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // Eslint packages used:
 // "eslint" –> The core ESLint package. It is the base linter.
 // NOTE: Styles have moved from eslint to @stylistic/eslint-plugin (js and ts)
 //       Built-in stylistic rules for JavaScript and Typescript
-//       We are still using legacy config, so we need to install v3.x with
-//       npm i -D @stylistic/eslint-plugin@3
+//       We are now using the @stylistic/eslint-plugin v4.x, it requires
+//       dynamic loading (see notes bellow)
 // "@stylistic/eslint-plugin" -> Used for general stylistic rules, which can be
 //    applied to both JavaScript and TypeScript.
 // See here for additional information on ESLint Stylistic Stylistic Formatting
@@ -44,15 +45,15 @@
 //
 // "eslint-formatter-stylish" –> A package that provides a stylish formatter for
 //    ESLint. It’s optional but useful for a more readable output.
-//-----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // TODO: May need to use the chai plugin in the future // skipcq: JS-0099
 // npm install --save-dev eslint-plugin-chai-friendly
 // And configure it into plugins: { "chai-friendly": chaiPLugin }
-//-----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-//-----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // Eslint rules Settings
 // Severity Levels ("off", "warn", "error")
 //   "off"   -> Disables the rule.
@@ -72,123 +73,129 @@
 //   "semi": ["error", "always"], // Requires semicolons
 //   "quotes": ["error", "never"], // Disallows quotes (uses backticks when possible)
 //   "array-bracket-newline": ["error", { "minItems": 3 }] Forces newline for arrays with 3+ items
-//-----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 const eslint = require('@eslint/js')
-const nodePlugin = require("eslint-plugin-n")
-const stylistic = require('@stylistic/eslint-plugin')
+const nodePlugin = require('eslint-plugin-n')
 const tsPlugin = require('@typescript-eslint/eslint-plugin')
 const tsParser = require('@typescript-eslint/parser')
-// const chaiPlugin = require("eslint-plugin-chai-friendly")
 
-//-----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 // ESLint configuration
 module.exports = [
-  // Core ESLint settings
   {
     languageOptions: {
-      ecmaVersion: "latest",
-      sourceType: "module",
+      ecmaVersion: 'latest',
+      sourceType: 'module',
     },
   },
   eslint.configs.recommended, // Recommended JS rules
-  
   {
-    files: ["**/*.ts", "**/*.tsx"],
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: tsParser,
     },
     plugins: {
-      "@typescript-eslint": tsPlugin,
-      '@stylistic': stylistic,
-      "n": nodePlugin
+      '@typescript-eslint': tsPlugin,
+      'n': nodePlugin,
       // "chai-friendly": chaiPLugin
     },
     ignores: [
-      '/node_modules',  // Ignore dependencies
-      '/lib',           // Ignore build output
+      '/node_modules', // Ignore dependencies
+      '/lib', // Ignore build output
     ],
     rules: {
-      "@typescript-eslint/no-explicit-any": "error", // Disallow 'any'
-      "@typescript-eslint/no-unused-vars": "warn",
-      "@typescript-eslint/typedef": "error",
-      
-      // stylistic rules
-      "@stylistic/array-bracket-spacing": ["error", "never"],
-      "@stylistic/array-bracket-newline": ["warn", { "multiline": true }],
-      "@stylistic/indent": ["warn", 2, { "SwitchCase": 1 }],
-      "@stylistic/max-statements-per-line": ["warn", { "max": 1, "ignoredNodes": ['BreakStatement'] }],
-      "@stylistic/no-multi-spaces": "warn", // Disallow multiple spaces except for alignment
-      "@stylistic/no-trailing-spaces": "warn",
-      "@stylistic/object-curly-spacing": ["warn", "never"],
-      "@stylistic/quotes": ["error", "single", { "avoidEscape": true }], // Allows double quotes (") when escaping single quotes
-      "@stylistic/semi": ["warn", "never"],
+      '@typescript-eslint/no-explicit-any': 'error', // Disallow 'any'
+      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/typedef': 'error',
 
       // eslint rules
-      "camelcase": "off",
-      "complexity": ["warn", 30],
-      "max-nested-callbacks": "warn",
+      'camelcase': 'off',
+      'complexity': ['warn', 30],
+      'max-nested-callbacks': 'warn',
 
-      "no-control-regex": "warn",
-      "no-console": "off",
-      "no-constant-condition": "warn",
-      "no-undef": "off",
-      "no-unused-vars": "warn",
-      "no-unused-expressions": "error",
-      "no-await-in-loop": "off",
+      'no-control-regex': 'warn',
+      'no-console': 'off',
+      'no-constant-condition': 'warn',
+      'no-undef': 'off',
+      'no-unused-vars': 'warn',
+      'no-unused-expressions': 'error',
+      'no-await-in-loop': 'off',
 
       // eslint-plugin-n rules (these were moved from eslint-plugin-node)
-      "n/exports-style": [
-        "error",
-        "exports",
+      'n/exports-style': [
+        'error',
+        'exports',
         {
-          "allowBatchAssign": false
-        }
+          'allowBatchAssign': false,
+        },
       ],
-      "n/no-missing-import": "off",
-      "n/no-process-exit": "off",
-      "n/no-unpublished-import": ["error", {
-        "ignoreTypeImport": true,
-        "ignorePrivate": true
-      }],
+      'n/no-missing-import': 'off',
+      'n/no-process-exit': 'off',
+      'n/no-unpublished-import': [
+        'error', {
+          'ignoreTypeImport': true,
+          'ignorePrivate': true,
+        },
+      ],
     },
   },
-  // Possible refactor to use unicorn (eslint-plugin-unicorn is an ESM-only module)
-  // without having to import() dynamically inside an async function. This causes
-  // node to display this warning:
+
+  // Unicorn (eslint-plugin-unicorn) and Stylistic (@stylistic/eslint-plugin)
+  // are ESM-only module, need to import them dynamically inside an async
+  // function. This causes node to display this warning:
   // (node:11996) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
   // This is cause by: const unicorn = await import("eslint-plugin-unicorn")
 
-  // Load unicorn plugin dynamically (comment the code out to preclude unicorn linting)
+  // Load unicorn and @stylistic plugin dynamically
   (async () => {
-    const unicorn = await import("eslint-plugin-unicorn")
+    const unicorn = await import('eslint-plugin-unicorn')
+    const stylisticPlugin = await import('@stylistic/eslint-plugin')
+
     return {
       plugins: {
         unicorn: unicorn.default, // Use `.default` because it's an ESM module
+        '@stylistic': stylisticPlugin.default,
       },
       rules: {
         // Ensure that recommended rules exist before accessing them
         ...(unicorn.default.configs?.recommended?.rules || {}),
-        "unicorn/better-regex": "off",
-        "unicorn/consistent-function-scoping": "off",         
-        "unicorn/explicit-length-check": "off",        
-        "unicorn/filename-case": "off",
-        "unicorn/import-style": "off",
-        "unicorn/numeric-separators-style": "off",        
-        "unicorn/prefer-node-protocol": "off",
-        "unicorn/prefer-module": "off",
-        "unicorn/prefer-code-point": "off",
-        "unicorn/prefer-json-parse-buffer": "off",
-        "unicorn/prefer-top-level-await": "off",
-        "unicorn/prefer-number-properties": "off",  
-        "unicorn/prevent-abbreviations": "off",
-        "unicorn/no-null": "off",        
-        "unicorn/no-hex-escape": "off",
-        "unicorn/no-zero-fractions": "off",
-        "unicorn/no-array-for-each": "off",       
-        "unicorn/no-process-exit": "off",
-        "unicorn/no-nested-ternary": "off",     
-        "unicorn/no-named-default": "off",      
+        'unicorn/better-regex': 'off',
+        'unicorn/consistent-function-scoping': 'off',
+        'unicorn/explicit-length-check': 'off',
+        'unicorn/filename-case': 'off',
+        'unicorn/import-style': 'off',
+        'unicorn/numeric-separators-style': 'off',
+        'unicorn/prefer-node-protocol': 'off',
+        'unicorn/prefer-module': 'off',
+        'unicorn/prefer-code-point': 'off',
+        'unicorn/prefer-json-parse-buffer': 'off',
+        'unicorn/prefer-top-level-await': 'off',
+        'unicorn/prefer-number-properties': 'off',
+        'unicorn/prevent-abbreviations': 'off',
+        'unicorn/no-null': 'off',
+        'unicorn/no-hex-escape': 'off',
+        'unicorn/no-zero-fractions': 'off',
+        'unicorn/no-array-for-each': 'off',
+        'unicorn/no-process-exit': 'off',
+        'unicorn/no-nested-ternary': 'off',
+        'unicorn/no-named-default': 'off',
+
+        // stylistic rules
+        ...(stylisticPlugin.default.configs?.recommended?.rules || {}),
+        '@stylistic/array-bracket-spacing': ['error', 'never'],
+        '@stylistic/array-bracket-newline': ['warn', {'multiline': true}],
+        '@stylistic/brace-style': ['error', '1tbs', {'allowSingleLine': true}],
+        '@stylistic/indent': ['warn', 2, {'SwitchCase': 1}],
+        '@stylistic/block-spacing': 'off',
+        '@stylistic/quote-props': 'off',
+        '@stylistic/multiline-ternary': 'off',
+        '@stylistic/max-statements-per-line': ['warn', {'max': 1, 'ignoredNodes': ['BreakStatement']}],
+        '@stylistic/no-multi-spaces': 'warn', // Disallow multiple spaces except for alignment
+        '@stylistic/no-trailing-spaces': 'warn',
+        '@stylistic/object-curly-spacing': ['warn', 'never'],
+        '@stylistic/quotes': ['error', 'single', {'avoidEscape': true}], // Allows double quotes (") when escaping single quotes
+        '@stylistic/semi': ['warn', 'never'],
       },
-    };
+    }
   })(),
 ]

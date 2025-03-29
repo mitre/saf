@@ -58,8 +58,8 @@ export default class MyHelpClass extends Help {
     }
 
     if (subCommands.length > 0) {
-      const aliases:string[] = []
-      const uniqueSubCommands: Command.Loadable[] = subCommands.filter(p => {
+      const aliases: string[] = []
+      const uniqueSubCommands: Command.Loadable[] = subCommands.filter((p) => {
         aliases.push(...p.aliases)
         return !aliases.includes(p.id)
       })

@@ -429,7 +429,6 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   for (const [key, values] of dashboardsMap) {
     it(`Successfully tested endpoint - Dashboard (${key})`, async () => {
-
       const DashboardClass = eval(values[0]) // skipcq: JS-0060
       const getDashboard = new DashboardClass(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances)
       await getDashboard[values[1]](45, false, 1, 2000).then((response: object) => {

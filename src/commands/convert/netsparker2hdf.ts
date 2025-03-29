@@ -5,14 +5,14 @@ import {checkInput, checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Netsparker2HDF extends BaseCommand<typeof Netsparker2HDF> {
-  static readonly usage =
-    '<%= command.id %> -i <netsparker-xml> -o <hdf-scan-results-json> [-h] [-w]'
+  static readonly usage
+    = '<%= command.id %> -i <netsparker-xml> -o <hdf-scan-results-json> [-h] [-w]'
 
-  static readonly description =
-    'Translate a Netsparker XML results file into a Heimdall Data Format JSON file\n' +
-    'The current iteration only works with Netsparker Enterprise Vulnerabilities Scan.'
+  static readonly description
+    = 'Translate a Netsparker XML results file into a Heimdall Data Format JSON file\n'
+      + 'The current iteration only works with Netsparker Enterprise Vulnerabilities Scan.'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i netsparker_results.xml -o output-hdf-name.json',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i netsparker_results.xml -o output-hdf-name.json']
 
   static readonly flags = {
     input: Flags.string({

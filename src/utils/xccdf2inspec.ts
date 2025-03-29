@@ -5,7 +5,7 @@ import {InSpecControl} from '../types/inspec'
 export function wrap(s: string, lineLength = 80): string {
   let currentLineLength = 0
   let finalString = ''
-  s.split(' ').forEach(word => {
+  s.split(' ').forEach((word) => {
     if (currentLineLength + word.length < lineLength || word.length >= lineLength) {
       currentLineLength += word.length
       finalString += word + ' '
@@ -113,7 +113,7 @@ export function inspecControlToRubyCode(control: InSpecControl, lineLength?: num
   }
 
   if (control.refs) {
-    control.refs.forEach(ref => {
+    control.refs.forEach((ref) => {
       result += `  ref '${escapeQuotes(ref)}'\n`
     })
   }

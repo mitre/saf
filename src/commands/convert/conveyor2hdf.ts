@@ -5,13 +5,13 @@ import {checkInput, checkSuffix} from '../../utils/global'
 import path from 'path'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 export default class Conveyor2HDF extends BaseCommand<typeof Conveyor2HDF> {
-  static readonly usage =
-    '<%= command.id %> -i <conveyor-json> -o <hdf-scan-results-json> [-h]'
+  static readonly usage
+    = '<%= command.id %> -i <conveyor-json> -o <hdf-scan-results-json> [-h]'
 
-  static readonly description =
-    'Translate a Conveyor JSON file into a Heimdall Data Format JSON files'
+  static readonly description
+    = 'Translate a Conveyor JSON file into a Heimdall Data Format JSON files'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i conveyor_results.json -o output-hdf-name.json',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i conveyor_results.json -o output-hdf-name.json']
 
   static readonly flags = {
     input: Flags.string({

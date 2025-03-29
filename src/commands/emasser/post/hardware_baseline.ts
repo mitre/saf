@@ -43,24 +43,24 @@ import {HwBaselineResponsePostPut as HwBaselineResponse} from '@mitre/emass_clie
  */
 interface Hardware {
   // Required field
-  assetName?: string,
+  assetName?: string
   // Conditional Fields
-  publicFacingFqdn?: string,
-  publicFacingIpAddress?: string,
-  publicFacingUrls?: string,
+  publicFacingFqdn?: string
+  publicFacingIpAddress?: string
+  publicFacingUrls?: string
   // Optional Fields
-  componentType?: string,
-  nickname?: string,
-  assetIpAddress?: string,
-  publicFacing?: boolean,
-  virtualAsset?: boolean,
-  manufacturer?: string,
-  modelNumber?: string,
-  serialNumber?: string,
-  OsIosFwVersion?: string,
-  memorySizeType?: string,
-  location?: string,
-  approvalStatus?: string,
+  componentType?: string
+  nickname?: string
+  assetIpAddress?: string
+  publicFacing?: boolean
+  virtualAsset?: boolean
+  manufacturer?: string
+  modelNumber?: string
+  serialNumber?: string
+  OsIosFwVersion?: string
+  memorySizeType?: string
+  location?: string
+  approvalStatus?: string
   criticalAsset?: boolean
 }
 
@@ -89,7 +89,7 @@ function getAllJsonExamples(): Record<string, unknown> {
  * @param value - The value of the parameter or field to check.
  * @throws Will throw an error if the value is undefined.
  */
-function assertParamExists(object: string, value: string|undefined|null): void {
+function assertParamExists(object: string, value: string | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')
@@ -253,9 +253,9 @@ const CMD_HELP = 'saf emasser post hardware_baseline -h or --help'
 export default class EmasserHardwareBaseline extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command usages\x1B[0m'
 
-  static readonly description = 'Add one or many hardware assets to a system.\n' +
-    'The CLI expects an input JSON file containing the required, conditional\n' +
-    'and optional fields for the hardware asset(s) being added to the system.'
+  static readonly description = 'Add one or many hardware assets to a system.\n'
+    + 'The CLI expects an input JSON file containing the required, conditional\n'
+    + 'and optional fields for the hardware asset(s) being added to the system.'
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',

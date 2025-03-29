@@ -25,15 +25,15 @@ import fs from 'fs'
  */
 interface ContainerResource {
   // Required
-  containerId: string,
-  containerName: string,
-  time: number,
+  containerId: string
+  containerName: string
+  time: number
   benchmarks: Benchmarks[]
   // Optional
-  podName?: string,
-  podIp?: string,
-  namespace?: string,
-  tags?: Tags,
+  podName?: string
+  podIp?: string
+  namespace?: string
+  tags?: Tags
 }
 
 /**
@@ -41,7 +41,7 @@ interface ContainerResource {
  * The key is a string representing the tag name, and the value is a string representing the tag value.
  */
 interface Tags {
-  [key: string]: string;
+  [key: string]: string
 }
 
 /**
@@ -49,12 +49,12 @@ interface Tags {
  */
 interface Benchmarks {
   // Required
-  benchmark: string,
-  results: Results[],
+  benchmark: string
+  results: Results[]
   // Optional
-  isBaseline?: boolean,
-  version?: string,
-  release?: string,
+  isBaseline?: boolean
+  version?: string
+  release?: string
 }
 
 /**
@@ -62,11 +62,11 @@ interface Benchmarks {
  */
 interface Results {
   // Required
-  ruleId: string,
-  status: StatusEnum,
-  lastSeen: number,
+  ruleId: string
+  status: StatusEnum
+  lastSeen: number
   // Optional
-  message?: string,
+  message?: string
 }
 
 /**
@@ -82,12 +82,12 @@ interface Results {
  * @property {string} NotApplicable - The scan is not applicable.
  */
 export declare const StatusEnum: {
-  readonly Pass: 'Pass';
-  readonly Fail: 'Fail';
-  readonly Other: 'Other';
-  readonly NotReviewed: 'Not Reviewed';
-  readonly NotChecked: 'Not Checked';
-  readonly NotApplicable: 'Not Applicable';
+  readonly Pass: 'Pass'
+  readonly Fail: 'Fail'
+  readonly Other: 'Other'
+  readonly NotReviewed: 'Not Reviewed'
+  readonly NotChecked: 'Not Checked'
+  readonly NotApplicable: 'Not Applicable'
 }
 /**
  * Represents the possible status values for the StatusEnum type.
@@ -120,7 +120,7 @@ function getAllJsonExamples(): string {
  * @param value - The value of the parameter or field which can be of type string, boolean, number, undefined, or null.
  * @throws {Error} Throws an error if the value is undefined.
  */
-function assertParamExists(object: string, value: string|boolean|number|undefined|null): void {
+function assertParamExists(object: string, value: string | boolean | number | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')
@@ -294,16 +294,16 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
  * @returns True if the object is a valid ContainerResource, false otherwise.
  */
 function isValidContainerResource(obj: unknown): obj is ContainerResource {
-  return typeof obj === 'object' &&
-    obj !== null &&
-    'containerId' in obj &&
-    'containerName' in obj &&
-    'time' in obj &&
-    'benchmarks' in obj &&
-    typeof (obj as ContainerResource).containerId === 'string' &&
-    typeof (obj as ContainerResource).containerName === 'string' &&
-    typeof (obj as ContainerResource).time === 'number' &&
-    Array.isArray((obj as ContainerResource).benchmarks)
+  return typeof obj === 'object'
+    && obj !== null
+    && 'containerId' in obj
+    && 'containerName' in obj
+    && 'time' in obj
+    && 'benchmarks' in obj
+    && typeof (obj as ContainerResource).containerId === 'string'
+    && typeof (obj as ContainerResource).containerName === 'string'
+    && typeof (obj as ContainerResource).time === 'number'
+    && Array.isArray((obj as ContainerResource).benchmarks)
 }
 
 const CMD_HELP = 'saf emasser post container_scans -h or --help'

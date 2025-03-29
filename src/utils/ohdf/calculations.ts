@@ -27,7 +27,7 @@ const logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View
 export function calculateSummariesForExecJSONs(execJSONs: Record<string, ContextualizedEvaluation>): Record<string, Record<string, Record<string, number>>[]> {
   logger.verbose('In calculateSummariesForExecJSONs')
   const summaries: Record<string, Record<string, Record<string, number>>[]> = {}
-  Object.values(execJSONs).forEach(parsedExecJSON => {
+  Object.values(execJSONs).forEach((parsedExecJSON) => {
     const summary: Record<string, Record<string, number>> = {}
     const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
     const profileName = parsedProfile.data.name
@@ -47,7 +47,7 @@ export function calculateSummariesForExecJSONs(execJSONs: Record<string, Context
 export function calculateComplianceScoresForExecJSONs(execJSONs: Record<string, ContextualizedEvaluation>): Record<string, number[]> {
   logger.verbose('In calculateComplianceScoresForExecJSONs')
   const complianceScores: Record<string, number[]> = {}
-  Object.values(execJSONs).forEach(parsedExecJSON => {
+  Object.values(execJSONs).forEach((parsedExecJSON) => {
     const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
     const profileName = parsedProfile.data.name
     const overallStatusCounts = extractStatusCounts(parsedProfile)
@@ -68,7 +68,7 @@ export function calculateTotalCountsForSummaries(summaries: Record<string, Recor
   logger.verbose('In calculateTotalCountsForSummaries')
   const totals: Record<string, Record<string, number>> = {}
   Object.entries(summaries).forEach(([profileName, profileSummaries]) => {
-    profileSummaries.forEach(profileSummary => {
+    profileSummaries.forEach((profileSummary) => {
       const flattened: Record<string, number> = flat.flatten(profileSummary)
       Object.entries(flattened).forEach(([key, value]) => {
         const existingValue = _.get(totals, `${profileName}.${key}`, 0)

@@ -1,5 +1,3 @@
-
-
 import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
@@ -52,7 +50,7 @@ describe('Test supplement passthrough', () => {
     await runCommand<{name: string}>([
       'supplement passthrough read',
       '-i', path.resolve('./test/sample_data/passthrough/minimal-hdf-passthrough-object.json'),
-      '-o', `${tmpobj.name}/passthrough-object.json`
+      '-o', `${tmpobj.name}/passthrough-object.json`,
     ])
     const output = JSON.parse(fs.readFileSync(`${tmpobj.name}/passthrough-object.json`, 'utf8'))
     const expected = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/passthrough/passthrough-object.json'), 'utf8'))

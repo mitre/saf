@@ -5,11 +5,11 @@ import {checkInput, checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class NeuVector2HDF extends BaseCommand<typeof NeuVector2HDF> {
-  static readonly usage =
-    '<%= command.id %> -i <neuvector-json> -o <hdf-scan-results-json>'
+  static readonly usage
+    = '<%= command.id %> -i <neuvector-json> -o <hdf-scan-results-json>'
 
-  static readonly description =
-    'Translate a NeuVector results JSON to a Heimdall Data Format JSON file'
+  static readonly description
+    = 'Translate a NeuVector results JSON to a Heimdall Data Format JSON file'
 
   static readonly examples = ['<%= config.bin %> <%= command.id %> -i neuvector.json -o output-hdf-name.json']
 
