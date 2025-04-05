@@ -198,7 +198,7 @@ export function getControlIdMap(profile: ContextualizedProfile, thresholds?: Thr
 
 export function getDescriptionContentsOrUndefined(
   label: string,
-  descriptions?: ControlDescription[] | Record<string, unknown> | null
+  descriptions?: ControlDescription[] | Record<string, unknown> | null,
 ): unknown {
   if (!descriptions) return undefined
 
@@ -290,7 +290,7 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
       message: [],
       control_status: cklControlStatus(control, true),
     }
-    control.hdf.segments?.forEach(segment => {
+    control.hdf.segments?.forEach((segment) => {
       switch (segment.status) {
         case 'skipped': {
           extracted.message.push(`SKIPPED -- Test: ${segment.code_desc}\nMessage: ${segment.skip_message}\n`)

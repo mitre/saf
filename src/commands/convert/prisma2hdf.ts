@@ -6,13 +6,13 @@ import _ from 'lodash'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Prisma2HDF extends BaseCommand<typeof Prisma2HDF> {
-  static readonly usage =
-    '<%= command.id %> -i <prisma-cloud-csv> -o <hdf-output-folder> [-h]'
+  static readonly usage
+    = '<%= command.id %> -i <prisma-cloud-csv> -o <hdf-output-folder> [-h]'
 
-  static readonly description =
-    'Translate a Prisma Cloud Scan Report CSV file into Heimdall Data Format JSON files'
+  static readonly description
+    = 'Translate a Prisma Cloud Scan Report CSV file into Heimdall Data Format JSON files'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i prismacloud-report.csv -o output-hdf-name.json',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i prismacloud-report.csv -o output-hdf-name.json']
 
   static readonly flags = {
     input: Flags.string({
@@ -39,7 +39,7 @@ export default class Prisma2HDF extends BaseCommand<typeof Prisma2HDF> {
       fs.mkdirSync(flags.output)
     }
 
-    _.forOwn(results, result => {
+    _.forOwn(results, (result) => {
       fs.writeFileSync(
         path.join(flags.output, `${_.get(result, 'platform.target_id')}.json`),
         JSON.stringify(result, null, 2),

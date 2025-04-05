@@ -6,16 +6,16 @@ export function omitHDFChangingFields(
 ) {
   return {
     ..._.omit(input, ['version', 'platform.release', 'profiles[0].sha256', 'profiles[0].version']),
-    profiles: input.profiles.map(profile => {
+    profiles: input.profiles.map((profile) => {
       return {
         ...profile,
-        controls: profile.controls.map(control => {
+        controls: profile.controls.map((control) => {
           return {
             ...control,
             attestation_data: {
               ..._.omit(control.attestation_data, 'updated'),
             },
-            results: control.results.map(result => {
+            results: control.results.map((result) => {
               return {
                 ..._.omit(result, 'start_time'),
                 message: result.message?.replace(/Updated:.*\n/g, ''),

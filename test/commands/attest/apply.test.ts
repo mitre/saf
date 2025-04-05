@@ -44,7 +44,7 @@ describe('Test attest apply', () => {
         '-o', `${tmpobj.name}/rhel8_attestations_jsonOutput.json`,
       ],
       `${tmpobj.name}/rhel8_attestations_jsonOutput.json`,
-      path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json')
+      path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json'),
     )
   })
 
@@ -57,7 +57,7 @@ describe('Test attest apply', () => {
         '-o', `${tmpobj.name}/rhel8_attestations_xlsxOutput.json`,
       ],
       `${tmpobj.name}/rhel8_attestations_xlsxOutput.json`,
-      path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json')
+      path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json'),
     )
   })
 
@@ -70,7 +70,7 @@ describe('Test attest apply', () => {
         '-o', `${tmpobj.name}/rhel8_attestations_yamlOutput.json`,
       ],
       `${tmpobj.name}/rhel8_attestations_yamlOutput.json`,
-      path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json')
+      path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json'),
     )
   })
 
@@ -83,7 +83,7 @@ describe('Test attest apply', () => {
         '-o', `${tmpobj.name}/triple_overlay_attested.json`,
       ],
       `${tmpobj.name}/triple_overlay_attested.json`,
-      path.resolve('./test/sample_data/attestations/triple_overlay_attested.json')
+      path.resolve('./test/sample_data/attestations/triple_overlay_attested.json'),
     )
   })
 
@@ -96,7 +96,7 @@ describe('Test attest apply', () => {
         '-o', `${tmpobj.name}/triple_overlay_attested_with_yml.json`,
       ],
       `${tmpobj.name}/triple_overlay_attested_with_yml.json`,
-      path.resolve('./test/sample_data/attestations/triple_overlay_attested.json')
+      path.resolve('./test/sample_data/attestations/triple_overlay_attested.json'),
     )
   })
 })

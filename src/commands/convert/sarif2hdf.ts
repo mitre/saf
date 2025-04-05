@@ -5,19 +5,19 @@ import {checkInput, checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Sarif2HDF extends BaseCommand<typeof Sarif2HDF> {
-  static readonly usage =
-    '<%= command.id %> -i <sarif-json> -o <hdf-scan-results-json> [-h] [-w]'
+  static readonly usage
+    = '<%= command.id %> -i <sarif-json> -o <hdf-scan-results-json> [-h] [-w]'
 
-  static readonly description =
-    'Translate a SARIF JSON file into a Heimdall Data Format JSON file\n' +
-    'SARIF levels to HDF impact mapping are:\n  ' +
-    'SARIF level error -> HDF impact 0.7\n' +
-    'SARIF level warning -> HDF impact 0.5\n' +
-    'SARIF level note -> HDF impact 0.3\n' +
-    'SARIF level none -> HDF impact 0.1\n' +
-    'SARIF level not provided -> HDF impact 0.1 as default'
+  static readonly description
+    = 'Translate a SARIF JSON file into a Heimdall Data Format JSON file\n'
+      + 'SARIF levels to HDF impact mapping are:\n  '
+      + 'SARIF level error -> HDF impact 0.7\n'
+      + 'SARIF level warning -> HDF impact 0.5\n'
+      + 'SARIF level note -> HDF impact 0.3\n'
+      + 'SARIF level none -> HDF impact 0.1\n'
+      + 'SARIF level not provided -> HDF impact 0.1 as default'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i sarif-results.json -o output-hdf-name.json',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i sarif-results.json -o output-hdf-name.json']
 
   static readonly flags = {
     input: Flags.string({

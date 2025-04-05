@@ -5,13 +5,13 @@ import {checkInput, checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Veracode2HDF extends BaseCommand<typeof Veracode2HDF> {
-  static readonly usage =
-    '<%= command.id %> -i <veracode-xml> -o <hdf-scan-results-json> [-h]'
+  static readonly usage
+    = '<%= command.id %> -i <veracode-xml> -o <hdf-scan-results-json> [-h]'
 
-  static readonly description =
-    'Translate a Veracode XML file into a Heimdall Data Format JSON file'
+  static readonly description
+    = 'Translate a Veracode XML file into a Heimdall Data Format JSON file'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i veracode_results.xml -o output-hdf-name.json',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i veracode_results.xml -o output-hdf-name.json']
 
   static readonly flags = {
     input: Flags.string({

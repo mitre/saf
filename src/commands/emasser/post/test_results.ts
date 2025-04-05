@@ -13,8 +13,8 @@ const CMD_HELP = 'saf emasser post test_results -h or --help'
 export default class EmasserPostTestResults extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]'
 
-  static readonly description = "Add test results for a system's Assessment Procedures which determine Security Control compliance\n" +
-    'See the FLAGS section for required fields and acceptable values'
+  static readonly description = "Add test results for a system's Assessment Procedures which determine Security Control compliance\n"
+    + 'See the FLAGS section for required fields and acceptable values'
 
   static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-a,--assessmentProcedure] [-b,--testedBy] [-t,--testDate] [-d,--description] [-S,--complianceStatus]']
 

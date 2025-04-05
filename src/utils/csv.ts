@@ -38,7 +38,7 @@ function descriptionsToString(
       descriptions = descriptions.filter( // skipcq: JS-0083
         description => description.label !== 'caveat',
       )
-      caveats.forEach(caveat => {
+      caveats.forEach((caveat) => {
         result += `${caveat.label}: ${caveat.data}`
       })
     }
@@ -55,11 +55,11 @@ function segmentsToString(segments: HDFControlSegment[] | undefined): string {
   if (segments) {
     let result = ''
     segments.forEach((segment: HDFControlSegment) => {
-      result += segment.message ?
-        `${segment.status.toUpperCase()} -- Test: ${
+      result += segment.message
+        ? `${segment.status.toUpperCase()} -- Test: ${
           segment.code_desc
-        }\r\nMessage: ${segment.message}\r\n\r\n` :
-        `${segment.status.toUpperCase()} -- Test: ${
+        }\r\nMessage: ${segment.message}\r\n\r\n`
+        : `${segment.status.toUpperCase()} -- Test: ${
           segment.code_desc
         }\r\n\r\n`
     })
@@ -91,7 +91,7 @@ export function convertRow(
     fix = getDescription(control.data.descriptions, 'fix') || ''
   }
 
-  fieldsToAdd.forEach(field => { // skipcq: JS-0044
+  fieldsToAdd.forEach((field) => { // skipcq: JS-0044
     switch (field) { // skipcq: JS-0047
       // Results Set
       case csvExportFields[0]: {

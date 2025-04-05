@@ -11,7 +11,7 @@ import _ from 'lodash'
 function removeNullsFromObject(dataObject: object): object {
   const jsonData: {[key: string]: any} = {};
 
-  (Object.keys(dataObject) as (keyof typeof dataObject)[]).forEach(key => {
+  (Object.keys(dataObject) as (keyof typeof dataObject)[]).forEach((key) => {
     if (dataObject[key] !== null) {
       jsonData[key] = dataObject[key]
     }
@@ -32,7 +32,7 @@ function removeNullsFromObject(dataObject: object): object {
  */
 function convertEpochToDateTime(dataObject: object): object {
   const jsonData: {[key: string]: any} = {};
-  (Object.keys(dataObject) as (keyof typeof dataObject)[]).forEach(key => {
+  (Object.keys(dataObject) as (keyof typeof dataObject)[]).forEach((key) => {
     if (Array.isArray(dataObject[key])) {
       let jsonObj: {[key: string]: any} = {} // skipcq: JS-0242
       const hash_array: object[] = []
@@ -112,7 +112,7 @@ export function outputFormat(data: object, doConversion = true): string {
       if (hideNulls) {
         const newData: {[key: string]: any} = {};
 
-        (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[]).forEach(key1 => {
+        (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[]).forEach((key1) => {
           switch (key1) {
             // Process the 'meta' content
             case 'meta': {
@@ -143,7 +143,7 @@ export function outputFormat(data: object, doConversion = true): string {
                 if (formatDataObj[key1] === null) {
                   _.merge(newData, {data: null})
                 } else {
-                  (Object.keys(obj) as (keyof typeof obj)[]).forEach(key2 => {
+                  (Object.keys(obj) as (keyof typeof obj)[]).forEach((key2) => {
                     if (Array.isArray(obj[key2])) {
                       let jsonObj: {[key: string]: any} = {} // skipcq: JS-0242
                       const data_array: object[] = Object.values(obj[key2])
@@ -189,7 +189,7 @@ export function outputFormat(data: object, doConversion = true): string {
       if (showEpoch) {
         const newData: {[key: string]: any} = {}
         const dataObj: {[key: string]: any} = {};
-        (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[]).forEach(key1 => {
+        (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[]).forEach((key1) => {
           const jsonData: {[key: string]: any} = {} // skipcq: JS-0242
           switch (key1) {
             case 'meta': {
@@ -211,7 +211,7 @@ export function outputFormat(data: object, doConversion = true): string {
                 formatDataObj = newData
               } else {
                 const obj: object = formatDataObj[key1];
-                (Object.keys(obj) as (keyof typeof obj)[]).forEach(key2 => {
+                (Object.keys(obj) as (keyof typeof obj)[]).forEach((key2) => {
                   if (Array.isArray(obj[key2])) {
                     let jsonObj: {[key: string]: any} = {} // skipcq: JS-0242
                     const data_array: object[] = Object.values(obj[key2])

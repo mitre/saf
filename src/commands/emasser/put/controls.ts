@@ -53,7 +53,7 @@ function getAllJsonExamples(): Record<string, unknown> {
   }
 }
 
-function assertParamExists(object: string, value: string|number|undefined|null): void {
+function assertParamExists(object: string, value: string | number | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')
@@ -176,7 +176,7 @@ function addOptionalFields(bodyObject: Controls, dataObj: Controls): void {
 }
 
 function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { // skipcq: JS-0044
-  //----------------------------------------------------------------------------------------
+  // ----------------------------------------------------------------------------------------
   // Conditional fields that are required based on the "implementationStatus" value
   // "Planned" or       estimatedCompletionDate, responsibleEntities, slcmCriticality,
   // "Implemented"      slcmFrequency, slcmMethod, slcmReporting, slcmTracking, slcmComments
@@ -189,7 +189,7 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
   //
   // "Inherited"          Only the following fields can be updated:
   //                      controlDesignation, commonnControlProvider
-  //----------------------------------------------------------------------------------------
+  // ----------------------------------------------------------------------------------------
   const HELP_MSG = 'Invoke saf emasser put controls [-h, --help] for additional help'
   // Only process if we have an Implementation Status (optional field)
   if (Object.prototype.hasOwnProperty.call(dataObj, 'implementationStatus')) {
@@ -200,10 +200,10 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
       case 'Planned':
       case 'Implemented': {
         // No need to check for controlDesignation and estimatedCompletionDate, they are required fields
-        if (!(Object.prototype.hasOwnProperty.call(dataObj, 'responsibleEntities')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmCriticality')) ||
-            !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmFrequency')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmMethod')) ||
-            !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmReporting')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmTracking')) ||
-            !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmComments'))) {
+        if (!(Object.prototype.hasOwnProperty.call(dataObj, 'responsibleEntities')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmCriticality'))
+          || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmFrequency')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmMethod'))
+          || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmReporting')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmTracking'))
+          || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmComments'))) {
           printRedMsg('Missing one of these parameters/fields:')
           printRedMsg('    responsibleEntities, slcmCriticality, slcmFrequency,')
           printRedMsg('    slcmMethod,slcmReporting, slcmTracking, slcmComments')
@@ -239,10 +239,10 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
 
       case 'Manually Inherited': {
         // No need to check for controlDesignation and estimatedCompletionDate, they are required fields
-        if (!(Object.prototype.hasOwnProperty.call(dataObj, 'commonControlProvider')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'responsibleEntities')) ||
-            !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmCriticality')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmFrequency')) ||
-            !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmMethod')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmReporting')) ||
-            !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmTracking')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmComments'))) {
+        if (!(Object.prototype.hasOwnProperty.call(dataObj, 'commonControlProvider')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'responsibleEntities'))
+          || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmCriticality')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmFrequency'))
+          || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmMethod')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmReporting'))
+          || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmTracking')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmComments'))) {
           printRedMsg('Missing one of these parameters/fields:')
           printRedMsg('    commonControlProvider, responsibleEntities, slcmCriticality,')
           printRedMsg('    slcmFrequency, slcmMethod, slcmReporting, slcmTracking, slcmComments')

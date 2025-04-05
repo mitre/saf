@@ -139,7 +139,7 @@ function getAllJsonExamples(): string {
  * @param value - The value of the parameter or field to check.
  * @throws Will throw an error if the value is undefined.
  */
-function assertParamExists(object: string, value: string|undefined|null): void {
+function assertParamExists(object: string, value: string | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')
@@ -420,8 +420,8 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
     case 'Completed': {
       // Completed POA&M Item require the completionDate, comments, and Milestones.
       // Given that this is a POST and the POA&M is completed, the scheduledCompletionDate is acceptable
-      if (!(Object.prototype.hasOwnProperty.call(dataObj, 'scheduledCompletionDate')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'comments')) ||
-           !(Object.prototype.hasOwnProperty.call(dataObj, 'completionDate')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'milestones'))) {
+      if (!(Object.prototype.hasOwnProperty.call(dataObj, 'scheduledCompletionDate')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'comments'))
+        || !(Object.prototype.hasOwnProperty.call(dataObj, 'completionDate')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'milestones'))) {
         printRedMsg('When status is "Completed" the following parameters/fields are required:')
         printRedMsg('    scheduledCompletionDate, comments, completionDate, or milestone')
         printHelpMsg(HELP_MSG)
@@ -495,9 +495,9 @@ const CMD_HELP = 'saf emasser post poams -h or --help'
 export default class EmasserPostPoams extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command usages\x1B[0m'
 
-  static readonly description = 'Add a Plan of Action and Milestones (POA&M) into a systems.\n' +
-    'This CLI expects an input file containing the necessary fields to add a POA&M. The content\n' +
-    'of the file must be in compliance with the eMASS API defined business rules for adding POA&Ms.'
+  static readonly description = 'Add a Plan of Action and Milestones (POA&M) into a systems.\n'
+    + 'This CLI expects an input file containing the necessary fields to add a POA&M. The content\n'
+    + 'of the file must be in compliance with the eMASS API defined business rules for adding POA&Ms.'
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',

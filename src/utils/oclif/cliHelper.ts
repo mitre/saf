@@ -31,7 +31,7 @@ export function saveProcessLogData() {
   // Signal the end of the stream
   writeStream.end()
 
-  writeStream.on('error', err => {
+  writeStream.on('error', (err) => {
     throw new Error('Error saving the CLI process log data', err)
   })
 }

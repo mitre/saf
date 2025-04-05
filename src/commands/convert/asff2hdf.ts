@@ -22,12 +22,12 @@ import {BaseCommand} from '../../utils/oclif/baseCommand'
 const API_MAX_RESULTS = 100
 
 export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
-  static readonly usage =
-    '<%= command.id %> -o <hdf-output-folder> [--interactive] [-L info|warn|debug|verbose]' +
-   ' [-i <asff-json> | -a | -r <region> | -I | -C <certificate> | -t <target>...] [-H <additional-input-files>...]'
+  static readonly usage
+    = '<%= command.id %> -o <hdf-output-folder> [--interactive] [-L info|warn|debug|verbose]'
+      + ' [-i <asff-json> | -a | -r <region> | -I | -C <certificate> | -t <target>...] [-H <additional-input-files>...]'
 
-  static readonly description =
-    'Translate a AWS Security Finding Format JSON into a Heimdall Data Format JSON file(s)'
+  static readonly description
+    = 'Translate a AWS Security Finding Format JSON into a Heimdall Data Format JSON file(s)'
 
   static readonly examples = [
     {
@@ -171,9 +171,9 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
             // Disable HTTPS verification if requested
             rejectUnauthorized: !flags.insecure,
             // Pass an SSL certificate to trust
-            ca: flags.certificate ?
-              fs.readFileSync(flags.certificate, 'utf8') :
-              undefined,
+            ca: flags.certificate
+              ? fs.readFileSync(flags.certificate, 'utf8')
+              : undefined,
           }),
         }),
       }
@@ -232,8 +232,8 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
         first = false
         logger.debug(`Querying for NextToken: ${nextToken}`)
         // type system seems to think that this call / the result is from the callback variant of the function instead of the promise based one and throwing fits
-        const getEnabledStandardsResult: GetEnabledStandardsCommandOutput =
-          (await client.getEnabledStandards({
+        const getEnabledStandardsResult: GetEnabledStandardsCommandOutput
+          = (await client.getEnabledStandards({
             NextToken: nextToken,
           })) as unknown as GetEnabledStandardsCommandOutput
 
@@ -260,8 +260,8 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
         while (nextToken !== undefined) {
           first = false
           logger.debug(`Querying for NextToken: ${nextToken}`)
-          const getEnabledStandardsResult: DescribeStandardsControlsCommandOutput =
-            await client.describeStandardsControls({
+          const getEnabledStandardsResult: DescribeStandardsControlsCommandOutput
+            = await client.describeStandardsControls({
               StandardsSubscriptionArn: standard.StandardsSubscriptionArn,
               NextToken: nextToken || '',
             })
