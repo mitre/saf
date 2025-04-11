@@ -22,9 +22,9 @@ import colors from 'colors'
 import {checkbox, input, select} from '@inquirer/prompts'
 
 export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
-  static readonly usage =
-    '<%= command.id %> [-i <hdf-json>|--interactive] [-o <csv-file>|--interactive] ' +
-    ' [-f <header-fields>|--interactive] [-t|--interactive] [-L info|warn|debug|verbose]'
+  static readonly usage
+    = '<%= command.id %> [-i <hdf-json>|--interactive] [-o <csv-file>|--interactive] '
+      + ' [-f <header-fields>|--interactive] [-t|--interactive] [-L info|warn|debug|verbose]'
 
   static readonly description = 'Translate a Heimdall Data Format JSON file into a Comma Separated Values (CSV) file'
 
@@ -38,7 +38,6 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"',
     },
   ]
-
 
   /*
       TODO: Find a way to make certain flags required when not using --interactive.
@@ -147,7 +146,7 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     }
   }
 
-  requiredFlagsProvided(flags: {input: any; output: any}): boolean {
+  requiredFlagsProvided(flags: {input: any, output: any}): boolean {
     let missingFlags = false
     let strMsg = 'Warning: The following errors occurred:\n'
 
@@ -267,8 +266,8 @@ async function getFlags(): Promise<any> {
   printMagenta('  Optional flag - Truncate fields that exceed Excel cell limit (32,767 characters)\n')
 
   interface ChoiceItems {
-    name: string,
-    value: string,
+    name: string
+    value: string
     checked: boolean
   }
   const choices: ChoiceItems[] = []

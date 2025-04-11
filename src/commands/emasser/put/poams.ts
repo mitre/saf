@@ -134,7 +134,7 @@ function getAllJsonExamples(): Record<string, unknown> {
  * @param value - The value of the parameter or field to check. Can be a string, number, undefined, or null.
  * @throws {Error} Throws an error if the value is undefined.
  */
-function assertParamExists(object: string, value: string|number|undefined|null): void {
+function assertParamExists(object: string, value: string | number | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`)
     throw new Error('Value not defined')
@@ -430,9 +430,9 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
 
     case 'Completed': {
       // Completed POA&M Item require the completionDate, comments, and Milestones.
-      if (!(Object.prototype.hasOwnProperty.call(dataObj, 'comments')) ||
-          !(Object.prototype.hasOwnProperty.call(dataObj, 'completionDate')) ||
-          !(Object.prototype.hasOwnProperty.call(dataObj, 'milestones'))) {
+      if (!(Object.prototype.hasOwnProperty.call(dataObj, 'comments'))
+        || !(Object.prototype.hasOwnProperty.call(dataObj, 'completionDate'))
+        || !(Object.prototype.hasOwnProperty.call(dataObj, 'milestones'))) {
         printRedMsg('When status is "Completed" the following parameters/fields are required:')
         printRedMsg('    comments, completionDate, and milestones')
         printHelpMsg(HELP_MSG)

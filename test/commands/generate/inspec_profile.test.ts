@@ -10,7 +10,7 @@ describe('Test inspec_profile (aliases:xccdf_benchmark2inspec)', () => {
   // Remove all controlled temporary objects on process exit
   tmp.setGracefulCleanup()
 
-  fs.readdirSync('./test/sample_data/xccdf/stigs').forEach(file => {
+  fs.readdirSync('./test/sample_data/xccdf/stigs').forEach((file) => {
     it(`Generated scaffold has the same number of controls based on STIG benchmark: ${file}`, async () => {
       await runCommand<{name: string}>(['generate inspec_profile', '-X', path.resolve('./test/sample_data/xccdf/stigs', file), '-o', `${tmpobj.name}/${file}`])
       const parsedXCCDF = processXCCDF(fs.readFileSync(path.resolve('./test/sample_data/xccdf/stigs', file), 'utf8'), false, 'rule')
@@ -19,7 +19,7 @@ describe('Test inspec_profile (aliases:xccdf_benchmark2inspec)', () => {
     })
   })
 
-  fs.readdirSync('./test/sample_data/xccdf/cis').forEach(file => {
+  fs.readdirSync('./test/sample_data/xccdf/cis').forEach((file) => {
     it(`Generated scaffold has the same number of controls based on CIS benchmark: ${file}`, async () => {
       await runCommand<{name: string}>(['generate inspec_profile', '-X', path.resolve('./test/sample_data/xccdf/cis', file), '-T', 'cis', '-o', `${tmpobj.name}/${file}`])
       const parsedXCCDF = processXCCDF(fs.readFileSync(path.resolve('./test/sample_data/xccdf/cis', file), 'utf8'), false, 'rule')

@@ -10,9 +10,9 @@ import {BaseCommand} from '../../utils/oclif/baseCommand'
 export default class GenerateThreshold extends BaseCommand<typeof GenerateThreshold> {
   static readonly usage = '<%= command.id %> -i <hdf-json> [-o <threshold-yaml>] [-h] [-e] [-c]'
 
-  static readonly description = 'Generate a compliance template for "saf validate threshold".\n' +
-  'Default output states that you must have your current control counts or better\n' +
-  '(More Passes and/or less Fails/Skips/Not Applicable/No Impact/Errors)'
+  static readonly description = 'Generate a compliance template for "saf validate threshold".\n'
+    + 'Default output states that you must have your current control counts or better\n'
+    + '(More Passes and/or less Fails/Skips/Not Applicable/No Impact/Errors)'
 
   static readonly examples = ['<%= config.bin %> <%= command.id %> -i rhel7-results.json -e -c -o output.yaml']
 

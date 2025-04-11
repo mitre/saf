@@ -8,7 +8,7 @@ import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/ema
 import {MilestonesApi} from '@mitre/emass_client'
 import {
   MilestonesPutPostDelete,
-  MilestonesRequestDeleteBodyInner as MilestoneDeleteBody
+  MilestonesRequestDeleteBodyInner as MilestoneDeleteBody,
 } from '@mitre/emass_client/dist/api'
 
 const CMD_HELP = 'saf emasser delete milestones -h or --help'

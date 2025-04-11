@@ -5,13 +5,13 @@ import {checkInput, checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Burpsuite2HDF extends BaseCommand<typeof Burpsuite2HDF> {
-  static readonly usage =
-    '<%= command.id %> -i <burpsuite-xml> -o <hdf-scan-results-json> [-h] [-w]'
+  static readonly usage
+    = '<%= command.id %> -i <burpsuite-xml> -o <hdf-scan-results-json> [-h] [-w]'
 
-  static readonly description =
-    'Translate a BurpSuite Pro XML file into a Heimdall Data Format JSON file'
+  static readonly description
+    = 'Translate a BurpSuite Pro XML file into a Heimdall Data Format JSON file'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i burpsuite_results.xml -o output-hdf-name.json',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i burpsuite_results.xml -o output-hdf-name.json']
 
   static readonly flags = {
     input: Flags.string({

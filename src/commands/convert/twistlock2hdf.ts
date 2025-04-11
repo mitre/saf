@@ -5,13 +5,13 @@ import {checkInput, checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Twistlock2HDF extends BaseCommand<typeof Twistlock2HDF> {
-  static readonly usage =
-    '<%= command.id %> -i <twistlock-json> -o <hdf-scan-results-json> [-h] [-w]'
+  static readonly usage
+    = '<%= command.id %> -i <twistlock-json> -o <hdf-scan-results-json> [-h] [-w]'
 
-  static readonly description =
-    'Translate a Twistlock CLI output file into an HDF results set'
+  static readonly description
+    = 'Translate a Twistlock CLI output file into an HDF results set'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i twistlock.json -o output-hdf-name.json',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i twistlock.json -o output-hdf-name.json']
 
   static readonly flags = {
     input: Flags.string({

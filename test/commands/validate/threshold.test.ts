@@ -1,5 +1,3 @@
-
-
 import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import path from 'path'

@@ -8,7 +8,7 @@ import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/ema
 import {SoftwareBaselineApi} from '@mitre/emass_client'
 import {
   SwBaselineResponseDelete,
-  SwBaselineRequestDeleteBodyInner as SwDeleteBody
+  SwBaselineRequestDeleteBodyInner as SwDeleteBody,
 } from '@mitre/emass_client/dist/api'
 
 const CMD_HELP = 'saf emasser delete software_baseline -h or --help'
