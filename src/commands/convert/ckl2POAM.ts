@@ -42,15 +42,15 @@ const logger = createLogger({
 const STARTING_ROW = 8 // The row we start inserting controls into
 
 export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
-  static readonly usage =
-    '<%= command.id %> -i <disa-checklist>... -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]'
+  static readonly usage
+    = '<%= command.id %> -i <disa-checklist>... -o <poam-output-folder> [-h] [-O <office/org>] [-d <device-name>] [-s <num-rows>]'
 
-  static readonly description =
-    'Translate DISA Checklist CKL file(s) to POA&M files'
+  static readonly description
+    = 'Translate DISA Checklist CKL file(s) to POA&M files'
 
   static readonly aliases = ['convert:ckl2poam']
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i checklist_file.ckl -o output-folder -d abcdefg -s 2',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i checklist_file.ckl -o output-folder -d abcdefg -s 2']
 
   static readonly flags = {
     help: Flags.help({char: 'h'}),
@@ -133,8 +133,8 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
               message: `Found ${stigs?.length} STIGs`,
             })
             // Get nested iSTIGs
-            stigs?.forEach(stig => {
-              stig.iSTIG?.forEach(iStig => {
+            stigs?.forEach((stig) => {
+              stig.iSTIG?.forEach((iStig) => {
                 iStigs.push(iStig)
               })
             })
@@ -144,9 +144,9 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
               message: `Found ${iStigs.length} iSTIGs`,
             })
             // Get the controls/vulnerabilities from each stig
-            iStigs.forEach(iSTIG => {
-              iSTIG.STIG_INFO?.forEach(info => {
-                info.SI_DATA?.forEach(data => {
+            iStigs.forEach((iSTIG) => {
+              iSTIG.STIG_INFO?.forEach((info) => {
+                info.SI_DATA?.forEach((data) => {
                   if (data.SID_DATA) {
                     infos[data.SID_NAME[0]] = data.SID_DATA[0]
                   }
@@ -155,10 +155,10 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
               if (iSTIG.VULN) {
                 vulnerabilities = [
                   ...vulnerabilities,
-                  ...iSTIG.VULN.map(vulnerability => {
+                  ...iSTIG.VULN.map((vulnerability) => {
                     const values: Record<string, unknown> = {}
                     // Extract STIG_DATA
-                    vulnerability.STIG_DATA?.reverse().forEach(data => {
+                    vulnerability.STIG_DATA?.reverse().forEach((data) => {
                       values[data.VULN_ATTRIBUTE[0]] = data.ATTRIBUTE_DATA[0]
                     })
                     // Extract remaining fields (status, finding details, comments, security override, and severity justification)
@@ -175,11 +175,11 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
               file: fileName,
               message: `Found ${vulnerabilities.length} vulnerabilities`,
             })
-            const officeOrg =
-              flags.officeOrg ||
-              prompt('What should the default value be for Office/org? ')
-            const host =
-              flags.deviceName || prompt('What is the device name? ')
+            const officeOrg
+              = flags.officeOrg
+                || prompt('What should the default value be for Office/org? ')
+            const host
+              = flags.deviceName || prompt('What is the device name? ')
             // Read our template
             XlsxPopulate.fromDataAsync(
               dataURLtoU8Array(files.POAMTemplate.data),
@@ -193,10 +193,10 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
                 new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
               ).format('M/DD/YYYY')
               // For each vulnerability
-              vulnerabilities.forEach(vulnerability => {
+              vulnerabilities.forEach((vulnerability) => {
                 if (
-                  vulnerability.STATUS !== 'NotAFinding' &&
-                  vulnerability.STATUS !== 'Not_Reviewed'
+                  vulnerability.STATUS !== 'NotAFinding'
+                  && vulnerability.STATUS !== 'Not_Reviewed'
                 ) {
                   // Control Vulnerability Description
                   if (vulnerability.STATUS === 'Not_Applicable') {
@@ -232,8 +232,8 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
                     .value(cleanStatus(vulnerability.STATUS || ''))
                   // Comments
                   if (
-                    vulnerability.STATUS === 'Open' ||
-                    vulnerability.STATUS === 'Not_Applicable'
+                    vulnerability.STATUS === 'Open'
+                    || vulnerability.STATUS === 'Not_Applicable'
                   ) {
                     if (host.startsWith('Nessus')) {
                       sheet
@@ -298,11 +298,11 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
                     .cell(`V${currentRow}`)
                     .value(
                       replaceSpecialCharacters(
-                        vulnerability.Fix_Text ||
-                          extractSolution(
-                            vulnerability.FINDING_DETAILS || '',
-                          ) ||
-                          '',
+                        vulnerability.Fix_Text
+                        || extractSolution(
+                          vulnerability.FINDING_DETAILS || '',
+                        )
+                        || '',
                       ),
                     )
                   // Go to the next row

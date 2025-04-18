@@ -14,11 +14,11 @@ import _ from 'lodash'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
-  static readonly usage =
-    '<%= command.id %> -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] (-u [-I -C <certificate>] | [-o <asff-output-folder>])'
+  static readonly usage
+    = '<%= command.id %> -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] (-u [-I -C <certificate>] | [-o <asff-output-folder>])'
 
-  static readonly description =
-    'Translate a Heimdall Data Format JSON file into AWS Security Findings Format JSON file(s) and/or upload to AWS Security Hub'
+  static readonly description
+    = 'Translate a Heimdall Data Format JSON file into AWS Security Findings Format JSON file(s) and/or upload to AWS Security Hub'
 
   static readonly examples = [
     {
@@ -140,9 +140,9 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
             // Disable HTTPS verification if requested
             rejectUnauthorized: !flags.insecure,
             // Pass an SSL certificate to trust
-            ca: flags.certificate ?
-              fs.readFileSync(flags.certificate, 'utf8') :
-              undefined,
+            ca: flags.certificate
+              ? fs.readFileSync(flags.certificate, 'utf8')
+              : undefined,
           }),
         }),
       }
@@ -150,7 +150,7 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
 
       try {
         await Promise.all(
-          convertedSlices.map(async chunk => {
+          convertedSlices.map(async (chunk) => {
             try {
               const result = await client.batchImportFindings({
                 Findings: chunk,
@@ -166,8 +166,8 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
               }
             } catch (error) {
               if (
-                _.isObject(error) &&
-                _.get(error, 'code') === 'NetworkingError'
+                _.isObject(error)
+                && _.get(error, 'code') === 'NetworkingError'
               ) {
                 console.error(
                   `Failed to upload controls: ${error}; Using --certificate to provide your own SSL intermediary certificate (in .crt format) or use the flag --insecure to ignore SSL might resolve this issue`,

@@ -34,4 +34,3 @@ describe('Test hdf2csv red_hat_good', () => {
     expect(converted).to.eql(sample)
   })
 })
-

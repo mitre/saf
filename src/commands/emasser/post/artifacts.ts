@@ -10,15 +10,14 @@ import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
-
 const CMD_HELP = 'saf emasser post artifacts -h or --help'
 export default class EmasserPostArtifacts extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command options\x1B[0m'
 
-  static readonly description = 'Uploads a single or multiple artifacts to a system.\n' +
-    'The single file can be an individual artifact or a .zip\n' +
-    'file containing multiple artifacts. If multiple files are\n' +
-    'provided they are archived into a zip file and sent as bulk.'
+  static readonly description = 'Uploads a single or multiple artifacts to a system.\n'
+    + 'The single file can be an individual artifact or a .zip\n'
+    + 'file containing multiple artifacts. If multiple files are\n'
+    + 'provided they are archived into a zip file and sent as bulk.'
 
   static readonly examples = [
     {

@@ -5,7 +5,6 @@ import tmp from 'tmp'
 import path from 'path'
 import {promises as fse} from 'fs'
 
-
 function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
 }

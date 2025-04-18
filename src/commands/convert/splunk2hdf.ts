@@ -8,16 +8,16 @@ import path from 'path'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
-  static readonly usage =
-    '<%= command.id %> -H <host> -I <index> [-h] [-P <port>] [-s http|https]\n' +
-    '(-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID>... -o <hdf-output-folder>]'
+  static readonly usage
+    = '<%= command.id %> -H <host> -I <index> [-h] [-P <port>] [-s http|https]\n'
+      + '(-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID>... -o <hdf-output-folder>]'
 
-  static readonly description =
-    'Pull HDF data from your Splunk instance back into an HDF file'
+  static readonly description
+    = 'Pull HDF data from your Splunk instance back into an HDF file'
 
   static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -H 127.0.0.1 -u admin -p Valid_password!\n' +
-    '-I hdf -i some-file-in-your-splunk-instance.json -i yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder',
+    '<%= config.bin %> <%= command.id %> -H 127.0.0.1 -u admin -p Valid_password!\n'
+    + '-I hdf -i some-file-in-your-splunk-instance.json -i yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder',
   ]
 
   static readonly flags = {
@@ -123,23 +123,23 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
           fs.writeFileSync(
             path.join(
               outputFolder,
-              _.get(hdf, 'meta.filename', '').replace(/\.json$/, '') +
-                _.get(hdf, 'meta.guid') +
-                '.json',
+              _.get(hdf, 'meta.filename', '').replace(/\.json$/, '')
+              + _.get(hdf, 'meta.guid')
+              + '.json',
             ),
             JSON.stringify(hdf, null, 2),
           )
         } else {
           // If we have a filename
           const executions = await this.searchExecutions(mapper, input)
-          executions.forEach(async execution => {
+          executions.forEach(async (execution) => {
             const hdf = await mapper.toHdf(_.get(execution, 'meta.guid'))
             fs.writeFileSync(
               path.join(
                 outputFolder,
-                _.get(hdf, 'meta.filename', '').replace(/\.json$/, '') +
-                  _.get(hdf, 'meta.guid') +
-                  '.json',
+                _.get(hdf, 'meta.filename', '').replace(/\.json$/, '')
+                + _.get(hdf, 'meta.guid')
+                + '.json',
               ),
               JSON.stringify(hdf, null, 2),
             )
@@ -150,11 +150,11 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
       logger.error('Please provide an output HDF folder')
       throw new Error('Please provide an output HDF folder')
     } else {
-      const availableExecutionsTable: string[][] = [['File Name', 'GUID', 'Imported At'],]
+      const availableExecutionsTable: string[][] = [['File Name', 'GUID', 'Imported At']]
 
       const executionsAvailable = await this.searchExecutions(mapper, '*')
 
-      executionsAvailable.forEach(execution => {
+      executionsAvailable.forEach((execution) => {
         availableExecutionsTable.push([
           _.get(execution, 'meta.filename') || '',
           _.get(execution, 'meta.guid') || '',

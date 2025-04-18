@@ -7,13 +7,13 @@ import path from 'path'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Prowler2HDF extends BaseCommand<typeof Prowler2HDF> {
-  static readonly usage =
-    '<%= command.id %> -i <prowler-finding-json> -o <hdf-output-folder> [-h]'
+  static readonly usage
+    = '<%= command.id %> -i <prowler-finding-json> -o <hdf-output-folder> [-h]'
 
-  static readonly description =
-    'Translate a Prowler-derived AWS Security Finding Format results from JSONL into a Heimdall Data Format JSON file'
+  static readonly description
+    = 'Translate a Prowler-derived AWS Security Finding Format results from JSONL into a Heimdall Data Format JSON file'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i prowler-asff.json -o output-folder',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i prowler-asff.json -o output-folder']
 
   static readonly flags = {
     input: Flags.string({

@@ -17,7 +17,7 @@ describe('Test heimdall SAF CLI Command', () => {
 describe('Test Heimdall Embedded', () => {
   let server: Server
 
-  beforeEach(done => {
+  beforeEach((done) => {
     const installedPath = getInstalledPath('@mitre/saf')
     const staticFilesDirectory = path.join(installedPath, 'node_modules/@mitre/heimdall-lite/dist')
     const predefinedLoadJSON = express.json() // Replace this with your actual middleware
@@ -34,7 +34,7 @@ describe('Test Heimdall Embedded', () => {
   })
 
   afterEach(() => {
-    return new Promise<void>(resolve => {
+    return new Promise<void>((resolve) => {
       server.close(() => {
         resolve()
       })

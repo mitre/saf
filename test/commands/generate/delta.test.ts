@@ -1,4 +1,3 @@
-
 import {expect, assert} from 'chai'
 import {runCommand} from '@oclif/test'
 import tmp from 'tmp'
