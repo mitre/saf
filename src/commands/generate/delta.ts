@@ -1228,7 +1228,6 @@ async function getFlags(): Promise<any> {
     }
   }
 
-  console.log(`ALL SELECTIONS: ${JSON.stringify(interactiveValues)}`)
   return interactiveValues
 }
 
