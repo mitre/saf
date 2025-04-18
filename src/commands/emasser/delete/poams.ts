@@ -8,7 +8,7 @@ import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/ema
 import {POAMApi} from '@mitre/emass_client'
 import {
   PoamResponsePostPutDelete,
-  PoamRequestDeleteBodyInner as PoamDeleteBody
+  PoamRequestDeleteBodyInner as PoamDeleteBody,
 } from '@mitre/emass_client/dist/api'
 
 const CMD_HELP = 'saf emasser delete poams -h or --help'

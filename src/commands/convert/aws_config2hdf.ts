@@ -6,13 +6,13 @@ import {checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class AWSConfig2HDF extends BaseCommand<typeof AWSConfig2HDF> {
-  static readonly usage =
-    '<%= command.id %> -r <region> -o <hdf-scan-results-json> [-h] [-a <access-key-id>] [-s <secret-access-key>] [-t <session-token>] [-i]'
+  static readonly usage
+    = '<%= command.id %> -r <region> -o <hdf-scan-results-json> [-h] [-a <access-key-id>] [-s <secret-access-key>] [-t <session-token>] [-i]'
 
-  static readonly description =
-    'Pull Configuration findings from AWS Config and convert into a Heimdall Data Format JSON file'
+  static readonly description
+    = 'Pull Configuration findings from AWS Config and convert into a Heimdall Data Format JSON file'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json']
 
   static readonly flags = {
     accessKeyId: Flags.string({
@@ -59,10 +59,10 @@ export default class AWSConfig2HDF extends BaseCommand<typeof AWSConfig2HDF> {
   ensureRefs(output: ExecJSON.Execution): ExecJSON.Execution {
     return {
       ...output,
-      profiles: output.profiles.map(profile => {
+      profiles: output.profiles.map((profile) => {
         return {
           ...profile,
-          controls: profile.controls.map(control => {
+          controls: profile.controls.map((control) => {
             if (!control.refs || !control.results) {
               return {
                 ...control,
@@ -81,9 +81,9 @@ export default class AWSConfig2HDF extends BaseCommand<typeof AWSConfig2HDF> {
   async run() {
     const {flags} = await this.parse(AWSConfig2HDF)
 
-    const converter =
-      flags.accessKeyId && flags.secretAccessKey ?
-        new Mapper(
+    const converter
+      = flags.accessKeyId && flags.secretAccessKey
+        ? new Mapper(
           {
             credentials: {
               accessKeyId: flags.accessKeyId || '',
@@ -93,16 +93,16 @@ export default class AWSConfig2HDF extends BaseCommand<typeof AWSConfig2HDF> {
             region: flags.region,
           },
           !flags.insecure,
-          flags.certificate ?
-            fs.readFileSync(flags.certificate, 'utf8') :
-            undefined,
-        ) :
-        new Mapper(
+          flags.certificate
+            ? fs.readFileSync(flags.certificate, 'utf8')
+            : undefined,
+        )
+        : new Mapper(
           {region: flags.region},
           !flags.insecure,
-          flags.certificate ?
-            fs.readFileSync(flags.certificate, 'utf8') :
-            undefined,
+          flags.certificate
+            ? fs.readFileSync(flags.certificate, 'utf8')
+            : undefined,
         )
 
     fs.writeFileSync(

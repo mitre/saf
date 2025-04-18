@@ -117,7 +117,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       }
     }
 
-    //-------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Check if we have a XCCDF XML file containing the new/updated profile guidance
     logger.info(`Verifying that the XCCDF file is valid: ${path.basename(flags.xccdfXmlFile)}...`)
     try {
@@ -140,12 +140,12 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         const errorCode = (error as {code?: string}).code // Type-safe access to `code`
         if (errorCode === 'ENOENT') {
           logger.error(
-            `ERROR: No entity found for: ${flags.xccdfXmlFile}. Run the --help command for more information on expected input files.`
+            `ERROR: No entity found for: ${flags.xccdfXmlFile}. Run the --help command for more information on expected input files.`,
           )
           throw error
         }
         logger.error(
-          `ERROR: Unable to process the XCCDF XML file ${flags.xccdfXmlFile} because: ${error.message}`
+          `ERROR: Unable to process the XCCDF XML file ${flags.xccdfXmlFile} because: ${error.message}`,
         )
       } else {
         logger.error('ERROR: An unexpected error occurred.')
@@ -153,7 +153,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       throw error
     }
 
-    //-------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Check if we have a controls folder
     logger.info('Verifying that a controls folder exists...')
     if (fs.existsSync(flags.controlsDir)) {
@@ -190,10 +190,10 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     }
 
     // Shorten the controls directory to sow the 'controls' directory and its parent
-    const shortControlsDir = path.sep + path.basename(path.dirname(flags.controlsDir)) +
-                             path.sep + path.basename(flags.controlsDir)
+    const shortControlsDir = path.sep + path.basename(path.dirname(flags.controlsDir))
+      + path.sep + path.basename(flags.controlsDir)
 
-    //-------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Check if we have an InSpec json file, generate if not provided
     // Process the InSpec json content, convert entries into a Profile object
     logger.info('Processing the Input execution/profile JSON summary...')
@@ -205,8 +205,8 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
           inspecProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
           logger.debug('  Converted JSON file into a Profile JSON/Execution object')
         } else {
-          throw new Error(`Input execution/profile JSON file not found: ${path.basename(flags.inspecJsonFile)}.\n` +
-            'Run the --help command to more information on expected input files.')
+          throw new Error(`Input execution/profile JSON file not found: ${path.basename(flags.inspecJsonFile)}.\n`
+            + 'Run the --help command to more information on expected input files.')
         }
       } catch (error: unknown) {
         if (error instanceof Error) {
@@ -243,7 +243,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       }
     }
 
-    //-------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Process the XCCDF file (convert entries into a Profile object)
     // The XCCDF contains the profiles metadata - it does not have the code descriptions
     logger.info(`Processing XCCDF Benchmark file: ${path.basename(flags.xccdfXmlFile)}...`)
@@ -252,7 +252,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     const xccdfProfile = processXCCDF(xccdf, false, idType)
     logger.debug(`  Converted XCCDF Benchmark file into a Profile JSON/Execution object using ${idType} Id`)
 
-    //-------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Create variable map data types containing various Controls Id mappings.
     // The xccdfProfile object has the following identifications (id's):
     //   "id": "SV-205624" -> the new control Id (generated from the Rule or Group Id)
@@ -288,15 +288,15 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       let controlId
       if (flags.useXccdfGroupId) {
         logger.debug('  Using `tags.gid` to determine new Control Name/Id')
-        controlId = (flags.controlPrefix === 'V') ?
-          control.tags.gid?.match(/^V-\d+/)?.toString() :
-          control.tags.gid?.match(/^SV-\d+/)?.toString()
+        controlId = (flags.controlPrefix === 'V')
+          ? control.tags.gid?.match(/^V-\d+/)?.toString()
+          : control.tags.gid?.match(/^SV-\d+/)?.toString()
       } else {
         logger.debug('  Using `tags.legacy` to determine new Control Name/Id')
-        controlId = control.tags.legacy?.map(value => {
-          const control = (flags.controlPrefix === 'V') ?
-            value.match(/^V-\d+/)?.toString() :
-            value.match(/^SV-\d+/)?.toString()
+        controlId = control.tags.legacy?.map((value) => {
+          const control = (flags.controlPrefix === 'V')
+            ? value.match(/^V-\d+/)?.toString()
+            : value.match(/^SV-\d+/)?.toString()
           return (control === undefined) ? '' : control
         }).find(Boolean)
         // If there isn't a legacy tag, use the XCCDF Id (see note above)
@@ -310,7 +310,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       xccdfNewControlsMetaDataMap.set(controlId, control)
     }
 
-    //-------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Generate a map data type containing the XCCDF metadata (all content minus the code)
     // and add the code from the old control (in InSpec json object)
     //
@@ -352,7 +352,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       }
     }
 
-    //-------------------------------------------------------------------------
+    // -------------------------------------------------------------------------
     // Update all baseline X controls with content from baseline Y
     // Updated controls have:
     //   Metadata from XCCDF guidances
@@ -487,7 +487,6 @@ function getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: 
 
   return controlData
 }
-
 
 function saveControl(filePath: string, newXCCDFControlNumber: string,
   currentControlNumber: string, updatedControl: string,

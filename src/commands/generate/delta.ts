@@ -360,7 +360,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               printYellowGreen('    Processed control: ', `${mappedShortControlFile}`)
               fs.writeFileSync(mappedControlFile, lines.join('\n'))
 
-
               // TODO: Maybe copy files from the source directory and rename for duplicates and to preserve source files // skipcq: JS-0099
               printYellowGreen('  Mapped control file: ', `${sourceShortControlFile} to reference ID ${key}`)
               printYellowBgGreen('     New control name: ', `${key}.rb\n`)
@@ -385,8 +384,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           await sleep(2000).then(() => process.exit(1))
         }
       } else if (runMapControls && !controlsDir) {
-        logger.error('  If the -M (Run the approximate string matching process) is specified\n' +
-          'the -c (The InSpec profile controls directory containing the profiles to be updated) is required')
+        logger.error('  If the -M (Run the approximate string matching process) is specified\n'
+          + 'the -c (The InSpec profile controls directory containing the profiles to be updated) is required')
       }
     } catch (error: any) {
       saveLogs(logger,
@@ -461,7 +460,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       logger.debug('  Computed the delta between the existing profile and updated benchmark.')
 
       if (updatedResult) {
-        updatedResult.profile.controls.forEach(control => {
+        updatedResult.profile.controls.forEach((control) => {
           const controls = existingProfile.controls
 
           let index = -1
@@ -484,7 +483,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // the describe block (code). Using the updateControl method with the new
           // control so we can get the code with the new metadata.
 
-
             // TODO: Can use the getExistingDescribeFromControl(existingProfile.controls[index]) // skipcq: JS-0099
             //       method from inspect-objects
             const newControl = updateControl(existingProfile.controls[index], control, logger)
@@ -505,20 +503,20 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           logger.debug('  Writing report markdown file')
           if (runMapControls) {
             const totalMappedControls = Object.keys(mappedControls!).length // skipcq: JS-0339
-            const reportData = '## Map Controls\n' +
-              JSON.stringify(mappedControls!, null, 2) + // skipcq:  JS-0339
-              `\nTotal Mapped Controls: ${Object.keys(mappedControls!).length}\n\n` + // skipcq:  JS-0339
-              `Total Controls Available for Delta: ${GenerateDelta.oldControlsLength}\n` +
-              `     Total Controls Found on XCCDF: ${GenerateDelta.newControlsLength}\n` +
-              `                    Match Controls: ${GenerateDelta.match}\n` +
-              `        Possible Mismatch Controls: ${GenerateDelta.posMisMatch}\n` +
-              `          Duplicate Match Controls: ${GenerateDelta.dupMatch}\n` +
-              `                 No Match Controls: ${GenerateDelta.noMatch}\n` +
-              `                New XCDDF Controls: ${GenerateDelta.newXccdfControl}\n\n` +
-              'Statistics Validation ------------------------------------------\n' +
-              `Match + Mismatch = Total Mapped Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}\n` +
-              `  Total Processed = Total XCCDF Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n` +
-              updatedResult.markdown
+            const reportData = '## Map Controls\n'
+              + JSON.stringify(mappedControls!, null, 2) // skipcq:  JS-0339
+              + `\nTotal Mapped Controls: ${Object.keys(mappedControls!).length}\n\n` // skipcq:  JS-0339
+              + `Total Controls Available for Delta: ${GenerateDelta.oldControlsLength}\n`
+              + `     Total Controls Found on XCCDF: ${GenerateDelta.newControlsLength}\n`
+              + `                    Match Controls: ${GenerateDelta.match}\n`
+              + `        Possible Mismatch Controls: ${GenerateDelta.posMisMatch}\n`
+              + `          Duplicate Match Controls: ${GenerateDelta.dupMatch}\n`
+              + `                 No Match Controls: ${GenerateDelta.noMatch}\n`
+              + `                New XCDDF Controls: ${GenerateDelta.newXccdfControl}\n\n`
+              + 'Statistics Validation ------------------------------------------\n'
+              + `Match + Mismatch = Total Mapped Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}\n`
+              + `  Total Processed = Total XCCDF Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`
+              + updatedResult.markdown
             fs.writeFileSync(path.join(markDownFile), reportData)
           } else {
             fs.writeFileSync(path.join(markDownFile), updatedResult.markdown)
@@ -642,15 +640,14 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             }
           }
 
-          if (typeof newControl.id === 'string' &&
-            typeof result[0].item.id === 'string') {
+          if (typeof newControl.id === 'string'
+            && typeof result[0].item.id === 'string') {
             // Check non displayed characters of title
             printYellowGreen('     Old Control Title: ', `${this.updateTitle(result[0].item.title)}`)
             // NOTE: We determined that 0.1 needs to be reviewed due to possible
             // words exchange that could alter the entire meaning of the title.
 
             if (result[0].score > 0.1) {
-
               // TODO: modify output report or logger to show potential mismatches // skipcq: JS-0099
               // alternatively: add a match decision feature for high-scoring results
               printBgRed('** Potential Mismatch **')
@@ -732,9 +729,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     const newXccdfControl = GenerateDelta.newXccdfControl
     const statTotalMatch = ((totalMappedControls + dupMatch + noMatch + newXccdfControl) === GenerateDelta.newControlsLength)
 
-    evalStats = statValidation === 'totalMapped' ?
-      `(${match}+${misMatch}=${totalMappedControls}) ${statMach}` :
-      `(${match}+${misMatch}+${dupMatch}+${noMatch}+${newXccdfControl}=${GenerateDelta.newControlsLength}) ${statTotalMatch}`
+    evalStats = statValidation === 'totalMapped'
+      ? `(${match}+${misMatch}=${totalMappedControls}) ${statMach}`
+      : `(${match}+${misMatch}+${dupMatch}+${noMatch}+${newXccdfControl}=${GenerateDelta.newControlsLength}) ${statTotalMatch}`
 
     return evalStats
   }
@@ -944,7 +941,6 @@ async function getFlags(): Promise<any> {
         }
       }
     }
-
   } else {
     addToProcessLogData('generateReport=false')
     interactiveValues.generateReport = false
@@ -998,7 +994,7 @@ function saveLogs(logger: winston.Logger, errorMsg: string) {
 }
 
 function sleep(ms: number) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     setTimeout(resolve, ms)
   })
 }

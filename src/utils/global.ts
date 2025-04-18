@@ -160,7 +160,7 @@ export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNu
 }
 
 interface ExtendedContextualizedEvaluation extends ContextualizedEvaluation {
-  profiles?: AnyProfile[]; // change this line
+  profiles?: AnyProfile[] // change this line
 }
 
 /**
@@ -246,7 +246,7 @@ export function getProfileInfo(evaluation: ExtendedContextualizedEvaluation, fil
 export function getDescription(
   descriptions:
     | {
-      [key: string]: string;
+      [key: string]: string
     }
     | ExecJSON.ControlDescription[],
   key: string,

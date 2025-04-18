@@ -273,8 +273,8 @@ export function prettyPrintColumnTitle(title: string): string {
 export function generateMarkdownTable(item: Data | PrintableSummary, titleTables: boolean): string {
   const score = item.compliance.toString()
   const headerRow = ['Compliance: ' + score + '<br>:test_tube:', ...COLUMN_ORDER.map(column => `${prettyPrintColumnTitle(column)}<br>${COLUMN_EMOJI[column]}`)]
-  const table: string[][] =
-    ROW_ORDER.map(row => [prettyPrintRowTitle(row), ...generateMarkdownTableRow(row, item as PrintableSummary)])
+  const table: string[][]
+    = ROW_ORDER.map(row => [prettyPrintRowTitle(row), ...generateMarkdownTableRow(row, item as PrintableSummary)])
 
   const myTable: Table = {
     head: headerRow,

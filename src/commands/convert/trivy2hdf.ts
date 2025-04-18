@@ -7,13 +7,13 @@ import path from 'path'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Trivy2HDF extends BaseCommand<typeof Trivy2HDF> {
-  static readonly usage =
-    '<%= command.id %> -i <trivy-finding-json> -o <hdf-output-folder>'
+  static readonly usage
+    = '<%= command.id %> -i <trivy-finding-json> -o <hdf-output-folder>'
 
-  static readonly description =
-    'Translate a Trivy-derived AWS Security Finding Format results from JSONL into a Heimdall Data Format JSON file'
+  static readonly description
+    = 'Translate a Trivy-derived AWS Security Finding Format results from JSONL into a Heimdall Data Format JSON file'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i trivy-asff.json -o output-folder',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i trivy-asff.json -o output-folder']
 
   static readonly flags = {
     input: Flags.string({

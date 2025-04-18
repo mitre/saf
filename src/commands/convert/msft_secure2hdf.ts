@@ -52,8 +52,8 @@ export default class MsftSecure2HDF extends BaseCommand<typeof MsftSecure2HDF> {
     '<%= command.id %> -i <combined-inputs> -o <hdf-scan-results-json> [-w] [--interactive] [-L info|warn|debug|verbose] [-h]',
   ]
 
-  static readonly description =
-    'Translate a Microsoft Secure Score report and Secure Score Control to a Heimdall Data Format JSON file.'
+  static readonly description
+    = 'Translate a Microsoft Secure Score report and Secure Score Control to a Heimdall Data Format JSON file.'
 
   static readonly examples = [
     {
@@ -146,8 +146,8 @@ export default class MsftSecure2HDF extends BaseCommand<typeof MsftSecure2HDF> {
     let profilesDoc: {value: SecureScoreControlProfile[]}
 
     if (
-      flags.inputProfiles !== undefined &&
-      flags.inputScoreDoc !== undefined
+      flags.inputProfiles !== undefined
+      && flags.inputScoreDoc !== undefined
     ) {
       // load from pre-downloaded files
       scoreDoc = JSON.parse(fs.readFileSync(flags.inputScoreDoc, 'utf8'))
@@ -161,9 +161,9 @@ export default class MsftSecure2HDF extends BaseCommand<typeof MsftSecure2HDF> {
       const profilesDoc = combined.profiles
       processInputs(scoreDoc, profilesDoc, flags.output, flags.includeRaw)
     } else if (
-      flags.tenantId !== undefined &&
-      flags.appId !== undefined &&
-      flags.appSecret !== undefined
+      flags.tenantId !== undefined
+      && flags.appId !== undefined
+      && flags.appSecret !== undefined
     ) {
       // attempt to use the Graph API to pull files
       const tenantId = flags.tenantId
@@ -179,9 +179,9 @@ export default class MsftSecure2HDF extends BaseCommand<typeof MsftSecure2HDF> {
             // Disable HTTPS verification if requested
             rejectUnauthorized: !flags.insecure,
             // Pass an SSL certificate to trust
-            ca: flags.certificate ?
-              fs.readFileSync(flags.certificate, 'utf8') :
-              undefined,
+            ca: flags.certificate
+              ? fs.readFileSync(flags.certificate, 'utf8')
+              : undefined,
           }),
         },
       }

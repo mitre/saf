@@ -8,7 +8,7 @@ import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/ema
 import {HardwareBaselineApi} from '@mitre/emass_client'
 import {
   HwBaselineResponseDelete,
-  HwBaselineRequestDeleteBodyInner as HwDeleteBody
+  HwBaselineRequestDeleteBodyInner as HwDeleteBody,
 } from '@mitre/emass_client/dist/api'
 
 const CMD_HELP = 'saf emasser delete hardware_baseline -h or --help'

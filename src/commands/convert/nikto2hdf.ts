@@ -5,14 +5,14 @@ import {checkInput, checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Nikto2HDF extends BaseCommand<typeof Nikto2HDF> {
-  static readonly usage =
-    '<%= command.id %> -i <nikto-json> -o <hdf-scan-results-json> [-h] [-w]'
+  static readonly usage
+    = '<%= command.id %> -i <nikto-json> -o <hdf-scan-results-json> [-h] [-w]'
 
-  static readonly description =
-    'Translate a Nikto results JSON file into a Heimdall Data Format JSON file\n' +
-    'Note: Current this mapper only supports single target Nikto Scans'
+  static readonly description
+    = 'Translate a Nikto results JSON file into a Heimdall Data Format JSON file\n'
+      + 'Note: Current this mapper only supports single target Nikto Scans'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i nikto-results.json -o output-hdf-name.json',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i nikto-results.json -o output-hdf-name.json']
 
   static readonly flags = {
     input: Flags.string({

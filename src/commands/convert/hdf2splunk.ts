@@ -6,11 +6,11 @@ import {createWinstonLogger, getHDFSummary} from '../../utils/logging'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class HDF2Splunk extends BaseCommand<typeof HDF2Splunk> {
-  static readonly usage =
-    '<%= command.id %> -i <hdf-scan-results-json> -H <host> -I <index> [-h] [-P <port>] [-s http|https] [-u <username> | -t <token>] [-p <password>] [-L info|warn|debug|verbose]'
+  static readonly usage
+    = '<%= command.id %> -i <hdf-scan-results-json> -H <host> -I <index> [-h] [-P <port>] [-s http|https] [-u <username> | -t <token>] [-p <password>] [-L info|warn|debug|verbose]'
 
-  static readonly description =
-    'Translate and upload a Heimdall Data Format JSON file into a Splunk server'
+  static readonly description
+    = 'Translate and upload a Heimdall Data Format JSON file into a Splunk server'
 
   static readonly examples = [
     {

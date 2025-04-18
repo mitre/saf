@@ -5,12 +5,12 @@ import {default as files} from '../../resources/files.json'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class HDF2XCCDF extends BaseCommand<typeof HDF2XCCDF> {
-  static readonly usage =
-    '<%= command.id %> -i <hdf-scan-results-json> -o <output-xccdf-xml> [-h]'
+  static readonly usage
+    = '<%= command.id %> -i <hdf-scan-results-json> -o <output-xccdf-xml> [-h]'
 
   static readonly description = 'Translate an HDF file into an XCCDF XML file'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i hdf_input.json -o xccdf-results.xml',]
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i hdf_input.json -o xccdf-results.xml']
 
   static readonly flags = {
     input: Flags.string({

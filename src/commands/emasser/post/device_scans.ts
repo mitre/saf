@@ -13,9 +13,9 @@ const CMD_HELP = 'saf emasser post device_scans -h or --help'
 export default class EmasserPostDeviceScans extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]'
 
-  static readonly description = 'Add (upload) device scan results in the assets module for a system\n' +
-    'Supported scan types: ACAS, DISA STIG Viewer, Policy Auditor, SCAP Compliance Checker\n' +
-    'See the [-S, --scanType] command line flag for acceptable option names for scan type'
+  static readonly description = 'Add (upload) device scan results in the assets module for a system\n'
+    + 'Supported scan types: ACAS, DISA STIG Viewer, Policy Auditor, SCAP Compliance Checker\n'
+    + 'See the [-S, --scanType] command line flag for acceptable option names for scan type'
 
   static readonly examples = [
     {
