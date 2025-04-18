@@ -1,8 +1,8 @@
 import os from 'os'
 import path from 'path'
+import AdmZip from 'adm-zip'
 import fs, {ReadStream} from 'fs'
 import {colorize} from 'json-colorizer'
-import {Zip} from 'zip-lib'
 import {Command, Flags} from '@oclif/core'
 import {ArtifactsApi} from '@mitre/emass_client'
 import {ArtifactsResponsePutPost} from '@mitre/emass_client/dist/api'
@@ -61,21 +61,25 @@ export default class EmasserPostArtifacts extends Command {
 
     // Multiple files, create a zip file
     } else {
-      // Create the archive object, add all files
-      const archiver = new Zip()
+      // Create a new AdmZip instance
+      const zip = new AdmZip()
+
+      // Add all files to the zip archive
       flags.fileName.forEach((inputFile: string) => {
         if (fs.existsSync(inputFile)) {
-          archiver.addFile(inputFile)
+          zip.addLocalFile(inputFile)
         } else {
           console.error('\x1B[91m» Artifact file not found:', inputFile, '\x1B[0m')
           process.exit(1)
         }
       })
 
-      // Generate zip file
+      // Generate a temporary zip file in the system's temp directory
       const zipper = path.join(os.tmpdir(), 'zipper.zip')
-      await archiver.archive(zipper)
-      const fileStream: ReadStream = fs.createReadStream(zipper)
+      zip.writeZip(zipper) // Write the zip file to disk
+
+      // Read the generated zip file as a stream
+      const fileStream: fs.ReadStream = fs.createReadStream(zipper)
 
       artifactApi.addArtifactsBySystemId(flags.systemId, fileStream, true, flags.isTemplate, flags.type, flags.category).then((response: ArtifactsResponsePutPost) => {
         console.log(colorize(outputFormat(response, false)))

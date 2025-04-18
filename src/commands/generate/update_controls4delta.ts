@@ -20,6 +20,9 @@ import {
   addToProcessLogData,
   saveProcessLogData,
 } from '../../utils/oclif/cliHelper'
+import {downloadFile, extractFileFromZip, getErrorMessage} from '../../utils/global'
+import tmp from 'tmp'
+import {Logger} from 'winston'
 
 /**
  * This class is used to prepare profile controls from one SRG or STIG baseline
@@ -49,26 +52,35 @@ import {
  */
 
 export default class GenerateUpdateControls extends BaseCommand<typeof GenerateUpdateControls> {
-  static readonly usage = '<%= command.id %> [ARGUMENTS]'
+  // static readonly usage = '<%= command.id %> [ARGUMENTS]'
 
   static readonly description = 'Update Profile Control(s) from baseline X to Y based on DISA XCCDF guidance'
 
   static readonly examples = [
-    '<%= config.bin %> <%= command.id %> -X ./the_xccdf_guidance_file.xml -c the_controls_directory -L debug',
-    '<%= config.bin %> <%= command.id %> -X ./the_xccdf_guidance_file.xml -c the_controls_directory -g -L debug',
-    '<%= config.bin %> <%= command.id %> -X ./the_xccdf_guidance_file.xml -c the_controls_directory -J ./the_profile_json-L debug',
-    '<%= config.bin %> <%= command.id %> -X ./the_xccdf_guidance_file.xml -c the_controls_directory --no-formatControls -P SV -L debug',
-    '<%= config.bin %> <%= command.id %> -X ./the_xccdf_guidance_file.xml -c the_controls_directory --no-backupControls --no-formatControls -P SV -L debug',
+    {
+      description: '\x1B[93mProviding an XCCDF File\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -X ./the_xccdf_guidance_file.xml [-J <profile_json_file.json>] [-c the_controls_directory --no-backupControls --no-formatControls -P <V or SV> -g -L debug]',
+    },
+    {
+      description: '\x1B[93mProviding an URL point to an ZIP XCCDF (from DISA STIG downloads)\x1B[0m',
+      command: '<%= config.bin %> <%= command.id %> -U <URL to DISA STIGs downloads> [-J <profile_json_file.json>] [-c the_controls_directory --no-backupControls --no-formatControls -P <V or SV> -g -L debug]',
+    },
   ]
 
   static readonly flags = {
     xccdfXmlFile: Flags.string({
-      char: 'X', required: true,
-      description: 'The XCCDF XML file containing the new guidance - in the form of .xml file',
+      char: 'X',
+      description: '\x1B[31m(required [-X or -U])\x1B[34m The XCCDF XML file containing the new guidance - in the form of .xml file',
+      exclusive: ['xccdfUrl'],
+    }),
+    xccdfUrl: Flags.url({
+      char: 'U',
+      description: '\x1B[31m(required [-X or -U])\x1B[34m The URL pointing to the XCCDF file containing the new guidance (DISA STIG downloads)',
+      exclusive: ['xccdfXmlFile'],
     }),
     inspecJsonFile: Flags.string({
       char: 'J', required: false,
-      description: 'Input execution/profile JSON file - can be generated using the "inspec json <profile path> > profile.json" command',
+      description: 'InSpec Profiles JSON summary file - can be generated using the "cinc-auditor or inspec] json <profile path> > profile.json" command',
     }),
     controlsDir: Flags.string({
       char: 'c', required: true,
@@ -99,6 +111,11 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, complexity
   async run(): Promise<any> { // skipcq: JS-0044
     const {flags} = await this.parse(GenerateUpdateControls)
+
+    if (!flags.xccdfXmlFile && !flags.xccdfUrl) {
+      this.error('\x1B[31mYou must specify either [-X, --xccdfXmlFile or -U --xccdfUrl]\x1B[0m')
+    }
+
     const logger = createWinstonLogger('generate:update_controls', flags.logLevel)
 
     logger.warn(colors.yellow('╔═══════════════════════════════════════════════╗'))
@@ -118,39 +135,57 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     }
 
     // -------------------------------------------------------------------------
-    // Check if we have a XCCDF XML file containing the new/updated profile guidance
-    logger.info(`Verifying that the XCCDF file is valid: ${path.basename(flags.xccdfXmlFile)}...`)
-    try {
-      if (fs.lstatSync(flags.xccdfXmlFile).isFile()) {
-        const xccdfXmlFile = flags.xccdfXmlFile
-        // logger.debug(`Processing the ${xccdfXmlFile} XCCDF file`)
-        const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8')
-        const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase()
-        if (inputFirstLine.includes('xccdf')) {
-          logger.debug('  Valid XCCDF file provided')
-        } else {
-          logger.error(`ERROR: Unable to load ${xccdfXmlFile} as XCCDF`)
-          throw new Error('Cannot load XCCDF file')
-        }
+    // Check if we have a XCCDF XML or URL file containing the new/updated
+    // profile guidance - Must provide either File or URL
+    let xccdfXmlFile = ''
+    let xccdfContent = ''
+    if (flags.xccdfXmlFile) {
+      xccdfXmlFile = path.basename(flags.xccdfXmlFile)
+      logger.info(`Verifying that the XCCDF file is valid: ${xccdfXmlFile}...`)
+      if (isXccdfFile(flags.xccdfXmlFile, logger)) {
+        xccdfContent = fs.readFileSync(flags.xccdfXmlFile, 'utf8')
       } else {
-        throw new Error('No benchmark (XCCDF) file was provided.')
+        return
       }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        const errorCode = (error as {code?: string}).code // Type-safe access to `code`
-        if (errorCode === 'ENOENT') {
-          logger.error(
-            `ERROR: No entity found for: ${flags.xccdfXmlFile}. Run the --help command for more information on expected input files.`,
-          )
-          throw error
-        }
-        logger.error(
-          `ERROR: Unable to process the XCCDF XML file ${flags.xccdfXmlFile} because: ${error.message}`,
-        )
+    // XCCDF is an URL
+    } else {
+      logger.info(`Verifying that the URL contains a valid XCCDF: ${flags.xccdfUrl}...`)
+      const tmpobj = tmp.dirSync({unsafeCleanup: true})
+      let fileBuffer: Buffer | null = null
+      let url
+
+      if (flags.xccdfUrl === undefined) {
+        logger.error('URL flag is undefined or invalid')
+        return
       } else {
-        logger.error('ERROR: An unexpected error occurred.')
+        url = flags.xccdfUrl?.toString()
       }
-      throw error
+      await (async () => {
+        const zipFile = url.split('/').pop() // Extracts the last segment
+
+        if (!zipFile) {
+          throw new Error('Failed to extract zip file name from URL')
+        }
+
+        const zipFilePath = path.join(tmpobj.name, zipFile)
+
+        try {
+          await downloadFile(url, zipFilePath)
+          logger.debug('  Valid XCCDF URL provided')
+          const fileNameToExtract = '-xccdf.xml'
+          const result = extractFileFromZip(zipFilePath, fileNameToExtract)
+          fileBuffer = result[0]
+          xccdfXmlFile = result[1].split('/')[1]
+          if (fileBuffer) {
+            logger.debug(`  Extracted XCCDF file from: ${xccdfXmlFile}`)
+            xccdfContent = fileBuffer.toString()
+          }
+        } catch (error) {
+          logger.error('Processing URL failed.', error)
+          process.exit(1)
+        }
+      })()
+      tmp.setGracefulCleanup()
     }
 
     // -------------------------------------------------------------------------
@@ -186,7 +221,8 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         }
       }
     } else {
-      throw new Error('Controls folder not specified or does not exist')
+      logger.error(`Profile Controls directory (folder) not specified or does not exist: ${flags.controlsDir}`)
+      process.exit(1)
     }
 
     // Shorten the controls directory to sow the 'controls' directory and its parent
@@ -228,7 +264,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         logger.info(`  Generating the summary file on directory: ${shortControlsDir}`)
         // Get the directory name without the trailing "controls" directory
         const profileDir = path.dirname(flags.controlsDir)
-        const inspecJsonFile = execSync(`inspec json '${profileDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
+        const inspecJsonFile = execSync(`cinc-auditor json '${profileDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
 
         logger.info('Generating InSpec Profiles from InSpec JSON summary')
         inspecProfile = processInSpecProfile(inspecJsonFile)
@@ -246,10 +282,9 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     // -------------------------------------------------------------------------
     // Process the XCCDF file (convert entries into a Profile object)
     // The XCCDF contains the profiles metadata - it does not have the code descriptions
-    logger.info(`Processing XCCDF Benchmark file: ${path.basename(flags.xccdfXmlFile)}...`)
-    const xccdf = fs.readFileSync(flags.xccdfXmlFile, 'utf8')
+    logger.info(`Processing XCCDF Benchmark file: ${xccdfXmlFile}...`)
     const idType = (flags.useXccdfGroupId) ? 'group' : 'rule'
-    const xccdfProfile = processXCCDF(xccdf, false, idType)
+    const xccdfProfile = processXCCDF(xccdfContent, false, idType)
     logger.debug(`  Converted XCCDF Benchmark file into a Profile JSON/Execution object using ${idType} Id`)
 
     // -------------------------------------------------------------------------
@@ -476,6 +511,43 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     // Signal that you're done logging - emits a finish event
     logger.end()
   }
+}
+
+function isXccdfFile(xccdfXmlFile: string, logger: Logger): boolean {
+  let isXccdf = true
+  try {
+    if (fs.lstatSync(xccdfXmlFile).isFile()) {
+      // logger.debug(`Processing the ${xccdfXmlFile} XCCDF file`)
+      const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8')
+      const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase()
+      if (inputFirstLine.includes('xccdf')) {
+        logger.debug('  Valid XCCDF file provided')
+      } else {
+        logger.error(`ERROR: Unable to load ${xccdfXmlFile} as XCCDF`)
+        isXccdf = false
+      }
+    } else {
+      logger.error('No benchmark (XCCDF) file was provided.')
+      isXccdf = false
+    }
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      const errorCode = (error as {code?: string}).code // Type-safe access to `code`
+      if (errorCode === 'ENOENT') {
+        logger.error(
+          `ERROR: No entity found for: ${xccdfXmlFile}. Run the --help command for more information on expected input files.`,
+        )
+        isXccdf = false
+      }
+      logger.error(
+        `ERROR: Unable to process the XCCDF XML file ${xccdfXmlFile} because: ${error.message}`,
+      )
+    } else {
+      logger.error(`ERROR: An unexpected error occurred: ${getErrorMessage(error)}`)
+    }
+    isXccdf = false
+  }
+  return isXccdf
 }
 
 function getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: string, newControlNumber: string) {
