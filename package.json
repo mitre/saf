@@ -95,7 +95,7 @@
     "eslint": "^9.22.0",
     "eslint-formatter-stylish": "^8.40.0",
     "eslint-plugin-n": "^17.16.2",
-    "eslint-plugin-unicorn": "^58.0.0",
+    "eslint-plugin-unicorn": "^59.0.0",
     "jsdom": "^26.0.0",
     "marked": "^15.0.0",
     "mocha": "^11",
