@@ -182,7 +182,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
 
     // Set default values for the inspec.yml file
     profile.name = readmeObj.profileName
-    profile.title = readmeObj.inspecTitle
+    profile.title = readmeObj.profileTitle // readmeObj.inspecTitle (includes ver/release info)
     profile.maintainer = 'MITRE SAF Team'
     profile.copyright = 'MITRE'
     profile.copyright_email = 'saf@groups.mitre.org'
@@ -278,7 +278,7 @@ function getDISAReadmeContent(_xmlDoc: any): InspecReadme {
   readmeObj.profileShortName = benchmarkTitle.replace('Security Technical Implementation Guide', '').trim()
   readmeObj.profileTitle = benchmarkTitle
   readmeObj.profileVersion = `${stigVersion}.${stigRelease}.0`
-  readmeObj.inspecTitle = `${benchmarkTitle} :: Version ${stigVersion}, Release ${stigRelease} :: Benchmark Date: ${stigDate}`
+  readmeObj.inspecTitle = `${benchmarkTitle} :: Version ${stigVersion}, Release ${stigRelease} Benchmark Date: ${stigDate}`
   readmeObj.benchmarkDate = stigDate
   readmeObj.benchmarkVersion = stigDisplayVersion
 
@@ -310,7 +310,7 @@ function getCISReadmeContent(_xmlDoc: any): InspecReadme {
   readmeObj.profileShortName = benchmarkTitle.replace('Benchmark', '').trim()
   readmeObj.profileTitle = benchmarkTitle
   readmeObj.profileVersion = cisVersion
-  readmeObj.inspecTitle = `${benchmarkTitle} :: Version ${cisVersion} :: Benchmark Date: ${cisDate}`
+  readmeObj.inspecTitle = `${benchmarkTitle} :: Version ${cisVersion} Benchmark Date: ${cisDate}`
   readmeObj.benchmarkDate = cisDate
   readmeObj.benchmarkVersion = cisVersion
 
