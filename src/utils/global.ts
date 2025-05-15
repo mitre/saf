@@ -1,5 +1,5 @@
 import appRootPath from 'app-root-path'
-import {fingerprint} from '@mitre/hdf-converters'
+import {Assettype, fingerprint, Role, Techarea} from '@mitre/hdf-converters'
 import {getInstalledPathSync} from 'get-installed-path'
 import {AnyProfile, ContextualizedEvaluation, ExecJSON} from 'inspecjs'
 import _ from 'lodash'
@@ -371,4 +371,69 @@ export function extractFileFromZip(zipPath: string, fileName: string): [Buffer |
   } catch (error) {
     throw new Error(`Error extracting file -> ${getErrorMessage(error)}`)
   }
+}
+
+/**
+ * Retrieves example JSON metadata based on the specified endpoint.
+ *
+ * @param endpoint - The endpoint identifier to determine the type of metadata to return.
+ *                   Supported values:
+ *                   - `'ckl-one-metadata'`: Returns metadata with a single profile.
+ *                   - `'ckl-multiple-metadata'`: Returns metadata with multiple profiles.
+ *                   If no endpoint is provided or the endpoint is not recognized, an empty array is returned.
+ *
+ * @returns An array of strings representing the JSON metadata examples for the specified endpoint.
+ *          If the endpoint is `'ckl-one-metadata'`, a single profile metadata is returned.
+ *          If the endpoint is `'ckl-multiple-metadata'`, multiple profiles metadata is returned.
+ *          Returns an empty array if the endpoint is not recognized.
+ *
+ * @throws {SyntaxError} If the constructed JSON data is malformed and cannot be parsed.
+ */
+export function getJsonMetaDataExamples(endpoint?: string): string[] {
+  const profile = '{ '
+    + '"name:": "The benchmark name (must match with profile name listed in HDF)",'
+    + '"title:": "The benchmark title",'
+    + '"version": "The benchmark version number (integer)",'
+    + '"releasenumber": "The benchmark Release number (integer or double)",'
+    + '"releasedate": "The benchmark release date (dd LLL yyyy)",'
+    + '"showCalendar": true}'
+
+  const assets = '"marking": "[Unclass, CUI, etc]",'
+    + '"hostname": "The asset hostname",'
+    + '"hostip": "The asset IP address",'
+    + '"hostmac": "The asset MAC address",'
+    + '"targetcomment": "The target comments",'
+    + `"role": "The computing role, one of: [${Object.values(Role)}]",`
+    + `"assettype": "The asset type, one of: [${Object.values(Assettype)}]",`
+    + `"techarea": "The tech area, one of: [${Object.values(Techarea).filter(item => item !== '')}]",`
+    + '"stigguid": "The STIG ID",'
+    + '"targetkey": "The target key",'
+    + '"webordatabase": "Is the target a web or database? [Y/n]",'
+    + '"webdbsite": "The Web or DB site",'
+    + '"webdbinstance": "The Web or DB instance",'
+    + '"vulidmapping": "Use gid or id for Vul ID number [gid/id]"'
+
+  if (endpoint === 'ckl-one-metadata') {
+    const data = '{ '
+      + '"profiles": ['
+      + profile
+      + '],'
+      + assets
+      + '}'
+
+    return JSON.parse(data)
+  }
+
+  if (endpoint === 'ckl-multiple-metadata') {
+    const data = '{ '
+      + '"profiles": ['
+      + profile + ',' + profile + ',' + profile
+      + '],'
+      + assets
+      + '}'
+
+    return JSON.parse(data)
+  }
+
+  return []
 }
