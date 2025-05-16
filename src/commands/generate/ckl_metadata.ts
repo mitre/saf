@@ -149,7 +149,8 @@ async function getCklMetaData(): Promise<unknown> {
   // Variable used to store the prompts (question and answers)
   const interactiveValues: {[key: string]: unknown} = {}
 
-  printYellow('This process collects information necessary to generate a checklist metadata used by the "saf convert hdf2ckl" command.\n')
+  printYellow('This process collects information necessary to generate a checklist metadata used by the "saf convert hdf2ckl" command.')
+  printYellow('Not all fields are visible in the STIG Viewer, some are used for references and may not generate a ckl exactly as the STIG Viewer.\n')
   printGreen('Please fill in the following fields to the best of your ability, if you do not have a value, please leave the field empty.')
 
   // Collect the "profiles" metadata information
@@ -195,8 +196,6 @@ async function getCklMetaData(): Promise<unknown> {
   }
 
   interactiveValues.profiles = profiles
-  console.log('Profiles:', profiles)
-  console.log('interactiveValues:', interactiveValues)
 
   // Collect the "assets" metadata information
   const assets: {
@@ -217,16 +216,16 @@ async function getCklMetaData(): Promise<unknown> {
     webdbinstance?: string // Added property
   } = {
     marking: await input({
-      message: 'What is the classification marking? [Unlcass, CUI, etc]:',
+      message: 'What is the classification marking? [Unclass, CUI, etc]:',
     }),
     hostname: await input({
       message: 'What is the asset hostname?:',
       default: hostname(),
       validate(input: string) {
-        if (/^[\w.-]+$/.test(input)) { // skipcq: JS-0113
+        if (isEmpty(input) || /^[\w.-]+$/.test(input)) { // skipcq: JS-0113
           return true
         }
-        return 'Please enter a valid hostname'
+        return 'Please enter a valid hostname or leave blank'
       },
     }),
     hostip: await input({
@@ -269,13 +268,15 @@ async function getCklMetaData(): Promise<unknown> {
     }),
     techarea: await select({
       message: 'What is the tech area?:',
-      choices: Object.values(Techarea).filter(item => item !== ''),
+      choices: Object.values(Techarea),
+      // Filter out empty strings from the choices (currently not used as user may not have a value)
+      // choices: Object.values(Techarea).filter(item => item !== ''),
     }),
     stigguid: await input({
-      message: 'What is the STIG ID?:',
+      message: 'What is the STIG ID (DISA reference identifier profile belongs too)?:',
     }),
     targetkey: await input({
-      message: 'What is the target key?:',
+      message: 'What is the target key (DISA reference identifier control belongs too)?:',
     }),
     webordatabase: await select({
       message: 'Is the target a web or database?:',
