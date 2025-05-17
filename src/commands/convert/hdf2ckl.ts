@@ -58,7 +58,6 @@ export default class HDF2CKL extends Command {
             'releasenumber',
             'releasedate',
             'marking',
-            'marking',
             'hostname',
             'ip',
             'mac',
