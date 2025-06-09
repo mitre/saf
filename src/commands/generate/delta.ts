@@ -368,7 +368,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             return
           }
 
-          // If the key equals the controls[wey], the update_controls4delta process was ran
+          // If the key equals the controls[key], the update_controls4delta process was ran
           // and the controls were properly updated to the proper control number and name.
           if (controls[key] === key) {
             // The controls are up to date with the xccdf
@@ -649,8 +649,10 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     // control has the lower score
     const controlIdToScoreMap = new Map()
     for (const newControl of newControls) {
-      // Check for existence of title, remove non-displayed characters
+      // Ensure the newControl.id is a string and has no leading or trailing slashes
+      const newControlId = path.basename(newControl.id)
 
+      // Check for existence of title, remove non-displayed characters
       // TODO: Determine whether removing symbols other than non-displayed characters is helpful // skipcq: JS-0099
       // words separated by newlines don't have spaces between them
       if (newControl.title) {
@@ -658,13 +660,13 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         //        [\r\t\f\v] -> carriage return, tab, form feed and vertical tab
         const result = fuse.search(newControl.title.replaceAll(/[^\w\s]|[\r\t\f\v]/g, '').replaceAll('\n', ''))
         if (isEmpty(result)) {
-          printYellowGreen('     New XCCDF Control:', ` ${newControl.id}`)
+          printYellowGreen('     New XCCDF Control:', ` ${newControlId}`)
           printBgYellow('* No Mapping Provided *\n')
           GenerateDelta.newXccdfControl++
           continue
         }
 
-        printYellowBgGreen('Processing New Control: ', `${newControl.id}`)
+        printYellowBgGreen('Processing New Control: ', `${newControlId}`)
         printYellowBgGreen('     New Control Title: ', `${this.updateTitle(newControl.title)}`)
 
         if (result[0] && result[0].score && result[0].score < 0.3) { // skipcq: JS-W1044
@@ -675,14 +677,14 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               controlIdToScoreMap.set(result[0].item.id, result[0].score)
             } else {
               printBgMagentaRed('     Old Control Title:', ` ${this.updateTitle(result[0].item.title)}`)
-              printBgMagentaRed('       Duplicate Match:', ` ${result[0].item.id} --> ${newControl.id}`)
+              printBgMagentaRed('       Duplicate Match:', ` ${result[0].item.id} --> ${newControlId}`)
               printBgMagentaRed('        Matching Score:', ` ${result[0].score}\n`)
               GenerateDelta.dupMatch++
               continue
             }
           }
 
-          if (typeof newControl.id === 'string'
+          if (typeof newControlId === 'string'
             && typeof result[0].item.id === 'string') {
             // Check non displayed characters of title
             printYellowGreen('     Old Control Title: ', `${this.updateTitle(result[0].item.title)}`)
@@ -698,7 +700,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               GenerateDelta.match++
             }
 
-            printYellowGreen('  Best Match Candidate: ', `${result[0].item.id} --> ${newControl.id}`)
+            printYellowGreen('  Best Match Candidate: ', `${result[0].item.id} --> ${newControlId}`)
             printYellowGreen('        Matching Score: ', `${result[0].score}\n`)
 
             // Check if we have added an entry for the old control being processed
@@ -719,12 +721,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
                 break
               }
             }
-            controlMappings[newControl.id] = result[0].item.id
+            controlMappings[newControlId] = result[0].item.id
             controlIdToScoreMap.set(result[0].item.id, result[0].score)
           }
         } else {
           printBgRedRed('     Old Control Title:', ` ${this.updateTitle(result[0].item.title)}`)
-          printBgRedRed('    No Match Found for:', ` ${result[0].item.id} --> ${newControl.id}`)
+          printBgRedRed('    No Match Found for:', ` ${result[0].item.id} --> ${newControlId}`)
           printBgRedRed('        Matching Score:', ` ${result[0].score} \n`)
           GenerateDelta.noMatch++
         }

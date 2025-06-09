@@ -227,17 +227,32 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
         controls,
       )
     } else {
+      const BASE_DIR = path.resolve(__dirname, 'controls')
+      logger.debug(`Controls base directory is: ${BASE_DIR}`)
+
       profile.controls.forEach((control) => {
-        logger.debug(`Writing control to: ${path.join(outDir, 'controls', control.id + '.rb')}`)
-        fs.writeFileSync(
-          path.join(outDir, 'controls', control.id + '.rb'),
-          control.toRuby(),
-        )
+        const controlId = path.basename(control.id) // Ensure valid filename
+        if (isSafePath(BASE_DIR, controlId)) {
+          logger.debug(`Writing control to: ${path.join(outDir, 'controls', controlId + '.rb')}`)
+          fs.writeFileSync(
+            path.join(outDir, 'controls', controlId + '.rb'),
+            control.toRuby(),
+          )
+        } else {
+          logger.error('Path traversal attempt detected!')
+          logger.error(`Invalid control ID path: ${controlId}. It must be within the base directory: ${BASE_DIR}`)
+          process.exit(1)
+        }
       })
     }
 
     logger.info('Generation of skeleton profile completed - All done now')
   }
+}
+
+function isSafePath(baseDir: string, userInput: string) {
+  const resolvedPath = path.resolve(baseDir, userInput)
+  return resolvedPath.startsWith(baseDir) // Ensure resolved path is within the base directory
 }
 
 function getDISAReadmeContent(_xmlDoc: any): InspecReadme {

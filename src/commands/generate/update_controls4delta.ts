@@ -321,6 +321,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     const xccdfNewControlsMetaDataMap = new Map()
     for (const control of xccdfProfile.controls) {
       let controlId
+      const newControlId = path.basename(control.id) // Ensure there are'nt any leading or trailing slashes
       if (flags.useXccdfGroupId) {
         logger.debug('  Using `tags.gid` to determine new Control Name/Id')
         controlId = (flags.controlPrefix === 'V')
@@ -335,13 +336,13 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
           return (control === undefined) ? '' : control
         }).find(Boolean)
         // If there isn't a legacy tag, use the XCCDF Id (see note above)
-        if (controlId === '') controlId = control.id
+        if (controlId === '') controlId = newControlId
       }
 
-      logger.debug(`    Old Control Name/Id: ${controlId} -> New Control Name/Id: ${control.id}`)
-      xccdfLegacyToControlMap.set(controlId, control.id)
+      logger.debug(`    Old Control Name/Id: ${controlId} -> New Control Name/Id: ${newControlId}`)
+      xccdfLegacyToControlMap.set(controlId, newControlId)
       xccdfLegacyControlsMap.set(controlId, controlId)
-      xccdfControlsMap.set(control.id, control.id)
+      xccdfControlsMap.set(newControlId, newControlId)
       xccdfNewControlsMetaDataMap.set(controlId, control)
     }
 
