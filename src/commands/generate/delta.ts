@@ -52,9 +52,9 @@ import {downloadFile, extractFileFromZip, getErrorMessage} from '../../utils/glo
 *        a - report file (.md), mapping statistics (CliProcessOutput.log)
 */
 export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
-  static description = 'Update an existing InSpec profile with new or updated XCCDF guidance'
+  static readonly description = 'Update an existing InSpec profile with new or updated XCCDF guidance'
 
-  static flags = {
+  static readonly flags = {
     inspecJsonFile: Flags.string({
       char: 'J', required: false, exclusive: ['interactive'],
       description: 'InSpec Profile Controls JSON summary file - can be generated using the "[cinc-auditor or inspec] json <profile path> | jq . > profile.json" command',

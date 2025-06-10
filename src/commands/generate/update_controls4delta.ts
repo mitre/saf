@@ -538,7 +538,6 @@ function isXccdfFile(xccdfXmlFile: string, logger: Logger): boolean {
         logger.error(
           `ERROR: No entity found for: ${xccdfXmlFile}. Run the --help command for more information on expected input files.`,
         )
-        isXccdf = false
       }
       logger.error(
         `ERROR: Unable to process the XCCDF XML file ${xccdfXmlFile} because: ${error.message}`,
