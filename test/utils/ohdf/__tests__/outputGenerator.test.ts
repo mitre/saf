@@ -1,4 +1,4 @@
-import * as marked from 'marked'
+import * as marked from 'marked' // skipcq: JS-C1003
 import {generateMarkdownTable, generateMarkdownTableRow, prettyPrintColumnTitle, prettyPrintRowTitle} from '../../../../src/utils/ohdf/outputGenerator'
 import {PrintableSummary} from '../../../../src/utils/ohdf/types'
 
