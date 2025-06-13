@@ -11,7 +11,7 @@ export type SpreadsheetTypes = 'cis' | 'disa' | 'general'
 
 export const knownInspecMetadataKeys = ['control', 'title', 'desc', 'description', 'rationale', 'impact', 'references', 'tag']
 
-export function checkSuffix(input: string, suffix: string = '.json') {
+export function checkSuffix(input: string, suffix = '.json') {
   if (input.endsWith(suffix)) {
     return input
   }

@@ -1,10 +1,9 @@
 import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {ASFFResults as Mapper} from '@mitre/hdf-converters'
-import {checkInput, checkSuffix} from '../../utils/global'
+import {basename, checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
-import {basename} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Trivy2HDF extends BaseCommand<typeof Trivy2HDF> {
