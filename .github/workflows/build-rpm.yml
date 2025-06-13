@@ -50,9 +50,9 @@ jobs:
       - name: repack tarball but include the spec file
         working-directory: ./saf/dist
         run: |
-          # Find the tar file, use only the first .tar file if multiple files are found
-          original_tarball=$(find . -maxdepth 1 -name "*.tar" | head -n 1)
-          filename=$(basename "${original_tarball%.tar}")
+          # Find the tar.gz file, use only the first .tar.gz file if multiple files are found
+          original_tarball=$(find . -maxdepth 1 -name "*.tar.gz" | head -n 1)
+          filename=$(basename "${original_tarball%.tar.gz}")
           # Unpack the original tar into a tar
           gzip -dc "$original_tarball" > "$filename.tar"
           # Append the spec file (renaming it into saf/ directory)
