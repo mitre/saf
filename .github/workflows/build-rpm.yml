@@ -50,12 +50,23 @@ jobs:
       - name: repack tarball but include the spec file
         working-directory: ./saf/dist
         run: |
-          # Unpack the original tarball
-          gzip -dc "$(ls)" > "$filename.tar"
-          # Add the spec file into the tarball
-          tar --append --file="$filename.tar" --transform 's|^\.\.|saf|' ../saf.spec
-          # Compress again
-          gzip "$filename.tar"
+          # Find the tar.gz file, use only the first .tar.gz file if multiple files are found
+          original_tarball=$(find . -maxdepth 1 -name "*.tar.gz" | head -n 1)
+          filename=$(basename "${original_tarball%.tar.gz}")
+          # Unpack the original tar.gz into a tar
+          gzip -dc "$original_tarball" > "$filename.tar"
+          # Append the spec file (renaming it into saf/ directory)
+          tar --append --file="$filename.tar" --transform 's|^|saf/|' ../saf.spec
+          # Recompress to .tar.gz
+          gzip -f "$filename.tar"
+
+      - name: validate tarball and spec file
+        working-directory: ./saf/dist
+        run: |
+          tar tf "$filename.tar.gz"
+          if ! grep -q 'Name:' ../saf.spec; then
+            echo "Spec file validation failed" && exit 1
+          fi
 
       - name: build rpm
         working-directory: ./saf
