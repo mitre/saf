@@ -6,6 +6,7 @@ import {InSpecMetaData, InspecReadme} from '../../types/inspec'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'
 import {processOVAL, processXCCDF, Profile} from '@mitre/inspec-objects'
+import {basename} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 import {Logger} from 'winston'
 import _ from 'lodash'
@@ -117,7 +118,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
       const benchmarkTitle = isSTIG ? _.get(xmlDoc, 'Benchmark.title') : _.get(xmlDoc, 'xccdf:Benchmark.xccdf:title.#text')
       outDir = (benchmarkTitle === undefined)
         ? flags.output
-        : benchmarkTitle.replace('Security Technical Implementation Guide', 'stig-baseline').replaceAll(' ', '-').toLowerCase()
+        : basename(benchmarkTitle.replace('Security Technical Implementation Guide', 'stig-baseline').replaceAll(' ', '-').toLowerCase())
     } else {
       outDir = flags.output
     }
@@ -227,32 +228,18 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
         controls,
       )
     } else {
-      const BASE_DIR = path.resolve(__dirname, 'controls')
-      logger.debug(`Controls base directory is: ${BASE_DIR}`)
-
       profile.controls.forEach((control) => {
-        const controlId = path.basename(control.id) // Ensure valid filename
-        if (isSafePath(BASE_DIR, controlId)) {
-          logger.debug(`Writing control to: ${path.join(outDir, 'controls', controlId + '.rb')}`)
-          fs.writeFileSync(
-            path.join(outDir, 'controls', controlId + '.rb'),
-            control.toRuby(),
-          )
-        } else {
-          logger.error('Path traversal attempt detected!')
-          logger.error(`Invalid control ID path: ${controlId}. It must be within the base directory: ${BASE_DIR}`)
-          process.exit(1)
-        }
+        const controlId = basename(control.id) // Ensure valid filename
+        logger.debug(`Writing control to: ${path.join(outDir, 'controls', controlId + '.rb')}`)
+        fs.writeFileSync(
+          path.join(outDir, 'controls', controlId + '.rb'),
+          control.toRuby(),
+        )
       })
     }
 
     logger.info('Generation of skeleton profile completed - All done now')
   }
-}
-
-function isSafePath(baseDir: string, userInput: string) {
-  const resolvedPath = path.resolve(baseDir, userInput)
-  return resolvedPath.startsWith(baseDir) // Ensure resolved path is within the base directory
 }
 
 function getDISAReadmeContent(_xmlDoc: any): InspecReadme {
@@ -363,7 +350,7 @@ Table of Contents
     * [Tailoring to Your Environment](#tailoring-to-your-environment)
     * [Testing the Profile Controls](#testing-the-profile-controls)
 * [Running the Profile](#running-the-profile)
-    * [Directly from Github](#directly-from-github) 
+    * [Directly from Github](#directly-from-github)
     * [Using a local Archive copy](#using-a-local-archive-copy)
     * [Different Run Options](#different-run-options)
 * [Using Heimdall for Viewing Test Results](#using-heimdall-for-viewing-test-results)
@@ -386,7 +373,7 @@ validation to the defined DoD requirements, the guidance can provide insight for
 to enhance their security posture and can be tailored easily for use in your organization.
 
 [top](#table-of-contents)
-## Getting Started  
+## Getting Started
 ### InSpec (CINC-auditor) setup
 For maximum flexibility/accessibility \`cinc-auditor\`, the open-source packaged binary version of Chef InSpec should be used,
 compiled by the CINC (CINC Is Not Chef) project in coordination with Chef using Chef's always-open-source InSpec source code.
@@ -420,7 +407,7 @@ Latest versions and other installation options are available at [CINC Auditor](h
 ### Intended Usage
 1. The latest \`released\` version of the profile is intended for use in A&A testing, as well as
     providing formal results to Authorizing Officials and Identity and Access Management (IAM)s.
-    Please use the \`released\` versions of the profile in these types of workflows. 
+    Please use the \`released\` versions of the profile in these types of workflows.
 
 2. The \`main\` branch is a development branch that will become the next release of the profile.
     The \`main\` branch is intended for use in _developing and testing_ merge requests for the next
@@ -463,23 +450,23 @@ For more information on developing overlays, reference the [MITRE SAF Training](
     <dir-path-1>/*.conf
     <dir-path-2>/*.conf
   ]
-  
+
   ...
 \`\`\`
 
 > [!NOTE]
 >Inputs are variables that are referenced by control(s) in the profile that implement them.
- They are declared (defined) and given a default value in the \`inspec.yml\` file. 
+ They are declared (defined) and given a default value in the \`inspec.yml\` file.
 
 #### Using Customized Inputs
 Customized inputs may be used at the CLI by providing an input file or a flag at execution time.
 
 1. Using the \`--input\` flag
-  
+
     Example: \`[inspec or cinc-auditor] exec <my-profile.tar.gz> --input disable_slow_controls=true\`
 
 2. Using the \`--input-file\` flag.
-    
+
     Example: \`[inspec or cinc-auditor] exec <my-profile.tar.gz> --input-file=<my_inputs_file.yml>\`
 
 >[!TIP]
@@ -495,7 +482,7 @@ Chef InSpec Resources:
 ### Testing the Profile Controls
 The Gemfile provided contains all the necessary ruby dependencies for checking the profile controls.
 #### Requirements
-All action are conducted using \`ruby\` (gemstone/programming language). Currently \`inspec\` 
+All action are conducted using \`ruby\` (gemstone/programming language). Currently \`inspec\`
 commands have been tested with ruby version 3.1.2. A higher version of ruby is not guaranteed to
 provide the expected results. Any modern distribution of Ruby comes with Bundler preinstalled by default.
 
@@ -557,7 +544,7 @@ bundle exec [inspec or cinc-auditor] archive ${contentObj.profileName}
 bundle exec [inspec or cinc-auditor] exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
 
 # Using \`winrm\` transport
-bundle exec [inspec or cinc-auditor] exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
+bundle exec [inspec or cinc-auditor] exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>
 \`\`\`
 
 For every successive run, follow these steps to always have the latest version of this profile baseline:
@@ -572,7 +559,7 @@ bundle exec [inspec or cinc-auditor] archive ${contentObj.profileName} --overwri
 bundle exec [inspec or cinc-auditor] exec <name of generated archive> --input-file=<your_inputs_file.yml> -t ssh://<hostname>:<port> --sudo --reporter=cli json:<your_results_file.json>
 
 # Using \`winrm\` transport
-bundle exec [inspec or cinc-auditor] exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>    
+bundle exec [inspec or cinc-auditor] exec <name of generated archive> --target winrm://<hostip> --user '<admin-account>' --password=<password> --input-file=<path_to_your_inputs_file/name_of_your_inputs_file.yml> --reporter=cli json:<path_to_your_output_file/name_of_your_output_file.json>
 \`\`\`
 
 [top](#table-of-contents)
@@ -612,13 +599,13 @@ ${contentObj.profileType === 'CIS'
 
 Approved for Public Release; Distribution Unlimited. Case Number 18-3678.
 
-## NOTICE 
+## NOTICE
 
 MITRE hereby grants express written permission to use, reproduce, distribute, modify, and otherwise leverage this software to the extent permitted by the licensed terms provided in the LICENSE.md file included with this project.
 
-## NOTICE  
+## NOTICE
 
-This software was produced for the U. S. Government under Contract Number HHSM-500-2012-00008I, and is subject to Federal Acquisition Regulation Clause 52.227-14, Rights in Data-General.  
+This software was produced for the U. S. Government under Contract Number HHSM-500-2012-00008I, and is subject to Federal Acquisition Regulation Clause 52.227-14, Rights in Data-General.
 
 No other use other than that granted to the U. S. Government, or to those acting on behalf of the U. S. Government under that Clause is authorized without the express written permission of The MITRE Corporation.
 
@@ -673,11 +660,11 @@ inputs:
 
 function generateLicense(outDir: string, logger: Logger) {
   const licensesContent
-= `Licensed under the apache-2.0 license, except as noted below.  
-    
+= `Licensed under the apache-2.0 license, except as noted below.
+
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
-  
+
 * Redistributions of source code must retain the above copyright/ digital rights legend,
   this list of conditions and the following Notice.
 * Redistributions in binary form must reproduce the above copyright copyright/ digital
@@ -701,7 +688,7 @@ function generateNotice(outDir: string, logger: Logger) {
 = `MITRE grants permission to reproduce, distribute, modify, and otherwise use this
 software to the extent permitted by the licensed terms provided in the LICENSE.md
 file included with this project.
-    
+
 This software was produced by The MITRE Corporation for the U. S. Government under
 contract. As such the U.S. Government has certain use and data rights in this software.
 No use other than those granted to the U. S. Government, or to those acting on behalf

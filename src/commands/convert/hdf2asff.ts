@@ -9,7 +9,7 @@ import {
   SecurityHubClientConfig,
 } from '@aws-sdk/client-securityhub'
 import {NodeHttpHandler} from '@smithy/node-http-handler'
-import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
+import {checkSuffix, basename} from '../../utils/global'
 import _ from 'lodash'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
@@ -101,12 +101,12 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
 
     if (flags.output) {
       const convertedSlices = _.chunk(converted, 100) // AWS doesn't allow uploading more than 100 findings at a time so we need to split them into chunks
-      const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
+      const outputFolder = flags.output.replace('.json', '') || 'asff-output'
       fs.mkdirSync(outputFolder)
       if (convertedSlices.length === 1) {
         const outfilePath = path.join(
           outputFolder,
-          convertFullPathToFilename(checkSuffix(flags.output)),
+          checkSuffix(basename(flags.output)),
         )
         fs.writeFileSync(
           outfilePath,
@@ -116,7 +116,7 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
         convertedSlices.forEach((slice, index) => {
           const outfilePath = path.join(
             outputFolder,
-            `${convertFullPathToFilename(checkSuffix(flags.output || '')).replace('.json', '')}.p${index}.json`,
+            `${checkSuffix(basename(flags.output || '')).replace('.json', '')}.p${index}.json`,
           )
           fs.writeFileSync(outfilePath, JSON.stringify(slice, null, 2))
         })

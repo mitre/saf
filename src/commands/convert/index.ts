@@ -1,4 +1,7 @@
 /* eslint-disable complexity */
+import fs from 'fs'
+import _ from 'lodash'
+import path from 'path'
 import {
   AnchoreGrypeMapper,
   ASFFResults,
@@ -25,13 +28,10 @@ import {
   XCCDFResultsMapper,
   ZapMapper,
 } from '@mitre/hdf-converters'
-import fs from 'fs'
-import _ from 'lodash'
-import {checkSuffix, convertFullPathToFilename} from '../../utils/global'
-import path from 'path'
-import ASFF2HDF from './asff2hdf'
 import {Flags} from '@oclif/core'
+import ASFF2HDF from './asff2hdf'
 import Zap2HDF from './zap2hdf'
+import {basename, checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 function getInputFilename(): string {
@@ -72,7 +72,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
     if (filePath) {
       Convert.detectedType = fingerprint({
         data: fs.readFileSync(filePath, 'utf8'),
-        filename: convertFullPathToFilename(filePath),
+        filename: basename(filePath),
       })
       switch (
         Convert.detectedType // skipcq: JS-0047
@@ -130,7 +130,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         fs.mkdirSync(flags.output)
         _.forOwn(results, (result, filename) => {
           fs.writeFileSync(
-            path.join(flags.output, checkSuffix(filename)),
+            path.join(flags.output, checkSuffix(basename(filename))),
             JSON.stringify(result, null, 2),
           )
         })
@@ -152,7 +152,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         fs.mkdirSync(flags.output)
         for (const [filename, result] of Object.entries(results)) {
           fs.writeFileSync(
-            path.join(flags.output, checkSuffix(filename as string)),
+            path.join(flags.output, checkSuffix(basename(filename as string))),
             JSON.stringify(result, null, 2),
           )
         }
@@ -234,7 +234,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         const singularResult = pluralResults.length === 0
         for (const element of pluralResults) {
           fs.writeFileSync(
-            `${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`,
+            `${flags.output.replaceAll(/\.json/gi, '')}-${basename(_.get(element, 'platform.target_id') || '')}.json`,
             JSON.stringify(element, null, 2),
           )
         }
@@ -287,7 +287,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
           fs.writeFileSync(
             path.join(
               flags.output,
-              `${_.get(result, 'platform.target_id')}.json`,
+              basename(`${_.get(result, 'platform.target_id')}.json`),
             ),
             JSON.stringify(result, null, 2),
           )
@@ -320,7 +320,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         const singularResult = pluralResults.length === 0
         for (const element of pluralResults) {
           fs.writeFileSync(
-            `${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`,
+            `${flags.output.replaceAll(/\.json/gi, '')}-${basename(_.get(element, 'platform.target_id') || '')}.json`,
             JSON.stringify(element, null, 2),
           )
         }

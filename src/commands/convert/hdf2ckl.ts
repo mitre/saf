@@ -9,6 +9,7 @@ import {
   Techarea,
   validateChecklistMetadata,
 } from '@mitre/hdf-converters'
+import {checkSuffix} from '../../utils/global'
 
 export default class HDF2CKL extends Command {
   static readonly usage
@@ -309,7 +310,7 @@ export default class HDF2CKL extends Command {
 
     const validationResults = validateChecklistMetadata(metadata)
     if (validationResults.ok) {
-      fs.writeFileSync(flags.output, new Mapper(inputHDF).toCkl())
+      fs.writeFileSync(checkSuffix(flags.output, '.ckl'), new Mapper(inputHDF).toCkl())
     } else {
       console.error(
         `Error creating checklist:\n${validationResults.error.message}`,

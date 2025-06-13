@@ -20,7 +20,7 @@ import {
   addToProcessLogData,
   saveProcessLogData,
 } from '../../utils/oclif/cliHelper'
-import {downloadFile, extractFileFromZip, getErrorMessage} from '../../utils/global'
+import {basename, downloadFile, extractFileFromZip, getErrorMessage} from '../../utils/global'
 import tmp from 'tmp'
 import {Logger} from 'winston'
 
@@ -140,7 +140,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     let xccdfXmlFile = ''
     let xccdfContent = ''
     if (flags.xccdfXmlFile) {
-      xccdfXmlFile = path.basename(flags.xccdfXmlFile)
+      xccdfXmlFile = basename(flags.xccdfXmlFile)
       logger.info(`Verifying that the XCCDF file is valid: ${xccdfXmlFile}...`)
       if (isXccdfFile(flags.xccdfXmlFile, logger)) {
         xccdfContent = fs.readFileSync(flags.xccdfXmlFile, 'utf8')
@@ -226,22 +226,22 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     }
 
     // Shorten the controls directory to sow the 'controls' directory and its parent
-    const shortControlsDir = path.sep + path.basename(path.dirname(flags.controlsDir))
-      + path.sep + path.basename(flags.controlsDir)
+    const shortControlsDir = path.sep + basename(path.dirname(flags.controlsDir))
+      + path.sep + basename(flags.controlsDir)
 
     // -------------------------------------------------------------------------
     // Check if we have an InSpec json file, generate if not provided
     // Process the InSpec json content, convert entries into a Profile object
     logger.info('Processing the Input execution/profile JSON summary...')
     if (flags.inspecJsonFile) {
-      logger.info(`  Using execution/profile summary file: ${path.basename(flags.inspecJsonFile!)}`) // skipcq: JS-0339
+      logger.info(`  Using execution/profile summary file: ${basename(flags.inspecJsonFile!)}`) // skipcq: JS-0339
       try {
         if (fs.lstatSync(flags.inspecJsonFile).isFile()) {
           const inspecJsonFile = flags.inspecJsonFile
           inspecProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'))
           logger.debug('  Converted JSON file into a Profile JSON/Execution object')
         } else {
-          throw new Error(`Input execution/profile JSON file not found: ${path.basename(flags.inspecJsonFile)}.\n`
+          throw new Error(`Input execution/profile JSON file not found: ${basename(flags.inspecJsonFile)}.\n`
             + 'Run the --help command to more information on expected input files.')
         }
       } catch (error: unknown) {
@@ -321,7 +321,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     const xccdfNewControlsMetaDataMap = new Map()
     for (const control of xccdfProfile.controls) {
       let controlId
-      const newControlId = path.basename(control.id) // Ensure there are'nt any leading or trailing slashes
+      const newControlId = basename(control.id) // Ensure there aren't any leading or trailing slashes
       if (flags.useXccdfGroupId) {
         logger.debug('  Using `tags.gid` to determine new Control Name/Id')
         controlId = (flags.controlPrefix === 'V')
@@ -338,6 +338,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         // If there isn't a legacy tag, use the XCCDF Id (see note above)
         if (controlId === '') controlId = newControlId
       }
+      controlId = basename(controlId || '')
 
       logger.debug(`    Old Control Name/Id: ${controlId} -> New Control Name/Id: ${newControlId}`)
       xccdfLegacyToControlMap.set(controlId, newControlId)
@@ -413,8 +414,8 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       const fileExt = path.extname(file)
       if (fileExt === ext) {
         logger.info(`Processing Control (file): ${file}`)
-        const currentFileFullPath = path.join(controlsDir, file)
-        const currentControlNumber = path.parse(file).name
+        const currentFileFullPath = path.join(controlsDir, basename(file))
+        const currentControlNumber = basename(path.parse(file).name)
         const newXCCDFControlNumber = xccdfLegacyToControlMap.get(currentControlNumber) // old control Id to new control Id
         const xccdfNewControlNumber = xccdfControlsMap.get(currentControlNumber) // new control Id to new control Id
         const xccdfLegacyControlNumber = xccdfLegacyControlsMap.get(currentControlNumber) // old control Id to old control Id
