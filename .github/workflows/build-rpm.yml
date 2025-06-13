@@ -84,11 +84,20 @@ jobs:
         run: |
           echo "Build RPM Debug Info:"
           echo "Current working directory: $(pwd)"
-          echo "Filename used: $filename"
+          echo "Filename used: ${filename}"
           echo "Version: $(cat VERSION)"
-          echo "Tarball file: dist/$filename.tar.gz"
-          echo "Running rpmbuild with the following command: rpmbuild -ta dist/$filename.tar.gz -D '_rpmdir $(pwd)' -D 'version $(cat VERSION)' --target x86_64"
+          echo "Tarball file: dist/${filename}.tar.gz"
+          echo "Running rpmbuild with the following command: rpmbuild -ta dist/${filename}.tar.gz -D '_rpmdir $(pwd)' -D 'version $(cat VERSION)' --target x86_64"
           rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)" --target x86_64 -v || echo "RPM build failed. Check the error output above."
+
+      - name: List RPM files
+        run: ls -l saf/noarch/
+
+      - name: Check RPM Build Output
+        run: |
+          if [ ! -f "dist/${filename}-x86_64.rpm" ]; then
+            echo "RPM Build Failed: No RPMs found" && exit 1
+          fi
 
       - name: upload binary as artifact
         uses: actions/upload-artifact@v4
