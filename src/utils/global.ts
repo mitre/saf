@@ -22,23 +22,33 @@ export function checkSuffix(input: string, suffix = '.json') {
 /**
  * The `basename` function.
  *
- * This function returns the basename, i.e. the last value for a given path which is usually the filename and extension.
- * Not using path.basename as it doesn't "just work" as one would expect handling paths from other filesystem types: see https://nodejs.org/api/path.html#windows-vs-posix
+ * This function returns the basename, i.e. the last value for a given path
+ * which is usually the filename and extension.
+ *
+ * Not using path.basename as it doesn't "just work" as one would expect handling
+ * paths from other filesystem types: see https://nodejs.org/api/path.html#windows-vs-posix
  *
  * @param inputPath - The full path to convert. This should be a string representing a valid file path.
  *
  * @returns {string} - The filename extracted from the full path. If the path does not contain a filename, an empty string is returned.
  */
 export function basename(inputPath: string): string {
-  // trim trailing whitespace and path separators ('/'=linux or '\'=windows (note that this could be double backslash on occasion)) from the end of the string
+  // trim trailing whitespace and path separators
+  // ('/'=linux or '\'=windows (note that this could be double backslash on occasion)) from the end of the string
   const trimmedPath = inputPath.trimEnd().replace(/[\\/]+$/, '')
 
+  // Handle edge case: if the trimmed path is empty, return an empty string
+  if (trimmedPath === '') {
+    return ''
+  }
   // return everything after the last separator or the entire string if no separator found
   const lastSeparatorIndex = Math.max(
     trimmedPath.lastIndexOf('/'),
     trimmedPath.lastIndexOf('\\'),
   )
-  return trimmedPath.slice(Math.max(0, lastSeparatorIndex + 1))
+
+  // Return the substring after the last separator, or the entire string if no separator is found
+  return trimmedPath.slice(lastSeparatorIndex + 1)
 }
 
 /**
