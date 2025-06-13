@@ -11,7 +11,7 @@ jobs:
   build-deploy:
     runs-on: ubuntu-22.04
     container:
-      image: registry.access.redhat.com/ubi8/nodejs-18:latest
+      image: registry.access.redhat.com/ubi9/nodejs-22:latest
       options: -u 0 # dnf needs root
     defaults:
       run:
