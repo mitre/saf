@@ -13,7 +13,6 @@ URL: https://saf.mitre.org
 Source: %{name}-v%{version}-linux-x64.tar.gz
 
 BuildRoot: %{buildroot}
-BuildArch: noarch
 ExclusiveArch: %{nodejs_arches} noarch
 
 Requires: nodejs > 18.18.2
@@ -41,6 +40,5 @@ rm -rf %{buildroot}
 
 %files
 %defattr(644, -, -, 755)
-/opt/saf
 %attr(755, -, -) /opt/saf/bin/saf
 /usr/bin/saf
