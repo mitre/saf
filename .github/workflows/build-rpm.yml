@@ -61,6 +61,9 @@ jobs:
             echo "Tarball validation failed" && exit 1
           else
             echo "Tarball validation succeeded"
+            echo "Current working directory: $(pwd)"
+            echo "Filename used: ${filename}"
+            echo "Tarball file: ${filename}.tar.gz"
           fi
           for field in Name Version Release Summary License; do
             if ! grep -q "^$field:" ../saf.spec; then
@@ -87,8 +90,17 @@ jobs:
           echo "Filename used: ${filename}"
           echo "Version: $(cat VERSION)"
           echo "Tarball file: dist/${filename}.tar.gz"
-          echo "Running rpmbuild with the following command: rpmbuild -ta dist/${filename}.tar.gz -D '_rpmdir $(pwd)' -D 'version $(cat VERSION)' --target x86_64"
-          rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)" --target x86_64 -v || echo "RPM build failed. Check the error output above."
+          echo "Debugging RPM Build:"
+          ls -l dist
+          cat saf.spec
+          echo "Building RPM Package:"
+          rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)" --target x86_64
+
+      - name: List RPM files
+        run: |
+          mkdir -p saf/noarch
+          echo "Listing RPM files in saf/noarch directory:"
+          ls -l saf/noarch/
 
       - name: List RPM files
         run: |
