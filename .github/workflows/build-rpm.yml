@@ -91,7 +91,9 @@ jobs:
           rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)" --target x86_64 -v || echo "RPM build failed. Check the error output above."
 
       - name: List RPM files
-        run: ls -l saf/noarch/
+        run: |
+          echo "Listing RPM files in saf/noarch directory:"
+          ls -l saf/noarch/
 
       - name: Check RPM Build Output
         run: |
