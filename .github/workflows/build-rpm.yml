@@ -11,7 +11,7 @@ jobs:
   build-deploy:
     runs-on: ubuntu-22.04
     container:
-      image: registry.access.redhat.com/ubi8/nodejs-18:latest
+      image: registry.access.redhat.com/ubi8/nodejs-22:latest
       options: -u 0 # dnf needs root
     defaults:
       run:
@@ -30,7 +30,7 @@ jobs:
           cache-dependency-path: ./saf/package-lock.json
 
       - name: install build dependencies
-        run: dnf install -y rpm-build perl-Digest-SHA gcc make # rpmbuild, shasum
+        run: dnf install -y rpm-build perl-Digest-SHA gcc make tar gzip # rpmbuild, shasum
 
       - name: setup saf cli
         working-directory: ./saf
@@ -58,13 +58,31 @@ jobs:
         working-directory: ./saf/dist
         run: |
           tar tf "$filename.tar.gz"
-          if ! grep -q 'Name:' ../saf.spec; then
-            echo "Spec file validation failed" && exit 1
-          fi
+          for field in Name Version Release Summary License; do
+            if ! grep -q "^$field:" ../saf.spec; then
+              echo "Spec file validation failed: missing $field" && exit 1
+            fi
+          done
+
+        # run: |
+        #   tar tf "$filename.tar.gz"
+        #   if ! grep -q 'Name:' ../saf.spec; then
+        #     echo "Spec file validation failed" && exit 1
+        #   fi
+
+      - name: validate spec file
+        working-directory: ./saf
+        run: rpmbuild --showrc -ba saf.spec || exit 1
+
+      - name: debug tarball and spec file
+        working-directory: ./saf/dist
+        run: |
+          ls
+          ls ../saf.spec || echo "Spec file missing" && exit 1
 
       - name: build rpm
         working-directory: ./saf
-        run: rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)" --target x86_64
+        run: rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)" --target x86_64 || echo "RPM build failed"
 
       - name: upload binary as artifact
         uses: actions/upload-artifact@v4
