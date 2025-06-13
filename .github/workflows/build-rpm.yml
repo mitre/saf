@@ -30,7 +30,7 @@ jobs:
           cache-dependency-path: ./saf/package-lock.json
 
       - name: install build dependencies
-        run: dnf install -y rpm-build perl-Digest-SHA # rpmbuild, shasum
+        run: dnf install -y rpm-build perl-Digest-SHA gcc make # rpmbuild, shasum
 
       - name: setup saf cli
         working-directory: ./saf
@@ -50,8 +50,11 @@ jobs:
       - name: repack tarball but include the spec file
         working-directory: ./saf/dist
         run: |
+          # Unpack the original tarball
           gzip -dc "$(ls)" > "$filename.tar"
-          tar -rf "$filename.tar" --transform 's|^\.\.|saf|' ../saf.spec
+          # Add the spec file into the tarball
+          tar --append --file="$filename.tar" --transform 's|^\.\.|saf|' ../saf.spec
+          # Compress again
           gzip "$filename.tar"
 
       - name: build rpm
