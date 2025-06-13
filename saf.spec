@@ -12,8 +12,7 @@ License: Apache-2.0
 URL: https://saf.mitre.org
 Source: %{name}-v%{version}-linux-x64.tar.gz
 
-BuildRoot: %{buildroot}
-ExclusiveArch: %{nodejs_arches} noarch
+BuildArch: noarch
 
 Requires: nodejs > 18.18.2
 
@@ -30,7 +29,7 @@ rm ./saf/bin/node # need to delete bundled node so that we use the system node i
 rm -rf %{buildroot}
 
 mkdir -p %{buildroot}/opt/saf
-cp -r ./saf %{buildroot}/opt
+cp -r ./* %{buildroot}/opt/saf/
 
 mkdir -p %{buildroot}%{_bindir}
 ln -s /opt/saf/bin/saf %{buildroot}%{_bindir}/saf

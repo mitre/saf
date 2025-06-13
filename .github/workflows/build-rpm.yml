@@ -57,7 +57,9 @@ jobs:
       - name: validate tarball and spec file
         working-directory: ./saf/dist
         run: |
-          tar tf "$filename.tar.gz"
+          if ! tar tf "$filename.tar.gz"; then
+            echo "Tarball validation failed" && exit 1
+          fi
           for field in Name Version Release Summary License; do
             if ! grep -q "^$field:" ../saf.spec; then
               echo "Spec file validation failed: missing $field" && exit 1
@@ -72,7 +74,10 @@ jobs:
 
       - name: validate spec file
         working-directory: ./saf
-        run: rpmbuild --showrc -ba saf.spec || exit 1
+        run: |
+          if ! rpmbuild --showrc -ba saf.spec; then
+            echo "Spec file validation failed" && exit 1
+          fi
 
       - name: debug tarball and spec file
         working-directory: ./saf/dist
