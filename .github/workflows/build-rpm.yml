@@ -63,7 +63,7 @@ jobs:
       - name: validate tarball and spec file
         working-directory: ./saf/dist
         run: |
-          tar tf "$filename.tar"
+          tar tf "$filename.tar.gz"
           if ! grep -q 'Name:' ../saf.spec; then
             echo "Spec file validation failed" && exit 1
           fi
