@@ -57,37 +57,38 @@ jobs:
       - name: validate tarball and spec file
         working-directory: ./saf/dist
         run: |
-          if ! tar tf "$filename.tar.gz"; then
+          if ! tar tf "$filename.tar.gz" > /dev/null 2>&1; then
             echo "Tarball validation failed" && exit 1
+          else
+            echo "Tarball validation succeeded"
           fi
           for field in Name Version Release Summary License; do
             if ! grep -q "^$field:" ../saf.spec; then
-              echo "Spec file validation failed: missing $field" && exit 1
+              echo "Spec field validation failed, missing field: $field" && exit 1
+            else
+              echo "Spec field name: $field found"
             fi
           done
-
-        # run: |
-        #   tar tf "$filename.tar.gz"
-        #   if ! grep -q 'Name:' ../saf.spec; then
-        #     echo "Spec file validation failed" && exit 1
-        #   fi
 
       - name: validate spec file
         working-directory: ./saf
         run: |
-          if ! rpmbuild --showrc -ba saf.spec; then
-            echo "Spec file validation failed" && exit 1
+          if ! rpmbuild --showrc -ba saf.spec > /dev/null 2>&1; then
+            echo "Can build the RPM package based to the saf.spec file: Failed" && exit 1
+          else
+            echo "Can build the RPM package based to the saf.spec file: PASS"
           fi
-
-      - name: debug tarball and spec file
-        working-directory: ./saf/dist
-        run: |
-          ls
-          ls ../saf.spec || echo "Spec file missing" && exit 1
 
       - name: build rpm
         working-directory: ./saf
-        run: rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)" --target x86_64 || echo "RPM build failed"
+        run: |
+          echo "Build RPM Debug Info:"
+          echo "Current working directory: $(pwd)"
+          echo "Filename used: $filename"
+          echo "Version: $(cat VERSION)"
+          echo "Tarball file: dist/$filename.tar.gz"
+          echo "Running rpmbuild with the following command: rpmbuild -ta dist/$filename.tar.gz -D '_rpmdir $(pwd)' -D 'version $(cat VERSION)' --target x86_64"
+          rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)" --target x86_64 -v || echo "RPM build failed. Check the error output above."
 
       - name: upload binary as artifact
         uses: actions/upload-artifact@v4
