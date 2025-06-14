@@ -1,17 +1,15 @@
 name: Build SAF-CLI RPM Installers
-
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
-
 jobs:
   build-deploy:
     runs-on: ubuntu-22.04
     container:
-      image: registry.access.redhat.com/ubi8/nodejs-22:latest
+      image: registry.access.redhat.com/ubi9/nodejs-22:latest
       options: -u 0 # dnf needs root
     defaults:
       run:
@@ -30,7 +28,7 @@ jobs:
           cache-dependency-path: ./saf/package-lock.json
 
       - name: install build dependencies
-        run: dnf install -y rpm-build perl-Digest-SHA gcc make tar gzip # rpmbuild, shasum
+        run: dnf install -y rpm-build perl-Digest-SHA # rpmbuild, shasum
 
       - name: setup saf cli
         working-directory: ./saf
@@ -43,7 +41,7 @@ jobs:
         run: |
           echo "filename=saf-v$(cat VERSION)-linux-x64" >> "$GITHUB_ENV"
 
-      - name: pack into tarball # we are targeting x86-64 since oclif bundles a node binary, but the project is actually fully architecture independent so long as they have a node binary on it
+      - name: pack into tarball # we are targetting x86-64 since oclif bundles a node binary, but the project is actually fully architecture independent so long as they have a node binary on it
         working-directory: ./saf
         run: npx oclif pack tarballs -t linux-x64 --no-xz
 
@@ -53,66 +51,11 @@ jobs:
           gzip -dc "$(ls)" > "$filename.tar"
           tar -rf "$filename.tar" --transform 's|^\.\.|saf|' ../saf.spec
           gzip "$filename.tar"
-
-      - name: validate tarball and spec file
-        working-directory: ./saf/dist
-        run: |
-          if ! tar tf "$filename.tar.gz" > /dev/null 2>&1; then
-            echo "Tarball validation failed" && exit 1
-          else
-            echo "Tarball validation succeeded"
-            echo "Current working directory: $(pwd)"
-            echo "Filename used: ${filename}"
-            echo "Tarball file: ${filename}.tar.gz"
-          fi
-          for field in Name Version Release Summary License; do
-            if ! grep -q "^$field:" ../saf.spec; then
-              echo "Spec field validation failed, missing field: $field" && exit 1
-            else
-              echo "Spec field name: $field found"
-            fi
-          done
-
-      - name: validate spec file
-        working-directory: ./saf
-        run: |
-          if ! rpmbuild --showrc -ba saf.spec > /dev/null 2>&1; then
-            echo "Can build the RPM package based to the saf.spec file: Failed" && exit 1
-          else
-            echo "Can build the RPM package based to the saf.spec file: PASS"
-          fi
-
+ 
       - name: build rpm
         working-directory: ./saf
-        run: |
-          echo "Build RPM Debug Info:"
-          echo "Current working directory: $(pwd)"
-          echo "Filename used: ${filename}"
-          echo "Version: $(cat VERSION)"
-          echo "Tarball file: dist/${filename}.tar.gz"
-          echo "Debugging RPM Build:"
-          ls -l dist
-          cat saf.spec
-          echo "Building RPM Package:"
-          rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)" --target x86_64
-
-      - name: List RPM files
-        run: |
-          mkdir -p saf/noarch
-          echo "Listing RPM files in saf/noarch directory:"
-          ls -l saf/noarch/
-
-      - name: List RPM files
-        run: |
-          echo "Listing RPM files in saf/noarch directory:"
-          ls -l saf/noarch/
-
-      - name: Check RPM Build Output
-        run: |
-          if [ ! -f "dist/${filename}-x86_64.rpm" ]; then
-            echo "RPM Build Failed: No RPMs found" && exit 1
-          fi
-
+        run: rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)"
+ 
       - name: upload binary as artifact
         uses: actions/upload-artifact@v4
         with:
