@@ -5,7 +5,7 @@ import _ from 'lodash'
 import yaml from 'yaml'
 import fs from 'fs'
 import path from 'path'
-import {convertFullPathToFilename} from '../../utils/global'
+import {basename} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class ApplyAttestation extends BaseCommand<typeof ApplyAttestation> {
@@ -41,7 +41,7 @@ export default class ApplyAttestation extends BaseCommand<typeof ApplyAttestatio
           attestations.push(..._.get(inputData, 'plugins.inspec-reporter-json-hdf.attestations'))
         } else if ('profiles' in inputData) {
           // We have an execution file
-          executions[convertFullPathToFilename(inputFile)] = inputData
+          executions[basename(inputFile)] = inputData
         } else {
           // Unknown file
           console.error(`Unknown input file: ${inputFile}`)

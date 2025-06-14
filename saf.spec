@@ -16,7 +16,7 @@ BuildRoot: %{buildroot}
 BuildArch: noarch
 ExclusiveArch: %{nodejs_arches} noarch
 
-Requires: nodejs > 18.18.2
+Requires: nodejs > 22.0.0
 
 AutoReqProv: no
 

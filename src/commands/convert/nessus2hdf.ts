@@ -2,7 +2,7 @@ import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {NessusResults as Mapper} from '@mitre/hdf-converters'
 import _ from 'lodash'
-import {checkInput, checkSuffix} from '../../utils/global'
+import {basename, checkInput, checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Nessus2HDF extends BaseCommand<typeof Nessus2HDF> {
@@ -50,13 +50,13 @@ export default class Nessus2HDF extends BaseCommand<typeof Nessus2HDF> {
     if (Array.isArray(result)) {
       for (const element of result) {
         fs.writeFileSync(
-          `${flags.output.replaceAll(/\.json/gi, '')}-${_.get(element, 'platform.target_id')}.json`,
+          `${flags.output.replaceAll(/\.json/gi, '')}-${basename(_.get(element, 'platform.target_id') || '')}.json`,
           JSON.stringify(element, null, 2),
         )
       }
     } else {
       fs.writeFileSync(
-        `${checkSuffix(flags.output)}`,
+        checkSuffix(flags.output),
         JSON.stringify(result, null, 2),
       )
     }

@@ -1,7 +1,7 @@
 import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {ASFFResults as Mapper} from '@mitre/hdf-converters'
-import {checkInput, checkSuffix} from '../../utils/global'
+import {basename, checkInput, checkSuffix} from '../../utils/global'
 import _ from 'lodash'
 import path from 'path'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
@@ -46,7 +46,7 @@ export default class Prowler2HDF extends BaseCommand<typeof Prowler2HDF> {
 
     _.forOwn(results, (result, filename) => {
       fs.writeFileSync(
-        path.join(flags.output, checkSuffix(filename)),
+        path.join(flags.output, checkSuffix(basename(filename))),
         JSON.stringify(result, null, 2),
       )
     })

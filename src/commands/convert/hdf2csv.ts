@@ -6,7 +6,7 @@ import fs, {promises as fse} from 'fs'
 import stringify from 'csv-stringify'
 import {ControlSetRows} from '../../types/csv'
 import {convertRow, csvExportFields} from '../../utils/csv'
-import {convertFullPathToFilename} from '../../utils/global'
+import {basename} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 import path from 'path'
 import {
@@ -112,7 +112,7 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(inputFile, 'utf8')))
 
       // Convert all controls from a file to ControlSetRows
-      let rows: ControlSetRows = convertRows(contextualizedEvaluation, convertFullPathToFilename(inputFile), includeFields.split(','))
+      let rows: ControlSetRows = convertRows(contextualizedEvaluation, basename(inputFile), includeFields.split(','))
       rows = rows.map((row, index) => {
         const cleanedRow: Record<string, string> = {}
         for (const key in row) {
