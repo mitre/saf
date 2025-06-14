@@ -1,6 +1,6 @@
 import {Flags} from '@oclif/core'
 import {FromHDFToSplunkMapper} from '@mitre/hdf-converters'
-import {convertFullPathToFilename} from '../../utils/global'
+import {basename} from '../../utils/global'
 import fs from 'fs'
 import {createWinstonLogger, getHDFSummary} from '../../utils/logging'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
@@ -91,7 +91,7 @@ export default class HDF2Splunk extends BaseCommand<typeof HDF2Splunk> {
     )
     const inputFile = JSON.parse(fs.readFileSync(flags.input, 'utf8'))
     logger.info(
-      `Input File "${convertFullPathToFilename(flags.input)}": ${getHDFSummary(inputFile)}`,
+      `Input File "${basename(flags.input)}": ${getHDFSummary(inputFile)}`,
     )
     await new FromHDFToSplunkMapper(inputFile, logger).toSplunk(
       {
@@ -103,7 +103,7 @@ export default class HDF2Splunk extends BaseCommand<typeof HDF2Splunk> {
         sessionKey: flags.token,
         index: flags.index,
       },
-      convertFullPathToFilename(flags.input),
+      basename(flags.input),
     )
   }
 }

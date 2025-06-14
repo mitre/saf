@@ -1,7 +1,7 @@
 import {Flags} from '@oclif/core'
 import fs from 'fs'
-import path from 'path'
 import {FromHDFToCAATMapper as Mapper} from '@mitre/hdf-converters'
+import {basename} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class HDF2CAAT extends BaseCommand<typeof HDF2CAAT> {
@@ -32,7 +32,7 @@ export default class HDF2CAAT extends BaseCommand<typeof HDF2CAAT> {
 
     const inputData = flags.input.map(filename => ({
       data: fs.readFileSync(filename, 'utf8'),
-      filename: path.basename(filename),
+      filename: basename(filename),
     }))
 
     const converter = new Mapper(inputData)
