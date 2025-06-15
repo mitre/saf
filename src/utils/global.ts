@@ -37,17 +37,13 @@ export function basename(inputPath: string): string {
   // ('/'=linux or '\'=windows (note that this could be double backslash on occasion)) from the end of the string
   const trimmedPath = inputPath.trimEnd().replace(/[\\/]+$/, '')
 
-  // Handle edge case: if the trimmed path is empty, return an empty string
-  if (trimmedPath === '') {
-    return ''
-  }
-  // return everything after the last separator or the entire string if no separator found
+  // grab everything after the last separator or the entire string if no separator found
   const lastSeparatorIndex = Math.max(
     trimmedPath.lastIndexOf('/'),
     trimmedPath.lastIndexOf('\\'),
   )
 
-  // Return the substring after the last separator, or the entire string if no separator is found
+  // return the substring after the index of the separator - if no separator was found then the index was -1 to which adding 1 makes 0, i.e. the beginning of the string
   return trimmedPath.slice(lastSeparatorIndex + 1)
 }
 

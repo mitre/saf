@@ -76,6 +76,16 @@ describe('basename', () => {
     const result = basename('\\path\\to\\')
     expect(result).toBe('to')
   })
+
+  it('should return the empty string if the path is the empty string', () => {
+    const result = basename('')
+    expect(result).toBe('')
+  })
+
+  it('should return the empty string if the path consists only of separators', () => {
+    const result = basename('//////\\\\\\/\\/')
+    expect(result).toBe('')
+  })
 })
 
 describe('dataURLtoU8Array', () => {
