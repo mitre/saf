@@ -29,10 +29,10 @@ import {
   ZapMapper,
 } from '@mitre/hdf-converters'
 import {Flags} from '@oclif/core'
-import ASFF2HDF from './asff2hdf'
-import Zap2HDF from './zap2hdf'
 import {basename, checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
+import ASFF2HDF from './asff2hdf'
+import Zap2HDF from './zap2hdf'
 
 function getInputFilename(): string {
   const inputFileIndex = process.argv.findIndex(

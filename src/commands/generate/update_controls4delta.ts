@@ -336,7 +336,9 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
           return (control === undefined) ? '' : control
         }).find(Boolean)
         // If there isn't a legacy tag, use the XCCDF Id (see note above)
-        if (controlId === '') controlId = newControlId
+        if (controlId === '') {
+          controlId = newControlId
+        }
       }
       controlId = basename(controlId || '')
 
