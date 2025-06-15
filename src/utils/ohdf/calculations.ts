@@ -8,7 +8,7 @@ import {createWinstonLogger} from '../logging'
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 let flat: any
 
-(async () => {
+(async () => { // skipcq: JS-0328
   flat = await import('flat')
 })()
 
