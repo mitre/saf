@@ -39,7 +39,7 @@ import {EventEmitter} from 'events'
 
 import colors from 'colors'
 import {input, confirm, select} from '@inquirer/prompts'
-import {downloadFile, extractFileFromZip, getErrorMessage} from '../../utils/global'
+import {basename, downloadFile, extractFileFromZip, getErrorMessage} from '../../utils/global'
 
 /**
  * This class extends the capabilities of the update_controls4delta providing the following capabilities:
@@ -52,9 +52,9 @@ import {downloadFile, extractFileFromZip, getErrorMessage} from '../../utils/glo
 *        a - report file (.md), mapping statistics (CliProcessOutput.log)
 */
 export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
-  static description = 'Update an existing InSpec profile with new or updated XCCDF guidance'
+  static readonly description = 'Update an existing InSpec profile with new or updated XCCDF guidance'
 
-  static flags = {
+  static readonly flags = {
     inspecJsonFile: Flags.string({
       char: 'J', required: false, exclusive: ['interactive'],
       description: 'InSpec Profile Controls JSON summary file - can be generated using the "[cinc-auditor or inspec] json <profile path> | jq . > profile.json" command',
@@ -235,7 +235,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     //       existingProfile variable is re-generated as the controls change.
     this.logThis('Processing the InSpec Profiles JSON summary (generate if not provided)...', 'info')
     if (inspecJsonFile) {
-      this.logThis(`  Using profile controls summary file: ${path.basename(inspecJsonFile)}`, 'info')
+      this.logThis(`  Using profile controls summary file: ${basename(inspecJsonFile)}`, 'info')
       try {
         if (fs.lstatSync(inspecJsonFile).isFile()) {
           this.logThis(`  Loading ${inspecJsonFile} as Profile JSON/Execution JSON`, 'debug')
@@ -258,8 +258,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       }
     } else {
       // Shorten the controls directory to show the 'controls' directory and its parent
-      const shortControlsDir = path.sep + path.basename(path.dirname(controlsDir))
-        + path.sep + path.basename(controlsDir)
+      const shortControlsDir = path.sep + basename(path.dirname(controlsDir))
+        + path.sep + basename(controlsDir)
       // Generate the profile json
       try {
         this.logThis(`  Generating the summary file on directory: ${shortControlsDir}`, 'info')
@@ -335,10 +335,10 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // Create a directory where we are storing the newly created mapped controls
         // Do not over right the original controls in the directory (controlsDir)
         const mappedDir = this.createMappedDirectory(controlsDir)
-        const shortRunningDir = path.sep + path.basename(path.dirname(controlsDir))
-        const shortProfileDir = shortRunningDir + path.sep + path.basename(controlsDir)
-        const shortMappedDir = shortRunningDir + path.sep + path.basename(mappedDir)
-        // const controls + path.sep + path.basename(controlsDir)
+        const shortRunningDir = path.sep + basename(path.dirname(controlsDir))
+        const shortProfileDir = shortRunningDir + path.sep + basename(controlsDir)
+        const shortMappedDir = shortRunningDir + path.sep + basename(mappedDir)
+        // const controls + path.sep + basename(controlsDir)
         // logger.info('  Updating controls with new control number')
         this.logThis('  Updating controls with new control number', 'info')
         printCyan('Updating Controls ===========================================================================')
@@ -368,7 +368,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             return
           }
 
-          // If the key equals the controls[wey], the update_controls4delta process was ran
+          // If the key equals the controls[key], the update_controls4delta process was ran
           // and the controls were properly updated to the proper control number and name.
           if (controls[key] === key) {
             // The controls are up to date with the xccdf
@@ -433,7 +433,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         fs.mkdirSync(path.join(deltaOutputDir), {recursive: true})
       }
 
-      if (path.basename(deltaOutputDir) === 'controls') {
+      if (basename(deltaOutputDir) === 'controls') {
         this.logThis(`  Deleting existing profile folder ${deltaOutputDir}`, 'debug')
         fse.emptyDirSync(deltaOutputDir)
         outputProfileFolderPath = path.dirname(deltaOutputDir)
@@ -528,11 +528,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             //       method from inspect-objects
             const newControl = updateControl(existingProfile.controls[index], control, thisLogger)
             this.logThis(`Writing updated control with code block for: ${control.id}.`, 'info')
-            fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), newControl.toRuby(processLogLevel))
+            fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${basename(control.id)}.rb`), newControl.toRuby(processLogLevel))
           } else {
             // We didn't find a mapping for this control - Old style of updating controls
             this.logThis(`Writing new control without code block for: ${control.id}.`, 'info')
-            fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${control.id}.rb`), control.toRuby(processLogLevel))
+            fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${basename(control.id)}.rb`), control.toRuby(processLogLevel))
           }
         })
 
@@ -558,9 +558,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               + `Match + Mismatch = Total Mapped Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}\n`
               + `  Total Processed = Total XCCDF Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`
               + updatedResult.markdown
-            fs.writeFileSync(path.join(markDownFile), reportData)
+            fs.writeFileSync(markDownFile, reportData)
           } else {
-            fs.writeFileSync(path.join(markDownFile), updatedResult.markdown)
+            fs.writeFileSync(markDownFile, updatedResult.markdown)
           }
         }
 
@@ -649,8 +649,10 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     // control has the lower score
     const controlIdToScoreMap = new Map()
     for (const newControl of newControls) {
-      // Check for existence of title, remove non-displayed characters
+      // Ensure the newControl.id is a string and has no leading or trailing slashes
+      const newControlId = basename(newControl.id)
 
+      // Check for existence of title, remove non-displayed characters
       // TODO: Determine whether removing symbols other than non-displayed characters is helpful // skipcq: JS-0099
       // words separated by newlines don't have spaces between them
       if (newControl.title) {
@@ -658,13 +660,13 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         //        [\r\t\f\v] -> carriage return, tab, form feed and vertical tab
         const result = fuse.search(newControl.title.replaceAll(/[^\w\s]|[\r\t\f\v]/g, '').replaceAll('\n', ''))
         if (isEmpty(result)) {
-          printYellowGreen('     New XCCDF Control:', ` ${newControl.id}`)
+          printYellowGreen('     New XCCDF Control:', ` ${newControlId}`)
           printBgYellow('* No Mapping Provided *\n')
           GenerateDelta.newXccdfControl++
           continue
         }
 
-        printYellowBgGreen('Processing New Control: ', `${newControl.id}`)
+        printYellowBgGreen('Processing New Control: ', `${newControlId}`)
         printYellowBgGreen('     New Control Title: ', `${this.updateTitle(newControl.title)}`)
 
         if (result[0] && result[0].score && result[0].score < 0.3) { // skipcq: JS-W1044
@@ -675,14 +677,14 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               controlIdToScoreMap.set(result[0].item.id, result[0].score)
             } else {
               printBgMagentaRed('     Old Control Title:', ` ${this.updateTitle(result[0].item.title)}`)
-              printBgMagentaRed('       Duplicate Match:', ` ${result[0].item.id} --> ${newControl.id}`)
+              printBgMagentaRed('       Duplicate Match:', ` ${result[0].item.id} --> ${newControlId}`)
               printBgMagentaRed('        Matching Score:', ` ${result[0].score}\n`)
               GenerateDelta.dupMatch++
               continue
             }
           }
 
-          if (typeof newControl.id === 'string'
+          if (typeof newControlId === 'string'
             && typeof result[0].item.id === 'string') {
             // Check non displayed characters of title
             printYellowGreen('     Old Control Title: ', `${this.updateTitle(result[0].item.title)}`)
@@ -698,7 +700,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               GenerateDelta.match++
             }
 
-            printYellowGreen('  Best Match Candidate: ', `${result[0].item.id} --> ${newControl.id}`)
+            printYellowGreen('  Best Match Candidate: ', `${result[0].item.id} --> ${newControlId}`)
             printYellowGreen('        Matching Score: ', `${result[0].score}\n`)
 
             // Check if we have added an entry for the old control being processed
@@ -719,12 +721,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
                 break
               }
             }
-            controlMappings[newControl.id] = result[0].item.id
+            controlMappings[newControlId] = result[0].item.id
             controlIdToScoreMap.set(result[0].item.id, result[0].score)
           }
         } else {
           printBgRedRed('     Old Control Title:', ` ${this.updateTitle(result[0].item.title)}`)
-          printBgRedRed('    No Match Found for:', ` ${result[0].item.id} --> ${newControl.id}`)
+          printBgRedRed('    No Match Found for:', ` ${result[0].item.id} --> ${newControlId}`)
           printBgRedRed('        Matching Score:', ` ${result[0].score} \n`)
           GenerateDelta.noMatch++
         }
@@ -828,7 +830,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     let xccdfContent = ''
 
     if (xccdfType === 'File') {
-      xccdfFile = path.basename(xccdfInput)
+      xccdfFile = basename(xccdfInput)
       this.logThis(`Verifying that the XCCDF file is valid: ${xccdfFile}...`, 'info')
       if (isXccdfFile(xccdfInput)) {
         // Did we get a .xml file or a zip package

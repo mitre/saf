@@ -15,6 +15,7 @@ import {
   SecureScoreControlProfile,
 } from '@microsoft/microsoft-graph-types'
 import {TokenCredentialAuthenticationProvider} from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials'
+import {basename} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 function processInputs(
@@ -39,7 +40,7 @@ function processInputs(
       ?.data as Record<string, unknown>
     const reportId = auxData?.reportId as string
     fs.writeFileSync(
-      `${output.replaceAll(/\.json/gi, '')}-${reportId}.json`,
+      `${output.replaceAll(/\.json/gi, '')}-${basename(reportId)}.json`,
       JSON.stringify(hdfReport),
     )
   }

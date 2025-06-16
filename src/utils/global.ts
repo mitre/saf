@@ -11,40 +11,40 @@ export type SpreadsheetTypes = 'cis' | 'disa' | 'general'
 
 export const knownInspecMetadataKeys = ['control', 'title', 'desc', 'description', 'rationale', 'impact', 'references', 'tag']
 
-export function checkSuffix(input: string) {
-  if (input.endsWith('.json')) {
+export function checkSuffix(input: string, suffix = '.json') {
+  if (input.endsWith(suffix)) {
     return input
   }
 
-  return `${input}.json`
+  return `${input}${suffix}`
 }
 
 /**
- * The `convertFullPathToFilename` function.
+ * The `basename` function.
  *
- * This function returns the last value for a given path witch is usually the filename.
- * Not using path.basename as it doesn't "just work" as one would expect handling paths
- * from other filesystem types.
+ * This function returns the basename, i.e. the last value for a given path
+ * which is usually the filename and extension.
+ *
+ * Not using path.basename as it doesn't "just work" as one would expect handling
+ * paths from other filesystem types: see https://nodejs.org/api/path.html#windows-vs-posix
  *
  * @param inputPath - The full path to convert. This should be a string representing a valid file path.
  *
  * @returns {string} - The filename extracted from the full path. If the path does not contain a filename, an empty string is returned.
  */
-export function convertFullPathToFilename(inputPath: string): string {
-  // return path.basename(inputPath)
-  let filePath = inputPath.split('/')
-  let basename = inputPath.endsWith('/') ? filePath.at(-2) : filePath.at(-1)
-  if (!basename) {
-    throw new Error('Could not derive basename from file path using /')
-  }
+export function basename(inputPath: string): string {
+  // trim trailing whitespace and path separators
+  // ('/'=linux or '\'=windows (note that this could be double backslash on occasion)) from the end of the string
+  const trimmedPath = inputPath.trimEnd().replace(/[\\/]+$/, '')
 
-  filePath = basename.split('\\')
-  basename = inputPath.endsWith('\\') ? filePath.at(-2) : filePath.at(-1)
-  if (!basename) {
-    throw new Error('Could not derive basename from file path using \\')
-  }
+  // grab everything after the last separator or the entire string if no separator found
+  const lastSeparatorIndex = Math.max(
+    trimmedPath.lastIndexOf('/'),
+    trimmedPath.lastIndexOf('\\'),
+  )
 
-  return basename
+  // return the substring after the index of the separator - if no separator was found then the index was -1 to which adding 1 makes 0, i.e. the beginning of the string
+  return trimmedPath.slice(lastSeparatorIndex + 1)
 }
 
 /**
@@ -283,7 +283,7 @@ export function getDescription(
  *                 the file type and throw an error if the validation fails.
  */
 export function checkInput(guessOptions: {data: string, filename: string}, desiredType: string, desiredFormat: string): void {
-  const detectedType = fingerprint({data: guessOptions.data, filename: convertFullPathToFilename(guessOptions.filename)})
+  const detectedType = fingerprint({data: guessOptions.data, filename: basename(guessOptions.filename)})
   if (!(detectedType === desiredType))
     throw new Error(`Unable to process input file\
       \nDetected input type: ${detectedType === '' ? 'unknown or none' : `${detectedType} - did you mean to run the ${detectedType} to HDF converter instead?`}\

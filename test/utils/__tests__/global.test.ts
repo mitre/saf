@@ -1,8 +1,8 @@
 import {
+  basename,
   checkSuffix,
   getProfileInfo,
   extractValueViaPathOrNumber,
-  convertFullPathToFilename,
   dataURLtoU8Array,
   getDescription, arrayNeededPaths,
 } from '../../../src/utils/global'
@@ -39,32 +39,52 @@ describe('checkSuffix', () => {
     const result = checkSuffix('test.json')
     expect(result).toBe('test.json')
   })
+
+  it('should append .xml if it is not present', () => {
+    const result = checkSuffix('test', '.xml')
+    expect(result).toBe('test.xml')
+  })
+
+  it('should not append .xml if it is already present', () => {
+    const result = checkSuffix('test.xml', '.xml')
+    expect(result).toBe('test.xml')
+  })
 })
 
-describe('convertFullPathToFilename', () => {
+describe('basename', () => {
   it('should return the filename from a full path (non windows)', () => {
-    const result = convertFullPathToFilename('/path/to/file.txt')
+    const result = basename('/path/to/file.txt')
     expect(result).toBe('file.txt')
   })
 
   it('should return the last directory name if the path ends with a forward slash (non windows)', () => {
-    const result = convertFullPathToFilename('/path/to/')
+    const result = basename('/path/to/')
     expect(result).toBe('to')
   })
 
   it('should handle paths with no slashes', () => {
-    const result = convertFullPathToFilename('file.txt')
+    const result = basename('file.txt')
     expect(result).toBe('file.txt')
   })
 
   it('should return the filename from a full path (windows)', () => {
-    const result = convertFullPathToFilename('\\path\\to\\file.txt\\')
+    const result = basename('\\path\\to\\file.txt\\')
     expect(result).toBe('file.txt')
   })
 
   it('should return the last directory name if the path ends with a backslash\'s (windows)', () => {
-    const result = convertFullPathToFilename('\\path\\to\\')
+    const result = basename('\\path\\to\\')
     expect(result).toBe('to')
+  })
+
+  it('should return the empty string if the path is the empty string', () => {
+    const result = basename('')
+    expect(result).toBe('')
+  })
+
+  it('should return the empty string if the path consists only of separators', () => {
+    const result = basename('//////\\\\\\/\\/')
+    expect(result).toBe('')
   })
 })
 
