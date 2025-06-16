@@ -1,17 +1,15 @@
 name: Build SAF-CLI RPM Installers
-
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
-
 jobs:
   build-deploy:
     runs-on: ubuntu-22.04
     container:
-      image: registry.access.redhat.com/ubi8/nodejs-18:latest
+      image: registry.access.redhat.com/ubi9/nodejs-22:latest
       options: -u 0 # dnf needs root
     defaults:
       run:
@@ -53,11 +51,11 @@ jobs:
           gzip -dc "$(ls)" > "$filename.tar"
           tar -rf "$filename.tar" --transform 's|^\.\.|saf|' ../saf.spec
           gzip "$filename.tar"
-
+ 
       - name: build rpm
         working-directory: ./saf
         run: rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)"
-
+ 
       - name: upload binary as artifact
         uses: actions/upload-artifact@v4
         with:

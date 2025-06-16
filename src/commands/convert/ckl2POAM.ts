@@ -24,7 +24,7 @@ import {
   replaceSpecialCharacters,
 } from '../../utils/ckl2poam'
 import {default as files} from '../../resources/files.json'
-import {convertFullPathToFilename, dataURLtoU8Array} from '../../utils/global'
+import {basename, dataURLtoU8Array} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 const prompt = promptSync()
@@ -312,7 +312,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
               return workBook.toFileAsync(
                 path.join(
                   flags.output,
-                  `${convertFullPathToFilename(fileName)}-${moment(new Date()).format('YYYY-MM-DD-HHmm')}.xlsm`,
+                  `${basename(fileName)}-${moment(new Date()).format('YYYY-MM-DD-HHmm')}.xlsm`,
                 ),
               )
             })

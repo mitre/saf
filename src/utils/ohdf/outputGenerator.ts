@@ -3,7 +3,7 @@ import fs from 'fs'
 import _ from 'lodash'
 import YAML from 'yaml'
 import {Align, Table, getMarkdownTable} from 'markdown-table-ts'
-import {convertFullPathToFilename} from '../global'
+import {basename} from '../global'
 import {ContextualizedEvaluation} from 'inspecjs'
 import {createWinstonLogger} from '../logging'
 import {PrintableSummary, Data, DataOrArray, RowType, ColumnType, PrintAndWriteOutputArgs} from './types'
@@ -122,7 +122,7 @@ export function createPrintableSummary(
  *
  * The function works as follows:
  * - It filters the execution JSONs to include only those where the name of the first profile matches the provided profile name.
- * - It maps over the filtered execution JSONs, converting the full path of each JSON file to a filename using the `convertFullPathToFilename` function.
+ * - It maps over the filtered execution JSONs, converting the full path of each JSON file to a filename using the `basename` function.
  * - It returns an array of filenames.
  *
  * @remarks
@@ -137,7 +137,7 @@ export function extractResultSets(execJSONs: Record<string, ContextualizedEvalua
   return Object.entries(execJSONs).filter(([, execJSON]) => {
     return execJSON.data.profiles[0].name === profileName
   }).map(([filePath]) => {
-    return convertFullPathToFilename(filePath)
+    return basename(filePath)
   })
 }
 
