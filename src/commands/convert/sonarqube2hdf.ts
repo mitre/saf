@@ -1,13 +1,13 @@
 import {Flags} from '@oclif/core'
 import fs from 'fs'
-import {SonarQubeResults as Mapper} from '@mitre/hdf-converters'
+import {SonarqubeResults as Mapper} from '@mitre/hdf-converters'
 import {checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
   static readonly usage
     = '<%= command.id %> -n <sonar-project-key> -u <http://your.sonar.instance:9000> -a <your-sonar-api-key>'
-      + '[ -b <target-branch> | -p <pull-request-id> ] -o <hdf-scan-results-json>'
+      + '[ -b <target-branch> | -p <pull-request-id> ] [ -g <organization-name> ] -o <hdf-scan-results-json>'
 
   static readonly description
     = 'Pull SonarQube vulnerabilities for the specified project name and optional branch \n'
@@ -43,6 +43,11 @@ export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
       exclusive: ['branch'],
       description: 'Requires Sonarqube Developer Edition or above',
     }),
+    organization: Flags.string({
+      char: 'g',
+      required: false,
+      description: "SonarQube organization name - used as a default when necessary to access rule descriptions",
+    }),
     output: Flags.string({
       char: 'o',
       required: true,
@@ -58,6 +63,7 @@ export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
       flags.auth,
       flags.branch,
       flags.pullRequestID,
+      flags.organization
     )
     fs.writeFileSync(
       checkSuffix(flags.output),
