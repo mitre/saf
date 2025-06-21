@@ -4,22 +4,18 @@ on:
   push:
     branches:
       - main
-  pull_request:
-    types: [opened, reopened, synchronize]
-  pull_request_target:
-    types: [opened, reopened, synchronize]
 
 permissions:
-  contents: read
+  contents: write # required to update the draft release
+  pull-requests: read # required to get information about the pull request
 
 jobs:
   update_draft_release:
-    permissions:
-      contents: write
-      pull-requests: write
     runs-on: ubuntu-22.04
     steps:
-      # Drafts your next Release notes as Pull Requests are merged into "master"
+      # Drafts your next Release notes as Pull Requests are merged into "main"
       - uses: release-drafter/release-drafter@v6
+        with:
+          disable-autolabeler: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
