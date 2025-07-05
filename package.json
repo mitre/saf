@@ -14,7 +14,7 @@
     "@mitre/emass_client": "3.22.0",
     "@mitre/hdf-converters": "2.11.5",
     "@mitre/heimdall-lite": "2.11.5",
-    "@mitre/inspec-objects": "2.0.1",
+    "@mitre/inspec-objects": "2.0.4",
     "@oclif/core": "^4.2.10",
     "@oclif/plugin-help": "^6.0.9",
     "@oclif/plugin-plugins": "^5.0.14",
