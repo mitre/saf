@@ -13,7 +13,7 @@
     "skipLibCheck": true,
     "target": "es2022",
     "sourceMap": true,
-    "types": ["node", "jest"]
+    "types": ["node"]
   },
   "include": ["src/**/*"]
 }
