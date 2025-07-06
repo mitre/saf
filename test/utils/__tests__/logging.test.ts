@@ -8,8 +8,6 @@ describe('createWinstonLogger', () => {
   it('should create a logger with the correct configuration', () => {
     createWinstonLogger('testMapper', 'info')
 
-    console.dir(winston.createLogger.mock.calls, {depth: 4});
-
     expect(winston.createLogger).toHaveBeenCalledTimes(1)
     expect(winston.createLogger).toHaveBeenCalledWith(
       expect.objectContaining(

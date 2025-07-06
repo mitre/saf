@@ -58,7 +58,7 @@ describe('calculations.ts utils', () => {
   })
 
   it('calculateSeverityCounts modifies the summary correctly', () => {
-    Object.values(execJSONs).forEach(parsedExecJSON => {
+    for(const parsedExecJSON of Object.values(execJSONs)) {
       const summary: Record<string, Record<string, number>> = {}
       const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
 
@@ -70,7 +70,7 @@ describe('calculations.ts utils', () => {
 
       const expectedSummary = loadExpectedData('./test/sample_data/utils/ohdf/calculations/calculateSeverityCounts.sample')
       expect(summary).to.deep.equal(expectedSummary)
-    })
+    }
   })
 
   it('calculateTotalCountsForSummaries calculates the totals correctly', () => {

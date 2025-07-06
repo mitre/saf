@@ -1,16 +1,8 @@
-// utils/calculations.ts
-
 import _ from 'lodash'
 import {ContextualizedEvaluation, ContextualizedProfile} from 'inspecjs'
 import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../threshold'
 import {createWinstonLogger} from '../logging'
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let flat: any
-
-(async () => { // skipcq: JS-0328
-  flat = await import('flat')
-})()
+import {flattenThreshold} from '../threshold'
 
 /**
 * The logger for this command.
@@ -69,7 +61,7 @@ export function calculateTotalCountsForSummaries(summaries: Record<string, Recor
   const totals: Record<string, Record<string, number>> = {}
   Object.entries(summaries).forEach(([profileName, profileSummaries]) => {
     profileSummaries.forEach((profileSummary) => {
-      const flattened: Record<string, number> = flat.flatten(profileSummary)
+      const flattened: Record<string, number> = flattenThreshold(profileSummary)
       Object.entries(flattened).forEach(([key, value]) => {
         const existingValue = _.get(totals, `${profileName}.${key}`, 0)
         if (typeof existingValue === 'number') {
