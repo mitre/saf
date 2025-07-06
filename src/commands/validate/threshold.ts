@@ -7,7 +7,8 @@ import {expect} from 'chai'
 import {Flags} from '@oclif/core'
 import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import {ThresholdValues} from '../../types/threshold'
-import {calculateCompliance,
+import {
+  calculateCompliance,
   exitNonZeroIfTrue,
   extractStatusCounts,
   getControlIdMap,
@@ -15,7 +16,9 @@ import {calculateCompliance,
   severityTargetsObject,
   statusSeverityPaths,
   totalMax,
-  totalMin} from '../../utils/threshold'
+  totalMin,
+  unflattenThreshold
+} from '../../utils/threshold'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -67,10 +70,10 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
         toUnpack[key] = Number.parseInt(value, 10)
       }
 
-      thresholds = flat.unflatten(toUnpack)
+      thresholds = unflattenThreshold(toUnpack)
     } else if (flags.templateFile) {
       const parsed = YAML.parse(fs.readFileSync(flags.templateFile, 'utf8'))
-      thresholds = Object.values(parsed).every(key => typeof key === 'number') ? flat.unflatten(parsed) : parsed
+      thresholds = Object.values(parsed).every(key => typeof key === 'number') ? unflattenThreshold(parsed) : parsed
     } else {
       console.log('Please provide an inline compliance template or a compliance file.')
       console.log('See https://github.com/mitre/saf/wiki/Validation-with-Thresholds for more information')

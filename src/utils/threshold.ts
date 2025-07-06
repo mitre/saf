@@ -327,3 +327,103 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
 
   return result
 }
+
+/**
+ * Flattens a threshold file.
+ * {
+ *   passed: { critical: 0, high: 11, medium: 208, low: 8, total: 227 },
+ *   failed: { critical: 0, high: 6, medium: 87, low: 19, total: 112 },
+ *   skipped: { critical: 0, high: 1, medium: 1, low: 1, total: 3 },
+ *   error: { critical: 0, high: 0, medium: 0, low: 0, total: 0 },
+ *   no_impact: { critical: 0, high: 3, medium: 30, low: 0, none: 0, total: 33 }
+ * }
+ * is turned into
+ * {
+ *   'passed.critical': 0,
+ *   'passed.high': 11,
+ *   'passed.medium': 208,
+ *   'passed.low': 8,
+ *   'passed.total': 227,
+ *   'failed.critical': 0,
+ *   'failed.high': 6,
+ *   'failed.medium': 87,
+ *   'failed.low': 19,
+ *   'failed.total': 112,
+ *   'skipped.critical': 0,
+ *   'skipped.high': 1,
+ *   'skipped.medium': 1,
+ *   'skipped.low': 1,
+ *   'skipped.total': 3,
+ *   'error.critical': 0,
+ *   'error.high': 0,
+ *   'error.medium': 0,
+ *   'error.low': 0,
+ *   'error.total': 0,
+ *   'no_impact.critical': 0,
+ *   'no_impact.high': 3,
+ *   'no_impact.medium': 30,
+ *   'no_impact.low': 0,
+ *   'no_impact.none': 0,
+ *   'no_impact.total': 33
+ * }
+ */
+export function flattenThreshold(threshold: Record<string, Record<string, number>>): Record<string, number> {
+  const ret: Record<string, number> = {}
+  for(const status of Object.keys(threshold)) {
+    for(const severity of Object.keys(threshold[status])) {
+      ret[`${status}.${severity}`] = threshold[status][severity]
+    }
+  }
+  return ret
+}
+
+/**
+ * Unflattens a threshold file.
+ * {
+ *   'passed.critical': 0,
+ *   'passed.high': 11,
+ *   'passed.medium': 208,
+ *   'passed.low': 8,
+ *   'passed.total': 227,
+ *   'failed.critical': 0,
+ *   'failed.high': 6,
+ *   'failed.medium': 87,
+ *   'failed.low': 19,
+ *   'failed.total': 112,
+ *   'skipped.critical': 0,
+ *   'skipped.high': 1,
+ *   'skipped.medium': 1,
+ *   'skipped.low': 1,
+ *   'skipped.total': 3,
+ *   'error.critical': 0,
+ *   'error.high': 0,
+ *   'error.medium': 0,
+ *   'error.low': 0,
+ *   'error.total': 0,
+ *   'no_impact.critical': 0,
+ *   'no_impact.high': 3,
+ *   'no_impact.medium': 30,
+ *   'no_impact.low': 0,
+ *   'no_impact.none': 0,
+ *   'no_impact.total': 33
+ * }
+ * is turned into
+ * {
+ *   passed: { critical: 0, high: 11, medium: 208, low: 8, total: 227 },
+ *   failed: { critical: 0, high: 6, medium: 87, low: 19, total: 112 },
+ *   skipped: { critical: 0, high: 1, medium: 1, low: 1, total: 3 },
+ *   error: { critical: 0, high: 0, medium: 0, low: 0, total: 0 },
+ *   no_impact: { critical: 0, high: 3, medium: 30, low: 0, none: 0, total: 33 }
+ * }
+ */
+export function unflattenThreshold(threshold: Record<string, number>): Record<string, Record<string, number>> {
+  const ret: Record<string, Record<string, number>> = {}
+  for(const statusDotSeverity of Object.keys(threshold)) {
+    const [status, severity] = statusDotSeverity.split('.')
+    if(!ret[status]) {
+      ret[status] = {}
+    }
+    ret[status][severity] = threshold[statusDotSeverity];
+  }
+  return ret;
+}
