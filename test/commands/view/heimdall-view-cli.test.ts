@@ -1,11 +1,11 @@
-import {expect, assert} from 'chai'
 import {runCommand} from '@oclif/test'
-import path from 'path'
 import axios from 'axios'
 import express from 'express'
 import {Server} from 'http'
-import {getErrorMessage, getInstalledPath} from '../../../src/utils/global'
 import {JSDOM} from 'jsdom'
+import path from 'path'
+import {afterEach, assert, beforeEach, describe, expect, it} from 'vitest'
+import {getErrorMessage, getInstalledPath} from '../../../src/utils/global'
 
 describe('Test heimdall SAF CLI Command', () => {
   it('runs heimdall with --help', async () => {
