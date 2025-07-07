@@ -17,7 +17,7 @@ import {
   statusSeverityPaths,
   totalMax,
   totalMin,
-  unflattenThreshold
+  unflattenThreshold,
 } from '../../utils/threshold'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 

@@ -369,8 +369,8 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
  */
 export function flattenThreshold(threshold: Record<string, Record<string, number>>): Record<string, number> {
   const ret: Record<string, number> = {}
-  for(const status of Object.keys(threshold)) {
-    for(const severity of Object.keys(threshold[status])) {
+  for (const status of Object.keys(threshold)) {
+    for (const severity of Object.keys(threshold[status])) {
       ret[`${status}.${severity}`] = threshold[status][severity]
     }
   }
@@ -418,12 +418,12 @@ export function flattenThreshold(threshold: Record<string, Record<string, number
  */
 export function unflattenThreshold(threshold: Record<string, number>): Record<string, Record<string, number>> {
   const ret: Record<string, Record<string, number>> = {}
-  for(const statusDotSeverity of Object.keys(threshold)) {
+  for (const statusDotSeverity of Object.keys(threshold)) {
     const [status, severity] = statusDotSeverity.split('.')
-    if(!ret[status]) {
+    if (!ret[status]) {
       ret[status] = {}
     }
-    ret[status][severity] = threshold[statusDotSeverity];
+    ret[status][severity] = threshold[statusDotSeverity]
   }
-  return ret;
+  return ret
 }
