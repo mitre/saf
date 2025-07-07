@@ -1,8 +1,7 @@
 import _ from 'lodash'
 import {ContextualizedEvaluation, ContextualizedProfile} from 'inspecjs'
-import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../threshold'
+import {calculateCompliance, extractStatusCounts, flattenThreshold, renameStatusName, severityTargetsObject} from '../threshold'
 import {createWinstonLogger} from '../logging'
-import {flattenThreshold} from '../threshold'
 
 /**
 * The logger for this command.
