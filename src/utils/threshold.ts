@@ -108,7 +108,7 @@ export function calculateCompliance(statusHash: StatusHash): number {
  * This function does not exit the process, it rather evaluates if an error occurred
  * logs an error message to the console and throws an error with the provided reason.
  *
- * It is the responsibility of the caller to catch the error and exit accordantly.
+ * It is the responsibility of the caller to catch the error and exit accordingly.
  *
  * @param condition - The condition to evaluate. If true, the process will exit with an error.
  * @param reason - Optional. The reason for the error. If not provided, a default message will be used.
@@ -327,7 +327,7 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
 }
 
 /**
- * Flattens a threshold file.
+ * Flattens a profile summary.
  * {
  *   passed: { critical: 0, high: 11, medium: 208, low: 8, total: 227 },
  *   failed: { critical: 0, high: 6, medium: 87, low: 19, total: 112 },
@@ -365,7 +365,7 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
  *   'no_impact.total': 33
  * }
  */
-export function flattenThreshold(threshold: Record<string, Record<string, number>>): Record<string, number> {
+export function flattenProfileSummary(threshold: Record<string, Record<string, number>>): Record<string, number> {
   const ret: Record<string, number> = {}
   for (const status of Object.keys(threshold)) {
     for (const severity of Object.keys(threshold[status])) {
