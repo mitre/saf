@@ -396,7 +396,7 @@ export function unflattenThreshold(threshold: Record<string, number>): Threshold
     if (!ret[left]) {
       ret[left] = {}
     }
-    if(right) {
+    if (right) {
       ret[left][middle] = {}
       ret[left][middle][right] = threshold[key]
     } else {
