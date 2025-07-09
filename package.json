@@ -222,7 +222,10 @@
     "pack-hdf-converters:darwin:linux": "./pack-hdf-converters.sh",
     "pack-inspecjs": "run-script-os",
     "pack-inspecjs:win32": "pack-inspecjs.bat",
-    "pack-inspecjs:darwin:linux": "./pack-inspecjs.sh"
+    "pack-inspecjs:darwin:linux": "./pack-inspecjs.sh",
+    "pack-inspec-objects": "run-script-os",
+    "pack-inspec-objects:win32": "pack-inspec-objects.bat",
+    "pack-inspec-objects:darwin:linux": "./pack-inspec-objects.sh"
   },
   "types": "lib/index.d.ts",
   "jest": {
