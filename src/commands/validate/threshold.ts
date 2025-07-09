@@ -21,13 +21,6 @@ import {
 } from '../../utils/threshold'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-let flat: any
-
-(async () => { // skipcq: JS-0328
-  flat = await import('flat')
-})()
-
 export default class Threshold extends BaseCommand<typeof Threshold> {
   static readonly usage = '<%= command.id %> -i <hdf-json> [-I <flattened-threshold-json> | -T <template-file>] [-h] [-L info|warn|debug|verbose]'
 
@@ -61,6 +54,7 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
   async run() { // skipcq: JS-R1005
     const {flags} = await this.parse(Threshold)
     let thresholds: ThresholdValues = {}
+    // inline does not seem to support the controls array option
     if (flags.templateInline) {
       // Need to do some processing to convert this into valid JSON
       const flattenedObjects = flags.templateInline.split(',').map((value: string) => value.trim().replace('{', '').replace('}', ''))
