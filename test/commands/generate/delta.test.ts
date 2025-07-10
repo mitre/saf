@@ -100,25 +100,22 @@ describe('Test generate delta command', () => {
     assert.isTrue(isFile)
   })
 
-  // TODO: look at this commented out test
   // should process delta using the fuzzy logic
-  // it('should generate the correct number of controls using fuzzy logic to match and map controls', async () => {
-  //   const {stdout} = await runCommand<{name: string}>(['generate delta',
-  //     '-J', path.resolve('./test/sample_data/inspec/json/profile_and_controls/Windows_Server_2022_v1r3_mini-profile.json'),
-  //     '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2022_V2R1_mini-sample-xccdf.xml'),
-  //     '-o', `${tmpobj.name}`,
-  //     '-M',
-  //     '-c', path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2022_v1r3_mini_controls/'),
-  //   ])
-
-  //   console.log(stdout)
-  //   expect(stdout).to.include('Total Controls Available for Delta:  5')
-  //   expect(stdout).to.include('Total Controls Found on XCCDF:  5')
-  //   expect(stdout).to.include('Match Controls:  5')
-  //   expect(stdout).to.include('Mapping (From --> To):  V-93369 --> SV-254238')
-  //   expect(stdout).to.include('Mapping (From --> To):  V-93473 --> SV-254239')
-  //   expect(stdout).to.include('Mapping (From --> To):  V-93205 --> SV-254240')
-  //   expect(stdout).to.include('Mapping (From --> To):  V-93207 --> SV-254241')
-  //   expect(stdout).to.include('Mapping (From --> To):  V-93461 --> SV-254242')
-  // })
+  it('should generate the correct number of controls using fuzzy logic to match and map controls', async () => {
+    const {stdout} = await runCommand<{name: string}>(['generate delta',
+      '-J', path.resolve('./test/sample_data/inspec/json/profile_and_controls/Windows_Server_2022_v1r3_mini-profile.json'),
+      '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2022_V2R1_mini-sample-xccdf.xml'),
+      '-o', `${tmpobj.name}`,
+      '-M',
+      '-c', path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2022_v1r3_mini_controls/'),
+    ])
+    expect(stdout).to.include('Total Controls Available for Delta:  5')
+    expect(stdout).to.include('Total Controls Found on XCCDF:  5')
+    expect(stdout).to.include('Match Controls:  5')
+    expect(stdout).to.include('Best Match Candidate:  V-93461 --> SV-254242')
+    expect(stdout).to.include('Best Match Candidate:  V-93473 --> SV-254239')
+    expect(stdout).to.include('Best Match Candidate:  V-93205 --> SV-254240')
+    expect(stdout).to.include('Best Match Candidate:  V-93207 --> SV-254241')
+    expect(stdout).to.include('Best Match Candidate:  V-93461 --> SV-254242')
+  })
 })
