@@ -201,12 +201,8 @@
     "dev": "run-script-os",
     "dev:win32": "(IF EXIST lib rmdir /s /q lib) && tsc && node bin/run",
     "dev:darwin:linux": "rm -rf lib && tsc && node bin/run",
-    "test": "npm run test:mocha && npm run test:jest",
+    "test": "vitest",
     "tests": "npm run test",
-    "test:mocha": "ts-mocha --timeout 25000 --forbid-only \"test/**/*.test.ts\"",
-    "test:mocha:one": "ts-mocha --timeout 25000 --forbid-only",
-    "test:jest": "jest",
-    "test:jest:one": "jest --findRelatedTests",
     "prepack": "run-script-os",
     "prepack:win32": "(IF EXIST lib rmdir /s /q lib) && tsc",
     "prepack:darwin:linux": "rm -rf lib && tsc",
@@ -220,17 +216,5 @@
     "pack-inspec-objects:win32": "pack-inspec-objects.bat",
     "pack-inspec-objects:darwin:linux": "./pack-inspec-objects.sh"
   },
-  "types": "lib/index.d.ts",
-  "jest": {
-    "preset": "ts-jest",
-    "testEnvironment": "node",
-    "testMatch": [
-      "**/test/**/**/**/__tests__/**/*.ts"
-    ]
-  },
-  "mocha": {
-    "exclude": [
-      "**/test/**/**/__tests__/**/*.ts"
-    ]
-  }
+  "types": "lib/index.d.ts"
 }
