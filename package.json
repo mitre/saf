@@ -14,7 +14,7 @@
     "@mitre/emass_client": "3.22.0",
     "@mitre/hdf-converters": "2.11.5",
     "@mitre/heimdall-lite": "2.11.5",
-    "@mitre/inspec-objects": "2.0.4",
+    "@mitre/inspec-objects": "2.0.5",
     "@oclif/core": "^4.2.10",
     "@oclif/plugin-help": "^6.0.9",
     "@oclif/plugin-plugins": "^5.0.14",
@@ -48,7 +48,6 @@
     "dotenv": "^17.0.1",
     "express": "^5.1.0",
     "fast-xml-parser": "^5.0.7",
-    "flat": "^6.0.1",
     "form-data": "^4.0.0",
     "fs-extra": "^11.1.1",
     "fuse.js": "^7.0.0",
@@ -97,7 +96,7 @@
     "eslint-plugin-n": "^17.16.2",
     "eslint-plugin-unicorn": "^59.0.0",
     "jsdom": "^26.0.0",
-    "marked": "^16.0.0",
+    "marked": "~15.0.12",
     "mocha": "^11",
     "mock-fs": "^5.2.0",
     "oclif": "^4.8.8",
@@ -223,7 +222,10 @@
     "pack-hdf-converters:darwin:linux": "./pack-hdf-converters.sh",
     "pack-inspecjs": "run-script-os",
     "pack-inspecjs:win32": "pack-inspecjs.bat",
-    "pack-inspecjs:darwin:linux": "./pack-inspecjs.sh"
+    "pack-inspecjs:darwin:linux": "./pack-inspecjs.sh",
+    "pack-inspec-objects": "run-script-os",
+    "pack-inspec-objects:win32": "pack-inspec-objects.bat",
+    "pack-inspec-objects:darwin:linux": "./pack-inspec-objects.sh"
   },
   "types": "lib/index.d.ts",
   "jest": {
