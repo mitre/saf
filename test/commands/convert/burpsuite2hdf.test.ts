@@ -1,8 +1,8 @@
-import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
-import tmp from 'tmp'
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
+import tmp from 'tmp'
+import {describe, expect, it} from 'vitest'
 import {omitHDFChangingFields} from '../utils'
 
 describe('Test burpsuite', () => {

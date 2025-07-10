@@ -1,9 +1,10 @@
 import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
-import tmp from 'tmp'
-import path from 'path'
-import fs from 'fs'
 import {parse} from 'csv-parse/sync'
+import fs from 'fs'
+import path from 'path'
+import tmp from 'tmp'
+import {describe, expect, it} from 'vitest'
 
 describe('Test hdf2csv triple_overlay_profile_example', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
