@@ -29,7 +29,7 @@ describe('Test hdf2caat two RHEL HDF and a RHEL triple overlay HDF', () => {
     const contents = fs.readFileSync(`${tmpobj.name}/caat.xlsx`, 'utf8')
     console.log('try read fs')
     // console.dir(contents)
-    const converted = XLSX.readFile(contents, {type: 'string'}) // XLSX.readFile(`${tmpobj.name}/caat.xlsx`, {type: 'file'})
+    const converted = XLSX.readFile(`${tmpobj.name}/caat.xlsx`, {type: 'file'})
     console.log('try read xlsx')
     const sample = XLSX.readFile(path.resolve('./test/sample_data/HDF/output/caat/caat.xlsx'), {type: 'file'})
     console.log('try read sample')
