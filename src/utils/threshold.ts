@@ -108,7 +108,7 @@ export function calculateCompliance(statusHash: StatusHash): number {
  * This function does not exit the process, it rather evaluates if an error occurred
  * logs an error message to the console and throws an error with the provided reason.
  *
- * It is the responsibility of the caller to catch the error and exit accordantly.
+ * It is the responsibility of the caller to catch the error and exit accordingly.
  *
  * @param condition - The condition to evaluate. If true, the process will exit with an error.
  * @param reason - Optional. The reason for the error. If not provided, a default message will be used.
@@ -181,9 +181,7 @@ export function reverseStatusName(statusName: string): 'passed' | 'failed' | 'sk
 }
 
 export function getControlIdMap(profile: ContextualizedProfile, thresholds?: ThresholdValues) {
-  if (!thresholds) {
-    thresholds = {} // skipcq: JS-0083
-  }
+  thresholds ??= {}
 
   for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
     const control = c.root
@@ -329,7 +327,7 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
 }
 
 /**
- * Flattens a threshold file.
+ * Flattens a profile summary.
  * {
  *   passed: { critical: 0, high: 11, medium: 208, low: 8, total: 227 },
  *   failed: { critical: 0, high: 6, medium: 87, low: 19, total: 112 },
@@ -367,10 +365,10 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
  *   'no_impact.total': 33
  * }
  */
-export function flattenThreshold(threshold: Record<string, Record<string, number>>): Record<string, number> {
+export function flattenProfileSummary(threshold: Record<string, Record<string, number>>): Record<string, number> {
   const ret: Record<string, number> = {}
-  for(const status of Object.keys(threshold)) {
-    for(const severity of Object.keys(threshold[status])) {
+  for (const status of Object.keys(threshold)) {
+    for (const severity of Object.keys(threshold[status])) {
       ret[`${status}.${severity}`] = threshold[status][severity]
     }
   }
@@ -378,52 +376,32 @@ export function flattenThreshold(threshold: Record<string, Record<string, number
 }
 
 /**
- * Unflattens a threshold file.
+ * Unflattens an inline threshold.
  * {
- *   'passed.critical': 0,
- *   'passed.high': 11,
- *   'passed.medium': 208,
- *   'passed.low': 8,
- *   'passed.total': 227,
- *   'failed.critical': 0,
- *   'failed.high': 6,
- *   'failed.medium': 87,
- *   'failed.low': 19,
- *   'failed.total': 112,
- *   'skipped.critical': 0,
- *   'skipped.high': 1,
- *   'skipped.medium': 1,
- *   'skipped.low': 1,
- *   'skipped.total': 3,
- *   'error.critical': 0,
- *   'error.high': 0,
- *   'error.medium': 0,
- *   'error.low': 0,
- *   'error.total': 0,
- *   'no_impact.critical': 0,
- *   'no_impact.high': 3,
- *   'no_impact.medium': 30,
- *   'no_impact.low': 0,
- *   'no_impact.none': 0,
- *   'no_impact.total': 33
+ *   'compliance.min': 66,
+ *   'passed.critical.min': 0,
+ *   'failed.medium.min': 0
  * }
  * is turned into
  * {
- *   passed: { critical: 0, high: 11, medium: 208, low: 8, total: 227 },
- *   failed: { critical: 0, high: 6, medium: 87, low: 19, total: 112 },
- *   skipped: { critical: 0, high: 1, medium: 1, low: 1, total: 3 },
- *   error: { critical: 0, high: 0, medium: 0, low: 0, total: 0 },
- *   no_impact: { critical: 0, high: 3, medium: 30, low: 0, none: 0, total: 33 }
+ *   compliance: { min: 66 },
+ *   passed: { critical: { min: 0 } },
+ *   failed: { medium: { min: 0 } }
  * }
  */
-export function unflattenThreshold(threshold: Record<string, number>): Record<string, Record<string, number>> {
-  const ret: Record<string, Record<string, number>> = {}
-  for(const statusDotSeverity of Object.keys(threshold)) {
-    const [status, severity] = statusDotSeverity.split('.')
-    if(!ret[status]) {
-      ret[status] = {}
+export function unflattenThreshold(threshold: Record<string, number>): ThresholdValues {
+  const ret: Record<string, Record<string, number | Record<string, number>>> = {}
+  for (const key of Object.keys(threshold)) {
+    const [left, middle, right] = key.split('.')
+    if (!ret[left]) {
+      ret[left] = {}
     }
-    ret[status][severity] = threshold[statusDotSeverity];
+    if (right) {
+      ret[left][middle] = {}
+      ret[left][middle][right] = threshold[key]
+    } else {
+      ret[left][middle] = threshold[key]
+    }
   }
-  return ret;
+  return ret
 }

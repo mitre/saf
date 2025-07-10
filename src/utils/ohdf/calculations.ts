@@ -1,8 +1,7 @@
 import _ from 'lodash'
 import {ContextualizedEvaluation, ContextualizedProfile} from 'inspecjs'
-import {calculateCompliance, extractStatusCounts, renameStatusName, severityTargetsObject} from '../threshold'
+import {calculateCompliance, extractStatusCounts, flattenProfileSummary, renameStatusName, severityTargetsObject} from '../threshold'
 import {createWinstonLogger} from '../logging'
-import {flattenThreshold} from '../threshold'
 
 /**
 * The logger for this command.
@@ -61,7 +60,7 @@ export function calculateTotalCountsForSummaries(summaries: Record<string, Recor
   const totals: Record<string, Record<string, number>> = {}
   Object.entries(summaries).forEach(([profileName, profileSummaries]) => {
     profileSummaries.forEach((profileSummary) => {
-      const flattened: Record<string, number> = flattenThreshold(profileSummary)
+      const flattened: Record<string, number> = flattenProfileSummary(profileSummary)
       Object.entries(flattened).forEach(([key, value]) => {
         const existingValue = _.get(totals, `${profileName}.${key}`, 0)
         if (typeof existingValue === 'number') {
