@@ -120,6 +120,7 @@ module.exports = [
       'no-unused-vars': 'warn',
       'no-unused-expressions': 'error',
       'no-await-in-loop': 'off',
+      'no-unused-vars': ['warn', { 'argsIgnorePattern': '^_' }],
 
       // eslint-plugin-n rules (these were moved from eslint-plugin-node)
       'n/exports-style': [
