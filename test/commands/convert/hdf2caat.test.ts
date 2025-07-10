@@ -9,7 +9,7 @@ describe('Test hdf2caat two RHEL HDF and a RHEL triple overlay HDF', () => {
   let tmpobj: tmp.DirResult
 
   beforeAll(() => {
-    XLSX.set_fs(fs) # https://docs.sheetjs.com/docs/getting-started/installation/nodejs/#filesystem-operations
+    XLSX.set_fs(fs) // https://docs.sheetjs.com/docs/getting-started/installation/nodejs/#filesystem-operations
 
     tmpobj = tmp.dirSync({unsafeCleanup: true})
   })
