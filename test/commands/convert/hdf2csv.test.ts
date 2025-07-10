@@ -1,4 +1,3 @@
-import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import {parse} from 'csv-parse/sync'
 import fs from 'fs'

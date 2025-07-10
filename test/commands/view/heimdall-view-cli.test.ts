@@ -22,13 +22,13 @@ describe('Test Heimdall Embedded', async () => {
     const staticFilesDirectory = path.join(installedPath, 'node_modules/@mitre/heimdall-lite/dist')
     const predefinedLoadJSON = express.json() // Replace this with your actual middleware
     server = express()
-    .use(predefinedLoadJSON)
-    .use(express.static(staticFilesDirectory))
+      .use(predefinedLoadJSON)
+      .use(express.static(staticFilesDirectory))
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-    .use((_err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-      res.status(500).send('Something broke!')
-    })
-    .listen(3000)
+      .use((_err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+        res.status(500).send('Something broke!')
+      })
+      .listen(3000)
 
     await new Promise<void>((resolve) => {
       server.on('listening', () => {
