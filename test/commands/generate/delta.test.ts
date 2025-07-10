@@ -1,8 +1,8 @@
-import {expect, assert} from 'chai'
 import {runCommand} from '@oclif/test'
-import tmp from 'tmp'
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
+import tmp from 'tmp'
+import {assert, describe, expect, it} from 'vitest'
 
 // Functional tests
 describe('Test generate delta command', () => {
@@ -100,6 +100,7 @@ describe('Test generate delta command', () => {
     assert.isTrue(isFile)
   })
 
+  // TODO: look at this commented out test
   // should process delta using the fuzzy logic
   // it('should generate the correct number of controls using fuzzy logic to match and map controls', async () => {
   //   const {stdout} = await runCommand<{name: string}>(['generate delta',
