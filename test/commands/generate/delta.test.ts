@@ -102,7 +102,8 @@ describe('Test generate delta command', () => {
 
   // should process delta using the fuzzy logic
   it('should generate the correct number of controls using fuzzy logic to match and map controls', async () => {
-    const {stdout} = await runCommand<{name: string}>(['generate delta',
+    const {stdout} = await runCommand<{name: string}>([
+      'generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/profile_and_controls/Windows_Server_2022_v1r3_mini-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2022_V2R1_mini-sample-xccdf.xml'),
       '-o', `${tmpobj.name}`,
