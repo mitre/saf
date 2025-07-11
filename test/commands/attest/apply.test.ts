@@ -1,19 +1,18 @@
-import {expect} from 'chai'
-import {before, after} from 'mocha'
 import {runCommand} from '@oclif/test'
-import tmp from 'tmp'
-import path from 'path'
 import fs from 'fs'
+import path from 'path'
+import tmp from 'tmp'
+import {afterAll, beforeAll, describe, expect, it} from 'vitest'
 import {omitHDFChangingFields} from '../utils'
 
 describe('Test attest apply', () => {
   let tmpobj: tmp.DirResult
 
-  before(() => {
+  beforeAll(() => {
     tmpobj = tmp.dirSync({unsafeCleanup: true})
   })
 
-  after(() => {
+  afterAll(() => {
     tmpobj.removeCallback()
   })
 

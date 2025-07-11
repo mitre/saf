@@ -1,5 +1,5 @@
-import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
+import {describe, expect, it} from 'vitest'
 import path from 'path'
 
 describe('Test validate threshold - using template file', () => {

@@ -1,11 +1,22 @@
-import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
-import tmp from 'tmp'
-import path from 'path'
 import * as XLSX from '@e965/xlsx'
+import fs from 'fs'
+import path from 'path'
+import tmp from 'tmp'
+import {beforeAll, afterAll, describe, expect, it} from 'vitest'
 
 describe('Test hdf2caat two RHEL HDF and a RHEL triple overlay HDF', () => {
-  const tmpobj = tmp.dirSync({unsafeCleanup: true})
+  let tmpobj: tmp.DirResult
+
+  beforeAll(() => {
+    XLSX.set_fs(fs) // https://docs.sheetjs.com/docs/getting-started/installation/nodejs/#filesystem-operations
+
+    tmpobj = tmp.dirSync({unsafeCleanup: true})
+  })
+
+  afterAll(() => {
+    tmpobj.removeCallback()
+  })
 
   it('hdf-converter output test', async () => {
     await runCommand<{name: string}>([

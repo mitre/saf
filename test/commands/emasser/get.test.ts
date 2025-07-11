@@ -1,5 +1,3 @@
-import {expect} from 'chai'
-import {InitMockServer} from './mock.server'
 import {
   SystemsApi, SystemRolesApi, TestApi,
   POAMApi, CACApi, PACApi, MilestonesApi,
@@ -25,7 +23,6 @@ import {
   CoastGuardSystemFISMAMetricsDashboardApi, SystemFISMAMetricsDashboardApi,
   VASystemDashboardsApi, CMMCAssessmentDashboardsApi,
 } from '@mitre/emass_client'
-
 import {
   PoamResponseGetPoams, PoamResponseGetSystems,
   SystemResponse, SystemRolesResponse, SystemsResponse,
@@ -36,7 +33,9 @@ import {
   WorkflowInstancesResponseGet, WorkflowInstanceResponseGet,
   CmmcResponseGet,
 } from '@mitre/emass_client/dist/api'
+import {describe, expect, it} from 'vitest'
 import {getErrorMessage} from '../../../src/utils/global'
+import {InitMockServer} from './mock.server'
 
 describe('Test eMASSer API CLI (GET) commands', () => {
   const mocServer = new InitMockServer()

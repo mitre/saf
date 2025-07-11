@@ -1,15 +1,13 @@
-// test/utils/ohdf/calculations.test.ts
-
+import fs from 'fs'
+import path from 'path'
+import {beforeEach, describe, expect, it} from 'vitest'
+import {ContextualizedEvaluation, ContextualizedProfile} from 'inspecjs'
 import {
   calculateSummariesForExecJSONs,
   calculateComplianceScoresForExecJSONs,
   calculateTotalCountsForSummaries,
   calculateSeverityCounts,
 } from '../../../src/utils/ohdf/calculations'
-import {ContextualizedEvaluation, ContextualizedProfile} from 'inspecjs'
-import path from 'path'
-import fs from 'fs'
-import {expect} from 'chai'
 import {loadExecJSONs} from '../../../src/utils/ohdf/dataLoader'
 
 const UTF8_ENCODING = 'utf8'

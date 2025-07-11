@@ -1,5 +1,5 @@
-import {expect} from 'chai'
 import path from 'path'
+import {beforeEach, describe, expect, it} from 'vitest'
 import {ContextualizedEvaluation} from 'inspecjs'
 import {loadExecJSONs} from '../../../src/utils/ohdf/dataLoader'
 
