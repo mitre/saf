@@ -12,7 +12,7 @@
     "@microsoft/microsoft-graph-client": "^3.0.7",
     "@microsoft/microsoft-graph-types": "^2.40.0",
     "@mitre/emass_client": "3.22.0",
-    "@mitre/hdf-converters": "2.11.5",
+    "@mitre/hdf-converters": "2.11.6",
     "@mitre/heimdall-lite": "2.11.6",
     "@mitre/inspec-objects": "2.0.5",
     "@oclif/core": "^4.2.10",
