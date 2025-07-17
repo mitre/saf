@@ -1,9 +1,8 @@
-import {expect} from 'chai'
-import {before} from 'mocha'
 import {runCommand} from '@oclif/test'
-import tmp from 'tmp'
-import path from 'path'
 import {promises as fse} from 'fs'
+import path from 'path'
+import tmp from 'tmp'
+import {beforeAll, describe, expect, it} from 'vitest'
 
 function delay(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms))
@@ -13,7 +12,7 @@ describe('Test ckl2POAM RHEL8 example', () => {
   const tmpobj = tmp.dirSync({unsafeCleanup: true})
   let matchingFiles: string[]
 
-  before(async () => {
+  beforeAll(async () => {
     await runCommand<{name: string}>([
       'convert ckl2POAM',
       '-i', path.resolve('./test/sample_data/checklist/sample_input_report/converted-RHEL8V1R3.ckl'),
