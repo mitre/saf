@@ -10,7 +10,6 @@ export class InitMockServer {
   public basePath: Configuration['basePath']
 
   constructor() {
-    // TODO: ask about this
     this.configuration = new Configuration({
       basePath: 'https://stoplight.io/mocks/mitre/emasser/32836028',
       formDataCtor: FormData,
