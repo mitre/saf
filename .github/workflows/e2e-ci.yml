@@ -23,9 +23,6 @@ jobs:
           check-latest: true
           cache: 'npm'
 
-      - name: Install dependencies on ${{ matrix.platform }}
-        run: npm ci
-
       - name: Install cinc-auditor on windows
         if: ${{ matrix.platform == 'windows' }}
         shell: pwsh
@@ -40,7 +37,18 @@ jobs:
         run: |
           curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
 
-      - name: Compile and run tests on ${{ matrix.platform }}
+      - name: Install dependencies, compile, and run tests on ${{ matrix.platform }}
         run: |
+          npm ci
           npm run prepack
           npm run test
+
+      - name: Sanity check that the SAF CLI works with no dev dependencies on ${{ matrix.platform }}
+        run: |
+          npm ci --omit=dev
+          npm run prepack
+          if stderr=$(./bin/run -v 2>&1 1>/dev/null); then
+            [ -z "stderr" ] || echo "Failed: received the following stderr:\n$stderr"
+          else
+            echo "Failed: received a non-zero exit code when doing `saf -v`"
+          fi
