@@ -60,7 +60,7 @@ jobs:
               exit 1
             }
           } else {
-            Write-Host "Failed: received a non-zero exit code when doing `saf -v`"
+            Write-Host "Failed: received a non-zero exit code when doing 'saf -v'"
             exit 1
           }
 
