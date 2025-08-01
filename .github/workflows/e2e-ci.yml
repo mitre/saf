@@ -43,7 +43,29 @@ jobs:
           npm run prepack
           npm run test
 
-      - name: Sanity check that the SAF CLI works with no dev dependencies on ${{ matrix.platform }}
+      - name: Sanity check that the SAF CLI works with no dev dependencies on ubuntu or macos
+        if: ${{ matrix.platform == 'windows' }}
+        shell: pwsh
+        run: |
+          npm ci --omit=dev
+          npm run prepack
+          $stderrFile = New-TemporaryFile
+          ./bin/run -v 2> $stderrFile.FullName 1> $null
+          $exitCode = $LASTEXITCODE
+          $stderr = Get-Content $stderrFile.FullName -Raw
+          Remove-Item $stderrFile
+          if ($exitCode -eq 0) {
+            if ($stderr.Trim()) {
+              Write-Host "Failed: received the following stderr:`n$stderr"
+              exit 1
+            }
+          } else {
+            Write-Host "Failed: received a non-zero exit code when doing `saf -v`"
+            exit 1
+          }
+
+      - name: Sanity check that the SAF CLI works with no dev dependencies on ubuntu or macos
+        if: ${{ matrix.platform == 'ubuntu' || matrix.platform == 'macos' }}
         run: |
           npm ci --omit=dev
           npm run prepack
