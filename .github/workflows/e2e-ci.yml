@@ -43,7 +43,7 @@ jobs:
           npm run prepack
           npm run test
 
-      - name: Sanity check that the SAF CLI works with no dev dependencies on ubuntu or macos
+      - name: Sanity check that the SAF CLI works with no dev dependencies on windows
         if: ${{ matrix.platform == 'windows' }}
         shell: pwsh
         run: |
