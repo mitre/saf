@@ -55,7 +55,7 @@ jobs:
           $stderr = Get-Content $stderrFile.FullName -Raw
           Remove-Item $stderrFile
           if ($exitCode -eq 0) {
-            if ($stderr.Trim()) {
+            if ($stderr?.Trim()) {
               Write-Host "Failed: received the following stderr:`n$stderr"
               exit 1
             }
