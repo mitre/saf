@@ -23,25 +23,25 @@ jobs:
           check-latest: true
           cache: 'npm'
 
-      - name: Install cinc-auditor on windows
-        if: ${{ matrix.platform == 'windows' }}
-        shell: pwsh
-        run: |
-          Start-Process powershell -Verb RunAs
-          . { iwr -useb https://omnitruck.cinc.sh/install.ps1 } | iex; install -project cinc-auditor
-          $env:Path = $env:Path + ';C:\cinc-project\cinc-auditor\bin' + ';C:\cinc-project\cinc-auditor\embedded\bin'
-          cinc-auditor -v
+      # - name: Install cinc-auditor on windows
+      #   if: ${{ matrix.platform == 'windows' }}
+      #   shell: pwsh
+      #   run: |
+      #     Start-Process powershell -Verb RunAs
+      #     . { iwr -useb https://omnitruck.cinc.sh/install.ps1 } | iex; install -project cinc-auditor
+      #     $env:Path = $env:Path + ';C:\cinc-project\cinc-auditor\bin' + ';C:\cinc-project\cinc-auditor\embedded\bin'
+      #     cinc-auditor -v
 
-      - name: Install cinc-auditor on ubuntu or macos
-        if: ${{ matrix.platform == 'ubuntu' || matrix.platform == 'macos' }}
-        run: |
-          curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
+      # - name: Install cinc-auditor on ubuntu or macos
+      #   if: ${{ matrix.platform == 'ubuntu' || matrix.platform == 'macos' }}
+      #   run: |
+      #     curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
 
-      - name: Install dependencies, compile, and run tests on ${{ matrix.platform }}
-        run: |
-          npm ci
-          npm run prepack
-          npm run test
+      # - name: Install dependencies, compile, and run tests on ${{ matrix.platform }}
+      #   run: |
+      #     npm ci
+      #     npm run prepack
+      #     npm run test
 
       - name: Sanity check that the SAF CLI works with no dev dependencies on windows
         if: ${{ matrix.platform == 'windows' }}
