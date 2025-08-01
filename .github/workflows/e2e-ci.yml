@@ -48,7 +48,8 @@ jobs:
           npm ci --omit=dev
           npm run prepack
           if stderr=$(./bin/run -v 2>&1 1>/dev/null); then
-            [ -z "stderr" ] || echo "Failed: received the following stderr:\n$stderr"
+            [ -z "stderr" ] || (echo "Failed: received the following stderr:\n$stderr"; return 1)
           else
             echo "Failed: received a non-zero exit code when doing `saf -v`"
+            return 1
           fi
