@@ -31,7 +31,6 @@ describe('Test Heimdall Embedded', async () => {
 
     await new Promise<void>((resolve) => {
       server.on('listening', () => {
-        console.log('hello')
         resolve()
       })
     })
@@ -40,7 +39,6 @@ describe('Test Heimdall Embedded', async () => {
   afterAll(async () => {
     await new Promise<void>((resolve) => {
       server.close(() => {
-        console.log('gootbye')
         resolve()
       })
     })

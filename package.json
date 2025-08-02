@@ -66,6 +66,7 @@
     "prompt-sync": "^4.2.0",
     "run-script-os": "^1.1.6",
     "table": "^6.8.1",
+    "tmp": "^0.2.1",
     "tsimportlib": "^0.0.5",
     "tslib": "^2",
     "typescript": "~5.8",
@@ -93,7 +94,6 @@
     "marked": "~16.1.0",
     "mock-fs": "^5.2.0",
     "oclif": "^4.8.8",
-    "tmp": "^0.2.1",
     "typescript-eslint": "^8.26.1",
     "vitest": "^3.2.4"
   },
