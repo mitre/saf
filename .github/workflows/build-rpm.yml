@@ -34,7 +34,7 @@ jobs:
         working-directory: ./saf
         run: |
           rm -rf test
-          npm ci
+          npm ci --omit=dev
 
       - name: set filename envvar
         working-directory: ./saf
@@ -51,11 +51,11 @@ jobs:
           gzip -dc "$(ls)" > "$filename.tar"
           tar -rf "$filename.tar" --transform 's|^\.\.|saf|' ../saf.spec
           gzip "$filename.tar"
- 
+
       - name: build rpm
         working-directory: ./saf
         run: rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)"
- 
+
       - name: upload binary as artifact
         uses: actions/upload-artifact@v4
         with:

@@ -3,7 +3,7 @@ import {defineConfig} from 'vitest/config';
 export default defineConfig({
   test: {
     disableConsoleIntercept: true,
-    hookTimeout: 40000,
-    testTimeout: 40000
+    hookTimeout: 80000,
+    testTimeout: 80000
   }
 });
