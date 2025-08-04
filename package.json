@@ -89,7 +89,7 @@
     "eslint": "^9.22.0",
     "eslint-formatter-stylish": "^8.40.0",
     "eslint-plugin-n": "^17.16.2",
-    "eslint-plugin-unicorn": "^59.0.0",
+    "eslint-plugin-unicorn": "^60.0.0",
     "jsdom": "^26.0.0",
     "marked": "~16.1.0",
     "mock-fs": "^5.2.0",

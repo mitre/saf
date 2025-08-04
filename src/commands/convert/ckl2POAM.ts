@@ -158,7 +158,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
                   ...iSTIG.VULN.map((vulnerability) => {
                     const values: Record<string, unknown> = {}
                     // Extract STIG_DATA
-                    vulnerability.STIG_DATA?.reverse().forEach((data) => {
+                    vulnerability.STIG_DATA?.toReversed().forEach((data) => {
                       values[data.VULN_ATTRIBUTE[0]] = data.ATTRIBUTE_DATA[0]
                     })
                     // Extract remaining fields (status, finding details, comments, security override, and severity justification)
