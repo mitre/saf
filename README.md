@@ -1114,6 +1114,8 @@ convert snyk2hdf              Translate a Snyk results JSON file into a Heimdall
 ```
 [top](#convert-other-formats-to-hdf)
 #### SonarQube to HDF
+NOTE: Pulling data from the SonarQube instance could take an extended amount of time depending on network conditions and the scale of the project being assessed.
+
 ```
 convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
                               project name and optional branch or pull/merge
@@ -1129,6 +1131,8 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
     -u, --url=<http://your.sonar.instance:9000>   (required) SonarQube Base URL (excluding '/api')       
     -b, --branch=<target-branch>                  Requires Sonarqube Developer Edition or above
     -p, --pullRequestID=<pull-request-id>         Requires Sonarqube Developer Edition or above
+    -g, --organization=<value>                    SonarQube organization name - used as a default when necessary to access rule descriptions
+    -w, --includeRaw                              Include raw input requests in HDF JSON file
 
   GLOBAL FLAGS
     -h, --help               Show CLI help
@@ -1137,7 +1141,7 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
         --interactive        Collect input tags interactively (not available on all CLI commands)
 
   EXAMPLES
-    $ saf convert sonarqube2hdf -n sonar_project_key -u http://sonar:9000 --auth abcdefg -p 123 -o scan_results.json
+    $ saf convert sonarqube2hdf -n sonar_project_key -u http://sonar:9000 --auth abcdefg -p 123 -o scan_results.json -w
 ```
 
 [top](#convert-other-formats-to-hdf)
