@@ -69,7 +69,7 @@
     "tmp": "^0.2.1",
     "tsimportlib": "^0.0.5",
     "tslib": "^2",
-    "typescript": "~5.8",
+    "typescript": "~5.9",
     "uuid": "^11.0.2",
     "winston": "^3.10.0",
     "xlsx-populate": "^1.21.0",
