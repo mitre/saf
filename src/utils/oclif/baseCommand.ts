@@ -59,7 +59,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   protected async catch(err: Error & {exitCode?: number}): Promise<void> { // skipcq: JS-0116
     // If error message is for missing flags, display what fields
     // are required, otherwise show the error
-    if (err.message.includes('See more help with --help')) {
+    if (err?.message?.includes('See more help with --help')) {
       this.warn(err.message.replace('--help', `\x1B[93m${process.argv.at(-2)} ${process.argv.at(-1)} -h or --help\x1B[0m`))
     } else {
       this.warn(err)
