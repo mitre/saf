@@ -59,6 +59,7 @@ jobs:
           ironbank_project_clone_url: repo1.dso.mil/dsop/mitre/security-automation-framework/saf.git
           git_commit_author_name: "Automated SAF CLI Release"
           git_commit_author_email: "saf@mitre.org"
+          issue_labels: ""
           draft: true
           update_commands: |
             yq e -i '.args.SAF_VERSION=\"${{ steps.format-tag.outputs.replaced }}\" | .tags[0]=\"${{ steps.format-tag.outputs.replaced }}\" | .labels.org.opencontainers.image.version=\"${{ steps.format-tag.outputs.replaced }}\" | .resources[1].tag=\"mitre/saf:${{ steps.format-tag.outputs.replaced }}\" | .resources[1].url=\"docker://docker.io/mitre/saf@${{ env.DOCKER_SHA }}\"' hardening_manifest.yaml
