@@ -61,7 +61,6 @@ jobs:
           git_commit_author_email: "saf@mitre.org"
           draft: true
           update_commands: |
-            yq --help
-            yq e -i '.args.SAF_VERSION="${{ steps.format-tag.outputs.replaced }}" | .tags[0]="${{ steps.format-tag.outputs.replaced }}" | .labels."org.opencontainers.image.version"="${{ steps.format-tag.outputs.replaced }}" | .resources[1].tag="mitre/saf:${{ steps.format-tag.outputs.replaced }}" | .resources[1].url="docker://docker.io/mitre/saf@${{ env.DOCKER_SHA }}"' hardening_manifest.yaml
+            yq e -i '.args.SAF_VERSION=\"${{ steps.format-tag.outputs.replaced }}\" | .tags[0]=\"${{ steps.format-tag.outputs.replaced }}\" | .labels.org.opencontainers.image.version=\"${{ steps.format-tag.outputs.replaced }}\" | .resources[1].tag=\"mitre/saf:${{ steps.format-tag.outputs.replaced }}\" | .resources[1].url=\"docker://docker.io/mitre/saf@${{ env.DOCKER_SHA }}\"' hardening_manifest.yaml
             sed -i s/SAF_VERSION=\.\*/SAF_VERSION=${{ steps.format-tag.outputs.replaced }}/ Dockerfile
 
