@@ -43,7 +43,7 @@ jobs:
           ironbank_pat: ${{ secrets.SAF_IRONBANK_REPO1_PAT }}
           ironbank_username: ${{ secrets.SAF_IRONBANK_REPO1_USERNAME }}
           ironbank_project_id: 17078
-          ironbank_project_clone_url: https://repo1.dso.mil/dsop/mitre/security-automation-framework/saf-mainline.git
+          ironbank_project_clone_url: repo1.dso.mil/dsop/mitre/security-automation-framework/saf-mainline.git
           git_commit_author_name: "Automated SAF CLI Release"
           git_commit_author_email: "saf@mitre.org"
           update_commands: |
