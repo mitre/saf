@@ -62,6 +62,6 @@ jobs:
           issue_labels: ""
           draft: true
           update_commands: |
-            yq e -i '.args.SAF_VERSION=\"${{ steps.format-tag.outputs.replaced }}\" | .tags[0]=\"${{ steps.format-tag.outputs.replaced }}\" | .labels.org.opencontainers.image.version=\"${{ steps.format-tag.outputs.replaced }}\" | .resources[1].tag=\"mitre/saf:${{ steps.format-tag.outputs.replaced }}\" | .resources[1].url=\"docker://docker.io/mitre/saf@${{ env.DOCKER_SHA }}\"' hardening_manifest.yaml
+            yq e -i '.args.SAF_VERSION=\"${{ steps.format-tag.outputs.replaced }}\" | .tags[0]=\"${{ steps.format-tag.outputs.replaced }}\" | .labels."org.opencontainers.image.version"=\"${{ steps.format-tag.outputs.replaced }}\" | .resources[0].tag=\"mitre/saf:${{ steps.format-tag.outputs.replaced }}\" | .resources[1].url=\"docker://docker.io/mitre/saf@${{ env.DOCKER_SHA }}\"' hardening_manifest.yaml
             sed -i s/SAF_VERSION=\.\*/SAF_VERSION=${{ steps.format-tag.outputs.replaced }}/ Dockerfile
 
