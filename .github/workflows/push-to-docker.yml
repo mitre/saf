@@ -9,6 +9,9 @@ on:
         description: 'Version'
         required: true
 
+permissions:
+  contents: read
+
 jobs:
   docker:
     runs-on: ubuntu-24.04
