@@ -35,14 +35,14 @@ jobs:
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-      # - name: Build and push the container image to DockerHub
-      #   id: docker_build
-      #   uses: docker/build-push-action@v5
-      #   with:
-      #     context: .
-      #     push: true
-      #     platforms: "linux/amd64,linux/arm64"
-      #     tags: mitre/saf:${{ steps.format-tag.outputs.replaced }} # mitre/saf:release-latest,mitre/saf:${{ steps.format-tag.outputs.replaced }},mitre/saf:v1
+      - name: Build and push the container image to DockerHub
+        id: docker_build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          platforms: "linux/amd64,linux/arm64"
+          tags: mitre/saf:release-latest,mitre/saf:${{ steps.format-tag.outputs.replaced }},mitre/saf:v1
       - name: Get Docker SHA since the Iron Bank release requires us to specify the exact resources we need them to pull into the environment
         shell: bash
         id: get-docker-sha
@@ -59,9 +59,6 @@ jobs:
           ironbank_project_clone_url: repo1.dso.mil/dsop/mitre/security-automation-framework/saf.git
           git_commit_author_name: "Automated SAF CLI Release"
           git_commit_author_email: "saf@mitre.org"
-          issue_labels: ""
-          draft: true
           update_commands: |
             yq e -i '.args.SAF_VERSION=\"${{ steps.format-tag.outputs.replaced }}\" | .tags[0]=\"${{ steps.format-tag.outputs.replaced }}\" | .labels.\"org.opencontainers.image.version\"=\"${{ steps.format-tag.outputs.replaced }}\" | .resources[0].tag=\"mitre/saf:${{ steps.format-tag.outputs.replaced }}\" | .resources[0].url=\"docker://docker.io/mitre/saf@${{ env.DOCKER_SHA }}\"' hardening_manifest.yaml
             sed -i s/SAF_VERSION=\.\*/SAF_VERSION=${{ steps.format-tag.outputs.replaced }}/ Dockerfile
-
