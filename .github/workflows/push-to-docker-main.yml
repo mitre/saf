@@ -36,7 +36,7 @@ jobs:
         run: |
           echo "DOCKER_SHA=$(docker pull mitre/saf:latest > /dev/null 2>&1 && docker inspect --format='{{index .RepoDigests 0}}' mitre/saf:latest | cut -d '@' -f 2)" >> $GITHUB_ENV
       - name: Upgrade Iron Bank
-        uses: mitre/ironbank_release_action@main
+        uses: mitre/ironbank_release_action@v1
         with:
           name: SAF-CLI
           version: ${{ github.sha }}
