@@ -18,7 +18,7 @@ export function omitHDFChangingFields(
             results: control.results.map((result) => {
               return {
                 ..._.omit(result, 'start_time'),
-                message: result.message?.replace(/Updated:.*\n/g, ''),
+                message: result.message?.replaceAll(/Updated:.*\n/g, ''),
               }
             }),
           }
@@ -36,7 +36,7 @@ export function omitChecklistChangingFields(input: string) {
 
 export function removeUUIDs(obj: Record<string, unknown>): void {
   for (const key in obj) {
-    if (!Object.prototype.hasOwnProperty.call(obj, key)) continue // Ensure it's own property
+    if (!Object.hasOwn(obj, key)) continue // Ensure it's own property
 
     const value = obj[key]
 
