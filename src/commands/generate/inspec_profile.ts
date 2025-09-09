@@ -321,7 +321,7 @@ function getCISReadmeContent(_xmlDoc: any): InspecReadme {
 
 function generateReadme(contentObj: InspecReadme, outDir: string, logger: Logger) {
   const readmeContent
-= `# ${contentObj.profileTitle}
+    = `# ${contentObj.profileTitle}
 This InSpec Profile was created to facilitate testing and auditing of \`${contentObj.profileShortName}\`
 infrastructure and applications when validating compliancy with ${contentObj.profileCompliance}
 requirements.
@@ -660,7 +660,7 @@ inputs:
 
 function generateLicense(outDir: string, logger: Logger) {
   const licensesContent
-= `Licensed under the apache-2.0 license, except as noted below.
+    = `Licensed under the apache-2.0 license, except as noted below.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -685,7 +685,7 @@ are permitted provided that the following conditions are met:
 
 function generateNotice(outDir: string, logger: Logger) {
   const noticeContent
-= `MITRE grants permission to reproduce, distribute, modify, and otherwise use this
+    = `MITRE grants permission to reproduce, distribute, modify, and otherwise use this
 software to the extent permitted by the licensed terms provided in the LICENSE.md
 file included with this project.
 
@@ -709,7 +709,7 @@ Office, 7515 Colshire Drive, McLean, VA 22102-7539, (703) 983-6000.
 
 function generateRubocopYml(outDir: string, logger: Logger) {
   const robocopContent
-= `AllCops:
+    = `AllCops:
   NewCops: enable
   Exclude:
   - "libraries/**/*"
@@ -889,7 +889,7 @@ Style/SwapValues: # new in 1.1
 
 function generateGemRc(outDir: string, logger: Logger) {
   const gemRc
-= `gem: --no-document
+    = `gem: --no-document
 `
   fs.writeFile(path.join(outDir, '.gemrc'), gemRc, (err) => {
     if (err) {
@@ -902,7 +902,7 @@ function generateGemRc(outDir: string, logger: Logger) {
 
 function generateGemFile(outDir: string, logger: Logger) {
   const gemFileContent
-= `# frozen_string_literal: true
+    = `# frozen_string_literal: true
 
 source 'https://rubygems.org'
 gem 'highline'
@@ -940,7 +940,7 @@ end
 
 function generateRakeFile(outDir: string, logger: Logger) {
   const rakefileContent
-= `# frozen_string_literal: true
+    = `# frozen_string_literal: true
 
 # !/usr/bin/env rake
 
@@ -976,7 +976,7 @@ task pre_commit_checks: [:lint, 'inspec:check']
 
 function generateGitIgnoreFile(outDir: string, logger: Logger) {
   const gitignoreContent
-= `.DS_Store
+    = `.DS_Store
 *.gem
 *.rbc
 /.config

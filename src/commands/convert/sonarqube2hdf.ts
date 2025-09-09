@@ -46,7 +46,7 @@ export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
     organization: Flags.string({
       char: 'g',
       required: false,
-      description: "SonarQube organization name - used as a default when necessary to access rule descriptions",
+      description: 'SonarQube organization name - used as a default when necessary to access rule descriptions',
     }),
     output: Flags.string({
       char: 'o',
@@ -69,7 +69,7 @@ export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
       flags.branch,
       flags.pullRequestID,
       flags.organization,
-      flags.includeRaw
+      flags.includeRaw,
     )
     fs.writeFileSync(
       checkSuffix(flags.output),
