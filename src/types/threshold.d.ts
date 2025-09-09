@@ -18,38 +18,38 @@ export type ControlIDThresholdValues = Record<string, Record<string, string[]>>
 export type ThresholdValues = {
   compliance?: {min?: number, max?: number}
   passed?: {
-    total: {controls?: string[], min?: number, max?: number}
-    critical: {controls?: string[], min?: number, max?: number}
-    high: {controls?: string[], min?: number, max?: number}
-    medium: {controls?: string[], min?: number, max?: number}
-    low: {controls?: string[], min?: number, max?: number}
+    total?: {controls?: string[], min?: number, max?: number}
+    critical?: {controls?: string[], min?: number, max?: number}
+    high?: {controls?: string[], min?: number, max?: number}
+    medium?: {controls?: string[], min?: number, max?: number}
+    low?: {controls?: string[], min?: number, max?: number}
   }
   failed?: {
-    total: {controls?: string[], min?: number, max?: number}
-    critical: {controls?: string[], min?: number, max?: number}
-    high: {controls?: string[], min?: number, max?: number}
-    medium: {controls?: string[], min?: number, max?: number}
-    low: {controls?: string[], min?: number, max?: number}
+    total?: {controls?: string[], min?: number, max?: number}
+    critical?: {controls?: string[], min?: number, max?: number}
+    high?: {controls?: string[], min?: number, max?: number}
+    medium?: {controls?: string[], min?: number, max?: number}
+    low?: {controls?: string[], min?: number, max?: number}
   }
   skipped?: {
-    total: {controls?: string[], min?: number, max?: number}
-    critical: {controls?: string[], min?: number, max?: number}
-    high: {controls?: string[], min?: number, max?: number}
-    medium: {controls?: string[], min?: number, max?: number}
-    low: {controls?: string[], min?: number, max?: number}
+    total?: {controls?: string[], min?: number, max?: number}
+    critical?: {controls?: string[], min?: number, max?: number}
+    high?: {controls?: string[], min?: number, max?: number}
+    medium?: {controls?: string[], min?: number, max?: number}
+    low?: {controls?: string[], min?: number, max?: number}
   }
   no_impact?: {
-    total: {controls?: string[], min?: number, max?: number}
-    critical: {controls?: string[], min?: number, max?: number}
-    high: {controls?: string[], min?: number, max?: number}
-    medium: {controls?: string[], min?: number, max?: number}
-    low: {controls?: string[], min?: number, max?: number}
+    total?: {controls?: string[], min?: number, max?: number}
+    critical?: {controls?: string[], min?: number, max?: number}
+    high?: {controls?: string[], min?: number, max?: number}
+    medium?: {controls?: string[], min?: number, max?: number}
+    low?: {controls?: string[], min?: number, max?: number}
   }
   error?: {
-    total: {controls?: string[], min?: number, max?: number}
-    critical: {controls?: string[], min?: number, max?: number}
-    high: {controls?: string[], min?: number, max?: number}
-    medium: {controls?: string[], min?: number, max?: number}
-    low: {controls?: string[], min?: number, max?: number}
+    total?: {controls?: string[], min?: number, max?: number}
+    critical?: {controls?: string[], min?: number, max?: number}
+    high?: {controls?: string[], min?: number, max?: number}
+    medium?: {controls?: string[], min?: number, max?: number}
+    low?: {controls?: string[], min?: number, max?: number}
   }
 }

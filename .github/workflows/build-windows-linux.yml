@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
-  
+
 jobs:
   build-deploy:
     runs-on: ubuntu-22.04
@@ -30,7 +30,7 @@ jobs:
         working-directory: ./saf
         run: |
           rm -rf test
-          npm ci
+          npm ci --omit=dev
 
       - name: Pack Windows Installer
         working-directory: ./saf
@@ -39,7 +39,7 @@ jobs:
       - name: Pack Debian Package
         working-directory: ./saf
         run: sudo npx oclif pack deb
-        
+
       - name: Rename Windows Installers
         run: |
           cd saf/dist/win32

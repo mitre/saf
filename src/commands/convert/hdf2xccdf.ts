@@ -2,6 +2,7 @@ import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {FromHDFToXCCDFMapper as Mapper} from '@mitre/hdf-converters'
 import {default as files} from '../../resources/files.json'
+import {checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class HDF2XCCDF extends BaseCommand<typeof HDF2XCCDF> {
@@ -32,6 +33,6 @@ export default class HDF2XCCDF extends BaseCommand<typeof HDF2XCCDF> {
       fs.readFileSync(flags.input, 'utf8'),
       files['xccdfTemplate.xml'].data,
     )
-    fs.writeFileSync(flags.output, converter.toXCCDF())
+    fs.writeFileSync(checkSuffix(flags.output, '.xml'), converter.toXCCDF())
   }
 }

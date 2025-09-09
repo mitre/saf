@@ -24,7 +24,7 @@ import {
   replaceSpecialCharacters,
 } from '../../utils/ckl2poam'
 import {default as files} from '../../resources/files.json'
-import {convertFullPathToFilename, dataURLtoU8Array} from '../../utils/global'
+import {basename, dataURLtoU8Array} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 const prompt = promptSync()
@@ -158,7 +158,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
                   ...iSTIG.VULN.map((vulnerability) => {
                     const values: Record<string, unknown> = {}
                     // Extract STIG_DATA
-                    vulnerability.STIG_DATA?.reverse().forEach((data) => {
+                    vulnerability.STIG_DATA?.toReversed().forEach((data) => {
                       values[data.VULN_ATTRIBUTE[0]] = data.ATTRIBUTE_DATA[0]
                     })
                     // Extract remaining fields (status, finding details, comments, security override, and severity justification)
@@ -312,7 +312,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
               return workBook.toFileAsync(
                 path.join(
                   flags.output,
-                  `${convertFullPathToFilename(fileName)}-${moment(new Date()).format('YYYY-MM-DD-HHmm')}.xlsm`,
+                  `${basename(fileName)}-${moment(new Date()).format('YYYY-MM-DD-HHmm')}.xlsm`,
                 ),
               )
             })

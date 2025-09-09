@@ -1,4 +1,5 @@
-import marked from 'marked'
+import * as marked from 'marked'
+import {beforeEach, describe, expect, it} from 'vitest'
 import {generateMarkdownTable, generateMarkdownTableRow, prettyPrintColumnTitle, prettyPrintRowTitle} from '../../../../src/utils/ohdf/outputGenerator'
 import {PrintableSummary} from '../../../../src/utils/ohdf/types'
 

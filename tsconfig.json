@@ -11,9 +11,9 @@
     "rootDir": "src",
     "strict": true,
     "skipLibCheck": true,
-    "target": "es2022",
+    "target": "es2023",
     "sourceMap": true,
-    "types": ["node", "jest"]
+    "types": ["node"]
   },
   "include": ["src/**/*"]
 }

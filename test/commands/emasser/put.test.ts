@@ -1,5 +1,3 @@
-import {expect} from 'chai'
-import {InitMockServer} from './mock.server'
 import {
   ArtifactsApi, ControlsApi, MilestonesApi,
   POAMApi, HardwareBaselineApi, SoftwareBaselineApi,
@@ -9,7 +7,9 @@ import {
   MilestoneResponsePut, PoamResponsePostPutDelete,
   HwBaselineResponsePostPut, SwBaselineResponsePostPut,
 } from '@mitre/emass_client/dist/api'
+import {describe, expect, it} from 'vitest'
 import {getErrorMessage} from '../../../src/utils/global'
+import {InitMockServer} from './mock.server'
 
 describe('Test eMASSer API CLI (PUT) commands', () => {
   const mocServer = new InitMockServer()

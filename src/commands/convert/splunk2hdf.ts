@@ -1,10 +1,11 @@
 import {Flags} from '@oclif/core'
 import {SplunkMapper} from '@mitre/hdf-converters/lib/src/splunk-mapper'
 import {table} from 'table'
-import {createWinstonLogger} from '../../utils/logging'
 import _ from 'lodash'
 import fs from 'fs'
 import path from 'path'
+import {basename} from '../../utils/global'
+import {createWinstonLogger} from '../../utils/logging'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
 export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
@@ -123,9 +124,11 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
           fs.writeFileSync(
             path.join(
               outputFolder,
-              _.get(hdf, 'meta.filename', '').replace(/\.json$/, '')
-              + _.get(hdf, 'meta.guid')
-              + '.json',
+              basename(
+                _.get(hdf, 'meta.filename', '').replace(/\.json$/, '')
+                + _.get(hdf, 'meta.guid')
+                + '.json',
+              ),
             ),
             JSON.stringify(hdf, null, 2),
           )
@@ -137,9 +140,11 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
             fs.writeFileSync(
               path.join(
                 outputFolder,
-                _.get(hdf, 'meta.filename', '').replace(/\.json$/, '')
-                + _.get(hdf, 'meta.guid')
-                + '.json',
+                basename(
+                  _.get(hdf, 'meta.filename', '').replace(/\.json$/, '')
+                  + _.get(hdf, 'meta.guid')
+                  + '.json',
+                ),
               ),
               JSON.stringify(hdf, null, 2),
             )

@@ -1,7 +1,7 @@
 import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {ConveyorResults as Mapper} from '@mitre/hdf-converters'
-import {checkInput, checkSuffix} from '../../utils/global'
+import {basename, checkInput, checkSuffix} from '../../utils/global'
 import path from 'path'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 export default class Conveyor2HDF extends BaseCommand<typeof Conveyor2HDF> {
@@ -38,7 +38,7 @@ export default class Conveyor2HDF extends BaseCommand<typeof Conveyor2HDF> {
     fs.mkdirSync(flags.output)
     for (const [filename, result] of Object.entries(results)) {
       fs.writeFileSync(
-        path.join(flags.output, checkSuffix(filename)),
+        path.join(flags.output, checkSuffix(basename(filename))),
         JSON.stringify(result, null, 2),
       )
     }

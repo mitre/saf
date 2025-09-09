@@ -9,7 +9,7 @@ import XlsxPopulate from 'xlsx-populate'
 import {impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact} from '../../utils/xccdf2inspec'
 import _ from 'lodash'
 import {CSVControl} from '../../types/csv'
-import {extractValueViaPathOrNumber} from '../../utils/global'
+import {basename, extractValueViaPathOrNumber} from '../../utils/global'
 import {CciNistMappingData} from '@mitre/hdf-converters'
 import {default as CISNistMappings} from '../../resources/cis2nist.json'
 import {default as files} from '../../resources/files.json'
@@ -327,7 +327,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
 
     // Convert all extracted controls to Ruby/InSpec code
     inspecControls.forEach((control) => {
-      fs.writeFileSync(path.join(flags.output, 'controls', control.id + '.rb'), inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader))
+      fs.writeFileSync(path.join(flags.output, 'controls', basename(control.id) + '.rb'), inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader))
     })
   }
 }

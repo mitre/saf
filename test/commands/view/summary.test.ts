@@ -1,8 +1,8 @@
-import {expect} from 'chai'
 import {runCommand} from '@oclif/test'
 import fs from 'fs'
-import path from 'path'
 import yaml from 'js-yaml'
+import path from 'path'
+import {describe, expect, it} from 'vitest'
 
 describe('Summary command', () => {
   const hdfFilePath = path.resolve('./test/sample_data/HDF/input/rhel-8_hardened.json')

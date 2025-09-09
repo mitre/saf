@@ -1,15 +1,13 @@
-// test/utils/ohdf/calculations.test.ts
-
+import fs from 'fs'
+import path from 'path'
+import {beforeEach, describe, expect, it} from 'vitest'
+import {ContextualizedEvaluation, ContextualizedProfile} from 'inspecjs'
 import {
   calculateSummariesForExecJSONs,
   calculateComplianceScoresForExecJSONs,
   calculateTotalCountsForSummaries,
   calculateSeverityCounts,
 } from '../../../src/utils/ohdf/calculations'
-import {ContextualizedEvaluation, ContextualizedProfile} from 'inspecjs'
-import path from 'path'
-import fs from 'fs'
-import {expect} from 'chai'
 import {loadExecJSONs} from '../../../src/utils/ohdf/dataLoader'
 
 const UTF8_ENCODING = 'utf8'
@@ -60,7 +58,7 @@ describe('calculations.ts utils', () => {
   })
 
   it('calculateSeverityCounts modifies the summary correctly', () => {
-    Object.values(execJSONs).forEach(parsedExecJSON => {
+    for(const parsedExecJSON of Object.values(execJSONs)) {
       const summary: Record<string, Record<string, number>> = {}
       const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
 
@@ -72,7 +70,7 @@ describe('calculations.ts utils', () => {
 
       const expectedSummary = loadExpectedData('./test/sample_data/utils/ohdf/calculations/calculateSeverityCounts.sample')
       expect(summary).to.deep.equal(expectedSummary)
-    })
+    }
   })
 
   it('calculateTotalCountsForSummaries calculates the totals correctly', () => {
