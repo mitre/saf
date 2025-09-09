@@ -36,7 +36,7 @@ export function omitChecklistChangingFields(input: string) {
 
 export function removeUUIDs(obj: Record<string, unknown>): void {
   for (const key in obj) {
-    if (!Object.prototype.hasOwnProperty.call(obj, key)) continue // Ensure it's own property
+    if (!Object.hasOwn(obj, key)) continue // Ensure it's own property
 
     const value = obj[key]
 
