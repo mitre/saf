@@ -19,7 +19,7 @@ export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
     auth: Flags.string({
       char: 'a',
       required: true,
-      description: 'SonarQube API Key / User Token',
+      description: 'SonarQube API Key / User Token - please ensure that the user has permissions for the project (including seeing the code)',
     }),
     projectKey: Flags.string({
       char: 'n',
