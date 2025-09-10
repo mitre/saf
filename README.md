@@ -1115,6 +1115,7 @@ convert snyk2hdf              Translate a Snyk results JSON file into a Heimdall
 [top](#convert-other-formats-to-hdf)
 #### SonarQube to HDF
 NOTE: Pulling data from the SonarQube instance could take an extended amount of time depending on network conditions and the scale of the project being assessed.
+NOTE: The SonarQube instance might need "warming up" before it properly returns all the codesnippets and rules from its API so repeated attempts at this command might be necessary.
 
 ```
 convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
