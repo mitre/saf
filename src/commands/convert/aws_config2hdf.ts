@@ -1,7 +1,7 @@
 import {Flags} from '@oclif/core'
 import fs from 'fs'
 import {AwsConfigMapper as Mapper} from '@mitre/hdf-converters'
-import {ExecJSON} from 'inspecjs'
+import type {ExecJSON} from 'inspecjs'
 import {checkSuffix} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 

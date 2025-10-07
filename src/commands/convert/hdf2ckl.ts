@@ -1,9 +1,10 @@
 import {Command, Flags} from '@oclif/core'
 import _ from 'lodash'
 import fs from 'fs'
+import type {
+  ChecklistMetadata} from '@mitre/hdf-converters'
 import {
   Assettype,
-  ChecklistMetadata,
   ChecklistResults as Mapper,
   Role,
   Techarea,

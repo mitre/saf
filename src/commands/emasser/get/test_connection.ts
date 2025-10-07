@@ -2,7 +2,7 @@ import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {TestApi} from '@mitre/emass_client'
-import {Test} from '@mitre/emass_client/dist/api'
+import type {Test} from '@mitre/emass_client/dist/api'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 import {displayError} from '../../../utils/emasser/utilities'
 

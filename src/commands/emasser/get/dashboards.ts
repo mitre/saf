@@ -2,8 +2,9 @@ import {colorize} from 'json-colorizer'
 import {Args, Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
+import type {
+  FlagOptions} from '../../../utils/emasser/utilities'
 import {
-  FlagOptions,
   displayError,
   getFlagsForEndpoint,
   getExamplesForEndpoint,

@@ -6,12 +6,13 @@ import {Command, Flags} from '@oclif/core'
 
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
+import type {FlagOptions} from '../../../utils/emasser/utilities'
+import {displayError, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
 
 import {POAMApi} from '@mitre/emass_client'
 // import {MilestonesGet, PoamResponsePut,
 //   PoamGet as Poams} from '@mitre/emass_client/dist/api'
-import {MilestonesRequiredPutMilestonesInner as MilestonesRequiredPut, PoamResponsePostPutDelete} from '@mitre/emass_client/dist/api'
+import type {MilestonesRequiredPutMilestonesInner as MilestonesRequiredPut, PoamResponsePostPutDelete} from '@mitre/emass_client/dist/api'
 
 /**
  * Interface representing a Plan of Action and Milestones (POAMs) object.

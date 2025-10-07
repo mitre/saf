@@ -1,4 +1,4 @@
-import {ControlStatus, Severity} from 'inspecjs'
+import type {ControlStatus, Severity} from 'inspecjs'
 
 /**
  * Hash containing counts for each control status type.

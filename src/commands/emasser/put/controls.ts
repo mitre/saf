@@ -5,10 +5,11 @@ import {Command, Flags} from '@oclif/core'
 
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
+import type {FlagOptions} from '../../../utils/emasser/utilities'
+import {displayError, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
 
 import {ControlsApi} from '@mitre/emass_client'
-import {ControlsResponsePut} from '@mitre/emass_client/dist/api'
+import type {ControlsResponsePut} from '@mitre/emass_client/dist/api'
 
 interface Controls {
   // Required Fields

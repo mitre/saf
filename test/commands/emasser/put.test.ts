@@ -2,7 +2,7 @@ import {
   ArtifactsApi, ControlsApi, MilestonesApi,
   POAMApi, HardwareBaselineApi, SoftwareBaselineApi,
 } from '@mitre/emass_client'
-import {
+import type {
   ArtifactsResponsePutPost, ControlsResponsePut,
   MilestoneResponsePut, PoamResponsePostPutDelete,
   HwBaselineResponsePostPut, SwBaselineResponsePostPut,

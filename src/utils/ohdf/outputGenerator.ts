@@ -2,11 +2,12 @@
 import fs from 'fs'
 import _ from 'lodash'
 import YAML from 'yaml'
-import {Align, Table, getMarkdownTable} from 'markdown-table-ts'
+import type {Table} from 'markdown-table-ts'
+import {Align, getMarkdownTable} from 'markdown-table-ts'
 import {basename} from '../global'
-import {ContextualizedEvaluation} from 'inspecjs'
+import type {ContextualizedEvaluation} from 'inspecjs'
 import {createWinstonLogger} from '../logging'
-import {PrintableSummary, Data, DataOrArray, RowType, ColumnType, PrintAndWriteOutputArgs} from './types'
+import type {PrintableSummary, Data, DataOrArray, RowType, ColumnType, PrintAndWriteOutputArgs} from './types'
 
 /**
 * The logger for command.

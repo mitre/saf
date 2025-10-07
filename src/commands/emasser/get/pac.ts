@@ -2,9 +2,10 @@ import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {PACApi} from '@mitre/emass_client'
-import {PacResponseGet} from '@mitre/emass_client/dist/api'
+import type {PacResponseGet} from '@mitre/emass_client/dist/api'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
+import type {FlagOptions} from '../../../utils/emasser/utilities'
+import {displayError, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetPac extends Command {
   static readonly usage = '<%= command.id %> [FLAG]'

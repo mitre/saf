@@ -3,10 +3,11 @@ import {Command, Flags} from '@oclif/core'
 
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
+import type {FlagOptions} from '../../../utils/emasser/utilities'
+import {displayError, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 import {TestResultsApi} from '@mitre/emass_client'
-import {TestResultsResponsePost,
+import type {TestResultsResponsePost,
   TestResultsGet as TestResult} from '@mitre/emass_client/dist/api'
 
 const CMD_HELP = 'saf emasser post test_results -h or --help'

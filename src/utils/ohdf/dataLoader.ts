@@ -1,7 +1,8 @@
 // utils/dataLoader.ts
 
 import fs from 'fs'
-import {ContextualizedEvaluation, convertFileContextual} from 'inspecjs'
+import type {ContextualizedEvaluation} from 'inspecjs'
+import {convertFileContextual} from 'inspecjs'
 import {createWinstonLogger} from '../logging'
 
 const UTF8_ENCODING = 'utf8'
