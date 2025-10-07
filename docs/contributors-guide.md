@@ -5,7 +5,7 @@ The MITRE saf-cli is an OCLIF application developed with TypeScript.
 ## Prerequisites
 
 - Node.js (check the package.json file for the current version)
-- npm (version 6 or newer)
+- pnpm (version 10 or newer) - Install with: `npm install -g pnpm`
 
 ## Installation
 
