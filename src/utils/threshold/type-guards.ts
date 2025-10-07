@@ -1,6 +1,6 @@
 import type {Severity} from 'inspecjs'
 import type {ThresholdStatus} from '../../types/threshold.js'
-import {STATUSES, SEVERITIES, THRESHOLD_TYPES} from './constants.js'
+import {STATUSES, SEVERITIES} from './constants.js'
 
 // =============================================================================
 // TYPE GUARD FUNCTIONS
