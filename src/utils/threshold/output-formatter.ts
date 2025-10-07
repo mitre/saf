@@ -2,6 +2,7 @@ import chalk from 'chalk'
 import {table} from 'table'
 import YAML from 'yaml'
 import type {ValidationResult, ThresholdCheck, OutputOptions} from '../../types/threshold-validation.js'
+import {getFailedChecks, getPassedChecks} from './helpers.js'
 
 // =============================================================================
 // OUTPUT FORMATTING
@@ -62,7 +63,7 @@ function formatDefault(result: ValidationResult, options: OutputOptions): string
     }
     lines.push(colorize(`  • ${result.summary.totalChecks}/${result.summary.totalChecks} threshold checks passed`, 'gray', options.colors))
   } else {
-    const failed = result.checks.filter(c => c.status === 'failed')
+    const failed = getFailedChecks(result.checks)
     lines.push(colorize(`${CROSS_MARK} Threshold validation failed (${failed.length}/${result.summary.totalChecks} checks)`, 'red', options.colors), '', colorize('Failed:', 'red-bold', options.colors))
     for (const check of failed) {
       lines.push(colorize(`  • ${check.path}: ${formatViolationBrief(check)}`, 'red', options.colors))
@@ -93,13 +94,13 @@ function formatDetailed(result: ValidationResult, options: OutputOptions): strin
     lines.push(`  Overall Compliance: ${result.summary.compliance}% (${reqStr} required) ${status}`, '')
   }
 
-  const failedChecks = result.checks.filter(c => c.status === 'failed')
+  const failedChecks = getFailedChecks(result.checks)
   if (failedChecks.length > 0) {
     lines.push(colorize(`❌ FAILED CHECKS (${failedChecks.length})`, 'red-bold', options.colors), formatChecksTable(failedChecks, 'failed'), '')
   }
 
   if (options.showPassed) {
-    const passedChecks = result.checks.filter(c => c.status === 'passed')
+    const passedChecks = getPassedChecks(result.checks)
     if (passedChecks.length > 0) {
       lines.push(colorize(`✓ PASSED CHECKS (${passedChecks.length})`, 'green-bold', options.colors), formatChecksTable(passedChecks, 'passed'), '')
     }
@@ -130,7 +131,7 @@ function formatMarkdown(result: ValidationResult, options: OutputOptions): strin
   lines.push(`- **Total Controls**: ${result.summary.totalControls}`, '')
 
   // Failed checks table
-  const failedChecks = result.checks.filter(c => c.status === 'failed')
+  const failedChecks = getFailedChecks(result.checks)
   if (failedChecks.length > 0) {
     lines.push('## Failed Checks', '', '| Check | Actual | Required | Violation |', '|-------|--------|----------|-----------|')
     for (const check of failedChecks) {
@@ -141,7 +142,7 @@ function formatMarkdown(result: ValidationResult, options: OutputOptions): strin
 
   // Passed checks (if requested)
   if (options.showPassed) {
-    const passedChecks = result.checks.filter(c => c.status === 'passed')
+    const passedChecks = getPassedChecks(result.checks)
     if (passedChecks.length > 0) {
       lines.push('## Passed Checks', '', '| Check | Actual | Required |', '|-------|--------|----------|')
       for (const check of passedChecks) {
@@ -216,7 +217,7 @@ export function filterValidationResult(
   severities?: string[],
   statuses?: string[],
 ): FilteredResult {
-  const originalFailureCount = result.checks.filter(c => c.status === 'failed').length
+  const originalFailureCount = getFailedChecks(result.checks).length
   const originalCheckCount = result.checks.length
 
   let filteredChecks = result.checks
@@ -234,8 +235,8 @@ export function filterValidationResult(
   }
 
   // Recalculate summary for filtered checks
-  const passedChecks = filteredChecks.filter(c => c.status === 'passed')
-  const failedChecks = filteredChecks.filter(c => c.status === 'failed')
+  const passedChecks = getPassedChecks(filteredChecks)
+  const failedChecks = getFailedChecks(filteredChecks)
 
   const filteredResult: ValidationResult = {
     ...result,

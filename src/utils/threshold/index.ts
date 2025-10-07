@@ -96,3 +96,11 @@ export {
 } from './output-formatter.js'
 
 export type {FilteredResult} from './output-formatter.js'
+
+// Helper Functions
+export {
+  getRootControls,
+  groupChecksByStatus,
+  getFailedChecks,
+  getPassedChecks,
+} from './helpers.js'

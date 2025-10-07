@@ -1,5 +1,6 @@
 import type {ContextualizedProfile, ControlStatus, Severity} from 'inspecjs'
 import type {StatusHash} from '../../types/threshold.js'
+import {getRootControls} from './helpers.js'
 
 // =============================================================================
 // THRESHOLD CALCULATION FUNCTIONS
@@ -37,8 +38,8 @@ export function extractStatusCounts(profile: ContextualizedProfile, severity?: s
     Waived: 0,
   }
 
-  // Filter to only include root controls (not extended controls)
-  const rootControls = profile.contains.filter(control => control.extendedBy.length === 0)
+  // Get only root controls (not extended controls)
+  const rootControls = getRootControls(profile)
 
   for (const c of rootControls) {
     const control = c.root

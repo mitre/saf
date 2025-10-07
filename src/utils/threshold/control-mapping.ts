@@ -4,6 +4,7 @@ import {ControlDescription} from 'inspecjs/lib/generated_parsers/v_1_0/exec-json
 import _ from 'lodash'
 import {reverseStatusName} from './status-conversion.js'
 import {cklControlStatus, controlFindingDetails} from './ckl-conversion.js'
+import {getRootControls} from './helpers.js'
 
 // =============================================================================
 // CONTROL ID MAPPING
@@ -30,8 +31,8 @@ import {cklControlStatus, controlFindingDetails} from './ckl-conversion.js'
 export function getControlIdMap(profile: ContextualizedProfile, thresholds?: ThresholdValues): ThresholdValues {
   const result = thresholds ?? {}
 
-  // Process only root controls (not extended controls)
-  const rootControls = profile.contains.filter(control => control.extendedBy.length === 0)
+  // Get only root controls (not extended controls)
+  const rootControls = getRootControls(profile)
 
   for (const c of rootControls) {
     const control = c.root
@@ -112,8 +113,8 @@ export function extractControlSummariesBySeverity(
     error: {},
   }
 
-  // Process only root controls (not extended controls)
-  const rootControls = profile.contains.filter(control => control.extendedBy.length === 0)
+  // Get only root controls (not extended controls)
+  const rootControls = getRootControls(profile)
 
   for (const c of rootControls) {
     const control = c.root

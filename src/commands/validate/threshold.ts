@@ -1,4 +1,3 @@
-import fs from 'fs'
 import YAML from 'yaml'
 import {Flags} from '@oclif/core'
 import {convertFileContextual, ContextualizedProfile} from 'inspecjs'
@@ -11,6 +10,7 @@ import {
   filterValidationResult,
 } from '../../utils/threshold/index.js'
 import {BaseCommand} from '../../utils/oclif/baseCommand.js'
+import {validateFilePath, safeReadFile} from '../../utils/path-validator.js'
 
 /**
  * Validate command - checks HDF files against threshold requirements.
@@ -99,7 +99,7 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
       description: 'Show detailed output with tables (alias for --format detailed)',
       default: false,
     }),
-    showPassed: Flags.boolean({
+    'show-passed': Flags.boolean({
       description: 'Include passing checks in output (use with --verbose)',
       default: false,
     }),
@@ -147,15 +147,20 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
         this.error(`Invalid inline threshold format: ${error instanceof Error ? error.message : String(error)}`)
       }
     } else if (flags.templateFile) {
-      // Validate threshold file exists
-      if (!fs.existsSync(flags.templateFile)) {
-        this.error(`Threshold file not found: ${flags.templateFile}`)
-      }
-
-      // Parse YAML file
+      // Validate and read threshold file safely
       try {
-        const content = fs.readFileSync(flags.templateFile, 'utf8')
+        validateFilePath(flags.templateFile, 'read')
+        const content = safeReadFile(flags.templateFile, 10) // 10MB limit for threshold files
+
+        // Parse YAML with security checks
         const parsed = YAML.parse(content)
+
+        // Check for prototype pollution attempts
+        if (parsed && typeof parsed === 'object' && (Object.prototype.hasOwnProperty.call(parsed, '__proto__')
+          || Object.prototype.hasOwnProperty.call(parsed, 'constructor')
+          || Object.prototype.hasOwnProperty.call(parsed, 'prototype'))) {
+          this.error('Invalid threshold file: contains dangerous properties')
+        }
         thresholds = Object.values(parsed).every(key => typeof key === 'number')
           ? unflattenThreshold(parsed)
           : parsed
@@ -166,15 +171,11 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
       this.error('Please provide a threshold template using -T or -I flag.\nSee https://github.com/mitre/saf/wiki/Validation-with-Thresholds for more information')
     }
 
-    // Validate HDF file exists
-    if (!fs.existsSync(flags.input)) {
-      this.error(`HDF file not found: ${flags.input}`)
-    }
-
-    // Parse HDF file
+    // Validate and read HDF file safely
     let profile: ContextualizedProfile
     try {
-      const hdfContent = fs.readFileSync(flags.input, 'utf8')
+      validateFilePath(flags.input, 'read')
+      const hdfContent = safeReadFile(flags.input, 100) // 100MB limit for HDF files
       const parsedExecJSON = convertFileContextual(hdfContent)
 
       if (!parsedExecJSON.contains || parsedExecJSON.contains.length === 0) {
@@ -190,8 +191,32 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
     let result = validateThresholds(profile, thresholds)
 
     // Apply validation filters if specified (affects exit code)
-    const filterSeverities = flags['filter-severity']?.split(',').map(s => s.trim())
-    const filterStatuses = flags['filter-status']?.split(',').map(s => s.trim())
+    const filterSeverities = flags['filter-severity']
+      ?.split(',')
+      .map(s => s.trim())
+      .filter(s => s.length > 0)
+    const filterStatuses = flags['filter-status']
+      ?.split(',')
+      .map(s => s.trim())
+      .filter(s => s.length > 0)
+
+    // Validate filter values
+    if (filterSeverities) {
+      const validSeverities = ['critical', 'high', 'medium', 'low', 'none', 'total']
+      const invalid = filterSeverities.filter(s => !validSeverities.includes(s))
+      if (invalid.length > 0) {
+        this.error(`Invalid --filter-severity values: ${invalid.join(', ')}. Allowed: ${validSeverities.join(', ')}`)
+      }
+    }
+
+    if (filterStatuses) {
+      const validStatuses = ['passed', 'failed', 'skipped', 'error', 'no_impact']
+      const invalid = filterStatuses.filter(s => !validStatuses.includes(s))
+      if (invalid.length > 0) {
+        this.error(`Invalid --filter-status values: ${invalid.join(', ')}. Allowed: ${validStatuses.join(', ')}`)
+      }
+    }
+
     let filterMetadata: {filteredOutFailureCount: number, filteredOutCheckCount: number} | undefined
 
     if (filterSeverities || filterStatuses) {
@@ -226,7 +251,7 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
     // Format and output results (use displayResult for presentation)
     const outputOptions: OutputOptions = {
       format: outputFormat as OutputOptions['format'],
-      showPassed: flags.showPassed,
+      showPassed: flags['show-passed'],
       colors: !['json', 'yaml', 'junit'].includes(outputFormat),
       includeControlIds: true,
     }
