@@ -1438,33 +1438,77 @@ view summary                  Get a quick compliance overview of an HDF file
 
 #### Thresholds
 
+Validate HDF files against compliance thresholds to ensure security requirements are met. The threshold system validates control counts by status (passed/failed/skipped/error/no_impact) and severity (critical/high/medium/low), and can validate specific control IDs.
+
+**Key Features**:
+- Shows **ALL** validation failures (not just the first)
+- Multiple output formats: CLI, JSON, YAML, JUnit XML, Markdown
+- **Validation filtering**: Only validate specific severities/statuses (affects exit code)
+- **Display filtering**: Reduce output noise without affecting validation
+- **Transparency**: Shows warnings when validation filters hide failures
+- CI/CD ready with JUnit XML output for Jenkins/GitLab
+- Graceful error handling and detailed error messages
+
+**Exit Codes**:
+- `0` - All validations passed (or filtered validations passed)
+- `1` - One or more validations failed
+
 See the wiki for more information on 👉 [template files](https://github.com/mitre/saf/wiki/Validation-with-Thresholds).
 
 ```
-validate threshold            Validate the compliance and status counts of an HDF file
+validate threshold            Validate HDF file against compliance thresholds
 
   USAGE
-    $ saf validate threshold -i <hdf-json> [-I <flattened-threshold-json> | -T <template-file>] [-h] [-L info|warn|debug|verbose]
+    $ saf validate threshold -i <hdf-json> [-I <flattened-threshold-json> | -T <template-file>]
+      [--format <format>] [--filter-severity <severities>] [--filter-status <statuses>]
+      [-v] [--show-passed] [-q]
 
   FLAGS
-    -i, --input=<value>           (required) The HDF JSON File to be validated by the threshold values   
-    -T, --templateFile=<value>    A threshold YAML file containing expected threshold values.
-                                  Generate it using the "saf generate threshold" command
-    -I, --templateInline=<value>  An inline (on the command line) flattened JSON containing the validation
-                                  thresholds (Intended for backwards compatibility with InSpec Tools)
+    -i, --input=<value>                (required) The HDF JSON file to validate
+    -T, --templateFile=<value>         Threshold YAML file (generate with: saf generate threshold)
+    -I, --templateInline=<value>       Inline flattened JSON threshold specification (legacy format)
+    -f, --format=<option>              [default: default] Output format
+                                       <options: default|detailed|json|yaml|markdown|junit|quiet>
+    -v, --verbose                      Show detailed output with tables (alias for --format detailed)
+    -q, --quiet                        Suppress output, only use exit code
+        --show-passed                  Include passing checks in output (use with --verbose)
+        --filter-severity=<value>      Only validate these severities (affects exit code). Shows warning about filtered checks.
+        --filter-status=<value>        Only validate these statuses (affects exit code). Shows warning about filtered checks.
+        --display-severity=<value>     Only display these severities in output (does not affect validation or exit code)
+        --display-status=<value>       Only display these statuses in output (does not affect validation or exit code)
 
   GLOBAL FLAGS
     -h, --help               Show CLI help
-    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+    -L, --logLevel=<option>  [default: info] Specify level for logging
                              <options: info|warn|debug|verbose>
-        --interactive        Collect input tags interactively (not available on all CLI commands)
 
   EXAMPLES
-    Providing a threshold template file
+    Basic validation with default CLI output
       $ saf validate threshold -i rhel7-results.json -T threshold.yaml
-    
-    Specifying the threshold inline
-      $ saf validate threshold -i rhel7-results.json -I "{compliance.min: 80}, {passed.total.min: 18}, {failed.total.max: 2}"
+
+    Detailed output with tables showing all checks
+      $ saf validate threshold -i rhel7-results.json -T threshold.yaml --verbose --show-passed
+
+    CI/CD: Output JUnit XML for Jenkins/GitLab
+      $ saf validate threshold -i rhel7-results.json -T threshold.yaml --format junit > results.xml
+
+    CI/CD: JSON output for automation/scripting
+      $ saf validate threshold -i rhel7-results.json -T threshold.yaml --format json
+
+    Validate only critical/high severity (fail CI only on critical/high issues)
+      $ saf validate threshold -i rhel7-results.json -T threshold.yaml --filter-severity critical,high
+
+    Display only critical/high (validate all, reduce output noise)
+      $ saf validate threshold -i rhel7-results.json -T threshold.yaml --display-severity critical,high
+
+    Display only failures (hide passing checks)
+      $ saf validate threshold -i rhel7-results.json -T threshold.yaml --display-status failed
+
+    Quiet mode for CI/CD (exit code only, no output)
+      $ saf validate threshold -i rhel7-results.json -T threshold.yaml --quiet
+
+    Legacy: Inline threshold specification
+      $ saf validate threshold -i rhel7-results.json -I "{compliance.min: 80}, {passed.total.min: 18}"
 
 ```
 
