@@ -37,6 +37,9 @@ jobs:
           rm -rf test
           pnpm install --frozen-lockfile --prod
 
+      - name: Install pnpm globally for oclif pack
+        run: sudo npm install -g pnpm@10.18.0
+
       - name: Pack Windows Installer
         working-directory: ./saf
         run: npx oclif pack win
