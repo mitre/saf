@@ -4,23 +4,67 @@ import _ from 'lodash'
 import fs from 'fs'
 import YAML from 'yaml'
 import {ThresholdValues} from '../../types/threshold'
-import {calculateCompliance, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject} from '../../utils/threshold'
+import {
+  calculateCompliance,
+  extractStatusCounts,
+  getControlIdMap,
+  renameStatusName,
+  severityTargetsObject,
+} from '../../utils/threshold'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 
+/**
+ * Command to generate threshold templates for HDF compliance validation.
+ *
+ * This command analyzes an HDF JSON file and generates a YAML threshold template
+ * that can be used with the 'saf validate threshold' command. The template
+ * defines acceptable ranges for control counts by status and severity.
+ */
 export default class GenerateThreshold extends BaseCommand<typeof GenerateThreshold> {
   static readonly usage = '<%= command.id %> -i <hdf-json> [-o <threshold-yaml>] [-h] [-e] [-c]'
 
-  static readonly description = 'Generate a compliance template for "saf validate threshold".\n'
-    + 'Default output states that you must have your current control counts or better\n'
-    + '(More Passes and/or less Fails/Skips/Not Applicable/No Impact/Errors)'
+  static readonly description = 'Generate a compliance threshold template for "saf validate threshold".\n\n'
+    + 'This command analyzes an HDF JSON file and creates a threshold template that defines\n'
+    + 'acceptable compliance levels. By default, the template requires that future validation\n'
+    + 'results have the same or better control counts (more passes, fewer failures).\n\n'
+    + 'The generated template can be customized and used with "saf validate threshold" to\n'
+    + 'ensure compliance requirements are met in CI/CD pipelines or regular assessments.'
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i rhel7-results.json -e -c -o output.yaml']
+  static readonly examples = [
+    {
+      description: 'Generate a basic threshold template',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -o threshold.yaml',
+    },
+    {
+      description: 'Generate exact match thresholds with control ID validation',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -e -c -o strict-threshold.yaml',
+    },
+    {
+      description: 'Output threshold to console instead of file',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json',
+    },
+  ]
 
   static readonly flags = {
-    input: Flags.string({char: 'i', required: true, description: 'Input HDF JSON File'}),
-    output: Flags.string({char: 'o', required: false, description: 'Output Threshold YAML File'}),
-    exact: Flags.boolean({char: 'e', description: 'All counts should be exactly the same when validating, not just less than or greater than'}),
-    generateControlIds: Flags.boolean({char: 'c', required: false, description: 'Validate control IDs have the correct severity and status'}),
+    input: Flags.string({
+      char: 'i',
+      required: true,
+      description: 'Input HDF JSON file to analyze',
+    }),
+    output: Flags.string({
+      char: 'o',
+      required: false,
+      description: 'Output threshold YAML file (if not specified, outputs to console)',
+    }),
+    exact: Flags.boolean({
+      char: 'e',
+      description: 'Generate exact match thresholds instead of minimum/maximum ranges',
+    }),
+    generateControlIds: Flags.boolean({
+      char: 'c',
+      required: false,
+      description: 'Include control ID validation in the threshold template',
+    }),
   }
 
   async run() {

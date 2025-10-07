@@ -1,215 +1,254 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import fs from 'fs'
-import _ from 'lodash'
 import YAML from 'yaml'
-import {expect} from 'chai'
 import {Flags} from '@oclif/core'
-import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
-import {ThresholdValues} from '../../types/threshold'
+import {convertFileContextual, ContextualizedProfile} from 'inspecjs'
+import type {ThresholdValues} from '../../types/threshold.js'
+import type {OutputOptions} from '../../types/threshold-validation.js'
 import {
-  calculateCompliance,
-  exitNonZeroIfTrue,
-  extractStatusCounts,
-  getControlIdMap,
-  renameStatusName,
-  severityTargetsObject,
-  statusSeverityPaths,
-  totalMax,
-  totalMin,
   unflattenThreshold,
-} from '../../utils/threshold'
-import {BaseCommand} from '../../utils/oclif/baseCommand'
+  validateThresholds,
+  formatValidationResult,
+  filterValidationResult,
+} from '../../utils/threshold/index.js'
+import {BaseCommand} from '../../utils/oclif/baseCommand.js'
 
+/**
+ * Validate command - checks HDF files against threshold requirements.
+ *
+ * Uses the new validation engine that collects ALL failures before reporting,
+ * provides multiple output formats, and supports filtering.
+ */
 export default class Threshold extends BaseCommand<typeof Threshold> {
-  static readonly usage = '<%= command.id %> -i <hdf-json> [-I <flattened-threshold-json> | -T <template-file>] [-h] [-L info|warn|debug|verbose]'
+  static readonly usage = '<%= command.id %> -i <hdf-json> [-I <flattened-threshold-json> | -T <template-file>] [--format <format>] [--filter-severity <severities>] [--filter-status <statuses>] [-v] [--show-passed] [-q]'
 
-  static readonly description = 'Validate the compliance and status counts of an HDF file'
+  static readonly description = 'Validate HDF file against compliance thresholds\n\n'
+    + 'Validates control counts and compliance percentages against defined thresholds.\n'
+    + 'Collects ALL validation failures (not just the first) and supports multiple output\n'
+    + 'formats including JSON, YAML, JUnit XML, and Markdown for CI/CD integration.\n\n'
+    + 'Use "saf generate threshold" to create a threshold template from a baseline HDF file.'
 
   static readonly examples = [
     {
-      description: '\x1B[93mProviding a threshold template file\x1B[0m',
+      description: 'Basic validation with default CLI output',
       command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -T threshold.yaml',
     },
     {
-      description: '\x1B[93mSpecifying the threshold inline\x1B[0m',
-      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -I "{compliance.min: 80}, {passed.total.min: 18}, {failed.total.max: 2}"',
+      description: 'Detailed output with tables showing all checks',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -T threshold.yaml --verbose --show-passed',
+    },
+    {
+      description: 'CI/CD: Output JUnit XML for Jenkins/GitLab',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -T threshold.yaml --format junit > results.xml',
+    },
+    {
+      description: 'CI/CD: JSON output for automation/scripting',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -T threshold.yaml --format json',
+    },
+    {
+      description: 'CI/CD: Fail only on critical/high severity (with transparency warning)',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -T threshold.yaml --filter-severity critical,high',
+    },
+    {
+      description: 'Display only critical/high issues (validate all, reduce output noise)',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -T threshold.yaml --display-severity critical,high',
+    },
+    {
+      description: 'Display only failures (hide passing checks)',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -T threshold.yaml --display-status failed',
+    },
+    {
+      description: 'Markdown output for GitHub/documentation',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -T threshold.yaml --format markdown',
+    },
+    {
+      description: 'Quiet mode for CI/CD (exit code only, no output)',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -T threshold.yaml --quiet',
+    },
+    {
+      description: 'Legacy: Inline threshold specification',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -I "{compliance.min: 80}, {passed.total.min: 18}"',
     },
   ]
 
   static readonly flags = {
     input: Flags.string({
-      char: 'i', required: true, description: 'The HDF JSON File to be validated by the threshold values'}),
+      char: 'i',
+      required: true,
+      description: 'The HDF JSON file to validate',
+    }),
     templateInline: Flags.string({
-      char: 'I', required: false, exclusive: ['templateFile'],
-      description: 'An inline (on the command line) flattened JSON containing the validation thresholds (Intended for backwards compatibility with InSpec Tools)',
+      char: 'I',
+      required: false,
+      exclusive: ['templateFile'],
+      description: 'Inline flattened JSON threshold specification (legacy format)',
     }),
     templateFile: Flags.string({
-      char: 'T', required: false, exclusive: ['templateInline'],
-      description: 'A threshold YAML file containing expected threshold values. Generate it using the "saf generate threshold" command',
+      char: 'T',
+      required: false,
+      exclusive: ['templateInline'],
+      description: 'Threshold YAML file (generate with: saf generate threshold)',
+    }),
+    format: Flags.string({
+      char: 'f',
+      options: ['default', 'detailed', 'json', 'yaml', 'markdown', 'junit', 'quiet'],
+      description: 'Output format',
+      default: 'default',
+    }),
+    verbose: Flags.boolean({
+      char: 'v',
+      description: 'Show detailed output with tables (alias for --format detailed)',
+      default: false,
+    }),
+    showPassed: Flags.boolean({
+      description: 'Include passing checks in output (use with --verbose)',
+      default: false,
+    }),
+    quiet: Flags.boolean({
+      char: 'q',
+      description: 'Suppress output, only use exit code',
+      default: false,
+    }),
+    'filter-severity': Flags.string({
+      description: 'Only validate these severities (affects exit code). Shows warning about filtered checks.',
+      helpValue: 'critical,high',
+    }),
+    'filter-status': Flags.string({
+      description: 'Only validate these statuses (affects exit code). Shows warning about filtered checks.',
+      helpValue: 'failed,error',
+    }),
+    'display-severity': Flags.string({
+      description: 'Only display these severities in output (does not affect validation or exit code)',
+      helpValue: 'critical,high',
+    }),
+    'display-status': Flags.string({
+      description: 'Only display these statuses in output (does not affect validation or exit code)',
+      helpValue: 'failed',
     }),
   }
 
   // eslint-disable-next-line complexity
-  async run() { // skipcq: JS-R1005
+  async run() {
     const {flags} = await this.parse(Threshold)
+
+    // Parse threshold configuration
     let thresholds: ThresholdValues = {}
-    // inline does not seem to support the controls array option
+
     if (flags.templateInline) {
-      // Need to do some processing to convert this into valid JSON
-      const flattenedObjects = flags.templateInline.split(',').map((value: string) => value.trim().replace('{', '').replace('}', ''))
-      const toUnpack: Record<string, number> = {}
-      for (const flattenedObject of flattenedObjects) {
-        const [key, value] = flattenedObject.split(':')
-        toUnpack[key] = Number.parseInt(value, 10)
-      }
-
-      thresholds = unflattenThreshold(toUnpack)
-    } else if (flags.templateFile) {
-      const parsed = YAML.parse(fs.readFileSync(flags.templateFile, 'utf8'))
-      thresholds = Object.values(parsed).every(key => typeof key === 'number') ? unflattenThreshold(parsed) : parsed
-    } else {
-      console.log('Please provide an inline compliance template or a compliance file.')
-      console.log('See https://github.com/mitre/saf/wiki/Validation-with-Thresholds for more information')
-      return
-    }
-
-    const parsedExecJSON = convertFileContextual(fs.readFileSync(flags.input, 'utf8'))
-    const overallStatusCounts = extractStatusCounts(parsedExecJSON.contains[0] as ContextualizedProfile)
-    if (thresholds.compliance) {
-      const overallCompliance = calculateCompliance(overallStatusCounts)
+      // Parse inline format (legacy)
       try {
-        exitNonZeroIfTrue(Boolean(thresholds.compliance.min && overallCompliance < thresholds.compliance.min), 'Overall compliance minimum was not satisfied') // Compliance Minimum
-        exitNonZeroIfTrue(Boolean(thresholds.compliance.max && overallCompliance > thresholds.compliance.max), 'Overall compliance maximum was not satisfied') // Compliance Maximum
-      } catch {
-        process.exitCode = 1
-        return
-      }
-    }
-
-    // Total Pass/Fail/Skipped/No Impact/Error
-    const targets = ['passed.total', 'failed.total', 'skipped.total', 'no_impact.total', 'error.total']
-    for (const statusThreshold of targets) {
-      const [statusName, _total] = statusThreshold.split('.')
-      if (_.get(thresholds, statusThreshold) !== undefined && typeof _.get(thresholds, statusThreshold) !== 'object') {
-        try {
-          exitNonZeroIfTrue(
-            Boolean(
-              _.get(overallStatusCounts, renameStatusName(statusName))
-              !== _.get(thresholds, statusThreshold),
-            ),
-            `${statusThreshold}: Threshold not met. Number of received total ${statusThreshold.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is not equal to your set threshold for the number of ${statusThreshold.split('.')[0]} controls (${_.get(thresholds, statusThreshold)})`,
-          )
-        } catch {
-          process.exitCode = 1
-          return
+        const flattenedObjects = flags.templateInline.split(',').map((value: string) => value.trim().replace('{', '').replace('}', ''))
+        const toUnpack: Record<string, number> = {}
+        for (const flattenedObject of flattenedObjects) {
+          const [key, value] = flattenedObject.split(':')
+          toUnpack[key.trim()] = Number.parseInt(value.trim(), 10)
         }
+        thresholds = unflattenThreshold(toUnpack)
+      } catch (error) {
+        this.error(`Invalid inline threshold format: ${error instanceof Error ? error.message : String(error)}`)
+      }
+    } else if (flags.templateFile) {
+      // Validate threshold file exists
+      if (!fs.existsSync(flags.templateFile)) {
+        this.error(`Threshold file not found: ${flags.templateFile}`)
+      }
+
+      // Parse YAML file
+      try {
+        const content = fs.readFileSync(flags.templateFile, 'utf8')
+        const parsed = YAML.parse(content)
+        thresholds = Object.values(parsed).every(key => typeof key === 'number')
+          ? unflattenThreshold(parsed)
+          : parsed
+      } catch (error) {
+        this.error(`Failed to parse threshold file: ${error instanceof Error ? error.message : String(error)}`)
+      }
+    } else {
+      this.error('Please provide a threshold template using -T or -I flag.\nSee https://github.com/mitre/saf/wiki/Validation-with-Thresholds for more information')
+    }
+
+    // Validate HDF file exists
+    if (!fs.existsSync(flags.input)) {
+      this.error(`HDF file not found: ${flags.input}`)
+    }
+
+    // Parse HDF file
+    let profile: ContextualizedProfile
+    try {
+      const hdfContent = fs.readFileSync(flags.input, 'utf8')
+      const parsedExecJSON = convertFileContextual(hdfContent)
+
+      if (!parsedExecJSON.contains || parsedExecJSON.contains.length === 0) {
+        this.error('Invalid HDF file: No profiles found')
+      }
+
+      profile = parsedExecJSON.contains[0] as ContextualizedProfile
+    } catch (error) {
+      this.error(`Failed to parse HDF file: ${error instanceof Error ? error.message : String(error)}`)
+    }
+
+    // Validate thresholds (collects ALL failures!)
+    let result = validateThresholds(profile, thresholds)
+
+    // Apply validation filters if specified (affects exit code)
+    const filterSeverities = flags['filter-severity']?.split(',').map(s => s.trim())
+    const filterStatuses = flags['filter-status']?.split(',').map(s => s.trim())
+    let filterMetadata: {filteredOutFailureCount: number, filteredOutCheckCount: number} | undefined
+
+    if (filterSeverities || filterStatuses) {
+      const filtered = filterValidationResult(result, filterSeverities, filterStatuses)
+      result = filtered.result
+      filterMetadata = {
+        filteredOutFailureCount: filtered.filteredOutFailureCount,
+        filteredOutCheckCount: filtered.filteredOutCheckCount,
       }
     }
 
-    for (const totalMinimum of totalMin) {
-      const [statusName] = totalMinimum.split('.')
-      if (_.get(thresholds, totalMinimum) !== undefined) {
-        try {
-          exitNonZeroIfTrue(
-            Boolean(
-              _.get(overallStatusCounts, renameStatusName(statusName))
-              < _.get(thresholds, totalMinimum),
-            ),
-            `${totalMinimum}: Threshold not met. Number of received total ${totalMinimum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${totalMinimum.split('.')[0]} controls (${_.get(thresholds, totalMinimum)})`,
-          )
-        } catch {
-          process.exitCode = 1
-          return
-        }
+    // Apply display filters if specified (presentation only, doesn't affect exit code)
+    const displaySeverities = flags['display-severity']?.split(',').map(s => s.trim())
+    const displayStatuses = flags['display-status']?.split(',').map(s => s.trim())
+    let displayResult = result
+
+    if (displaySeverities || displayStatuses) {
+      const filtered = filterValidationResult(result, displaySeverities, displayStatuses)
+      displayResult = filtered.result
+      // Note: Display filtering doesn't affect exit code, so we use displayResult only for output
+    }
+
+    // Determine output format
+    let outputFormat = flags.format as string
+    if (flags.verbose && outputFormat === 'default') {
+      outputFormat = 'detailed'
+    }
+    if (flags.quiet) {
+      outputFormat = 'quiet'
+    }
+
+    // Format and output results (use displayResult for presentation)
+    const outputOptions: OutputOptions = {
+      format: outputFormat as OutputOptions['format'],
+      showPassed: flags.showPassed,
+      colors: !['json', 'yaml', 'junit'].includes(outputFormat),
+      includeControlIds: true,
+    }
+
+    let output = formatValidationResult(displayResult, outputOptions)
+
+    // Append transparency warning if validation was filtered
+    if (filterMetadata && filterMetadata.filteredOutCheckCount > 0 && outputFormat !== 'quiet' && output) {
+      if (filterMetadata.filteredOutFailureCount > 0) {
+        output += `\n\n⚠️  Validation was filtered - ${filterMetadata.filteredOutFailureCount} failures were IGNORED`
+        output += `\n   ${filterMetadata.filteredOutCheckCount} total checks were not validated`
+        output += '\n   Run without --filter-* flags to see all issues'
+      } else {
+        output += `\n\nℹ️  Note: ${filterMetadata.filteredOutCheckCount} checks were filtered out (all passed or not applicable)`
       }
     }
 
-    for (const totalMaximum of totalMax) {
-      const [statusName] = totalMaximum.split('.')
-      if (_.get(thresholds, totalMaximum) !== undefined) {
-        try {
-          exitNonZeroIfTrue(
-            Boolean(
-              _.get(overallStatusCounts, renameStatusName(statusName))
-              > _.get(thresholds, totalMaximum),
-            ),
-            `${totalMaximum}: Threshold not met. Number of received total ${totalMaximum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${totalMaximum.split('.')[0]} controls (${_.get(thresholds, totalMaximum)})`,
-          )
-        } catch {
-          process.exitCode = 1
-          return
-        }
-      }
+    if (output) {
+      console.log(output)
     }
 
-    // All Severities Pass/Fail/Skipped/No Impact/Error
-    for (const [severity, targetPaths] of Object.entries(severityTargetsObject)) {
-      const criticalStatusCounts = extractStatusCounts(parsedExecJSON.contains[0] as ContextualizedProfile, severity)
-      for (const statusCountThreshold of targetPaths) {
-        const [statusName, _total, thresholdType] = statusCountThreshold.split('.')
-        if (thresholdType === 'min' && _.get(thresholds, statusCountThreshold) !== undefined) {
-          try {
-            exitNonZeroIfTrue(
-              Boolean(
-                _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold),
-              ),
-              `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
-            )
-          } catch {
-            process.exitCode = 1
-            return
-          }
-        } else if (thresholdType === 'max' && _.get(thresholds, statusCountThreshold) !== undefined) {
-          try {
-            exitNonZeroIfTrue(
-              Boolean(
-                _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold),
-              ),
-              `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
-            )
-          } catch {
-            process.exitCode = 1
-            return
-          }
-        }
-      }
-    }
-
-    // Expect Control IDs to match placed severities
-    const controlIdMap = getControlIdMap(parsedExecJSON.contains[0] as ContextualizedProfile)
-    for (const [_severity, targetPaths] of Object.entries(statusSeverityPaths)) {
-      for (const targetPath of targetPaths) {
-        const expectedControlIds: string[] | undefined = _.get(thresholds, targetPath)
-        const actualControlIds: string[] | undefined = _.get(controlIdMap, targetPath)
-        if (expectedControlIds) {
-          for (const expectedControlId of expectedControlIds) {
-            try {
-              expect(actualControlIds).to.contain(expectedControlId)
-            } catch {
-              try {
-                exitNonZeroIfTrue(true, `Expected ${targetPath} to contain ${expectedControlId} controls but it only contained [${actualControlIds?.join(', ')}]`) // Chai doesn't print the actual object diff anymore
-              } catch {
-                process.exitCode = 1
-                return
-              }
-            }
-          }
-
-          try {
-            expect(expectedControlIds.length).to.equal(actualControlIds?.length)
-          } catch {
-            try {
-              exitNonZeroIfTrue(true, `Expected ${targetPath} to contain ${expectedControlIds.length} controls but it contained ${actualControlIds?.length}`)
-            } catch {
-              process.exitCode = 1
-              return
-            }
-          }
-        }
-      }
-    }
-
-    console.log('All validation tests passed')
+    // Set exit code based on validation results (not display results!)
+    process.exitCode = result.passed ? 0 : 1
   }
 }
