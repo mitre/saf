@@ -13,11 +13,14 @@ LABEL name="SAF" \
 
 RUN mkdir -p /share
 
+# Install pnpm globally
+RUN npm install -g pnpm@10.18.0
+
 COPY . /build
 WORKDIR /build
 RUN rm -rf test
-RUN npm ci --omit=dev --fetch-timeout=600000
-RUN mv "$(npm pack | tail -1)" saf.tgz
+RUN pnpm install --frozen-lockfile --prod
+RUN pnpm pack && mv mitre-saf-*.tgz saf.tgz
 
 FROM $BASE_CONTAINER AS app
 
