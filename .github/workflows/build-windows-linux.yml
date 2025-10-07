@@ -15,13 +15,18 @@ jobs:
         with:
           path: saf
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: setup node
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           check-latest: true
-          cache: 'npm'
-          cache-dependency-path: ./saf/package-lock.json
+          cache: 'pnpm'
+          cache-dependency-path: ./saf/pnpm-lock.yaml
 
       - name: Install Nullsoft Scriptable Install System and p7zip
         run: sudo apt install nsis p7zip-full
@@ -30,7 +35,7 @@ jobs:
         working-directory: ./saf
         run: |
           rm -rf test
-          npm ci --omit=dev
+          pnpm install --frozen-lockfile --prod
 
       - name: Pack Windows Installer
         working-directory: ./saf

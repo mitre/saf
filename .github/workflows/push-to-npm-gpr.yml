@@ -9,19 +9,24 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: setup node
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           check-latest: true
           registry-url: "https://registry.npmjs.org"
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Remove testing resources
         run: rm -rf test
 
       - name: Install project dependencies
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Pack all items that are published as packages
         run: npm pack
@@ -36,7 +41,7 @@ jobs:
         with:
           node-version: "22"
           registry-url: 'https://npm.pkg.github.com'
-          cache: 'npm'
+          cache: 'pnpm'
 
       # Publish SAF CLI to GitHub Package Registry
       - name: Publish SAF CLI to GPR

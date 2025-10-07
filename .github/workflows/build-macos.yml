@@ -12,15 +12,20 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
       - name: setup node
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           check-latest: true
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install project dependencies
-        run: npm ci --omit=dev
+        run: pnpm install --frozen-lockfile --prod
 
       - name: Remove testing resources
         run: rm -rf test
