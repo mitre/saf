@@ -26,7 +26,7 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm install --frozen-lockfile --prod --offline --ignore-scripts
 
-# Copy source code (test dir excluded via .dockerignore)
+# Copy source code (sensitive files excluded via .dockerignore: .git, .env, coverage, node_modules, etc.)
 COPY . .
 
 # Build and pack
