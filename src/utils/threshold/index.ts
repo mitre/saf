@@ -103,4 +103,6 @@ export {
   groupChecksByStatus,
   getFailedChecks,
   getPassedChecks,
+  getNestedValue,
+  setNestedValue,
 } from './helpers.js'

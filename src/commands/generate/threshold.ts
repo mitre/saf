@@ -1,15 +1,17 @@
 import {Flags} from '@oclif/core'
-import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
-import _ from 'lodash'
+import type {ContextualizedProfile} from 'inspecjs'
+import {convertFileContextual} from 'inspecjs'
 import fs from 'fs'
 import YAML from 'yaml'
-import {ThresholdValues} from '../../types/threshold'
+import type {ThresholdValues} from '../../types/threshold'
 import {
   calculateCompliance,
   extractStatusCounts,
   getControlIdMap,
   renameStatusName,
   severityTargetsObject,
+  setNestedValue,
+  getNestedValue,
 } from '../../utils/threshold'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
 import {validateFilePath, safeReadFile} from '../../utils/path-validator.js'
@@ -90,9 +92,9 @@ export default class GenerateThreshold extends BaseCommand<typeof GenerateThresh
     const overallCompliance = calculateCompliance(overallStatusCounts)
 
     // Overall compliance counts
-    _.set(thresholds, 'compliance.min', overallCompliance)
+    setNestedValue(thresholds, 'compliance.min', overallCompliance)
     if (flags.exact) {
-      _.set(thresholds, 'compliance.max', overallCompliance)
+      setNestedValue(thresholds, 'compliance.max', overallCompliance)
     }
 
     // Severity counts
@@ -101,21 +103,22 @@ export default class GenerateThreshold extends BaseCommand<typeof GenerateThresh
       for (const severityTarget of severityTargets) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
         const [statusName, _total, thresholdType] = severityTarget.split('.')
+        const value = getNestedValue(severityStatusCounts, renameStatusName(statusName))
         if ((statusName === 'passed' && thresholdType === 'min') || flags.exact) {
-          _.set(thresholds, severityTarget, _.get(severityStatusCounts, renameStatusName(statusName)))
+          setNestedValue(thresholds, severityTarget, value)
         } else if ((statusName !== 'passed' && thresholdType === 'max') || flags.exact) {
-          _.set(thresholds, severityTarget, _.get(severityStatusCounts, renameStatusName(statusName)))
+          setNestedValue(thresholds, severityTarget, value)
         }
       }
     }
 
     // Total counts
     const severityStatusCounts = extractStatusCounts(parsedProfile)
-    _.set(thresholds, 'passed.total.min', severityStatusCounts.Passed)
-    _.set(thresholds, 'failed.total.max', severityStatusCounts.Failed)
-    _.set(thresholds, 'skipped.total.max', severityStatusCounts['Not Reviewed'])
-    _.set(thresholds, 'error.total.max', severityStatusCounts['Profile Error'])
-    _.set(thresholds, 'no_impact.total.max', severityStatusCounts['Not Applicable'])
+    setNestedValue(thresholds, 'passed.total.min', severityStatusCounts.Passed)
+    setNestedValue(thresholds, 'failed.total.max', severityStatusCounts.Failed)
+    setNestedValue(thresholds, 'skipped.total.max', severityStatusCounts['Not Reviewed'])
+    setNestedValue(thresholds, 'error.total.max', severityStatusCounts['Profile Error'])
+    setNestedValue(thresholds, 'no_impact.total.max', severityStatusCounts['Not Applicable'])
 
     // Expected control ID status and severity
     if (flags['generate-control-ids']) {

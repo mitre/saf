@@ -6,7 +6,7 @@ import {getControlIdMap} from './control-mapping.js'
 import {renameStatusName} from './status-conversion.js'
 import {severityTargetsObject, statusSeverityPaths, totalMin, totalMax} from './constants.js'
 import {parseThresholdPath} from './path-parser.js'
-import _ from 'lodash'
+import {getNestedValue} from './helpers.js'
 
 // =============================================================================
 // HELPER FUNCTIONS
@@ -220,30 +220,30 @@ export function validateTotalCounts(
   // Validate exact match totals (legacy format: passed.total as number)
   const exactMatchPaths = ['passed.total', 'failed.total', 'skipped.total', 'no_impact.total', 'error.total']
   for (const path of exactMatchPaths) {
-    const threshold = _.get(thresholds, path)
+    const threshold = getNestedValue<number>(thresholds, path)
     if (threshold !== undefined && typeof threshold === 'number') {
       const {statusName} = parseThresholdPath(path)
-      const actual = _.get(statusCounts, renameStatusName(statusName)) as number
+      const actual = getNestedValue<number>(statusCounts, renameStatusName(statusName))!
       checks.push(createThresholdCheck(path, actual, threshold, 'exact', 'total', statusName as ThresholdStatus))
     }
   }
 
   // Validate total minimums
   for (const path of totalMin) {
-    const threshold = _.get(thresholds, path) as number | undefined
+    const threshold = getNestedValue<number>(thresholds, path)
     if (threshold !== undefined) {
       const {statusName} = parseThresholdPath(path)
-      const actual = _.get(statusCounts, renameStatusName(statusName)) as number
+      const actual = getNestedValue<number>(statusCounts, renameStatusName(statusName))!
       checks.push(createThresholdCheck(path, actual, threshold, 'min', 'total', statusName as ThresholdStatus))
     }
   }
 
   // Validate total maximums
   for (const path of totalMax) {
-    const threshold = _.get(thresholds, path) as number | undefined
+    const threshold = getNestedValue<number>(thresholds, path)
     if (threshold !== undefined) {
       const {statusName} = parseThresholdPath(path)
-      const actual = _.get(statusCounts, renameStatusName(statusName)) as number
+      const actual = getNestedValue<number>(statusCounts, renameStatusName(statusName))!
       checks.push(createThresholdCheck(path, actual, threshold, 'max', 'total', statusName as ThresholdStatus))
     }
   }
@@ -270,11 +270,11 @@ export function validateSeverityCounts(
     const statusCounts = extractStatusCounts(profile, severity)
 
     for (const path of targetPaths) {
-      const threshold = _.get(thresholds, path) as number | undefined
+      const threshold = getNestedValue<number>(thresholds, path)
       if (threshold === undefined) continue
 
       const {statusName, type: thresholdType} = parseThresholdPath(path)
-      const actual = _.get(statusCounts, renameStatusName(statusName)) as number
+      const actual = getNestedValue<number>(statusCounts, renameStatusName(statusName))!
 
       let passed = false
       if (thresholdType === 'min') {
@@ -322,12 +322,12 @@ export function validateControlIds(
 
   for (const [severity, paths] of Object.entries(statusSeverityPaths)) {
     for (const path of paths) {
-      const expectedControls = _.get(thresholds, path) as string[] | undefined
+      const expectedControls = getNestedValue<string[]>(thresholds, path)
       if (!expectedControls || !Array.isArray(expectedControls) || expectedControls.length === 0) {
         continue
       }
 
-      const actualControls = _.get(actualControlMap, path) as string[] | undefined || []
+      const actualControls = getNestedValue<string[]>(actualControlMap, path) || []
 
       const expectedSet = new Set(expectedControls)
       const actualSet = new Set(actualControls)

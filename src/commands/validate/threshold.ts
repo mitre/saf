@@ -1,6 +1,7 @@
 import YAML from 'yaml'
 import {Flags} from '@oclif/core'
-import {convertFileContextual, ContextualizedProfile} from 'inspecjs'
+import type {ContextualizedProfile} from 'inspecjs'
+import {convertFileContextual} from 'inspecjs'
 import type {ThresholdValues} from '../../types/threshold.js'
 import type {OutputOptions} from '../../types/threshold-validation.js'
 import {
@@ -8,6 +9,8 @@ import {
   validateThresholds,
   formatValidationResult,
   filterValidationResult,
+  SEVERITIES,
+  STATUSES,
 } from '../../utils/threshold/index.js'
 import {BaseCommand} from '../../utils/oclif/baseCommand.js'
 import {validateFilePath, safeReadFile} from '../../utils/path-validator.js'
@@ -224,9 +227,9 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
       .map(s => s.trim())
       .filter(s => s.length > 0)
 
-    // Validate filter values
+    // Validate filter values using constants
     if (filterSeverities) {
-      const validSeverities = ['critical', 'high', 'medium', 'low', 'none', 'total']
+      const validSeverities = [...SEVERITIES, 'total']
       const invalid = filterSeverities.filter(s => !validSeverities.includes(s))
       if (invalid.length > 0) {
         this.error(`Invalid --filter-severity values: ${invalid.join(', ')}. Allowed: ${validSeverities.join(', ')}`)
@@ -234,7 +237,7 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
     }
 
     if (filterStatuses) {
-      const validStatuses = ['passed', 'failed', 'skipped', 'error', 'no_impact']
+      const validStatuses: string[] = [...STATUSES]
       const invalid = filterStatuses.filter(s => !validStatuses.includes(s))
       if (invalid.length > 0) {
         this.error(`Invalid --filter-status values: ${invalid.join(', ')}. Allowed: ${validStatuses.join(', ')}`)

@@ -1,10 +1,9 @@
 import type {ContextualizedProfile} from 'inspecjs'
 import type {ThresholdValues, ControlSummary, ControlSummariesByStatus} from '../../types/threshold.js'
-import {ControlDescription} from 'inspecjs/lib/generated_parsers/v_1_0/exec-json'
-import _ from 'lodash'
+import type {ControlDescription} from 'inspecjs/lib/generated_parsers/v_1_0/exec-json'
 import {reverseStatusName} from './status-conversion.js'
 import {cklControlStatus, controlFindingDetails} from './ckl-conversion.js'
-import {getRootControls} from './helpers.js'
+import {getRootControls, getNestedValue, setNestedValue} from './helpers.js'
 
 // =============================================================================
 // CONTROL ID MAPPING
@@ -41,10 +40,10 @@ export function getControlIdMap(profile: ContextualizedProfile, thresholds?: Thr
     const path = `${status}.${severity}.controls`
 
     // Get existing control IDs for this path, or initialize empty array
-    const existingControlIds = (_.get(result, path) as string[]) || []
+    const existingControlIds = getNestedValue<string[]>(result, path) || []
 
     // Add this control ID to the list
-    _.set(result, path, [...existingControlIds, control.data.id])
+    setNestedValue(result, path, [...existingControlIds, control.data.id])
   }
 
   return result
