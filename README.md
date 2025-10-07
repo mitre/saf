@@ -1471,7 +1471,7 @@ validate threshold            Validate HDF file against compliance thresholds
                                        <options: default|detailed|json|yaml|markdown|junit|quiet>
     -v, --verbose                      Show detailed output with tables (alias for --format detailed)
     -q, --quiet                        Suppress output, only use exit code
-        --show-passed                  Include passing checks in output (use with --verbose)
+        --show-passed                  Include passing checks in output (works with verbose, detailed, and markdown formats)
         --filter-severity=<value>      Only validate these severities (affects exit code). Shows warning about filtered checks.
         --filter-status=<value>        Only validate these statuses (affects exit code). Shows warning about filtered checks.
         --display-severity=<value>     Only display these severities in output (does not affect validation or exit code)
@@ -1706,8 +1706,8 @@ generate threshold            Generate a compliance template for "saf validate t
     $ saf generate threshold -i <hdf-json> [-o <threshold-yaml>] [-h] [-e] [-c]
 
   FLAGS
-    -c, --generateControlIds  Validate control IDs have the correct severity and status
-    -e, --exact               All counts should be exactly the same when validating, not just less than or greater than
+    -c, --generate-control-ids  Validate control IDs have the correct severity and status
+    -e, --exact                 All counts should be exactly the same when validating, not just less than or greater than
     -i, --input=<value>       (required) Input HDF JSON File
     -o, --output=<value>      Output Threshold YAML File
 
