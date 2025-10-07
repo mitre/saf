@@ -22,4 +22,25 @@ describe('Generate threshold', () => {
     const {stdout} = await runCommand<{name: string}>(['generate threshold', '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json')])
     expect(stdout.replaceAll(/\r\n/gi, '\n')).to.contain(fs.readFileSync(path.resolve('./test/sample_data/thresholds/red_hat_good.counts.good.yml'), 'utf8').replaceAll(/\r\n/gi, '\n'))
   })
+
+  it('when provided -c flag should include control IDs', async () => {
+    await runCommand<{name: string}>(['generate threshold', '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'), '-c', '-o', `${tmpobj.name}/red_hat_with_controls.yml`])
+    const generatedContent = fs.readFileSync(`${tmpobj.name}/red_hat_with_controls.yml`, 'utf8')
+
+    // Should contain controls arrays
+    expect(generatedContent).to.contain('controls:')
+    // Should contain control IDs (STIG format)
+    expect(generatedContent).to.match(/V-\d{5}/)
+  })
+
+  it('when provided -e flag should generate exact match thresholds', async () => {
+    await runCommand<{name: string}>(['generate threshold', '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'), '-e', '-o', `${tmpobj.name}/red_hat_exact.yml`])
+    const generatedContent = fs.readFileSync(`${tmpobj.name}/red_hat_exact.yml`, 'utf8')
+    const parsed = YAML.parse(generatedContent)
+
+    // With -e flag, should have both min and max for passed controls
+    expect(parsed.passed?.critical).toHaveProperty('min')
+    expect(parsed.passed?.critical).toHaveProperty('max')
+    expect(parsed.passed?.critical?.min).toBe(parsed.passed?.critical?.max)
+  })
 })
