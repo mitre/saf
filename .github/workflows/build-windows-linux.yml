@@ -15,13 +15,18 @@ jobs:
         with:
           path: saf
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+        with:
+          version: 10.18.0
+
       - name: setup node
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           check-latest: true
-          cache: 'npm'
-          cache-dependency-path: ./saf/package-lock.json
+          cache: 'pnpm'
+          cache-dependency-path: ./saf/pnpm-lock.yaml
 
       - name: Install Nullsoft Scriptable Install System and p7zip
         run: sudo apt install nsis p7zip-full
@@ -30,7 +35,10 @@ jobs:
         working-directory: ./saf
         run: |
           rm -rf test
-          npm ci --omit=dev
+          pnpm install --frozen-lockfile --prod
+
+      - name: Install pnpm globally for oclif pack
+        run: sudo npm install -g pnpm@10.18.0
 
       - name: Pack Windows Installer
         working-directory: ./saf

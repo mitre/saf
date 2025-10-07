@@ -1,0 +1,52 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+
+# Node
+node_modules
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Testing
+test
+coverage
+.nyc_output
+
+# Build artifacts
+lib
+dist
+*.tgz
+
+# Documentation (session files)
+*.md
+!README.md
+!LICENSE.md
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+.DS_Store
+
+# Environment
+.env
+.env.*
+
+# Temporary
+tmp
+temp
+*.tmp
+*.backup
+
+# Claude/session files
+.claude
+COMMIT-*.md
+RECOVERY-*.md
+threshold-*.md
+debug-scripts

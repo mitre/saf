@@ -5,7 +5,7 @@ The MITRE saf-cli is an OCLIF application developed with TypeScript.
 ## Prerequisites
 
 - Node.js (check the package.json file for the current version)
-- npm (version 6 or newer)
+- pnpm (version 10 or newer) - Install with: `npm install -g pnpm`
 
 ## Installation
 
@@ -14,7 +14,7 @@ To install the project, clone the repository and install the dependencies:
 ```bash
 git clone https://github.com/mitre/saf.git
 cd project
-npm install
+pnpm install
 ```
 
 ## Development
@@ -22,14 +22,14 @@ npm install
 To start the development server, run:
 
 ```bash
-npm run dev -- ${command you desire to run & its flags}
+pnpm run dev -- ${command you desire to run & its flags}
 ```
 
 This script will clean the `lib` directory, compile the TypeScript files, and start the application. You can pass arguments to the `dev` script using the `--` syntax. For example:
 
 ```bash
-npm run dev -- --help
-npm run dev -- view summary
+pnpm run dev -- --help
+pnpm run dev -- view summary
 ```
 
 ## Testing
@@ -41,8 +41,8 @@ We use both ts-mocha/chai and ts-jest for testing.
 The 'command' tests are located in the `./test/commands` directory and organized by the OCLIF commands such as attest, view, generate etc. These tests are written in ts-mocha. You can run all the tests or a single test. For example:
 
 ```bash
-npm run test:mocha
-npm run test:mocha:one ./test/commands/view/summary.ts
+pnpm run test:mocha
+pnpm run test:mocha:one ./test/commands/view/summary.ts
 ```
 
 ### Utility Tests
@@ -50,14 +50,14 @@ npm run test:mocha:one ./test/commands/view/summary.ts
 The 'utility' tests are located in the `./test/utils` directory and organized by each of the utility classes of the saf-cli. These tests are a mix of chai and jest tests. The chai tests are all the files named `{utility}.test.ts` and the jest tests are located in the `__tests__` directory. You can run all the tests or a single test. For example:
 
 ```bash
-npm run test:jest
-npm run test:jest:one ./test/utils/calculations.test.ts
+pnpm run test:jest
+pnpm run test:jest:one ./test/utils/calculations.test.ts
 ```
 ### Run All Tests
 To invoke all tests `chai` and `jest` use the following commands:
 ```bash
-npm run test
-npm run tests
+pnpm run test
+pnpm run tests
 ```
 
 ## Linting
@@ -65,8 +65,8 @@ npm run tests
 We use ESLint with the TypeScript ESLint plugin for linting. The command lint’s all TypeScript files found in the `scr` directory (including sub-directories). To run the linter, use:
 
 ```bash
-npm run lint:ci  # Reports issues found, does not fix them
-npm run lint     # Invokes the --fix flag, fixes issues found
+pnpm run lint:ci  # Reports issues found, does not fix them
+pnpm run lint     # Invokes the --fix flag, fixes issues found
 ```
 
 ## Building
@@ -74,7 +74,7 @@ npm run lint     # Invokes the --fix flag, fixes issues found
 To build the project, use:
 
 ```bash
-npm run prepack
+pnpm run prepack
 ```
 
 This script will clean the `lib` directory and compile the TypeScript files.

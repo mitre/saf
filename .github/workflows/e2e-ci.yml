@@ -16,12 +16,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+        with:
+          version: 10.18.0
+
       - name: Setup Node.js on ${{ matrix.platform }}
         uses: actions/setup-node@v4
         with:
           node-version: "22"
           check-latest: true
-          cache: 'npm'
+          cache: 'pnpm'
 
       - name: Install cinc-auditor on windows
         if: ${{ matrix.platform == 'windows' }}
@@ -39,16 +44,16 @@ jobs:
 
       - name: Install dependencies, compile, and run tests on ${{ matrix.platform }}
         run: |
-          npm ci
-          npm run prepack
-          npm run test
+          pnpm install --frozen-lockfile
+          pnpm run prepack
+          pnpm run test
 
       - name: Sanity check that the SAF CLI works with no dev dependencies on windows
         if: ${{ matrix.platform == 'windows' }}
         shell: pwsh
         run: |
-          npm ci --omit=dev
-          npm run prepack
+          pnpm install --frozen-lockfile --prod
+          pnpm run prepack
           $stderrFile = New-TemporaryFile
           ./bin/run -v 2> $stderrFile.FullName 1> $null
           $exitCode = $LASTEXITCODE
@@ -67,8 +72,8 @@ jobs:
       - name: Sanity check that the SAF CLI works with no dev dependencies on ubuntu or macos
         if: ${{ matrix.platform == 'ubuntu' || matrix.platform == 'macos' }}
         run: |
-          npm ci --omit=dev
-          npm run prepack
+          pnpm install --frozen-lockfile --prod
+          pnpm run prepack
           if stderr=$(./bin/run -v 2>&1 1>/dev/null); then
             [ -z "$stderr" ] || (printf "Failed: received the following stderr:\n%s\n" "$stderr"; exit 1)
           else
