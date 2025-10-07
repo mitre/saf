@@ -9,6 +9,74 @@ import {parseThresholdPath} from './path-parser.js'
 import _ from 'lodash'
 
 // =============================================================================
+// HELPER FUNCTIONS
+// =============================================================================
+
+/**
+ * Creates a threshold check object with proper typing and violation details.
+ *
+ * This eliminates duplicated check creation logic across validation functions.
+ *
+ * @param path - The threshold path being validated
+ * @param actual - The actual value from the profile
+ * @param threshold - The threshold value to compare against
+ * @param checkType - The type of check (min, max, or exact)
+ * @param severity - Optional severity level
+ * @param statusType - Optional status type
+ * @returns Complete ThresholdCheck object
+ */
+function createThresholdCheck(
+  path: string,
+  actual: number,
+  threshold: number,
+  checkType: 'min' | 'max' | 'exact',
+  severity?: Severity | 'total' | 'none',
+  statusType?: ThresholdStatus,
+): ThresholdCheck {
+  let passed: boolean
+  let violationType: 'exceeds' | 'below'
+  let amount: number
+  let details: string
+
+  if (checkType === 'min') {
+    passed = actual >= threshold
+    violationType = 'below'
+    amount = threshold - actual
+    details = statusType
+      ? `Total ${statusType} controls (${actual}) is less than minimum (${threshold})`
+      : `${actual} < ${threshold} (below by ${amount})`
+  } else if (checkType === 'max') {
+    passed = actual <= threshold
+    violationType = 'exceeds'
+    amount = actual - threshold
+    details = statusType
+      ? `Total ${statusType} controls (${actual}) exceeds maximum (${threshold})`
+      : `${actual} > ${threshold} (exceeds by ${amount})`
+  } else {
+    // exact
+    passed = actual === threshold
+    violationType = actual > threshold ? 'exceeds' : 'below'
+    amount = Math.abs(actual - threshold)
+    details = `Expected exactly ${threshold} controls, got ${actual}`
+  }
+
+  return {
+    path,
+    type: 'count',
+    status: passed ? 'passed' : 'failed',
+    actual,
+    expected: checkType === 'exact' ? {exact: threshold} : {[checkType]: threshold},
+    ...(severity && {severity}),
+    ...(statusType && {statusType}),
+    violation: passed ? undefined : {
+      type: violationType,
+      amount,
+      details,
+    },
+  }
+}
+
+// =============================================================================
 // MAIN VALIDATION ORCHESTRATOR
 // =============================================================================
 
@@ -156,22 +224,7 @@ export function validateTotalCounts(
     if (threshold !== undefined && typeof threshold === 'number') {
       const {statusName} = parseThresholdPath(path)
       const actual = _.get(statusCounts, renameStatusName(statusName)) as number
-      const passed = actual === threshold
-
-      checks.push({
-        path,
-        type: 'count',
-        status: passed ? 'passed' : 'failed',
-        actual,
-        expected: {exact: threshold},
-        severity: 'total',
-        statusType: statusName as ThresholdStatus,
-        violation: passed ? undefined : {
-          type: actual > threshold ? 'exceeds' : 'below',
-          amount: Math.abs(actual - threshold),
-          details: `Expected exactly ${threshold} controls, got ${actual}`,
-        },
-      })
+      checks.push(createThresholdCheck(path, actual, threshold, 'exact', 'total', statusName as ThresholdStatus))
     }
   }
 
@@ -181,22 +234,7 @@ export function validateTotalCounts(
     if (threshold !== undefined) {
       const {statusName} = parseThresholdPath(path)
       const actual = _.get(statusCounts, renameStatusName(statusName)) as number
-      const passed = actual >= threshold
-
-      checks.push({
-        path,
-        type: 'count',
-        status: passed ? 'passed' : 'failed',
-        actual,
-        expected: {min: threshold},
-        severity: 'total',
-        statusType: statusName as ThresholdStatus,
-        violation: passed ? undefined : {
-          type: 'below',
-          amount: threshold - actual,
-          details: `Total ${statusName} controls (${actual}) is less than minimum (${threshold})`,
-        },
-      })
+      checks.push(createThresholdCheck(path, actual, threshold, 'min', 'total', statusName as ThresholdStatus))
     }
   }
 
@@ -206,22 +244,7 @@ export function validateTotalCounts(
     if (threshold !== undefined) {
       const {statusName} = parseThresholdPath(path)
       const actual = _.get(statusCounts, renameStatusName(statusName)) as number
-      const passed = actual <= threshold
-
-      checks.push({
-        path,
-        type: 'count',
-        status: passed ? 'passed' : 'failed',
-        actual,
-        expected: {max: threshold},
-        severity: 'total',
-        statusType: statusName as ThresholdStatus,
-        violation: passed ? undefined : {
-          type: 'exceeds',
-          amount: actual - threshold,
-          details: `Total ${statusName} controls (${actual}) exceeds maximum (${threshold})`,
-        },
-      })
+      checks.push(createThresholdCheck(path, actual, threshold, 'max', 'total', statusName as ThresholdStatus))
     }
   }
 
