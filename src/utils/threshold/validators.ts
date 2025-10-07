@@ -1,13 +1,11 @@
 import type {ContextualizedProfile, Severity} from 'inspecjs'
 import type {ThresholdValues, ThresholdStatus} from '../../types/threshold.js'
 import type {ValidationResult, ThresholdCheck} from '../../types/threshold-validation.js'
-import {
-  calculateCompliance,
-  extractStatusCounts,
-  getControlIdMap,
-  renameStatusName,
-} from './index.js'
+import {calculateCompliance, extractStatusCounts} from './calculations.js'
+import {getControlIdMap} from './control-mapping.js'
+import {renameStatusName} from './status-conversion.js'
 import {severityTargetsObject, statusSeverityPaths, totalMin, totalMax} from './constants.js'
+import {parseThresholdPath} from './path-parser.js'
 import _ from 'lodash'
 
 // =============================================================================
@@ -156,7 +154,7 @@ export function validateTotalCounts(
   for (const path of exactMatchPaths) {
     const threshold = _.get(thresholds, path)
     if (threshold !== undefined && typeof threshold === 'number') {
-      const [statusName] = path.split('.')
+      const {statusName} = parseThresholdPath(path)
       const actual = _.get(statusCounts, renameStatusName(statusName)) as number
       const passed = actual === threshold
 
@@ -181,7 +179,7 @@ export function validateTotalCounts(
   for (const path of totalMin) {
     const threshold = _.get(thresholds, path) as number | undefined
     if (threshold !== undefined) {
-      const [statusName] = path.split('.')
+      const {statusName} = parseThresholdPath(path)
       const actual = _.get(statusCounts, renameStatusName(statusName)) as number
       const passed = actual >= threshold
 
@@ -206,7 +204,7 @@ export function validateTotalCounts(
   for (const path of totalMax) {
     const threshold = _.get(thresholds, path) as number | undefined
     if (threshold !== undefined) {
-      const [statusName] = path.split('.')
+      const {statusName} = parseThresholdPath(path)
       const actual = _.get(statusCounts, renameStatusName(statusName)) as number
       const passed = actual <= threshold
 
@@ -252,7 +250,7 @@ export function validateSeverityCounts(
       const threshold = _.get(thresholds, path) as number | undefined
       if (threshold === undefined) continue
 
-      const [statusName, , thresholdType] = path.split('.')
+      const {statusName, type: thresholdType} = parseThresholdPath(path)
       const actual = _.get(statusCounts, renameStatusName(statusName)) as number
 
       let passed = false

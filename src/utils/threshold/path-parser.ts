@@ -37,20 +37,16 @@ export function parseThresholdPath(path: string): ParsedThresholdPath {
     const [first, second] = parts
 
     // Check if this is a compliance path (compliance.min/max) or status.total path
-    if (first === 'compliance') {
-      // compliance.min or compliance.max
-      return {
+    return first === 'compliance'
+      ? {
         statusName: 'passed', // Default for compliance paths
         type: second as 'min' | 'max',
       }
-    } else {
-      // status.total path (e.g., passed.total, failed.total)
-      return {
+      : {
         statusName: first as ThresholdStatus,
         severity: 'total',
         type: undefined,
       }
-    }
   }
 
   // 3-part path: status.severity.type

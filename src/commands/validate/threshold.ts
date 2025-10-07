@@ -100,7 +100,7 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
       default: false,
     }),
     'show-passed': Flags.boolean({
-      description: 'Include passing checks in output (use with --verbose)',
+      description: 'Include passing checks in output (works with verbose, detailed, and markdown formats)',
       default: false,
     }),
     quiet: Flags.boolean({
@@ -140,7 +140,16 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
         const toUnpack: Record<string, number> = {}
         for (const flattenedObject of flattenedObjects) {
           const [key, value] = flattenedObject.split(':')
-          toUnpack[key.trim()] = Number.parseInt(value.trim(), 10)
+          const trimmedKey = key.trim()
+
+          // Validate key format and check for dangerous property names
+          if (trimmedKey.includes('__proto__')
+            || trimmedKey.includes('constructor')
+            || trimmedKey.includes('prototype')) {
+            this.error('Invalid threshold key: contains dangerous property name')
+          }
+
+          toUnpack[trimmedKey] = Number.parseInt(value.trim(), 10)
         }
         thresholds = unflattenThreshold(toUnpack)
       } catch (error) {
@@ -182,7 +191,22 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
         this.error('Invalid HDF file: No profiles found')
       }
 
-      profile = parsedExecJSON.contains[0] as ContextualizedProfile
+      // Validate profile structure before type assertion
+      const profileCandidate = parsedExecJSON.contains[0]
+      if (!profileCandidate || typeof profileCandidate !== 'object') {
+        this.error('Invalid HDF file: Profile structure is malformed')
+      }
+
+      // Check required fields exist
+      if (!('data' in profileCandidate) || !('contains' in profileCandidate)) {
+        this.error('Invalid HDF file: Missing required profile fields (data, contains)')
+      }
+
+      if (!Array.isArray(profileCandidate.contains)) {
+        this.error('Invalid HDF file: Profile.contains must be an array')
+      }
+
+      profile = profileCandidate as ContextualizedProfile
     } catch (error) {
       this.error(`Failed to parse HDF file: ${error instanceof Error ? error.message : String(error)}`)
     }

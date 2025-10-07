@@ -12,6 +12,7 @@ import {
   severityTargetsObject,
 } from '../../utils/threshold'
 import {BaseCommand} from '../../utils/oclif/baseCommand'
+import {validateFilePath, safeReadFile} from '../../utils/path-validator.js'
 
 /**
  * Command to generate threshold templates for HDF compliance validation.
@@ -60,7 +61,7 @@ export default class GenerateThreshold extends BaseCommand<typeof GenerateThresh
       char: 'e',
       description: 'Generate exact match thresholds instead of minimum/maximum ranges',
     }),
-    generateControlIds: Flags.boolean({
+    'generate-control-ids': Flags.boolean({
       char: 'c',
       required: false,
       description: 'Include control ID validation in the threshold template',
@@ -70,7 +71,20 @@ export default class GenerateThreshold extends BaseCommand<typeof GenerateThresh
   async run() {
     const {flags} = await this.parse(GenerateThreshold)
     const thresholds: ThresholdValues = {}
-    const parsedExecJSON = convertFileContextual(fs.readFileSync(flags.input, 'utf8'))
+
+    // Validate and read HDF file safely (with 100MB limit)
+    validateFilePath(flags.input, 'read')
+    const hdfContent = safeReadFile(flags.input, 100)
+
+    const parsedExecJSON = convertFileContextual(hdfContent)
+
+    // Check for prototype pollution in parsed HDF data
+    if (parsedExecJSON && typeof parsedExecJSON === 'object' && (Object.prototype.hasOwnProperty.call(parsedExecJSON, '__proto__')
+      || Object.prototype.hasOwnProperty.call(parsedExecJSON, 'constructor')
+      || Object.prototype.hasOwnProperty.call(parsedExecJSON, 'prototype'))) {
+      this.error('Invalid HDF file: contains dangerous properties')
+    }
+
     const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile
     const overallStatusCounts = extractStatusCounts(parsedProfile)
     const overallCompliance = calculateCompliance(overallStatusCounts)
@@ -104,11 +118,13 @@ export default class GenerateThreshold extends BaseCommand<typeof GenerateThresh
     _.set(thresholds, 'no_impact.total.max', severityStatusCounts['Not Applicable'])
 
     // Expected control ID status and severity
-    if (flags.generateControlIds) {
+    if (flags['generate-control-ids']) {
       getControlIdMap(parsedProfile, thresholds)
     }
 
     if (flags.output) {
+      // Validate output path before writing
+      validateFilePath(flags.output, 'write')
       fs.writeFileSync(flags.output, YAML.stringify(thresholds))
     } else {
       console.log(YAML.stringify(thresholds))
