@@ -65,8 +65,8 @@ export function isValidSeverity(value: string): value is Severity | 'total' | 'n
  * }
  * ```
  */
-export function isValidThresholdType(value: string): value is 'min' | 'max' {
-  return THRESHOLD_TYPES.includes(value as 'min' | 'max')
+export function isValidThresholdType(value: string): value is 'min' | 'max' | 'controls' {
+  return value === 'min' || value === 'max' || value === 'controls'
 }
 
 /**
