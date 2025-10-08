@@ -3,10 +3,9 @@ import {readFile} from 'fs/promises'
 import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 
-import type {
-  FlagOptions} from '../../../utils/emasser/utilities'
 import {
   displayError,
+  FlagOptions,
   getFlagsForEndpoint,
   getJsonExamples,
   printRedMsg,
@@ -15,7 +14,7 @@ import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
 
 import {SoftwareBaselineApi} from '@mitre/emass_client'
-import type {SwBaselineResponsePostPut as SwBaselineResponse} from '@mitre/emass_client/dist/api'
+import {SwBaselineResponsePostPut as SwBaselineResponse} from '@mitre/emass_client/dist/api'
 
 /**
  * Represents a software entity with various attributes.

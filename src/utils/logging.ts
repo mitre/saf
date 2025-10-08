@@ -1,7 +1,5 @@
-import type {transport, Logger} from 'winston'
-import {createLogger, format, transports} from 'winston'
-import type {ContextualizedControl, ExecJSON} from 'inspecjs'
-import {contextualizeEvaluation} from 'inspecjs'
+import {createLogger, format, transports, transport, Logger} from 'winston'
+import {ContextualizedControl, contextualizeEvaluation, ExecJSON} from 'inspecjs'
 import colors from 'colors'
 
 /**

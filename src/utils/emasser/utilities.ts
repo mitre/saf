@@ -1,7 +1,7 @@
 /* eslint-disable complexity */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {Flags} from '@oclif/core'
-import type {BooleanFlag, OptionFlag} from '@oclif/core/interfaces'
+import {BooleanFlag, OptionFlag} from '@oclif/core/interfaces'
 import fs from 'fs'
 import path from 'path'
 import {colorize} from 'json-colorizer'

@@ -3,10 +3,9 @@ import {Args, Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {ApiConfig} from '../../../utils/emasser/apiConfig'
 import {ArtifactsApi, ArtifactsExportApi} from '@mitre/emass_client'
-import type {ArtifactsResponseGet} from '@mitre/emass_client/dist/api'
+import {ArtifactsResponseGet} from '@mitre/emass_client/dist/api'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import type {FlagOptions} from '../../../utils/emasser/utilities'
-import {displayError,
+import {displayError, FlagOptions,
   getDescriptionForEndpoint,
   getExamplesForEndpoint,
   getFlagsForEndpoint,

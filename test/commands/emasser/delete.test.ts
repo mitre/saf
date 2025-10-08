@@ -4,7 +4,7 @@ import {
   ContainerScanResultsApi, HardwareBaselineApi,
   SoftwareBaselineApi,
 } from '@mitre/emass_client'
-import type {
+import {
   ArtifactsResponseDel, PoamResponsePostPutDelete,
   MilestonesPutPostDelete, ContainersResourcesPostDelete,
   CloudResourcesPostDelete, HwBaselineResponseDelete,

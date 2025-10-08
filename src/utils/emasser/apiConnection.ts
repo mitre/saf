@@ -1,5 +1,5 @@
-import type {Configuration} from '@mitre/emass_client/dist/configuration'
-import type {AxiosInstance} from 'axios'
+import {Configuration} from '@mitre/emass_client/dist/configuration'
+import {AxiosInstance} from 'axios'
 import {ApiConfig} from './apiConfig'
 import {InitConnections} from './initConnection'
 

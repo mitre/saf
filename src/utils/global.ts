@@ -1,7 +1,7 @@
 import appRootPath from 'app-root-path'
 import {Assettype, fingerprint, Role, Techarea} from '@mitre/hdf-converters'
 import {getInstalledPathSync} from 'get-installed-path'
-import type {AnyProfile, ContextualizedEvaluation, ExecJSON} from 'inspecjs'
+import {AnyProfile, ContextualizedEvaluation, ExecJSON} from 'inspecjs'
 import _ from 'lodash'
 import fs from 'fs'
 import axios from 'axios'

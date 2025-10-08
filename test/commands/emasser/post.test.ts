@@ -6,7 +6,7 @@ import {
   DeviceScanResultsApi, HardwareBaselineApi,
   SoftwareBaselineApi,
 } from '@mitre/emass_client'
-import type {
+import {
   CacResponsePost, PacResponsePost, CloudResourcesResponsePost,
   ContainersResponsePost, MilestoneResponsePost, PoamResponsePostPutDelete,
   Register, StaticCodeResponsePost, TestResultsResponsePost,

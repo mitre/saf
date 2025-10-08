@@ -1,4 +1,4 @@
-import type {Hook} from '@oclif/core'
+import {Hook} from '@oclif/core'
 
 /**
  * Hook that is triggered when an "oclif" command is not found.

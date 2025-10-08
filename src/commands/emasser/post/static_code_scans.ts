@@ -6,11 +6,10 @@ import {Command, Flags} from '@oclif/core'
 
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import type {FlagOptions} from '../../../utils/emasser/utilities'
-import {displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg} from '../../../utils/emasser/utilities'
+import {displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg} from '../../../utils/emasser/utilities'
 
 import {StaticCodeScansApi} from '@mitre/emass_client'
-import type {
+import {
   StaticCodeApplicationPost, StaticCodeResponsePost,
   StaticCodeRequestPostBody as StaticCodeRequest,
   StaticCodeRequestPostBodyApplication as ApplicationRequestBody,

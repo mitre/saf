@@ -1,9 +1,8 @@
 import {Flags} from '@oclif/core'
 import fs from 'fs'
-import type {
-  ChecklistMetadata} from '@mitre/hdf-converters'
 import {
   Assettype,
+  ChecklistMetadata,
   Role,
   Techarea,
   validateChecklistMetadata,

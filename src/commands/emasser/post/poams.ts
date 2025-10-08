@@ -6,11 +6,10 @@ import {Command, Flags} from '@oclif/core'
 
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import type {FlagOptions} from '../../../utils/emasser/utilities'
-import {displayError, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
+import {displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
 
 import {POAMApi} from '@mitre/emass_client'
-import type {MilestonesGet, PoamResponsePostPutDelete} from '@mitre/emass_client/dist/api'
+import {MilestonesGet, PoamResponsePostPutDelete} from '@mitre/emass_client/dist/api'
 import {getErrorMessage} from '../../../utils/global'
 
 /**

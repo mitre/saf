@@ -1,17 +1,16 @@
-import type {ExecJSON} from 'inspecjs'
+import {ExecJSON} from 'inspecjs'
 import {Flags} from '@oclif/core'
 import fs from 'fs'
 import https from 'https'
 import {MsftSecureScoreResults as Mapper} from '@mitre/hdf-converters'
 import {ClientSecretCredential} from '@azure/identity'
-import type {
-  ClientOptions,
-  PageIteratorCallback} from '@microsoft/microsoft-graph-client'
 import {
   Client,
+  ClientOptions,
   PageIterator,
+  PageIteratorCallback,
 } from '@microsoft/microsoft-graph-client'
-import type {
+import {
   SecureScore,
   SecureScoreControlProfile,
 } from '@microsoft/microsoft-graph-types'

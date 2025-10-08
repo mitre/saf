@@ -3,11 +3,10 @@ import fs from 'fs'
 import https from 'https'
 import {FromHdfToAsffMapper as Mapper} from '@mitre/hdf-converters'
 import path from 'path'
-import type {
-  AwsSecurityFinding,
-  SecurityHubClientConfig} from '@aws-sdk/client-securityhub'
 import {
+  AwsSecurityFinding,
   SecurityHub,
+  SecurityHubClientConfig,
 } from '@aws-sdk/client-securityhub'
 import {NodeHttpHandler} from '@smithy/node-http-handler'
 import {basename, checkSuffix} from '../../utils/global'

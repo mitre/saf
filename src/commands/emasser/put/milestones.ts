@@ -3,11 +3,10 @@ import {Command, Flags} from '@oclif/core'
 
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import type {FlagOptions} from '../../../utils/emasser/utilities'
-import {displayError, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
+import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 import {MilestonesApi} from '@mitre/emass_client'
-import type {MilestoneResponsePut,
+import {MilestoneResponsePut,
   MilestonesGet as Milestones} from '@mitre/emass_client/dist/api'
 
 const CMD_HELP = 'saf emasser put milestones -h or --help'

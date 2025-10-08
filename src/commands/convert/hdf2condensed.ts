@@ -1,6 +1,5 @@
 import {Flags} from '@oclif/core'
-import type {ContextualizedProfile} from 'inspecjs'
-import {convertFileContextual} from 'inspecjs'
+import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
 import fs from 'fs'
 import {
   calculateCompliance,

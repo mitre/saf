@@ -1,17 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {Flags} from '@oclif/core'
-import type winston from 'winston'
+import winston from 'winston'
 import fs, {copyFileSync} from 'fs'
-import type {
-  UpdatedProfileReturn,
-  Profile,
-  Control} from '@mitre/inspec-objects'
 import {
   processInSpecProfile,
   processOVAL,
+  UpdatedProfileReturn,
   updateProfileUsingXCCDF,
   processXCCDF,
   updateControl,
+  Profile,
+  Control,
 } from '@mitre/inspec-objects'
 import path from 'path'
 import {createWinstonLogger} from '../../utils/logging'

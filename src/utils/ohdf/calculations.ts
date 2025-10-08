@@ -1,5 +1,5 @@
 import _ from 'lodash'
-import type {ContextualizedEvaluation, ContextualizedProfile} from 'inspecjs'
+import {ContextualizedEvaluation, ContextualizedProfile} from 'inspecjs'
 import {calculateCompliance, extractStatusCounts, flattenProfileSummary, renameStatusName, severityTargetsObject} from '../threshold'
 import {createWinstonLogger} from '../logging'
 

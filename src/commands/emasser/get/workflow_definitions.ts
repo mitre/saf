@@ -2,10 +2,9 @@ import {colorize} from 'json-colorizer'
 import {Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {WorkflowDefinitionsApi} from '@mitre/emass_client'
-import type {WorkflowDefinitionResponseGet} from '@mitre/emass_client/dist/api'
+import {WorkflowDefinitionResponseGet} from '@mitre/emass_client/dist/api'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import type {FlagOptions} from '../../../utils/emasser/utilities'
-import {displayError, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
+import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetWorkflowDefinitions extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]'

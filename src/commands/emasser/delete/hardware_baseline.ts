@@ -3,11 +3,10 @@ import {Command, Flags} from '@oclif/core'
 
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import type {FlagOptions} from '../../../utils/emasser/utilities'
-import {displayError, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
+import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 import {HardwareBaselineApi} from '@mitre/emass_client'
-import type {
+import {
   HwBaselineResponseDelete,
   HwBaselineRequestDeleteBodyInner as HwDeleteBody,
 } from '@mitre/emass_client/dist/api'

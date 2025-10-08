@@ -1,5 +1,5 @@
 import {Flags} from '@oclif/core'
-import type {ExecJSON} from 'inspecjs'
+import {ExecJSON} from 'inspecjs'
 import fs from 'fs'
 import {BaseCommand} from '../../../utils/oclif/baseCommand'
 
