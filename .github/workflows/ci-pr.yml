@@ -31,20 +31,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
-        with:
-          version: 10.18.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
-        with:
-          node-version: "22"
-          check-latest: true
-          cache: 'pnpm'
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+      - name: Setup SAF CLI environment
+        uses: ./.github/actions/setup-saf-cli
 
       - name: Run linter
         run: pnpm run lint:ci
@@ -70,24 +58,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
-        with:
-          version: 10.18.0
-
-      - name: Setup Node.js
-        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
-        with:
-          node-version: "22"
-          check-latest: true
-          cache: 'pnpm'
+      - name: Setup SAF CLI environment
+        uses: ./.github/actions/setup-saf-cli
 
       # TODO: Determine if cinc-auditor is needed - tests don't appear to use it
       # - name: Install cinc-auditor
       #   uses: ./.github/actions/install-cinc-auditor
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
 
       - name: Build
         run: pnpm run prepack
@@ -142,19 +118,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@c47758b77c9736f4b2ef4073d4d51994fabfe349 # v3.7.1
-
-      - name: Build Docker image
-        id: docker_build
-        uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6.9.0
+      - name: Build Docker image (linux/amd64 only for PR testing)
+        uses: ./.github/actions/docker-build-native
         with:
-          context: .
-          push: false
-          load: true  # Make available for local docker executable
+          platform: 'linux/amd64'
           tags: ${{ env.TEST_TAG }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
+          push: 'false'
 
       - name: Smoke test - Verify CLI runs
         run: |
