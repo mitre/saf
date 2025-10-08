@@ -161,12 +161,27 @@ The SAF CLI uses a clean **Pipeline-Centric architecture** with three distinct s
 └──────────────────────────────────────────────────────────────────┘
 
 ┌──────────────────────────────────────────────────────────────────┐
-│                   OPERATIONAL WORKFLOWS                           │
-│                  (Scheduled / Event-Driven)                       │
+│                   OPERATIONAL WORKFLOWS (ops-*)                   │
+│          Project Maintenance & Metrics (Scheduled/Cron)           │
 ├──────────────────────────────────────────────────────────────────┤
-│  cache-cleanup.yml      │ Weekly cache maintenance (Sundays)     │
-│  stale.yml              │ Auto-close inactive issues/PRs         │
-│  auto-approve-merge.yml │ Auto-merge Dependabot PRs             │
+│                                                                   │
+│  ops-cache-cleanup.yml       │ Weekly cache maintenance          │
+│  • Schedule: Sundays 2am UTC │ • Delete caches >7 days old       │
+│  • Manual trigger available  │ • Report cache usage              │
+│                              │                                    │
+│  ops-stale-management.yml    │ Daily inactive issue/PR cleanup   │
+│  • Schedule: Daily 1am UTC   │ • Mark stale after 90/60 days     │
+│  • Close after 7/14 days     │ • Exempt: pinned, security, wip   │
+│                              │                                    │
+│  ops-dependabot-automerge.yml│ Auto-merge dependency updates     │
+│  • Trigger: PR labeled       │ • Dependabot PRs only             │
+│  • Waits for CI to pass      │ • Security compliance             │
+│                              │                                    │
+│  ops-download-metrics.yml    │ Weekly adoption tracking          │
+│  • Schedule: Saturdays 3am   │ • NPM downloads (week/month/year) │
+│  • Manual trigger available  │ • Docker Hub pulls                │
+│                              │ • GitHub release downloads        │
+│                              │ • Reports to Step Summary         │
 └──────────────────────────────────────────────────────────────────┘
 ```
 
@@ -195,13 +210,14 @@ The SAF CLI uses a clean **Pipeline-Centric architecture** with three distinct s
 | **Main Branch CI** | `ci-main.yml` | push to main | 20-25 min | Full validation + Docker publish |
 | **Release Publishing** | `cd-release.yml` | release published | 60-70 min | Build all + publish everywhere |
 
-### Operational Workflows (3)
+### Operational Workflows (4)
 
 | Workflow | File | Trigger | Purpose |
 |----------|------|---------|---------|
-| **Cache Cleanup** | `cache-cleanup.yml` | Weekly | Delete caches >7 days old |
-| **Stale Management** | `stale.yml` | Daily | Auto-close inactive issues/PRs |
-| **Dependabot** | `auto-approve-and-merge.yml` | PR labeled | Auto-merge dependency updates |
+| **Cache Cleanup** | `ops-cache-cleanup.yml` | Weekly (Sun 2am) | Delete caches >7 days old |
+| **Stale Management** | `ops-stale-management.yml` | Daily (1am) | Auto-close inactive issues/PRs |
+| **Dependabot Automerge** | `ops-dependabot-automerge.yml` | PR labeled | Auto-merge dependency updates |
+| **Download Metrics** | `ops-download-metrics.yml` | Weekly (Sat 3am) | Track NPM/Docker/release downloads |
 
 ---
 

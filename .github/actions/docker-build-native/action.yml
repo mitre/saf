@@ -1,0 +1,45 @@
+name: Build Docker Image (Native Architecture)
+description: Build Docker image for native architecture without QEMU emulation
+inputs:
+  platform:
+    description: 'Docker platform (linux/amd64 or linux/arm64)'
+    required: true
+  tags:
+    description: 'Docker image tags (newline-separated)'
+    required: true
+  push:
+    description: 'Push image to registry'
+    required: false
+    default: 'true'
+  docker-username:
+    description: 'DockerHub username'
+    required: false
+  docker-password:
+    description: 'DockerHub password/token'
+    required: false
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.9.0
+      shell: bash
+
+    - name: Login to DockerHub
+      if: inputs.push == 'true' && inputs.docker-username != ''
+      uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.4.0
+      with:
+        username: ${{ inputs.docker-username }}
+        password: ${{ inputs.docker-password }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.14.0
+      shell: bash
+      with:
+        context: .
+        push: ${{ inputs.push }}
+        load: ${{ inputs.push == 'false' }}
+        platforms: ${{ inputs.platform }}
+        tags: ${{ inputs.tags }}
+        cache-from: type=gha,scope=${{ inputs.platform }}
+        cache-to: type=gha,mode=max,scope=${{ inputs.platform }}

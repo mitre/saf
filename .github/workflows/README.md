@@ -26,8 +26,9 @@ The CI/CD pipeline was reorganized from multiple individual workflows into a coh
 - Unclear workflow dependencies
 
 **After (New Architecture):**
-- Three focused workflows: `ci-pr.yml`, `ci-main.yml`, `draft-release.yml`
-- Two reusable composite actions for common setup tasks
+- Three core pipeline workflows: `ci-pr.yml`, `ci-main.yml`, `cd-release.yml`
+- Three reusable composite actions for common setup tasks
+- Four operational workflows: `ops-*` prefix for maintenance/metrics
 - Fast PR validation with strategic testing
 - Comprehensive cross-platform validation on main branch
 - Clear progression: PR → Main → Release
@@ -617,11 +618,7 @@ The CI/CD reorganization consolidated and replaced several standalone workflows:
 **Workflows to Keep**:
 - `e2e-ci.yml` - Still used for end-to-end testing
 - `build-*.yml` - Used for release package builds
-- `push-to-npm-gpr.yml` - Used for release publishing
-- `bump-brew.yml` - Used for Homebrew updates
-- `anchore-syft.yml` - Security scanning (may integrate into ci-main.yml later)
-- `auto-approve-and-merge.yml` - Dependabot automation
-- `cache-cleanup.yml` - Maintenance automation
+All archived in `workflows-archive/` (13 workflows replaced by pipeline reorganization)
 
 ### Rollback Procedure
 
