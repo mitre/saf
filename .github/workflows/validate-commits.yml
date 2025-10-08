@@ -1,0 +1,60 @@
+name: Validate Commit Messages
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  validate:
+    name: Lint Commit Messages
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0  # Need full history for commitlint
+
+      - name: Setup SAF CLI environment
+        uses: ./.github/actions/setup-saf-cli
+        with:
+          install-deps: 'false'  # Don't need full deps for commitlint
+
+      - name: Install commitlint
+        run: pnpm add -D @commitlint/cli @commitlint/config-conventional
+
+      - name: Validate commit messages
+        run: |
+          echo "Validating commits from ${{ github.event.pull_request.base.sha }} to ${{ github.event.pull_request.head.sha }}"
+          npx commitlint --from ${{ github.event.pull_request.base.sha }} --to ${{ github.event.pull_request.head.sha }} --verbose
+
+      - name: Comment on PR if validation fails
+        if: failure()
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## ❌ Commit Message Validation Failed
+
+            This PR contains commits that don't follow [Conventional Commits](https://www.conventionalcommits.org/) format.
+
+            **Required format**: \`type(scope): subject\`
+
+            **Valid types**: feat, fix, docs, style, refactor, perf, test, ci, chore, security
+
+            **Examples**:
+            - \`feat(convert): add support for Trivy SBOM format\`
+            - \`fix(threshold): correct parseThresholdPath for status.total paths\`
+            - \`docs(readme): update installation instructions\`
+
+            Please update your commit messages and force-push to this PR.`
+            })

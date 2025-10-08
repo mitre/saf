@@ -1,0 +1,273 @@
+name: Main Branch CI
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+  workflow_dispatch:  # Allow manual testing
+
+# Don't cancel in-progress builds on main branch
+concurrency:
+  group: ci-main-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  # Code quality check (catches direct commits to main)
+  quality:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup SAF CLI environment
+        uses: ./.github/actions/setup-saf-cli
+
+      - name: Run linter
+        run: pnpm run lint:ci
+
+      - name: Security audit
+        uses: ./.github/actions/security-audit
+        with:
+          audit-level: 'high'
+          fail-on-vulnerabilities: 'true'
+
+  # Full platform testing matrix
+  test-matrix:
+    name: Test on ${{ matrix.platform }}
+    runs-on: ${{ matrix.platform }}-latest
+    needs: quality  # Wait for linting to pass
+    timeout-minutes: 20
+    strategy:
+      fail-fast: true
+      matrix:
+        platform: [ubuntu, macos, windows]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup SAF CLI environment
+        uses: ./.github/actions/setup-saf-cli
+
+      # TODO: Determine if cinc-auditor is needed - tests don't appear to use it
+      # - name: Install cinc-auditor
+      #   uses: ./.github/actions/install-cinc-auditor
+
+      - name: Build
+        run: pnpm run prepack
+
+      - name: Run all tests
+        run: |
+          echo "::group::Test Execution - ${{ matrix.platform }} (695 tests)"
+          pnpm run test
+          echo "::endgroup::"
+
+      - name: Sanity check CLI works without dev dependencies (Windows)
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          pnpm install --frozen-lockfile --prod
+          pnpm run prepack
+          $stderrFile = New-TemporaryFile
+          ./bin/run -v 2> $stderrFile.FullName 1> $null
+          $exitCode = $LASTEXITCODE
+          $stderr = Get-Content $stderrFile.FullName -Raw
+          Remove-Item $stderrFile
+          if ($exitCode -eq 0) {
+            if (($null -ne $stderr) -and ($stderr.Trim())) {
+              Write-Host "Failed: received the following stderr:`n$stderr"
+              exit 1
+            }
+          } else {
+            Write-Host "Failed: received a non-zero exit code when doing 'saf -v'"
+            exit 1
+          }
+
+      - name: Sanity check CLI works without dev dependencies (Unix)
+        if: matrix.platform == 'ubuntu' || matrix.platform == 'macos'
+        run: |
+          pnpm install --frozen-lockfile --prod
+          pnpm run prepack
+          if stderr=$(./bin/run -v 2>&1 1>/dev/null); then
+            [ -z "$stderr" ] || (printf "Failed: received the following stderr:\n%s\n" "$stderr"; exit 1)
+          else
+            echo "Failed: received a non-zero exit code when doing \`saf -v\`"
+            exit 1
+          fi
+
+      # Upload coverage only from Ubuntu
+      - name: Run tests with coverage (Ubuntu only)
+        if: matrix.platform == 'ubuntu'
+        run: |
+          echo "::group::Test Execution with Coverage"
+          pnpm test -- --coverage
+          echo "::endgroup::"
+
+      - name: Upload coverage to Codecov (Ubuntu only)
+        if: matrix.platform == 'ubuntu'
+        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
+        with:
+          files: ./coverage/clover.xml
+          flags: unittests
+          name: saf-cli-coverage
+          fail_ci_if_error: false
+
+      - name: Coverage Summary (Ubuntu only)
+        if: matrix.platform == 'ubuntu'
+        run: |
+          echo "## Test Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/coverage-summary.json ]; then
+            cat coverage/coverage-summary.json >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Coverage report generated successfully" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # Security scanning with SBOM generation
+  security-scan:
+    name: Security SBOM Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # Required to upload to Dependency submission API
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Build Docker image
+        run: docker build . --file Dockerfile --tag localbuild/testimage:latest
+
+      - name: Scan image and upload dependency results
+        uses: anchore/sbom-action@f8bdd1d8ac5e901a77a92f111440fdb1b593736b # v0.20.6
+        with:
+          image: "localbuild/testimage:latest"
+          artifact-name: image.spdx.json
+          dependency-snapshot: true
+
+      - name: Setup SAF CLI for audit
+        uses: ./.github/actions/setup-saf-cli
+        with:
+          install-deps: 'false'
+
+      - name: Run dependency security audit
+        uses: ./.github/actions/security-audit
+        with:
+          audit-level: 'moderate'
+          fail-on-vulnerabilities: 'false'  # Don't block main, just report
+
+  # Docker build and publish (depends on tests passing)
+  docker-publish:
+    name: Build and Publish Docker Image (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 15
+    needs: [test-matrix, security-scan]
+    permissions:
+      contents: read
+    strategy:
+      matrix:
+        include:
+          - arch: amd64
+            runner: ubuntu-24.04
+            platform: linux/amd64
+          - arch: arm64
+            runner: macos-14  # M1 runner for native arm64
+            platform: linux/arm64
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Build Docker image (native ${{ matrix.arch }})
+        uses: ./.github/actions/docker-build-native
+        with:
+          platform: ${{ matrix.platform }}
+          tags: |
+            mitre/saf:latest-${{ matrix.arch }}
+            mitre/saf:${{ github.sha }}-${{ matrix.arch }}
+          push: 'true'
+          docker-username: ${{ secrets.DOCKER_USERNAME }}
+          docker-password: ${{ secrets.DOCKER_TOKEN }}
+
+  # Create multi-arch manifest after both builds complete
+  docker-manifest:
+    name: Create Multi-Arch Docker Manifest
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: docker-publish
+    permissions:
+      contents: read
+
+    steps:
+      - name: Create manifest for latest tag
+        uses: ./.github/actions/docker-create-manifest
+        with:
+          image-name: 'mitre/saf'
+          version-tag: 'latest'
+          docker-username: ${{ secrets.DOCKER_USERNAME }}
+          docker-password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Create manifest for SHA tag
+        uses: ./.github/actions/docker-create-manifest
+        with:
+          image-name: 'mitre/saf'
+          version-tag: ${{ github.sha }}
+          docker-username: ${{ secrets.DOCKER_USERNAME }}
+          docker-password: ${{ secrets.DOCKER_TOKEN }}
+
+  # Update Iron Bank after multi-arch manifest is ready
+  ironbank-update:
+    name: Update Iron Bank Mainline
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: docker-manifest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Update Iron Bank repository
+        uses: mitre/ironbank_release_action@1c14c27db1c37e894f8042ac2edcde08d445882d # v1
+        with:
+          name: SAF-CLI
+          version: ${{ github.sha }}
+          ironbank_pat: ${{ secrets.SAF_IRONBANK_REPO1_PAT }}
+          ironbank_username: ${{ secrets.SAF_IRONBANK_REPO1_USERNAME }}
+          ironbank_project_id: 17078
+          ironbank_project_clone_url: repo1.dso.mil/dsop/mitre/security-automation-framework/saf-mainline.git
+          git_commit_author_name: "Automated SAF CLI Release"
+          git_commit_author_email: "saf@mitre.org"
+          update_commands: |
+            yq e -i '.args.SAF_VERSION=\"${{ github.sha }}\" | .tags[0]=\"${{ github.sha }}\" | .labels.\"org.opencontainers.image.version\"=\"${{ github.sha }}\" | .resources[0].tag=\"mitre/saf:${{ github.sha }}\" | .resources[0].url=\"docker://docker.io/mitre/saf@${{ env.DOCKER_SHA }}\"' hardening_manifest.yaml
+            sed -i s/SAF_VERSION=\.\*/SAF_VERSION=${{ github.sha }}/ Dockerfile
+
+  # Update draft release notes (runs in parallel with docker)
+  draft-release:
+    name: Update Draft Release
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    permissions:
+      contents: write # Required to update the draft release
+      pull-requests: read # Required to get PR information
+
+    steps:
+      - name: Update draft release notes
+        uses: release-drafter/release-drafter@7cf306f56b79636bb76931494ccf29fc893763bd # v6.1.0
+        with:
+          disable-autolabeler: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

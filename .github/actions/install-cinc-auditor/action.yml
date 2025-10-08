@@ -1,0 +1,68 @@
+name: 'Install cinc-auditor'
+description: 'Install cinc-auditor (InSpec community build) with platform-aware caching'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Determine cinc-auditor cache path
+      id: cache-path
+      shell: bash
+      run: |
+        if [ "$RUNNER_OS" = "Windows" ]; then
+          echo "path=C:\\cinc-project\\cinc-auditor" >> $GITHUB_OUTPUT
+        else
+          echo "path=/opt/cinc-auditor" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Cache cinc-auditor installation
+      id: cache-cinc
+      uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+      with:
+        path: ${{ steps.cache-path.outputs.path }}
+        key: cinc-auditor-${{ runner.os }}-6.6.0
+
+    - name: Install cinc-auditor on Windows
+      if: runner.os == 'Windows' && steps.cache-cinc.outputs.cache-hit != 'true'
+      shell: pwsh
+      run: |
+        Write-Host "Installing cinc-auditor 6.6.0 on Windows..."
+        Start-Process powershell -Verb RunAs
+        . { iwr -useb https://omnitruck.cinc.sh/install.ps1 } | iex; install -project cinc-auditor -version 6.6.0
+        if (Test-Path "C:\cinc-project\cinc-auditor\bin\cinc-auditor.bat") {
+          Write-Host "cinc-auditor installed successfully"
+        } else {
+          Write-Error "cinc-auditor installation failed"
+          exit 1
+        }
+
+    - name: Install cinc-auditor on Linux/macOS
+      if: runner.os != 'Windows' && steps.cache-cinc.outputs.cache-hit != 'true'
+      shell: bash
+      run: |
+        echo "Installing cinc-auditor 6.6.0 on ${{ runner.os }}..."
+        curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor -v 6.6.0
+        if command -v cinc-auditor &> /dev/null; then
+          echo "cinc-auditor installed successfully"
+        else
+          echo "cinc-auditor installation failed"
+          exit 1
+        fi
+
+    - name: Add cinc-auditor to PATH (Windows)
+      if: runner.os == 'Windows'
+      shell: pwsh
+      run: |
+        $env:Path = "C:\cinc-project\cinc-auditor\bin;C:\cinc-project\cinc-auditor\embedded\bin;" + $env:Path
+        echo "C:\cinc-project\cinc-auditor\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+        echo "C:\cinc-project\cinc-auditor\embedded\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+    - name: Verify cinc-auditor installation
+      shell: bash
+      run: |
+        echo "Verifying cinc-auditor installation..."
+        if [ "$RUNNER_OS" = "Windows" ]; then
+          cinc-auditor.bat version || (echo "cinc-auditor verification failed" && exit 1)
+        else
+          cinc-auditor version || (echo "cinc-auditor verification failed" && exit 1)
+        fi
+        echo "cinc-auditor is ready to use"

@@ -1,0 +1,32 @@
+{
+  "packages": {
+    ".": {
+      "release-type": "node",
+      "package-name": "@mitre/saf",
+      "changelog-sections": [
+        {"type": "feat", "section": "Features", "hidden": false},
+        {"type": "fix", "section": "Bug Fixes", "hidden": false},
+        {"type": "perf", "section": "Performance Improvements", "hidden": false},
+        {"type": "refactor", "section": "Code Refactoring", "hidden": false},
+        {"type": "docs", "section": "Documentation", "hidden": false},
+        {"type": "test", "section": "Tests", "hidden": false},
+        {"type": "ci", "section": "CI/CD", "hidden": false},
+        {"type": "chore", "section": "Miscellaneous", "hidden": false},
+        {"type": "security", "section": "Security", "hidden": false}
+      ],
+      "extra-files": [
+        {
+          "type": "json",
+          "path": "package.json",
+          "jsonpath": "$.version"
+        }
+      ],
+      "include-component-in-tag": false,
+      "include-v-in-tag": true,
+      "versioning": "default",
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": false
+    }
+  },
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
+}
