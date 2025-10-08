@@ -157,11 +157,6 @@ jobs:
             artifact-path-win-x86: saf/dist/win32/saf-*-x86.exe
             artifact-path-deb: saf/dist/deb/saf-*.deb
 
-          # RPM .rpm installer
-          - build-type: RPM
-            os: ubuntu-22.04
-            artifact-name: SAF-CLI RPM Build noarch
-            artifact-path: saf/noarch/saf-*.rpm
 
     steps:
       - name: Checkout code
@@ -283,42 +278,68 @@ jobs:
           path: ${{ matrix.artifact-path-deb }}
           retention-days: 5
 
-      # RPM-specific steps
-      - name: Setup container for RPM build
-        if: matrix.build-type == 'RPM'
-        run: echo "Building in container in next step"
+  # =============================================================================
+  # JOB 3B: Build RPM Installer (Separate Job - Needs Container)
+  # =============================================================================
+  # RPM builds need container: at job level, incompatible with matrix
+  build-rpm:
+    name: Build RPM Installer
+    runs-on: ubuntu-22.04
+    needs: [test-matrix, security-scan]
+    timeout-minutes: 30
+    container:
+      image: registry.access.redhat.com/ubi9/nodejs-22:latest
+      options: -u 0  # Run as root for dnf
 
-      # RPM build requires special container setup
-      # We can't use container: at the job level with matrix, so we handle it in steps
-      - name: Build RPM in container
-        if: matrix.build-type == 'RPM'
-        run: |
-          docker run --rm \
-            -v $(pwd)/saf:/workspace \
-            -w /workspace \
-            registry.access.redhat.com/ubi9/nodejs-22:latest \
-            bash -c "
-              dnf install -y rpm-build perl-Digest-SHA
-              npm install -g pnpm@${{ env.PNPM_VERSION }}
-              rm -rf test
-              pnpm install --frozen-lockfile --prod
-              echo \"filename=saf-v\$(cat VERSION)-linux-x64\" >> /tmp/env
-              source /tmp/env
-              npx oclif pack tarballs -t linux-x64 --no-xz
-              cd dist
-              gzip -dc \$(ls) > \"\$filename.tar\"
-              tar -rf \"\$filename.tar\" --transform 's|^\.\.|saf|' ../saf.spec
-              gzip \"\$filename.tar\"
-              cd ..
-              rpmbuild -ta \"dist/\$filename.tar.gz\" -D \"_rpmdir \$(pwd)\" -D \"version \$(cat VERSION)\"
-            "
-
-      - name: Upload RPM installer artifact
-        if: matrix.build-type == 'RPM'
-        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
         with:
-          name: ${{ matrix.artifact-name }}
-          path: ${{ matrix.artifact-path }}
+          path: saf
+
+      - name: Install build dependencies
+        run: dnf install -y rpm-build perl-Digest-SHA
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          check-latest: true
+          cache: 'pnpm'
+          cache-dependency-path: ./saf/pnpm-lock.yaml
+
+      - name: Setup and build
+        working-directory: ./saf
+        run: |
+          rm -rf test
+          pnpm install --frozen-lockfile --prod
+          echo "filename=saf-v$(cat VERSION)-linux-x64" >> "$GITHUB_ENV"
+
+      - name: Pack tarball
+        working-directory: ./saf
+        run: npx oclif pack tarballs -t linux-x64 --no-xz
+
+      - name: Repack with spec file
+        working-directory: ./saf/dist
+        run: |
+          gzip -dc "$(ls)" > "${{ env.filename }}.tar"
+          tar -rf "${{ env.filename }}.tar" --transform 's|^\.\.|saf|' ../saf.spec
+          gzip "${{ env.filename }}.tar"
+
+      - name: Build RPM
+        working-directory: ./saf
+        run: rpmbuild -ta "dist/${{ env.filename }}.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)"
+
+      - name: Upload RPM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: SAF-CLI RPM Build noarch
+          path: saf/noarch/saf-*.rpm
           retention-days: 5
 
   # =============================================================================
@@ -329,7 +350,7 @@ jobs:
   publish-npm:
     name: Publish to NPM and GitHub Packages
     runs-on: ubuntu-22.04
-    needs: build-installers
+    needs: [build-installers, build-rpm]
     timeout-minutes: 10
     permissions:
       contents: read
@@ -524,7 +545,7 @@ jobs:
     name: Upload Release Assets
     if: inputs.dry-run != true  # Skip asset upload in dry-run (no real release)
     runs-on: ubuntu-22.04
-    needs: build-installers
+    needs: [build-installers, build-rpm]
     timeout-minutes: 10
     permissions:
       contents: write
