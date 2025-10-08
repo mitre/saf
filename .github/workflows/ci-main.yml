@@ -19,10 +19,35 @@ permissions:
   contents: write
 
 jobs:
+  # Code quality check (catches direct commits to main)
+  quality:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup SAF CLI environment
+        uses: ./.github/actions/setup-saf-cli
+
+      - name: Run linter
+        run: pnpm run lint:ci
+
+      - name: Security audit
+        uses: ./.github/actions/security-audit
+        with:
+          audit-level: 'high'
+          fail-on-vulnerabilities: 'true'
+
   # Full platform testing matrix
   test-matrix:
     name: Test on ${{ matrix.platform }}
     runs-on: ${{ matrix.platform }}-latest
+    needs: quality  # Wait for linting to pass
     timeout-minutes: 20
     strategy:
       fail-fast: true

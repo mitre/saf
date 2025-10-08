@@ -27,6 +27,39 @@ The SAF CLI uses a clean **Pipeline-Centric architecture** with three distinct s
 
 ---
 
+## Pipeline Stage Comparison
+
+| Check/Action | PR | Main | Release | Rationale |
+|--------------|----|----|---------|-----------|
+| **Linting** | ✅ | ✅ | ❌ | Lint PRs and direct main commits; releases already validated |
+| **Security Audit** | ✅ | ✅ | ✅ | Check vulnerabilities at all stages |
+| **Tests (Ubuntu)** | ✅ | ✅ | ✅ | Core functionality validation |
+| **Tests (macOS)** | ❌ | ✅ | ✅ | Full platform validation on main+ |
+| **Tests (Windows)** | ❌ | ✅ | ✅ | Full platform validation on main+ |
+| **SBOM Scan** | ❌ | ✅ | ✅ | Security compliance for published artifacts |
+| **Docker Build** | ✅ test | ✅ publish | ✅ publish | PR validates, Main/Release publish |
+| **Docker Tags** | - | `latest`, `SHA` | `release-latest`, `v1.5.1`, `v1` | Different tags for different purposes |
+| **Build Installers** | ❌ | ❌ | ✅ | Only build on actual releases |
+| **Publish NPM** | ❌ | ❌ | ✅ | Only publish releases |
+| **Publish Homebrew** | ❌ | ❌ | ✅ | Only publish releases |
+| **Iron Bank** | ❌ | mainline | release | Different repos for continuous vs release |
+| **Upload Assets** | ❌ | ❌ | ✅ | Only attach installers to releases |
+| **Draft Release** | ❌ | ✅ | ❌ | Auto-generate notes on main, not needed on release |
+
+**Key Insights**:
+- **PR**: Fast feedback (10-15 min) - Ubuntu only, no publishing
+- **Main**: Full validation (20-25 min) - All platforms, publish `latest` Docker
+- **Release**: Complete build (60-70 min) - All platforms, all installers, all channels
+
+**Docker Tag Strategy**:
+- `latest` = Latest main branch (bleeding edge, updated by ci-main.yml)
+- `release-latest` = Latest stable release (updated by cd-release.yml)
+- `v1.5.1` = Specific version (updated by cd-release.yml)
+- `v1` = Latest v1.x.x release (updated by cd-release.yml)
+- `SHA` = Specific commit from main (updated by ci-main.yml)
+
+---
+
 ## Architecture Diagram
 
 ```
