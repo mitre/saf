@@ -8,6 +8,7 @@ on:
       - '**.md'
       - 'docs/**'
       - 'LICENSE'
+  workflow_dispatch:  # Allow manual testing
 
 # Don't cancel in-progress builds on main branch
 concurrency:
