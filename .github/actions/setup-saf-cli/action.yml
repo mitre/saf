@@ -38,7 +38,7 @@ runs:
         cache: 'pnpm'
 
     - name: Install dependencies
-      if: ${{ inputs.install-deps == 'true' }}
+      if: inputs.install-deps != 'false'
       shell: bash
       run: |
         if [ "${{ inputs.production-only }}" = "true" ]; then

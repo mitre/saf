@@ -14,6 +14,8 @@ jobs:
     name: Lint Commit Messages
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    # Skip for Dependabot PRs (they don't use conventional commits)
+    if: github.actor != 'dependabot[bot]'
 
     steps:
       - name: Checkout code
