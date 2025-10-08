@@ -206,11 +206,28 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Verify image availability
+      - name: Verify image availability and extract digest
+        id: docker-digest
         run: |
           sleep 10
-          docker pull mitre/saf:${{ github.sha }}
-          docker pull mitre/saf:latest
+
+          MAX_RETRIES=5
+          RETRY_DELAY=2
+
+          for i in $(seq 1 $MAX_RETRIES); do
+            if docker pull mitre/saf:${{ github.sha }}; then
+              DOCKER_SHA=$(docker inspect --format='{{index .RepoDigests 0}}' mitre/saf:${{ github.sha }} | cut -d '@' -f 2)
+              echo "DOCKER_SHA=$DOCKER_SHA" >> $GITHUB_OUTPUT
+              echo "✓ Extracted Docker SHA: $DOCKER_SHA"
+              break
+            else
+              echo "Retry $i/$MAX_RETRIES failed, waiting $RETRY_DELAY seconds..."
+              sleep $RETRY_DELAY
+            fi
+          done
+
+    outputs:
+      docker_sha: ${{ steps.docker-digest.outputs.DOCKER_SHA }}
 
   # Update Iron Bank after Docker publish
   ironbank-update:
@@ -237,7 +254,7 @@ jobs:
           git_commit_author_name: "Automated SAF CLI Release"
           git_commit_author_email: "saf@mitre.org"
           update_commands: |
-            yq e -i '.args.SAF_VERSION=\"${{ github.sha }}\" | .tags[0]=\"${{ github.sha }}\" | .labels.\"org.opencontainers.image.version\"=\"${{ github.sha }}\" | .resources[0].tag=\"mitre/saf:${{ github.sha }}\" | .resources[0].url=\"docker://docker.io/mitre/saf@${{ env.DOCKER_SHA }}\"' hardening_manifest.yaml
+            yq e -i '.args.SAF_VERSION=\"${{ github.sha }}\" | .tags[0]=\"${{ github.sha }}\" | .labels.\"org.opencontainers.image.version\"=\"${{ github.sha }}\" | .resources[0].tag=\"mitre/saf:${{ github.sha }}\" | .resources[0].url=\"docker://docker.io/mitre/saf@${{ needs.docker-publish.outputs.docker_sha }}\"' hardening_manifest.yaml
             sed -i s/SAF_VERSION=\.\*/SAF_VERSION=${{ github.sha }}/ Dockerfile
 
   # Update draft release notes (runs in parallel with docker)
