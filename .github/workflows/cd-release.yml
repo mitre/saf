@@ -169,13 +169,24 @@ jobs:
         with:
           path: ${{ matrix.build-type == 'macOS' && '.' || 'saf' }}
 
-      - name: Setup SAF CLI environment
-        uses: ./.github/actions/setup-saf-cli
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
         with:
-          production-only: 'true'
+          version: ${{ env.PNPM_VERSION }}
 
-      - name: Remove test files
-        run: rm -rf test
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          check-latest: true
+          cache: 'pnpm'
+          cache-dependency-path: ${{ matrix.build-type == 'macOS' && 'pnpm-lock.yaml' || 'saf/pnpm-lock.yaml' }}
+
+      - name: Install dependencies and remove tests
+        working-directory: ${{ matrix.build-type == 'macOS' && '.' || 'saf' }}
+        run: |
+          pnpm install --frozen-lockfile --prod
+          rm -rf test
 
       # macOS-specific steps
       - name: Build macOS installer
