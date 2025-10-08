@@ -68,15 +68,18 @@ jobs:
       - name: Build
         run: pnpm run prepack
 
-      - name: Run all tests (with coverage on Ubuntu)
+      - name: Run all tests (Ubuntu with coverage)
+        if: matrix.platform == 'ubuntu'
         run: |
-          if [ "${{ matrix.platform }}" = "ubuntu" ]; then
-            echo "::group::Test Execution - ubuntu (695 tests with coverage)"
-            pnpm run test -- --coverage
-          else
-            echo "::group::Test Execution - ${{ matrix.platform }} (695 tests)"
-            pnpm run test
-          fi
+          echo "::group::Test Execution - ubuntu (695 tests with coverage)"
+          pnpm run test -- --coverage
+          echo "::endgroup::"
+
+      - name: Run all tests (macOS/Windows)
+        if: matrix.platform != 'ubuntu'
+        run: |
+          echo "::group::Test Execution - ${{ matrix.platform }} (695 tests)"
+          pnpm run test
           echo "::endgroup::"
 
       - name: Sanity check CLI works without dev dependencies (Windows)
