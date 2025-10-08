@@ -8,9 +8,14 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g., v1.5.1)'
+        description: 'Release version (e.g., v1.5.1 or v99.99.99-test for dry-run)'
         required: true
         type: string
+      dry-run:
+        description: 'Dry-run mode: build everything but do not publish'
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -335,7 +340,13 @@ jobs:
         run: npm pack
 
       - name: Publish to NPM
-        run: npm publish --access public mitre-saf-*.tgz
+        run: |
+          if [ "${{ inputs.dry-run }}" = "true" ]; then
+            echo "DRY-RUN: Would publish to NPM"
+            npm publish --access public --dry-run mitre-saf-*.tgz
+          else
+            npm publish --access public mitre-saf-*.tgz
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
@@ -348,7 +359,13 @@ jobs:
           cache: 'pnpm'
 
       - name: Publish to GitHub Package Registry
-        run: npm publish --access public mitre-saf-*.tgz
+        run: |
+          if [ "${{ inputs.dry-run }}" = "true" ]; then
+            echo "DRY-RUN: Would publish to GitHub Packages"
+            npm publish --access public --dry-run mitre-saf-*.tgz
+          else
+            npm publish --access public mitre-saf-*.tgz
+          fi
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -396,14 +413,16 @@ jobs:
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.14.0
         with:
           context: .
-          push: true
-          platforms: "linux/amd64,linux/arm64"
+          push: ${{ inputs.dry-run != true }}  # Don't push in dry-run mode
+          load: ${{ inputs.dry-run == true }}  # Load locally in dry-run for testing
+          platforms: ${{ inputs.dry-run == true && 'linux/amd64' || 'linux/amd64,linux/arm64' }}  # Single platform for dry-run
           tags: |
             mitre/saf:release-latest
             mitre/saf:${{ steps.version.outputs.no_v }}
             mitre/saf:${{ steps.version.outputs.major }}
 
       - name: Verify Docker image availability
+        if: inputs.dry-run != true  # Skip verification in dry-run
         shell: bash
         id: get-docker-sha
         run: |
@@ -431,6 +450,7 @@ jobs:
           fi
 
       - name: Update Iron Bank release repository
+        if: inputs.dry-run != true  # Skip Iron Bank in dry-run
         uses: mitre/ironbank_release_action@1c14c27db1c37e894f8042ac2edcde08d445882d # v1
         with:
           name: SAF-CLI
@@ -451,6 +471,7 @@ jobs:
   # Depends on NPM publish completing (Homebrew pulls from NPM)
   publish-homebrew:
     name: Update Homebrew Formula
+    if: inputs.dry-run != true  # Skip Homebrew in dry-run (needs real NPM package)
     runs-on: ubuntu-22.04
     needs: publish-npm
     timeout-minutes: 10
@@ -486,6 +507,7 @@ jobs:
   # Downloads all installer artifacts and attaches them to the release
   upload-assets:
     name: Upload Release Assets
+    if: inputs.dry-run != true  # Skip asset upload in dry-run (no real release)
     runs-on: ubuntu-22.04
     needs: build-installers
     timeout-minutes: 10
