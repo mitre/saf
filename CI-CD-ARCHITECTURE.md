@@ -323,7 +323,12 @@ The SAF CLI uses a clean **Pipeline-Centric architecture** with three distinct s
    - ALL 695 tests on all platforms
    - Blocks entire release if any test fails
 
-2. **build-installers** (25-30 min) - Depends on tests, parallel builds
+2. **security-scan** (10 min) - Parallel with tests
+   - SBOM generation (Anchore Syft)
+   - Dependency audit (pnpm audit)
+   - Blocks publishing if security issues found
+
+3. **build-installers** (25-30 min) - Depends on tests + security, parallel builds
    - Matrix strategy:
      * macOS: .pkg installer
      * Ubuntu: .exe (x64, x86) + .deb
@@ -331,22 +336,22 @@ The SAF CLI uses a clean **Pipeline-Centric architecture** with three distinct s
    - Upload all 5 installers as artifacts
    - Retention: 90 days
 
-3. **publish-npm** (3-5 min) - Depends on builds
+4. **publish-npm** (3-5 min) - Depends on builds
    - Pack tarball
    - Publish to npmjs.org
    - Publish to npm.pkg.github.com
 
-4. **publish-docker** (10-15 min) - Depends on builds, parallel with npm
+5. **publish-docker** (10-15 min) - Depends on builds, parallel with npm
    - Build multi-arch image
    - Tags: `release-latest`, `v1.5.1`, `v1`
    - Push to Docker Hub
    - Update Iron Bank release repository
 
-5. **publish-homebrew** (2-3 min) - Depends on npm (needs tarball)
+6. **publish-homebrew** (2-3 min) - Depends on npm (needs tarball)
    - Update formula in mitre/homebrew-saf
    - Calculate SHA256 from NPM tarball
 
-6. **upload-assets** (1-2 min) - Depends on builds, parallel with publishers
+7. **upload-assets** (1-2 min) - Depends on builds, parallel with publishers
    - Download all 5 installer artifacts
    - Attach to GitHub release
 
