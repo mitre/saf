@@ -45,19 +45,10 @@ jobs:
           check-latest: true
           cache: 'pnpm'
 
-      - name: Install cinc-auditor on Windows
-        if: matrix.platform == 'windows'
-        shell: pwsh
-        run: |
-          Start-Process powershell -Verb RunAs
-          . { iwr -useb https://omnitruck.cinc.sh/install.ps1 } | iex; install -project cinc-auditor
-          $env:Path = $env:Path + ';C:\cinc-project\cinc-auditor\bin' + ';C:\cinc-project\cinc-auditor\embedded\bin'
-          cinc-auditor -v
-
-      - name: Install cinc-auditor on Ubuntu or macOS
-        if: matrix.platform == 'ubuntu' || matrix.platform == 'macos'
-        run: |
-          curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
+      # TODO: Determine if cinc-auditor is needed - tests don't appear to use it
+      # Kept composite action available if needed: .github/actions/install-cinc-auditor
+      # - name: Install cinc-auditor
+      #   uses: ./.github/actions/install-cinc-auditor
 
       - name: Install dependencies and build
         run: |

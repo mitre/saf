@@ -82,9 +82,9 @@ jobs:
           check-latest: true
           cache: 'pnpm'
 
-      - name: Install cinc-auditor
-        run: |
-          curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
+      # TODO: Determine if cinc-auditor is needed - tests don't appear to use it
+      # - name: Install cinc-auditor
+      #   uses: ./.github/actions/install-cinc-auditor
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
