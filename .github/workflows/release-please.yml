@@ -1,0 +1,56 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  release-please:
+    name: Create Release PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Run Release Please
+        uses: googleapis/release-please-action@7987652d64b4581673a76e33ad5e98e3dd56832f # v4.1.3
+        id: release
+        with:
+          # Release type for Node.js projects
+          release-type: node
+
+          # Package name (from package.json)
+          package-name: '@mitre/saf'
+
+          # Changelog sections
+          changelog-types: |
+            [
+              {"type":"feat","section":"Features","hidden":false},
+              {"type":"fix","section":"Bug Fixes","hidden":false},
+              {"type":"perf","section":"Performance Improvements","hidden":false},
+              {"type":"refactor","section":"Code Refactoring","hidden":false},
+              {"type":"docs","section":"Documentation","hidden":false},
+              {"type":"test","section":"Tests","hidden":false},
+              {"type":"ci","section":"CI/CD","hidden":false},
+              {"type":"chore","section":"Miscellaneous","hidden":false},
+              {"type":"security","section":"Security","hidden":false}
+            ]
+
+          # Include all changes (not just since last release-please PR)
+          include-component-in-tag: false
+
+          # Pull request settings
+          pull-request-title-pattern: 'chore: release ${version}'
+
+          # Labels for the release PR
+          labels: release,automated
+
+    outputs:
+      release_created: ${{ steps.release.outputs.release_created }}
+      tag_name: ${{ steps.release.outputs.tag_name }}
+      version: ${{ steps.release.outputs.version }}
+      pr: ${{ steps.release.outputs.pr }}
