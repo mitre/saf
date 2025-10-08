@@ -23,6 +23,10 @@ jobs:
           # Release type for Node.js projects
           release-type: node
 
+          # TEMPORARY: Enable for first run to test without creating releases
+          # Remove this line after confirming it works
+          # bootstrap-sha: ${{ github.sha }}
+
           # Package name (from package.json)
           package-name: '@mitre/saf'
 

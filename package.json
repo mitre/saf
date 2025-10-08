@@ -77,6 +77,8 @@
     "yaml": "^2.3.2"
   },
   "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
     "@e965/xlsx": "^0.20.0",
     "@eslint/js": "^9.22.0",
     "@oclif/test": "^4.1.0",
