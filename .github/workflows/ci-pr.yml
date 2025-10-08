@@ -26,6 +26,8 @@ jobs:
     name: Lint Code
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
 
     steps:
       - name: Checkout repository
@@ -117,6 +119,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [quality, test-ubuntu]  # Only build if quality and tests pass
+    permissions:
+      contents: read
     env:
       TEST_TAG: saf:pr-test
 
@@ -147,6 +151,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [quality, test-ubuntu, docker-build]
     if: always()
+    permissions: {}  # No permissions needed
 
     steps:
       - name: Check validation status
