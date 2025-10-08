@@ -112,7 +112,7 @@ jobs:
         if: matrix.platform == 'ubuntu'
         run: |
           echo "::group::Test Execution with Coverage"
-          pnpm test -- --coverage
+          pnpm exec vitest -- --coverage
           echo "::endgroup::"
 
       - name: Upload coverage to Codecov (Ubuntu only)
