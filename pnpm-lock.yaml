@@ -262,8 +262,8 @@ importers:
         specifier: ^27.0.0
         version: 27.0.0(postcss@8.5.6)
       marked:
-        specifier: ~16.3.0
-        version: 16.3.0
+        specifier: ~16.4.0
+        version: 16.4.0
       mock-fs:
         specifier: ^5.2.0
         version: 5.5.0
@@ -3143,8 +3143,8 @@ packages:
     engines: {node: '>= 18'}
     hasBin: true
 
-  marked@16.3.0:
-    resolution: {integrity: sha512-K3UxuKu6l6bmA5FUwYho8CfJBlsUWAooKtdGgMcERSpF7gcBUrCGsLH7wDaaNOzwq18JzSUDyoEb/YsrqMac3w==}
+  marked@16.4.0:
+    resolution: {integrity: sha512-CTPAcRBq57cn3R8n3hwc2REddc28hjR7RzDXQ+lXLmMJYqn20BaI2cGw6QjgZGIgVfp2Wdfw4aMzgNteQ6qJgQ==}
     engines: {node: '>= 20'}
     hasBin: true
 
@@ -8147,7 +8147,7 @@ snapshots:
 
   marked@12.0.2: {}
 
-  marked@16.3.0: {}
+  marked@16.4.0: {}
 
   math-intrinsics@1.1.0: {}
 
