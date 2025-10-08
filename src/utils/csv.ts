@@ -1,6 +1,6 @@
-import {ContextualizedControl, ExecJSON, HDFControlSegment} from 'inspecjs'
+import type {ContextualizedControl, ExecJSON, HDFControlSegment} from 'inspecjs'
 import _ from 'lodash'
-import {ControlSetRow} from '../types/csv'
+import type {ControlSetRow} from '../types/csv'
 import {getDescription} from './global'
 
 export const csvExportFields = [

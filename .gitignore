@@ -21,3 +21,4 @@ out
 saf-cli.log
 CliProcessOutput.log
 deltaProcessReport.md
+debug-scripts/

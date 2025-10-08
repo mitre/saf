@@ -1,4 +1,4 @@
-import {ExecJSON} from 'inspecjs'
+import type {ExecJSON} from 'inspecjs'
 import _ from 'lodash'
 
 export function omitHDFChangingFields(

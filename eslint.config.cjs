@@ -107,6 +107,10 @@ module.exports = [
       '@typescript-eslint/no-explicit-any': 'error', // Disallow 'any'
       '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/typedef': 'error',
+      '@typescript-eslint/consistent-type-imports': ['error', {
+        'prefer': 'type-imports',
+        'fixStyle': 'separate-type-imports',
+      }],
 
       // eslint rules
       'camelcase': 'off',

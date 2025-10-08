@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {Command, Flags, Interfaces} from '@oclif/core'
+import type {Interfaces} from '@oclif/core'
+import {Command, Flags} from '@oclif/core'
 
 export type CommandFlags<T extends typeof Command> = Interfaces.InferredFlags<typeof BaseCommand['baseFlags'] & T['flags']>
 export type CommandArgs<T extends typeof Command> = Interfaces.InferredArgs<T['args']>

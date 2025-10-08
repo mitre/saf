@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import {Flags} from '@oclif/core'
-import {ContextualizedEvaluation, contextualizeEvaluation} from 'inspecjs'
+import type {ContextualizedEvaluation} from 'inspecjs'
+import {contextualizeEvaluation} from 'inspecjs'
 import _ from 'lodash'
 import fs, {promises as fse} from 'fs'
 import stringify from 'csv-stringify'
-import {ControlSetRows} from '../../types/csv'
+import type {ControlSetRows} from '../../types/csv'
 import {convertRow, csvExportFields} from '../../utils/csv'
 import {basename} from '../../utils/global'
 import {BaseCommand} from '../../utils/oclif/baseCommand'

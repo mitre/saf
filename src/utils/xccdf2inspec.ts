@@ -1,5 +1,5 @@
 import {XMLParser} from 'fast-xml-parser'
-import {InSpecControl} from '../types/inspec'
+import type {InSpecControl} from '../types/inspec'
 
 // Breaks lines down to lineLength number of characters
 export function wrap(s: string, lineLength = 80): string {

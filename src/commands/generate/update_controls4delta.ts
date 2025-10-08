@@ -22,7 +22,7 @@ import {
 } from '../../utils/oclif/cliHelper'
 import {basename, downloadFile, extractFileFromZip, getErrorMessage} from '../../utils/global'
 import tmp from 'tmp'
-import {Logger} from 'winston'
+import type {Logger} from 'winston'
 
 /**
  * This class is used to prepare profile controls from one SRG or STIG baseline

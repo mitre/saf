@@ -1,6 +1,7 @@
 import https from 'https'
 import {Configuration} from '@mitre/emass_client/dist/configuration'
-import globalAxios, {AxiosInstance, AxiosRequestConfig} from 'axios'
+import type {AxiosInstance, AxiosRequestConfig} from 'axios'
+import globalAxios from 'axios'
 import FormData from 'form-data'
 
 export class InitMockServer {

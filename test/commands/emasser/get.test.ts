@@ -23,7 +23,7 @@ import {
   CoastGuardSystemFISMAMetricsDashboardApi, SystemFISMAMetricsDashboardApi,
   VASystemDashboardsApi, CMMCAssessmentDashboardsApi,
 } from '@mitre/emass_client'
-import {
+import type {
   PoamResponseGetPoams, PoamResponseGetSystems,
   SystemResponse, SystemRolesResponse, SystemsResponse,
   CacResponseGet, PacResponseGet, MilestoneResponseGetMilestone,

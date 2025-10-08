@@ -2,9 +2,10 @@ import {colorize} from 'json-colorizer'
 import {Args, Command, Flags} from '@oclif/core'
 import {ApiConnection} from '../../../utils/emasser/apiConnection'
 import {HardwareBaselineApi} from '@mitre/emass_client'
-import {HwBaselineResponseGet} from '@mitre/emass_client/dist/api'
+import type {HwBaselineResponseGet} from '@mitre/emass_client/dist/api'
 import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
+import type {FlagOptions} from '../../../utils/emasser/utilities'
+import {displayError, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
 
 export default class EmasserGetHardwareBaseline extends Command {
   static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n \x1B[93m NOTE: see EXAMPLES for argument case format\x1B[0m'
