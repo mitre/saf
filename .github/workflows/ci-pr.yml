@@ -49,6 +49,12 @@ jobs:
       - name: Run linter
         run: pnpm run lint:ci
 
+      - name: Security audit
+        uses: ./.github/actions/security-audit
+        with:
+          audit-level: 'high'
+          fail-on-vulnerabilities: 'true'
+
   # ============================================================================
   # Test Suite - Full test coverage on Ubuntu only
   # ============================================================================

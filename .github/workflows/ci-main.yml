@@ -147,6 +147,17 @@ jobs:
           artifact-name: image.spdx.json
           dependency-snapshot: true
 
+      - name: Setup SAF CLI for audit
+        uses: ./.github/actions/setup-saf-cli
+        with:
+          install-deps: 'false'
+
+      - name: Run dependency security audit
+        uses: ./.github/actions/security-audit
+        with:
+          audit-level: 'moderate'
+          fail-on-vulnerabilities: 'false'  # Don't block main, just report
+
   # Docker build and publish (depends on tests passing)
   docker-publish:
     name: Build and Publish Docker Image
