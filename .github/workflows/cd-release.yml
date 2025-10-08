@@ -302,7 +302,7 @@ jobs:
         run: rm -rf test
 
       - name: Pack package
-        run: npm pack
+        run: pnpm pack
 
       - name: Publish to NPM
         run: |
