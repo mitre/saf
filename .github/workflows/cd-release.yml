@@ -92,14 +92,50 @@ jobs:
           fi
 
   # =============================================================================
-  # JOB 2: Build Installers for All Platforms
+  # JOB 2: Security Scanning
+  # =============================================================================
+  # Runs in parallel with tests - validates security before any publishing
+  security-scan:
+    name: Security SBOM Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # Required to upload to Dependency submission API
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Build Docker image
+        run: docker build . --file Dockerfile --tag localbuild/testimage:latest
+
+      - name: Scan image and upload dependency results
+        uses: anchore/sbom-action@f8bdd1d8ac5e901a77a92f111440fdb1b593736b # v0.20.6
+        with:
+          image: "localbuild/testimage:latest"
+          artifact-name: image.spdx.json
+          dependency-snapshot: true
+
+      - name: Setup SAF CLI for audit
+        uses: ./.github/actions/setup-saf-cli
+        with:
+          install-deps: 'false'
+
+      - name: Run dependency security audit
+        uses: ./.github/actions/security-audit
+        with:
+          audit-level: 'moderate'
+          fail-on-vulnerabilities: 'false'  # Don't block release, just report
+
+  # =============================================================================
+  # JOB 3: Build Installers for All Platforms
   # =============================================================================
   # Runs in parallel after tests pass
   # Produces: macOS .pkg, Windows .exe (x64, x86), Debian .deb, RPM .rpm
   build-installers:
     name: Build ${{ matrix.build-type }} Installer
     runs-on: ${{ matrix.os }}
-    needs: test-matrix
+    needs: [test-matrix, security-scan]
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -275,7 +311,7 @@ jobs:
           retention-days: 5
 
   # =============================================================================
-  # JOB 3: Publish to NPM and GitHub Package Registry
+  # JOB 4: Publish to NPM and GitHub Package Registry
   # =============================================================================
   # Depends on successful installer builds
   # Publishes the NPM package to both registries
@@ -338,7 +374,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   # =============================================================================
-  # JOB 4: Publish Docker Images
+  # JOB 5: Publish Docker Images
   # =============================================================================
   # Depends on successful installer builds
   # Publishes to Docker Hub and updates Iron Bank
@@ -434,7 +470,7 @@ jobs:
             sed -i s/SAF_VERSION=\.\*/SAF_VERSION=${{ steps.version.outputs.no_v }}/ Dockerfile
 
   # =============================================================================
-  # JOB 5: Update Homebrew Formula
+  # JOB 6: Update Homebrew Formula
   # =============================================================================
   # Depends on NPM publish completing (Homebrew pulls from NPM)
   publish-homebrew:
@@ -469,7 +505,7 @@ jobs:
           COMMITTER_TOKEN: ${{ secrets.HOMEBREW_PAT }}
 
   # =============================================================================
-  # JOB 6: Upload Installer Assets to GitHub Release
+  # JOB 7: Upload Installer Assets to GitHub Release
   # =============================================================================
   # Depends on successful installer builds
   # Downloads all installer artifacts and attaches them to the release
