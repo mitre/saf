@@ -1,0 +1,240 @@
+name: Main Branch CI
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+
+# Don't cancel in-progress builds on main branch
+concurrency:
+  group: ci-main-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  # Full platform testing matrix
+  test-matrix:
+    name: Test on ${{ matrix.platform }}
+    runs-on: ${{ matrix.platform }}-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: true
+      matrix:
+        platform: [ubuntu, macos, windows]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+        with:
+          version: 10.18.0
+
+      - name: Setup Node.js on ${{ matrix.platform }}
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
+        with:
+          node-version: "22"
+          check-latest: true
+          cache: 'pnpm'
+
+      - name: Install cinc-auditor on Windows
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          Start-Process powershell -Verb RunAs
+          . { iwr -useb https://omnitruck.cinc.sh/install.ps1 } | iex; install -project cinc-auditor
+          $env:Path = $env:Path + ';C:\cinc-project\cinc-auditor\bin' + ';C:\cinc-project\cinc-auditor\embedded\bin'
+          cinc-auditor -v
+
+      - name: Install cinc-auditor on Ubuntu or macOS
+        if: matrix.platform == 'ubuntu' || matrix.platform == 'macos'
+        run: |
+          curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
+
+      - name: Install dependencies and build
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm run prepack
+
+      - name: Run all tests
+        run: pnpm run test
+
+      - name: Sanity check CLI works without dev dependencies (Windows)
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          pnpm install --frozen-lockfile --prod
+          pnpm run prepack
+          $stderrFile = New-TemporaryFile
+          ./bin/run -v 2> $stderrFile.FullName 1> $null
+          $exitCode = $LASTEXITCODE
+          $stderr = Get-Content $stderrFile.FullName -Raw
+          Remove-Item $stderrFile
+          if ($exitCode -eq 0) {
+            if (($null -ne $stderr) -and ($stderr.Trim())) {
+              Write-Host "Failed: received the following stderr:`n$stderr"
+              exit 1
+            }
+          } else {
+            Write-Host "Failed: received a non-zero exit code when doing 'saf -v'"
+            exit 1
+          }
+
+      - name: Sanity check CLI works without dev dependencies (Unix)
+        if: matrix.platform == 'ubuntu' || matrix.platform == 'macos'
+        run: |
+          pnpm install --frozen-lockfile --prod
+          pnpm run prepack
+          if stderr=$(./bin/run -v 2>&1 1>/dev/null); then
+            [ -z "$stderr" ] || (printf "Failed: received the following stderr:\n%s\n" "$stderr"; exit 1)
+          else
+            echo "Failed: received a non-zero exit code when doing \`saf -v\`"
+            exit 1
+          fi
+
+      # Upload coverage only from Ubuntu
+      - name: Run tests with coverage (Ubuntu only)
+        if: matrix.platform == 'ubuntu'
+        run: pnpm test -- --coverage
+
+      - name: Upload coverage to Codecov (Ubuntu only)
+        if: matrix.platform == 'ubuntu'
+        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
+        with:
+          files: ./coverage/clover.xml
+          flags: unittests
+          name: saf-cli-coverage
+          fail_ci_if_error: false
+
+      - name: Coverage Summary (Ubuntu only)
+        if: matrix.platform == 'ubuntu'
+        run: |
+          echo "## Test Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/coverage-summary.json ]; then
+            cat coverage/coverage-summary.json >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Coverage report generated successfully" >> $GITHUB_STEP_SUMMARY
+          fi
+
+  # Security scanning with SBOM generation
+  security-scan:
+    name: Security SBOM Scan
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write # Required to upload to Dependency submission API
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Build Docker image
+        run: docker build . --file Dockerfile --tag localbuild/testimage:latest
+
+      - name: Scan image and upload dependency results
+        uses: anchore/sbom-action@f8bdd1d8ac5e901a77a92f111440fdb1b593736b # v0.20.6
+        with:
+          image: "localbuild/testimage:latest"
+          artifact-name: image.spdx.json
+          dependency-snapshot: true
+
+  # Docker build and publish (depends on tests passing)
+  docker-publish:
+    name: Build and Publish Docker Image
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    needs: [test-matrix, security-scan]
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.3.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.9.0
+
+      - name: Login to DockerHub
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.4.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build and push container image
+        id: docker_build
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.14.0
+        with:
+          context: .
+          push: true
+          platforms: "linux/amd64,linux/arm64"
+          tags: mitre/saf:latest,mitre/saf:${{ github.sha }}
+
+      - name: Verify Docker image availability
+        shell: bash
+        id: get-docker-sha
+        run: |
+          MAX_RETRIES=5
+          RETRY_DELAY=0.5 # in seconds
+          RETRY_COUNT=0
+          SUCCESS=false
+
+          while [ "$RETRY_COUNT" -lt "$MAX_RETRIES" ]; do
+            if docker pull mitre/saf:${{ github.sha }}; then
+              SUCCESS=true
+              break
+            else
+              RETRY_COUNT="$((RETRY_COUNT + 1))"
+              echo "Retry $RETRY_COUNT/$MAX_RETRIES: Docker pull failed. Retrying in $RETRY_DELAY seconds..."
+              sleep "$RETRY_DELAY"
+            fi
+          done
+
+          if [ "$SUCCESS" = true ]; then
+            echo "DOCKER_SHA=$(docker inspect --format='{{index .RepoDigests 0}}' mitre/saf:${{ github.sha }} | cut -d '@' -f 2)" >> $GITHUB_ENV
+          else
+            echo "Docker pull failed after $MAX_RETRIES attempts."
+            exit 1
+          fi
+
+      - name: Update Iron Bank repository
+        uses: mitre/ironbank_release_action@1c14c27db1c37e894f8042ac2edcde08d445882d # v1
+        with:
+          name: SAF-CLI
+          version: ${{ github.sha }}
+          ironbank_pat: ${{ secrets.SAF_IRONBANK_REPO1_PAT }}
+          ironbank_username: ${{ secrets.SAF_IRONBANK_REPO1_USERNAME }}
+          ironbank_project_id: 17078
+          ironbank_project_clone_url: repo1.dso.mil/dsop/mitre/security-automation-framework/saf-mainline.git
+          git_commit_author_name: "Automated SAF CLI Release"
+          git_commit_author_email: "saf@mitre.org"
+          update_commands: |
+            yq e -i '.args.SAF_VERSION=\"${{ github.sha }}\" | .tags[0]=\"${{ github.sha }}\" | .labels.\"org.opencontainers.image.version\"=\"${{ github.sha }}\" | .resources[0].tag=\"mitre/saf:${{ github.sha }}\" | .resources[0].url=\"docker://docker.io/mitre/saf@${{ env.DOCKER_SHA }}\"' hardening_manifest.yaml
+            sed -i s/SAF_VERSION=\.\*/SAF_VERSION=${{ github.sha }}/ Dockerfile
+
+  # Update draft release notes (runs in parallel with docker)
+  draft-release:
+    name: Update Draft Release
+    runs-on: ubuntu-22.04
+    timeout-minutes: 5
+    permissions:
+      contents: write # Required to update the draft release
+      pull-requests: read # Required to get PR information
+
+    steps:
+      - name: Update draft release notes
+        uses: release-drafter/release-drafter@7cf306f56b79636bb76931494ccf29fc893763bd # v6.1.0
+        with:
+          disable-autolabeler: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

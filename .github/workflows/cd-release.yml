@@ -1,0 +1,539 @@
+name: Release Publishing Pipeline
+
+# Triggered when a release is published
+# Consolidates: build-macos, build-windows-linux, build-rpm, push-to-npm-gpr, push-to-docker, bump-brew
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.5.1)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+env:
+  PNPM_VERSION: "10.18.0"
+  NODE_VERSION: "22"
+
+jobs:
+  # =============================================================================
+  # JOB 1: Full Platform Testing - Quality Gate
+  # =============================================================================
+  # All 695 tests must pass on all platforms before any publishing begins
+  test-matrix:
+    name: Quality Gate - Test on ${{ matrix.platform }}
+    runs-on: ${{ matrix.platform }}-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: true
+      matrix:
+        platform: [ubuntu, macos, windows]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js on ${{ matrix.platform }}
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          check-latest: true
+          cache: 'pnpm'
+
+      - name: Install cinc-auditor on Windows
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          Start-Process powershell -Verb RunAs
+          . { iwr -useb https://omnitruck.cinc.sh/install.ps1 } | iex; install -project cinc-auditor
+          $env:Path = $env:Path + ';C:\cinc-project\cinc-auditor\bin' + ';C:\cinc-project\cinc-auditor\embedded\bin'
+          cinc-auditor -v
+
+      - name: Install cinc-auditor on Ubuntu or macOS
+        if: matrix.platform == 'ubuntu' || matrix.platform == 'macos'
+        run: |
+          curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
+
+      - name: Install dependencies and build
+        run: |
+          pnpm install --frozen-lockfile
+          pnpm run prepack
+
+      - name: Run all tests
+        run: pnpm run test
+
+      - name: Sanity check CLI works without dev dependencies (Windows)
+        if: matrix.platform == 'windows'
+        shell: pwsh
+        run: |
+          pnpm install --frozen-lockfile --prod
+          pnpm run prepack
+          $stderrFile = New-TemporaryFile
+          ./bin/run -v 2> $stderrFile.FullName 1> $null
+          $exitCode = $LASTEXITCODE
+          $stderr = Get-Content $stderrFile.FullName -Raw
+          Remove-Item $stderrFile
+          if ($exitCode -eq 0) {
+            if (($null -ne $stderr) -and ($stderr.Trim())) {
+              Write-Host "Failed: received the following stderr:`n$stderr"
+              exit 1
+            }
+          } else {
+            Write-Host "Failed: received a non-zero exit code when doing 'saf -v'"
+            exit 1
+          }
+
+      - name: Sanity check CLI works without dev dependencies (Unix)
+        if: matrix.platform == 'ubuntu' || matrix.platform == 'macos'
+        run: |
+          pnpm install --frozen-lockfile --prod
+          pnpm run prepack
+          if stderr=$(./bin/run -v 2>&1 1>/dev/null); then
+            [ -z "$stderr" ] || (printf "Failed: received the following stderr:\n%s\n" "$stderr"; exit 1)
+          else
+            echo "Failed: received a non-zero exit code when \`saf -v\`"
+            exit 1
+          fi
+
+  # =============================================================================
+  # JOB 2: Build Installers for All Platforms
+  # =============================================================================
+  # Runs in parallel after tests pass
+  # Produces: macOS .pkg, Windows .exe (x64, x86), Debian .deb, RPM .rpm
+  build-installers:
+    name: Build ${{ matrix.build-type }} Installer
+    runs-on: ${{ matrix.os }}
+    needs: test-matrix
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # macOS .pkg installer
+          - build-type: macOS
+            os: macos-14
+            artifact-name: SAF-CLI macOS Installer
+            artifact-path: dist/macos/saf-*.pkg
+
+          # Windows .exe (x64, x86) + Debian .deb
+          - build-type: Windows-Linux
+            os: ubuntu-22.04
+            artifact-name-win-x64: SAF-CLI Windows Build x64
+            artifact-name-win-x86: SAF-CLI Windows Build x86
+            artifact-name-deb: SAF-CLI Debian Build x64
+            artifact-path-win-x64: saf/dist/win32/saf-*-x64.exe
+            artifact-path-win-x86: saf/dist/win32/saf-*-x86.exe
+            artifact-path-deb: saf/dist/deb/saf-*.deb
+
+          # RPM .rpm installer
+          - build-type: RPM
+            os: ubuntu-22.04
+            artifact-name: SAF-CLI RPM Build noarch
+            artifact-path: saf/noarch/saf-*.rpm
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: ${{ matrix.build-type == 'macOS' && '.' || 'saf' }}
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          check-latest: true
+          cache: 'pnpm'
+          cache-dependency-path: ${{ matrix.build-type == 'macOS' && 'pnpm-lock.yaml' || './saf/pnpm-lock.yaml' }}
+
+      # macOS-specific steps
+      - name: Build macOS installer
+        if: matrix.build-type == 'macOS'
+        run: |
+          pnpm install --frozen-lockfile --prod
+          rm -rf test
+          npx oclif pack macos
+
+      - name: Rename macOS installers
+        if: matrix.build-type == 'macOS'
+        run: |
+          cd dist/macos
+          for file in saf-*.pkg; do
+            prefix=${file%-*-*.pkg}
+            suffix=${file#saf-*-*-*}
+            mv "$file" "$prefix-$suffix"
+          done
+
+      - name: Upload macOS installer artifact
+        if: matrix.build-type == 'macOS'
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: ${{ matrix.artifact-path }}
+          retention-days: 5
+
+      # Windows/Linux-specific steps
+      - name: Install build dependencies for Windows/Linux
+        if: matrix.build-type == 'Windows-Linux'
+        run: sudo apt install nsis p7zip-full
+
+      - name: Setup SAF CLI for Windows/Linux builds
+        if: matrix.build-type == 'Windows-Linux'
+        working-directory: ./saf
+        run: |
+          rm -rf test
+          pnpm install --frozen-lockfile --prod
+
+      - name: Install pnpm globally for oclif pack
+        if: matrix.build-type == 'Windows-Linux'
+        run: sudo npm install -g pnpm@${{ env.PNPM_VERSION }}
+
+      - name: Pack Windows installer
+        if: matrix.build-type == 'Windows-Linux'
+        working-directory: ./saf
+        run: npx oclif pack win
+
+      - name: Pack Debian package
+        if: matrix.build-type == 'Windows-Linux'
+        working-directory: ./saf
+        run: sudo npx oclif pack deb
+
+      - name: Rename Windows installers
+        if: matrix.build-type == 'Windows-Linux'
+        run: |
+          cd saf/dist/win32
+          for file in saf-*.exe; do
+            prefix=${file%-*-*}
+            suffix=${file#saf-*-*-}
+            mv "$file" "$prefix-$suffix"
+          done
+
+      - name: Rename Debian installers
+        if: matrix.build-type == 'Windows-Linux'
+        run: |
+          cd saf/dist/deb
+          for file in saf_*.deb; do
+            prefix=${file%.*-*.deb}
+            prefix_ver=${prefix#saf_}
+            suffix=${file#*_*_}
+            sudo mv "$file" "saf-$prefix_ver-$suffix"
+          done
+
+      - name: Upload Windows x64 installer artifact
+        if: matrix.build-type == 'Windows-Linux'
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: ${{ matrix.artifact-name-win-x64 }}
+          path: ${{ matrix.artifact-path-win-x64 }}
+          retention-days: 5
+
+      - name: Upload Windows x86 installer artifact
+        if: matrix.build-type == 'Windows-Linux'
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: ${{ matrix.artifact-name-win-x86 }}
+          path: ${{ matrix.artifact-path-win-x86 }}
+          retention-days: 5
+
+      - name: Upload Debian x64 installer artifact
+        if: matrix.build-type == 'Windows-Linux'
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: ${{ matrix.artifact-name-deb }}
+          path: ${{ matrix.artifact-path-deb }}
+          retention-days: 5
+
+      # RPM-specific steps
+      - name: Setup container for RPM build
+        if: matrix.build-type == 'RPM'
+        run: echo "Building in container in next step"
+
+      # RPM build requires special container setup
+      # We can't use container: at the job level with matrix, so we handle it in steps
+      - name: Build RPM in container
+        if: matrix.build-type == 'RPM'
+        run: |
+          docker run --rm \
+            -v $(pwd)/saf:/workspace \
+            -w /workspace \
+            registry.access.redhat.com/ubi9/nodejs-22:latest \
+            bash -c "
+              dnf install -y rpm-build perl-Digest-SHA
+              npm install -g pnpm@${{ env.PNPM_VERSION }}
+              rm -rf test
+              pnpm install --frozen-lockfile --prod
+              echo \"filename=saf-v\$(cat VERSION)-linux-x64\" >> /tmp/env
+              source /tmp/env
+              npx oclif pack tarballs -t linux-x64 --no-xz
+              cd dist
+              gzip -dc \$(ls) > \"\$filename.tar\"
+              tar -rf \"\$filename.tar\" --transform 's|^\.\.|saf|' ../saf.spec
+              gzip \"\$filename.tar\"
+              cd ..
+              rpmbuild -ta \"dist/\$filename.tar.gz\" -D \"_rpmdir \$(pwd)\" -D \"version \$(cat VERSION)\"
+            "
+
+      - name: Upload RPM installer artifact
+        if: matrix.build-type == 'RPM'
+        uses: actions/upload-artifact@b4b15b8c7c6ac21ea08fcf65892d2ee8f75cf882 # v4.4.3
+        with:
+          name: ${{ matrix.artifact-name }}
+          path: ${{ matrix.artifact-path }}
+          retention-days: 5
+
+  # =============================================================================
+  # JOB 3: Publish to NPM and GitHub Package Registry
+  # =============================================================================
+  # Depends on successful installer builds
+  # Publishes the NPM package to both registries
+  publish-npm:
+    name: Publish to NPM and GitHub Packages
+    runs-on: ubuntu-22.04
+    needs: build-installers
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - name: Setup Node.js for NPM
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          check-latest: true
+          registry-url: "https://registry.npmjs.org"
+          cache: 'pnpm'
+
+      - name: Remove testing resources
+        run: rm -rf test
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Pack package
+        run: npm pack
+
+      - name: Publish to NPM
+        run: npm publish --access public mitre-saf-*.tgz
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      # Reconfigure for GitHub Package Registry
+      - name: Setup Node.js for GitHub Packages
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          registry-url: 'https://npm.pkg.github.com'
+          cache: 'pnpm'
+
+      - name: Publish to GitHub Package Registry
+        run: npm publish --access public mitre-saf-*.tgz
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # =============================================================================
+  # JOB 4: Publish Docker Images
+  # =============================================================================
+  # Depends on successful installer builds
+  # Publishes to Docker Hub and updates Iron Bank
+  publish-docker:
+    name: Publish Docker Images
+    runs-on: ubuntu-24.04
+    needs: build-installers
+    timeout-minutes: 20
+    permissions:
+      contents: read
+
+    steps:
+      - name: Extract version from release
+        id: version
+        run: |
+          VERSION="${{ github.event.release.tag_name || github.event.inputs.version }}"
+          VERSION_NO_V="${VERSION#v}"
+          MAJOR_VERSION="v${VERSION_NO_V%%.*}"
+          echo "full=$VERSION" >> $GITHUB_OUTPUT
+          echo "no_v=$VERSION_NO_V" >> $GITHUB_OUTPUT
+          echo "major=$MAJOR_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392 # v3.3.0
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@e468171a9de216ec08956ac3ada2f0791b6bd435 # v3.9.0
+
+      - name: Login to DockerHub
+        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.4.0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_TOKEN }}
+
+      - name: Build and push container image to DockerHub
+        id: docker_build
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.14.0
+        with:
+          context: .
+          push: true
+          platforms: "linux/amd64,linux/arm64"
+          tags: |
+            mitre/saf:release-latest
+            mitre/saf:${{ steps.version.outputs.no_v }}
+            mitre/saf:${{ steps.version.outputs.major }}
+
+      - name: Verify Docker image availability
+        shell: bash
+        id: get-docker-sha
+        run: |
+          MAX_RETRIES=5
+          RETRY_DELAY=0.5
+          RETRY_COUNT=0
+          SUCCESS=false
+
+          while [ "$RETRY_COUNT" -lt "$MAX_RETRIES" ]; do
+            if docker pull mitre/saf:${{ steps.version.outputs.no_v }}; then
+              SUCCESS=true
+              break
+            else
+              RETRY_COUNT="$((RETRY_COUNT + 1))"
+              echo "Retry $RETRY_COUNT/$MAX_RETRIES: Docker pull failed. Retrying in $RETRY_DELAY seconds..."
+              sleep "$RETRY_DELAY"
+            fi
+          done
+
+          if [ "$SUCCESS" = true ]; then
+            echo "DOCKER_SHA=$(docker inspect --format='{{index .RepoDigests 0}}' mitre/saf:${{ steps.version.outputs.no_v }} | cut -d '@' -f 2)" >> $GITHUB_ENV
+          else
+            echo "Docker pull failed after $MAX_RETRIES attempts."
+            exit 1
+          fi
+
+      - name: Update Iron Bank release repository
+        uses: mitre/ironbank_release_action@1c14c27db1c37e894f8042ac2edcde08d445882d # v1
+        with:
+          name: SAF-CLI
+          version: ${{ steps.version.outputs.no_v }}
+          ironbank_pat: ${{ secrets.SAF_IRONBANK_REPO1_PAT }}
+          ironbank_username: ${{ secrets.SAF_IRONBANK_REPO1_USERNAME }}
+          ironbank_project_id: 17072
+          ironbank_project_clone_url: repo1.dso.mil/dsop/mitre/security-automation-framework/saf.git
+          git_commit_author_name: "Automated SAF CLI Release"
+          git_commit_author_email: "saf@mitre.org"
+          update_commands: |
+            yq e -i '.args.SAF_VERSION="${{ steps.version.outputs.no_v }}" | .tags[0]="${{ steps.version.outputs.no_v }}" | .labels."org.opencontainers.image.version"="${{ steps.version.outputs.no_v }}" | .resources[0].tag="mitre/saf:${{ steps.version.outputs.no_v }}" | .resources[0].url="docker://docker.io/mitre/saf@${{ env.DOCKER_SHA }}"' hardening_manifest.yaml
+            sed -i s/SAF_VERSION=\.\*/SAF_VERSION=${{ steps.version.outputs.no_v }}/ Dockerfile
+
+  # =============================================================================
+  # JOB 5: Update Homebrew Formula
+  # =============================================================================
+  # Depends on NPM publish completing (Homebrew pulls from NPM)
+  publish-homebrew:
+    name: Update Homebrew Formula
+    runs-on: ubuntu-22.04
+    needs: publish-npm
+    timeout-minutes: 10
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+
+      - name: Extract version from release
+        id: version
+        run: |
+          VERSION="${{ github.event.release.tag_name || github.event.inputs.version }}"
+          echo "tag=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Update Homebrew formula
+        uses: mislav/bump-homebrew-formula-action@v3
+        with:
+          formula-name: saf-cli
+          homebrew-tap: mitre/homebrew-saf
+          download-url: https://registry.npmjs.org/@mitre/saf/-/saf-${{ steps.version.outputs.tag }}.tgz
+          tag-name: ${{ steps.version.outputs.tag }}
+        env:
+          COMMITTER_TOKEN: ${{ secrets.HOMEBREW_PAT }}
+
+  # =============================================================================
+  # JOB 6: Upload Installer Assets to GitHub Release
+  # =============================================================================
+  # Depends on successful installer builds
+  # Downloads all installer artifacts and attaches them to the release
+  upload-assets:
+    name: Upload Release Assets
+    runs-on: ubuntu-22.04
+    needs: build-installers
+    timeout-minutes: 10
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all installer artifacts
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          path: installers/
+
+      - name: Display downloaded artifact structure
+        run: |
+          echo "Downloaded artifacts:"
+          ls -lR installers/
+
+      - name: Upload macOS installer to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installers/SAF-CLI macOS Installer/saf-*.pkg
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows x64 installer to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installers/SAF-CLI Windows Build x64/saf-*-x64.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Windows x86 installer to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installers/SAF-CLI Windows Build x86/saf-*-x86.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload Debian x64 installer to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installers/SAF-CLI Debian Build x64/saf-*.deb
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload RPM installer to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: installers/SAF-CLI RPM Build noarch/saf-*.rpm
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

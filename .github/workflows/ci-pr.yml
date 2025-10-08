@@ -1,0 +1,191 @@
+name: PR Validation
+
+# Fast feedback CI workflow for pull requests
+# Runs linting, tests, and Docker build in parallel for quick validation
+# Replaces individual linter.yml, coverage.yml, and test-docker-image.yml for PRs
+
+on:
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'LICENSE'
+      - '.gitignore'
+
+# Cancel in-progress runs when new commits are pushed to the same PR
+concurrency:
+  group: ci-pr-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ============================================================================
+  # Code Quality - Fast linting check
+  # ============================================================================
+  quality:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+        with:
+          version: 10.18.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: "22"
+          check-latest: true
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run linter
+        run: pnpm run lint:ci
+
+  # ============================================================================
+  # Test Suite - Full test coverage on Ubuntu only
+  # ============================================================================
+  test-ubuntu:
+    name: Test on Ubuntu
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+      pull-requests: write  # For PR coverage comments
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+        with:
+          version: 10.18.0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          node-version: "22"
+          check-latest: true
+          cache: 'pnpm'
+
+      - name: Install cinc-auditor
+        run: |
+          curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm run prepack
+
+      - name: Run tests
+        run: pnpm test
+
+      - name: Run tests with coverage
+        run: pnpm test -- --coverage
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
+        with:
+          files: ./coverage/clover.xml
+          flags: unittests
+          name: saf-cli-pr-coverage
+          fail_ci_if_error: false
+
+      - name: Coverage Summary
+        run: |
+          echo "## Test Coverage Report" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ -f coverage/coverage-summary.json ]; then
+            cat coverage/coverage-summary.json >> $GITHUB_STEP_SUMMARY
+          else
+            echo "Coverage report generated successfully" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Sanity check CLI works without dev dependencies
+        run: |
+          pnpm install --frozen-lockfile --prod
+          pnpm run prepack
+          if stderr=$(./bin/run -v 2>&1 1>/dev/null); then
+            [ -z "$stderr" ] || (printf "Failed: received the following stderr:\n%s\n" "$stderr"; exit 1)
+          else
+            echo "Failed: received a non-zero exit code when doing 'saf -v'"
+            exit 1
+          fi
+
+  # ============================================================================
+  # Docker Build - Verify Docker image builds and runs
+  # ============================================================================
+  docker-build:
+    name: Build and Test Docker Image
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [quality, test-ubuntu]  # Only build if quality and tests pass
+    env:
+      TEST_TAG: saf:pr-test
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@c47758b77c9736f4b2ef4073d4d51994fabfe349 # v3.7.1
+
+      - name: Build Docker image
+        id: docker_build
+        uses: docker/build-push-action@4f58ea79222b3b9dc2c8bbdd6debcef730109a75 # v6.9.0
+        with:
+          context: .
+          push: false
+          load: true  # Make available for local docker executable
+          tags: ${{ env.TEST_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Smoke test - Verify CLI runs
+        run: |
+          docker run --rm ${{ env.TEST_TAG }} --version
+
+      - name: Test - Run help command
+        run: |
+          docker run --rm ${{ env.TEST_TAG }} --help
+
+  # ============================================================================
+  # PR Validation Summary
+  # ============================================================================
+  pr-validation-summary:
+    name: PR Validation Complete
+    runs-on: ubuntu-latest
+    needs: [quality, test-ubuntu, docker-build]
+    if: always()
+
+    steps:
+      - name: Check validation status
+        run: |
+          echo "## PR Validation Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Code Quality | ${{ needs.quality.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Tests (Ubuntu) | ${{ needs.test-ubuntu.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Docker Build | ${{ needs.docker-build.result }} |" >> $GITHUB_STEP_SUMMARY
+
+          # Fail if any job failed
+          if [[ "${{ needs.quality.result }}" == "failure" ]] || \
+             [[ "${{ needs.test-ubuntu.result }}" == "failure" ]] || \
+             [[ "${{ needs.docker-build.result }}" == "failure" ]]; then
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "❌ **PR validation failed. Please fix the issues above.**" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "✅ **All PR validation checks passed!**" >> $GITHUB_STEP_SUMMARY

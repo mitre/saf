@@ -1,0 +1,50 @@
+name: 'Setup SAF CLI Environment'
+description: 'Setup Node.js, pnpm, and dependencies for SAF CLI development'
+
+inputs:
+  node-version:
+    description: 'Node.js version to install'
+    required: false
+    default: '22'
+
+  pnpm-version:
+    description: 'pnpm version to install'
+    required: false
+    default: '10.18.0'
+
+  install-deps:
+    description: 'Whether to install dependencies'
+    required: false
+    default: 'true'
+
+  production-only:
+    description: 'Install only production dependencies (--prod flag)'
+    required: false
+    default: 'false'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install pnpm
+      uses: pnpm/action-setup@7088e561eb65bb68695d245aa206f005ef30921d # v4.1.0
+      with:
+        version: ${{ inputs.pnpm-version }}
+
+    - name: Setup Node.js
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+      with:
+        node-version: ${{ inputs.node-version }}
+        check-latest: true
+        cache: 'pnpm'
+
+    - name: Install dependencies
+      if: ${{ inputs.install-deps == 'true' }}
+      shell: bash
+      run: |
+        if [ "${{ inputs.production-only }}" = "true" ]; then
+          echo "Installing production dependencies only..."
+          pnpm install --frozen-lockfile --prod
+        else
+          echo "Installing all dependencies..."
+          pnpm install --frozen-lockfile
+        fi
