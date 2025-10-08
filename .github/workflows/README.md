@@ -327,6 +327,76 @@ steps:
 - Cache key: `cinc-auditor-${{ runner.os }}-6.6.0`
 - Separate caches per OS (Linux, macOS, Windows)
 
+### security-audit
+
+**Location**: `.github/actions/security-audit/action.yml`
+
+**Purpose**: Run pnpm audit to check for dependency vulnerabilities.
+
+**Inputs**:
+- `audit-level`: Severity level (low, moderate, high, critical) - default: 'high'
+- `fail-on-vulnerabilities`: Whether to fail workflow if found - default: 'true'
+
+**Usage Example**:
+```yaml
+- uses: ./.github/actions/security-audit
+  with:
+    audit-level: 'high'
+    fail-on-vulnerabilities: 'true'
+```
+
+### docker-build-native
+
+**Location**: `.github/actions/docker-build-native/action.yml`
+
+**Purpose**: Build Docker image for single architecture natively (no QEMU emulation).
+
+**Key Feature**: Builds linux/arm64 natively on macos-14 (M1) - 2-3x faster than QEMU!
+
+**Inputs**:
+- `platform`: Docker platform (linux/amd64 or linux/arm64)
+- `tags`: Image tags (newline-separated)
+- `push`: Whether to push to registry
+- `docker-username`, `docker-password`: DockerHub credentials
+
+**Usage Example**:
+```yaml
+- uses: ./.github/actions/docker-build-native
+  with:
+    platform: 'linux/arm64'
+    tags: 'mitre/saf:latest-arm64'
+    push: 'true'
+    docker-username: ${{ secrets.DOCKER_USERNAME }}
+    docker-password: ${{ secrets.DOCKER_TOKEN }}
+```
+
+### docker-create-manifest
+
+**Location**: `.github/actions/docker-create-manifest/action.yml`
+
+**Purpose**: Combine architecture-specific images into multi-arch manifest.
+
+**Inputs**:
+- `image-name`: Base image name (e.g., mitre/saf)
+- `version-tag`: Version tag (e.g., latest, v1.5.1)
+- `docker-username`, `docker-password`: DockerHub credentials
+
+**What It Does**:
+1. Creates manifest from `image:tag-amd64` and `image:tag-arm64`
+2. Annotates each image with correct architecture
+3. Pushes manifest as `image:tag`
+4. Users pulling `image:tag` get correct arch automatically
+
+**Usage Example**:
+```yaml
+- uses: ./.github/actions/docker-create-manifest
+  with:
+    image-name: 'mitre/saf'
+    version-tag: 'latest'
+    docker-username: ${{ secrets.DOCKER_USERNAME }}
+    docker-password: ${{ secrets.DOCKER_TOKEN }}
+```
+
 **Platform Differences**:
 - **Linux**: Installs to `/opt/cinc-auditor`, automatically in PATH
 - **macOS**: Installs to `/opt/cinc-auditor`, automatically in PATH

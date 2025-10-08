@@ -193,10 +193,17 @@ The SAF CLI uses a clean **Pipeline-Centric architecture** with three distinct s
 .github/actions/
 ├── setup-saf-cli/           ← Node.js + pnpm + dependencies
 ├── install-cinc-auditor/    ← InSpec with platform-aware caching
-└── security-audit/          ← Dependency vulnerability scanning
+├── security-audit/          ← Dependency vulnerability scanning
+├── docker-build-native/     ← Docker build for single architecture (no QEMU)
+└── docker-create-manifest/  ← Combine amd64 + arm64 into multi-arch manifest
 ```
 
 **Usage**: All workflows use these instead of duplicating setup code.
+
+**Docker Build Strategy**: Native builds on each architecture
+- **amd64**: Built natively on ubuntu-24.04 runner (fast)
+- **arm64**: Built natively on macos-14 runner (M1, fast - NO QEMU!)
+- **Result**: 2-3x faster arm64 builds vs QEMU emulation
 
 ---
 
@@ -274,13 +281,25 @@ The SAF CLI uses a clean **Pipeline-Centric architecture** with three distinct s
    - Upload to GitHub dependency API
    - Run pnpm audit (dependency check)
 
-3. **docker-publish** (5-8 min) - Depends on: test-matrix + security-scan
-   - Build multi-arch (amd64, arm64)
-   - Push tags: `latest`, `sha256:abc...`
-   - Update Iron Bank mainline repository
+3. **docker-publish** (5-8 min) - Matrix: ubuntu (amd64) + macos-14 (arm64)
+   - Native builds (NO QEMU emulation - 2-3x faster!)
+   - ubuntu-24.04: Builds linux/amd64 natively
+   - macos-14: Builds linux/arm64 natively (M1 runner)
+   - Pushes arch-specific tags
+   - Depends on: test-matrix + security-scan
+
+4. **docker-manifest** (1-2 min) - Depends on: docker-publish
+   - Combines amd64 + arm64 images
+   - Creates multi-arch manifests
+   - Tags: `latest`, `sha256:abc...`
+   - Users auto-get correct architecture
+
+5. **ironbank-update** (2-3 min) - Depends on: docker-manifest
+   - Updates Iron Bank mainline repository
+   - After multi-arch manifest ready
    - Only runs if ALL tests pass ✅
 
-4. **draft-release** (30 sec) - Parallel
+6. **draft-release** (30 sec) - Parallel with all above
    - Auto-generate release notes
    - Aggregate merged PRs
 
