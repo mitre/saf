@@ -69,10 +69,16 @@ jobs:
         run: pnpm run prepack
 
       - name: Run tests
-        run: pnpm test
+        run: |
+          echo "::group::Test Execution (695 tests)"
+          pnpm test
+          echo "::endgroup::"
 
       - name: Run tests with coverage
-        run: pnpm test -- --coverage
+        run: |
+          echo "::group::Test Execution with Coverage"
+          pnpm test -- --coverage
+          echo "::endgroup::"
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4

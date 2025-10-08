@@ -44,7 +44,10 @@ jobs:
         run: pnpm run prepack
 
       - name: Run all tests
-        run: pnpm run test
+        run: |
+          echo "::group::Test Execution - ${{ matrix.platform }} (695 tests)"
+          pnpm run test
+          echo "::endgroup::"
 
       - name: Sanity check CLI works without dev dependencies (Windows)
         if: matrix.platform == 'windows'
@@ -82,7 +85,10 @@ jobs:
       # Upload coverage only from Ubuntu
       - name: Run tests with coverage (Ubuntu only)
         if: matrix.platform == 'ubuntu'
-        run: pnpm test -- --coverage
+        run: |
+          echo "::group::Test Execution with Coverage"
+          pnpm test -- --coverage
+          echo "::endgroup::"
 
       - name: Upload coverage to Codecov (Ubuntu only)
         if: matrix.platform == 'ubuntu'

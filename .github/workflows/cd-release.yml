@@ -53,7 +53,10 @@ jobs:
         run: pnpm run prepack
 
       - name: Run all tests
-        run: pnpm run test
+        run: |
+          echo "::group::Test Execution - ${{ matrix.platform }} (695 tests)"
+          pnpm run test
+          echo "::endgroup::"
 
       - name: Sanity check CLI works without dev dependencies (Windows)
         if: matrix.platform == 'windows'
