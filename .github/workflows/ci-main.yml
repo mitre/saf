@@ -68,10 +68,15 @@ jobs:
       - name: Build
         run: pnpm run prepack
 
-      - name: Run all tests
+      - name: Run all tests (with coverage on Ubuntu)
         run: |
-          echo "::group::Test Execution - ${{ matrix.platform }} (695 tests)"
-          pnpm run test
+          if [ "${{ matrix.platform }}" = "ubuntu" ]; then
+            echo "::group::Test Execution - ubuntu (695 tests with coverage)"
+            pnpm run test -- --coverage
+          else
+            echo "::group::Test Execution - ${{ matrix.platform }} (695 tests)"
+            pnpm run test
+          fi
           echo "::endgroup::"
 
       - name: Sanity check CLI works without dev dependencies (Windows)
@@ -107,14 +112,7 @@ jobs:
             exit 1
           fi
 
-      # Upload coverage only from Ubuntu
-      - name: Run tests with coverage (Ubuntu only)
-        if: matrix.platform == 'ubuntu'
-        run: |
-          echo "::group::Test Execution with Coverage"
-          pnpm exec vitest -- --coverage
-          echo "::endgroup::"
-
+      # Upload coverage (generated during test step for Ubuntu)
       - name: Upload coverage to Codecov (Ubuntu only)
         if: matrix.platform == 'ubuntu'
         uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
