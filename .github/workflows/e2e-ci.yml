@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 jobs:
   build:
     strategy:
@@ -14,10 +17,10 @@ jobs:
        platform: [ ubuntu, macos, windows ]
     runs-on: ${{ matrix.platform }}-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Setup Node.js on ${{ matrix.platform }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: "22"
           check-latest: true
