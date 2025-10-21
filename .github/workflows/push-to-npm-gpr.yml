@@ -4,6 +4,7 @@ on:
     types: [published]
 
 permissions:
+  id-token: write # required for trusted publishing's use of OIDC
   contents: read
   packages: write
 
@@ -20,6 +21,9 @@ jobs:
           check-latest: true
           registry-url: "https://registry.npmjs.org"
           cache: 'npm'
+
+      - name: Manually update npm to 11.5.1 or later which is the required version for trusted publishing to work # this step can be removed after the ubuntu runner has the correct minimum version of npm installed
+        run: npm install -g npm@latest
 
       - name: Remove testing resources
         run: rm -rf test
