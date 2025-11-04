@@ -170,7 +170,7 @@ function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerRe
       i++
       const benchMarksObj: Benchmarks = {
         benchmark: entryObject.benchmark,
-        results: resultsArray
+        results: resultsArray,
       }
       benchmarksArray.push(benchMarksObj)
     })

@@ -133,7 +133,7 @@ function addRequiredFieldsToRequestBody(dataObj: CloudResource): CloudResource {
       const complianceResultsObj: ComplianceResults = {
         cspPolicyDefinitionId: entryObject.cspPolicyDefinitionId,
         isCompliant: entryObject.isCompliant,
-        policyDefinitionTitle: entryObject.policyDefinitionTitle
+        policyDefinitionTitle: entryObject.policyDefinitionTitle,
       }
       complianceResultsArray.push(complianceResultsObj)
     })
@@ -207,7 +207,7 @@ function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): v
     const complianceResultsObj: ComplianceResults = {
       cspPolicyDefinitionId: entryObject.cspPolicyDefinitionId,
       isCompliant: entryObject.isCompliant,
-      policyDefinitionTitle: entryObject.policyDefinitionTitle
+      policyDefinitionTitle: entryObject.policyDefinitionTitle,
     }
     if (Object.prototype.hasOwnProperty.call(entryObject, 'assessmentProcedure')) {
       complianceResultsObj.assessmentProcedure = entryObject.assessmentProcedure
