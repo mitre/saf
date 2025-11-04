@@ -131,10 +131,10 @@ function addRequiredFieldsToRequestBody(dataObj: CloudResource): CloudResource {
       i++
 
       const complianceResultsObj: ComplianceResults = {
-        cspPolicyDefinitionId: '',
-        isCompliant: false,
-        policyDefinitionTitle: '',
-        cspPolicyDefinitionId: entryObject.cspPolicyDefinitionId, isCompliant: entryObject.isCompliant, policyDefinitionTitle: entryObject.policyDefinitionTitle}
+        cspPolicyDefinitionId: entryObject.cspPolicyDefinitionId,
+        isCompliant: entryObject.isCompliant,
+        policyDefinitionTitle: entryObject.policyDefinitionTitle
+      }
       complianceResultsArray.push(complianceResultsObj)
     })
   } catch (error) {
@@ -205,10 +205,10 @@ function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): v
   const complianceResultsArray: ComplianceResults[] = []
   dataObj.complianceResults.forEach((entryObject: ComplianceResults) => {
     const complianceResultsObj: ComplianceResults = {
-      cspPolicyDefinitionId: '',
-      isCompliant: false,
-      policyDefinitionTitle: '',
-      cspPolicyDefinitionId: entryObject.cspPolicyDefinitionId, isCompliant: entryObject.isCompliant, policyDefinitionTitle: entryObject.policyDefinitionTitle}
+      cspPolicyDefinitionId: entryObject.cspPolicyDefinitionId,
+      isCompliant: entryObject.isCompliant,
+      policyDefinitionTitle: entryObject.policyDefinitionTitle
+    }
     if (Object.prototype.hasOwnProperty.call(entryObject, 'assessmentProcedure')) {
       complianceResultsObj.assessmentProcedure = entryObject.assessmentProcedure
     }

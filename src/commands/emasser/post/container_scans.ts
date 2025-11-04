@@ -163,15 +163,15 @@ function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerRe
         assertParamExists(`benchmarks.results[${j}].status`, resultObj.status)
         j++
 
-        const resultsObj: Results = {ruleId: '', status: 'Pass', lastSeen: 0, ruleId: resultObj.ruleId, lastSeen: resultObj.lastSeen, status: resultObj.status}
+        const resultsObj: Results = {ruleId: resultObj.ruleId, lastSeen: resultObj.lastSeen, status: resultObj.status}
         resultsArray.push(resultsObj)
       })
 
       i++
       const benchMarksObj: Benchmarks = {
-        benchmark: '',
-        results: [],
-        benchmark: entryObject.benchmark, results: resultsArray}
+        benchmark: entryObject.benchmark,
+        results: resultsArray
+      }
       benchmarksArray.push(benchMarksObj)
     })
   } catch (error) {
@@ -237,7 +237,7 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
   const resultsArray: Results[] = []
   // Add the optional benchmark entries
   dataObj.benchmarks.forEach((entryObject: Benchmarks) => {
-    const benchmarksObj: Benchmarks = {benchmark: '', results: [], benchmark: entryObject.benchmark}
+    const benchmarksObj: Benchmarks = {benchmark: entryObject.benchmark, results: []}
     // These are required
     // Check for the optional entry (isBaseline, version, and release)
     if (Object.prototype.hasOwnProperty.call(entryObject, 'isBaseline')) {
@@ -254,8 +254,8 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
 
     // Add the optional Results entries
     entryObject.results.forEach((resultObj: Results) => {
-      const resultsObj: Results = {ruleId: '', status: 'Pass', lastSeen: 0, ruleId: resultObj.ruleId, status: resultObj.status, lastSeen: resultObj.lastSeen}
       // These are required
+      const resultsObj: Results = {ruleId: resultObj.ruleId, status: resultObj.status, lastSeen: resultObj.lastSeen}
       // Check for the optional entry
       if (Object.prototype.hasOwnProperty.call(resultObj, 'message')) {
         resultsObj.message = resultObj.message

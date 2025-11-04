@@ -411,7 +411,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         // Add the milestone object
         const milestoneArray: Array<MilestonesRequiredPut> = []
         dataObj.milestones?.forEach((milestone: MilestonesRequiredPut) => {
-          const milestoneObj: MilestonesRequiredPut = {description: '', scheduledCompletionDate: 0, isActive: false, description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate}
+          const milestoneObj: MilestonesRequiredPut = {description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: false}
           // isActive is used to prevent uploading duplicate/undesired milestones via the
           // POA&M PUT call and must be set to false, otherwise a new milestone is created
           if (Object.prototype.hasOwnProperty.call(milestone, 'isActive')) {
@@ -447,7 +447,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         // Add the milestone object
         const milestoneArray: Array<MilestonesRequiredPut> = []
         dataObj.milestones?.forEach((milestone: MilestonesRequiredPut) => {
-          const milestoneObj: MilestonesRequiredPut = {description: '', scheduledCompletionDate: 0, isActive: false, description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate}
+          const milestoneObj: MilestonesRequiredPut = {description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: false}
           // isActive is used to prevent uploading duplicate/undesired milestones via the
           // POA&M PUT call and must be set to false, otherwise a new milestone is created
           if (Object.prototype.hasOwnProperty.call(milestone, 'isActive')) {
