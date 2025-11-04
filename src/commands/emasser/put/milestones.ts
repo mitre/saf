@@ -27,12 +27,13 @@ export default class EmasserPutMilestones extends Command {
     const apiCxn = new ApiConnection()
     const putMilestones = new MilestonesApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
 
-    const requestBodyArray: Milestones[] = []
-    requestBodyArray.push({
-      milestoneId: flags.milestoneId,
-      description: flags.description,
-      scheduledCompletionDate: Number.parseFloat(flags.scheduledCompletionDate),
-    })
+    const requestBodyArray: Milestones[] = [
+      {
+        milestoneId: flags.milestoneId,
+        description: flags.description,
+        scheduledCompletionDate: Number.parseFloat(flags.scheduledCompletionDate),
+      },
+    ]
 
     // Call API endpoint
     putMilestones.updateMilestoneBySystemIdAndPoamId(flags.systemId, flags.poamId, requestBodyArray).then((response: MilestoneResponsePut) => {
