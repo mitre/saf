@@ -29,11 +29,12 @@ export default class EmasserPostMilestones extends Command {
     const apiCxn = new ApiConnection()
     const addMilestone = new MilestonesApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
 
-    const requestBodyArray: Milestones[] = []
-    requestBodyArray.push({
-      description: flags.description,
-      scheduledCompletionDate: Number.parseFloat(flags.scheduledCompletionDate),
-    })
+    const requestBodyArray: Milestones[] = [
+      {
+        description: flags.description,
+        scheduledCompletionDate: Number.parseFloat(flags.scheduledCompletionDate),
+      },
+    ]
 
     // Call the endpoint
     addMilestone.addMilestoneBySystemIdAndPoamId(flags.systemId, flags.poamId, requestBodyArray).then((response: MilestoneResponsePost) => {

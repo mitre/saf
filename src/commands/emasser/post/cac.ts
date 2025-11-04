@@ -27,11 +27,12 @@ export default class EmasserPostCac extends Command {
     const apiCxn = new ApiConnection()
     const addCac = new CACApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
 
-    const requestBodyArray: CAC[] = []
-    requestBodyArray.push({
-      controlAcronym: flags.controlAcronym,
-      comments: flags.comments,
-    })
+    const requestBodyArray: CAC[] = [
+      {
+        controlAcronym: flags.controlAcronym,
+        comments: flags.comments,
+      },
+    ]
 
     addCac.addSystemCac(flags.systemId, requestBodyArray).then((response: CacResponsePost) => {
       console.log(colorize(outputFormat(response, false)))

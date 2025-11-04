@@ -27,12 +27,13 @@ export default class EmasserPostPac extends Command {
     const apiCxn = new ApiConnection()
     const addPac = new PACApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
 
-    const requestBodyArray: PAC[] = []
-    requestBodyArray.push({
-      workflow: flags.workflow,
-      name: flags.name,
-      comments: flags.comments,
-    })
+    const requestBodyArray: PAC[] = [
+      {
+        workflow: flags.workflow,
+        name: flags.name,
+        comments: flags.comments,
+      },
+    ]
 
     addPac.addSystemPac(flags.systemId, requestBodyArray).then((response: PacResponsePost) => {
       console.log(colorize(outputFormat(response, false)))

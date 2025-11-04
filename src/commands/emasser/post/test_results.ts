@@ -28,14 +28,15 @@ export default class EmasserPostTestResults extends Command {
     const apiCxn = new ApiConnection()
     const addTestResults = new TestResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
 
-    const requestBodyArray: TestResult[] = []
-    requestBodyArray.push({
-      assessmentProcedure: flags.assessmentProcedure,
-      testedBy: flags.testedBy,
-      testDate: Number.parseFloat(flags.testDate),
-      description: flags.description,
-      complianceStatus: flags.complianceStatus,
-    })
+    const requestBodyArray: TestResult[] = [
+      {
+        assessmentProcedure: flags.assessmentProcedure,
+        testedBy: flags.testedBy,
+        testDate: Number.parseFloat(flags.testDate),
+        description: flags.description,
+        complianceStatus: flags.complianceStatus,
+      },
+    ]
 
     addTestResults.addTestResultsBySystemId(flags.systemId, requestBodyArray).then((response: TestResultsResponsePost) => {
       console.log(colorize(outputFormat(response, false)))
