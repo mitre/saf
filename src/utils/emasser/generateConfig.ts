@@ -121,11 +121,8 @@ async function processPrompt() {
   }
 
   // Variable used to store the prompts (question and answers)
-  const interactiveValues: {[key: string]: string | number} = {}
+  const interactiveValues: {[key: string]: string | number} = {EMASSER_KEY_FILE_PATH: '', EMASSER_CERT_FILE_PATH: '', EMASSER_CA_FILE_PATH: ''}
   // Reset the certificates as the user will choose what cert type to use
-  interactiveValues.EMASSER_KEY_FILE_PATH = ''
-  interactiveValues.EMASSER_CERT_FILE_PATH = ''
-  interactiveValues.EMASSER_CA_FILE_PATH = ''
 
   // Required variables
   const requiredContent = {

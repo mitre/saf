@@ -116,8 +116,7 @@ export function outputFormat(data: object, doConversion = true): string {
           switch (key1) {
             // Process the 'meta' content
             case 'meta': {
-              const jsonData: {[key: string]: any} = {}
-              jsonData[key1] = formatDataObj[key1]
+              const jsonData: {[key: string]: any} = {[key1]: formatDataObj[key1]}
               _.merge(newData, jsonData)
               break
             }
@@ -158,8 +157,7 @@ export function outputFormat(data: object, doConversion = true): string {
                       jsonData[key2] = obj[key2]
                     }
                   })
-                  const dataObj: {[key: string]: any} = {}
-                  dataObj.data = jsonData
+                  const dataObj: {[key: string]: any} = {data: jsonData}
                   _.merge(newData, dataObj)
                 }
 
@@ -177,8 +175,7 @@ export function outputFormat(data: object, doConversion = true): string {
 
             // Process any other key-pair not specified
             default: {
-              const jsonData: {[key: string]: any} = {}
-              jsonData[key1] = formatDataObj[key1]
+              const jsonData: {[key: string]: any} = {[key1]: formatDataObj[key1]}
               _.merge(newData, jsonData)
               break
             }

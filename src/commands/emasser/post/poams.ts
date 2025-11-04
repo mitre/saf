@@ -406,9 +406,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         // Add the milestone object
         const milestoneArray: Array<MilestonesGet> = []
         dataObj.milestones?.forEach((milestone: MilestonesGet) => {
-          const milestoneObj: MilestonesGet = {}
-          milestoneObj.description = milestone.description
-          milestoneObj.scheduledCompletionDate = milestone.scheduledCompletionDate
+          const milestoneObj: MilestonesGet = {description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate}
           milestoneArray.push(milestoneObj)
         })
         bodyObject.milestones = [...milestoneArray]
@@ -435,9 +433,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         // Add the milestone object
         const milestoneArray: Array<MilestonesGet> = []
         dataObj.milestones?.forEach((milestone: MilestonesGet) => {
-          const milestoneObj: MilestonesGet = {}
-          milestoneObj.description = milestone.description
-          milestoneObj.scheduledCompletionDate = milestone.scheduledCompletionDate
+          const milestoneObj: MilestonesGet = {description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate}
           milestoneArray.push(milestoneObj)
         })
         bodyObject.milestones = [...milestoneArray]

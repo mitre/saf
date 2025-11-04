@@ -367,17 +367,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   })
 
   // Dashboards API endpoints
-  const dashboardsMap = new Map()
-  dashboardsMap.set('status_details', [SystemStatusDashboardApi, 'getSystemStatusDetails'])
-  dashboardsMap.set('terms_conditions_details', [SystemTermsConditionsDashboardsApi, 'getSystemTermsConditionsDetails'])
-  dashboardsMap.set('terms_conditions_summary', [SystemTermsConditionsDashboardsApi, 'getSystemTermsConditionsSummary'])
-  dashboardsMap.set('connectivity_ccsd_details', [SystemConnectivityCCSDDashboardsApi, 'getSystemConnectivityCcsdDetails'])
-  dashboardsMap.set('connectivity_ccsd_summary', [SystemConnectivityCCSDDashboardsApi, 'getSystemConnectivityCcsdSummary'])
-  dashboardsMap.set('atc_iatc_details', [SystemATCIATCDashboardApi, 'getSystemAtcIatcDetails'])
-  dashboardsMap.set('questionnaire_summary', [SystemQuestionnaireDashboardsApi, 'getSystemQuestionnaireSummary'])
-  dashboardsMap.set('questionnaire_details', [SystemQuestionnaireDashboardsApi, 'getSystemQuestionnaireDetails'])
-  dashboardsMap.set('workflows_history_summary', [SystemWorkflowsDashboardsApi, 'getSystemWorkflowsHistorySummary'])
-  dashboardsMap.set('workflows_history_details', [SystemWorkflowsDashboardsApi, 'getSystemWorkflowsHistoryDetails'])
+  const dashboardsMap = new Map([['status_details', [SystemStatusDashboardApi, 'getSystemStatusDetails']], ['terms_conditions_details', [SystemTermsConditionsDashboardsApi, 'getSystemTermsConditionsDetails']], ['terms_conditions_summary', [SystemTermsConditionsDashboardsApi, 'getSystemTermsConditionsSummary']], ['connectivity_ccsd_details', [SystemConnectivityCCSDDashboardsApi, 'getSystemConnectivityCcsdDetails']], ['connectivity_ccsd_summary', [SystemConnectivityCCSDDashboardsApi, 'getSystemConnectivityCcsdSummary']], ['atc_iatc_details', [SystemATCIATCDashboardApi, 'getSystemAtcIatcDetails']], ['questionnaire_summary', [SystemQuestionnaireDashboardsApi, 'getSystemQuestionnaireSummary']], ['questionnaire_details', [SystemQuestionnaireDashboardsApi, 'getSystemQuestionnaireDetails']], ['workflows_history_summary', [SystemWorkflowsDashboardsApi, 'getSystemWorkflowsHistorySummary']], ['workflows_history_details', [SystemWorkflowsDashboardsApi, 'getSystemWorkflowsHistoryDetails']]])
   dashboardsMap.set('workflows_history_stage_details', [SystemWorkflowsDashboardsApi, 'getSystemWorkflowsHistoryStageDetails'])
   dashboardsMap.set('control_compliance_summary', [SystemSecurityControlsDashboardsApi, 'getSystemControlComplianceSummary'])
   dashboardsMap.set('security_control_details', [SystemSecurityControlsDashboardsApi, 'getSystemSecurityControlDetails'])
