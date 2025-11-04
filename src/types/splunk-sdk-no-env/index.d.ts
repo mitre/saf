@@ -67,7 +67,7 @@ declare module '@mitre/splunk-sdk-no-env' {
       callback: (
         err: any,
         results: {fields: string[], rows: string[]},
-        job: Job
+        job: Job,
       ) => void
     ): void
   }
