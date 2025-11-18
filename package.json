@@ -62,7 +62,7 @@
     "markdown-table-ts": "^1.0.3",
     "moment": "^2.29.4",
     "mustache": "^4.2.0",
-    "open": "^10.0.0",
+    "open": "^11.0.0",
     "prompt-sync": "^4.2.0",
     "run-script-os": "^1.1.6",
     "table": "^6.8.1",
