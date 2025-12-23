@@ -77,7 +77,7 @@ describe('Test hdf2checklist', () => {
       '-o', `${tmpobj.name}/hdf2ckl_metadata_error_test.json`,
       '-m', path.resolve('test/sample_data/checklist/sample_input_report/invalid_metadata.json'),
     ])
-    expect(stderr).to.equal('Error creating checklist:\nInvalid checklist metadata fields:\n\tHost IP (invalid)\n\tAsset Type (Not a real assettype)\n')
+    expect(stderr).to.equal('Error creating checklist:\nInvalid checklist metadata fields:\n\tHost IP addresses must be valid and separated by newline, space, or comma. (invalid)\n\tAsset Type (Not a real assettype)\n')
   })
 
   it('hdf-converter output test - throws error when using invalid checklist metadata (Host IP)', async () => {
@@ -87,6 +87,6 @@ describe('Test hdf2checklist', () => {
       '-o', `${tmpobj.name}/hdf2ckl_metadata_error_test.json`,
       '--ip', '"bad ip address"',
     ])
-    expect(stderr).to.equal('Error creating checklist:\nInvalid checklist metadata fields:\n\tHost IP (bad ip address)\n')
+    expect(stderr).to.equal('Error creating checklist:\nInvalid checklist metadata fields:\n\tHost IP addresses must be valid and separated by newline, space, or comma. (bad ip address)\n')
   })
 })

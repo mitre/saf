@@ -75,8 +75,7 @@ describe('Test invalid checklist metadata example', () => {
       '-i', path.resolve('./test/sample_data/checklist/sample_input_report/ckl_with_invalid_metadata.ckl'),
       '-o', `${tmpobj.name}/invalid_output.json`,
     ])
-    const expected_error_message = 'Error converting to hdf:\nError: Invalid checklist metadata fields:\n\tHost FQDN (invalid)\n\tHost IP (invalid)\n\tHost MAC addresses must be valid and separated by newline, space, or comma. (invalid)\n'
-    // const expected_error_message2 = 'Error converting to hdf:\nError: Invalid checklist metadata fields:\n\tHost FQDN (invalid)\n\tHost IP (invalid)\n\tHost MAC (invalid)\n'
+    const expected_error_message = 'Error converting to hdf:\nError: Invalid checklist metadata fields:\n\tHost FQDN (invalid)\n\tHost IP addresses must be valid and separated by newline, space, or comma. (invalid)\n\tHost MAC addresses must be valid and separated by newline, space, or comma. (invalid)\n'
     expect(stderr).to.equal(expected_error_message)
   })
 })
