@@ -51,7 +51,7 @@
     "get-installed-path": "^4.0.8",
     "htmlparser2": "^10.0.0",
     "https": "^1.0.0",
-    "inquirer": "12.11.1",
+    "inquirer": "13.2.0",
     "inquirer-file-selector": "^0.6.1",
     "inspecjs": "2.12.6",
     "js-yaml": "^4.1.0",
