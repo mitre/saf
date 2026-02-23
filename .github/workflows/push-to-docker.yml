@@ -1,10 +1,10 @@
 name: Push SAF CLI to Docker Hub on every release
 
 on:
-  # release:
-  #   types: [published]
-  push:
-    branches: [multi-platform-build]
+  release:
+    types: [published]
+  # push:
+  #   branches: [multi-platform-build]
   workflow_dispatch:
     inputs:
       version:
@@ -53,8 +53,8 @@ jobs:
       - name: Build and push multi-platform container image to DockerHub
         uses: docker/bake-action@v5
         env:
-	  TAG_SUFFIXES: "{{ github.sha }},test"
-	with:
+          TAG_SUFFIXES: "{{ github.sha }},test"
+        with:
           files: docker-bake.hcl
           push: true
       - name: Get Docker SHA since the Iron Bank release requires us to specify the exact resources we need them to pull into the environment
