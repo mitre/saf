@@ -43,7 +43,7 @@ jobs:
       - name: Build and push multi-platform container image to DockerHub
         uses: docker/bake-action@v5
         env:
-          TAG_SUFFIXES: "{{ github.sha }},test"
+          TAG_SUFFIXES: "${{ github.sha }},test"
         with:
           files: docker-bake.hcl
           push: true
