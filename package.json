@@ -204,7 +204,7 @@
     "dev:win32": "(IF EXIST lib rmdir /s /q lib) && tsc && node bin/run",
     "dev:darwin:linux": "rm -rf lib && tsc && node bin/run",
     "test": "vitest",
-    "tests": "npm run test",
+    "test:ci": "vitest run",
     "prepack": "run-script-os",
     "prepack:win32": "(IF EXIST lib rmdir /s /q lib) && tsc",
     "prepack:darwin:linux": "rm -rf lib && tsc",
