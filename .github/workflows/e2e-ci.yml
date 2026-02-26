@@ -44,7 +44,7 @@ jobs:
         run: |
           npm ci
           npm run prepack
-          npm run test
+        npm run test:ci
 
       - name: Sanity check that the SAF CLI works with no dev dependencies on windows
         if: ${{ matrix.platform == 'windows' }}
