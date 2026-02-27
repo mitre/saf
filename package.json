@@ -195,8 +195,8 @@
   },
   "repository": "mitre/saf",
   "scripts": {
-    "lint": "eslint \"src/**/*.ts\" \"test/commands/**/*.ts\" --fix --format ./src/utils/linter-formatter.js",
-    "lint:ci": "eslint \"src/**/*.ts\" \"test/commands/**/*.ts\" --max-warnings 0 --format ./src/utils/linter-formatter.js",
+    "lint": "eslint --fix",
+    "lint:ci": "eslint --max-warnings 0",
     "dev": "run-script-os",
     "dev:win32": "(IF EXIST lib rmdir /s /q lib) && tsc && node bin/run",
     "dev:darwin:linux": "rm -rf lib && tsc && node bin/run",
