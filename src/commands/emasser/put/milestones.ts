@@ -1,31 +1,31 @@
-import {colorize} from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
+import { colorize } from 'json-colorizer';
+import { Command, Flags } from '@oclif/core';
 
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {displayError, FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
+import { ApiConnection } from '../../../utils/emasser/apiConnection';
+import { outputFormat } from '../../../utils/emasser/outputFormatter';
+import { displayError, FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
-import {MilestonesApi} from '@mitre/emass_client'
-import {MilestoneResponsePut,
-  MilestonesGet as Milestones} from '@mitre/emass_client/dist/api'
+import { MilestonesApi } from '@mitre/emass_client';
+import { MilestoneResponsePut,
+  MilestonesGet as Milestones } from '@mitre/emass_client/dist/api';
 
-const CMD_HELP = 'saf emasser put milestones -h or --help'
+const CMD_HELP = 'saf emasser put milestones -h or --help';
 export default class EmasserPutMilestones extends Command {
-  static readonly usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [options]';
 
-  static readonly description = 'Update milestone(s) for specified system, poam, and milestone Id'
+  static readonly description = 'Update milestone(s) for specified system, poam, and milestone Id';
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-m,--milestoneId] [-d,--description] [-c,--scheduledCompletionDate]']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-p,--poamId] [-m,--milestoneId] [-d,--description] [-c,--scheduledCompletionDate]'];
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the PUT Milestones command'}),
+    help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the PUT Milestones command' }),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
-  }
+  };
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserPutMilestones)
-    const apiCxn = new ApiConnection()
-    const putMilestones = new MilestonesApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+    const { flags } = await this.parse(EmasserPutMilestones);
+    const apiCxn = new ApiConnection();
+    const putMilestones = new MilestonesApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
     const requestBodyArray: Milestones[] = [
       {
@@ -33,22 +33,22 @@ export default class EmasserPutMilestones extends Command {
         description: flags.description,
         scheduledCompletionDate: Number.parseFloat(flags.scheduledCompletionDate),
       },
-    ]
+    ];
 
     // Call API endpoint
     putMilestones.updateMilestoneBySystemIdAndPoamId(flags.systemId, flags.poamId, requestBodyArray).then((response: MilestoneResponsePut) => {
-      console.log(colorize(outputFormat(response, false)))
-    }).catch((error: unknown) => displayError(error, 'Milestones'))
+      console.log(colorize(outputFormat(response, false)));
+    }).catch((error: unknown) => displayError(error, 'Milestones'));
   }
 
   // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
+  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \x1B[93m${CMD_HELP}\x1B[0m`))
+      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
-      this.warn(err)
+      this.warn(err);
     }
   }
 }

@@ -1,18 +1,18 @@
-import {Flags} from '@oclif/core'
-import fs from 'fs'
-import {NiktoMapper as Mapper} from '@mitre/hdf-converters'
-import {checkInput, checkSuffix} from '../../utils/global'
-import {BaseCommand} from '../../utils/oclif/baseCommand'
+import { Flags } from '@oclif/core';
+import fs from 'fs';
+import { NiktoMapper as Mapper } from '@mitre/hdf-converters';
+import { checkInput, checkSuffix } from '../../utils/global';
+import { BaseCommand } from '../../utils/oclif/baseCommand';
 
 export default class Nikto2HDF extends BaseCommand<typeof Nikto2HDF> {
   static readonly usage
-    = '<%= command.id %> -i <nikto-json> -o <hdf-scan-results-json> [-h] [-w]'
+    = '<%= command.id %> -i <nikto-json> -o <hdf-scan-results-json> [-h] [-w]';
 
   static readonly description
     = 'Translate a Nikto results JSON file into a Heimdall Data Format JSON file\n'
-      + 'Note: Current this mapper only supports single target Nikto Scans'
+      + 'Note: Current this mapper only supports single target Nikto Scans';
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i nikto-results.json -o output-hdf-name.json']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i nikto-results.json -o output-hdf-name.json'];
 
   static readonly flags = {
     input: Flags.string({
@@ -30,19 +30,19 @@ export default class Nikto2HDF extends BaseCommand<typeof Nikto2HDF> {
       required: false,
       description: 'Include raw input file in HDF JSON file',
     }),
-  }
+  };
 
   async run() {
-    const {flags} = await this.parse(Nikto2HDF)
+    const { flags } = await this.parse(Nikto2HDF);
 
     // Check for correct input type
-    const data = fs.readFileSync(flags.input, 'utf8')
-    checkInput({data, filename: flags.input}, 'nikto', 'Nikto results JSON')
+    const data = fs.readFileSync(flags.input, 'utf8');
+    checkInput({ data, filename: flags.input }, 'nikto', 'Nikto results JSON');
 
-    const converter = new Mapper(data, flags.includeRaw)
+    const converter = new Mapper(data, flags.includeRaw);
     fs.writeFileSync(
       checkSuffix(flags.output),
       JSON.stringify(converter.toHdf(), null, 2),
-    )
+    );
   }
 }

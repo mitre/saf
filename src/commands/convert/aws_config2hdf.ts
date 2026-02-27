@@ -1,18 +1,18 @@
-import {Flags} from '@oclif/core'
-import fs from 'fs'
-import {AwsConfigMapper as Mapper} from '@mitre/hdf-converters'
-import {ExecJSON} from 'inspecjs'
-import {checkSuffix} from '../../utils/global'
-import {BaseCommand} from '../../utils/oclif/baseCommand'
+import { Flags } from '@oclif/core';
+import fs from 'fs';
+import { AwsConfigMapper as Mapper } from '@mitre/hdf-converters';
+import { ExecJSON } from 'inspecjs';
+import { checkSuffix } from '../../utils/global';
+import { BaseCommand } from '../../utils/oclif/baseCommand';
 
 export default class AWSConfig2HDF extends BaseCommand<typeof AWSConfig2HDF> {
   static readonly usage
-    = '<%= command.id %> -r <region> -o <hdf-scan-results-json> [-h] [-a <access-key-id>] [-s <secret-access-key>] [-t <session-token>] [-i]'
+    = '<%= command.id %> -r <region> -o <hdf-scan-results-json> [-h] [-a <access-key-id>] [-s <secret-access-key>] [-t <session-token>] [-i]';
 
   static readonly description
-    = 'Pull Configuration findings from AWS Config and convert into a Heimdall Data Format JSON file'
+    = 'Pull Configuration findings from AWS Config and convert into a Heimdall Data Format JSON file';
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -a ABCDEFGHIJKLMNOPQRSTUV -s +4NOT39A48REAL93SECRET934 -r us-east-1 -o output-hdf-name.json'];
 
   static readonly flags = {
     accessKeyId: Flags.string({
@@ -53,7 +53,7 @@ export default class AWSConfig2HDF extends BaseCommand<typeof AWSConfig2HDF> {
       required: true,
       description: 'Output HDF JSON File',
     }),
-  }
+  };
 
   // Refs may not be defined if no resources were found
   ensureRefs(output: ExecJSON.Execution): ExecJSON.Execution {
@@ -68,18 +68,18 @@ export default class AWSConfig2HDF extends BaseCommand<typeof AWSConfig2HDF> {
                 ...control,
                 refs: [],
                 results: [],
-              }
+              };
             }
 
-            return control
+            return control;
           }),
-        }
+        };
       }),
-    }
+    };
   }
 
   async run() {
-    const {flags} = await this.parse(AWSConfig2HDF)
+    const { flags } = await this.parse(AWSConfig2HDF);
 
     const converter
       = flags.accessKeyId && flags.secretAccessKey
@@ -98,16 +98,16 @@ export default class AWSConfig2HDF extends BaseCommand<typeof AWSConfig2HDF> {
             : undefined,
         )
         : new Mapper(
-          {region: flags.region},
+          { region: flags.region },
           !flags.insecure,
           flags.certificate
             ? fs.readFileSync(flags.certificate, 'utf8')
             : undefined,
-        )
+        );
 
     fs.writeFileSync(
       checkSuffix(flags.output),
       JSON.stringify(this.ensureRefs(await converter.toHdf()), null, 2),
-    )
+    );
   }
 }

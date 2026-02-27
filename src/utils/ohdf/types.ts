@@ -6,10 +6,10 @@
  * @property {[key: string]: unknown} - Allows for the spread operator in the `createPrintableSummary` method.
  */
 export interface PrintableSummary {
-  profileName: string
-  resultSets: string[]
-  compliance: number
-  [key: string]: unknown
+  profileName: string;
+  resultSets: string[];
+  compliance: number;
+  [key: string]: unknown;
 }
 
 /**
@@ -25,15 +25,15 @@ export interface PrintableSummary {
  * @property {number} default - The default value.
  */
 export interface Data {
-  [key: string]: Record<string, number> | number
-  compliance: number
-  passed: Record<string, number>
-  failed: Record<string, number>
-  skipped: Record<string, number>
-  no_impact: Record<string, number>
-  error: Record<string, number>
-  total: number
-  default: number
+  [key: string]: Record<string, number> | number;
+  compliance: number;
+  passed: Record<string, number>;
+  failed: Record<string, number>;
+  skipped: Record<string, number>;
+  no_impact: Record<string, number>;
+  error: Record<string, number>;
+  total: number;
+  default: number;
 }
 
 /**
@@ -41,19 +41,19 @@ export interface Data {
  * a single PrintableSummary object, or an array of PrintableSummary objects.
  * Used in functions where the input can be either a single object or an array of objects.
  */
-export type DataOrArray = Data | Data[] | PrintableSummary | PrintableSummary[]
+export type DataOrArray = Data | Data[] | PrintableSummary | PrintableSummary[];
 
 /**
  * Represents the possible values for the row names in the generated Markdown table.
  * The possible values are 'Total', 'Critical', 'High', 'Medium', 'Low'.
  */
-export type RowType = 'total' | 'critical' | 'high' | 'medium' | 'low'
+export type RowType = 'total' | 'critical' | 'high' | 'medium' | 'low';
 
 /**
  * Represents the possible values for the column names in the generated Markdown table.
  * The possible values are 'compliance', 'passed', 'failed', 'skipped', 'no_impact', and 'error'.
  */
-export type ColumnType = 'compliance' | 'passed' | 'failed' | 'skipped' | 'no_impact' | 'error'
+export type ColumnType = 'compliance' | 'passed' | 'failed' | 'skipped' | 'no_impact' | 'error';
 
 /**
  * Represents the arguments for the `printAndWriteOutput` function.
@@ -65,10 +65,10 @@ export type ColumnType = 'compliance' | 'passed' | 'failed' | 'skipped' | 'no_im
  * @property {string} [output] - The path of the file to write the output to. If not provided, the output is not written to a file.
  */
 export interface PrintAndWriteOutputArgs {
-  printableSummaries: PrintableSummary[]
-  titleTable: boolean
-  format: string
-  printPretty: boolean
-  stdout: boolean
-  output?: string
+  printableSummaries: PrintableSummary[];
+  titleTable: boolean;
+  format: string;
+  printPretty: boolean;
+  stdout: boolean;
+  output?: string;
 }

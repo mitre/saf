@@ -1,25 +1,25 @@
-import {Flags} from '@oclif/core'
-import {SplunkMapper} from '@mitre/hdf-converters/lib/src/splunk-mapper'
-import {table} from 'table'
-import _ from 'lodash'
-import fs from 'fs'
-import path from 'path'
-import {basename} from '../../utils/global'
-import {createWinstonLogger} from '../../utils/logging'
-import {BaseCommand} from '../../utils/oclif/baseCommand'
+import { Flags } from '@oclif/core';
+import { SplunkMapper } from '@mitre/hdf-converters/lib/src/splunk-mapper';
+import { table } from 'table';
+import _ from 'lodash';
+import fs from 'fs';
+import path from 'path';
+import { basename } from '../../utils/global';
+import { createWinstonLogger } from '../../utils/logging';
+import { BaseCommand } from '../../utils/oclif/baseCommand';
 
 export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
   static readonly usage
     = '<%= command.id %> -H <host> -I <index> [-h] [-P <port>] [-s http|https]\n'
-      + '(-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID>... -o <hdf-output-folder>]'
+      + '(-u <username> -p <password> | -t <token>) [-L info|warn|debug|verbose] [-i <filename/GUID>... -o <hdf-output-folder>]';
 
   static readonly description
-    = 'Pull HDF data from your Splunk instance back into an HDF file'
+    = 'Pull HDF data from your Splunk instance back into an HDF file';
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> -H 127.0.0.1 -u admin -p Valid_password!\n'
     + '-I hdf -i some-file-in-your-splunk-instance.json -i yBNxQsE1mi4f3mkjtpap5YxNTttpeG -o output-folder',
-  ]
+  ];
 
   static readonly flags = {
     host: Flags.string({
@@ -75,7 +75,7 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
       required: false,
       description: 'Output HDF JSON Folder',
     }),
-  }
+  };
 
   async searchExecutions(
     mapper: SplunkMapper,
@@ -84,20 +84,20 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
   ) {
     return mapper.queryData(
       `search index="${index || '*'}" meta.filename="${filename || '*'}" meta.subtype="header" | head 100`,
-    )
+    );
   }
 
   async run() {
-    const {flags} = await this.parse(Splunk2HDF)
-    const logger = createWinstonLogger('splunk2hdf', flags.logLevel)
+    const { flags } = await this.parse(Splunk2HDF);
+    const logger = createWinstonLogger('splunk2hdf', flags.logLevel);
 
     if (!(flags.username && flags.password) && !flags.token) {
       logger.error(
         'Please provide either a Username and Password or a Splunk token',
-      )
+      );
       throw new Error(
         'Please provide either a Username and Password or a Splunk token',
-      )
+      );
     }
 
     const mapper = new SplunkMapper(
@@ -111,15 +111,15 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
         index: flags.index,
       },
       logger,
-    )
+    );
 
     if (flags.input && flags.output) {
-      const outputFolder = flags.output?.replace('.json', '') || 'asff-output'
-      fs.mkdirSync(outputFolder)
+      const outputFolder = flags.output?.replace('.json', '') || 'asff-output';
+      fs.mkdirSync(outputFolder);
       flags.input.forEach(async (input: string) => {
         // If we have a GUID
         if (/^(\w){30}$/.test(input)) {
-          const hdf = await mapper.toHdf(input)
+          const hdf = await mapper.toHdf(input);
           // Rename example.json -> example-p9dwG2kdSoHsYdyF2dMytUmljgOHD5.json and put into the outputFolder
           fs.writeFileSync(
             path.join(
@@ -131,12 +131,12 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
               ),
             ),
             JSON.stringify(hdf, null, 2),
-          )
+          );
         } else {
           // If we have a filename
-          const executions = await this.searchExecutions(mapper, input)
+          const executions = await this.searchExecutions(mapper, input);
           executions.forEach(async (execution) => {
-            const hdf = await mapper.toHdf(_.get(execution, 'meta.guid'))
+            const hdf = await mapper.toHdf(_.get(execution, 'meta.guid'));
             fs.writeFileSync(
               path.join(
                 outputFolder,
@@ -147,33 +147,33 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
                 ),
               ),
               JSON.stringify(hdf, null, 2),
-            )
-          })
+            );
+          });
         }
-      })
+      });
     } else if (flags.input && !flags.output) {
-      logger.error('Please provide an output HDF folder')
-      throw new Error('Please provide an output HDF folder')
+      logger.error('Please provide an output HDF folder');
+      throw new Error('Please provide an output HDF folder');
     } else {
-      const availableExecutionsTable: string[][] = [['File Name', 'GUID', 'Imported At']]
+      const availableExecutionsTable: string[][] = [['File Name', 'GUID', 'Imported At']];
 
-      const executionsAvailable = await this.searchExecutions(mapper, '*')
+      const executionsAvailable = await this.searchExecutions(mapper, '*');
 
-      executionsAvailable.forEach((execution) => {
+      for (const execution of executionsAvailable) {
         availableExecutionsTable.push([
           _.get(execution, 'meta.filename') || '',
           _.get(execution, 'meta.guid') || '',
           _.get(execution, 'meta.parse_time') || '',
-        ])
-      })
+        ]);
+      }
 
       if (availableExecutionsTable.length === 1) {
-        logger.warn('No executions found in the provided Splunk instance')
+        logger.warn('No executions found in the provided Splunk instance');
       } else {
         console.log(
           'No filename or GUID provided (-i), available executions are:',
-        )
-        console.log(table(availableExecutionsTable))
+        );
+        console.log(table(availableExecutionsTable));
       }
     }
   }

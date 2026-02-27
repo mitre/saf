@@ -1,4 +1,4 @@
-import {Hook} from '@oclif/core'
+import { Hook } from '@oclif/core';
 
 /**
  * Hook that is triggered when an "oclif" command is not found.
@@ -19,10 +19,10 @@ import {Hook} from '@oclif/core'
  *   $ saf emasser puts -h
  * This hook is not called
  */
-const commandNotFound: Hook<'command_not_found'> = async (opts: {id: string}) => { // skipcq: JS-0116
-  console.error(`\x1B[91m» Command "${opts.id}" not found.\x1B[0m`)
-  console.error(`\x1B[93m→ Try this 👉 \x1B[92m"${opts.id.split(':')[0]} [-h or --help]" \x1B[93mfor additional help with the command.\x1B[0m`)
-  process.exit(1)
-}
+const commandNotFound: Hook<'command_not_found'> = async (opts: { id: string }) => { // skipcq: JS-0116
+  console.error(`\u001B[91m» Command "${opts.id}" not found.\u001B[0m`);
+  console.error(`\u001B[93m→ Try this 👉 \u001B[92m"${opts.id.split(':')[0]} [-h or --help]" \u001B[93mfor additional help with the command.\u001B[0m`);
+  process.exit(1);
+};
 
-export default commandNotFound
+export default commandNotFound;

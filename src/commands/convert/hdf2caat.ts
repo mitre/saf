@@ -1,17 +1,17 @@
-import {Flags} from '@oclif/core'
-import fs from 'fs'
-import {FromHDFToCAATMapper as Mapper} from '@mitre/hdf-converters'
-import {basename} from '../../utils/global'
-import {BaseCommand} from '../../utils/oclif/baseCommand'
+import { Flags } from '@oclif/core';
+import fs from 'fs';
+import { FromHDFToCAATMapper as Mapper } from '@mitre/hdf-converters';
+import { basename } from '../../utils/global';
+import { BaseCommand } from '../../utils/oclif/baseCommand';
 
 export default class HDF2CAAT extends BaseCommand<typeof HDF2CAAT> {
   static readonly usage
-    = '<%= command.id %> -i <hdf-scan-results-json>... -o <output-caat-xlsx> [-h]'
+    = '<%= command.id %> -i <hdf-scan-results-json>... -o <output-caat-xlsx> [-h]';
 
   static readonly description
-    = 'Translate an HDF file into a Compliance Assessment and Audit Tracking (CAAT) XLSX file'
+    = 'Translate an HDF file into a Compliance Assessment and Audit Tracking (CAAT) XLSX file';
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i hdf_input.json -o caat-results.xlsx']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i hdf_input.json -o caat-results.xlsx'];
 
   static readonly flags = {
     input: Flags.string({
@@ -25,20 +25,20 @@ export default class HDF2CAAT extends BaseCommand<typeof HDF2CAAT> {
       required: true,
       description: 'Output CAAT XLSX file',
     }),
-  }
+  };
 
   async run() {
-    const {flags} = await this.parse(HDF2CAAT)
+    const { flags } = await this.parse(HDF2CAAT);
 
     const inputData = flags.input.map(filename => ({
       data: fs.readFileSync(filename, 'utf8'),
       filename: basename(filename),
-    }))
+    }));
 
-    const converter = new Mapper(inputData)
+    const converter = new Mapper(inputData);
     fs.writeFileSync(
       flags.output,
-      converter.toCAAT(false, {bookType: 'xlsx', type: 'buffer'}),
-    )
+      converter.toCAAT(false, { bookType: 'xlsx', type: 'buffer' }),
+    );
   }
 }

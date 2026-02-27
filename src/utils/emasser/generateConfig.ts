@@ -1,8 +1,8 @@
-import fse from 'fs-extra'
-import dotenv from 'dotenv'
-import _ from 'lodash'
-import colors from 'colors'
-import {input, confirm, password, select} from '@inquirer/prompts'
+import fse from 'fs-extra';
+import dotenv from 'dotenv';
+import _ from 'lodash';
+import colors from 'colors';
+import { input, confirm, password, select } from '@inquirer/prompts';
 
 const PROMPT_MESSAGE = [
   'Provide the eMASS API key (EMASSER_API_KEY) - valid key is > 30 alpha numeric characters:',
@@ -19,7 +19,7 @@ const PROMPT_MESSAGE = [
   'Display null value fields - true or false (default false):',
   'Convert epoch to data/time value - true or false (default true):',
   'Directory where exported files are saved (default eMASSerDownloads):',
-]
+];
 
 const PROMPT_NAMES_REQUIRED = [
   '# -----------------------------------------------------------------------------',
@@ -32,7 +32,7 @@ const PROMPT_NAMES_REQUIRED = [
   'EMASSER_KEY_FILE_PASSWORD',
   '# Not required by certain eMASS instances (required by most)',
   'EMASSER_USER_UID',
-]
+];
 
 const PROMPT_NAMES_OPTIONAL = [
   '# -----------------------------------------------------------------------------',
@@ -44,7 +44,7 @@ const PROMPT_NAMES_OPTIONAL = [
   'EMASSER_CLI_DISPLAY_NULL',
   'EMASSER_EPOCH_TO_DATETIME',
   'EMASSER_DOWNLOAD_DIR',
-]
+];
 
 const OPTIONAL_DEFAULT_VALUES = [
   443,
@@ -54,7 +54,7 @@ const OPTIONAL_DEFAULT_VALUES = [
   true,
   false,
   "'eMASSerDownloads'",
-]
+];
 
 /**
  * Generates a new `.env` file with required and optional environment variables.
@@ -74,16 +74,16 @@ const OPTIONAL_DEFAULT_VALUES = [
  * @throws Will throw an error if the file cannot be written.
  */
 function generateNewdotEnv() {
-  let data = ''
-  PROMPT_NAMES_REQUIRED.forEach((element) => {
-    data += element.startsWith('#') ? element + '\n' : element + "=''\n"
-  })
+  let data = '';
+  for (const element of PROMPT_NAMES_REQUIRED) {
+    data += element.startsWith('#') ? element + '\n' : element + "=''\n";
+  }
 
-  PROMPT_NAMES_OPTIONAL.forEach((element, index) => {
-    data += element.startsWith('#') ? element + '\n' : element + '=' + OPTIONAL_DEFAULT_VALUES[index - 2] + '\n'
-  })
+  for (const [index, element] of PROMPT_NAMES_OPTIONAL.entries()) {
+    data += element.startsWith('#') ? element + '\n' : element + '=' + OPTIONAL_DEFAULT_VALUES[index - 2] + '\n';
+  }
 
-  fse.writeFileSync('.env', data)
+  fse.writeFileSync('.env', data);
 }
 
 /**
@@ -106,22 +106,22 @@ function generateNewdotEnv() {
  * @returns {Promise<void>} A promise that resolves when the prompts have been processed and the `.env` file has been updated.
  */
 async function processPrompt() {
-  const envConfig = dotenv.parse(fse.readFileSync('.env'))
+  const envConfig = dotenv.parse(fse.readFileSync('.env'));
 
   // Dynamically import inquirer-file-selector and chalk
   // Once we move the SAF CLI from a CommonJS to an ES modules we can use the regular import
-  const {default: fileSelector} = await import('inquirer-file-selector')
-  const {default: chalk} = await import('chalk')
+  const { default: fileSelector } = await import('inquirer-file-selector');
+  const { default: chalk } = await import('chalk');
 
   const fileSelectorTheme = {
     style: {
       file: (text: unknown) => chalk.green(text),
       help: (text: unknown) => chalk.yellow(text),
     },
-  }
+  };
 
   // Variable used to store the prompts (question and answers)
-  const interactiveValues: {[key: string]: string | number} = {EMASSER_KEY_FILE_PATH: '', EMASSER_CERT_FILE_PATH: '', EMASSER_CA_FILE_PATH: ''}
+  const interactiveValues: { [key: string]: string | number } = { EMASSER_KEY_FILE_PATH: '', EMASSER_CERT_FILE_PATH: '', EMASSER_CA_FILE_PATH: '' };
   // Reset the certificates as the user will choose what cert type to use
 
   // Required variables
@@ -132,10 +132,10 @@ async function processPrompt() {
       required: true,
       validate: (input: string) => {
         if (/([a-zA-Z0-9-]{30,})/g.test(input)) { // skipcq: JS-0113
-          return true
+          return true;
         }
 
-        return 'Invalid API key. Must have more than 30 alpha numeric characters, no special keys other than a dash(-)'
+        return 'Invalid API key. Must have more than 30 alpha numeric characters, no special keys other than a dash(-)';
       },
     }),
     EMASSER_HOST_URL: await input({
@@ -145,24 +145,24 @@ async function processPrompt() {
       validate: (input: string) => {
         // eslint-disable-next-line no-useless-escape
         if (/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/g.test(input)) { // skipcq: JS-0113, JS-0097
-          return true
+          return true;
         }
 
-        return 'Invalid eMASS FQDN (URL). Format: [protocol]://[hostname].[...].[domain].'
+        return 'Invalid eMASS FQDN (URL). Format: [protocol]://[hostname].[...].[domain].';
       },
     }),
     EMASSER_KEY_FILE_PASSWORD: await password({
       message: PROMPT_MESSAGE[5],
       mask: true,
     }),
-  }
+  };
 
   // Add required content to the collection
   for (const tagName in requiredContent) {
     if (Object.prototype.hasOwnProperty.call(requiredContent, tagName)) {
-      const answerValue = _.get(requiredContent, tagName)
+      const answerValue = _.get(requiredContent, tagName);
       if (answerValue !== null) {
-        interactiveValues[tagName] = answerValue
+        interactiveValues[tagName] = answerValue;
       }
     }
   }
@@ -173,69 +173,71 @@ async function processPrompt() {
       message: 'What type of certificate to use with eMASS!',
       default: 'Key_Cert',
       choices: [
-        {name: 'Key/Client Certificate', value: 'key_cert'},
-        {name: 'Single CA Certificate', value: 'CA'},
+        { name: 'Key/Client Certificate', value: 'key_cert' },
+        { name: 'Single CA Certificate', value: 'CA' },
       ],
     }),
-  }
+  };
 
   // Get cert information
-  const requiredCerts = certTypes.certType === 'key_cert' ? {
-    EMASSER_KEY_FILE_PATH: await fileSelector({
-      message: PROMPT_MESSAGE[2],
-      pageSize: 15,
-      loop: true,
-      type: 'file',
-      allowCancel: true,
-      emptyText: 'Directory is empty',
-      showExcluded: false,
-      filter: file => file.isDirectory() || file.name.endsWith('.pem'),
-      theme: fileSelectorTheme,
-    }),
-    EMASSER_CERT_FILE_PATH: await fileSelector({
-      message: PROMPT_MESSAGE[3],
-      pageSize: 15,
-      loop: true,
-      type: 'file',
-      allowCancel: true,
-      emptyText: 'Directory is empty',
-      showExcluded: false,
-      filter: file => file.isDirectory() || file.name.endsWith('.pem'),
-      theme: fileSelectorTheme,
-    }),
-  } : {
-    EMASSER_CA_FILE_PATH: await fileSelector({
-      message: PROMPT_MESSAGE[4],
-      pageSize: 15,
-      loop: true,
-      type: 'file',
-      allowCancel: true,
-      emptyText: 'Directory is empty',
-      showExcluded: false,
-      filter: file => file.isDirectory() || file.name.endsWith('.pem') || file.name.endsWith('.crt') || file.name.endsWith('.cer'),
-      theme: fileSelectorTheme,
-    }),
-  }
+  const requiredCerts = certTypes.certType === 'key_cert'
+    ? {
+      EMASSER_KEY_FILE_PATH: await fileSelector({
+        message: PROMPT_MESSAGE[2],
+        pageSize: 15,
+        loop: true,
+        type: 'file',
+        allowCancel: true,
+        emptyText: 'Directory is empty',
+        showExcluded: false,
+        filter: file => file.isDirectory() || file.name.endsWith('.pem'),
+        theme: fileSelectorTheme,
+      }),
+      EMASSER_CERT_FILE_PATH: await fileSelector({
+        message: PROMPT_MESSAGE[3],
+        pageSize: 15,
+        loop: true,
+        type: 'file',
+        allowCancel: true,
+        emptyText: 'Directory is empty',
+        showExcluded: false,
+        filter: file => file.isDirectory() || file.name.endsWith('.pem'),
+        theme: fileSelectorTheme,
+      }),
+    }
+    : {
+      EMASSER_CA_FILE_PATH: await fileSelector({
+        message: PROMPT_MESSAGE[4],
+        pageSize: 15,
+        loop: true,
+        type: 'file',
+        allowCancel: true,
+        emptyText: 'Directory is empty',
+        showExcluded: false,
+        filter: file => file.isDirectory() || file.name.endsWith('.pem') || file.name.endsWith('.crt') || file.name.endsWith('.cer'),
+        theme: fileSelectorTheme,
+      }),
+    };
 
   // Add certs content to the collection
   for (const tagName in requiredCerts) {
     if (Object.prototype.hasOwnProperty.call(requiredCerts, tagName)) {
-      const answerValue = _.get(requiredCerts, tagName)
+      const answerValue = _.get(requiredCerts, tagName);
       if (answerValue !== null) {
-        interactiveValues[tagName] = answerValue
+        interactiveValues[tagName] = answerValue;
       }
     }
   }
 
   // Use the unique user identifier?
-  const addUserUid = await confirm({message: 'Add a unique user identifier (user-id)?'})
+  const addUserUid = await confirm({ message: 'Add a unique user identifier (user-id)?' });
   if (addUserUid) {
     const EMASSER_USER_UID = await input({
       message: PROMPT_MESSAGE[6],
       default: envConfig.EMASSER_USER_UID,
       required: true,
-    })
-    interactiveValues.EMASSER_USER_UID = EMASSER_USER_UID
+    });
+    interactiveValues.EMASSER_USER_UID = EMASSER_USER_UID;
   }
 
   // Process the optional environment configuration variables
@@ -245,88 +247,88 @@ async function processPrompt() {
       default: envConfig.EMASSER_PORT,
       validate(input: string) {
         if (/(^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$)/g.test(input)) { // skipcq: JS-0113
-          return true
+          return true;
         }
 
-        return 'Invalid port provided. Must be a Well-known (0-1023), or Registered (1024-49151), or Private (49152-65535) port number'
+        return 'Invalid port provided. Must be a Well-known (0-1023), or Registered (1024-49151), or Private (49152-65535) port number';
       },
     }),
     EMASSER_REQUEST_CERT: await select({
       message: PROMPT_MESSAGE[8],
       default: true,
       choices: [
-        {name: 'true', value: true},
-        {name: 'false', value: false},
+        { name: 'true', value: true },
+        { name: 'false', value: false },
       ],
     }),
     EMASSER_REJECT_UNAUTHORIZED: await select({
       message: PROMPT_MESSAGE[9],
       default: true,
       choices: [
-        {name: 'true', value: true},
-        {name: 'false', value: false},
+        { name: 'true', value: true },
+        { name: 'false', value: false },
       ],
     }),
     EMASSER_DEBUGGING: await select({
       message: PROMPT_MESSAGE[10],
       default: false,
       choices: [
-        {name: 'true', value: true},
-        {name: 'false', value: false},
+        { name: 'true', value: true },
+        { name: 'false', value: false },
       ],
     }),
     EMASSER_CLI_DISPLAY_NULL: await select({
       message: PROMPT_MESSAGE[11],
       default: false,
       choices: [
-        {name: 'true', value: true},
-        {name: 'false', value: false},
+        { name: 'true', value: true },
+        { name: 'false', value: false },
       ],
     }),
     EMASSER_EPOCH_TO_DATETIME: await select({
       message: PROMPT_MESSAGE[12],
       default: true,
       choices: [
-        {name: 'true', value: true},
-        {name: 'false', value: false},
+        { name: 'true', value: true },
+        { name: 'false', value: false },
       ],
     }),
     EMASSER_DOWNLOAD_DIR: await input({
       message: PROMPT_MESSAGE[13],
       default: envConfig.EMASSER_DOWNLOAD_DIR,
     }),
-  }
+  };
 
   // Add optional content to the collection
   for (const tagName in optionalContent) {
     if (Object.prototype.hasOwnProperty.call(optionalContent, tagName)) {
-      const answerValue = _.get(optionalContent, tagName)
+      const answerValue = _.get(optionalContent, tagName);
       if (answerValue !== null) {
-        interactiveValues[tagName] = answerValue
+        interactiveValues[tagName] = answerValue;
       }
     }
   }
   // Save content to the .env file
-  updateKeyValuePairs('.env', interactiveValues)
+  updateKeyValuePairs('.env', interactiveValues);
 
   // Output the content of the new or updated .env configuration file
-  const table: string[][] = fse.readFileSync('.env', 'utf8').split('\n').map(pair => pair.split('='))
-  const envData: object = Object.fromEntries(table)
+  const table: string[][] = fse.readFileSync('.env', 'utf8').split('\n').map(pair => pair.split('='));
+  const envData: object = Object.fromEntries(table);
 
-  console.log('\n', colors.yellow('An eMASS configuration file with the following environment variables was created:'))
+  console.log('\n', colors.yellow('An eMASS configuration file with the following environment variables was created:'));
 
   for (const [key, value] of Object.entries(envData)) {
     // if ((key.trim() !== '' || !key.startsWith('#'))) {
     if (key.startsWith('#')) {
-      console.log(`\t${colors.green(key)}`)
+      console.log(`\t${colors.green(key)}`);
     } else if (key.trim() !== '') {
-      console.log(`\t${colors.blue(key)}=${colors.dim(value)}`)
+      console.log(`\t${colors.blue(key)}=${colors.dim(value)}`);
     }
   }
 
-  console.log('\n', colors.yellow('To modify any of the entries, simple run the configure command again.'))
-  console.log('\n', colors.cyan.bold('To verify connection to the eMASS services use the command: '), colors.green.underline('saf emasser get test_connection'))
-  console.log('\n', colors.cyan.bold('For additional help on available eMASS CLI API commands use: '), colors.green.underline('saf emasser -h or -help'))
+  console.log('\n', colors.yellow('To modify any of the entries, simple run the configure command again.'));
+  console.log('\n', colors.cyan.bold('To verify connection to the eMASS services use the command: '), colors.green.underline('saf emasser get test_connection'));
+  console.log('\n', colors.cyan.bold('For additional help on available eMASS CLI API commands use: '), colors.green.underline('saf emasser -h or -help'));
 }
 
 /**
@@ -344,19 +346,19 @@ async function processPrompt() {
 function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: Record<string, string | number | boolean>): void {
   try {
     // Read the file content
-    const fileContent = fse.readFileSync(filePath, 'utf8')
+    const fileContent = fse.readFileSync(filePath, 'utf8');
 
     // Split the content into lines
-    const lines = fileContent.split('\n')
+    const lines = fileContent.split('\n');
 
     // Iterate over each line to find and update key-value pairs
     const updatedLines = lines.map((line) => {
       // Trim the line to remove any leading/trailing whitespace
-      const trimmedLine = line.trim()
+      const trimmedLine = line.trim();
 
       // Check if the line contains a key-value pair (e.g., key=value)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
-      const [key, _value_] = trimmedLine.split('=') // skipcq: JS-0356
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const [key, _value_] = trimmedLine.split('='); // skipcq: JS-0356
 
       // If the key exists in the updates object, update the value
       if (Object.prototype.hasOwnProperty.call(updates, key)) {
@@ -365,23 +367,23 @@ function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: Record
           ? `${key}=${updates[key]}`
           : ((typeof updates[key] === 'string')
             ? `${key}='${updates[key]}'`
-            : `${key}=${updates[key]}`)
+            : `${key}=${updates[key]}`);
       }
 
       // Return the original line if no update is needed
-      return line
-    })
+      return line;
+    });
 
     // Join the updated lines back into a single string
-    const updatedContent = updatedLines.join('\n')
+    const updatedContent = updatedLines.join('\n');
 
     // Write the updated content back to the file
-    fse.writeFileSync(filePath, updatedContent, 'utf8')
+    fse.writeFileSync(filePath, updatedContent, 'utf8');
 
-    console.log('File updated successfully.')
+    console.log('File updated successfully.');
   } catch (error) {
-    console.error('Error reading or writing file:', error)
-    process.exit(1)
+    console.error('Error reading or writing file:', error);
+    process.exit(1);
   }
 }
 
@@ -395,7 +397,7 @@ function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: Record
  * @returns `true` if the value is numeric, otherwise `false`.
  */
 function isNumeric(value: unknown): boolean {
-  return typeof value === 'number' || (!isNaN(Number(value)) && typeof value === 'string')
+  return typeof value === 'number' || (!isNaN(Number(value)) && typeof value === 'string');
 }
 
 /**
@@ -408,11 +410,11 @@ function isNumeric(value: unknown): boolean {
  */
 export async function generateConfig() {
   if (fse.existsSync('.env')) {
-    console.log(colors.yellow('A configuration file already exists, updating - Press Enter to accept the current value(s), otherwise provide new value'))
-    await processPrompt()
+    console.log(colors.yellow('A configuration file already exists, updating - Press Enter to accept the current value(s), otherwise provide new value'));
+    await processPrompt();
   } else {
-    console.log(colors.yellow('No configuration file found, creating - Provide the environment variables values'))
-    generateNewdotEnv()
-    await processPrompt()
+    console.log(colors.yellow('No configuration file found, creating - Provide the environment variables values'));
+    generateNewdotEnv();
+    await processPrompt();
   }
 }

@@ -1,13 +1,13 @@
-import colors from 'colors'
-import {Command} from '@oclif/core'
-import {generateConfig} from '../../utils/emasser/generateConfig'
+import colors from 'colors';
+import { Command } from '@oclif/core';
+import { generateConfig } from '../../utils/emasser/generateConfig';
 
 export default class EmasserBuildConfig extends Command {
   static readonly summary = 'Generate a configuration file (.env) for accessing an eMASS instances.\n'
     + 'Authentication to an eMASS instances requires a PKI-valid/trusted client\n'
     + 'certificate. The eMASSer CLI accepts a Key/Client pair certificates (.pem) or\n'
     + 'a CA certificate (.pem or .crt). A Unique user identifier (user-uid) is used by\n'
-    + 'most eMASS integration, however certain integrations, the user-uid is not required'
+    + 'most eMASS integration, however certain integrations, the user-uid is not required';
 
   static readonly description
     = `
@@ -29,12 +29,12 @@ export default class EmasserBuildConfig extends Command {
    ${colors.blue('\tEMASSER_CLI_DISPLAY_NULL') + colors.green('    <Display null value fields - true or false (default true)>')}
    ${colors.blue('\tEMASSER_EPOCH_TO_DATETIME') + colors.green('   <Convert epoch to data/time value - true or false (default false)>')}
    ${colors.blue('\tEMASSER_DOWNLOAD_DIR') + colors.green('        <Directory where the CLI exports files (default eMASSerDownloads)>')}
-  `
+  `;
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %>']
+  static readonly examples = ['<%= config.bin %> <%= command.id %>'];
 
   // skipcq: JS-0116, JS-0105
   async run(): Promise<void> {
-    generateConfig() // skipcq: JS-0328
+    generateConfig(); // skipcq: JS-0328
   }
 }

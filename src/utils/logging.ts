@@ -1,6 +1,6 @@
-import {createLogger, format, transports, transport, Logger} from 'winston'
-import {ContextualizedControl, contextualizeEvaluation, ExecJSON} from 'inspecjs'
-import colors from 'colors'
+import { createLogger, format, transports, transport, Logger } from 'winston';
+import { ContextualizedControl, contextualizeEvaluation, ExecJSON } from 'inspecjs';
+import colors from 'colors';
 
 /**
  * Summary type represents a summary of an HDF execution.
@@ -14,14 +14,14 @@ import colors from 'colors'
  */
 
 export type Summary = {
-  profileNames: string[]
-  controlCount: number
-  passedCount: number
-  failedCount: number
-  notApplicableCount: number
-  notReviewedCount: number
-  errorCount: number
-}
+  profileNames: string[];
+  controlCount: number;
+  passedCount: number;
+  failedCount: number;
+  notApplicableCount: number;
+  notReviewedCount: number;
+  errorCount: number;
+};
 
 // Use user defined colors. Used by the console log transporter
 const syslogColors = {
@@ -35,7 +35,7 @@ const syslogColors = {
   crit: 'inverse yellow',
   alert: 'bold inverse red',
   emerg: 'bold inverse magenta',
-}
+};
 
 /**
  * createWinstonLogger function creates a Winston logger.
@@ -45,7 +45,7 @@ const syslogColors = {
  */
 
 export function createWinstonLogger(mapperName: string, level = 'info'): Logger {
-  const transportList: transport[] = [new transports.File({filename: 'saf-cli.log'})]
+  const transportList: transport[] = [new transports.File({ filename: 'saf-cli.log' })];
 
   if ((process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') || level === 'verbose') {
     transportList.push(new transports.Console({
@@ -58,18 +58,18 @@ export function createWinstonLogger(mapperName: string, level = 'info'): Logger 
         format.timestamp({
           format: 'MMM-DD-YYYY HH:mm:ss Z',
         }),
-        format.errors({stack: true}),
+        format.errors({ stack: true }),
         format.printf(
           info => colors.yellow(`[${[info.timestamp]} -> ${mapperName}]:`) + ` ${info.message}`,
         ),
       ),
-    }))
+    }));
   }
 
   return createLogger({
     transports: transportList,
     level,
-  })
+  });
 }
 
 /**
@@ -80,7 +80,7 @@ export function createWinstonLogger(mapperName: string, level = 'info'): Logger 
  */
 
 export function getHDFSummary(hdf: ExecJSON.Execution): string {
-  let summary = 'Execution<'
+  let summary = 'Execution<';
   const summaryObject: Summary = {
     profileNames: [],
     controlCount: 0,
@@ -89,44 +89,44 @@ export function getHDFSummary(hdf: ExecJSON.Execution): string {
     notApplicableCount: 0,
     notReviewedCount: 0,
     errorCount: 0,
+  };
+  const contextualizedEvaluation = contextualizeEvaluation(hdf);
+  for (const profile of contextualizedEvaluation.contains) {
+    summaryObject.profileNames.push(profile.data.name);
   }
-  const contextualizedEvaluation = contextualizeEvaluation(hdf)
-  contextualizedEvaluation.contains.forEach((profile) => {
-    summaryObject.profileNames.push(profile.data.name)
-  })
   const controls: readonly ContextualizedControl[] = contextualizedEvaluation.contains.flatMap(
     profile => profile.contains,
-  )
-  controls.forEach((control) => {
+  );
+  for (const control of controls) {
     switch (control.hdf.status) {
       case 'Passed': {
-        summaryObject.passedCount += 1
-        break
+        summaryObject.passedCount += 1;
+        break;
       }
 
       case 'Failed': {
-        summaryObject.failedCount += 1
-        break
+        summaryObject.failedCount += 1;
+        break;
       }
 
       case 'Not Applicable': {
-        summaryObject.notApplicableCount += 1
-        break
+        summaryObject.notApplicableCount += 1;
+        break;
       }
 
       case 'Not Reviewed': {
-        summaryObject.notReviewedCount += 1
-        break
+        summaryObject.notReviewedCount += 1;
+        break;
       }
 
       case 'Profile Error': {
-        summaryObject.errorCount += 1
-        break
+        summaryObject.errorCount += 1;
+        break;
       }
 
       default:
     }
-  })
-  summary += `Profiles: [Profile<${summaryObject.profileNames.join('> Profile<')}>], Passed=${summaryObject.passedCount}, Failed=${summaryObject.failedCount}, Not Applicable=${summaryObject.notApplicableCount}, Not Reviewed=${summaryObject.notReviewedCount}>`
-  return summary
+  }
+  summary += `Profiles: [Profile<${summaryObject.profileNames.join('> Profile<')}>], Passed=${summaryObject.passedCount}, Failed=${summaryObject.failedCount}, Not Applicable=${summaryObject.notApplicableCount}, Not Reviewed=${summaryObject.notReviewedCount}>`;
+  return summary;
 }

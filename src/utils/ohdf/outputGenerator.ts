@@ -1,22 +1,22 @@
 // utils/outputGenerator.ts
-import fs from 'fs'
-import _ from 'lodash'
-import YAML from 'yaml'
-import {Align, Table, getMarkdownTable} from 'markdown-table-ts'
-import {basename} from '../global'
-import {ContextualizedEvaluation} from 'inspecjs'
-import {createWinstonLogger} from '../logging'
-import {PrintableSummary, Data, DataOrArray, RowType, ColumnType, PrintAndWriteOutputArgs} from './types'
+import fs from 'fs';
+import _ from 'lodash';
+import YAML from 'yaml';
+import { Align, Table, getMarkdownTable } from 'markdown-table-ts';
+import { basename } from '../global';
+import { ContextualizedEvaluation } from 'inspecjs';
+import { createWinstonLogger } from '../logging';
+import { PrintableSummary, Data, DataOrArray, RowType, ColumnType, PrintAndWriteOutputArgs } from './types';
 
 /**
 * The logger for command.
 * It uses a Winston logger with the label 'view summary:'.
 * @property {ReturnType<typeof createWinstonLogger>} logger - The logger for command. It uses a Winston logger with the label 'view summary:'.
 */
-const logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View Summary:')
+const logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View Summary:');
 
-export const ROW_ORDER: RowType[] = ['total', 'critical', 'high', 'medium', 'low']
-export const COLUMN_ORDER: ColumnType[] = ['passed', 'failed', 'skipped', 'no_impact', 'error']
+export const ROW_ORDER: RowType[] = ['total', 'critical', 'high', 'medium', 'low'];
+export const COLUMN_ORDER: ColumnType[] = ['passed', 'failed', 'skipped', 'no_impact', 'error'];
 
 export const COLUMN_EMOJI: Record<ColumnType, string> = {
   compliance: ':test_tube:',
@@ -25,7 +25,7 @@ export const COLUMN_EMOJI: Record<ColumnType, string> = {
   skipped: ':leftwards_arrow_with_hook:',
   no_impact: ':heavy_minus_sign:',
   error: ':warning:',
-}
+};
 
 /**
  * Prints the provided printable summaries to the console and optionally writes them to an output file.
@@ -52,35 +52,35 @@ export const COLUMN_EMOJI: Record<ColumnType, string> = {
  * @returns void - This method does not return anything.
  */
 export function printAndWriteOutput(args: PrintAndWriteOutputArgs): void {
-  logger.verbose('In printAndWriteOutput')
-  let outputStr = '' // Initialize output to an empty string
+  logger.verbose('In printAndWriteOutput');
+  let outputStr = ''; // Initialize output to an empty string
   switch (args.format) {
     case 'json': {
-      outputStr = args.printPretty ? JSON.stringify(args.printableSummaries, null, 2) : JSON.stringify(args.printableSummaries)
-      break
+      outputStr = args.printPretty ? JSON.stringify(args.printableSummaries, null, 2) : JSON.stringify(args.printableSummaries);
+      break;
     }
 
     case 'markdown': {
-      const markdownTables = convertToMarkdown(args.printableSummaries, args.titleTable ?? true)
-      outputStr = markdownTables.join('\n\n') // Join the tables with two newlines between each table
-      break
+      const markdownTables = convertToMarkdown(args.printableSummaries, args.titleTable ?? true);
+      outputStr = markdownTables.join('\n\n'); // Join the tables with two newlines between each table
+      break;
     }
 
     default: { // Default to 'yaml'
-      outputStr = YAML.stringify(args.printableSummaries)
+      outputStr = YAML.stringify(args.printableSummaries);
     }
   }
 
   if (args.stdout) {
-    console.log(outputStr)
+    console.log(outputStr);
   }
 
   if (args.output) {
     try {
-      fs.writeFileSync(args.output, outputStr)
-      logger.info(`Output written to ${args.output}`)
+      fs.writeFileSync(args.output, outputStr);
+      logger.info(`Output written to ${args.output}`);
     } catch (error) {
-      logger.error(`Failed to write output to ${args.output}: ${(error as Error).message}`)
+      logger.error(`Failed to write output to ${args.output}: ${(error as Error).message}`);
     }
   }
 }
@@ -108,13 +108,13 @@ export function createPrintableSummary(
   execJSONs: Record<string, ContextualizedEvaluation>,
   complianceScores: Record<string, number[]>,
 ): PrintableSummary {
-  logger.verbose('In createPrintableSummary')
+  logger.verbose('In createPrintableSummary');
   return {
     profileName,
     resultSets: extractResultSets(execJSONs, profileName),
     compliance: _.mean(complianceScores[profileName]),
     ...profileMetrics,
-  }
+  };
 }
 
 /**
@@ -133,12 +133,12 @@ export function createPrintableSummary(
  * @returns An array of filenames representing the result sets.
  */
 export function extractResultSets(execJSONs: Record<string, ContextualizedEvaluation>, profileName: string): string[] {
-  logger.verbose('In extractResultSets')
+  logger.verbose('In extractResultSets');
   return Object.entries(execJSONs).filter(([, execJSON]) => {
-    return execJSON.data.profiles[0].name === profileName
+    return execJSON.data.profiles[0].name === profileName;
   }).map(([filePath]) => {
-    return basename(filePath)
-  })
+    return basename(filePath);
+  });
 }
 
 /**
@@ -158,19 +158,19 @@ export function extractResultSets(execJSONs: Record<string, ContextualizedEvalua
  * @returns A string representing the value for the cell.
  */
 export function generateValue(item: PrintableSummary, column: string, key: string): string {
-  logger.debug('item:', item)
-  logger.debug('column:', column)
-  logger.debug('key:', key)
+  logger.debug('item:', item);
+  logger.debug('column:', column);
+  logger.debug('key:', key);
 
-  const columnData = item[column] as Record<string, number>
+  const columnData = item[column] as Record<string, number>;
 
-  logger.debug('columnData:', columnData)
+  logger.debug('columnData:', columnData);
 
   if (columnData && key in columnData) {
-    return columnData[key].toString()
+    return columnData[key].toString();
   }
 
-  return '0'
+  return '0';
 }
 
 /**
@@ -187,7 +187,7 @@ export function generateValue(item: PrintableSummary, column: string, key: strin
  * @returns An array of strings, each representing a cell in the row.
  */
 export function generateMarkdownTableRow(row: string, item: PrintableSummary): string[] {
-  return COLUMN_ORDER.map(column => generateValue(item, column, row))
+  return COLUMN_ORDER.map(column => generateValue(item, column, row));
 }
 
 /**
@@ -204,10 +204,10 @@ export function generateMarkdownTableRow(row: string, item: PrintableSummary): s
  * @returns An array of strings, each representing a Markdown table.
  */
 export function convertToMarkdown(data: DataOrArray, titleTables: boolean): string[] {
-  logger.verbose('In convertTomarkdown')
-  let tables: string[] = []
-  tables = Array.isArray(data) ? data.map(item => generateMarkdownTable(item, titleTables)) : [generateMarkdownTable(data, titleTables)]
-  return tables
+  logger.verbose('In convertTomarkdown');
+  let tables: string[] = [];
+  tables = Array.isArray(data) ? data.map(item => generateMarkdownTable(item, titleTables)) : [generateMarkdownTable(data, titleTables)];
+  return tables;
 }
 
 /**
@@ -223,7 +223,7 @@ export function convertToMarkdown(data: DataOrArray, titleTables: boolean): stri
  * @returns The pretty-printed row title.
  */
 export function prettyPrintRowTitle(title: string): string {
-  return title.charAt(0).toUpperCase() + title.slice(1)
+  return title.charAt(0).toUpperCase() + title.slice(1);
 }
 
 /**
@@ -241,16 +241,16 @@ export function prettyPrintRowTitle(title: string): string {
  * @returns The pretty-printed column title.
  */
 export function prettyPrintColumnTitle(title: string): string {
-  title = title.charAt(0).toUpperCase() + title.slice(1)
+  title = title.charAt(0).toUpperCase() + title.slice(1);
   if (title === 'Skipped') {
-    return 'Not Reviewed'
+    return 'Not Reviewed';
   }
 
   if (title === 'No_impact') {
-    return 'Not Applicable'
+    return 'Not Applicable';
   }
 
-  return title
+  return title;
 }
 
 /**
@@ -271,23 +271,23 @@ export function prettyPrintColumnTitle(title: string): string {
  * @returns A string representing the Markdown table.
  */
 export function generateMarkdownTable(item: Data | PrintableSummary, titleTables: boolean): string {
-  const score = item.compliance.toString()
-  const headerRow = ['Compliance: ' + score + '<br>:test_tube:', ...COLUMN_ORDER.map(column => `${prettyPrintColumnTitle(column)}<br>${COLUMN_EMOJI[column]}`)]
+  const score = item.compliance.toString();
+  const headerRow = ['Compliance: ' + score + '<br>:test_tube:', ...COLUMN_ORDER.map(column => `${prettyPrintColumnTitle(column)}<br>${COLUMN_EMOJI[column]}`)];
   const table: string[][]
-    = ROW_ORDER.map(row => [prettyPrintRowTitle(row), ...generateMarkdownTableRow(row, item as PrintableSummary)])
+    = ROW_ORDER.map(row => [prettyPrintRowTitle(row), ...generateMarkdownTableRow(row, item as PrintableSummary)]);
 
   const myTable: Table = {
     head: headerRow,
     body: table,
-  }
-  const myAlignment: Align[] = [Align.Left, Align.Center, Align.Center, Align.Center, Align.Center, Align.Center]
+  };
+  const myAlignment: Align[] = [Align.Left, Align.Center, Align.Center, Align.Center, Align.Center, Align.Center];
 
   // Include the profileName as a Markdown header before the table if titleTables is true
-  const profile_name = typeof item.profileName === 'string' ? item.profileName : 'Evalueated Profile'
-  const title = titleTables ? `# ${profile_name}\n\n` : ''
+  const profile_name = typeof item.profileName === 'string' ? item.profileName : 'Evalueated Profile';
+  const title = titleTables ? `# ${profile_name}\n\n` : '';
   return title + getMarkdownTable({
     table: myTable,
     alignment: myAlignment,
     alignColumns: true,
-  })
+  });
 }

@@ -1,13 +1,13 @@
-import {colorize} from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
-import {CloudResourceResultsApi} from '@mitre/emass_client'
-import {CloudResourcesResponsePost} from '@mitre/emass_client/dist/api'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg} from '../../../utils/emasser/utilities'
-import {readFile} from 'fs/promises'
-import _ from 'lodash'
-import fs from 'fs'
+import { colorize } from 'json-colorizer';
+import { Command, Flags } from '@oclif/core';
+import { CloudResourceResultsApi } from '@mitre/emass_client';
+import { CloudResourcesResponsePost } from '@mitre/emass_client/dist/api';
+import { ApiConnection } from '../../../utils/emasser/apiConnection';
+import { outputFormat } from '../../../utils/emasser/outputFormatter';
+import { displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
+import { readFile } from 'fs/promises';
+import _ from 'lodash';
+import fs from 'fs';
 
 /**
  * Represents a cloud resource with compliance results.
@@ -28,17 +28,17 @@ import fs from 'fs'
  */
 interface CloudResource {
   // Required
-  provider: string
-  resourceId: string
-  resourceName: string
-  resourceType: string
-  complianceResults: ComplianceResults[]
+  provider: string;
+  resourceId: string;
+  resourceName: string;
+  resourceType: string;
+  complianceResults: ComplianceResults[];
   // Optional
-  cspAccountId?: string
-  cspRegion?: string
-  initiatedBy?: string
-  isBaseline?: boolean
-  tags?: Tags
+  cspAccountId?: string;
+  cspRegion?: string;
+  initiatedBy?: string;
+  isBaseline?: boolean;
+  tags?: Tags;
 }
 
 /**
@@ -49,22 +49,22 @@ interface CloudResource {
  * @property {string} value - The value associated with the tag key.
  */
 interface Tags {
-  [key: string]: string
+  [key: string]: string;
 }
 
 interface ComplianceResults {
   // Required
-  cspPolicyDefinitionId: string
-  isCompliant: boolean
-  policyDefinitionTitle: string
+  cspPolicyDefinitionId: string;
+  isCompliant: boolean;
+  policyDefinitionTitle: string;
   // Optional
-  assessmentProcedure?: string
-  complianceCheckTimestamp?: number
-  complianceReason?: string
-  control?: string
-  policyDeploymentName?: string
-  policyDeploymentVersion?: string
-  severity?: string
+  assessmentProcedure?: string;
+  complianceCheckTimestamp?: number;
+  complianceReason?: string;
+  control?: string;
+  policyDeploymentName?: string;
+  policyDeploymentVersion?: string;
+  severity?: string;
 }
 
 /**
@@ -79,7 +79,7 @@ function getAllJsonExamples(): string {
       getJsonExamples('cloud_resources-required'),
       getJsonExamples('cloud_resources-optional'),
     ),
-  )
+  );
 }
 
 /**
@@ -91,8 +91,8 @@ function getAllJsonExamples(): string {
  */
 function assertParamExists(object: string, value: string | boolean | undefined | null): void {
   if (value === undefined) {
-    printRedMsg(`Missing required parameter/field: ${object}`)
-    throw new Error('Value not defined')
+    printRedMsg(`Missing required parameter/field: ${object}`);
+    throw new Error('Value not defined');
   }
 }
 
@@ -113,42 +113,42 @@ function addRequiredFieldsToRequestBody(dataObj: CloudResource): CloudResource {
     resourceName: '',
     resourceType: '',
     complianceResults: [],
-  }
+  };
 
-  const complianceResultsArray: ComplianceResults[] = []
+  const complianceResultsArray: ComplianceResults[] = [];
 
   try {
-    assertParamExists('provider', dataObj.provider)
-    assertParamExists('resourceId', dataObj.resourceId)
-    assertParamExists('resourceName', dataObj.resourceName)
-    assertParamExists('resourceType', dataObj.resourceType)
+    assertParamExists('provider', dataObj.provider);
+    assertParamExists('resourceId', dataObj.resourceId);
+    assertParamExists('resourceName', dataObj.resourceName);
+    assertParamExists('resourceType', dataObj.resourceType);
 
-    let i = 0
+    let i = 0;
     dataObj.complianceResults.forEach((entryObject: ComplianceResults) => {
-      assertParamExists(`dataObj.complianceResults[${i}].cspPolicyDefinitionId`, entryObject.cspPolicyDefinitionId)
-      assertParamExists(`dataObj.complianceResults[${i}].isCompliant`, entryObject.isCompliant)
-      assertParamExists(`dataObj.complianceResults[${i}].policyDefinitionTitle`, entryObject.policyDefinitionTitle)
-      i++
+      assertParamExists(`dataObj.complianceResults[${i}].cspPolicyDefinitionId`, entryObject.cspPolicyDefinitionId);
+      assertParamExists(`dataObj.complianceResults[${i}].isCompliant`, entryObject.isCompliant);
+      assertParamExists(`dataObj.complianceResults[${i}].policyDefinitionTitle`, entryObject.policyDefinitionTitle);
+      i++;
 
       const complianceResultsObj: ComplianceResults = {
         cspPolicyDefinitionId: entryObject.cspPolicyDefinitionId,
         isCompliant: entryObject.isCompliant,
         policyDefinitionTitle: entryObject.policyDefinitionTitle,
-      }
-      complianceResultsArray.push(complianceResultsObj)
-    })
+      };
+      complianceResultsArray.push(complianceResultsObj);
+    });
   } catch (error) {
-    console.log('Required JSON fields are:')
-    console.log(colorize(JSON.stringify(getJsonExamples('cloud_resources-required'), null, 2)))
-    throw error
+    console.log('Required JSON fields are:');
+    console.log(colorize(JSON.stringify(getJsonExamples('cloud_resources-required'), null, 2)));
+    throw error;
   }
 
-  bodyObj.provider = dataObj.provider
-  bodyObj.resourceId = dataObj.resourceId
-  bodyObj.resourceName = dataObj.resourceName
-  bodyObj.resourceType = dataObj.resourceType
-  bodyObj.complianceResults = complianceResultsArray
-  return bodyObj
+  bodyObj.provider = dataObj.provider;
+  bodyObj.resourceId = dataObj.resourceId;
+  bodyObj.resourceName = dataObj.resourceName;
+  bodyObj.resourceType = dataObj.resourceType;
+  bodyObj.complianceResults = complianceResultsArray;
+  return bodyObj;
 }
 
 /**
@@ -177,70 +177,70 @@ function addRequiredFieldsToRequestBody(dataObj: CloudResource): CloudResource {
 function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): void {
   // Add object optional entries
   if (Object.prototype.hasOwnProperty.call(dataObj, 'cspAccountId')) {
-    bodyObject.cspAccountId = dataObj.cspAccountId
+    bodyObject.cspAccountId = dataObj.cspAccountId;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'cspRegion')) {
-    bodyObject.cspRegion = dataObj.cspRegion
+    bodyObject.cspRegion = dataObj.cspRegion;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'initiatedBy')) {
-    bodyObject.initiatedBy = dataObj.initiatedBy
+    bodyObject.initiatedBy = dataObj.initiatedBy;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'isBaseline')) {
-    bodyObject.isBaseline = dataObj.isBaseline
+    bodyObject.isBaseline = dataObj.isBaseline;
   }
 
   // Add optional tags objects if available
   if (dataObj.tags && typeof dataObj.tags === 'object') {
-    const tagsObj: Tags = {}
-    Object.keys(dataObj.tags).forEach((key) => {
-      tagsObj[key] = dataObj.tags?.[key] as string // Ensure type safety
-    })
-    bodyObject.tags = tagsObj
+    const tagsObj: Tags = {};
+    for (const key of Object.keys(dataObj.tags)) {
+      tagsObj[key] = dataObj.tags?.[key] as string; // Ensure type safety
+    }
+    bodyObject.tags = tagsObj;
   }
 
   // Add optional compliance results fields
-  const complianceResultsArray: ComplianceResults[] = []
+  const complianceResultsArray: ComplianceResults[] = [];
   dataObj.complianceResults.forEach((entryObject: ComplianceResults) => {
     const complianceResultsObj: ComplianceResults = {
       cspPolicyDefinitionId: entryObject.cspPolicyDefinitionId,
       isCompliant: entryObject.isCompliant,
       policyDefinitionTitle: entryObject.policyDefinitionTitle,
-    }
+    };
     if (Object.prototype.hasOwnProperty.call(entryObject, 'assessmentProcedure')) {
-      complianceResultsObj.assessmentProcedure = entryObject.assessmentProcedure
+      complianceResultsObj.assessmentProcedure = entryObject.assessmentProcedure;
     }
 
     if (Object.prototype.hasOwnProperty.call(entryObject, 'complianceCheckTimestamp')) {
-      complianceResultsObj.complianceCheckTimestamp = entryObject.complianceCheckTimestamp
+      complianceResultsObj.complianceCheckTimestamp = entryObject.complianceCheckTimestamp;
     }
 
     if (Object.prototype.hasOwnProperty.call(entryObject, 'complianceReason')) {
-      complianceResultsObj.complianceReason = entryObject.complianceReason
+      complianceResultsObj.complianceReason = entryObject.complianceReason;
     }
 
     if (Object.prototype.hasOwnProperty.call(entryObject, 'control')) {
-      complianceResultsObj.control = entryObject.control
+      complianceResultsObj.control = entryObject.control;
     }
 
     if (Object.prototype.hasOwnProperty.call(entryObject, 'policyDeploymentName')) {
-      complianceResultsObj.policyDeploymentName = entryObject.policyDeploymentName
+      complianceResultsObj.policyDeploymentName = entryObject.policyDeploymentName;
     }
 
     if (Object.prototype.hasOwnProperty.call(entryObject, 'policyDeploymentVersion')) {
-      complianceResultsObj.policyDeploymentVersion = entryObject.policyDeploymentVersion
+      complianceResultsObj.policyDeploymentVersion = entryObject.policyDeploymentVersion;
     }
 
     if (Object.prototype.hasOwnProperty.call(entryObject, 'severity')) {
-      complianceResultsObj.severity = entryObject.severity
+      complianceResultsObj.severity = entryObject.severity;
     }
 
-    complianceResultsArray.push(complianceResultsObj)
-  })
+    complianceResultsArray.push(complianceResultsObj);
+  });
 
-  bodyObject.complianceResults = complianceResultsArray
+  bodyObject.complianceResults = complianceResultsArray;
 }
 
 /**
@@ -250,16 +250,16 @@ function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): v
  * @returns True if the object is a CloudResource, false otherwise.
  */
 function isValidCloudResource(obj: unknown): obj is CloudResource {
-  if (typeof obj !== 'object' || obj === null) return false
-  const requiredFields = ['provider', 'resourceId', 'resourceName', 'resourceType', 'complianceResults']
-  return requiredFields.every(field => field in obj)
+  if (typeof obj !== 'object' || obj === null) return false;
+  const requiredFields = ['provider', 'resourceId', 'resourceName', 'resourceType', 'complianceResults'];
+  return requiredFields.every(field => field in obj);
 }
 
-const CMD_HELP = 'saf emasser post cloud_resources -h or --help'
+const CMD_HELP = 'saf emasser post cloud_resources -h or --help';
 export default class EmasserPostCloudResources extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command usages\x1B[0m'
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command usages\u001B[0m';
 
-  static readonly description = 'Add a cloud resource and their scan results in the assets module for a system'
+  static readonly description = 'Add a cloud resource and their scan results in the assets module for a system';
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
@@ -268,84 +268,84 @@ export default class EmasserPostCloudResources extends Command {
     colorize(JSON.stringify(getJsonExamples('cloud_resources-required'), null, 2)),
     'Optional JSON parameters/fields are:',
     colorize(JSON.stringify(getJsonExamples('cloud_resources-optional'), null, 2)),
-    '\x1B[1m\x1B[32mAll accepted parameters/fields are:\x1B[0m',
+    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
     colorize(getAllJsonExamples()),
-  ]
+  ];
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Cloud Resource Results command'}),
+    help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Cloud Resource Results command' }),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
-  }
+  };
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserPostCloudResources)
-    const apiCxn = new ApiConnection()
-    const addCloudResource = new CloudResourceResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+    const { flags } = await this.parse(EmasserPostCloudResources);
+    const apiCxn = new ApiConnection();
+    const addCloudResource = new CloudResourceResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    const requestBodyArray: CloudResource[] = []
+    const requestBodyArray: CloudResource[] = [];
 
     // Check if a Cloud Resource json file was provided
     if (!fs.existsSync(flags.dataFile)) {
-      console.error('\x1B[91m» Cloud Resource data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
-      process.exit(1)
+      console.error('\u001B[91m» Cloud Resource data file (.json) not found or invalid:', flags.dataFile, '\u001B[0m');
+      process.exit(1);
     }
 
     try {
-      const fileContent = await readFile(flags.dataFile, 'utf8')
-      const data: unknown = JSON.parse(fileContent)
+      const fileContent = await readFile(flags.dataFile, 'utf8');
+      const data: unknown = JSON.parse(fileContent);
 
       // Create request body based on key/pair values provide in the input file
       if (Array.isArray(data)) {
-        data.forEach((item) => {
+        for (const item of data) {
           if (!isValidCloudResource(item)) {
-            console.error('\x1B[91m» Invalid Cloud Resource entry in array.\x1B[0m')
-            process.exit(1)
+            console.error('\u001B[91m» Invalid Cloud Resource entry in array.\u001B[0m');
+            process.exit(1);
           }
 
           try {
-            const bodyObj: CloudResource = addRequiredFieldsToRequestBody(item)
-            addOptionalFields(bodyObj, item)
-            requestBodyArray.push(bodyObj)
+            const bodyObj: CloudResource = addRequiredFieldsToRequestBody(item);
+            addOptionalFields(bodyObj, item);
+            requestBodyArray.push(bodyObj);
           } catch {
-            process.exit(1)
+            process.exit(1);
           }
-        })
+        }
       } else if (isValidCloudResource(data)) {
         try {
-          const bodyObj: CloudResource = addRequiredFieldsToRequestBody(data)
-          addOptionalFields(bodyObj, data)
-          requestBodyArray.push(bodyObj)
+          const bodyObj: CloudResource = addRequiredFieldsToRequestBody(data);
+          addOptionalFields(bodyObj, data);
+          requestBodyArray.push(bodyObj);
         } catch {
-          process.exit(1)
+          process.exit(1);
         }
       } else {
-        console.error('\x1B[91m» Invalid Cloud Resource data format.\x1B[0m')
-        process.exit(1)
+        console.error('\u001B[91m» Invalid Cloud Resource data format.\u001B[0m');
+        process.exit(1);
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error('\x1B[91m» Error reading Cloud Resource data file, possible malformed JSON. Please use the -h flag for help.\x1B[0m')
-        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+        console.error('\u001B[91m» Error reading Cloud Resource data file, possible malformed JSON. Please use the -h flag for help.\u001B[0m');
+        console.error('\u001B[93m→ Error message was:', error.message, '\u001B[0m');
       } else {
-        console.error('\x1B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\x1B[0m')
+        console.error('\u001B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\u001B[0m');
       }
-      process.exit(1)
+      process.exit(1);
     }
 
     // Call the endpoint
     addCloudResource.addCloudResourcesBySystemId(flags.systemId, requestBodyArray).then((response: CloudResourcesResponsePost) => {
-      console.log(colorize(outputFormat(response, false)))
-    }).catch((error: unknown) => displayError(error, 'Cloud Resources'))
+      console.log(colorize(outputFormat(response, false)));
+    }).catch((error: unknown) => displayError(error, 'Cloud Resources'));
   }
 
   // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
+  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \x1B[93m${CMD_HELP}\x1B[0m`))
+      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
-      this.warn(err)
+      this.warn(err);
     }
   }
 }

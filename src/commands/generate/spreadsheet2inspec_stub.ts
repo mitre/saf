@@ -1,173 +1,172 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import {Flags} from '@oclif/core'
-import fs from 'fs'
-import path from 'path'
-import {parse} from 'csv-parse/sync'
-import {InSpecControl, InSpecMetaData} from '../../types/inspec'
-import YAML from 'yaml'
-import XlsxPopulate from 'xlsx-populate'
-import {impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact} from '../../utils/xccdf2inspec'
-import _ from 'lodash'
-import {CSVControl} from '../../types/csv'
-import {basename, extractValueViaPathOrNumber} from '../../utils/global'
-import {CciNistMappingData} from '@mitre/hdf-converters'
-import {default as CISNistMappings} from '../../resources/cis2nist.json'
-import {default as files} from '../../resources/files.json'
-import {BaseCommand} from '../../utils/oclif/baseCommand'
+import { Flags } from '@oclif/core';
+import fs from 'fs';
+import path from 'path';
+import { parse } from 'csv-parse/sync';
+import { InSpecControl, InSpecMetaData } from '../../types/inspec';
+import YAML from 'yaml';
+import XlsxPopulate from 'xlsx-populate';
+import { impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact } from '../../utils/xccdf2inspec';
+import _ from 'lodash';
+import { CSVControl } from '../../types/csv';
+import { basename, extractValueViaPathOrNumber } from '../../utils/global';
+import { CciNistMappingData } from '@mitre/hdf-converters';
+import CISNistMappings from '../../resources/cis2nist.json';
+import files from '../../resources/files.json';
+import { BaseCommand } from '../../utils/oclif/baseCommand';
 
 export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF> {
-  static readonly usage = '<%= command.id %> -i, --input=<XLSX or CSV> -o, --output=FOLDER'
+  static readonly usage = '<%= command.id %> -i, --input=<XLSX or CSV> -o, --output=FOLDER';
 
-  static readonly description = 'Convert CSV STIGs or CIS XLSX benchmarks into a skeleton InSpec profile'
+  static readonly description = 'Convert CSV STIGs or CIS XLSX benchmarks into a skeleton InSpec profile';
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i spreadsheet.xlsx -o profile']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i spreadsheet.xlsx -o profile'];
 
   static readonly flags = {
-    input: Flags.string({char: 'i', required: true, description: 'The CSV STIGs or CIS XLSX benchmarks file'}),
-    controlNamePrefix: Flags.string({char: 'c', required: false, default: '', description: 'Prefix for all control IDs'}),
-    format: Flags.string({char: 'f', required: false, default: 'general', options: ['cis', 'disa', 'general']}),
-    encodingHeader: Flags.boolean({char: 'e', required: false, default: false, description: 'Add the "# encoding: UTF-8" comment at the top of each control'}),
-    metadata: Flags.string({char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file'}),
-    mapping: Flags.string({char: 'M', required: false, description: 'Path to a YAML file with mappings for each field, by default, CIS Benchmark fields are used for XLSX, STIG Viewer CSV export is used by CSV'}),
-    lineLength: Flags.integer({char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output InSpec profile folder'}),
-  }
+    input: Flags.string({ char: 'i', required: true, description: 'The CSV STIGs or CIS XLSX benchmarks file' }),
+    controlNamePrefix: Flags.string({ char: 'c', required: false, default: '', description: 'Prefix for all control IDs' }),
+    format: Flags.string({ char: 'f', required: false, default: 'general', options: ['cis', 'disa', 'general'] }),
+    encodingHeader: Flags.boolean({ char: 'e', required: false, default: false, description: 'Add the "# encoding: UTF-8" comment at the top of each control' }),
+    metadata: Flags.string({ char: 'm', required: false, description: 'Path to a JSON file with additional metadata for the inspec.yml file' }),
+    mapping: Flags.string({ char: 'M', required: false, description: 'Path to a YAML file with mappings for each field, by default, CIS Benchmark fields are used for XLSX, STIG Viewer CSV export is used by CSV' }),
+    lineLength: Flags.integer({ char: 'l', required: false, default: 80, description: 'Characters between lines within InSpec controls' }),
+    output: Flags.string({ char: 'o', required: true, description: 'Output InSpec profile folder' }),
+  };
 
   // Extract URLs for references
   matchReferences(control: Partial<InSpecControl>): Partial<InSpecControl> {
     if (control.ref) {
-      const urlMatches = control.ref.replaceAll('\r', '').replaceAll('\n', '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g)
+      const urlMatches = control.ref.replaceAll('\r', '').replaceAll('\n', '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g);
       if (urlMatches) {
-        control.refs = urlMatches
+        control.refs = urlMatches;
       }
 
-      control.ref = undefined
+      control.ref = undefined;
     }
 
-    return control
+    return control;
   }
 
   // Set impact from tags.severity if impact is not defined
   matchImpactFromSeverityIfImpactNotSet(control: Partial<InSpecControl>): Partial<InSpecControl> {
     if (!control.impact && control.tags?.severity) {
-      control.impact = severityStringToImpact(control.tags.severity)
+      control.impact = severityStringToImpact(control.tags.severity);
     }
 
-    return control
+    return control;
   }
 
   // Extract CIS controls from control.tags.cis_controls (as string) into
-  matchCISControls(control: Partial<InSpecControl>, flags: {[name: string]: any}): Partial<InSpecControl> {
+  matchCISControls(control: Partial<InSpecControl>, flags: { [name: string]: any }): Partial<InSpecControl> {
     if (flags.format === 'cis' && control.tags && control.tags.cis_controls && typeof control.tags.cis_controls === 'string') {
       // Match standard CIS benchmark XLSX spreadsheets
       // CIS controls are a string before they are parsed
-      let cisControlMatches = (control.tags.cis_controls as unknown as string).match(/CONTROL:v(\d) (\d+)\.?(\d*)/)
+      let cisControlMatches = (control.tags.cis_controls as unknown as string).match(/CONTROL:v(\d) (\d+)\.?(\d*)/);
       if (cisControlMatches) {
-        control.tags.cis_controls = []
-        const mappedCISControlsByVersion: Record<string, string[]> = {}
-        cisControlMatches.map(cisControl => cisControl.split(' ')).forEach(([revision, cisControl]) => {
-          const controlRevision = revision.split('CONTROL:v')[1]
-          const existingControls = _.get(mappedCISControlsByVersion, controlRevision) || []
-          existingControls.push(cisControl)
-          mappedCISControlsByVersion[controlRevision] = existingControls
-        })
-        Object.entries(mappedCISControlsByVersion).forEach(([version, controls]) => {
+        control.tags.cis_controls = [];
+        const mappedCISControlsByVersion: Record<string, string[]> = {};
+        for (const [revision, cisControl] of cisControlMatches.map(cisControl => cisControl.split(' '))) {
+          const controlRevision = revision.split('CONTROL:v')[1];
+          const existingControls = _.get(mappedCISControlsByVersion, controlRevision) || [];
+          existingControls.push(cisControl);
+          mappedCISControlsByVersion[controlRevision] = existingControls;
+        }
+        for (const [version, controls] of Object.entries(mappedCISControlsByVersion)) {
           if (version !== 'undefined') {
             control.tags?.cis_controls?.push({
               [version]: controls,
-            })
+            });
           }
-        })
+        }
       } else {
         // Match parsed CIS benchmark PDFs
         // CIS controls are a string before they are parsed
-        cisControlMatches = (control.tags?.cis_controls as unknown as string).match(/v\d\W\r?\n\d.?\d?\d?/gi)
+        cisControlMatches = (control.tags?.cis_controls as unknown as string).match(/v\d\W\r?\n\d.?\d?\d?/gi);
         if (cisControlMatches && control.tags) {
-          control.tags.cis_controls = []
-          const mappedCISControlsByVersion: Record<string, string[]> = {}
-          cisControlMatches.map(cisControl => cisControl.replace(/\r?\n/, '').split(' ')).forEach(([revision, cisControl]) => {
+          control.tags.cis_controls = [];
+          const mappedCISControlsByVersion: Record<string, string[]> = {};
+          for (const [revision, cisControl] of cisControlMatches.map(cisControl => cisControl.replace(/\r?\n/, '').split(' '))) {
             if (revision === 'v7' && cisControl in CISNistMappings) {
-              control.tags?.nist?.push(_.get(CISNistMappings, cisControl))
+              control.tags?.nist?.push(_.get(CISNistMappings, cisControl));
             }
 
-            const revisionNumber = revision.replace('v', '')
-            const existingControls = _.get(mappedCISControlsByVersion, revisionNumber) || []
-            existingControls.push(cisControl)
-            mappedCISControlsByVersion[revisionNumber] = existingControls
-          })
-          console.log(mappedCISControlsByVersion)
-          Object.entries(mappedCISControlsByVersion).forEach(([version, controls]) => {
+            const revisionNumber = revision.replace('v', '');
+            const existingControls = _.get(mappedCISControlsByVersion, revisionNumber) || [];
+            existingControls.push(cisControl);
+            mappedCISControlsByVersion[revisionNumber] = existingControls;
+          }
+          console.log(mappedCISControlsByVersion);
+          for (const [version, controls] of Object.entries(mappedCISControlsByVersion)) {
             if (version !== 'undefined') {
               control.tags?.cis_controls?.push({
                 [version]: controls,
-              })
+              });
             }
-          })
+          }
         }
       }
     }
 
-    return control
+    return control;
   }
 
   extractCCIsFromText(control: Partial<InSpecControl>): Partial<InSpecControl> {
     if (control.tags?.cci) {
-      const extractedCCIs: string[] = []
-      control.tags.cci.forEach((cci) => {
-        const cciMatches = cci.match(/CCI-\d{4,}/g)
+      const extractedCCIs: string[] = [];
+      for (const cci of control.tags.cci) {
+        const cciMatches = cci.match(/CCI-\d{4,}/g);
         if (cciMatches) {
-          cciMatches.forEach((match) => {
-            extractedCCIs.push(match)
-          })
+          for (const match of cciMatches) {
+            extractedCCIs.push(match);
+          }
         }
-      })
-      control.tags.cci = extractedCCIs
+      }
+      control.tags.cci = extractedCCIs;
     }
 
-    return control
+    return control;
   }
 
   async run() {
-    const {flags} = await this.parse(Spreadsheet2HDF)
+    const { flags } = await this.parse(Spreadsheet2HDF);
 
     if (flags.format === 'general' && !flags.mapping) {
-      throw new Error('Please provide your own mapping file for spreadsheets that do not follow CIS or DISA specifications, or use --format to specify a template')
+      throw new Error('Please provide your own mapping file for spreadsheets that do not follow CIS or DISA specifications, or use --format to specify a template');
     }
 
     // Check if the output folder already exists
     if (fs.existsSync(flags.output)) {
       // Folder should not exist already
-      throw new Error('Profile output folder already exists, please specify a new folder')
+      throw new Error('Profile output folder already exists, please specify a new folder');
     } else {
-      fs.mkdirSync(flags.output)
-      fs.mkdirSync(path.join(flags.output, 'controls'))
-      fs.mkdirSync(path.join(flags.output, 'libraries'))
+      fs.mkdirSync(flags.output);
+      fs.mkdirSync(path.join(flags.output, 'controls'));
+      fs.mkdirSync(path.join(flags.output, 'libraries'));
     }
 
-    let metadata: InSpecMetaData = {}
-    let mappings: Record<string, string | string[] | number> = {}
+    let metadata: InSpecMetaData = {};
+    let mappings: Record<string, string | string[] | number> = {};
 
     // Read metadata file if passed
     if (flags.metadata) {
       if (fs.existsSync(flags.metadata)) {
-        metadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf8'))
+        metadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf8'));
       } else {
-        throw new Error('Passed metadata file does not exist')
+        throw new Error('Passed metadata file does not exist');
       }
     }
 
     // Read mapping file
     if (flags.mapping) {
       if (fs.existsSync(flags.mapping)) {
-        mappings = YAML.parse(fs.readFileSync(flags.mapping, 'utf8'))
+        mappings = YAML.parse(fs.readFileSync(flags.mapping, 'utf8'));
       } else {
-        throw new Error('Passed metadata file does not exist')
+        throw new Error('Passed metadata file does not exist');
       }
     } else {
-      mappings = YAML.parse(flags.format === 'disa' ? files['disa.mapping.yml'].data : files['cis.mapping.yml'].data)
+      mappings = YAML.parse(flags.format === 'disa' ? files['disa.mapping.yml'].data : files['cis.mapping.yml'].data);
     }
 
-    const inspecControls: InSpecControl[] = []
+    const inspecControls: InSpecControl[] = [];
 
     // Convert profile inspec.yml
     const profileInfo: Record<string, string | number | undefined> = {
@@ -179,155 +178,155 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
       license: metadata.license || 'Apache-2.0',
       summary: '"An InSpec Compliance Profile"',
       version: metadata.version || '0.1.0',
-    }
+    };
 
-    fs.writeFileSync(path.join(flags.output, 'inspec.yml'), YAML.stringify(profileInfo))
+    fs.writeFileSync(path.join(flags.output, 'inspec.yml'), YAML.stringify(profileInfo));
 
     // Write README.md
-    const readableMetadata: Record<string, string | number> = {}
-    Object.entries(profileInfo).forEach(([key, value]) => {
+    const readableMetadata: Record<string, string | number> = {};
+    for (const [key, value] of Object.entries(profileInfo)) {
       // Filter out any undefined values and omit summary and title
       if (value && key !== 'summary' && key !== 'summary') {
-        readableMetadata[_.startCase(key)] = value
+        readableMetadata[_.startCase(key)] = value;
       }
-    })
-    fs.writeFileSync(path.join(flags.output, 'README.md'), `# ${profileInfo.name}\n${profileInfo.summary}\n---\n${YAML.stringify(readableMetadata)}`)
+    }
+    fs.writeFileSync(path.join(flags.output, 'README.md'), `# ${profileInfo.name}\n${profileInfo.summary}\n---\n${YAML.stringify(readableMetadata)}`);
 
     await XlsxPopulate.fromFileAsync(flags.input).then((workBook: any) => {
-      const completedIds: string[] = [] // Numbers such as 1.10 can get parsed 1.1 which will over-write controls, keep track of existing controls to prevent this
+      const completedIds: string[] = []; // Numbers such as 1.10 can get parsed 1.1 which will over-write controls, keep track of existing controls to prevent this
 
       workBook.sheets().forEach((sheet: any) => {
-        const usedRange = sheet.usedRange()
+        const usedRange = sheet.usedRange();
         if (usedRange) {
           // Get data from the spreadsheet into a 2D array
-          const extractedData: (string | number)[][] = usedRange.value()
+          const extractedData: (string | number)[][] = usedRange.value();
           // Map the data into an object array
-          const headers = extractedData[0]
+          const headers = extractedData[0];
           const mappedRecords = extractedData.slice(1).map((record) => {
-            const mappedRecord: Record<string, string> = {}
+            const mappedRecord: Record<string, string> = {};
             record.forEach((record, index) => {
               if (typeof record === 'string') {
-                mappedRecord[headers[index]] = record
+                mappedRecord[headers[index]] = record;
               }
 
               if (typeof record === 'number') {
-                mappedRecord[headers[index]] = record.toString()
+                mappedRecord[headers[index]] = record.toString();
               }
-            })
-            return mappedRecord
-          })
+            });
+            return mappedRecord;
+          });
           // Convert the mapped objects into controls
-          mappedRecords.forEach((record, index) => {
+          for (const [index, record] of mappedRecords.entries()) {
             // Get the control ID
-            let controlId = extractValueViaPathOrNumber('mappings.id', mappings.id, record)
+            let controlId = extractValueViaPathOrNumber('mappings.id', mappings.id, record);
             if (controlId) {
               // Prevent controls that get parsed from 1.10 to 1.1 from being over-written, this assumes the controls are in order
               while (completedIds.includes(controlId)) {
-                controlId += '0'
+                controlId += '0';
               }
 
-              completedIds.push(controlId)
+              completedIds.push(controlId);
               let newControl: Partial<InSpecControl> = {
                 refs: [],
                 tags: {
                   nist: [],
                   severity: impactNumberToSeverityString(extractValueViaPathOrNumber('mappings.impact', mappings.impact, record)),
                 },
-              }
-              Object.entries(mappings).forEach((mapping) => {
+              };
+              for (const mapping of Object.entries(mappings)) {
                 if (mapping[0] === 'id' && flags.controlNamePrefix) {
                   _.set(
                     newControl,
                     mapping[0].toLowerCase().replace('desc.', 'descs.'),
                     `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${extractValueViaPathOrNumber(mapping[0], mapping[1], record)}`,
-                  )
+                  );
                 } else {
                   _.set(
                     newControl,
                     mapping[0].toLowerCase().replace('desc.', 'descs.'),
                     extractValueViaPathOrNumber(mapping[0], mapping[1], record),
-                  )
+                  );
                 }
-              })
-              newControl = this.matchReferences(newControl)
-              newControl = this.matchCISControls(newControl, flags)
-              newControl = this.matchImpactFromSeverityIfImpactNotSet(newControl)
-              newControl = this.extractCCIsFromText(newControl)
-              inspecControls.push(newControl as unknown as InSpecControl)
+              }
+              newControl = this.matchReferences(newControl);
+              newControl = this.matchCISControls(newControl, flags);
+              newControl = this.matchImpactFromSeverityIfImpactNotSet(newControl);
+              newControl = this.extractCCIsFromText(newControl);
+              inspecControls.push(newControl as unknown as InSpecControl);
             } else {
               // Possibly a section divider, possibly a bad mapping. Let the user know to verify
-              console.error(`Control at index "${index}" has no ID... skipping`)
+              console.error(`Control at index "${index}" has no ID... skipping`);
             }
-          })
+          }
         }
-      })
+      });
     }).catch(() => {
       // Assume we have a CSV file
       // Read the input file into lines
-      const inputDataLines = fs.readFileSync(flags.input, 'utf8').split('\n')
+      const inputDataLines = fs.readFileSync(flags.input, 'utf8').split('\n');
       // Replace BOM if it exists
-      inputDataLines[0] = inputDataLines[0].replaceAll('\u{FEFF}', '')
+      inputDataLines[0] = inputDataLines[0].replaceAll('\u{FEFF}', '');
       // STIG Viewer embeds the classification level in the first and last line for CSV export, breaking parsing
       if (/~~~~~.*~~~~~/.test(inputDataLines[0])) {
-        inputDataLines.shift()
+        inputDataLines.shift();
       }
 
       if (/~~~~~.*~~~~~/.test(inputDataLines.at(-1) || '')) {
-        inputDataLines.pop()
+        inputDataLines.pop();
       }
 
       const records: CSVControl[] = parse(inputDataLines.join('\n'), {
         columns: true,
         skip_empty_lines: true,
-      })
+      });
 
-      records.forEach((record, index) => {
-        let skipControlDueToError = false
+      for (const [index, record] of records.entries()) {
+        let skipControlDueToError = false;
         let newControl: Partial<InSpecControl> = {
           refs: [],
           tags: {
             nist: [],
             severity: impactNumberToSeverityString(extractValueViaPathOrNumber('mappings.impact', mappings.impact, record)),
           },
-        }
-        Object.entries(mappings).forEach((mapping) => {
+        };
+        for (const mapping of Object.entries(mappings)) {
           if (mapping[0] === 'id') {
-            const value = extractValueViaPathOrNumber(mapping[0], mapping[1], record)
+            const value = extractValueViaPathOrNumber(mapping[0], mapping[1], record);
             if (value) {
-              _.set(newControl, mapping[0], `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${value}`)
+              _.set(newControl, mapping[0], `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${value}`);
             } else {
-              console.error(`Control at index ${index} has no mapped control ID... skipping`)
-              skipControlDueToError = true
+              console.error(`Control at index ${index} has no mapped control ID... skipping`);
+              skipControlDueToError = true;
             }
           } else {
-            _.set(newControl, mapping[0].toLowerCase().replace('desc.', 'descs.'), extractValueViaPathOrNumber(mapping[0], mapping[1], record))
+            _.set(newControl, mapping[0].toLowerCase().replace('desc.', 'descs.'), extractValueViaPathOrNumber(mapping[0], mapping[1], record));
           }
-        })
+        }
         if (skipControlDueToError) {
-          return
+          continue;
         }
 
         if (newControl.tags && newControl.tags?.cci) {
-          newControl.tags.nist = []
-          newControl.tags.cci.forEach((cci) => {
+          newControl.tags.nist = [];
+          for (const cci of newControl.tags.cci) {
             if (cci in CciNistMappingData.data) {
-              newControl.tags?.nist?.push(_.get(CciNistMappingData.data, cci))
+              newControl.tags?.nist?.push(_.get(CciNistMappingData.data, cci));
             }
-          })
+          }
         }
 
-        newControl = this.matchReferences(newControl)
-        newControl = this.matchCISControls(newControl, flags)
-        newControl = this.matchImpactFromSeverityIfImpactNotSet(newControl)
-        newControl = this.extractCCIsFromText(newControl)
+        newControl = this.matchReferences(newControl);
+        newControl = this.matchCISControls(newControl, flags);
+        newControl = this.matchImpactFromSeverityIfImpactNotSet(newControl);
+        newControl = this.extractCCIsFromText(newControl);
 
-        inspecControls.push(newControl as unknown as InSpecControl)
-      })
-    })
+        inspecControls.push(newControl as unknown as InSpecControl);
+      }
+    });
 
     // Convert all extracted controls to Ruby/InSpec code
-    inspecControls.forEach((control) => {
-      fs.writeFileSync(path.join(flags.output, 'controls', basename(control.id) + '.rb'), inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader))
-    })
+    for (const control of inspecControls) {
+      fs.writeFileSync(path.join(flags.output, 'controls', basename(control.id) + '.rb'), inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader));
+    }
   }
 }

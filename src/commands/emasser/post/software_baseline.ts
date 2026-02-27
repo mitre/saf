@@ -1,13 +1,13 @@
-import fs from 'fs'
-import {readFile} from 'fs/promises'
-import {colorize} from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
-import {displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg} from '../../../utils/emasser/utilities'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {SoftwareBaselineApi} from '@mitre/emass_client'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {SwBaselineResponsePostPut} from '@mitre/emass_client/dist/api'
-import {getErrorMessage} from '../../../utils/global'
+import fs from 'fs';
+import { readFile } from 'fs/promises';
+import { colorize } from 'json-colorizer';
+import { Command, Flags } from '@oclif/core';
+import { displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
+import { ApiConnection } from '../../../utils/emasser/apiConnection';
+import { SoftwareBaselineApi } from '@mitre/emass_client';
+import { outputFormat } from '../../../utils/emasser/outputFormatter';
+import { SwBaselineResponsePostPut } from '@mitre/emass_client/dist/api';
+import { getErrorMessage } from '../../../utils/global';
 
 /**
  * Interface representing software details.
@@ -51,45 +51,45 @@ import {getErrorMessage} from '../../../utils/global'
  */
 interface Software {
   // Required field
-  softwareVendor?: string
-  softwareName?: string
-  version?: string
+  softwareVendor?: string;
+  softwareName?: string;
+  version?: string;
   // Conditional Fields
-  approvalDate?: number
+  approvalDate?: number;
   // Optional Fields
-  softwareType?: string
-  parentSystem?: string
-  subsystem?: string
-  network?: string
-  hostingEnvironment?: string
-  softwareDependencies?: string
-  cryptographicHash?: string
-  inServiceData?: string
-  itBudgetUii?: string
-  fiscalYear?: string
-  popEndDate?: string
-  licenseOrContract?: string
-  licenseTerm?: string
-  costPerLicense?: number
-  totalLicenses?: number
-  totalLicenseCost?: number
-  licensesUsed?: number
-  licensePoc?: string
-  licenseRenewalDate?: number
-  licenseExpirationDate?: number
-  approvalStatus?: string
-  releaseDate?: number
-  maintenanceDate?: number
-  retirementDate?: number
-  endOfLifeSupportDate?: number
-  extendedEndOfLifeSupportDate?: number
-  criticalAsset?: boolean
-  location?: string
-  purpose?: string
+  softwareType?: string;
+  parentSystem?: string;
+  subsystem?: string;
+  network?: string;
+  hostingEnvironment?: string;
+  softwareDependencies?: string;
+  cryptographicHash?: string;
+  inServiceData?: string;
+  itBudgetUii?: string;
+  fiscalYear?: string;
+  popEndDate?: string;
+  licenseOrContract?: string;
+  licenseTerm?: string;
+  costPerLicense?: number;
+  totalLicenses?: number;
+  totalLicenseCost?: number;
+  licensesUsed?: number;
+  licensePoc?: string;
+  licenseRenewalDate?: number;
+  licenseExpirationDate?: number;
+  approvalStatus?: string;
+  releaseDate?: number;
+  maintenanceDate?: number;
+  retirementDate?: number;
+  endOfLifeSupportDate?: number;
+  extendedEndOfLifeSupportDate?: number;
+  criticalAsset?: boolean;
+  location?: string;
+  purpose?: string;
   // VA Only
-  unsupportedOperatingSystem?: boolean
-  unapprovedSoftwareFromTrm?: boolean
-  approvedWaiver?: boolean
+  unsupportedOperatingSystem?: boolean;
+  unapprovedSoftwareFromTrm?: boolean;
+  approvedWaiver?: boolean;
 }
 
 /**
@@ -106,9 +106,9 @@ function getAllJsonExamples(): string {
     ...getJsonExamples('software-post-required'),
     ...getJsonExamples('software-post-put-conditional'),
     ...getJsonExamples('software-post-put-optional'),
-  }
+  };
 
-  return JSON.stringify(exampleBodyObj)
+  return JSON.stringify(exampleBodyObj);
 }
 
 /**
@@ -120,8 +120,8 @@ function getAllJsonExamples(): string {
  */
 function assertParamExists(object: string, value: string | undefined | null): void {
   if (value === undefined) {
-    printRedMsg(`Missing required parameter/field: ${object}`)
-    throw new Error('Value not defined')
+    printRedMsg(`Missing required parameter/field: ${object}`);
+    throw new Error('Value not defined');
   }
 }
 
@@ -137,24 +137,24 @@ function assertParamExists(object: string, value: string | undefined | null): vo
  * @throws Will throw an error if any of the required fields are missing in `dataObj`.
  */
 function addRequiredFieldsToRequestBody(dataObj: Software): Software {
-  const bodyObj: Software = {}
+  const bodyObj: Software = {};
 
   try {
-    assertParamExists('softwareVendor', dataObj.softwareVendor)
-    assertParamExists('softwareName', dataObj.softwareName)
-    assertParamExists('version', dataObj.version)
+    assertParamExists('softwareVendor', dataObj.softwareVendor);
+    assertParamExists('softwareName', dataObj.softwareName);
+    assertParamExists('version', dataObj.version);
   } catch (error) {
-    console.log('Required JSON fields are:')
-    console.log(colorize(JSON.stringify(getJsonExamples('software-post-required'), null, 2)))
-    throw error
+    console.log('Required JSON fields are:');
+    console.log(colorize(JSON.stringify(getJsonExamples('software-post-required'), null, 2)));
+    throw error;
   }
 
   // The required parameter "systemId" is validated by oclif
-  bodyObj.softwareVendor = dataObj.softwareVendor
-  bodyObj.softwareName = dataObj.softwareName
-  bodyObj.version = dataObj.version
+  bodyObj.softwareVendor = dataObj.softwareVendor;
+  bodyObj.softwareName = dataObj.softwareName;
+  bodyObj.version = dataObj.version;
 
-  return bodyObj
+  return bodyObj;
 }
 
 /**
@@ -165,7 +165,7 @@ function addRequiredFieldsToRequestBody(dataObj: Software): Software {
  */
 function addConditionalFields(bodyObject: Software, dataObj: Software): void {
   if (Object.prototype.hasOwnProperty.call(dataObj, 'publicFacingFqdn')) {
-    bodyObject.approvalDate = dataObj.approvalDate
+    bodyObject.approvalDate = dataObj.approvalDate;
   }
 }
 
@@ -176,135 +176,135 @@ function addConditionalFields(bodyObject: Software, dataObj: Software): void {
  * @param dataObj - The source object from which optional fields will be copied.
  */
 // skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
-// eslint-disable-next-line complexity
+
 function addOptionalFields(bodyObject: Software, dataObj: Software): void {
   if (Object.prototype.hasOwnProperty.call(dataObj, 'softwareType')) {
-    bodyObject.softwareType = dataObj.softwareType
+    bodyObject.softwareType = dataObj.softwareType;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'parentSystem')) {
-    bodyObject.parentSystem = dataObj.parentSystem
+    bodyObject.parentSystem = dataObj.parentSystem;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'subsystem')) {
-    bodyObject.subsystem = dataObj.subsystem
+    bodyObject.subsystem = dataObj.subsystem;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'network')) {
-    bodyObject.network = dataObj.network
+    bodyObject.network = dataObj.network;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'hostingEnvironment')) {
-    bodyObject.hostingEnvironment = dataObj.hostingEnvironment
+    bodyObject.hostingEnvironment = dataObj.hostingEnvironment;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'softwareDependencies')) {
-    bodyObject.softwareDependencies = dataObj.softwareDependencies
+    bodyObject.softwareDependencies = dataObj.softwareDependencies;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'cryptographicHash')) {
-    bodyObject.cryptographicHash = dataObj.cryptographicHash
+    bodyObject.cryptographicHash = dataObj.cryptographicHash;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'inServiceData')) {
-    bodyObject.inServiceData = dataObj.inServiceData
+    bodyObject.inServiceData = dataObj.inServiceData;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'itBudgetUii')) {
-    bodyObject.itBudgetUii = dataObj.itBudgetUii
+    bodyObject.itBudgetUii = dataObj.itBudgetUii;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'fiscalYear')) {
-    bodyObject.fiscalYear = dataObj.fiscalYear
+    bodyObject.fiscalYear = dataObj.fiscalYear;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'popEndDate')) {
-    bodyObject.popEndDate = dataObj.popEndDate
+    bodyObject.popEndDate = dataObj.popEndDate;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'licenseOrContract')) {
-    bodyObject.licenseOrContract = dataObj.licenseOrContract
+    bodyObject.licenseOrContract = dataObj.licenseOrContract;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'licenseTerm')) {
-    bodyObject.licenseTerm = dataObj.licenseTerm
+    bodyObject.licenseTerm = dataObj.licenseTerm;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'costPerLicense')) {
-    bodyObject.costPerLicense = dataObj.costPerLicense
+    bodyObject.costPerLicense = dataObj.costPerLicense;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'totalLicenses')) {
-    bodyObject.totalLicenses = dataObj.totalLicenses
+    bodyObject.totalLicenses = dataObj.totalLicenses;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'totalLicenseCost')) {
-    bodyObject.totalLicenseCost = dataObj.totalLicenseCost
+    bodyObject.totalLicenseCost = dataObj.totalLicenseCost;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'licensesUsed')) {
-    bodyObject.licensesUsed = dataObj.licensesUsed
+    bodyObject.licensesUsed = dataObj.licensesUsed;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'licensePoc')) {
-    bodyObject.licensePoc = dataObj.licensePoc
+    bodyObject.licensePoc = dataObj.licensePoc;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'licenseRenewalDate')) {
-    bodyObject.licenseRenewalDate = dataObj.licenseRenewalDate
+    bodyObject.licenseRenewalDate = dataObj.licenseRenewalDate;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'licenseExpirationDate ')) {
-    bodyObject.licenseExpirationDate = dataObj.licenseExpirationDate
+    bodyObject.licenseExpirationDate = dataObj.licenseExpirationDate;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'approvalStatus')) {
-    bodyObject.approvalStatus = dataObj.approvalStatus
+    bodyObject.approvalStatus = dataObj.approvalStatus;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'releaseDate')) {
-    bodyObject.releaseDate = dataObj.releaseDate
+    bodyObject.releaseDate = dataObj.releaseDate;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'maintenanceDate')) {
-    bodyObject.maintenanceDate = dataObj.maintenanceDate
+    bodyObject.maintenanceDate = dataObj.maintenanceDate;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'retirementDate')) {
-    bodyObject.retirementDate = dataObj.retirementDate
+    bodyObject.retirementDate = dataObj.retirementDate;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'endOfLifeSupportDate')) {
-    bodyObject.endOfLifeSupportDate = dataObj.endOfLifeSupportDate
+    bodyObject.endOfLifeSupportDate = dataObj.endOfLifeSupportDate;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'extendedEndOfLifeSupportDate')) {
-    bodyObject.extendedEndOfLifeSupportDate = dataObj.extendedEndOfLifeSupportDate
+    bodyObject.extendedEndOfLifeSupportDate = dataObj.extendedEndOfLifeSupportDate;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'criticalAsset')) {
-    bodyObject.criticalAsset = dataObj.criticalAsset
+    bodyObject.criticalAsset = dataObj.criticalAsset;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'location')) {
-    bodyObject.location = dataObj.location
+    bodyObject.location = dataObj.location;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'purpose')) {
-    bodyObject.purpose = dataObj.purpose
+    bodyObject.purpose = dataObj.purpose;
   }
 
   // VA Only
   if (Object.prototype.hasOwnProperty.call(dataObj, 'unsupportedOperatingSystem')) {
-    bodyObject.unsupportedOperatingSystem = dataObj.unsupportedOperatingSystem
+    bodyObject.unsupportedOperatingSystem = dataObj.unsupportedOperatingSystem;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'unapprovedSoftwareFromTrm')) {
-    bodyObject.unapprovedSoftwareFromTrm = dataObj.unapprovedSoftwareFromTrm
+    bodyObject.unapprovedSoftwareFromTrm = dataObj.unapprovedSoftwareFromTrm;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'approvedWaiver')) {
-    bodyObject.approvedWaiver = dataObj.approvedWaiver
+    bodyObject.approvedWaiver = dataObj.approvedWaiver;
   }
 }
 
@@ -319,93 +319,93 @@ function addOptionalFields(bodyObject: Software, dataObj: Software): void {
  * @returns The generated `Software` body object.
  */
 function generateBodyObj(dataObject: Software): Software {
-  let bodyObj: Software = {}
+  let bodyObj: Software = {};
 
   try {
-    bodyObj = addRequiredFieldsToRequestBody(dataObject)
-    addConditionalFields(bodyObj, dataObject)
-    addOptionalFields(bodyObj, dataObject)
+    bodyObj = addRequiredFieldsToRequestBody(dataObject);
+    addConditionalFields(bodyObj, dataObject);
+    addOptionalFields(bodyObj, dataObject);
   } catch {
-    process.exit(1)
+    process.exit(1);
   }
 
-  return bodyObj
+  return bodyObj;
 }
 
-const CMD_HELP = 'saf emasser post software_baseline -h or --help'
+const CMD_HELP = 'saf emasser post software_baseline -h or --help';
 export default class EmasserSoftwareBaseline extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command usages\x1B[0m'
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command usages\u001B[0m';
 
   static readonly description = 'Add one or many software assets to a system.\n'
     + 'The CLI expects an input JSON file containing the required, conditional\n'
-    + 'and optional fields for the software asset(s) being added to the system.'
+    + 'and optional fields for the software asset(s) being added to the system.';
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing Software Assets.',
-    '\x1B[1mRequired JSON parameter/field is:\x1B[0m',
+    '\u001B[1mRequired JSON parameter/field is:\u001B[0m',
     colorize(JSON.stringify(getJsonExamples('software-post-required'), null, 2)),
-    '\x1B[1mConditional JSON parameters/fields are:\x1B[0m',
+    '\u001B[1mConditional JSON parameters/fields are:\u001B[0m',
     colorize(JSON.stringify(getJsonExamples('software-post-put-conditional'), null, 2)),
-    '\x1B[1mOptional JSON parameters/fields are:\x1B[0m',
+    '\u001B[1mOptional JSON parameters/fields are:\u001B[0m',
     colorize(JSON.stringify(getJsonExamples('software-post-put-optional'), null, 2)),
-    '\x1B[1m\x1B[32mAll accepted parameters/fields are:\x1B[0m',
+    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
     colorize(getAllJsonExamples()),
-  ]
+  ];
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Software Baseline command'}),
+    help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Software Baseline command' }),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
-  }
+  };
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserSoftwareBaseline)
-    const apiCxn = new ApiConnection()
-    const swBaseline = new SoftwareBaselineApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+    const { flags } = await this.parse(EmasserSoftwareBaseline);
+    const apiCxn = new ApiConnection();
+    const swBaseline = new SoftwareBaselineApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    const requestBodyArray: Software[] = []
+    const requestBodyArray: Software[] = [];
 
     // Check if a Software json file was provided
     if (fs.existsSync(flags.dataFile)) {
-      let data
+      let data;
       try {
-        data = JSON.parse(await readFile(flags.dataFile, 'utf8'))
+        data = JSON.parse(await readFile(flags.dataFile, 'utf8'));
       } catch (error: unknown) {
-        console.error('\x1B[91m» Error reading Software data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
-        console.error('\x1B[93m→ Error message was:', getErrorMessage(error), '\x1B[0m')
-        process.exit(1)
+        console.error('\u001B[91m» Error reading Software data file, possible malformed json. Please use the -h flag for help.\u001B[0m');
+        console.error('\u001B[93m→ Error message was:', getErrorMessage(error), '\u001B[0m');
+        process.exit(1);
       }
 
       // Process the Software data file
       if (Array.isArray(data)) {
         data.forEach((dataObject: Software) => {
           // Generate the post request object based on business logic
-          requestBodyArray.push(generateBodyObj(dataObject))
-        })
+          requestBodyArray.push(generateBodyObj(dataObject));
+        });
       } else if (typeof data === 'object') {
-        const dataObject: Software = data
+        const dataObject: Software = data;
         // Generate the post request object based on business logic
-        requestBodyArray.push(generateBodyObj(dataObject))
+        requestBodyArray.push(generateBodyObj(dataObject));
       }
     } else {
-      console.error('\x1B[91m» Software data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
-      process.exit(1)
+      console.error('\u001B[91m» Software data file (.json) not found or invalid:', flags.dataFile, '\u001B[0m');
+      process.exit(1);
     }
 
     // Call the endpoint
     swBaseline.addSwBaselineAssets(flags.systemId, requestBodyArray).then((response: SwBaselineResponsePostPut) => {
-      console.log(colorize(outputFormat(response, false)))
-    }).catch((error: unknown) => displayError(error, 'Software Baseline'))
+      console.log(colorize(outputFormat(response, false)));
+    }).catch((error: unknown) => displayError(error, 'Software Baseline'));
   }
 
   // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
+  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \x1B[93m${CMD_HELP}\x1B[0m`))
+      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
-      this.warn(err)
+      this.warn(err);
     }
   }
 }

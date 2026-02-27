@@ -1,20 +1,20 @@
-import fs from 'fs'
-import {readFile} from 'fs/promises'
-import {colorize} from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
+import fs from 'fs';
+import { readFile } from 'fs/promises';
+import { colorize } from 'json-colorizer';
+import { Command, Flags } from '@oclif/core';
 import {
   displayError,
   FlagOptions,
   getFlagsForEndpoint,
   getJsonExamples,
   printRedMsg,
-} from '../../../utils/emasser/utilities'
+} from '../../../utils/emasser/utilities';
 
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
+import { ApiConnection } from '../../../utils/emasser/apiConnection';
+import { outputFormat } from '../../../utils/emasser/outputFormatter';
 
-import {HardwareBaselineApi} from '@mitre/emass_client'
-import {HwBaselineResponsePostPut as HwBaselineResponse} from '@mitre/emass_client/dist/api'
+import { HardwareBaselineApi } from '@mitre/emass_client';
+import { HwBaselineResponsePostPut as HwBaselineResponse } from '@mitre/emass_client/dist/api';
 
 /**
  * Represents a hardware asset with various attributes.
@@ -43,25 +43,25 @@ import {HwBaselineResponsePostPut as HwBaselineResponse} from '@mitre/emass_clie
  */
 interface Hardware {
   // Required field
-  assetName?: string
+  assetName?: string;
   // Conditional Fields
-  publicFacingFqdn?: string
-  publicFacingIpAddress?: string
-  publicFacingUrls?: string
+  publicFacingFqdn?: string;
+  publicFacingIpAddress?: string;
+  publicFacingUrls?: string;
   // Optional Fields
-  componentType?: string
-  nickname?: string
-  assetIpAddress?: string
-  publicFacing?: boolean
-  virtualAsset?: boolean
-  manufacturer?: string
-  modelNumber?: string
-  serialNumber?: string
-  OsIosFwVersion?: string
-  memorySizeType?: string
-  location?: string
-  approvalStatus?: string
-  criticalAsset?: boolean
+  componentType?: string;
+  nickname?: string;
+  assetIpAddress?: string;
+  publicFacing?: boolean;
+  virtualAsset?: boolean;
+  manufacturer?: string;
+  modelNumber?: string;
+  serialNumber?: string;
+  OsIosFwVersion?: string;
+  memorySizeType?: string;
+  location?: string;
+  approvalStatus?: string;
+  criticalAsset?: boolean;
 }
 
 /**
@@ -79,7 +79,7 @@ function getAllJsonExamples(): Record<string, unknown> {
     ...getJsonExamples('hardware-post-required'),
     ...getJsonExamples('hardware-post-put-conditional'),
     ...getJsonExamples('hardware-post-put-optional'),
-  }
+  };
 }
 
 /**
@@ -91,8 +91,8 @@ function getAllJsonExamples(): Record<string, unknown> {
  */
 function assertParamExists(object: string, value: string | undefined | null): void {
   if (value === undefined) {
-    printRedMsg(`Missing required parameter/field: ${object}`)
-    throw new Error('Value not defined')
+    printRedMsg(`Missing required parameter/field: ${object}`);
+    throw new Error('Value not defined');
   }
 }
 
@@ -108,20 +108,20 @@ function assertParamExists(object: string, value: string | undefined | null): vo
  * @throws Will throw an error if the required field `assetName` is missing.
  */
 function addRequiredFieldsToRequestBody(dataObj: Hardware): Hardware {
-  const bodyObj: Hardware = {}
+  const bodyObj: Hardware = {};
 
   try {
-    assertParamExists('assetName', dataObj.assetName)
+    assertParamExists('assetName', dataObj.assetName);
   } catch (error) {
-    console.log('Required JSON field is:')
-    console.log(colorize(JSON.stringify(getJsonExamples('hardware-post-required'), null, 2)))
-    throw error
+    console.log('Required JSON field is:');
+    console.log(colorize(JSON.stringify(getJsonExamples('hardware-post-required'), null, 2)));
+    throw error;
   }
 
   // The required parameter "systemId" is validated by oclif
-  bodyObj.assetName = dataObj.assetName
+  bodyObj.assetName = dataObj.assetName;
 
-  return bodyObj
+  return bodyObj;
 }
 
 /**
@@ -132,15 +132,15 @@ function addRequiredFieldsToRequestBody(dataObj: Hardware): Hardware {
  */
 function addConditionalFields(bodyObject: Hardware, dataObj: Hardware): void {
   if (Object.prototype.hasOwnProperty.call(dataObj, 'publicFacingFqdn')) {
-    bodyObject.publicFacingFqdn = dataObj.publicFacingFqdn
+    bodyObject.publicFacingFqdn = dataObj.publicFacingFqdn;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'publicFacingIpAddress')) {
-    bodyObject.publicFacingIpAddress = dataObj.publicFacingIpAddress
+    bodyObject.publicFacingIpAddress = dataObj.publicFacingIpAddress;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'publicFacingUrls')) {
-    bodyObject.publicFacingUrls = dataObj.publicFacingUrls
+    bodyObject.publicFacingUrls = dataObj.publicFacingUrls;
   }
 }
 
@@ -152,55 +152,55 @@ function addConditionalFields(bodyObject: Hardware, dataObj: Hardware): void {
  */
 function addOptionalFields(bodyObject: Hardware, dataObj: Hardware): void {
   if (Object.prototype.hasOwnProperty.call(dataObj, 'componentType')) {
-    bodyObject.componentType = dataObj.componentType
+    bodyObject.componentType = dataObj.componentType;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'nickname')) {
-    bodyObject.nickname = dataObj.nickname
+    bodyObject.nickname = dataObj.nickname;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'assetIpAddress')) {
-    bodyObject.assetIpAddress = dataObj.assetIpAddress
+    bodyObject.assetIpAddress = dataObj.assetIpAddress;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'publicFacing')) {
-    bodyObject.publicFacing = dataObj.publicFacing
+    bodyObject.publicFacing = dataObj.publicFacing;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'virtualAsset')) {
-    bodyObject.virtualAsset = dataObj.virtualAsset
+    bodyObject.virtualAsset = dataObj.virtualAsset;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'manufacturer')) {
-    bodyObject.manufacturer = dataObj.manufacturer
+    bodyObject.manufacturer = dataObj.manufacturer;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'modelNumber')) {
-    bodyObject.modelNumber = dataObj.modelNumber
+    bodyObject.modelNumber = dataObj.modelNumber;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'serialNumber')) {
-    bodyObject.serialNumber = dataObj.serialNumber
+    bodyObject.serialNumber = dataObj.serialNumber;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'OsIosFwVersion')) {
-    bodyObject.OsIosFwVersion = dataObj.OsIosFwVersion
+    bodyObject.OsIosFwVersion = dataObj.OsIosFwVersion;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'memorySizeType')) {
-    bodyObject.memorySizeType = dataObj.memorySizeType
+    bodyObject.memorySizeType = dataObj.memorySizeType;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'location')) {
-    bodyObject.location = dataObj.location
+    bodyObject.location = dataObj.location;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'approvalStatus')) {
-    bodyObject.approvalStatus = dataObj.approvalStatus
+    bodyObject.approvalStatus = dataObj.approvalStatus;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'criticalAsset')) {
-    bodyObject.criticalAsset = dataObj.criticalAsset
+    bodyObject.criticalAsset = dataObj.criticalAsset;
   }
 }
 
@@ -215,17 +215,17 @@ function addOptionalFields(bodyObject: Hardware, dataObj: Hardware): void {
  * @returns The generated `Hardware` body object.
  */
 function generateBodyObj(dataObject: Hardware): Hardware {
-  let bodyObj: Hardware = {}
+  let bodyObj: Hardware = {};
 
   try {
-    bodyObj = addRequiredFieldsToRequestBody(dataObject)
-    addConditionalFields(bodyObj, dataObject)
-    addOptionalFields(bodyObj, dataObject)
+    bodyObj = addRequiredFieldsToRequestBody(dataObject);
+    addConditionalFields(bodyObj, dataObject);
+    addOptionalFields(bodyObj, dataObject);
   } catch {
-    process.exit(1)
+    process.exit(1);
   }
 
-  return bodyObj
+  return bodyObj;
 }
 
 /**
@@ -236,95 +236,95 @@ function generateBodyObj(dataObject: Hardware): Hardware {
  */
 function isHardware(obj: unknown): obj is Hardware {
   if (typeof obj !== 'object' || obj === null) {
-    return false
+    return false;
   }
 
-  const hardwareObj = obj as Partial<Hardware>
+  const hardwareObj = obj as Partial<Hardware>;
   // Check that required fields, if present, have the correct type
   // skipcq: JS-W1041 - Skip complex boolean return
   if (hardwareObj.assetName !== undefined && typeof hardwareObj.assetName !== 'string') {
-    return false
+    return false;
   }
 
-  return true
+  return true;
 }
 
-const CMD_HELP = 'saf emasser post hardware_baseline -h or --help'
+const CMD_HELP = 'saf emasser post hardware_baseline -h or --help';
 export default class EmasserHardwareBaseline extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command usages\x1B[0m'
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command usages\u001B[0m';
 
   static readonly description = 'Add one or many hardware assets to a system.\n'
     + 'The CLI expects an input JSON file containing the required, conditional\n'
-    + 'and optional fields for the hardware asset(s) being added to the system.'
+    + 'and optional fields for the hardware asset(s) being added to the system.';
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing Hardware Assets.',
-    '\x1B[1mRequired JSON parameter/field is:\x1B[0m',
+    '\u001B[1mRequired JSON parameter/field is:\u001B[0m',
     colorize(JSON.stringify(getJsonExamples('hardware-post-required'), null, 2)),
-    '\x1B[1mConditional JSON parameters/fields are:\x1B[0m',
+    '\u001B[1mConditional JSON parameters/fields are:\u001B[0m',
     colorize(JSON.stringify(getJsonExamples('hardware-post-put-conditional'), null, 2)),
-    '\x1B[1mOptional JSON parameters/fields are:\x1B[0m',
+    '\u001B[1mOptional JSON parameters/fields are:\u001B[0m',
     colorize(JSON.stringify(getJsonExamples('hardware-post-put-optional'), null, 2)),
-    '\x1B[1m\x1B[32mAll accepted parameters/fields are:\x1B[0m',
+    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
     colorize(getAllJsonExamples()),
-  ]
+  ];
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Hardware Baseline command'}),
+    help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Hardware Baseline command' }),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
-  }
+  };
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserHardwareBaseline)
-    const apiCxn = new ApiConnection()
-    const hwBaseline = new HardwareBaselineApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+    const { flags } = await this.parse(EmasserHardwareBaseline);
+    const apiCxn = new ApiConnection();
+    const hwBaseline = new HardwareBaselineApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    const requestBodyArray: Hardware[] = []
+    const requestBodyArray: Hardware[] = [];
 
     // Check if a Hardware JSON file was provided
     if (!fs.existsSync(flags.dataFile)) {
-      console.error(`\x1B[91m» Hardware data file (.json) not found or invalid: ${flags.dataFile}\x1B[0m`)
-      process.exit(1)
+      console.error(`\u001B[91m» Hardware data file (.json) not found or invalid: ${flags.dataFile}\u001B[0m`);
+      process.exit(1);
     }
 
     try {
-      const fileContent = await readFile(flags.dataFile, 'utf8')
-      const data: unknown = JSON.parse(fileContent)
+      const fileContent = await readFile(flags.dataFile, 'utf8');
+      const data: unknown = JSON.parse(fileContent);
 
       if (Array.isArray(data)) {
-        data.forEach((dataObject) => {
+        for (const dataObject of data) {
           if (isHardware(dataObject)) {
-            requestBodyArray.push(generateBodyObj(dataObject))
+            requestBodyArray.push(generateBodyObj(dataObject));
           }
-        })
+        }
       } else if (isHardware(data)) {
-        requestBodyArray.push(generateBodyObj(data))
+        requestBodyArray.push(generateBodyObj(data));
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error('\x1B[91m» Error reading Hardware data file, possible malformed JSON. Please use the -h flag for help.\x1B[0m')
-        console.error(`\x1B[93m→ Error message was: ${error.message}\x1B[0m`)
+        console.error('\u001B[91m» Error reading Hardware data file, possible malformed JSON. Please use the -h flag for help.\u001B[0m');
+        console.error(`\u001B[93m→ Error message was: ${error.message}\u001B[0m`);
       } else {
-        console.error(`\x1B[91m» Unknown error occurred while reading the file: ${flags.dataFile}.\x1B[0m`)
+        console.error(`\u001B[91m» Unknown error occurred while reading the file: ${flags.dataFile}.\u001B[0m`);
       }
-      process.exit(1)
+      process.exit(1);
     }
 
     // Call the endpoint
     hwBaseline.addHwBaselineAssets(flags.systemId, requestBodyArray).then((response: HwBaselineResponse) => {
-      console.log(colorize(outputFormat(response, false)))
-    }).catch((error: unknown) => displayError(error, 'Hardware Baseline'))
+      console.log(colorize(outputFormat(response, false)));
+    }).catch((error: unknown) => displayError(error, 'Hardware Baseline'));
   }
 
   // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
+  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \x1B[93m${CMD_HELP}\x1B[0m`))
+      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
-      this.warn(err)
+      this.warn(err);
     }
   }
 }

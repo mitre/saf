@@ -1,13 +1,13 @@
-import {colorize} from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
-import {ContainerScanResultsApi} from '@mitre/emass_client'
-import {ContainersResponsePost} from '@mitre/emass_client/dist/api'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg} from '../../../utils/emasser/utilities'
-import {readFile} from 'fs/promises'
-import _ from 'lodash'
-import fs from 'fs'
+import { colorize } from 'json-colorizer';
+import { Command, Flags } from '@oclif/core';
+import { ContainerScanResultsApi } from '@mitre/emass_client';
+import { ContainersResponsePost } from '@mitre/emass_client/dist/api';
+import { ApiConnection } from '../../../utils/emasser/apiConnection';
+import { outputFormat } from '../../../utils/emasser/outputFormatter';
+import { displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
+import { readFile } from 'fs/promises';
+import _ from 'lodash';
+import fs from 'fs';
 
 /**
  * Represents a container resource with associated metadata and benchmarks.
@@ -25,15 +25,15 @@ import fs from 'fs'
  */
 interface ContainerResource {
   // Required
-  containerId: string
-  containerName: string
-  time: number
-  benchmarks: Benchmarks[]
+  containerId: string;
+  containerName: string;
+  time: number;
+  benchmarks: Benchmarks[];
   // Optional
-  podName?: string
-  podIp?: string
-  namespace?: string
-  tags?: Tags
+  podName?: string;
+  podIp?: string;
+  namespace?: string;
+  tags?: Tags;
 }
 
 /**
@@ -41,7 +41,7 @@ interface ContainerResource {
  * The key is a string representing the tag name, and the value is a string representing the tag value.
  */
 interface Tags {
-  [key: string]: string
+  [key: string]: string;
 }
 
 /**
@@ -49,12 +49,12 @@ interface Tags {
  */
 interface Benchmarks {
   // Required
-  benchmark: string
-  results: Results[]
+  benchmark: string;
+  results: Results[];
   // Optional
-  isBaseline?: boolean
-  version?: string
-  release?: string
+  isBaseline?: boolean;
+  version?: string;
+  release?: string;
 }
 
 /**
@@ -62,11 +62,11 @@ interface Benchmarks {
  */
 interface Results {
   // Required
-  ruleId: string
-  status: StatusEnum
-  lastSeen: number
+  ruleId: string;
+  status: StatusEnum;
+  lastSeen: number;
   // Optional
-  message?: string
+  message?: string;
 }
 
 /**
@@ -82,19 +82,19 @@ interface Results {
  * @property {string} NotApplicable - The scan is not applicable.
  */
 export declare const StatusEnum: {
-  readonly Pass: 'Pass'
-  readonly Fail: 'Fail'
-  readonly Other: 'Other'
-  readonly NotReviewed: 'Not Reviewed'
-  readonly NotChecked: 'Not Checked'
-  readonly NotApplicable: 'Not Applicable'
-}
+  readonly Pass: 'Pass';
+  readonly Fail: 'Fail';
+  readonly Other: 'Other';
+  readonly NotReviewed: 'Not Reviewed';
+  readonly NotChecked: 'Not Checked';
+  readonly NotApplicable: 'Not Applicable';
+};
 /**
  * Represents the possible status values for the StatusEnum type.
  * This type is derived from the keys of the StatusEnum object.
  */
-// eslint-disable-next-line no-redeclare
-export declare type StatusEnum = typeof StatusEnum[keyof typeof StatusEnum]
+
+export declare type StatusEnum = typeof StatusEnum[keyof typeof StatusEnum];
 
 /**
  * Combines JSON examples from 'container_scans-required' and
@@ -109,7 +109,7 @@ function getAllJsonExamples(): string {
       getJsonExamples('container_scans-required'),
       getJsonExamples('container_scans-optional'),
     ),
-  )
+  );
 }
 
 /**
@@ -122,8 +122,8 @@ function getAllJsonExamples(): string {
  */
 function assertParamExists(object: string, value: string | boolean | number | undefined | null): void {
   if (value === undefined) {
-    printRedMsg(`Missing required parameter/field: ${object}`)
-    throw new Error('Value not defined')
+    printRedMsg(`Missing required parameter/field: ${object}`);
+    throw new Error('Value not defined');
   }
 }
 
@@ -144,48 +144,48 @@ function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerRe
     containerName: '',
     time: 0,
     benchmarks: [],
-  }
-  const benchmarksArray: Benchmarks[] = []
-  const resultsArray: Results[] = []
+  };
+  const benchmarksArray: Benchmarks[] = [];
+  const resultsArray: Results[] = [];
   try {
-    assertParamExists('containerId', dataObj.containerId)
-    assertParamExists('containerName', dataObj.containerName)
-    assertParamExists('time', dataObj.time)
+    assertParamExists('containerId', dataObj.containerId);
+    assertParamExists('containerName', dataObj.containerName);
+    assertParamExists('time', dataObj.time);
 
-    let i = 0
-    let j = 0
+    let i = 0;
+    let j = 0;
     dataObj.benchmarks.forEach((entryObject: Benchmarks) => {
-      assertParamExists(`benchmarks[${i}].benchmark`, entryObject.benchmark)
+      assertParamExists(`benchmarks[${i}].benchmark`, entryObject.benchmark);
 
       entryObject.results.forEach((resultObj: Results) => {
-        assertParamExists(`benchmarks.results[${j}].ruleId`, resultObj.ruleId)
-        assertParamExists(`benchmarks.results[${j}].lastSeen`, resultObj.lastSeen)
-        assertParamExists(`benchmarks.results[${j}].status`, resultObj.status)
-        j++
+        assertParamExists(`benchmarks.results[${j}].ruleId`, resultObj.ruleId);
+        assertParamExists(`benchmarks.results[${j}].lastSeen`, resultObj.lastSeen);
+        assertParamExists(`benchmarks.results[${j}].status`, resultObj.status);
+        j++;
 
-        const resultsObj: Results = {ruleId: resultObj.ruleId, lastSeen: resultObj.lastSeen, status: resultObj.status}
-        resultsArray.push(resultsObj)
-      })
+        const resultsObj: Results = { ruleId: resultObj.ruleId, lastSeen: resultObj.lastSeen, status: resultObj.status };
+        resultsArray.push(resultsObj);
+      });
 
-      i++
+      i++;
       const benchMarksObj: Benchmarks = {
         benchmark: entryObject.benchmark,
         results: resultsArray,
-      }
-      benchmarksArray.push(benchMarksObj)
-    })
+      };
+      benchmarksArray.push(benchMarksObj);
+    });
   } catch (error) {
-    console.log('Required JSON fields are:')
-    console.log(colorize(JSON.stringify(getJsonExamples('container_scans-required'), null, 2)))
-    throw error
+    console.log('Required JSON fields are:');
+    console.log(colorize(JSON.stringify(getJsonExamples('container_scans-required'), null, 2)));
+    throw error;
   }
 
-  bodyObj.containerId = dataObj.containerId
-  bodyObj.containerName = dataObj.containerName
-  bodyObj.time = dataObj.time
-  bodyObj.benchmarks = benchmarksArray
+  bodyObj.containerId = dataObj.containerId;
+  bodyObj.containerName = dataObj.containerName;
+  bodyObj.time = dataObj.time;
+  bodyObj.benchmarks = benchmarksArray;
 
-  return bodyObj
+  return bodyObj;
 }
 
 /**
@@ -213,61 +213,61 @@ function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerRe
 function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerResource): void {
   // Add object optional entries
   if (Object.prototype.hasOwnProperty.call(dataObj, 'namespace')) {
-    bodyObject.namespace = dataObj.namespace
+    bodyObject.namespace = dataObj.namespace;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'podIp')) {
-    bodyObject.podIp = dataObj.podIp
+    bodyObject.podIp = dataObj.podIp;
   }
 
   if (Object.prototype.hasOwnProperty.call(dataObj, 'podName')) {
-    bodyObject.podName = dataObj.podName
+    bodyObject.podName = dataObj.podName;
   }
 
   // Add optional tags objects if available
   if (dataObj.tags && typeof dataObj.tags === 'object') {
-    const tagsObj: Tags = {}
-    Object.keys(dataObj.tags).forEach((key) => {
-      tagsObj[key] = dataObj.tags?.[key] as string // Ensure type safety
-    })
-    bodyObject.tags = tagsObj
+    const tagsObj: Tags = {};
+    for (const key of Object.keys(dataObj.tags)) {
+      tagsObj[key] = dataObj.tags?.[key] as string; // Ensure type safety
+    }
+    bodyObject.tags = tagsObj;
   }
 
-  const benchmarksArray: Benchmarks[] = []
-  const resultsArray: Results[] = []
+  const benchmarksArray: Benchmarks[] = [];
+  const resultsArray: Results[] = [];
   // Add the optional benchmark entries
   dataObj.benchmarks.forEach((entryObject: Benchmarks) => {
-    const benchmarksObj: Benchmarks = {benchmark: entryObject.benchmark, results: []}
+    const benchmarksObj: Benchmarks = { benchmark: entryObject.benchmark, results: [] };
     // These are required
     // Check for the optional entry (isBaseline, version, and release)
     if (Object.prototype.hasOwnProperty.call(entryObject, 'isBaseline')) {
-      benchmarksObj.isBaseline = entryObject.isBaseline
+      benchmarksObj.isBaseline = entryObject.isBaseline;
     }
 
     if (Object.prototype.hasOwnProperty.call(entryObject, 'version')) {
-      benchmarksObj.version = entryObject.version
+      benchmarksObj.version = entryObject.version;
     }
 
     if (Object.prototype.hasOwnProperty.call(entryObject, 'release')) {
-      benchmarksObj.release = entryObject.release
+      benchmarksObj.release = entryObject.release;
     }
 
     // Add the optional Results entries
     entryObject.results.forEach((resultObj: Results) => {
       // These are required
-      const resultsObj: Results = {ruleId: resultObj.ruleId, status: resultObj.status, lastSeen: resultObj.lastSeen}
+      const resultsObj: Results = { ruleId: resultObj.ruleId, status: resultObj.status, lastSeen: resultObj.lastSeen };
       // Check for the optional entry
       if (Object.prototype.hasOwnProperty.call(resultObj, 'message')) {
-        resultsObj.message = resultObj.message
+        resultsObj.message = resultObj.message;
       }
 
-      resultsArray.push(resultsObj)
-    })
-    benchmarksObj.results = resultsArray
-    benchmarksArray.push(benchmarksObj)
-  })
+      resultsArray.push(resultsObj);
+    });
+    benchmarksObj.results = resultsArray;
+    benchmarksArray.push(benchmarksObj);
+  });
 
-  bodyObject.benchmarks = benchmarksArray
+  bodyObject.benchmarks = benchmarksArray;
 }
 
 /**
@@ -294,14 +294,14 @@ function isValidContainerResource(obj: unknown): obj is ContainerResource {
     && typeof (obj as ContainerResource).containerId === 'string'
     && typeof (obj as ContainerResource).containerName === 'string'
     && typeof (obj as ContainerResource).time === 'number'
-    && Array.isArray((obj as ContainerResource).benchmarks)
+    && Array.isArray((obj as ContainerResource).benchmarks);
 }
 
-const CMD_HELP = 'saf emasser post container_scans -h or --help'
+const CMD_HELP = 'saf emasser post container_scans -h or --help';
 export default class EmasserContainerScans extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command usages\x1B[0m'
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command usages\u001B[0m';
 
-  static readonly description = 'Upload containers and their scan results in the assets module for a system'
+  static readonly description = 'Upload containers and their scan results in the assets module for a system';
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
@@ -310,55 +310,55 @@ export default class EmasserContainerScans extends Command {
     colorize(JSON.stringify(getJsonExamples('container_scans-required'), null, 2)),
     'Optional JSON parameters/fields are:',
     colorize(JSON.stringify(getJsonExamples('container_scans-optional'), null, 2)),
-    '\x1B[1m\x1B[32mAll accepted parameters/fields are:\x1B[0m',
+    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
     colorize(getAllJsonExamples()),
-  ]
+  ];
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the POST Container Scan Results command'}),
+    help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Container Scan Results command' }),
     ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
-  }
+  };
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserContainerScans)
-    const apiCxn = new ApiConnection()
-    const addContainer = new ContainerScanResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+    const { flags } = await this.parse(EmasserContainerScans);
+    const apiCxn = new ApiConnection();
+    const addContainer = new ContainerScanResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    const requestBodyArray: ContainerResource[] = []
+    const requestBodyArray: ContainerResource[] = [];
 
     // Check if a Container Scans json file was provided
     if (!fs.existsSync(flags.dataFile)) {
-      console.error(`\x1B[91m» Container Scan Results data file (.json) not found or invalid: ${flags.dataFile}\x1B[0m`)
-      process.exit(1)
+      console.error(`\u001B[91m» Container Scan Results data file (.json) not found or invalid: ${flags.dataFile}\u001B[0m`);
+      process.exit(1);
     }
 
     try {
-      const fileContent = await readFile(flags.dataFile, 'utf8')
-      const data: unknown = JSON.parse(fileContent)
+      const fileContent = await readFile(flags.dataFile, 'utf8');
+      const data: unknown = JSON.parse(fileContent);
 
       if (Array.isArray(data)) {
-        data.forEach((item) => {
+        for (const item of data) {
           if (isValidContainerResource(item)) {
-            processContainerResource(item)
+            processContainerResource(item);
           } else {
-            console.error('\x1B[91m» Invalid container resource format detected.\x1B[0m')
-            process.exit(1)
+            console.error('\u001B[91m» Invalid container resource format detected.\u001B[0m');
+            process.exit(1);
           }
-        })
+        }
       } else if (typeof data === 'object' && data !== null && isValidContainerResource(data)) {
-        processContainerResource(data)
+        processContainerResource(data);
       } else {
-        console.error('\x1B[91m» Invalid data format in Container Scan Results JSON file.\x1B[0m')
-        process.exit(1)
+        console.error('\u001B[91m» Invalid data format in Container Scan Results JSON file.\u001B[0m');
+        process.exit(1);
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error('\x1B[91m» Error reading Container Scan Results data file, possible malformed JSON. Please use the -h flag for help.\x1B[0m')
-        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+        console.error('\u001B[91m» Error reading Container Scan Results data file, possible malformed JSON. Please use the -h flag for help.\u001B[0m');
+        console.error('\u001B[93m→ Error message was:', error.message, '\u001B[0m');
       } else {
-        console.error('\x1B[91m» Unknown error occurred while reading the file.\x1B[0m')
+        console.error('\u001B[91m» Unknown error occurred while reading the file.\u001B[0m');
       }
-      process.exit(1)
+      process.exit(1);
     }
 
     /**
@@ -366,29 +366,29 @@ export default class EmasserContainerScans extends Command {
     */
     function processContainerResource(dataObject: ContainerResource): void {
       try {
-        const bodyObj: ContainerResource = addRequiredFieldsToRequestBody(dataObject)
-        addOptionalFields(bodyObj, dataObject)
-        requestBodyArray.push(bodyObj)
+        const bodyObj: ContainerResource = addRequiredFieldsToRequestBody(dataObject);
+        addOptionalFields(bodyObj, dataObject);
+        requestBodyArray.push(bodyObj);
       } catch {
-        console.error('\x1B[91m» Error processing container resource.\x1B[0m')
-        process.exit(1)
+        console.error('\u001B[91m» Error processing container resource.\u001B[0m');
+        process.exit(1);
       }
     }
 
     // Call the API endpoint
     addContainer.addContainerSansBySystemId(flags.systemId, requestBodyArray).then((response: ContainersResponsePost) => {
-      console.log(colorize(outputFormat(response, false)))
-    }).catch((error: unknown) => displayError(error, 'Container Scans'))
+      console.log(colorize(outputFormat(response, false)));
+    }).catch((error: unknown) => displayError(error, 'Container Scans'));
   }
 
   // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
+  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \x1B[93m${CMD_HELP}\x1B[0m`))
+      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
-      this.warn(err)
+      this.warn(err);
     }
   }
 }

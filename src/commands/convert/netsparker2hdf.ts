@@ -1,18 +1,18 @@
-import {Flags} from '@oclif/core'
-import fs from 'fs'
-import {NetsparkerMapper as Mapper} from '@mitre/hdf-converters'
-import {checkInput, checkSuffix} from '../../utils/global'
-import {BaseCommand} from '../../utils/oclif/baseCommand'
+import { Flags } from '@oclif/core';
+import fs from 'fs';
+import { NetsparkerMapper as Mapper } from '@mitre/hdf-converters';
+import { checkInput, checkSuffix } from '../../utils/global';
+import { BaseCommand } from '../../utils/oclif/baseCommand';
 
 export default class Netsparker2HDF extends BaseCommand<typeof Netsparker2HDF> {
   static readonly usage
-    = '<%= command.id %> -i <netsparker-xml> -o <hdf-scan-results-json> [-h] [-w]'
+    = '<%= command.id %> -i <netsparker-xml> -o <hdf-scan-results-json> [-h] [-w]';
 
   static readonly description
     = 'Translate a Netsparker XML results file into a Heimdall Data Format JSON file\n'
-      + 'The current iteration only works with Netsparker Enterprise Vulnerabilities Scan.'
+      + 'The current iteration only works with Netsparker Enterprise Vulnerabilities Scan.';
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i netsparker_results.xml -o output-hdf-name.json']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i netsparker_results.xml -o output-hdf-name.json'];
 
   static readonly flags = {
     input: Flags.string({
@@ -30,23 +30,23 @@ export default class Netsparker2HDF extends BaseCommand<typeof Netsparker2HDF> {
       required: false,
       description: 'Include raw input file in HDF JSON file',
     }),
-  }
+  };
 
   async run() {
-    const {flags} = await this.parse(Netsparker2HDF)
+    const { flags } = await this.parse(Netsparker2HDF);
 
     // Check for correct input type
-    const data = fs.readFileSync(flags.input, 'utf8')
+    const data = fs.readFileSync(flags.input, 'utf8');
     checkInput(
-      {data, filename: flags.input},
+      { data, filename: flags.input },
       'netsparker',
       'Netsparker XML results file',
-    )
+    );
 
-    const converter = new Mapper(data, flags.includeRaw)
+    const converter = new Mapper(data, flags.includeRaw);
     fs.writeFileSync(
       checkSuffix(flags.output),
       JSON.stringify(converter.toHdf(), null, 2),
-    )
+    );
   }
 }

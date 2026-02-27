@@ -1,17 +1,17 @@
-import {Flags} from '@oclif/core'
-import fs from 'fs'
-import {NeuVectorMapper as Mapper} from '@mitre/hdf-converters'
-import {checkInput, checkSuffix} from '../../utils/global'
-import {BaseCommand} from '../../utils/oclif/baseCommand'
+import { Flags } from '@oclif/core';
+import fs from 'fs';
+import { NeuVectorMapper as Mapper } from '@mitre/hdf-converters';
+import { checkInput, checkSuffix } from '../../utils/global';
+import { BaseCommand } from '../../utils/oclif/baseCommand';
 
 export default class NeuVector2HDF extends BaseCommand<typeof NeuVector2HDF> {
   static readonly usage
-    = '<%= command.id %> -i <neuvector-json> -o <hdf-scan-results-json>'
+    = '<%= command.id %> -i <neuvector-json> -o <hdf-scan-results-json>';
 
   static readonly description
-    = 'Translate a NeuVector results JSON to a Heimdall Data Format JSON file'
+    = 'Translate a NeuVector results JSON to a Heimdall Data Format JSON file';
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -i neuvector.json -o output-hdf-name.json']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i neuvector.json -o output-hdf-name.json'];
 
   static readonly flags = {
     input: Flags.string({
@@ -29,21 +29,21 @@ export default class NeuVector2HDF extends BaseCommand<typeof NeuVector2HDF> {
       required: false,
       description: 'Include raw input file in HDF JSON file',
     }),
-  }
+  };
 
   async run() {
-    const {flags} = await this.parse(NeuVector2HDF)
-    const input = fs.readFileSync(flags.input, 'utf8')
+    const { flags } = await this.parse(NeuVector2HDF);
+    const input = fs.readFileSync(flags.input, 'utf8');
     checkInput(
-      {data: input, filename: flags.input},
+      { data: input, filename: flags.input },
       'neuvector',
       'NeuVector results JSON',
-    )
+    );
 
-    const converter = new Mapper(input, flags.includeRaw)
+    const converter = new Mapper(input, flags.includeRaw);
     fs.writeFileSync(
       checkSuffix(flags.output),
       JSON.stringify(converter.toHdf(), null, 2),
-    )
+    );
   }
 }

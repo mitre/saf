@@ -1,19 +1,19 @@
-import {Flags} from '@oclif/core'
-import fs from 'fs'
-import {SonarqubeResults as Mapper} from '@mitre/hdf-converters'
-import {checkSuffix} from '../../utils/global'
-import {BaseCommand} from '../../utils/oclif/baseCommand'
+import { Flags } from '@oclif/core';
+import fs from 'fs';
+import { SonarqubeResults as Mapper } from '@mitre/hdf-converters';
+import { checkSuffix } from '../../utils/global';
+import { BaseCommand } from '../../utils/oclif/baseCommand';
 
 export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
   static readonly usage
     = '<%= command.id %> -n <sonar-project-key> -u <http://your.sonar.instance:9000> -a <your-sonar-api-key>'
-      + '[ -b <target-branch> | -p <pull-request-id> ] [ -g <organization-name> ] -o <hdf-scan-results-json> [-h] [-w]'
+      + '[ -b <target-branch> | -p <pull-request-id> ] [ -g <organization-name> ] -o <hdf-scan-results-json> [-h] [-w]';
 
   static readonly description
     = 'Pull SonarQube vulnerabilities for the specified project name and optional branch \n'
-      + 'or pull/merge request ID name from an API and convert into a Heimdall Data Format JSON file'
+      + 'or pull/merge request ID name from an API and convert into a Heimdall Data Format JSON file';
 
-  static readonly examples = ['<%= config.bin %> <%= command.id %> -n sonar_project_key -u http://sonar:9000 --auth abcdefg -p 123 -o scan_results.json -w']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -n sonar_project_key -u http://sonar:9000 --auth abcdefg -p 123 -o scan_results.json -w'];
 
   static readonly flags = {
     auth: Flags.string({
@@ -58,10 +58,10 @@ export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
       required: false,
       description: 'Include raw input requests in HDF JSON file',
     }),
-  }
+  };
 
   async run() {
-    const {flags} = await this.parse(Sonarqube2HDF)
+    const { flags } = await this.parse(Sonarqube2HDF);
     const converter = new Mapper(
       flags.url,
       flags.projectKey,
@@ -70,10 +70,10 @@ export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
       flags.pullRequestID,
       flags.organization,
       flags.includeRaw,
-    )
+    );
     fs.writeFileSync(
       checkSuffix(flags.output),
       JSON.stringify(await converter.toHdf(), null, 2),
-    )
+    );
   }
 }

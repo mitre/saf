@@ -1,43 +1,42 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import {Flags} from '@oclif/core'
-import {ContextualizedEvaluation, contextualizeEvaluation} from 'inspecjs'
-import _ from 'lodash'
-import fs, {promises as fse} from 'fs'
-import stringify from 'csv-stringify'
-import {ControlSetRows} from '../../types/csv'
-import {convertRow, csvExportFields} from '../../utils/csv'
-import {basename} from '../../utils/global'
-import {BaseCommand} from '../../utils/oclif/baseCommand'
-import path from 'path'
+import { Flags } from '@oclif/core';
+import { ContextualizedEvaluation, contextualizeEvaluation } from 'inspecjs';
+import _ from 'lodash';
+import fs, { promises as fse } from 'fs';
+import stringify from 'csv-stringify';
+import { ControlSetRows } from '../../types/csv';
+import { convertRow, csvExportFields } from '../../utils/csv';
+import { basename } from '../../utils/global';
+import { BaseCommand } from '../../utils/oclif/baseCommand';
+import path from 'path';
 import {
   addToProcessLogData,
   printGreen,
   printMagenta,
   printRed,
   printYellow,
-  saveProcessLogData} from '../../utils/oclif/cliHelper'
-import {EventEmitter} from 'events'
+  saveProcessLogData } from '../../utils/oclif/cliHelper';
+import { EventEmitter } from 'events';
 
-import colors from 'colors'
-import {checkbox, input, select} from '@inquirer/prompts'
+import colors from 'colors';
+import { checkbox, input, select } from '@inquirer/prompts';
 
 export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   static readonly usage
     = '<%= command.id %> [-i <hdf-json>|--interactive] [-o <csv-file>|--interactive] '
-      + ' [-f <header-fields>|--interactive] [-t|--interactive] [-L info|warn|debug|verbose]'
+      + ' [-f <header-fields>|--interactive] [-t|--interactive] [-L info|warn|debug|verbose]';
 
-  static readonly description = 'Translate a Heimdall Data Format JSON file into a Comma Separated Values (CSV) file'
+  static readonly description = 'Translate a Heimdall Data Format JSON file into a Comma Separated Values (CSV) file';
 
   static readonly examples = [
     {
-      description: '\x1B[93mRunning the CLI interactively\x1B[0m',
+      description: '\u001B[93mRunning the CLI interactively\u001B[0m',
       command: '<%= config.bin %> <%= command.id %> --interactive',
     },
     {
-      description: '\x1B[93mProviding flags at the command line\x1B[0m',
+      description: '\u001B[93mProviding flags at the command line\u001B[0m',
       command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"',
     },
-  ]
+  ];
 
   /*
       TODO: Find a way to make certain flags required when not using --interactive.
@@ -53,12 +52,12 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       char: 'i',
       required: false,
       exclusive: ['interactive'],
-      description: '\x1B[31m(required if not --interactive)\x1B[34m Input HDF file'}),
+      description: '\u001B[31m(required if not --interactive)\u001B[34m Input HDF file' }),
     output: Flags.string({
       char: 'o',
       required: false,
       exclusive: ['interactive'],
-      description: '\x1B[31m(required if not --interactive)\x1B[34m Output CSV file'}),
+      description: '\u001B[31m(required if not --interactive)\u001B[34m Output CSV file' }),
     fields: Flags.string({
       char: 'f',
       required: false,
@@ -71,101 +70,101 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       required: false,
       exclusive: ['interactive'],
       default: false,
-      description: 'Do not truncate fields longer than 32,767 characters (the cell limit in Excel)'}),
-  }
+      description: 'Do not truncate fields longer than 32,767 characters (the cell limit in Excel)' }),
+  };
 
   async run() {
-    const {flags} = await this.parse(HDF2CSV)
+    const { flags } = await this.parse(HDF2CSV);
 
-    addToProcessLogData('================== HDF2CSV CLI Process ===================')
-    addToProcessLogData(`Date: ${new Date().toISOString()}\n`)
+    addToProcessLogData('================== HDF2CSV CLI Process ===================');
+    addToProcessLogData(`Date: ${new Date().toISOString()}\n`);
 
-    let inputFile = ''
-    let outputFile = ''
-    let includeFields = ''
-    let truncateFields = false
+    let inputFile = '';
+    let outputFile = '';
+    let includeFields = '';
+    let truncateFields = false;
 
     if (flags.interactive) {
-      const interactiveFlags = await getFlags()
-      inputFile = interactiveFlags.inputFile
-      outputFile = path.join(interactiveFlags.outputDirectory, interactiveFlags.outputFileName)
-      includeFields = interactiveFlags.fields.join(',')
-      truncateFields = Boolean(interactiveFlags.truncateFields)
+      const interactiveFlags = await getFlags();
+      inputFile = interactiveFlags.inputFile;
+      outputFile = path.join(interactiveFlags.outputDirectory, interactiveFlags.outputFileName);
+      includeFields = interactiveFlags.fields.join(',');
+      truncateFields = Boolean(interactiveFlags.truncateFields);
     } else if (this.requiredFlagsProvided(flags)) {
-      inputFile = flags.input as string
-      outputFile = flags.output as string
-      includeFields = flags.fields
-      truncateFields = flags.noTruncate
+      inputFile = flags.input as string;
+      outputFile = flags.output as string;
+      includeFields = flags.fields;
+      truncateFields = flags.noTruncate;
 
       // Save the flags to the log object
-      addToProcessLogData('Process Flags ============================================')
+      addToProcessLogData('Process Flags ============================================');
       for (const key in flags) {
         if (Object.prototype.hasOwnProperty.call(flags, key)) {
-          addToProcessLogData(key + '=' + flags[key as keyof typeof flags])
+          addToProcessLogData(key + '=' + flags[key as keyof typeof flags]);
         }
       }
     } else {
-      return
+      return;
     }
 
     if (validFileFlags(inputFile, outputFile)) {
-      const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(inputFile, 'utf8')))
+      const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(inputFile, 'utf8')));
 
       // Convert all controls from a file to ControlSetRows
-      let rows: ControlSetRows = convertRows(contextualizedEvaluation, basename(inputFile), includeFields.split(','))
+      let rows: ControlSetRows = convertRows(contextualizedEvaluation, basename(inputFile), includeFields.split(','));
       rows = rows.map((row, index) => {
-        const cleanedRow: Record<string, string> = {}
+        const cleanedRow: Record<string, string> = {};
         for (const key in row) {
           if (row[key] !== undefined) {
-            if ((row[key]).length > 32767 && truncateFields) {
+            if ((row[key]).length > 32_767 && truncateFields) {
               if ('ID' in row) {
-                console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`)
+                console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
               } else {
-                console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`)
+                console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
               }
 
-              cleanedRow[key] = _.truncate(row[key], {length: 32757, omission: 'TRUNCATED'})
+              cleanedRow[key] = _.truncate(row[key], { length: 32_757, omission: 'TRUNCATED' });
             } else {
-              cleanedRow[key] = row[key]
+              cleanedRow[key] = row[key];
             }
           }
         }
 
-        return cleanedRow
-      })
+        return cleanedRow;
+      });
 
       try {
-        await saveCSV(outputFile, rows)
-        printGreen('\nTranslation completed successfully\n')
+        await saveCSV(outputFile, rows);
+        printGreen('\nTranslation completed successfully\n');
       } catch (error: any) {
-        const error_ = error.code === 'EISDIR' ? new Error('The CSV output file name was not provided.') : error
-        printRed(`\nTranslation failed: ${error_}\n`)
+        const error_ = error.code === 'EISDIR' ? new Error('The CSV output file name was not provided.') : error;
+        printRed(`\nTranslation failed: ${error_}\n`);
       } finally {
-        saveProcessLogData()
+        saveProcessLogData();
       }
     }
   }
 
-  requiredFlagsProvided(flags: {input: any, output: any}): boolean {
-    let missingFlags = false
-    let strMsg = 'Warning: The following errors occurred:\n'
+  requiredFlagsProvided(flags: { input: any; output: any }): boolean {
+    let missingFlags = false;
+    let strMsg = 'Warning: The following errors occurred:\n';
 
     if (!flags.input) {
-      strMsg += colors.dim('  Missing required flag input (HDF file)\n')
-      missingFlags = true
+      strMsg += colors.dim('  Missing required flag input (HDF file)\n');
+      missingFlags = true;
     }
 
     if (!flags.output) {
-      strMsg += colors.dim('  Missing required flag output (CSV file)\n')
-      missingFlags = true
+      strMsg += colors.dim('  Missing required flag output (CSV file)\n');
+      missingFlags = true;
     }
 
     if (missingFlags) {
-      strMsg += 'See more help with -h or --help'
-      this.warn(strMsg)
+      strMsg += 'See more help with -h or --help';
+      this.warn(strMsg);
     }
 
-    return !missingFlags
+    return !missingFlags;
   }
 }
 
@@ -178,8 +177,8 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
  * @returns An array of ControlSetRows representing the converted controls.
  */
 function convertRows(evaluation: ContextualizedEvaluation, filename: string, fieldsToAdd: string[]): ControlSetRows {
-  const controls = evaluation.contains.flatMap(profile => profile.contains) || []
-  return controls.map(ctrl => convertRow(filename, ctrl, fieldsToAdd))
+  const controls = evaluation.contains.flatMap(profile => profile.contains) || [];
+  return controls.map(ctrl => convertRow(filename, ctrl, fieldsToAdd));
 }
 
 /**
@@ -202,17 +201,17 @@ async function saveCSV(filename: fs.PathLike | fs.promises.FileHandle, data: str
     header: true, // Include column headers
     columns: Object.keys(data[0]), // Ensure consistent column order
     delimiter: ',', // Customize delimiter (using standard comma)
-  }
+  };
 
   try {
-    const csvData = await convertToCSV(data, options)
+    const csvData = await convertToCSV(data, options);
     try {
-      await fse.writeFile(filename, csvData as string, 'utf8')
+      await fse.writeFile(filename, csvData as string, 'utf8');
     } catch (error) {
-      printRed(`\nError writing CSV file: ${error}\n`)
+      printRed(`\nError writing CSV file: ${error}\n`);
     }
   } catch (error) {
-    printRed(`\nError processing data to convert to CSV: ${error}\n`)
+    printRed(`\nError processing data to convert to CSV: ${error}\n`);
   }
 }
 
@@ -226,10 +225,10 @@ async function saveCSV(filename: fs.PathLike | fs.promises.FileHandle, data: str
 function convertToCSV(data: stringify.Input, options: stringify.Options | undefined): Promise<string> {
   return new Promise((resolve, reject) => {
     stringify.stringify(data, options, (err, output: string | PromiseLike<string>) => {
-      if (err) reject(err)
-      else resolve(output)
-    })
-  })
+      if (err) reject(err);
+      else resolve(output);
+    });
+  });
 }
 
 /**
@@ -251,28 +250,28 @@ async function getFlags(): Promise<any> {
   // The default max listeners is set to 10. The inquire checkbox sets a
   // listener for each entry it displays, we are providing 16 entries,
   // does using 16 listeners. Need to increase the defaultMaxListeners.
-  EventEmitter.defaultMaxListeners = 20
+  EventEmitter.defaultMaxListeners = 20;
 
   // Dynamically import inquirer-file-selector and chalk
   // Once we move the SAF CLI from a CommonJS to an ES modules we can use the regular import
-  const {default: fileSelector} = await import('inquirer-file-selector')
-  const {default: chalk} = await import('chalk')
+  const { default: fileSelector } = await import('inquirer-file-selector');
+  const { default: chalk } = await import('chalk');
 
-  printYellow('Provide the necessary information:')
-  printGreen('  Required flag - HDF file to convert to a CSV formatted file')
-  printGreen('  Required flag - Translation output directory (where the CSV file is written to)')
-  printGreen('  Required flag - CSV output file name (default name is hdf2csv.csv)')
-  printGreen('  Required flag - Field(s) (at least one) to include in output CSV (comma delineated)')
-  printMagenta('  Optional flag - Truncate fields that exceed Excel cell limit (32,767 characters)\n')
+  printYellow('Provide the necessary information:');
+  printGreen('  Required flag - HDF file to convert to a CSV formatted file');
+  printGreen('  Required flag - Translation output directory (where the CSV file is written to)');
+  printGreen('  Required flag - CSV output file name (default name is hdf2csv.csv)');
+  printGreen('  Required flag - Field(s) (at least one) to include in output CSV (comma delineated)');
+  printMagenta('  Optional flag - Truncate fields that exceed Excel cell limit (32,767 characters)\n');
 
   interface ChoiceItems {
-    name: string
-    value: string
-    checked: boolean
+    name: string;
+    value: string;
+    checked: boolean;
   }
-  const choices: ChoiceItems[] = []
+  const choices: ChoiceItems[] = [];
   for (const str of csvExportFields) {
-    choices.push({name: str, value: str, checked: true})
+    choices.push({ name: str, value: str, checked: true });
   }
 
   const fileSelectorTheme = {
@@ -280,7 +279,7 @@ async function getFlags(): Promise<any> {
       file: (text: unknown) => chalk.green(text),
       help: (text: unknown) => chalk.yellow(text),
     },
-  }
+  };
 
   const answers = {
     inputFile: await fileSelector({
@@ -319,24 +318,24 @@ async function getFlags(): Promise<any> {
       message: 'Truncate fields longer than 32,767 characters (the cell limit in Excel):',
       default: false,
       choices: [
-        {name: 'true', value: true},
-        {name: 'false', value: false},
+        { name: 'true', value: true },
+        { name: 'false', value: false },
       ],
     }),
-  }
+  };
 
-  addToProcessLogData('Process Flags ============================================')
+  addToProcessLogData('Process Flags ============================================');
 
   for (const tagName in answers) {
     if (Object.prototype.hasOwnProperty.call(answers, tagName)) {
-      const answerValue = _.get(answers, tagName)
+      const answerValue = _.get(answers, tagName);
       if (answerValue !== null) {
-        addToProcessLogData(tagName + '=' + answerValue)
+        addToProcessLogData(tagName + '=' + answerValue);
       }
     }
   }
 
-  return answers
+  return answers;
 }
 
 /**
@@ -351,15 +350,15 @@ function validFileFlags(input: string, output: string): boolean {
   // Do we have a file. Note that this check only ensures that a file was
   // provided, not necessary an HDF json file
   try {
-    fs.lstatSync(input).isFile()
+    fs.lstatSync(input).isFile();
   } catch {
-    throw new Error('Invalid or no HDF json file provided.')
+    throw new Error('Invalid or no HDF json file provided.');
   }
 
   // Here we simply check if the path leading to the provided output file is valid
   if (!fs.existsSync(path.dirname(output))) {
-    throw new Error('Invalid output directory provided for the CSV output file.')
+    throw new Error('Invalid output directory provided for the CSV output file.');
   }
 
-  return true
+  return true;
 }

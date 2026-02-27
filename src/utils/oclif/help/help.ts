@@ -1,6 +1,6 @@
-import _ from 'lodash'
-import * as util from 'util' // skipcq: JS-C1003 - util does not expose itself as an ES Module.
-import {Command, Help} from '@oclif/core'
+import _ from 'lodash';
+import * as util from 'util'; // skipcq: JS-C1003 - util does not expose itself as an ES Module.
+import { Command, Help } from '@oclif/core';
 
 /*
   Override the showCommandHelp (called directly for single-command CLIs) method defined in the oclif Help class.
@@ -25,46 +25,46 @@ import {Command, Help} from '@oclif/core'
 */
 export default class MyHelpClass extends Help {
   public async showCommandHelp(command: Command.Loadable): Promise<void> { // skipcq: JS-0116
-    const name = command.id
-    const depth = name.split(':').length
+    const name = command.id;
+    const depth = name.split(':').length;
 
-    const subTopics = this.sortedTopics.filter(t => t.name.startsWith(name + ':') && t.name.split(':').length === depth + 1)
-    const subCommands = this.sortedCommands.filter(c => c.id.startsWith(name + ':') && c.id.split(':').length === depth + 1)
+    const subTopics = this.sortedTopics.filter(t => t.name.startsWith(name + ':') && t.name.split(':').length === depth + 1);
+    const subCommands = this.sortedCommands.filter(c => c.id.startsWith(name + ':') && c.id.split(':').length === depth + 1);
 
-    const summary = this.summary(command)
+    const summary = this.summary(command);
     if (summary) {
-      this.log(summary + '\n')
+      this.log(summary + '\n');
     }
 
-    const hasArgs = _.has(command.args, 'name')
+    const hasArgs = _.has(command.args, 'name');
     if (hasArgs) {
-      const argNamesMap = new Map<string, string>()
+      const argNamesMap = new Map<string, string>();
       _.forOwn(command.args, (value, key) => {
         if (key !== 'name') {
-          const argName = _.get(command.args[key], 'name')
-          argNamesMap.set(argName.toUpperCase(), argName)
+          const argName = _.get(command.args[key], 'name');
+          argNamesMap.set(argName.toUpperCase(), argName);
         }
-      })
-      this.logModify(argNamesMap, this.formatCommand(command))
+      });
+      this.logModify(argNamesMap, this.formatCommand(command));
     } else {
-      this.log(this.formatCommand(command))
+      this.log(this.formatCommand(command));
     }
 
-    this.log('')
+    this.log('');
 
     if (subTopics.length > 0) {
-      this.log(this.formatTopics(subTopics))
-      this.log('')
+      this.log(this.formatTopics(subTopics));
+      this.log('');
     }
 
     if (subCommands.length > 0) {
-      const aliases: string[] = []
+      const aliases: string[] = [];
       const uniqueSubCommands: Command.Loadable[] = subCommands.filter((p) => {
-        aliases.push(...p.aliases)
-        return !aliases.includes(p.id)
-      })
-      this.log(this.formatCommands(uniqueSubCommands))
-      this.log('')
+        aliases.push(...p.aliases);
+        return !aliases.includes(p.id);
+      });
+      this.log(this.formatCommands(uniqueSubCommands));
+      this.log('');
     }
   }
 
@@ -72,14 +72,14 @@ export default class MyHelpClass extends Help {
     // Iterate over the argNamesMap using object destructuring
     // Replace the uppercase values with its natural format value
     for (const [key, value] of argNamesMap) {
-      args[0] = args[0].replace(key, value)
+      args[0] = args[0].replace(key, value);
     }
 
-    stdout.write(util.format.apply(this, args) + '\n') // skipcq: JS-0357
+    stdout.write(util.format.apply(this, args) + '\n'); // skipcq: JS-0357
   }
 
   protected log(...args: string[]): void {
-    stdout.write(util.format.apply(this, args) + '\n') // skipcq: JS-0357
+    stdout.write(util.format.apply(this, args) + '\n'); // skipcq: JS-0357
   }
 }
 
@@ -87,15 +87,15 @@ export default class MyHelpClass extends Help {
  * A wrapper around process.stdout and process.stderr that allows us to mock out the streams for testing.
  */
 class Stream {
-  public channel: 'stdout' | 'stderr'
+  public channel: 'stdout' | 'stderr';
 
   constructor(channel: 'stdout' | 'stderr') {
-    this.channel = channel
+    this.channel = channel;
   }
 
   public write(data: string): boolean {
-    return process[this.channel].write(data)
+    return process[this.channel].write(data);
   }
 }
-export const stdout = new Stream('stdout')
-export const stderr = new Stream('stderr')
+export const stdout = new Stream('stdout');
+export const stderr = new Stream('stderr');

@@ -1,22 +1,22 @@
-import appRootPath from 'app-root-path'
-import {Assettype, fingerprint, Role, Techarea} from '@mitre/hdf-converters'
-import {getInstalledPathSync} from 'get-installed-path'
-import {AnyProfile, ContextualizedEvaluation, ExecJSON} from 'inspecjs'
-import _ from 'lodash'
-import fs from 'fs'
-import axios from 'axios'
-import AdmZip from 'adm-zip'
+import appRootPath from 'app-root-path';
+import { Assettype, fingerprint, Role, Techarea } from '@mitre/hdf-converters';
+import { getInstalledPathSync } from 'get-installed-path';
+import { AnyProfile, ContextualizedEvaluation, ExecJSON } from 'inspecjs';
+import _ from 'lodash';
+import fs from 'fs';
+import axios from 'axios';
+import AdmZip from 'adm-zip';
 
-export type SpreadsheetTypes = 'cis' | 'disa' | 'general'
+export type SpreadsheetTypes = 'cis' | 'disa' | 'general';
 
-export const knownInspecMetadataKeys = ['control', 'title', 'desc', 'description', 'rationale', 'impact', 'references', 'tag']
+export const knownInspecMetadataKeys = ['control', 'title', 'desc', 'description', 'rationale', 'impact', 'references', 'tag'];
 
 export function checkSuffix(input: string, suffix = '.json') {
   if (input.endsWith(suffix)) {
-    return input
+    return input;
   }
 
-  return `${input}${suffix}`
+  return `${input}${suffix}`;
 }
 
 /**
@@ -35,16 +35,16 @@ export function checkSuffix(input: string, suffix = '.json') {
 export function basename(inputPath: string): string {
   // trim trailing whitespace and path separators
   // ('/'=linux or '\'=windows (note that this could be double backslash on occasion)) from the end of the string
-  const trimmedPath = inputPath.trimEnd().replace(/[\\/]+$/, '')
+  const trimmedPath = inputPath.trimEnd().replace(/[\\/]+$/, '');
 
   // grab everything after the last separator or the entire string if no separator found
   const lastSeparatorIndex = Math.max(
     trimmedPath.lastIndexOf('/'),
     trimmedPath.lastIndexOf('\\'),
-  )
+  );
 
   // return the substring after the index of the separator - if no separator was found then the index was -1 to which adding 1 makes 0, i.e. the beginning of the string
-  return trimmedPath.slice(lastSeparatorIndex + 1)
+  return trimmedPath.slice(lastSeparatorIndex + 1);
 }
 
 /**
@@ -62,16 +62,16 @@ export function basename(inputPath: string): string {
  * @returns {Uint8Array} - The Uint8Array representation of the data URL.
  */
 export function dataURLtoU8Array(dataURL: string): Uint8Array {
-  const arr = dataURL.split(',')
-  const bstr = atob(arr[1])
-  let n = bstr.length
-  const u8arr = new Uint8Array(n)
+  const arr = dataURL.split(',');
+  const bstr = atob(arr[1]);
+  let n = bstr.length;
+  const u8arr = new Uint8Array(n);
 
   while (n--) {
-    u8arr[n] = bstr.charCodeAt(n)
+    u8arr[n] = bstr.charCodeAt(n);
   }
 
-  return u8arr
+  return u8arr;
 }
 
 /**
@@ -87,17 +87,17 @@ export function dataURLtoU8Array(dataURL: string): Uint8Array {
  * @returns {string} - The installed path of the specified package, or the application root path if the package is not installed.
  */
 export function getInstalledPath(moduleName: string): string {
-  let installedPath
+  let installedPath;
   try {
-    installedPath = getInstalledPathSync(moduleName)
+    installedPath = getInstalledPathSync(moduleName);
   } catch {
-    installedPath = appRootPath.path
+    installedPath = appRootPath.path;
   }
 
-  return installedPath
+  return installedPath;
 }
 
-export const arrayedPaths = ['tags.cci', 'tags.nist']
+export const arrayedPaths = ['tags.cci', 'tags.nist'];
 
 /**
  * The `arrayNeededPaths` function.
@@ -113,15 +113,15 @@ export const arrayedPaths = ['tags.cci', 'tags.nist']
  *                          Otherwise, `values` is returned as is.
  */
 export function arrayNeededPaths(typeOfPath: string, values: string | string[]): string | string[] {
-  const isArray = Array.isArray(values)
-  let result
+  const isArray = Array.isArray(values);
+  let result;
   if (arrayedPaths.includes(typeOfPath.toLowerCase())) {
-    result = isArray ? values : [values]
+    result = isArray ? values : [values];
   } else {
-    result = values
+    result = values;
   }
 
-  return result
+  return result;
 }
 
 /**
@@ -144,26 +144,26 @@ export function arrayNeededPaths(typeOfPath: string, values: string | string[]):
  * @returns {any} The extracted value. If `pathOrNumber` is a string or array, it's processed by `arrayNeededPaths`.
  *                If `pathOrNumber` is a number, it's returned as is.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNumber: string | string[] | number, data: Record<string, any>): any {
   // Maps paths from mapping file to target value
   if (typeof pathOrNumber === 'string') {
-    return arrayNeededPaths(typeOfPathOrNumber, _.get(data, pathOrNumber))
+    return arrayNeededPaths(typeOfPathOrNumber, _.get(data, pathOrNumber));
   }
 
   if (Array.isArray(pathOrNumber)) {
     // const foundPath = pathOrNumber.find(item => _.get(data, item)) || 'Field Not Defined'
-    const foundPath = pathOrNumber.find(item => _.get(data, item)) ?? 'Field Not Defined'
-    return arrayNeededPaths(typeOfPathOrNumber, _.get(data, foundPath))
+    const foundPath = pathOrNumber.find(item => _.get(data, item)) ?? 'Field Not Defined';
+    return arrayNeededPaths(typeOfPathOrNumber, _.get(data, foundPath));
   }
 
   if (typeof pathOrNumber === 'number') {
-    return pathOrNumber
+    return pathOrNumber;
   }
 }
 
 interface ExtendedContextualizedEvaluation extends ContextualizedEvaluation {
-  profiles?: AnyProfile[] // change this line
+  profiles?: AnyProfile[]; // change this line
 }
 
 /**
@@ -189,40 +189,40 @@ interface ExtendedContextualizedEvaluation extends ContextualizedEvaluation {
  */
 // export function getProfileInfo(evaluation: ContextualizedEvaluation, fileName: string): string {
 export function getProfileInfo(evaluation: ExtendedContextualizedEvaluation, fileName: string): string {
-  let result = ''
+  let result = '';
   // const profile: ExecJSONProfile = _.get(evaluation, 'data.profiles[0]')
-  const profile: AnyProfile | undefined = evaluation?.profiles ? evaluation.profiles[0] : undefined
+  const profile: AnyProfile | undefined = evaluation?.profiles ? evaluation.profiles[0] : undefined;
 
   if (!evaluation || !profile) {
-    return result
+    return result;
   }
 
-  result += `File Name: ${fileName}\n`
+  result += `File Name: ${fileName}\n`;
   if (profile.version) {
-    result += `Version: ${profile.version}\n`
+    result += `Version: ${profile.version}\n`;
   }
 
   if (profile.sha256) {
-    result += `SHA256 Hash: ${profile.sha256}\n`
+    result += `SHA256 Hash: ${profile.sha256}\n`;
   }
 
   if (profile.maintainer) {
-    result += `Maintainer: ${profile.maintainer}\n`
+    result += `Maintainer: ${profile.maintainer}\n`;
   }
 
   if (profile.copyright) {
-    result += `Copyright: ${profile.copyright}\n`
+    result += `Copyright: ${profile.copyright}\n`;
   }
 
   if (profile.copyright_email) {
-    result += `Copyright Email: ${profile.copyright_email}\n`
+    result += `Copyright Email: ${profile.copyright_email}\n`;
   }
 
-  if (profile.controls.length) {
-    result += `Control Count: ${profile.controls.length}\n`
+  if (profile.controls.length > 0) {
+    result += `Control Count: ${profile.controls.length}\n`;
   }
 
-  return result.trim()
+  return result.trim();
 }
 
 /**
@@ -249,15 +249,17 @@ export function getProfileInfo(evaluation: ExtendedContextualizedEvaluation, fil
 export function getDescription(
   descriptions:
     | {
-      [key: string]: string
+      [key: string]: string;
     }
     | ExecJSON.ControlDescription[],
   key: string,
 ): string | undefined {
-  return Array.isArray(descriptions) ? descriptions.find(
-    (description: ExecJSON.ControlDescription) =>
-      description.label.toLowerCase() === key,
-  )?.data : _.get(descriptions, key)
+  return Array.isArray(descriptions)
+    ? descriptions.find(
+      (description: ExecJSON.ControlDescription) =>
+        description.label.toLowerCase() === key,
+    )?.data
+    : _.get(descriptions, key);
 }
 
 /**
@@ -282,12 +284,12 @@ export function getDescription(
  * @returns {void} This function doesn't return a value. Its purpose is to validate
  *                 the file type and throw an error if the validation fails.
  */
-export function checkInput(guessOptions: {data: string, filename: string}, desiredType: string, desiredFormat: string): void {
-  const detectedType = fingerprint({data: guessOptions.data, filename: basename(guessOptions.filename)})
+export function checkInput(guessOptions: { data: string; filename: string }, desiredType: string, desiredFormat: string): void {
+  const detectedType = fingerprint({ data: guessOptions.data, filename: basename(guessOptions.filename) });
   if (!(detectedType === desiredType))
     throw new Error(`Unable to process input file\
       \nDetected input type: ${detectedType === '' ? 'unknown or none' : `${detectedType} - did you mean to run the ${detectedType} to HDF converter instead?`}\
-      \nPlease ensure the input is a valid ${desiredFormat}`)
+      \nPlease ensure the input is a valid ${desiredFormat}`);
 }
 
 /**
@@ -301,11 +303,11 @@ export function checkInput(guessOptions: {data: string, filename: string}, desir
  *          falls back to converting the error to a string.
  */
 export function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message
+  if (error instanceof Error) return error.message;
   try {
-    return JSON.stringify(error)
+    return JSON.stringify(error);
   } catch {
-    return String(error) // Fallback for circular references
+    return String(error); // Fallback for circular references
   }
 }
 
@@ -319,7 +321,7 @@ export function getErrorMessage(error: unknown): string {
  */
 export async function downloadFile(url: string | undefined, outputPath: string): Promise<void> {
   if (url === undefined) {
-    throw new Error('XCCDF URL not defined')
+    throw new Error('XCCDF URL not defined');
   }
 
   try {
@@ -327,24 +329,24 @@ export async function downloadFile(url: string | undefined, outputPath: string):
       url,
       method: 'GET',
       responseType: 'stream',
-    })
+    });
 
-    const writer = fs.createWriteStream(outputPath)
+    const writer = fs.createWriteStream(outputPath);
 
-    response.data.pipe(writer)
+    response.data.pipe(writer);
 
     return new Promise((resolve, reject) => {
       writer.on('finish', () => {
-        resolve()
-      })
+        resolve();
+      });
 
       writer.on('error', (err) => {
-        console.error('Error writing file:', err)
-        reject(err)
-      })
-    })
+        console.error('Error writing file:', err);
+        reject(err);
+      });
+    });
   } catch (error) {
-    throw new Error(`Error downloading file: ${getErrorMessage(error)}`)
+    throw new Error(`Error downloading file: ${getErrorMessage(error)}`);
   }
 }
 
@@ -357,19 +359,19 @@ export async function downloadFile(url: string | undefined, outputPath: string):
  */
 export function extractFileFromZip(zipPath: string, fileName: string): [Buffer | null, string] {
   try {
-    const zip = new AdmZip(zipPath)
-    const zipEntries = zip.getEntries()
+    const zip = new AdmZip(zipPath);
+    const zipEntries = zip.getEntries();
 
     // Look for the file (it will cycle trough all files to include sub-folders)
     for (const entry of zipEntries) {
       if (entry.entryName.endsWith(fileName)) {
         // Returns file content as a Buffer and file name
-        return [entry.getData(), entry.entryName]
+        return [entry.getData(), entry.entryName];
       }
     }
-    throw new Error(`File not found in the ZIP archived: ${fileName}`)
+    throw new Error(`File not found in the ZIP archived: ${fileName}`);
   } catch (error) {
-    throw new Error(`Error extracting file -> ${getErrorMessage(error)}`)
+    throw new Error(`Error extracting file -> ${getErrorMessage(error)}`);
   }
 }
 
@@ -396,7 +398,7 @@ export function getJsonMetaDataExamples(endpoint?: string): string[] {
     + '"version": "The benchmark version number (integer)",'
     + '"releasenumber": "The benchmark Release number (integer or double)",'
     + '"releasedate": "The benchmark release date (dd LLL yyyy)",'
-    + '"showCalendar": true}'
+    + '"showCalendar": true}';
 
   const assets = '"marking": "[Unclass, CUI, etc]",'
     + '"hostname": "The asset hostname",'
@@ -411,7 +413,7 @@ export function getJsonMetaDataExamples(endpoint?: string): string[] {
     + '"webordatabase": "Is the target a web or database? [Y/n]",'
     + '"webdbsite": "The Web or DB site",'
     + '"webdbinstance": "The Web or DB instance",'
-    + '"vulidmapping": "Use gid or id for Vul ID number [gid/id]"'
+    + '"vulidmapping": "Use gid or id for Vul ID number [gid/id]"';
 
   if (endpoint === 'ckl-one-metadata') {
     const data = '{ '
@@ -419,9 +421,9 @@ export function getJsonMetaDataExamples(endpoint?: string): string[] {
       + profile
       + '],'
       + assets
-      + '}'
+      + '}';
 
-    return JSON.parse(data)
+    return JSON.parse(data);
   }
 
   if (endpoint === 'ckl-multiple-metadata') {
@@ -430,10 +432,10 @@ export function getJsonMetaDataExamples(endpoint?: string): string[] {
       + profile + ',' + profile + ',' + profile
       + '],'
       + assets
-      + '}'
+      + '}';
 
-    return JSON.parse(data)
+    return JSON.parse(data);
   }
 
-  return []
+  return [];
 }

@@ -1,7 +1,7 @@
-import {ContextualizedControl, ContextualizedProfile, ControlStatus, Severity} from 'inspecjs'
-import {StatusHash, ThresholdValues} from '../types/threshold'
-import _ from 'lodash'
-import {ControlDescription} from 'inspecjs/lib/generated_parsers/v_1_0/exec-json'
+import { ContextualizedControl, ContextualizedProfile, ControlStatus, Severity } from 'inspecjs';
+import { StatusHash, ThresholdValues } from '../types/threshold';
+import _ from 'lodash';
+import { ControlDescription } from 'inspecjs/lib/generated_parsers/v_1_0/exec-json';
 
 export const severityTargetsObject = {
   critical: ['passed.critical.min', 'passed.critical.max', 'failed.critical.min', 'failed.critical.max', 'skipped.critical.min', 'skipped.critical.max', 'error.critical.min', 'error.critical.max', 'no_impact.critical.min', 'no_impact.critical.max'],
@@ -9,10 +9,10 @@ export const severityTargetsObject = {
   medium: ['passed.medium.min', 'passed.medium.max', 'failed.medium.min', 'failed.medium.max', 'skipped.medium.min', 'skipped.medium.max', 'error.medium.min', 'error.medium.max', 'no_impact.medium.min', 'no_impact.medium.max'],
   low: ['passed.low.min', 'passed.low.max', 'failed.low.min', 'failed.low.max', 'skipped.low.min', 'skipped.low.max', 'error.low.min', 'error.low.max', 'no_impact.low.min', 'no_impact.low.max'],
   none: ['no_impact.none.min', 'no_impact.none.max'],
-}
+};
 
-export const totalMin = ['passed.total.min', 'failed.total.min', 'skipped.total.min', 'error.total.min']
-export const totalMax = ['passed.total.max', 'failed.total.max', 'skipped.total.max', 'error.total.max']
+export const totalMin = ['passed.total.min', 'failed.total.min', 'skipped.total.min', 'error.total.min'];
+export const totalMax = ['passed.total.max', 'failed.total.max', 'skipped.total.max', 'error.total.max'];
 
 export const statusSeverityPaths = {
   critical: ['passed.critical.controls', 'failed.critical.controls', 'skipped.critical.controls', 'error.critical.controls', 'no_impact.critical.controls'],
@@ -20,7 +20,7 @@ export const statusSeverityPaths = {
   medium: ['passed.medium.controls', 'failed.medium.controls', 'skipped.medium.controls', 'error.medium.controls', 'no_impact.medium.controls'],
   low: ['passed.low.controls', 'failed.low.controls', 'skipped.low.controls', 'error.low.controls', 'no_impact.low.controls'],
   none: ['no_impact.none.controls'],
-}
+};
 
 export const emptyStatusAndSeverityCounts = {
   passed: {
@@ -54,7 +54,7 @@ export const emptyStatusAndSeverityCounts = {
     medium: [],
     low: [],
   },
-}
+};
 
 export function extractStatusCounts(profile: ContextualizedProfile, severity?: string) {
   const hash: StatusHash = {
@@ -68,40 +68,40 @@ export function extractStatusCounts(profile: ContextualizedProfile, severity?: s
     FailedTests: 0,
     PassingTestsFailedControl: 0,
     Waived: 0,
-  }
+  };
 
   for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
-    const control = c.root
-    const status: ControlStatus = control.hdf.status
-    const controlSeverity: Severity = control.hdf.severity
+    const control = c.root;
+    const status: ControlStatus = control.hdf.status;
+    const controlSeverity: Severity = control.hdf.severity;
 
     if (!severity || (controlSeverity === severity)) {
-      ++hash[status]
+      ++hash[status];
       if (status === 'Passed') {
-        hash.PassedTests += (control.hdf.segments || []).length
+        hash.PassedTests += (control.hdf.segments || []).length;
       } else if (status === 'Failed') {
         hash.PassingTestsFailedControl += (control.hdf.segments || []).filter(
           s => s.status === 'passed',
-        ).length
+        ).length;
         hash.FailedTests += (control.hdf.segments || []).filter(
           s => s.status === 'failed',
-        ).length
+        ).length;
       } else if (status === 'Not Applicable' && control.hdf.waived) {
-        hash.Waived += control.hdf.segments?.length || 0
+        hash.Waived += control.hdf.segments?.length || 0;
       }
     }
   }
 
-  return hash
+  return hash;
 }
 
 export function calculateCompliance(statusHash: StatusHash): number {
-  const total = statusHash.Passed + statusHash.Failed + statusHash['Not Reviewed'] + statusHash['Profile Error']
+  const total = statusHash.Passed + statusHash.Failed + statusHash['Not Reviewed'] + statusHash['Profile Error'];
   if (total === 0) {
-    return 0
+    return 0;
   }
 
-  return Math.round((100 * statusHash.Passed) / total)
+  return Math.round((100 * statusHash.Passed) / total);
 }
 
 /**
@@ -119,35 +119,35 @@ export function calculateCompliance(statusHash: StatusHash): number {
 export function exitNonZeroIfTrue(condition: boolean, reason?: string) {
   if (condition) {
     // eslint-disable-next-line no-constant-binary-expression
-    console.error(`Error: ${reason}` || 'Error: Compliance levels were not met') // skipcq: JS-W1043
-    throw new Error(reason || 'Compliance levels were not met')
+    console.error(`Error: ${reason}` || 'Error: Compliance levels were not met'); // skipcq: JS-W1043
+    throw new Error(reason || 'Compliance levels were not met');
   }
 }
 
 export function renameStatusName(statusName: string): string {
   switch (statusName) {
     case 'passed': {
-      return 'Passed'
+      return 'Passed';
     }
 
     case 'failed': {
-      return 'Failed'
+      return 'Failed';
     }
 
     case 'skipped': {
-      return 'Not Reviewed'
+      return 'Not Reviewed';
     }
 
     case 'no_impact': {
-      return 'Not Applicable'
+      return 'Not Applicable';
     }
 
     case 'error': {
-      return 'Profile Error'
+      return 'Profile Error';
     }
 
     default: {
-      return 'Profile Error'
+      return 'Profile Error';
     }
   }
 }
@@ -155,104 +155,104 @@ export function renameStatusName(statusName: string): string {
 export function reverseStatusName(statusName: string): 'passed' | 'failed' | 'skipped' | 'no_impact' | 'error' {
   switch (statusName) {
     case 'Passed': {
-      return 'passed'
+      return 'passed';
     }
 
     case 'Failed': {
-      return 'failed'
+      return 'failed';
     }
 
     case 'Not Reviewed': {
-      return 'skipped'
+      return 'skipped';
     }
 
     case 'Not Applicable': {
-      return 'no_impact'
+      return 'no_impact';
     }
 
     case 'Profile Error': {
-      return 'error'
+      return 'error';
     }
 
     default: {
-      return 'error'
+      return 'error';
     }
   }
 }
 
 export function getControlIdMap(profile: ContextualizedProfile, thresholds?: ThresholdValues) {
-  thresholds ??= {}
+  thresholds ??= {};
 
   for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
-    const control = c.root
-    const severity = c.root.hdf.severity
-    const path = `${reverseStatusName(control.hdf.status)}.${severity}.controls`
-    const existingData = (_.get(thresholds, path) as string[]) || []
-    _.set(thresholds, path, [...existingData, control.data.id])
+    const control = c.root;
+    const severity = c.root.hdf.severity;
+    const path = `${reverseStatusName(control.hdf.status)}.${severity}.controls`;
+    const existingData = (_.get(thresholds, path) as string[]) || [];
+    _.set(thresholds, path, [...existingData, control.data.id]);
   }
 
-  return thresholds
+  return thresholds;
 }
 
 export function getDescriptionContentsOrUndefined(
   label: string,
   descriptions?: ControlDescription[] | Record<string, unknown> | null,
 ): unknown {
-  if (!descriptions) return undefined
+  if (!descriptions) return undefined;
 
   if (Array.isArray(descriptions)) {
     for (const description of descriptions) {
       if (description.label === label) {
-        return description.data
+        return description.data;
       }
     }
   }
 
-  return undefined
+  return undefined;
 }
 
 function cklControlStatus(control: ContextualizedControl, for_summary?: boolean): 'Not_Applicable' | 'Profile_Error' | 'Open' | 'NotAFinding' | 'Not_Reviewed' {
-  const statuses = control.hdf.segments?.map(segment => segment.status)
+  const statuses = control.hdf.segments?.map(segment => segment.status);
   if (control.data.impact === 0) {
-    return 'Not_Applicable'
+    return 'Not_Applicable';
   }
 
   if (statuses?.includes('error') || (statuses?.length === 0 && for_summary)) {
-    return 'Profile_Error'
+    return 'Profile_Error';
   }
 
   if (statuses?.includes('failed')) {
-    return 'Open'
+    return 'Open';
   }
 
   if (statuses?.includes('passed')) {
-    return 'NotAFinding'
+    return 'NotAFinding';
   }
 
-  return 'Not_Reviewed'
+  return 'Not_Reviewed';
 }
 
-function controlFindingDetails(control: {message: string[]}, controlCKLStatus: 'Not_Applicable' | 'Profile_Error' | 'Open' | 'NotAFinding' | 'Not_Reviewed') {
-  control.message.sort()
+function controlFindingDetails(control: { message: string[] }, controlCKLStatus: 'Not_Applicable' | 'Profile_Error' | 'Open' | 'NotAFinding' | 'Not_Reviewed') {
+  control.message.sort();
   switch (controlCKLStatus) {
     case 'Open': {
-      return `One or more of the automated tests failed or was inconclusive for the control \n\n ${control.message.join('\n')}`
+      return `One or more of the automated tests failed or was inconclusive for the control \n\n ${control.message.join('\n')}`;
     }
 
     case 'NotAFinding': {
-      return `All Automated tests passed for the control \n\n ${control.message.join('\n')}`
+      return `All Automated tests passed for the control \n\n ${control.message.join('\n')}`;
     }
 
     case 'Not_Reviewed': {
-      return `Automated test skipped due to known accepted condition in the control : \n\n${control.message.join('\n')}`
+      return `Automated test skipped due to known accepted condition in the control : \n\n${control.message.join('\n')}`;
     }
 
     case 'Not_Applicable': {
-      return `Justification: \n ${control.message.join('\n')}`
+      return `Justification: \n ${control.message.join('\n')}`;
     }
 
     default: {
-      return 'No test available or some test errors occurred for this control'
+      return 'No test available or some test errors occurred for this control';
     }
   }
 }
@@ -264,11 +264,11 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
     no_impact: {},
     skipped: {},
     error: {},
-  }
+  };
   for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
-    const control = c.root
-    const status: ControlStatus = control.hdf.status
-    const extracted: Record<string, string | string[] | undefined> & {message: string[]} = {
+    const control = c.root;
+    const status: ControlStatus = control.hdf.status;
+    const extracted: Record<string, string | string[] | undefined> & { message: string[] } = {
       vuln_num: control.data.id,
       rule_title: control.data.title || undefined,
       vuln_discuss: control.data.desc || undefined,
@@ -287,43 +287,43 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
       status: control.hdf.segments?.map(segment => segment.status),
       message: [],
       control_status: cklControlStatus(control, true),
-    }
-    control.hdf.segments?.forEach((segment) => {
+    };
+    if (control.hdf.segments) for (const segment of control.hdf.segments) {
       switch (segment.status) {
         case 'skipped': {
-          extracted.message.push(`SKIPPED -- Test: ${segment.code_desc}\nMessage: ${segment.skip_message}\n`)
-          break
+          extracted.message.push(`SKIPPED -- Test: ${segment.code_desc}\nMessage: ${segment.skip_message}\n`);
+          break;
         }
 
         case 'failed': {
-          extracted.message.push(`FAILED -- Test: ${segment.code_desc}\nMessage: ${segment.message}\n`)
-          break
+          extracted.message.push(`FAILED -- Test: ${segment.code_desc}\nMessage: ${segment.message}\n`);
+          break;
         }
 
         case 'passed': {
-          extracted.message.push(`PASS -- ${segment.code_desc}\n`)
-          break
+          extracted.message.push(`PASS -- ${segment.code_desc}\n`);
+          break;
         }
 
         case 'error': {
-          extracted.message.push(`PROFILE_ERROR -- Test: ${segment.code_desc}\nMessage: ${segment.code_desc}\n`)
-          break
+          extracted.message.push(`PROFILE_ERROR -- Test: ${segment.code_desc}\nMessage: ${segment.code_desc}\n`);
+          break;
         }
 
         default: {
-          break
+          break;
         }
       }
-    })
+    }
     if (control.data.impact === 0) {
-      extracted.message.push(`NOT_APPLICABLE -- Description: ${control.data.desc}\n\n`)
+      extracted.message.push(`NOT_APPLICABLE -- Description: ${control.data.desc}\n\n`);
     }
 
-    extracted.finding_details = controlFindingDetails(extracted, cklControlStatus(control, true))
-    result[reverseStatusName(status)][control.data.id] = extracted
+    extracted.finding_details = controlFindingDetails(extracted, cklControlStatus(control, true));
+    result[reverseStatusName(status)][control.data.id] = extracted;
   }
 
-  return result
+  return result;
 }
 
 /**
@@ -366,13 +366,13 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
  * }
  */
 export function flattenProfileSummary(threshold: Record<string, Record<string, number>>): Record<string, number> {
-  const ret: Record<string, number> = {}
+  const ret: Record<string, number> = {};
   for (const status of Object.keys(threshold)) {
     for (const severity of Object.keys(threshold[status])) {
-      ret[`${status}.${severity}`] = threshold[status][severity]
+      ret[`${status}.${severity}`] = threshold[status][severity];
     }
   }
-  return ret
+  return ret;
 }
 
 /**
@@ -390,18 +390,18 @@ export function flattenProfileSummary(threshold: Record<string, Record<string, n
  * }
  */
 export function unflattenThreshold(threshold: Record<string, number>): ThresholdValues {
-  const ret: Record<string, Record<string, number | Record<string, number>>> = {}
+  const ret: Record<string, Record<string, number | Record<string, number>>> = {};
   for (const key of Object.keys(threshold)) {
-    const [left, middle, right] = key.split('.')
+    const [left, middle, right] = key.split('.');
     if (!ret[left]) {
-      ret[left] = {}
+      ret[left] = {};
     }
     if (right) {
-      ret[left][middle] = {}
-      ret[left][middle][right] = threshold[key]
+      ret[left][middle] = {};
+      ret[left][middle][right] = threshold[key];
     } else {
-      ret[left][middle] = threshold[key]
+      ret[left][middle] = threshold[key];
     }
   }
-  return ret
+  return ret;
 }

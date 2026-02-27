@@ -1,23 +1,23 @@
-import * as marked from 'marked'
-import {beforeEach, describe, expect, it} from 'vitest'
-import {generateMarkdownTable, generateMarkdownTableRow, prettyPrintColumnTitle, prettyPrintRowTitle} from '../../../../src/utils/ohdf/outputGenerator'
-import {PrintableSummary} from '../../../../src/utils/ohdf/types'
+import * as marked from 'marked';
+import { beforeEach, describe, expect, it } from 'vitest';
+import { generateMarkdownTable, generateMarkdownTableRow, prettyPrintColumnTitle, prettyPrintRowTitle } from '../../../../src/utils/ohdf/outputGenerator';
+import { PrintableSummary } from '../../../../src/utils/ohdf/types';
 
-let item: PrintableSummary
-const titleTables = true
+let item: PrintableSummary;
+const titleTables = true;
 
 beforeEach(() => {
   item = {
     profileName: 'redhat-enterprise-linux-8-stig-baseline',
     resultSets: ['rhel-8_hardened.json'],
     compliance: 66,
-    passed: {critical: 0, high: 11, medium: 208, low: 8, total: 227},
-    failed: {critical: 0, high: 6, medium: 87, low: 19, total: 112},
-    skipped: {critical: 0, high: 1, medium: 1, low: 1, total: 3},
-    error: {critical: 0, high: 0, medium: 0, low: 0, total: 0},
-    no_impact: {none: 33, total: 33},
-  }
-})
+    passed: { critical: 0, high: 11, medium: 208, low: 8, total: 227 },
+    failed: { critical: 0, high: 6, medium: 87, low: 19, total: 112 },
+    skipped: { critical: 0, high: 1, medium: 1, low: 1, total: 3 },
+    error: { critical: 0, high: 0, medium: 0, low: 0, total: 0 },
+    no_impact: { none: 33, total: 33 },
+  };
+});
 
 const testTableRows = [
   ['Total', '227', '112', '3', '33', '0'],
@@ -25,19 +25,19 @@ const testTableRows = [
   ['High', '11', '6', '1', '0', '0'],
   ['Medium', '208', '87', '1', '0', '0'],
   ['Low', '8', '19', '1', '0', '0'],
-]
+];
 
-const expectedColumnOrder = ['Compliance', 'Passed', 'Failed', 'Not Reviewed', 'Not Applicable', 'Error']
-const expectedRowOrder = ['Total', 'Critical', 'High', 'Medium', 'Low']
+const expectedColumnOrder = ['Compliance', 'Passed', 'Failed', 'Not Reviewed', 'Not Applicable', 'Error'];
+const expectedRowOrder = ['Total', 'Critical', 'High', 'Medium', 'Low'];
 
 describe('outputGenerator', () => {
   describe('generateMarkdownTableRow', () => {
     it('should generate a row for the Markdown table', () => {
-      const row = 'high'
-      const result = generateMarkdownTableRow(row, item)
-      expect(result).toEqual(['11', '6', '1', '0', '0'])
-    })
-  })
+      const row = 'high';
+      const result = generateMarkdownTableRow(row, item);
+      expect(result).toEqual(['11', '6', '1', '0', '0']);
+    });
+  });
 
   describe('prettyPrintRowTitle', () => {
     it.each([
@@ -47,10 +47,10 @@ describe('outputGenerator', () => {
       ['title', 'Title'],
       ['', ''],
     ])('should correctly format row title "%s"', (title: string, expected: string) => {
-      const result = prettyPrintRowTitle(title)
-      expect(result).toBe(expected)
-    })
-  })
+      const result = prettyPrintRowTitle(title);
+      expect(result).toBe(expected);
+    });
+  });
 
   describe('prettyPrintColumnTitle', () => {
     it.each([
@@ -58,100 +58,100 @@ describe('outputGenerator', () => {
       ['no_impact', 'Not Applicable'],
       ['passed', 'Passed'],
     ])('should correctly format column title "%s"', (title: string, expected: string) => {
-      const result = prettyPrintColumnTitle(title)
-      expect(result).toBe(expected)
-    })
-  })
-})
+      const result = prettyPrintColumnTitle(title);
+      expect(result).toBe(expected);
+    });
+  });
+});
 
 describe('generateMarkdownTable', () => {
   it('generates a table with both columns and rows', () => {
-    const result = generateMarkdownTable(item, titleTables)
-    const tokens = marked.lexer(result)
-    const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table
+    const result = generateMarkdownTable(item, titleTables);
+    const tokens = marked.lexer(result);
+    const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
     if (tableToken && tableToken.type === 'table') {
-      const headers = tableToken.header
-      const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text))
-      expect(Array.isArray(headers)).toBe(true)
-      expect(Array.isArray(rows)).toBe(true)
+      const headers = tableToken.header;
+      const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
+      expect(Array.isArray(headers)).toBe(true);
+      expect(Array.isArray(rows)).toBe(true);
     }
-  })
+  });
 
   it('each row matches a row in `testTableRows`', () => {
-    const result = generateMarkdownTable(item, titleTables)
-    const tokens = marked.lexer(result)
-    const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table
+    const result = generateMarkdownTable(item, titleTables);
+    const tokens = marked.lexer(result);
+    const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
     if (tableToken && tableToken.type === 'table') {
-      const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text))
+      const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
 
-      rows.forEach((row, _index) => {
-        expect(Array.isArray(row)).toBe(true)
-        const matchedRowIndex = testTableRows.findIndex(testRow => JSON.stringify(testRow) === JSON.stringify(row))
-        expect(matchedRowIndex).not.toBe(-1)
-      })
+      for (const [_index, row] of rows.entries()) {
+        expect(Array.isArray(row)).toBe(true);
+        const matchedRowIndex = testTableRows.findIndex(testRow => JSON.stringify(testRow) === JSON.stringify(row));
+        expect(matchedRowIndex).not.toBe(-1);
+      }
     }
-  })
+  });
 
   it(`rows are in the expected order: ${expectedRowOrder}`, () => {
-    const result = generateMarkdownTable(item, titleTables)
-    const tokens = marked.lexer(result)
-    const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table
+    const result = generateMarkdownTable(item, titleTables);
+    const tokens = marked.lexer(result);
+    const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
     if (tableToken && tableToken.type === 'table') {
-      const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text))
+      const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
 
-      rows.forEach((row, index) => {
-        expect(row[0]).toBe(expectedRowOrder[index])
-      })
+      for (const [index, row] of rows.entries()) {
+        expect(row[0]).toBe(expectedRowOrder[index]);
+      }
     }
-  })
+  });
 
   it(`columns are in the expected order: ${expectedColumnOrder}`, () => {
-    const result = generateMarkdownTable(item, titleTables)
-    const tokens = marked.lexer(result)
-    const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table
+    const result = generateMarkdownTable(item, titleTables);
+    const tokens = marked.lexer(result);
+    const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
     if (tableToken && tableToken.type === 'table') {
-      const headers = tableToken.header
+      const headers = tableToken.header;
 
       const headerTexts = headers.map((header, index) => {
         if (index === 0) {
           // Special case for the first element
-          return header.text.split(': ')[0]
+          return header.text.split(': ')[0];
         }
 
-        return header.text.split('<br>')[0]
-      })
+        return header.text.split('<br>')[0];
+      });
 
-      headerTexts.forEach((headerText, index) => {
-        expect(headerText).toBe(expectedColumnOrder[index])
-      })
+      for (const [index, headerText] of headerTexts.entries()) {
+        expect(headerText).toBe(expectedColumnOrder[index]);
+      }
     }
-  })
+  });
 
   it(`each column matches a column in ${expectedColumnOrder}`, () => {
-    const result = generateMarkdownTable(item, titleTables)
-    const tokens = marked.lexer(result)
-    const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table
+    const result = generateMarkdownTable(item, titleTables);
+    const tokens = marked.lexer(result);
+    const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
     if (tableToken && tableToken.type === 'table') {
-      const headers = tableToken.header
+      const headers = tableToken.header;
 
       const headerTexts = headers.map((header, index) => {
         if (index === 0) {
         // Special case for the first element
-          return header.text.split(': ')[0]
+          return header.text.split(': ')[0];
         }
 
-        return header.text.split('<br>')[0]
-      })
+        return header.text.split('<br>')[0];
+      });
 
-      headerTexts.forEach((headerText, _index) => {
-        const matchedColumnIndex = expectedColumnOrder.indexOf(headerText)
-        expect(matchedColumnIndex).not.toBe(-1)
-      })
+      for (const [_index, headerText] of headerTexts.entries()) {
+        const matchedColumnIndex = expectedColumnOrder.indexOf(headerText);
+        expect(matchedColumnIndex).not.toBe(-1);
+      }
     }
-  })
-})
+  });
+});
