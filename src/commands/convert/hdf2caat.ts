@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core';
 import fs from 'fs';
 import { FromHDFToCAATMapper as Mapper } from '@mitre/hdf-converters';
 import { basename } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class HDF2CAAT extends BaseCommand<typeof HDF2CAAT> {
   static readonly usage

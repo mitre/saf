@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core';
 import fs from 'fs';
 import { DependencyTrackMapper as Mapper } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class DependencyTrack2HDF extends BaseCommand<typeof DependencyTrack2HDF> {
   static readonly usage = '<%= command.id %> -i <dt-fpf-json> -o <hdf-scan-results-json> [-h] [-w]';

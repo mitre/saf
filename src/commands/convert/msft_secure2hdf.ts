@@ -16,7 +16,7 @@ import {
 } from '@microsoft/microsoft-graph-types';
 import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials';
 import { basename } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 function processInputs(
   scoreDoc: SecureScore,

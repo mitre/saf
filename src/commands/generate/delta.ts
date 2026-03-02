@@ -32,8 +32,8 @@ import {
   printYellowBgGreen,
   printYellowGreen,
   saveProcessLogData,
-} from '../../utils/oclif/cliHelper';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+} from '../../utils/oclif/cli_helper';
+import { BaseCommand } from '../../utils/oclif/base_command';
 import { EventEmitter } from 'events';
 
 import colors from 'colors';

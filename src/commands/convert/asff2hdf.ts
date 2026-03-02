@@ -16,7 +16,7 @@ import {
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import https from 'https';
 import { createWinstonLogger } from '../../utils/logging';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 // Should be no more than 100
 const API_MAX_RESULTS = 100;

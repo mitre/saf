@@ -1,7 +1,7 @@
 import path from 'path';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ContextualizedEvaluation } from 'inspecjs';
-import { loadExecJSONs } from '../../../src/utils/ohdf/dataLoader';
+import { loadExecJSONs } from '../../../src/utils/ohdf/data_loader';
 
 describe('dataLoader.ts utils', () => {
   let hdfFilePath: string;

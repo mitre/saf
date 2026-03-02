@@ -1,7 +1,7 @@
 import fs from 'fs';
 import https from 'https';
 import FormData from 'form-data';
-import { ApiConfig } from './apiConfig';
+import { ApiConfig } from './api_config';
 import { Configuration } from '@mitre/emass_client/dist/configuration';
 import globalAxios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 

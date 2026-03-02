@@ -10,8 +10,8 @@ import {
   getJsonExamples,
   printRedMsg,
 } from '../../../utils/emasser/utilities';
-import { ApiConnection } from '../../../utils/emasser/apiConnection';
-import { outputFormat } from '../../../utils/emasser/outputFormatter';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
 
 import { HardwareBaselineApi } from '@mitre/emass_client';
 import { HwBaselineResponsePostPut as HwBaselineResponse } from '@mitre/emass_client/dist/api';

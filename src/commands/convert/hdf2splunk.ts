@@ -3,7 +3,7 @@ import { FromHDFToSplunkMapper } from '@mitre/hdf-converters';
 import { basename } from '../../utils/global';
 import fs from 'fs';
 import { createWinstonLogger, getHDFSummary } from '../../utils/logging';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class HDF2Splunk extends BaseCommand<typeof HDF2Splunk> {
   static readonly usage

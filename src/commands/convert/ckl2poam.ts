@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { createLogger, format, transports } from 'winston';
 import xml2js from 'xml2js';
-import { STIG, Vulnerability, STIGHolder } from '../../types/STIG';
+import { STIG, Vulnerability, STIGHolder } from '../../types/stig';
 import promptSync from 'prompt-sync';
 import XlsxPopulate from 'xlsx-populate';
 import moment from 'moment';
@@ -24,7 +24,7 @@ import {
 } from '../../utils/ckl2poam';
 import files from '../../resources/files.json';
 import { basename, dataURLtoU8Array } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 const prompt = promptSync();
 const { printf } = format;
@@ -47,7 +47,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
   static readonly description
     = 'Translate DISA Checklist CKL file(s) to POA&M files';
 
-  static readonly aliases = ['convert:ckl2poam'];
+  static readonly aliases = ['convert:ckl2POAM'];
 
   static readonly examples = ['<%= config.bin %> <%= command.id %> -i checklist_file.ckl -o output-folder -d abcdefg -s 2'];
 

@@ -6,7 +6,7 @@ import path from 'path';
 import { createWinstonLogger } from '../../utils/logging';
 import { processOVAL, processXCCDF, Profile } from '@mitre/inspec-objects';
 import { basename } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 import { Logger } from 'winston';
 import _ from 'lodash';
 

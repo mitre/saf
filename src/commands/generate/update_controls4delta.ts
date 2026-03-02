@@ -11,7 +11,7 @@ import {
   Profile,
 } from '@mitre/inspec-objects';
 import colors from 'colors';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 import {
   printGreen,
   printRed,
@@ -19,7 +19,7 @@ import {
   printYellowGreen,
   addToProcessLogData,
   saveProcessLogData,
-} from '../../utils/oclif/cliHelper';
+} from '../../utils/oclif/cli_helper';
 import { basename, downloadFile, extractFileFromZip, getErrorMessage } from '../../utils/global';
 import tmp from 'tmp';
 import { Logger } from 'winston';

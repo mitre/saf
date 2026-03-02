@@ -3,7 +3,7 @@ import fs from 'fs';
 import { ConveyorResults as Mapper } from '@mitre/hdf-converters';
 import { basename, checkInput, checkSuffix } from '../../utils/global';
 import path from 'path';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 export default class Conveyor2HDF extends BaseCommand<typeof Conveyor2HDF> {
   static readonly usage
     = '<%= command.id %> -i <conveyor-json> -o <hdf-scan-results-json> [-h]';

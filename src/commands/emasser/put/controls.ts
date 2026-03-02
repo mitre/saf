@@ -3,8 +3,8 @@ import { readFile } from 'fs/promises';
 import { colorize } from 'json-colorizer';
 import { Command, Flags } from '@oclif/core';
 
-import { ApiConnection } from '../../../utils/emasser/apiConnection';
-import { outputFormat } from '../../../utils/emasser/outputFormatter';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
 import { displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg } from '../../../utils/emasser/utilities';
 
 import { ControlsApi } from '@mitre/emass_client';

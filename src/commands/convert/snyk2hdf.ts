@@ -3,7 +3,7 @@ import fs from 'fs';
 import { SnykResults as Mapper } from '@mitre/hdf-converters';
 import _ from 'lodash';
 import { basename, checkInput, checkSuffix } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class Snyk2HDF extends BaseCommand<typeof Snyk2HDF> {
   static readonly usage

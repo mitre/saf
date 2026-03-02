@@ -8,7 +8,7 @@ import {
 import { createWinstonLogger } from '../../utils/logging';
 import fs from 'fs';
 import path from 'path';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class IonChannel2HDF extends BaseCommand<typeof IonChannel2HDF> {
   static readonly usage

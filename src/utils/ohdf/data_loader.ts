@@ -1,10 +1,6 @@
-// utils/dataLoader.ts
-
 import fs from 'fs';
 import { ContextualizedEvaluation, convertFileContextual } from 'inspecjs';
 import { createWinstonLogger } from '../logging';
-
-const UTF8_ENCODING = 'utf8';
 
 /**
 * The logger for this command.
@@ -17,7 +13,7 @@ export function loadExecJSONs(files: string[]): Record<string, ContextualizedEva
   logger.verbose('In loadExecJSONs');
   const execJSONs: Record<string, ContextualizedEvaluation> = {};
   files.forEach((file: string) => {
-    execJSONs[file] = convertFileContextual(fs.readFileSync(file, UTF8_ENCODING)) as ContextualizedEvaluation;
+    execJSONs[file] = convertFileContextual(fs.readFileSync(file, 'utf8')) as ContextualizedEvaluation;
   });
   return execJSONs;
 }

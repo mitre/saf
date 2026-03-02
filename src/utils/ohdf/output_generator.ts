@@ -1,4 +1,3 @@
-// utils/outputGenerator.ts
 import fs from 'fs';
 import _ from 'lodash';
 import YAML from 'yaml';
@@ -38,9 +37,6 @@ export const COLUMN_EMOJI: Record<ColumnType, string> = {
  * - If the `format` is not provided or is not 'json' or 'markdown', it converts the printable summaries to a YAML string.
  * - If the `stdout` property of the `args` object is true, it prints the output to the console.
  * - If the `output` property of the `args` object is provided, it writes the output to the specified file.
- *
- * @remarks
- * This function is part of the `outputGenerator.ts` module.
  *
  * @param args - An object containing the following properties:
  *   - `printableSummaries`: The printable summaries to print and write to the output file.
@@ -93,9 +89,6 @@ export function printAndWriteOutput(args: PrintAndWriteOutputArgs): void {
  * - It calculates the average compliance score for the given profile from the compliance scores.
  * - It returns an object containing the profile name, the result sets, the average compliance score, and the profile metrics.
  *
- * @remarks
- * This function is part of the `outputGenerator.ts` module.
- *
  * @param profileName - The name of the profile to create the printable summary for.
  * @param profileMetrics - The metrics of the profile to create the printable summary for.
  * @param execJSONs - The execution JSONs to use for creating the printable summary.
@@ -125,9 +118,6 @@ export function createPrintableSummary(
  * - It maps over the filtered execution JSONs, converting the full path of each JSON file to a filename using the `basename` function.
  * - It returns an array of filenames.
  *
- * @remarks
- * This function is part of the `outputGenerator.ts` module.
- *
  * @param execJSONs - The execution JSONs to extract the result sets from. This should be an object where the keys are file paths and the values are ContextualizedEvaluation objects.
  * @param profileName - The name of the profile to extract the result sets for.
  * @returns An array of filenames representing the result sets.
@@ -148,9 +138,6 @@ export function extractResultSets(execJSONs: Record<string, ContextualizedEvalua
  * - It retrieves the data for the specified column from the item.
  * - If the data exists and contains the specified key, it returns the value as a string.
  * - If the data does not exist or does not contain the specified key, it returns '0'.
- *
- * @remarks
- * This function is part of the `outputGenerator.ts` module.
  *
  * @param item - The PrintableSummary object containing the data for the table.
  * @param column - The name of the column to retrieve the data for.
@@ -179,9 +166,6 @@ export function generateValue(item: PrintableSummary, column: string, key: strin
  * The function works as follows:
  * - It maps over the `COLUMN_ORDER` array, generating a value for each cell in the row using the `generateValue` function.
  *
- * @remarks
- * This function is part of the `outputGenerator.ts` module.
- *
  * @param row - The name of the row to generate the data for.
  * @param item - The PrintableSummary object containing the data for the table.
  * @returns An array of strings, each representing a cell in the row.
@@ -195,9 +179,6 @@ export function generateMarkdownTableRow(row: string, item: PrintableSummary): s
  *
  * The table has a row for each value in `ROW_ORDER` and a column for each value in `COLUMN_ORDER`.
  * The values in the table are extracted from the data object.
- *
- * @remarks
- * This function is part of the `outputGenerator.ts` module.
  *
  * @param data - The data object or array of data objects containing the values for the table.
  * @param titleTables - Boolean to either enable or disable adding titles to the produced markdown tables.
@@ -216,9 +197,6 @@ export function convertToMarkdown(data: DataOrArray, titleTables: boolean): stri
  * The function works as follows:
  * - It capitalizes the first letter of the title.
  *
- * @remarks
- * This function is part of the `outputGenerator.ts` module.
- *
  * @param title - The original row title.
  * @returns The pretty-printed row title.
  */
@@ -233,9 +211,6 @@ export function prettyPrintRowTitle(title: string): string {
  * - It capitalizes the first letter of the title.
  * - If the title is 'Skipped', it changes it to 'Not Reviewed'.
  * - If the title is 'No_impact', it changes it to 'Not Applicable'.
- *
- * @remarks
- * This function is part of the `outputGenerator.ts` module.
  *
  * @param title - The original column title.
  * @returns The pretty-printed column title.
@@ -262,9 +237,6 @@ export function prettyPrintColumnTitle(title: string): string {
  * - It creates a `Table` object from the header row and the body of the table.
  * - It then determines the title of the table based on the `titleTables` parameter and the `profileName` property of the item.
  * - Finally, it returns the title and the Markdown table as a string.
- *
- * @remarks
- * This function is part of the `outputGenerator.ts` module.
  *
  * @param item - The data to generate the table from. This can be either a `Data` object or a `PrintableSummary` object.
  * @param titleTables - A boolean indicating whether to include the profile name as a Markdown header before the table.

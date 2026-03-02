@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core';
 import fs from 'fs';
 import { SonarqubeResults as Mapper } from '@mitre/hdf-converters';
 import { checkSuffix } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
   static readonly usage

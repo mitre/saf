@@ -1,7 +1,7 @@
 import { Configuration } from '@mitre/emass_client/dist/configuration';
 import { AxiosInstance } from 'axios';
-import { ApiConfig } from './apiConfig';
-import { InitConnections } from './initConnection';
+import { ApiConfig } from './api_config';
+import { InitConnections } from './init_connection';
 
 /**
  * Class representing an API connection.

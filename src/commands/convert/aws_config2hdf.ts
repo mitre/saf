@@ -3,7 +3,7 @@ import fs from 'fs';
 import { AwsConfigMapper as Mapper } from '@mitre/hdf-converters';
 import { ExecJSON } from 'inspecjs';
 import { checkSuffix } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class AWSConfig2HDF extends BaseCommand<typeof AWSConfig2HDF> {
   static readonly usage

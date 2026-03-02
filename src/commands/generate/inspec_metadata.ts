@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
 import promptSync from 'prompt-sync';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 const prompt = promptSync();
 

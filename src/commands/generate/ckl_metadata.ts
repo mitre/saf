@@ -8,10 +8,10 @@ import {
   validateChecklistMetadata,
 } from '@mitre/hdf-converters';
 import path from 'path';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 import { colorize } from 'json-colorizer';
 import { getJsonMetaDataExamples } from '../../utils/global';
-import { printGreen, printYellow } from '../../utils/oclif/cliHelper';
+import { printGreen, printYellow } from '../../utils/oclif/cli_helper';
 import { input, confirm, select, number } from '@inquirer/prompts';
 import _, { isEmpty } from 'lodash';
 import { hostname } from 'os';

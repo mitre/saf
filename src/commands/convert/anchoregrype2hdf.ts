@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core';
 import fs from 'fs';
 import { AnchoreGrypeMapper as Mapper } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class AnchoreGrype2HDF extends BaseCommand<typeof AnchoreGrype2HDF> {
   static readonly usage

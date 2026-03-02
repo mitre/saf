@@ -3,7 +3,7 @@ import { BooleanFlag, OptionFlag } from '@oclif/core/interfaces';
 import fs from 'fs';
 import path from 'path';
 import { colorize } from 'json-colorizer';
-import { outputError } from './outputError';
+import { outputError } from './output_error';
 
 /**
  * Interface representing the command line arguments.

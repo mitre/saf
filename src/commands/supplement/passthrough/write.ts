@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import { ExecJSON } from 'inspecjs';
 import fs from 'fs';
-import { BaseCommand } from '../../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../../utils/oclif/base_command';
 
 export default class WritePassthrough extends BaseCommand<typeof WritePassthrough> {
   static readonly usage = '<%= command.id %> -i <input-hdf-json> (-f <input-passthrough-json> | -d <passthrough-json>) [-o <output-hdf-json>]';

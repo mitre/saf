@@ -5,7 +5,7 @@ import fs from 'fs';
 import YAML from 'yaml';
 import { ThresholdValues } from '../../types/threshold';
 import { calculateCompliance, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject } from '../../utils/threshold';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class GenerateThreshold extends BaseCommand<typeof GenerateThreshold> {
   static readonly usage = '<%= command.id %> -i <hdf-json> [-o <threshold-yaml>] [-h] [-e] [-c]';

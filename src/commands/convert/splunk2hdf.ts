@@ -6,7 +6,7 @@ import fs from 'fs';
 import path from 'path';
 import { basename } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
   static readonly usage

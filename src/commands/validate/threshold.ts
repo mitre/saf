@@ -18,7 +18,7 @@ import {
   totalMin,
   unflattenThreshold,
 } from '../../utils/threshold';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class Threshold extends BaseCommand<typeof Threshold> {
   static readonly usage = '<%= command.id %> -i <hdf-json> [-I <flattened-threshold-json> | -T <template-file>] [-h] [-L info|warn|debug|verbose]';

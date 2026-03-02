@@ -6,8 +6,8 @@ import { colorize } from 'json-colorizer';
 import { Command, Flags } from '@oclif/core';
 import { ArtifactsApi } from '@mitre/emass_client';
 import { ArtifactsResponsePutPost } from '@mitre/emass_client/dist/api';
-import { ApiConnection } from '../../../utils/emasser/apiConnection';
-import { outputFormat } from '../../../utils/emasser/outputFormatter';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
 import { displayError, FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 const CMD_HELP = 'saf emasser post artifacts -h or --help';

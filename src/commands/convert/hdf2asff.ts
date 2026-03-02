@@ -11,7 +11,7 @@ import {
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import { basename, checkSuffix } from '../../utils/global';
 import _ from 'lodash';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
   static readonly usage

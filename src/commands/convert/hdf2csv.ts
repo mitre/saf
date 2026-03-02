@@ -6,7 +6,7 @@ import stringify from 'csv-stringify';
 import { ControlSetRows } from '../../types/csv';
 import { convertRow, csvExportFields } from '../../utils/csv';
 import { basename } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 import path from 'path';
 import {
   addToProcessLogData,
@@ -14,7 +14,7 @@ import {
   printMagenta,
   printRed,
   printYellow,
-  saveProcessLogData } from '../../utils/oclif/cliHelper';
+  saveProcessLogData } from '../../utils/oclif/cli_helper';
 import { EventEmitter } from 'events';
 
 import colors from 'colors';

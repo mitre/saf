@@ -1,7 +1,7 @@
 import { colorize } from 'json-colorizer';
 import { Args, Command, Flags } from '@oclif/core';
-import { ApiConnection } from '../../../utils/emasser/apiConnection';
-import { outputFormat } from '../../../utils/emasser/outputFormatter';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
 import {
   FlagOptions,
   displayError,

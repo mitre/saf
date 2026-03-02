@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core';
 import fs from 'fs';
 import { FortifyMapper as Mapper } from '@mitre/hdf-converters';
 import { checkSuffix, checkInput } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class Fortify2HDF extends BaseCommand<typeof Fortify2HDF> {
   static readonly usage

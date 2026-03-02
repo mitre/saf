@@ -3,9 +3,9 @@ import { readFile } from 'fs/promises';
 import { colorize } from 'json-colorizer';
 import { Command, Flags } from '@oclif/core';
 import { displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
-import { ApiConnection } from '../../../utils/emasser/apiConnection';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { SoftwareBaselineApi } from '@mitre/emass_client';
-import { outputFormat } from '../../../utils/emasser/outputFormatter';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
 import { SwBaselineResponsePostPut } from '@mitre/emass_client/dist/api';
 import { getErrorMessage } from '../../../utils/global';
 

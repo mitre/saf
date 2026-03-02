@@ -1,8 +1,8 @@
 import { Command, Flags } from '@oclif/core';
 import { createWinstonLogger } from '../../utils/logging';
-import { loadExecJSONs } from '../../utils/ohdf/dataLoader';
+import { loadExecJSONs } from '../../utils/ohdf/data_loader';
 import { calculateSummariesForExecJSONs, calculateTotalCountsForSummaries, calculateComplianceScoresForExecJSONs } from '../../utils/ohdf/calculations';
-import { createPrintableSummary, printAndWriteOutput } from '../../utils/ohdf/outputGenerator';
+import { createPrintableSummary, printAndWriteOutput } from '../../utils/ohdf/output_generator';
 
 /** The prefix used for logging messages in this command */
 const VIEW_SUMMARY = 'view summary:';

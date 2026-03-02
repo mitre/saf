@@ -3,7 +3,7 @@ import fs from 'fs';
 import { NessusResults as Mapper } from '@mitre/hdf-converters';
 import _ from 'lodash';
 import { basename, checkInput, checkSuffix } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class Nessus2HDF extends BaseCommand<typeof Nessus2HDF> {
   static readonly usage

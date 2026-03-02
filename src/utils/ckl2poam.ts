@@ -1,5 +1,5 @@
 import { CciNistMappingData } from '@mitre/hdf-converters';
-import { Vulnerability } from '../types/STIG';
+import { Vulnerability } from '../types/stig';
 import promptSync from 'prompt-sync';
 const prompt = promptSync();
 

@@ -8,7 +8,7 @@ import promptSync from 'prompt-sync';
 import files from '../../resources/files.json';
 import { dataURLtoU8Array } from '../../utils/global';
 import yaml from 'yaml';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 const MAX_SEARCH_RESULTS = 5;
 const prompt = promptSync();

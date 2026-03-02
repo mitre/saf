@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import { ExecJSON } from 'inspecjs';
 import fs from 'fs';
-import { BaseCommand } from '../../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../../utils/oclif/base_command';
 
 export default class WriteTarget extends BaseCommand<typeof WriteTarget> {
   static readonly usage = '<%= command.id %> -i <input-hdf-json> (-f <input-target-json> | -d <target-json>) [-o <output-hdf-json>]';

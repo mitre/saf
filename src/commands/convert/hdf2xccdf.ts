@@ -3,7 +3,7 @@ import fs from 'fs';
 import { FromHDFToXCCDFMapper as Mapper } from '@mitre/hdf-converters';
 import files from '../../resources/files.json';
 import { checkSuffix } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class HDF2XCCDF extends BaseCommand<typeof HDF2XCCDF> {
   static readonly usage

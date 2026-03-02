@@ -12,7 +12,7 @@ import { basename, extractValueViaPathOrNumber } from '../../utils/global';
 import { CciNistMappingData } from '@mitre/hdf-converters';
 import CISNistMappings from '../../resources/cis2nist.json';
 import files from '../../resources/files.json';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF> {
   static readonly usage = '<%= command.id %> -i, --input=<XLSX or CSV> -o, --output=FOLDER';

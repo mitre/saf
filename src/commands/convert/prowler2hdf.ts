@@ -4,7 +4,7 @@ import { ASFFResults as Mapper } from '@mitre/hdf-converters';
 import { basename, checkInput, checkSuffix } from '../../utils/global';
 import _ from 'lodash';
 import path from 'path';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class Prowler2HDF extends BaseCommand<typeof Prowler2HDF> {
   static readonly usage

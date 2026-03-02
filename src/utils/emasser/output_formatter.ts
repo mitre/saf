@@ -1,4 +1,4 @@
-import { ApiConfig } from './apiConfig';
+import { ApiConfig } from './api_config';
 import _ from 'lodash';
 
 /**

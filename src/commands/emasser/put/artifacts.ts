@@ -7,8 +7,8 @@ import { ArtifactsApi } from '@mitre/emass_client';
 import { ArtifactsResponsePutPost } from '@mitre/emass_client/dist/api'; // skipcq: JS-R1000
 import { ArtifactsResponseGetDataInner as Artifacts } from '@mitre/emass_client/dist/api'; // skipcq: JS-R1000
 
-import { ApiConnection } from '../../../utils/emasser/apiConnection';
-import { outputFormat } from '../../../utils/emasser/outputFormatter';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
 import { displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
 
 function getAllJsonExamples(): Record<string, unknown> {

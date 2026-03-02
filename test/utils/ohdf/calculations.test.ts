@@ -8,7 +8,7 @@ import {
   calculateTotalCountsForSummaries,
   calculateSeverityCounts,
 } from '../../../src/utils/ohdf/calculations';
-import { loadExecJSONs } from '../../../src/utils/ohdf/dataLoader';
+import { loadExecJSONs } from '../../../src/utils/ohdf/data_loader';
 
 const UTF8_ENCODING = 'utf8';
 const hdfFilePath = path.resolve('./test/sample_data/HDF/input/rhel-8_hardened.json');

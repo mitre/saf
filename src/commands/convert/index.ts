@@ -29,7 +29,7 @@ import {
 } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
 import { basename, checkSuffix } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 import ASFF2HDF from './asff2hdf';
 import Zap2HDF from './zap2hdf';
 

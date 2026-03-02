@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core';
 import fs from 'fs';
 import { GosecMapper as Mapper } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class Gosec2HDF extends BaseCommand<typeof Gosec2HDF> {
   static readonly usage = '<%= command.id %> -i <gosec-json> -o <hdf-scan-results-json> [-h] [-w]';

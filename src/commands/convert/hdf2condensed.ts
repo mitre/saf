@@ -10,7 +10,7 @@ import {
 } from '../../utils/threshold';
 import _ from 'lodash';
 import { checkSuffix } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class HDF2Condensed extends BaseCommand<typeof HDF2Condensed> {
   static readonly usage

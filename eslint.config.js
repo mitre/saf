@@ -33,6 +33,7 @@ export default defineConfig([
     rules: {
       '@stylistic/quotes': ['error', 'single', { avoidEscape: true }],
       '@typescript-eslint/no-explicit-any': 'off',
+      'unicorn/filename-case': ['error', { case: 'snakeCase' }],
       'unicorn/no-null': 'off',
       'unicorn/no-process-exit': 'off',
       'unicorn/prefer-node-protocol': 'off',

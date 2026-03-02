@@ -4,7 +4,7 @@ import { PrismaMapper as Mapper } from '@mitre/hdf-converters';
 import path from 'path';
 import _ from 'lodash';
 import { basename } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class Prisma2HDF extends BaseCommand<typeof Prisma2HDF> {
   static readonly usage

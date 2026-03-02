@@ -6,7 +6,7 @@ import yaml from 'yaml';
 import fs from 'fs';
 import path from 'path';
 import { basename } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class ApplyAttestation extends BaseCommand<typeof ApplyAttestation> {
   static readonly usage = '<%= command.id %> -i <input-hdf-json>... <attestation>... -o <output-hdf-path>';

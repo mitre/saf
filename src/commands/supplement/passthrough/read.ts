@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import { ExecJSON } from 'inspecjs';
 import fs from 'fs';
-import { BaseCommand } from '../../../utils/oclif/baseCommand';
+import { BaseCommand } from '../../../utils/oclif/base_command';
 
 export default class ReadPassthrough extends BaseCommand<typeof ReadPassthrough> {
   static readonly usage = '<%= command.id %> -i <hdf-json> [-o <passthrough-json>]';
