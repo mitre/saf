@@ -14,7 +14,7 @@ describe('Test heimdall SAF CLI Command', () => {
   });
 });
 
-describe('Test Heimdall Embedded', async () => {
+describe('Test Heimdall Embedded', () => {
   let server: Server;
 
   beforeAll(async () => {

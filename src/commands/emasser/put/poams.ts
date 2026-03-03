@@ -545,7 +545,7 @@ export default class EmasserPutPoams extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the PUT POA&Ms command' }),
-    ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
   };
 
   async run(): Promise<void> {

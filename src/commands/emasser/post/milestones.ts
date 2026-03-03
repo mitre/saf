@@ -18,7 +18,7 @@ export default class EmasserPostMilestones extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Milestones command' }),
-    ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
   };
 
   async run(): Promise<void> {

@@ -151,7 +151,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         fs.mkdirSync(flags.output);
         for (const [filename, result] of Object.entries(results)) {
           fs.writeFileSync(
-            path.join(flags.output, checkSuffix(basename(filename as string))),
+            path.join(flags.output, checkSuffix(basename(filename))),
             JSON.stringify(result, null, 2),
           );
         }

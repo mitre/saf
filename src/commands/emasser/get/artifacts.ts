@@ -26,7 +26,7 @@ export default class EmasserGetArtifacts extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the GET Artifacts command' }),
-    ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
   };
 
   // NOTE: The way args are being implemented are mainly for the purposes of help clarity, there is, displays

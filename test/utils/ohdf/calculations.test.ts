@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import type { ContextualizedEvaluation, ContextualizedProfile } from 'inspecjs';
+import type { ContextualizedEvaluation } from 'inspecjs';
 import { beforeEach, describe, expect, it } from 'vitest';
 import {
   calculateSummariesForExecJSONs,
@@ -60,7 +60,7 @@ describe('calculations.ts utils', () => {
   it('calculateSeverityCounts modifies the summary correctly', () => {
     for (const parsedExecJSON of Object.values(execJSONs)) {
       const summary: Record<string, Record<string, number>> = {};
-      const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile;
+      const parsedProfile = parsedExecJSON.contains[0];
 
       calculateSeverityCounts(summary, parsedProfile);
 

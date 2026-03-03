@@ -86,7 +86,7 @@ describe('generateMarkdownTable', () => {
     if (tableToken?.type === 'table') {
       const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
 
-      for (const [_index, row] of rows.entries()) {
+      for (const row of rows) {
         expect(Array.isArray(row)).toBe(true);
         const matchedRowIndex = testTableRows.findIndex(testRow => JSON.stringify(testRow) === JSON.stringify(row));
         expect(matchedRowIndex).not.toBe(-1);
@@ -94,7 +94,7 @@ describe('generateMarkdownTable', () => {
     }
   });
 
-  it(`rows are in the expected order: ${expectedRowOrder}`, () => {
+  it(`rows are in the expected order: ${expectedRowOrder.join(',')}`, () => {
     const result = generateMarkdownTable(item, titleTables);
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
@@ -108,7 +108,7 @@ describe('generateMarkdownTable', () => {
     }
   });
 
-  it(`columns are in the expected order: ${expectedColumnOrder}`, () => {
+  it(`columns are in the expected order: ${expectedColumnOrder.join(',')}`, () => {
     const result = generateMarkdownTable(item, titleTables);
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
@@ -131,7 +131,7 @@ describe('generateMarkdownTable', () => {
     }
   });
 
-  it(`each column matches a column in ${expectedColumnOrder}`, () => {
+  it(`each column matches a column in ${expectedColumnOrder.join(',')}`, () => {
     const result = generateMarkdownTable(item, titleTables);
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
@@ -148,7 +148,7 @@ describe('generateMarkdownTable', () => {
         return header.text.split('<br>')[0];
       });
 
-      for (const [_index, headerText] of headerTexts.entries()) {
+      for (const headerText of headerTexts) {
         const matchedColumnIndex = expectedColumnOrder.indexOf(headerText);
         expect(matchedColumnIndex).not.toBe(-1);
       }

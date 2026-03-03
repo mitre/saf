@@ -49,7 +49,7 @@ export const COLUMN_EMOJI: Record<ColumnType, string> = {
  */
 export function printAndWriteOutput(args: PrintAndWriteOutputArgs): void {
   logger.verbose('In printAndWriteOutput');
-  let outputStr = ''; // Initialize output to an empty string
+  let outputStr;
   switch (args.format) {
     case 'json': {
       outputStr = args.printPretty ? JSON.stringify(args.printableSummaries, null, 2) : JSON.stringify(args.printableSummaries);
@@ -186,9 +186,7 @@ export function generateMarkdownTableRow(row: string, item: PrintableSummary): s
  */
 export function convertToMarkdown(data: DataOrArray, titleTables: boolean): string[] {
   logger.verbose('In convertTomarkdown');
-  let tables: string[] = [];
-  tables = Array.isArray(data) ? data.map(item => generateMarkdownTable(item, titleTables)) : [generateMarkdownTable(data, titleTables)];
-  return tables;
+  return Array.isArray(data) ? data.map(item => generateMarkdownTable(item, titleTables)) : [generateMarkdownTable(data, titleTables)];
 }
 
 /**

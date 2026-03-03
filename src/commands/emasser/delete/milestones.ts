@@ -19,7 +19,7 @@ export default class EmasserDeleteMilestones extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show help for the SAF CLI eMASSer DELETE Milestones command' }),
-    ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
   };
 
   async run(): Promise<void> {

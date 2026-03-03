@@ -226,7 +226,7 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
   if (dataObj.tags && typeof dataObj.tags === 'object') {
     const tagsObj: Tags = {};
     for (const key of Object.keys(dataObj.tags)) {
-      tagsObj[key] = dataObj.tags?.[key] as string; // Ensure type safety
+      tagsObj[key] = dataObj.tags?.[key]; // Ensure type safety
     }
     bodyObject.tags = tagsObj;
   }
@@ -314,7 +314,7 @@ export default class EmasserContainerScans extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Container Scan Results command' }),
-    ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
   };
 
   async run(): Promise<void> {

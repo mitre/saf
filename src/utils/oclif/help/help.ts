@@ -1,4 +1,4 @@
-import * as util from 'util'; // skipcq: JS-C1003 - util does not expose itself as an ES Module.
+import * as util from 'util';
 import { type Command, Help } from '@oclif/core';
 import _ from 'lodash';
 

@@ -20,7 +20,7 @@ export function calculateSummariesForExecJSONs(execJSONs: Record<string, Context
   const summaries: Record<string, Record<string, Record<string, number>>[]> = {};
   for (const parsedExecJSON of Object.values(execJSONs)) {
     const summary: Record<string, Record<string, number>> = {};
-    const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile;
+    const parsedProfile = parsedExecJSON.contains[0];
     const profileName = parsedProfile.data.name;
     calculateSeverityCounts(summary, parsedProfile);
     calculateTotalCounts(summary);
@@ -39,7 +39,7 @@ export function calculateComplianceScoresForExecJSONs(execJSONs: Record<string, 
   logger.verbose('In calculateComplianceScoresForExecJSONs');
   const complianceScores: Record<string, number[]> = {};
   for (const parsedExecJSON of Object.values(execJSONs)) {
-    const parsedProfile = parsedExecJSON.contains[0] as ContextualizedProfile;
+    const parsedProfile = parsedExecJSON.contains[0];
     const profileName = parsedProfile.data.name;
     const overallStatusCounts = extractStatusCounts(parsedProfile);
     const overallCompliance = calculateCompliance(overallStatusCounts);

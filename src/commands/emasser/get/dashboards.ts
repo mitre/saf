@@ -52,7 +52,7 @@ export default class EmasserGetDashboards extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the GET Dashboards command' }),
-    ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
   };
 
   // NOTE: The way args are being implemented are mainly for the purposes of identifying which

@@ -12,8 +12,8 @@ const logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View
 export function loadExecJSONs(files: string[]): Record<string, ContextualizedEvaluation> {
   logger.verbose('In loadExecJSONs');
   const execJSONs: Record<string, ContextualizedEvaluation> = {};
-  files.forEach((file: string) => {
+  for (const file of files) {
     execJSONs[file] = convertFileContextual(fs.readFileSync(file, 'utf8')) as ContextualizedEvaluation;
-  });
+  }
   return execJSONs;
 }

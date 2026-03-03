@@ -5,6 +5,10 @@ import tmp from 'tmp';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { omitHDFChangingFields } from '../utils';
 
+const readAndParseJSON = (filePath: fs.PathOrFileDescriptor) => {
+  return JSON.parse(fs.readFileSync(filePath, 'utf8').replaceAll(/\r/gi, ''));
+};
+
 describe('Test attest apply', () => {
   let tmpobj: tmp.DirResult;
 
@@ -19,10 +23,6 @@ describe('Test attest apply', () => {
   const captureOpts = {
     print: true,
     stripAnsi: false,
-  };
-
-  const readAndParseJSON = (filePath: fs.PathOrFileDescriptor) => {
-    return JSON.parse(fs.readFileSync(filePath, 'utf8').replaceAll(/\r/gi, ''));
   };
 
   const runAndValidate = async (commandArgs: string | string[], outputFilePath: string, expectedFilePath: string) => {

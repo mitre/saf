@@ -15,7 +15,7 @@ export default class EmasserGetWorkflowDefinitions extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the GET Workflow Definitions command' }),
-    ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
   };
 
   // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async

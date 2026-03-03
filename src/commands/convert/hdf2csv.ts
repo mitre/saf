@@ -205,7 +205,7 @@ async function saveCSV(filename: fs.PathLike | fs.promises.FileHandle, data: str
   try {
     const csvData = await convertToCSV(data, options);
     try {
-      await fse.writeFile(filename, csvData as string, 'utf8');
+      await fse.writeFile(filename, csvData, 'utf8');
     } catch (error) {
       printRed(`\nError writing CSV file: ${error}\n`);
     }

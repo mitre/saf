@@ -5,7 +5,6 @@ import { XMLParser } from 'fast-xml-parser';
 import moment from 'moment';
 import promptSync from 'prompt-sync';
 import { createLogger, format, transports } from 'winston';
-import xml2js from 'xml2js';
 import XlsxPopulate from 'xlsx-populate';
 import files from '../../resources/files.json';
 import type { STIG, Vulnerability, STIGHolder } from '../../types/stig';
