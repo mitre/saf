@@ -37,11 +37,13 @@ export default defineConfig([
       n,
     },
     rules: {
+      // any is unfortunately used frequently throughout our types as a shortcut around dealing with parsing json for the most part.  it'll take time to rework things to make our types safer
       '@stylistic/quotes': ['error', 'single', { avoidEscape: true }],
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
       '@typescript-eslint/consistent-type-exports': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-redundant-type-constituents': 'off',
       '@typescript-eslint/no-unsafe-argument': 'off',
       '@typescript-eslint/no-unsafe-assignment': 'off',
       '@typescript-eslint/no-unsafe-call': 'off',
