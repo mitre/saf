@@ -1,5 +1,5 @@
-import colors from 'colors';
 import { contextualizeEvaluation, type ContextualizedControl, type ExecJSON } from 'inspecjs';
+import * as _ from 'lodash';
 import { createLogger, format, type transport, transports, type Logger } from 'winston';
 
 /**
@@ -35,6 +35,7 @@ const syslogColors = {
   crit: 'inverse yellow',
   alert: 'bold inverse red',
   emerg: 'bold inverse magenta',
+  prefix: 'yellow',
 };
 
 /**
@@ -44,31 +45,39 @@ const syslogColors = {
  * @returns {Logger}              - A Winston logger.
  */
 
-export function createWinstonLogger(mapperName: string, level = 'info'): Logger {
+export function createWinstonLogger(module = 'SAF CLI', level = 'info'): Logger {
+  const colorizer = format.colorize({ colors: syslogColors });
+
   const transportList: transport[] = [new transports.File({ filename: 'saf-cli.log' })];
 
   if ((process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') || level === 'verbose') {
-    transportList.push(new transports.Console({
-      format: format.combine(
-        format.colorize({
-          all: true,
-          colors: syslogColors,
-        }),
-        format.simple(),
-        format.timestamp({
-          format: 'MMM-DD-YYYY HH:mm:ss Z',
-        }),
-        format.errors({ stack: true }),
-        format.printf(
-          info => colors.yellow(`[${[info.timestamp]} -> ${mapperName}]:`) + ` ${info.message}`,
-        ),
-      ),
-    }));
+    transportList.push(new transports.Console());
   }
 
   return createLogger({
     transports: transportList,
     level,
+    format: format.combine(
+      format.timestamp({
+        format: 'MMM-DD-YYYY HH:mm:ss Z',
+      }),
+      format.errors({ stack: true }),
+      format.printf(
+        (info) => {
+          const prefix = colorizer.colorize('prefix', `[${info.timestamp as string} -> ${module}]`);
+          const lvl = colorizer.colorize(info.level, info.level);
+          let msg = '';
+          if (info.message) {
+            msg = _.isString(info.message) ? info.message : JSON.stringify(info.message, null, 2);
+          }
+          if (info.stack) {
+            msg += `\n${_.isString(info.stack) ? info.stack : JSON.stringify(info.stack, null, 2)}`;
+          }
+          msg = colorizer.colorize(info.level, msg);
+          return `${prefix} - ${lvl}: ${msg}`;
+        },
+      ),
+    ),
   });
 }
 
