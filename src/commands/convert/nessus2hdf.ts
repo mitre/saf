@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { NessusResults as Mapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, NessusResults as Mapper } from '@mitre/hdf-converters';
 import _ from 'lodash';
 import { basename, checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
@@ -41,7 +41,7 @@ export default class Nessus2HDF extends BaseCommand<typeof Nessus2HDF> {
     const data = fs.readFileSync(flags.input, 'utf8');
     checkInput(
       { data, filename: flags.input },
-      'nessus',
+      INPUT_TYPES.NESSUS,
       'Nessus XML results file',
     );
 

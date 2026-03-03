@@ -1,6 +1,6 @@
-import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { VeracodeMapper as Mapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, VeracodeMapper as Mapper } from '@mitre/hdf-converters';
+import { Flags } from '@oclif/core';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -31,7 +31,7 @@ export default class Veracode2HDF extends BaseCommand<typeof Veracode2HDF> {
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8');
-    checkInput({ data, filename: flags.input }, 'veracode', 'Veracode XML');
+    checkInput({ data, filename: flags.input }, INPUT_TYPES.VERACODE, 'Veracode XML');
 
     const converter = new Mapper(data);
     fs.writeFileSync(

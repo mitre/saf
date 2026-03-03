@@ -1,6 +1,6 @@
-import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { TwistlockResults as Mapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, TwistlockResults as Mapper } from '@mitre/hdf-converters';
+import { Flags } from '@oclif/core';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -38,7 +38,7 @@ export default class Twistlock2HDF extends BaseCommand<typeof Twistlock2HDF> {
     const data = fs.readFileSync(flags.input, 'utf8');
     checkInput(
       { data, filename: flags.input },
-      'twistlock',
+      INPUT_TYPES.TWISTLOCK,
       'Twistlock CLI output file',
     );
 

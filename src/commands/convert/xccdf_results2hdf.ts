@@ -1,6 +1,6 @@
-import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { XCCDFResultsMapper as Mapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, XCCDFResultsMapper as Mapper } from '@mitre/hdf-converters';
+import { Flags } from '@oclif/core';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -38,7 +38,7 @@ export default class XCCDFResults2HDF extends BaseCommand<typeof XCCDFResults2HD
     const data = fs.readFileSync(flags.input, 'utf8');
     checkInput(
       { data, filename: flags.input },
-      'xccdf',
+      INPUT_TYPES.XCCDF,
       'SCAP client XCCDF-Results XML report',
     );
 

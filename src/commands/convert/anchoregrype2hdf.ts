@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { AnchoreGrypeMapper as Mapper } from '@mitre/hdf-converters';
+import { AnchoreGrypeMapper as Mapper, INPUT_TYPES } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -36,7 +36,7 @@ export default class AnchoreGrype2HDF extends BaseCommand<typeof AnchoreGrype2HD
     const input = fs.readFileSync(flags.input, 'utf8');
     checkInput(
       { data: input, filename: flags.input },
-      'grype',
+      INPUT_TYPES.GRYPE,
       'Anchore Grype JSON results file',
     );
 

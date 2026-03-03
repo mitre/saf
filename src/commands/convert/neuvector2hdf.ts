@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { NeuVectorMapper as Mapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, NeuVectorMapper as Mapper } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -36,7 +36,7 @@ export default class NeuVector2HDF extends BaseCommand<typeof NeuVector2HDF> {
     const input = fs.readFileSync(flags.input, 'utf8');
     checkInput(
       { data: input, filename: flags.input },
-      'neuvector',
+      INPUT_TYPES.NEUVECTOR,
       'NeuVector results JSON',
     );
 

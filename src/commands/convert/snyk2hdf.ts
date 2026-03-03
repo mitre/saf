@@ -1,9 +1,9 @@
-import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { SnykResults as Mapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, SnykResults as Mapper } from '@mitre/hdf-converters';
+import { Flags } from '@oclif/core';
 import _ from 'lodash';
-import { basename, checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
+import { basename, checkInput, checkSuffix } from '../../utils/global';
 
 export default class Snyk2HDF extends BaseCommand<typeof Snyk2HDF> {
   static readonly usage
@@ -35,7 +35,7 @@ export default class Snyk2HDF extends BaseCommand<typeof Snyk2HDF> {
     const data = fs.readFileSync(flags.input, 'utf8');
     checkInput(
       { data: data, filename: flags.input }, // skipcq: JS-0240
-      'snyk',
+      INPUT_TYPES.SNYK,
       'Snyk results JSON',
     );
 

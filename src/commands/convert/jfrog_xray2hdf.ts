@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { JfrogXrayMapper as Mapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, JfrogXrayMapper as Mapper } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -38,7 +38,7 @@ export default class JfrogXray2HDF extends BaseCommand<typeof JfrogXray2HDF> {
     const data = fs.readFileSync(flags.input, 'utf8');
     checkInput(
       { data, filename: flags.input },
-      'jfrog',
+      INPUT_TYPES.JFROG,
       'JFrog Xray results JSON',
     );
 

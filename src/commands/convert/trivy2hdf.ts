@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { ASFFResults as Mapper } from '@mitre/hdf-converters';
+import { ASFFResults as Mapper, INPUT_TYPES } from '@mitre/hdf-converters';
 import { basename, checkInput, checkSuffix } from '../../utils/global';
 import _ from 'lodash';
 import path from 'path';
@@ -40,7 +40,7 @@ export default class Trivy2HDF extends BaseCommand<typeof Trivy2HDF> {
 
     checkInput(
       { data: input, filename: flags.input },
-      'asff',
+      INPUT_TYPES.ASFF,
       'Trivy-derived AWS Security Finding Format results',
     );
 

@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { GosecMapper as Mapper } from '@mitre/hdf-converters';
+import { GosecMapper as Mapper, INPUT_TYPES } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -22,7 +22,7 @@ export default class Gosec2HDF extends BaseCommand<typeof Gosec2HDF> {
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8');
-    checkInput({ data, filename: flags.input }, 'gosec', 'gosec results JSON');
+    checkInput({ data, filename: flags.input }, INPUT_TYPES.GOSEC, 'gosec results JSON');
 
     const converter = new Mapper(data, flags.includeRaw);
     fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf(), null, 2));

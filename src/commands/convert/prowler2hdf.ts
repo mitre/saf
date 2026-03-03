@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { ASFFResults as Mapper } from '@mitre/hdf-converters';
+import { ASFFResults as Mapper, INPUT_TYPES } from '@mitre/hdf-converters';
 import { basename, checkInput, checkSuffix } from '../../utils/global';
 import _ from 'lodash';
 import path from 'path';
@@ -33,7 +33,7 @@ export default class Prowler2HDF extends BaseCommand<typeof Prowler2HDF> {
     const data = fs.readFileSync(flags.input, 'utf8');
     checkInput(
       { data: data, filename: flags.input }, // skipcq: JS-0240
-      'asff',
+      INPUT_TYPES.ASFF,
       'Prowler-derived AWS Security Finding Format results',
     );
     const converter = new Mapper(data);

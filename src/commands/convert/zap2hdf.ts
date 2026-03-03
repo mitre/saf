@@ -1,6 +1,6 @@
-import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { ZapMapper as Mapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, ZapMapper as Mapper } from '@mitre/hdf-converters';
+import { Flags } from '@oclif/core';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -41,7 +41,7 @@ export default class Zap2HDF extends BaseCommand<typeof Zap2HDF> {
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8');
-    checkInput({ data, filename: flags.input }, 'zap', 'OWASP ZAP results JSON');
+    checkInput({ data, filename: flags.input }, INPUT_TYPES.ZAP, 'OWASP ZAP results JSON');
 
     const converter = new Mapper(
       fs.readFileSync(flags.input, 'utf8'),

@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { NiktoMapper as Mapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, NiktoMapper as Mapper } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -37,7 +37,7 @@ export default class Nikto2HDF extends BaseCommand<typeof Nikto2HDF> {
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8');
-    checkInput({ data, filename: flags.input }, 'nikto', 'Nikto results JSON');
+    checkInput({ data, filename: flags.input }, INPUT_TYPES.NIKTO, 'Nikto results JSON');
 
     const converter = new Mapper(data, flags.includeRaw);
     fs.writeFileSync(

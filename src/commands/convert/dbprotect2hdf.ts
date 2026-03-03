@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { DBProtectMapper as Mapper } from '@mitre/hdf-converters';
+import { DBProtectMapper as Mapper, INPUT_TYPES } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -38,7 +38,7 @@ export default class DBProtect2HDF extends BaseCommand<typeof DBProtect2HDF> {
     const data = fs.readFileSync(flags.input, 'utf8');
     checkInput(
       { data, filename: flags.input },
-      'dbProtect',
+      INPUT_TYPES.DB_PROTECT,
       'DBProtect report in "Check Results Details" XML format',
     );
 

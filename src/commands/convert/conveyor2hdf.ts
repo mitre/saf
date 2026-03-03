@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { ConveyorResults as Mapper } from '@mitre/hdf-converters';
+import { ConveyorResults as Mapper, INPUT_TYPES } from '@mitre/hdf-converters';
 import { basename, checkInput, checkSuffix } from '../../utils/global';
 import path from 'path';
 import { BaseCommand } from '../../utils/oclif/base_command';
@@ -31,7 +31,7 @@ export default class Conveyor2HDF extends BaseCommand<typeof Conveyor2HDF> {
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8');
-    checkInput({ data, filename: flags.input }, 'Conveyor', 'Conveyor JSON');
+    checkInput({ data, filename: flags.input }, INPUT_TYPES.CONVEYOR, 'Conveyor JSON');
 
     const converter = new Mapper(data);
     const results = converter.toHdf();

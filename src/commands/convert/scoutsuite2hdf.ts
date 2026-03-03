@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { ScoutsuiteMapper as Mapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, ScoutsuiteMapper as Mapper } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -39,7 +39,7 @@ export default class Scoutsuite2HDF extends BaseCommand<typeof Scoutsuite2HDF> {
     const data = fs.readFileSync(flags.input, 'utf8');
     checkInput(
       { data, filename: flags.input },
-      'scoutsuite',
+      INPUT_TYPES.SCOUTSUITE,
       'ScoutSuite results from a Javascript object',
     );
 

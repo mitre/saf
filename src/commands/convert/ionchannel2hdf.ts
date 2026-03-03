@@ -1,4 +1,4 @@
-import { IonChannelAPIMapper, IonChannelMapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, IonChannelAPIMapper, IonChannelMapper } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
 import {
   basename,
@@ -146,7 +146,7 @@ export default class IonChannel2HDF extends BaseCommand<typeof IonChannel2HDF> {
         const data = fs.readFileSync(filename, 'utf8');
         checkInput(
           { data: data, filename: filename }, // skipcq: JS-0240
-          'ionchannel',
+          INPUT_TYPES.IONCHANNEL,
           'IonChannel JSON',
         );
 

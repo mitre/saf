@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { CycloneDXSBOMResults as Mapper } from '@mitre/hdf-converters';
+import { CycloneDXSBOMResults as Mapper, INPUT_TYPES } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -38,7 +38,7 @@ export default class CycloneDXSBOM2HDF extends BaseCommand<typeof CycloneDXSBOM2
     const data = fs.readFileSync(flags.input, 'utf8');
     checkInput(
       { data, filename: flags.input },
-      'cyclonedx_sbom',
+      INPUT_TYPES.CYCLONEDX_SBOM,
       'CycloneDX SBOM output file',
     );
 

@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { DependencyTrackMapper as Mapper } from '@mitre/hdf-converters';
+import { DependencyTrackMapper as Mapper, INPUT_TYPES } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -22,7 +22,7 @@ export default class DependencyTrack2HDF extends BaseCommand<typeof DependencyTr
     const data = fs.readFileSync(flags.input, 'utf8');
     checkInput(
       { data, filename: flags.input },
-      'dependencyTrack',
+      INPUT_TYPES.DEPENDENCY_TRACK,
       'Dependency-Track results JSON',
     );
 

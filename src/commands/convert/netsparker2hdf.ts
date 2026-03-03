@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { NetsparkerMapper as Mapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, NetsparkerMapper as Mapper } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -39,7 +39,7 @@ export default class Netsparker2HDF extends BaseCommand<typeof Netsparker2HDF> {
     const data = fs.readFileSync(flags.input, 'utf8');
     checkInput(
       { data, filename: flags.input },
-      'netsparker',
+      INPUT_TYPES.NETSPARKER,
       'Netsparker XML results file',
     );
 

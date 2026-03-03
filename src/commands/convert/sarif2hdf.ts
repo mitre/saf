@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { SarifMapper as Mapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, SarifMapper as Mapper } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -42,7 +42,7 @@ export default class Sarif2HDF extends BaseCommand<typeof Sarif2HDF> {
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8');
-    checkInput({ data, filename: flags.input }, 'sarif', 'SARIF JSON');
+    checkInput({ data, filename: flags.input }, INPUT_TYPES.SARIF, 'SARIF JSON');
 
     const converter = new Mapper(data, flags.includeRaw);
     fs.writeFileSync(

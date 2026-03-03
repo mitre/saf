@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { ChecklistResults as Mapper } from '@mitre/hdf-converters';
+import { ChecklistResults as Mapper, INPUT_TYPES } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -35,7 +35,7 @@ export default class CKL2HDF extends BaseCommand<typeof CKL2HDF> {
     const { flags } = await this.parse(CKL2HDF);
 
     const data = fs.readFileSync(flags.input, 'utf8');
-    checkInput({ data, filename: flags.input }, 'checklist', 'DISA Checklist');
+    checkInput({ data, filename: flags.input }, INPUT_TYPES.CHECKLIST, 'DISA Checklist');
 
     try {
       const converter = new Mapper(data, flags.includeRaw);

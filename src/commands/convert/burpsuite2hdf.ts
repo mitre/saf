@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { BurpSuiteMapper as Mapper } from '@mitre/hdf-converters';
+import { BurpSuiteMapper as Mapper, INPUT_TYPES } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -36,7 +36,7 @@ export default class Burpsuite2HDF extends BaseCommand<typeof Burpsuite2HDF> {
 
     // Check for correct input type
     const data = fs.readFileSync(flags.input, 'utf8');
-    checkInput({ data, filename: flags.input }, 'burp', 'BurpSuite Pro XML');
+    checkInput({ data, filename: flags.input }, INPUT_TYPES.BURP, 'BurpSuite Pro XML');
 
     const converter = new Mapper(data, flags.includeRaw);
     fs.writeFileSync(

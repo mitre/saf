@@ -10,7 +10,7 @@ import {
   type StandardsSubscription,
 } from '@aws-sdk/client-securityhub';
 import { Flags } from '@oclif/core';
-import { ASFFResults as Mapper } from '@mitre/hdf-converters';
+import { ASFFResults as Mapper, INPUT_TYPES } from '@mitre/hdf-converters';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import https from 'https';
 import _ from 'lodash';
@@ -134,7 +134,7 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
         } else {
           checkInput(
             { data: data, filename: flags.input }, // skipcq: JS-0240
-            'asff',
+            INPUT_TYPES.ASFF,
             'AWS Security Finding Format JSON',
           );
         }
