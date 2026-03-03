@@ -1,4 +1,4 @@
-import * as util from 'util';
+import { format } from 'util';
 import { type Command, Help } from '@oclif/core';
 import _ from 'lodash';
 
@@ -24,7 +24,7 @@ import _ from 'lodash';
   For additional information, reference the oclif Help Classes (https://oclif.io/docs/help_classes)
 */
 export default class MyHelpClass extends Help {
-  public async showCommandHelp(command: Command.Loadable): Promise<void> { // skipcq: JS-0116
+  public showCommandHelp(command: Command.Loadable): Promise<void> {
     const name = command.id;
     const depth = name.split(':').length;
 
@@ -66,6 +66,8 @@ export default class MyHelpClass extends Help {
       this.log(this.formatCommands(uniqueSubCommands));
       this.log('');
     }
+
+    return Promise.resolve();
   }
 
   protected logModify(argNamesMap: Map<string, string>, ...args: string[]): void {
@@ -75,11 +77,11 @@ export default class MyHelpClass extends Help {
       args[0] = args[0].replace(key, value);
     }
 
-    stdout.write(util.format.apply(this, args) + '\n'); // skipcq: JS-0357
+    stdout.write(format.apply(this, args) + '\n'); // skipcq: JS-0357
   }
 
   protected log(...args: string[]): void {
-    stdout.write(util.format.apply(this, args) + '\n'); // skipcq: JS-0357
+    stdout.write(format.apply(this, args) + '\n'); // skipcq: JS-0357
   }
 }
 

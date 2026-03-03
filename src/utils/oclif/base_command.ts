@@ -56,7 +56,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     this.args = args as CommandArgs<T>;
   }
 
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> { // skipcq: JS-0116
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display what fields
     // are required, otherwise show the error
     if (err?.message?.includes('See more help with --help')) {
@@ -64,9 +64,10 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 
-  protected async finally(_: Error | undefined): Promise<any> { // skipcq: JS-0116
+  protected finally(_: Error | undefined): Promise<any> {
     // called after run and catch regardless of whether or not the command errored
     return super.finally(_);
   }

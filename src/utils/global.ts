@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { fingerprint, Assettype, type INPUT_TYPES, Role, Techarea } from '@mitre/hdf-converters';
+import { fingerprint, Assettype, INPUT_TYPES, Role, Techarea } from '@mitre/hdf-converters';
 import AdmZip from 'adm-zip';
 import appRootPath from 'app-root-path';
 import axios from 'axios';
@@ -63,12 +63,13 @@ export function basename(inputPath: string): string {
  */
 export function dataURLtoU8Array(dataURL: string): Uint8Array {
   const arr = dataURL.split(',');
+  // functionality can be simplified by using this function once node25+ is used as the base image - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array/fromBase64
   const bstr = atob(arr[1]);
   let n = bstr.length;
   const u8arr = new Uint8Array(n);
 
   while (n--) {
-    u8arr[n] = bstr.charCodeAt(n);
+    u8arr[n] = bstr.charCodeAt(n); // eslint-disable-line unicorn/prefer-code-point
   }
 
   return u8arr;
@@ -286,7 +287,7 @@ export function checkInput(guessOptions: { data: string; filename: string }, des
   const detectedType = fingerprint({ data: guessOptions.data, filename: basename(guessOptions.filename) });
   if (!(detectedType === desiredType))
     throw new Error(`Unable to process input file\
-      \nDetected input type: ${detectedType === '' ? 'unknown or none' : `${detectedType} - did you mean to run the ${detectedType} to HDF converter instead?`}\
+      \nDetected input type: ${detectedType === INPUT_TYPES.NOT_FOUND ? 'unknown or none' : `${detectedType} - did you mean to run the ${detectedType} to HDF converter instead?`}\
       \nPlease ensure the input is a valid ${desiredFormat}`);
 }
 
@@ -344,7 +345,7 @@ export async function downloadFile(url: string | undefined, outputPath: string):
       });
     });
   } catch (error) {
-    throw new Error(`Error downloading file: ${getErrorMessage(error)}`);
+    throw new Error(`Error downloading file: ${getErrorMessage(error)}`, { cause: error });
   }
 }
 
@@ -369,7 +370,7 @@ export function extractFileFromZip(zipPath: string, fileName: string): [Buffer |
     }
     throw new Error(`File not found in the ZIP archived: ${fileName}`);
   } catch (error) {
-    throw new Error(`Error extracting file -> ${getErrorMessage(error)}`);
+    throw new Error(`Error extracting file -> ${getErrorMessage(error)}`, { cause: error });
   }
 }
 
@@ -403,9 +404,9 @@ export function getJsonMetaDataExamples(endpoint?: string): string[] {
     + '"hostip": "The asset IP address",'
     + '"hostmac": "The asset MAC address",'
     + '"targetcomment": "The target comments",'
-    + `"role": "The computing role, one of: [${Object.values(Role)}]",`
-    + `"assettype": "The asset type, one of: [${Object.values(Assettype)}]",`
-    + `"techarea": "The tech area, one of: [${Object.values(Techarea).filter(item => item !== '')}]",`
+    + `"role": "The computing role, one of: [${Object.values(Role).join(', ')}]",`
+    + `"assettype": "The asset type, one of: [${Object.values(Assettype).join(', ')}]",`
+    + `"techarea": "The tech area, one of: [${Object.values(Techarea).filter(item => item !== Techarea.Empty).join(', ')}]",`
     + '"stigguid": "The STIG ID",'
     + '"targetkey": "The target key",'
     + '"webordatabase": "Is the target a web or database? [Y/n]",'
