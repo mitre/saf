@@ -1,19 +1,17 @@
 import fs from 'fs';
-import _ from 'lodash';
 import { readFile } from 'fs/promises';
-import { colorize } from 'json-colorizer';
-import { Command, Flags } from '@oclif/core';
-
-import { ApiConnection } from '../../../utils/emasser/api_connection';
-import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
-
 import { StaticCodeScansApi } from '@mitre/emass_client';
-import {
+import type {
   StaticCodeApplicationPost, StaticCodeResponsePost,
   StaticCodeRequestPostBody as StaticCodeRequest,
   StaticCodeRequestPostBodyApplication as ApplicationRequestBody,
 } from '@mitre/emass_client/dist/api';
+import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
+import _ from 'lodash';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
 
 /**
  * Generates a JSON string based on the provided action.

@@ -1,10 +1,10 @@
 import { colorize } from 'json-colorizer';
+import { CACApi } from '@mitre/emass_client';
+import type { CacResponseGet } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
-import { CACApi } from '@mitre/emass_client';
-import { CacResponseGet } from '@mitre/emass_client/dist/api';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetCac extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]';

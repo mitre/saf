@@ -1,13 +1,13 @@
-import { Flags } from '@oclif/core';
-import { Attestation } from '@mitre/hdf-converters';
 import fs from 'fs';
+import { Flags } from '@oclif/core';
+import type { Attestation } from '@mitre/hdf-converters';
 import AccurateSearch from 'accurate-search';
-import XlsxPopulate from 'xlsx-populate';
-import { ExecJSON } from 'inspecjs';
+import type { ExecJSON } from 'inspecjs';
 import promptSync from 'prompt-sync';
+import XlsxPopulate from 'xlsx-populate';
+import yaml from 'yaml';
 import files from '../../resources/files.json';
 import { dataURLtoU8Array } from '../../utils/global';
-import yaml from 'yaml';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
 const MAX_SEARCH_RESULTS = 5;

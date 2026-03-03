@@ -1,20 +1,18 @@
 import fs from 'fs';
 import { readFile } from 'fs/promises';
-import { colorize } from 'json-colorizer';
+import { HardwareBaselineApi } from '@mitre/emass_client';
+import type { HwBaselineResponsePostPut as HwBaselineResponse } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
 import {
   displayError,
-  FlagOptions,
   getFlagsForEndpoint,
   getJsonExamples,
   printRedMsg,
+  type FlagOptions,
 } from '../../../utils/emasser/utilities';
-
-import { ApiConnection } from '../../../utils/emasser/api_connection';
-import { outputFormat } from '../../../utils/emasser/output_formatter';
-
-import { HardwareBaselineApi } from '@mitre/emass_client';
-import { HwBaselineResponsePostPut as HwBaselineResponse } from '@mitre/emass_client/dist/api';
 
 /**
  * Represents a hardware asset with various attributes.
@@ -41,7 +39,7 @@ import { HwBaselineResponsePostPut as HwBaselineResponse } from '@mitre/emass_cl
  * @property {string} [approvalStatus] - The approval status of the asset.
  * @property {boolean} [criticalAsset] - Indicates if the asset is critical.
  */
-interface Hardware {
+type Hardware = {
   // Required field
   assetName?: string;
   // Conditional Fields
@@ -62,7 +60,7 @@ interface Hardware {
   location?: string;
   approvalStatus?: string;
   criticalAsset?: boolean;
-}
+};
 
 /**
  * Retrieves all JSON examples by merging the results of multiple example sets.

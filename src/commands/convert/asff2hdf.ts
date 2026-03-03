@@ -1,20 +1,20 @@
-import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { ASFFResults as Mapper } from '@mitre/hdf-converters';
-import { basename, checkInput, checkSuffix } from '../../utils/global';
-import _ from 'lodash';
 import path from 'path';
 import {
-  AwsSecurityFindingFilters,
-  DescribeStandardsControlsCommandOutput,
-  GetEnabledStandardsCommandOutput,
+  type AwsSecurityFindingFilters,
+  type DescribeStandardsControlsCommandOutput,
+  type GetEnabledStandardsCommandOutput,
   SecurityHub,
-  SecurityHubClientConfig,
-  StandardsControl,
-  StandardsSubscription,
+  type SecurityHubClientConfig,
+  type StandardsControl,
+  type StandardsSubscription,
 } from '@aws-sdk/client-securityhub';
+import { Flags } from '@oclif/core';
+import { ASFFResults as Mapper } from '@mitre/hdf-converters';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import https from 'https';
+import _ from 'lodash';
+import { basename, checkInput, checkSuffix } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 

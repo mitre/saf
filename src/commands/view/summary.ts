@@ -1,7 +1,7 @@
 import { Command, Flags } from '@oclif/core';
 import { createWinstonLogger } from '../../utils/logging';
-import { loadExecJSONs } from '../../utils/ohdf/data_loader';
 import { calculateSummariesForExecJSONs, calculateTotalCountsForSummaries, calculateComplianceScoresForExecJSONs } from '../../utils/ohdf/calculations';
+import { loadExecJSONs } from '../../utils/ohdf/data_loader';
 import { createPrintableSummary, printAndWriteOutput } from '../../utils/ohdf/output_generator';
 
 /** The prefix used for logging messages in this command */
@@ -30,7 +30,7 @@ const FORMAT_OPTIONS = ['json', 'yaml', 'markdown'];
  * @property {string} [logLevel] - The level of logging to use (e.g., 'info', 'debug'). This is optional.
  * @property {unknown} help - The help flag. The type is unknown because it can be a boolean or a string depending on the command line library used.
  */
-interface CommandFlags {
+type CommandFlags = {
   input: string[];
   output?: string;
   format: string;
@@ -39,7 +39,7 @@ interface CommandFlags {
   'title-table'?: boolean;
   logLevel?: string;
   help: string | undefined;
-}
+};
 
 /**
  * Summary Class

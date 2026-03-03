@@ -1,12 +1,12 @@
 import path from 'path';
+import type { ContextualizedEvaluation } from 'inspecjs';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { ContextualizedEvaluation } from 'inspecjs';
 import { loadExecJSONs } from '../../../src/utils/ohdf/data_loader';
 
 describe('dataLoader.ts utils', () => {
   let hdfFilePath: string;
   let evaluation: ContextualizedEvaluation;
-  let result: { [key: string]: ContextualizedEvaluation };
+  let result: Record<string, ContextualizedEvaluation>;
 
   beforeEach(() => {
     // Arrange

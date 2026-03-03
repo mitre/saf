@@ -37,7 +37,7 @@ function printHelpMessage(showLocation: boolean) {
  * variables are missing, it prints an error message and exits the process.
  */
 export class ApiConfig {
-  private readonly envConfig: { [key: string]: string | undefined };
+  private readonly envConfig: Record<string, string | undefined>;
 
   public url: string;
   public port: number;

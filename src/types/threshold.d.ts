@@ -1,10 +1,7 @@
-import { ControlStatus } from 'inspecjs';
+import type { ControlStatus } from 'inspecjs';
 
 // The hash that we will generally be working with herein
-export type ControlStatusHash = {
-
-  [key in ControlStatus | 'Waived']: number;
-};
+export type ControlStatusHash = Record<ControlStatus | 'Waived', number>;
 
 export type StatusHash = ControlStatusHash & {
   PassedTests: number; // from passed controls

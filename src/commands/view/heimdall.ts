@@ -1,7 +1,7 @@
-import { Command, Flags } from '@oclif/core';
-import express, { Request, Response, NextFunction } from 'express';
 import fs from 'fs';
 import path from 'path';
+import { Command, Flags } from '@oclif/core';
+import express, { type Request, type Response, type NextFunction } from 'express';
 import { dynamicImport } from 'tsimportlib';
 import { getInstalledPath } from '../../utils/global';
 

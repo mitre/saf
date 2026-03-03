@@ -1,23 +1,27 @@
-import { Flags } from '@oclif/core';
-import winston from 'winston';
+import { execSync } from 'child_process';
+import { EventEmitter } from 'events';
 import fs, { copyFileSync } from 'fs';
+import path from 'path';
+import { input, confirm, select } from '@inquirer/prompts';
 import {
   processInSpecProfile,
   processOVAL,
-  UpdatedProfileReturn,
   updateProfileUsingXCCDF,
   processXCCDF,
   updateControl,
-  Profile,
-  Control,
+  type Control,
+  type Profile,
+  type UpdatedProfileReturn,
 } from '@mitre/inspec-objects';
-import path from 'path';
-import { createWinstonLogger } from '../../utils/logging';
+import { Flags } from '@oclif/core';
+import colors from 'colors';
 import fse from 'fs-extra';
 import Fuse from 'fuse.js';
-import { execSync } from 'child_process';
-import tmp from 'tmp';
 import _, { isEmpty } from 'lodash';
+import tmp from 'tmp';
+import type winston from 'winston';
+import { createWinstonLogger } from '../../utils/logging';
+import { BaseCommand } from '../../utils/oclif/base_command';
 import {
   addToProcessLogData,
   printBgMagentaRed,
@@ -33,11 +37,6 @@ import {
   printYellowGreen,
   saveProcessLogData,
 } from '../../utils/oclif/cli_helper';
-import { BaseCommand } from '../../utils/oclif/base_command';
-import { EventEmitter } from 'events';
-
-import colors from 'colors';
-import { input, confirm, select } from '@inquirer/prompts';
 import { basename, downloadFile, extractFileFromZip, getErrorMessage } from '../../utils/global';
 
 /**
@@ -201,15 +200,15 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         : (flags.xccdfUrl ? await this.getXccdfContent('URL', flags.xccdfUrl.toString()) : '');
       xccdfXmlFile = dataFileContent ? dataFileContent.xccdfFile : '';
       xccdfContent = dataFileContent ? dataFileContent.xccdfContent : '';
-      deltaOutputDir = flags.deltaOutputDir as string;
+      deltaOutputDir = flags.deltaOutputDir!;
 
       // Optional flags
-      inspecJsonFile = flags.inspecJsonFile as string;
-      ovalXmlFile = flags.ovalXmlFile as string;
-      reportFile = flags.reportFile as string;
+      inspecJsonFile = flags.inspecJsonFile!;
+      ovalXmlFile = flags.ovalXmlFile!;
+      reportFile = flags.reportFile!;
       idType = flags.idType;
       runMapControls = flags.runMapControls;
-      controlsDir = flags.controlsDir as string;
+      controlsDir = flags.controlsDir!;
       logLevel = flags.logLevel;
 
       // Save the flags to the log object
@@ -328,7 +327,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
         // Iterate through each mapped control
         // key = new control, controls[key] = old control
-        const controls: { [key: string]: any } = mappedControls;
+        const controls: Record<string, any> = mappedControls;
 
         // Create a directory where we are storing the newly created mapped controls
         // Do not over right the original controls in the directory (controlsDir)
@@ -636,7 +635,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       // fieldNormWeight: 1,
       keys: ['title'],
     };
-    const controlMappings: { [key: string]: string } = {};
+    const controlMappings: Record<string, string> = {};
 
     printCyan('Mapping Process ===========================================================================');
     // Create fuse object for searching through matchList
@@ -667,7 +666,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         printYellowBgGreen('Processing New Control: ', `${newControlId}`);
         printYellowBgGreen('     New Control Title: ', `${this.updateTitle(newControl.title)}`);
 
-        if (result[0] && result[0].score && result[0].score < 0.3) { // skipcq: JS-W1044
+        if (result[0]?.score && result[0].score < 0.3) { // skipcq: JS-W1044
           if (controlIdToScoreMap.has(result[0].item.id)) {
             const score = controlIdToScoreMap.get(result[0].item.id);
 
@@ -1017,7 +1016,7 @@ async function getFlags(): Promise<any> {
   };
 
   // Variable used to store the prompts (question and answers)
-  const interactiveValues: { [key: string]: any } = {};
+  const interactiveValues: Record<string, any> = {};
 
   printYellow('Provide the necessary information:');
   printGreen('  Required flag - The XCCDF XML file or URL containing the new guidance - in the form of .xml file');

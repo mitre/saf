@@ -1,6 +1,6 @@
-import { ContextualizedControl, ExecJSON, HDFControlSegment } from 'inspecjs';
+import type { ContextualizedControl, ExecJSON, HDFControlSegment } from 'inspecjs';
 import _ from 'lodash';
-import { ControlSetRow } from '../types/csv';
+import type { ControlSetRow } from '../types/csv';
 import { getDescription } from './global';
 
 export const csvExportFields = [
@@ -24,7 +24,7 @@ export const csvExportFields = [
 function descriptionsToString(
   descriptions?:
     | ExecJSON.ControlDescription[]
-    | { [key: string]: unknown }
+    | Record<string, unknown>
     | null,
 ): string {
   let result = '';

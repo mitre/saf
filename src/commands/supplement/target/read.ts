@@ -1,6 +1,6 @@
-import { Flags } from '@oclif/core';
-import { ExecJSON } from 'inspecjs';
 import fs from 'fs';
+import type { ExecJSON } from 'inspecjs';
+import { Flags } from '@oclif/core';
 import { BaseCommand } from '../../../utils/oclif/base_command';
 
 export default class ReadTarget extends BaseCommand<typeof ReadTarget> {

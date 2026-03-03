@@ -1,13 +1,10 @@
-import { colorize } from 'json-colorizer';
+import { PACApi } from '@mitre/emass_client';
+import type { PacResponsePost, PacGet as PAC } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
-
+import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
-
-import { PACApi } from '@mitre/emass_client';
-import { PacResponsePost,
-  PacGet as PAC } from '@mitre/emass_client/dist/api';
+import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
 
 const CMD_HELP = 'saf emasser post pac -h or --help';
 export default class EmasserPostPac extends Command {

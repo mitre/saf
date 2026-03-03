@@ -1,11 +1,11 @@
-import appRootPath from 'app-root-path';
-import { Assettype, fingerprint, Role, Techarea } from '@mitre/hdf-converters';
-import { getInstalledPathSync } from 'get-installed-path';
-import { AnyProfile, ContextualizedEvaluation, ExecJSON } from 'inspecjs';
-import _ from 'lodash';
 import fs from 'fs';
-import axios from 'axios';
+import { Assettype, fingerprint, Role, Techarea } from '@mitre/hdf-converters';
 import AdmZip from 'adm-zip';
+import appRootPath from 'app-root-path';
+import axios from 'axios';
+import { getInstalledPathSync } from 'get-installed-path';
+import type { AnyProfile, ContextualizedEvaluation, ExecJSON } from 'inspecjs';
+import _ from 'lodash';
 
 export type SpreadsheetTypes = 'cis' | 'disa' | 'general';
 
@@ -162,9 +162,9 @@ export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNu
   }
 }
 
-interface ExtendedContextualizedEvaluation extends ContextualizedEvaluation {
+type ExtendedContextualizedEvaluation = {
   profiles?: AnyProfile[]; // change this line
-}
+} & ContextualizedEvaluation;
 
 /**
  * The `getProfileInfo` function retrieves and formats profile information from a given evaluation.
@@ -248,9 +248,7 @@ export function getProfileInfo(evaluation: ExtendedContextualizedEvaluation, fil
  */
 export function getDescription(
   descriptions:
-    | {
-      [key: string]: string;
-    }
+    | Record<string, string>
     | ExecJSON.ControlDescription[],
   key: string,
 ): string | undefined {

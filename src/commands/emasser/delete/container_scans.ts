@@ -1,15 +1,13 @@
-import { colorize } from 'json-colorizer';
-import { Command, Flags } from '@oclif/core';
-
-import { ApiConnection } from '../../../utils/emasser/api_connection';
-import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
-
 import { ContainerScanResultsApi } from '@mitre/emass_client';
-import {
+import type {
   ContainerResourcesDeleteBodyInner,
   ContainersResourcesPostDelete,
 } from '@mitre/emass_client/dist/api';
+import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
+import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
 
 const CMD_HELP = 'saf emasser delete container_scans -h or --help';
 export default class EmasserContainerScans extends Command {
@@ -29,7 +27,7 @@ export default class EmasserContainerScans extends Command {
     const apiCxn = new ApiConnection();
     const containerScan = new ContainerScanResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    const requestBodyArray: Array<ContainerResourcesDeleteBodyInner> = [];
+    const requestBodyArray: ContainerResourcesDeleteBodyInner[] = [];
     flags.containerId.forEach((containerId: string) => {
       requestBodyArray.push({ containerId: containerId.replace(',', '') });
     });

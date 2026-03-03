@@ -1,13 +1,13 @@
-import { colorize } from 'json-colorizer';
-import { Command, Flags } from '@oclif/core';
+import fs from 'fs';
+import { readFile } from 'fs/promises';
 import { CloudResourceResultsApi } from '@mitre/emass_client';
-import { CloudResourcesResponsePost } from '@mitre/emass_client/dist/api';
+import type { CloudResourcesResponsePost } from '@mitre/emass_client/dist/api';
+import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
+import _ from 'lodash';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
-import { readFile } from 'fs/promises';
-import _ from 'lodash';
-import fs from 'fs';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
 
 /**
  * Represents a cloud resource with compliance results.
@@ -26,7 +26,7 @@ import fs from 'fs';
  * @property {boolean} [isBaseline] - (Optional) Indicates if the resource is a baseline.
  * @property {Tags|any} [tags] - (Optional) Tags associated with the resource.
  */
-interface CloudResource {
+type CloudResource = {
   // Required
   provider: string;
   resourceId: string;
@@ -39,7 +39,7 @@ interface CloudResource {
   initiatedBy?: string;
   isBaseline?: boolean;
   tags?: Tags;
-}
+};
 
 /**
  * Represents a collection of tags where each tag is a key-value pair.
@@ -48,11 +48,9 @@ interface CloudResource {
  * @property {string} [key] - The key of the tag.
  * @property {string} value - The value associated with the tag key.
  */
-interface Tags {
-  [key: string]: string;
-}
+type Tags = Record<string, string>;
 
-interface ComplianceResults {
+type ComplianceResults = {
   // Required
   cspPolicyDefinitionId: string;
   isCompliant: boolean;
@@ -65,7 +63,7 @@ interface ComplianceResults {
   policyDeploymentName?: string;
   policyDeploymentVersion?: string;
   severity?: string;
-}
+};
 
 /**
  * Combines JSON examples for 'cloud_resources-required' and 'cloud_resources-optional'

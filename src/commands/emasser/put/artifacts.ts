@@ -1,15 +1,12 @@
-import { colorize } from 'json-colorizer';
 import fs from 'fs';
 import { readFile } from 'fs/promises';
-import { Command, Flags } from '@oclif/core';
-
 import { ArtifactsApi } from '@mitre/emass_client';
-import { ArtifactsResponsePutPost } from '@mitre/emass_client/dist/api'; // skipcq: JS-R1000
-import { ArtifactsResponseGetDataInner as Artifacts } from '@mitre/emass_client/dist/api'; // skipcq: JS-R1000
-
+import type { ArtifactsResponseGetDataInner as Artifacts, ArtifactsResponsePutPost } from '@mitre/emass_client/dist/api'; // skipcq: JS-R1000
+import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
 
 function getAllJsonExamples(): Record<string, unknown> {
   return {

@@ -1,11 +1,11 @@
-export interface STIG {
+export type STIG = {
   CHECKLIST: CHECKLIST;
-}
-export interface CHECKLIST {
+};
+export type CHECKLIST = {
   ASSET?: Asset[] | null;
   STIGS?: STIGs[] | null;
-}
-export interface Asset {
+};
+export type Asset = {
   ROLE?: string[] | null;
   ASSET_TYPE?: string[] | null;
   HOST_NAME?: string[] | null;
@@ -17,23 +17,23 @@ export interface Asset {
   WEB_OR_DATABASE: boolean;
   WEB_DB_SITE?: string[] | null;
   WEB_DB_INSTANCE?: string[] | null;
-}
-export interface STIGs {
+};
+export type STIGs = {
   iSTIG?: STIGHolder[] | null;
-}
-export interface STIGHolder {
+};
+export type STIGHolder = {
   STIG_INFO?: STIGInfo[] | null;
   VULN?: Vulnerability[] | null;
-}
-export interface STIGInfo {
+};
+export type STIGInfo = {
   SI_DATA?: SIData[] | null;
-}
-export interface SIData {
+};
+export type SIData = {
   SID_NAME: string[];
   SID_DATA: string[];
-}
+};
 
-export interface Vulnerability {
+export type Vulnerability = {
   Vuln_Num?: string;
   Severity?: string;
   Group_Title?: string;
@@ -66,8 +66,8 @@ export interface Vulnerability {
   COMMENTS?: string;
   SEVERITY_OVERRIDE?: string;
   SEVERITY_JUSTIFICATION?: string;
-}
-export interface STIGAttributes {
+};
+export type STIGAttributes = {
   VULN_ATTRIBUTE: string[];
   ATTRIBUTE_DATA: string[];
-}
+};

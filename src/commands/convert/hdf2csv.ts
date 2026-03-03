@@ -1,13 +1,16 @@
-import { Flags } from '@oclif/core';
-import { ContextualizedEvaluation, contextualizeEvaluation } from 'inspecjs';
-import _ from 'lodash';
 import fs, { promises as fse } from 'fs';
-import stringify from 'csv-stringify';
-import { ControlSetRows } from '../../types/csv';
+import path from 'path';
+import { checkbox, input, select } from '@inquirer/prompts';
+import { Flags } from '@oclif/core';
+import colors from 'colors';
+import * as stringify from 'csv-stringify';
+import { EventEmitter } from 'events';
+import { contextualizeEvaluation, type ContextualizedEvaluation } from 'inspecjs';
+import _ from 'lodash';
+import type { ControlSetRows } from '../../types/csv';
 import { convertRow, csvExportFields } from '../../utils/csv';
 import { basename } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
-import path from 'path';
 import {
   addToProcessLogData,
   printGreen,
@@ -15,10 +18,6 @@ import {
   printRed,
   printYellow,
   saveProcessLogData } from '../../utils/oclif/cli_helper';
-import { EventEmitter } from 'events';
-
-import colors from 'colors';
-import { checkbox, input, select } from '@inquirer/prompts';
 
 export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   static readonly usage
@@ -91,8 +90,8 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       includeFields = interactiveFlags.fields.join(',');
       truncateFields = Boolean(interactiveFlags.truncateFields);
     } else if (this.requiredFlagsProvided(flags)) {
-      inputFile = flags.input as string;
-      outputFile = flags.output as string;
+      inputFile = flags.input!;
+      outputFile = flags.output!;
       includeFields = flags.fields;
       truncateFields = flags.noTruncate;
 
@@ -264,11 +263,11 @@ async function getFlags(): Promise<any> {
   printGreen('  Required flag - Field(s) (at least one) to include in output CSV (comma delineated)');
   printMagenta('  Optional flag - Truncate fields that exceed Excel cell limit (32,767 characters)\n');
 
-  interface ChoiceItems {
+  type ChoiceItems = {
     name: string;
     value: string;
     checked: boolean;
-  }
+  };
   const choices: ChoiceItems[] = [];
   for (const str of csvExportFields) {
     choices.push({ name: str, value: str, checked: true });

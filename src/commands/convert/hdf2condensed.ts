@@ -1,6 +1,7 @@
 import { Flags } from '@oclif/core';
-import { ContextualizedProfile, convertFileContextual } from 'inspecjs';
 import fs from 'fs';
+import { convertFileContextual, type ContextualizedProfile } from 'inspecjs';
+import _ from 'lodash';
 import {
   calculateCompliance,
   extractControlSummariesBySeverity,
@@ -8,7 +9,6 @@ import {
   renameStatusName,
   severityTargetsObject,
 } from '../../utils/threshold';
-import _ from 'lodash';
 import { checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 

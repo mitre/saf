@@ -1,13 +1,10 @@
-import { colorize } from 'json-colorizer';
+import { CACApi } from '@mitre/emass_client';
+import type { CacResponsePost, CacGet as CAC } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
-
+import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
-
-import { CACApi } from '@mitre/emass_client';
-import { CacResponsePost,
-  CacGet as CAC } from '@mitre/emass_client/dist/api';
+import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
 
 const CMD_HELP = 'saf emasser post cac -h or --help';
 export default class EmasserPostCac extends Command {

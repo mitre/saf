@@ -1,4 +1,4 @@
-export interface CSVControl {
+export type CSVControl = {
   V_ID: string;
   Severity: string;
   CCI: string;
@@ -14,10 +14,8 @@ export interface CSVControl {
   checktext: string;
   '': string;
   Response: string;
-}
-
-export type ControlSetRow = {
-  [key: string]: string;
 };
+
+export type ControlSetRow = Record<string, string>;
 
 export type ControlSetRows = ControlSetRow[];

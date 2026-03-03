@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import fs from 'fs';
+import { Flags } from '@oclif/core';
+import { expect } from 'chai';
+import { convertFileContextual, type ContextualizedProfile } from 'inspecjs';
 import _ from 'lodash';
 import YAML from 'yaml';
-import { expect } from 'chai';
-import { Flags } from '@oclif/core';
-import { ContextualizedProfile, convertFileContextual } from 'inspecjs';
-import { ThresholdValues } from '../../types/threshold';
+import type { ThresholdValues } from '../../types/threshold';
+import { BaseCommand } from '../../utils/oclif/base_command';
 import {
   calculateCompliance,
   exitNonZeroIfTrue,
@@ -18,7 +18,6 @@ import {
   totalMin,
   unflattenThreshold,
 } from '../../utils/threshold';
-import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class Threshold extends BaseCommand<typeof Threshold> {
   static readonly usage = '<%= command.id %> -i <hdf-json> [-I <flattened-threshold-json> | -T <template-file>] [-h] [-L info|warn|debug|verbose]';

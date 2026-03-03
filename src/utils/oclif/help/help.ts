@@ -1,6 +1,6 @@
-import _ from 'lodash';
 import * as util from 'util'; // skipcq: JS-C1003 - util does not expose itself as an ES Module.
-import { Command, Help } from '@oclif/core';
+import { type Command, Help } from '@oclif/core';
+import _ from 'lodash';
 
 /*
   Override the showCommandHelp (called directly for single-command CLIs) method defined in the oclif Help class.

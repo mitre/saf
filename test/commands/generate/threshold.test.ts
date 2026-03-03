@@ -1,6 +1,6 @@
-import { runCommand } from '@oclif/test';
 import fs from 'fs';
 import path from 'path';
+import { runCommand } from '@oclif/test';
 import tmp from 'tmp';
 import { describe, expect, it } from 'vitest';
 import YAML from 'yaml';

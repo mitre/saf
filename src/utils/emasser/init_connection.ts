@@ -1,9 +1,9 @@
 import fs from 'fs';
 import https from 'https';
-import FormData from 'form-data';
-import { ApiConfig } from './api_config';
 import { Configuration } from '@mitre/emass_client/dist/configuration';
-import globalAxios, { AxiosInstance, AxiosRequestConfig } from 'axios';
+import globalAxios, { type AxiosInstance, type AxiosRequestConfig } from 'axios';
+import FormData from 'form-data';
+import type { ApiConfig } from './api_config';
 
 /**
  * Initializes and configures Axios instances for making HTTP requests.

@@ -1,14 +1,3 @@
-import { colorize } from 'json-colorizer';
-import { Args, Command, Flags } from '@oclif/core';
-import { ApiConnection } from '../../../utils/emasser/api_connection';
-import { outputFormat } from '../../../utils/emasser/output_formatter';
-import {
-  FlagOptions,
-  displayError,
-  getFlagsForEndpoint,
-  getExamplesForEndpoint,
-  getDescriptionForEndpoint,
-} from '../../../utils/emasser/utilities';
 import {
   VASystemDashboardsApi,
   VAOMBFISMADashboardApi,
@@ -40,6 +29,17 @@ import {
   CoastGuardSystemFISMAMetricsDashboardApi,
   SystemCONMONIntegrationStatusDashboardApi,
 } from '@mitre/emass_client';
+import { Args, Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
+import {
+  displayError,
+  getFlagsForEndpoint,
+  getExamplesForEndpoint,
+  getDescriptionForEndpoint,
+  type FlagOptions,
+} from '../../../utils/emasser/utilities';
 
 const endpoint = 'dashboards';
 

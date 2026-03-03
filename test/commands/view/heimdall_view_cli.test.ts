@@ -1,9 +1,9 @@
+import type { Server } from 'http';
+import path from 'path';
 import { runCommand } from '@oclif/test';
 import axios from 'axios';
 import express from 'express';
-import { Server } from 'http';
 import { JSDOM } from 'jsdom';
-import path from 'path';
 import { afterAll, assert, beforeAll, describe, expect, it } from 'vitest';
 import { getInstalledPath } from '../../../src/utils/global';
 

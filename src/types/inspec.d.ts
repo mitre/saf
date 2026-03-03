@@ -1,8 +1,8 @@
-export interface InSpecControl {
+export type InSpecControl = {
   id: string;
   title: string;
   desc: string;
-  descs: { [key: string]: string };
+  descs: Record<string, string>;
   ref?: string;
   refs?: string[];
   rationale?: string;
@@ -33,17 +33,17 @@ export interface InSpecControl {
     ia_controls?: string;
     [key: string]: string | string[] | Record<string, string[]>[] | boolean | undefined;
   };
-}
+};
 
-export interface InSpecMetaData {
+export type InSpecMetaData = {
   maintainer?: string;
   copyright?: string;
   copyright_email?: string;
   license?: string;
   version?: string;
-}
+};
 
-export interface InspecReadme {
+export type InspecReadme = {
   profileType: string;
   profileGuidance: string;
   profileGuidanceAgency: string;
@@ -57,4 +57,4 @@ export interface InspecReadme {
   inspecTitle: string;
   benchmarkVersion: string;
   benchmarkDate: string;
-}
+};

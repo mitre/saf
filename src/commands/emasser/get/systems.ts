@@ -1,10 +1,10 @@
-import { colorize } from 'json-colorizer';
+import { SystemsApi } from '@mitre/emass_client';
+import type { SystemsResponse } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { getFlagsForEndpoint, FlagOptions, displayError } from '../../../utils/emasser/utilities';
-import { SystemsApi } from '@mitre/emass_client';
-import { SystemsResponse } from '@mitre/emass_client/dist/api';
+import { getFlagsForEndpoint, displayError, type FlagOptions } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetSystems extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]';

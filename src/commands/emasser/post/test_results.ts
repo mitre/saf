@@ -1,13 +1,10 @@
-import { colorize } from 'json-colorizer';
+import { TestResultsApi } from '@mitre/emass_client';
+import type { TestResultsResponsePost, TestResultsGet as TestResult } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
-
+import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
-
-import { TestResultsApi } from '@mitre/emass_client';
-import { TestResultsResponsePost,
-  TestResultsGet as TestResult } from '@mitre/emass_client/dist/api';
+import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
 
 const CMD_HELP = 'saf emasser post test_results -h or --help';
 export default class EmasserPostTestResults extends Command {

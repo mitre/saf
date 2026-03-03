@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import type { ExecJSON, ContextualizedEvaluation } from 'inspecjs';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ExecJSON, ContextualizedEvaluation } from 'inspecjs';
 import {
   basename,
   checkSuffix,

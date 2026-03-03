@@ -1,6 +1,7 @@
 import { CciNistMappingData } from '@mitre/hdf-converters';
-import { Vulnerability } from '../types/stig';
 import promptSync from 'prompt-sync';
+import type { Vulnerability } from '../types/stig';
+
 const prompt = promptSync();
 
 export function extractSTIGUrl(findingDetails: string): string {

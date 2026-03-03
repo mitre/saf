@@ -1,20 +1,20 @@
-import { Flags } from '@oclif/core';
 import fs from 'fs';
+import { hostname } from 'os';
+import path from 'path';
+import { input, confirm, select, number } from '@inquirer/prompts';
 import {
   Assettype,
-  ChecklistMetadata,
+  type ChecklistMetadata,
   Role,
   Techarea,
   validateChecklistMetadata,
 } from '@mitre/hdf-converters';
-import path from 'path';
-import { BaseCommand } from '../../utils/oclif/base_command';
+import { Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
-import { getJsonMetaDataExamples } from '../../utils/global';
-import { printGreen, printYellow } from '../../utils/oclif/cli_helper';
-import { input, confirm, select, number } from '@inquirer/prompts';
 import _, { isEmpty } from 'lodash';
-import { hostname } from 'os';
+import { getJsonMetaDataExamples } from '../../utils/global';
+import { BaseCommand } from '../../utils/oclif/base_command';
+import { printGreen, printYellow } from '../../utils/oclif/cli_helper';
 
 export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLMetadata> {
   static readonly usage = '<%= command.id %> [-h] [-L info|warn|debug|verbose] [-o <value> | --interactive]';
@@ -97,7 +97,7 @@ async function getFlags(): Promise<unknown> {
   };
 
   // Variable used to store the prompts (question and answers)
-  const interactiveValues: { [key: string]: unknown } = {};
+  const interactiveValues: Record<string, unknown> = {};
   printYellow('Provide the necessary information:');
   printGreen('  Required flag - The metadata json file to be generated (full path to include file name)');
 
@@ -147,7 +147,7 @@ async function getFlags(): Promise<unknown> {
  */
 async function getCklMetaData(): Promise<unknown> {
   // Variable used to store the prompts (question and answers)
-  const interactiveValues: { [key: string]: unknown } = {};
+  const interactiveValues: Record<string, unknown> = {};
 
   printYellow('This process collects information necessary to generate a checklist metadata used by the "saf convert hdf2ckl" command.');
   printYellow('Not all fields are visible in the STIG Viewer, some are used for references and may not generate a ckl exactly as the STIG Viewer.\n');

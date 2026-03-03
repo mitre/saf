@@ -1,7 +1,6 @@
-import { ContextualizedControl, ContextualizedProfile, ControlStatus, Severity } from 'inspecjs';
-import { StatusHash, ThresholdValues } from '../types/threshold';
+import type { ContextualizedControl, ContextualizedProfile, ControlStatus, ExecJSON, Severity } from 'inspecjs';
 import _ from 'lodash';
-import { ControlDescription } from 'inspecjs/lib/generated_parsers/v_1_0/exec-json';
+import type { StatusHash, ThresholdValues } from '../types/threshold';
 
 export const severityTargetsObject = {
   critical: ['passed.critical.min', 'passed.critical.max', 'failed.critical.min', 'failed.critical.max', 'skipped.critical.min', 'skipped.critical.max', 'error.critical.min', 'error.critical.max', 'no_impact.critical.min', 'no_impact.critical.max'],
@@ -196,7 +195,7 @@ export function getControlIdMap(profile: ContextualizedProfile, thresholds?: Thr
 
 export function getDescriptionContentsOrUndefined(
   label: string,
-  descriptions?: ControlDescription[] | Record<string, unknown> | null,
+  descriptions?: ExecJSON.ControlDescription[] | Record<string, unknown> | null,
 ): unknown {
   if (!descriptions) return undefined;
 

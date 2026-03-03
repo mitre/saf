@@ -1,12 +1,12 @@
-import { colorize } from 'json-colorizer';
-import { Command, Flags } from '@oclif/core';
-import { CLIError } from '@oclif/core/errors';
-import { DeviceScanResultsApi } from '@mitre/emass_client';
-import { DeviceScanResultsResponsePost } from '@mitre/emass_client/dist/api';
-import { ApiConnection } from '../../../utils/emasser/api_connection';
-import { outputFormat } from '../../../utils/emasser/output_formatter';
 import fs from 'fs';
 import path from 'path';
+import { DeviceScanResultsApi } from '@mitre/emass_client';
+import type { DeviceScanResultsResponsePost } from '@mitre/emass_client/dist/api';
+import { Command, Flags } from '@oclif/core';
+import { CLIError } from '@oclif/core/errors';
+import { colorize } from 'json-colorizer';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
 import { displayError } from '../../../utils/emasser/utilities';
 
 const CMD_HELP = 'saf emasser post device_scans -h or --help';

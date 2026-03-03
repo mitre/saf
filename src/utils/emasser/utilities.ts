@@ -1,7 +1,7 @@
-import { Flags } from '@oclif/core';
-import { BooleanFlag, OptionFlag } from '@oclif/core/interfaces';
 import fs from 'fs';
 import path from 'path';
+import { Flags } from '@oclif/core';
+import type { BooleanFlag, OptionFlag } from '@oclif/core/interfaces';
 import { colorize } from 'json-colorizer';
 import { outputError } from './output_error';
 
@@ -12,18 +12,18 @@ import { outputError } from './output_error';
  * @property {string} endpoint - The endpoint to which the request is directed.
  * @property {string} argument - Additional argument for the request.
  */
-interface CliArgs {
+type CliArgs = {
   requestType: string;
   endpoint: string;
   argument: string;
-}
+};
 
 /**
  * Interface representing various flag options used in the application.
  * Property are listed here as optional but are set to required based
  * on what endpoint being supported (see getFlagsForEndpoint)
  */
-export interface FlagOptions {
+export type FlagOptions = {
   systemId?: OptionFlag<number>;
   poamId?: OptionFlag<number>;
   poamsId?: OptionFlag<number[]>;
@@ -84,7 +84,7 @@ export interface FlagOptions {
   comments?: OptionFlag<string | any>;
   workflow?: OptionFlag<string | any>;
   name?: OptionFlag<string | any>;
-}
+};
 
 /**
  * Parses command line arguments to extract the request type, endpoint, and additional argument.

@@ -1,13 +1,13 @@
-import { colorize } from 'json-colorizer';
-import { Command, Flags } from '@oclif/core';
+import fs from 'fs';
+import { readFile } from 'fs/promises';
 import { ContainerScanResultsApi } from '@mitre/emass_client';
-import { ContainersResponsePost } from '@mitre/emass_client/dist/api';
+import type { ContainersResponsePost } from '@mitre/emass_client/dist/api';
+import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
+import _ from 'lodash';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
-import { readFile } from 'fs/promises';
-import _ from 'lodash';
-import fs from 'fs';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
 
 /**
  * Represents a container resource with associated metadata and benchmarks.
@@ -23,7 +23,7 @@ import fs from 'fs';
  * @property {string} [namespace] - The namespace in which the container is running. (Optional)
  * @property {Tags|any} [tags] - Additional tags or metadata associated with the container. (Optional)
  */
-interface ContainerResource {
+type ContainerResource = {
   // Required
   containerId: string;
   containerName: string;
@@ -34,20 +34,18 @@ interface ContainerResource {
   podIp?: string;
   namespace?: string;
   tags?: Tags;
-}
+};
 
 /**
  * Represents a collection of tags where each tag is a key-value pair.
  * The key is a string representing the tag name, and the value is a string representing the tag value.
  */
-interface Tags {
-  [key: string]: string;
-}
+type Tags = Record<string, string>;
 
 /**
  * Represents the benchmarks for a container scan.
  */
-interface Benchmarks {
+type Benchmarks = {
   // Required
   benchmark: string;
   results: Results[];
@@ -55,19 +53,19 @@ interface Benchmarks {
   isBaseline?: boolean;
   version?: string;
   release?: string;
-}
+};
 
 /**
  * Represents the results of a container scan.
  */
-interface Results {
+type Results = {
   // Required
   ruleId: string;
   status: StatusEnum;
   lastSeen: number;
   // Optional
   message?: string;
-}
+};
 
 /**
  * Enum representing the status of a container scan.

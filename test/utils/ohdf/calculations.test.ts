@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
+import type { ContextualizedEvaluation, ContextualizedProfile } from 'inspecjs';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { ContextualizedEvaluation, ContextualizedProfile } from 'inspecjs';
 import {
   calculateSummariesForExecJSONs,
   calculateComplianceScoresForExecJSONs,

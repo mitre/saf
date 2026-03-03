@@ -1,16 +1,16 @@
-import { Flags } from '@oclif/core';
 import fs from 'fs';
 import https from 'https';
-import { FromHdfToAsffMapper as Mapper } from '@mitre/hdf-converters';
 import path from 'path';
 import {
-  AwsSecurityFinding,
+  type AwsSecurityFinding,
   SecurityHub,
-  SecurityHubClientConfig,
+  type SecurityHubClientConfig,
 } from '@aws-sdk/client-securityhub';
+import { FromHdfToAsffMapper as Mapper } from '@mitre/hdf-converters';
+import { Flags } from '@oclif/core';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
-import { basename, checkSuffix } from '../../utils/global';
 import _ from 'lodash';
+import { basename, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {

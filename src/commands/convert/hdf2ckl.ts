@@ -1,14 +1,14 @@
-import { Command, Flags } from '@oclif/core';
-import _ from 'lodash';
 import fs from 'fs';
 import {
   Assettype,
-  ChecklistMetadata,
+  type ChecklistMetadata,
   ChecklistResults as Mapper,
   Role,
   Techarea,
   validateChecklistMetadata,
 } from '@mitre/hdf-converters';
+import { Command, Flags } from '@oclif/core';
+import _ from 'lodash';
 import { checkSuffix } from '../../utils/global';
 
 export default class HDF2CKL extends Command {

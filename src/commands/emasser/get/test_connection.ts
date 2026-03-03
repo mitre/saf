@@ -1,8 +1,8 @@
-import { colorize } from 'json-colorizer';
-import { Command, Flags } from '@oclif/core';
-import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { TestApi } from '@mitre/emass_client';
-import { Test } from '@mitre/emass_client/dist/api';
+import type { Test } from '@mitre/emass_client/dist/api';
+import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
 import { displayError } from '../../../utils/emasser/utilities';
 

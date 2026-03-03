@@ -1,12 +1,12 @@
 import fs from 'fs';
 import { readFile } from 'fs/promises';
-import { colorize } from 'json-colorizer';
-import { Command, Flags } from '@oclif/core';
-import { displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
-import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { SoftwareBaselineApi } from '@mitre/emass_client';
+import type { SwBaselineResponsePostPut } from '@mitre/emass_client/dist/api';
+import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { SwBaselineResponsePostPut } from '@mitre/emass_client/dist/api';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
 import { getErrorMessage } from '../../../utils/global';
 
 /**
@@ -49,7 +49,7 @@ import { getErrorMessage } from '../../../utils/global';
  * @property {boolean} [unapprovedSoftwareFromTrm] - Indicates if the software is unapproved from TRM. (VA Only)
  * @property {boolean} [approvedWaiver] - Indicates if there is an approved waiver for the software. (VA Only)
  */
-interface Software {
+type Software = {
   // Required field
   softwareVendor?: string;
   softwareName?: string;
@@ -90,7 +90,7 @@ interface Software {
   unsupportedOperatingSystem?: boolean;
   unapprovedSoftwareFromTrm?: boolean;
   approvedWaiver?: boolean;
-}
+};
 
 /**
  * Combines SON examples from multiple sources into a single obect.

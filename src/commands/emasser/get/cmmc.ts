@@ -1,10 +1,10 @@
-import { colorize } from 'json-colorizer';
-import { Command, Flags } from '@oclif/core';
-import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { CMMCAssessmentsApi } from '@mitre/emass_client';
-import { CmmcResponseGet } from '@mitre/emass_client/dist/api';
+import type { CmmcResponseGet } from '@mitre/emass_client/dist/api';
+import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetCmmc extends Command {
   static readonly usage = '<%= command.id %> [FLAG]';

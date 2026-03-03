@@ -1,14 +1,14 @@
-import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { XMLParser } from 'fast-xml-parser';
-import { InSpecMetaData, InspecReadme } from '../../types/inspec';
 import path from 'path';
-import { createWinstonLogger } from '../../utils/logging';
-import { processOVAL, processXCCDF, Profile } from '@mitre/inspec-objects';
-import { basename } from '../../utils/global';
-import { BaseCommand } from '../../utils/oclif/base_command';
-import { Logger } from 'winston';
+import { processOVAL, processXCCDF, type Profile } from '@mitre/inspec-objects';
+import { Flags } from '@oclif/core';
+import { XMLParser } from 'fast-xml-parser';
 import _ from 'lodash';
+import type { Logger } from 'winston';
+import type { InSpecMetaData, InspecReadme } from '../../types/inspec';
+import { basename } from '../../utils/global';
+import { createWinstonLogger } from '../../utils/logging';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
   static readonly usage

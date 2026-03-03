@@ -1,7 +1,7 @@
 import * as marked from 'marked';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { generateMarkdownTable, generateMarkdownTableRow, prettyPrintColumnTitle, prettyPrintRowTitle } from '../../../../src/utils/ohdf/output_generator';
-import { PrintableSummary } from '../../../../src/utils/ohdf/types';
+import type { PrintableSummary } from '../../../../src/utils/ohdf/types';
 
 let item: PrintableSummary;
 const titleTables = true;
@@ -70,7 +70,7 @@ describe('generateMarkdownTable', () => {
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
-    if (tableToken && tableToken.type === 'table') {
+    if (tableToken?.type === 'table') {
       const headers = tableToken.header;
       const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
       expect(Array.isArray(headers)).toBe(true);
@@ -83,7 +83,7 @@ describe('generateMarkdownTable', () => {
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
-    if (tableToken && tableToken.type === 'table') {
+    if (tableToken?.type === 'table') {
       const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
 
       for (const [_index, row] of rows.entries()) {
@@ -99,7 +99,7 @@ describe('generateMarkdownTable', () => {
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
-    if (tableToken && tableToken.type === 'table') {
+    if (tableToken?.type === 'table') {
       const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
 
       for (const [index, row] of rows.entries()) {
@@ -113,7 +113,7 @@ describe('generateMarkdownTable', () => {
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
-    if (tableToken && tableToken.type === 'table') {
+    if (tableToken?.type === 'table') {
       const headers = tableToken.header;
 
       const headerTexts = headers.map((header, index) => {
@@ -136,7 +136,7 @@ describe('generateMarkdownTable', () => {
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
-    if (tableToken && tableToken.type === 'table') {
+    if (tableToken?.type === 'table') {
       const headers = tableToken.header;
 
       const headerTexts = headers.map((header, index) => {

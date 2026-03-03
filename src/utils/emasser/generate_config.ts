@@ -1,8 +1,8 @@
-import fse from 'fs-extra';
-import dotenv from 'dotenv';
-import _ from 'lodash';
-import colors from 'colors';
 import { input, confirm, password, select } from '@inquirer/prompts';
+import colors from 'colors';
+import dotenv from 'dotenv';
+import fse from 'fs-extra';
+import _ from 'lodash';
 
 const PROMPT_MESSAGE = [
   'Provide the eMASS API key (EMASSER_API_KEY) - valid key is > 30 alpha numeric characters:',
@@ -121,7 +121,7 @@ async function processPrompt() {
   };
 
   // Variable used to store the prompts (question and answers)
-  const interactiveValues: { [key: string]: string | number } = { EMASSER_KEY_FILE_PATH: '', EMASSER_CERT_FILE_PATH: '', EMASSER_CA_FILE_PATH: '' };
+  const interactiveValues: Record<string, string | number> = { EMASSER_KEY_FILE_PATH: '', EMASSER_CERT_FILE_PATH: '', EMASSER_CA_FILE_PATH: '' };
   // Reset the certificates as the user will choose what cert type to use
 
   // Required variables

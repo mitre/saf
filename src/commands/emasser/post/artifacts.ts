@@ -1,14 +1,14 @@
+import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import AdmZip from 'adm-zip';
-import fs, { ReadStream } from 'fs';
-import { colorize } from 'json-colorizer';
 import { Command, Flags } from '@oclif/core';
 import { ArtifactsApi } from '@mitre/emass_client';
-import { ArtifactsResponsePutPost } from '@mitre/emass_client/dist/api';
+import type { ArtifactsResponsePutPost } from '@mitre/emass_client/dist/api';
+import AdmZip from 'adm-zip';
+import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, FlagOptions, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
 
 const CMD_HELP = 'saf emasser post artifacts -h or --help';
 export default class EmasserPostArtifacts extends Command {
@@ -48,7 +48,7 @@ export default class EmasserPostArtifacts extends Command {
     if (flags.fileName.length === 1 || flags.fileName[0].endsWith('.zip')) {
       if (fs.existsSync(flags.fileName[0])) {
         const isBulk = Boolean(flags.fileName[0].endsWith('.zip'));
-        const fileStream: ReadStream = fs.createReadStream(flags.fileName[0]);
+        const fileStream: fs.ReadStream = fs.createReadStream(flags.fileName[0]);
 
         artifactApi.addArtifactsBySystemId(
           flags.systemId, fileStream, isBulk, flags.isTemplate, flags.type, flags.category).then(

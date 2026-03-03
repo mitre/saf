@@ -1,5 +1,5 @@
-import { ApiConfig } from './api_config';
 import _ from 'lodash';
+import { ApiConfig } from './api_config';
 
 /**
  * Removes all properties with null values from the given object.
@@ -8,7 +8,7 @@ import _ from 'lodash';
  * @returns A new object with all null properties removed.
  */
 function removeNullsFromObject(dataObject: object): object {
-  const jsonData: { [key: string]: any } = {};
+  const jsonData: Record<string, any> = {};
 
   for (const key of (Object.keys(dataObject) as (keyof typeof dataObject)[])) {
     if (dataObject[key] !== null) {
@@ -30,10 +30,10 @@ function removeNullsFromObject(dataObject: object): object {
  * @returns A new object with epoch timestamps converted to Date objects.
  */
 function convertEpochToDateTime(dataObject: object): object {
-  const jsonData: { [key: string]: any } = {};
+  const jsonData: Record<string, any> = {};
   for (const key of (Object.keys(dataObject) as (keyof typeof dataObject)[])) {
     if (Array.isArray(dataObject[key])) {
-      let jsonObj: { [key: string]: any } = {}; // skipcq: JS-0242
+      let jsonObj: Record<string, any> = {}; // skipcq: JS-0242
       const hash_array: object[] = [];
       const data_array: object[] = Object.values(dataObject[key]);
       data_array.forEach((dataObj: object) => {
@@ -109,13 +109,13 @@ export function outputFormat(data: object, doConversion = true): string {
       const paginationObj = { pagination: _.get(formatDataObj, 'pagination') };
 
       if (hideNulls) {
-        const newData: { [key: string]: any } = {};
+        const newData: Record<string, any> = {};
 
         for (const key1 of (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[])) {
           switch (key1) {
             // Process the 'meta' content
             case 'meta': {
-              const jsonData: { [key: string]: any } = { [key1]: formatDataObj[key1] };
+              const jsonData: Record<string, any> = { [key1]: formatDataObj[key1] };
               _.merge(newData, jsonData);
               break;
             }
@@ -135,7 +135,7 @@ export function outputFormat(data: object, doConversion = true): string {
                 formatDataObj = newData;
               // data: is NOT an array of objects, it is a simple object
               } else {
-                const jsonData: { [key: string]: any } = {};
+                const jsonData: Record<string, any> = {};
                 const obj: object = formatDataObj[key1];
                 // If we have a data key/pair of null
                 if (formatDataObj[key1] === null) {
@@ -143,7 +143,7 @@ export function outputFormat(data: object, doConversion = true): string {
                 } else {
                   for (const key2 of (Object.keys(obj) as (keyof typeof obj)[])) {
                     if (Array.isArray(obj[key2])) {
-                      let jsonObj: { [key: string]: any } = {}; // skipcq: JS-0242
+                      let jsonObj: Record<string, any> = {}; // skipcq: JS-0242
                       const data_array: object[] = Object.values(obj[key2]);
                       const hash_array: object[] = [];
                       for (const dataObject of data_array) {
@@ -156,7 +156,7 @@ export function outputFormat(data: object, doConversion = true): string {
                       jsonData[key2] = obj[key2];
                     }
                   }
-                  const dataObj: { [key: string]: any } = { data: jsonData };
+                  const dataObj: Record<string, any> = { data: jsonData };
                   _.merge(newData, dataObj);
                 }
 
@@ -174,7 +174,7 @@ export function outputFormat(data: object, doConversion = true): string {
 
             // Process any other key-pair not specified
             default: {
-              const jsonData: { [key: string]: any } = { [key1]: formatDataObj[key1] };
+              const jsonData: Record<string, any> = { [key1]: formatDataObj[key1] };
               _.merge(newData, jsonData);
               break;
             }
@@ -183,10 +183,10 @@ export function outputFormat(data: object, doConversion = true): string {
       }
 
       if (showEpoch) {
-        const newData: { [key: string]: any } = {};
-        const dataObj: { [key: string]: any } = {};
+        const newData: Record<string, any> = {};
+        const dataObj: Record<string, any> = {};
         for (const key1 of (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[])) {
-          const jsonData: { [key: string]: any } = {}; // skipcq: JS-0242
+          const jsonData: Record<string, any> = {}; // skipcq: JS-0242
           switch (key1) {
             case 'meta': {
               jsonData[key1] = formatDataObj[key1];
@@ -209,7 +209,7 @@ export function outputFormat(data: object, doConversion = true): string {
                 const obj: object = formatDataObj[key1];
                 for (const key2 of (Object.keys(obj) as (keyof typeof obj)[])) {
                   if (Array.isArray(obj[key2])) {
-                    let jsonObj: { [key: string]: any } = {}; // skipcq: JS-0242
+                    let jsonObj: Record<string, any> = {}; // skipcq: JS-0242
                     const data_array: object[] = Object.values(obj[key2]);
                     const hash_array: object[] = [];
                     for (const dataObject of data_array) {

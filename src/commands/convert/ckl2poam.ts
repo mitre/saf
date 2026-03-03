@@ -1,12 +1,13 @@
-import { Flags } from '@oclif/core';
 import fs from 'fs';
 import path from 'path';
+import { Flags } from '@oclif/core';
+import moment from 'moment';
+import promptSync from 'prompt-sync';
 import { createLogger, format, transports } from 'winston';
 import xml2js from 'xml2js';
-import { STIG, Vulnerability, STIGHolder } from '../../types/stig';
-import promptSync from 'prompt-sync';
 import XlsxPopulate from 'xlsx-populate';
-import moment from 'moment';
+import files from '../../resources/files.json';
+import type { STIG, Vulnerability, STIGHolder } from '../../types/stig';
 import {
   cci2nist,
   cklSeverityToImpact,
@@ -22,7 +23,6 @@ import {
   extractSTIGUrl,
   replaceSpecialCharacters,
 } from '../../utils/ckl2poam';
-import files from '../../resources/files.json';
 import { basename, dataURLtoU8Array } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -164,7 +164,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
                     }
                     // Extract remaining fields (status, finding details, comments, security override, and severity justification)
                     for (const [key, value] of Object.entries(vulnerability)) {
-                      values[key] = value[0];
+                      values[key] = value?.[0];
                     }
                     return values;
                   }),

@@ -1,18 +1,18 @@
-import { Flags } from '@oclif/core';
 import fs from 'fs';
 import path from 'path';
-import { parse } from 'csv-parse/sync';
-import { InSpecControl, InSpecMetaData } from '../../types/inspec';
-import YAML from 'yaml';
-import XlsxPopulate from 'xlsx-populate';
-import { impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact } from '../../utils/xccdf2inspec';
-import _ from 'lodash';
-import { CSVControl } from '../../types/csv';
-import { basename, extractValueViaPathOrNumber } from '../../utils/global';
 import { CciNistMappingData } from '@mitre/hdf-converters';
+import { Flags } from '@oclif/core';
+import { parse } from 'csv-parse/sync';
+import _ from 'lodash';
+import XlsxPopulate from 'xlsx-populate';
+import YAML from 'yaml';
 import CISNistMappings from '../../resources/cis2nist.json';
 import files from '../../resources/files.json';
+import type { CSVControl } from '../../types/csv';
+import type { InSpecControl, InSpecMetaData } from '../../types/inspec';
+import { basename, extractValueViaPathOrNumber } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
+import { impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact } from '../../utils/xccdf2inspec';
 
 export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF> {
   static readonly usage = '<%= command.id %> -i, --input=<XLSX or CSV> -o, --output=FOLDER';
@@ -56,11 +56,11 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
   }
 
   // Extract CIS controls from control.tags.cis_controls (as string) into
-  matchCISControls(control: Partial<InSpecControl>, flags: { [name: string]: any }): Partial<InSpecControl> {
-    if (flags.format === 'cis' && control.tags && control.tags.cis_controls && typeof control.tags.cis_controls === 'string') {
+  matchCISControls(control: Partial<InSpecControl>, flags: Record<string, any>): Partial<InSpecControl> {
+    if (flags.format === 'cis' && control.tags?.cis_controls && typeof control.tags.cis_controls === 'string') {
       // Match standard CIS benchmark XLSX spreadsheets
       // CIS controls are a string before they are parsed
-      let cisControlMatches = (control.tags.cis_controls as unknown as string).match(/CONTROL:v(\d) (\d+)\.?(\d*)/);
+      let cisControlMatches: RegExpMatchArray | null = /CONTROL:v(\d) (\d+)\.?(\d*)/.exec((control.tags.cis_controls as unknown as string));
       if (cisControlMatches) {
         control.tags.cis_controls = [];
         const mappedCISControlsByVersion: Record<string, string[]> = {};
@@ -306,7 +306,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
           continue;
         }
 
-        if (newControl.tags && newControl.tags?.cci) {
+        if (newControl.tags?.cci) {
           newControl.tags.nist = [];
           for (const cci of newControl.tags.cci) {
             if (cci in CciNistMappingData.data) {

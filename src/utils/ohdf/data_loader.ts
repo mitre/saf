@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { ContextualizedEvaluation, convertFileContextual } from 'inspecjs';
+import { convertFileContextual, type ContextualizedEvaluation } from 'inspecjs';
 import { createWinstonLogger } from '../logging';
 
 /**

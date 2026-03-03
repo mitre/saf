@@ -1,15 +1,13 @@
 import fs from 'fs';
-import _ from 'lodash';
 import { readFile } from 'fs/promises';
-import { colorize } from 'json-colorizer';
+import { POAMApi } from '@mitre/emass_client';
+import type { MilestonesGet, PoamResponsePostPutDelete } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
-
+import { colorize } from 'json-colorizer';
+import _ from 'lodash';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg } from '../../../utils/emasser/utilities';
-
-import { POAMApi } from '@mitre/emass_client';
-import { MilestonesGet, PoamResponsePostPutDelete } from '@mitre/emass_client/dist/api';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
 import { getErrorMessage } from '../../../utils/global';
 
 /**
@@ -57,7 +55,7 @@ import { getErrorMessage } from '../../../utils/global';
  * @property {string} [nonPersonnelResourcesNonfundingObstacle] - Non-funding obstacle for non-personnel resources.
  * @property {string} [nonPersonnelResourcesNonfundingObstacleOtherReason] - Other reason for non-funding obstacle for non-personnel resources.
  */
-interface Poams {
+type Poams = {
   // Required Fields - Declared as undefined but validated later
   status?: string;
   vulnerabilityDescription?: string;
@@ -66,7 +64,7 @@ interface Poams {
   resources?: string;
 
   // Conditional Fields
-  milestones?: Array<MilestonesGet>;
+  milestones?: MilestonesGet[];
   pocFirstName?: string;
   pocLastName?: string;
   pocEmail?: string;
@@ -109,7 +107,7 @@ interface Poams {
   nonPersonnelResourcesUnfundedAmount?: number;
   nonPersonnelResourcesNonfundingObstacle?: string;
   nonPersonnelResourcesNonfundingObstacleOtherReason?: string;
-}
+};
 
 /**
  * Retrieves and combines JSON examples from various sources.
@@ -404,7 +402,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         bodyObject.scheduledCompletionDate = dataObj.scheduledCompletionDate;
 
         // Add the milestone object
-        const milestoneArray: Array<MilestonesGet> = [];
+        const milestoneArray: MilestonesGet[] = [];
         dataObj.milestones?.forEach((milestone: MilestonesGet) => {
           const milestoneObj: MilestonesGet = { description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate };
           milestoneArray.push(milestoneObj);
@@ -431,7 +429,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         bodyObject.scheduledCompletionDate = dataObj.scheduledCompletionDate;
 
         // Add the milestone object
-        const milestoneArray: Array<MilestonesGet> = [];
+        const milestoneArray: MilestonesGet[] = [];
         dataObj.milestones?.forEach((milestone: MilestonesGet) => {
           const milestoneObj: MilestonesGet = { description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate };
           milestoneArray.push(milestoneObj);

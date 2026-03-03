@@ -1,16 +1,19 @@
-import fs from 'fs';
-import path from 'path';
-import { readdir } from 'fs/promises';
 import { execSync } from 'child_process';
-import { Flags } from '@oclif/core';
-import { createWinstonLogger } from '../../utils/logging';
+import fs from 'fs';
+import { readdir } from 'fs/promises';
+import path from 'path';
 import {
   getExistingDescribeFromControl,
   processInSpecProfile,
   processXCCDF,
   Profile,
 } from '@mitre/inspec-objects';
+import { Flags } from '@oclif/core';
 import colors from 'colors';
+import tmp from 'tmp';
+import type { Logger } from 'winston';
+import { basename, downloadFile, extractFileFromZip, getErrorMessage } from '../../utils/global';
+import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 import {
   printGreen,
@@ -20,9 +23,6 @@ import {
   addToProcessLogData,
   saveProcessLogData,
 } from '../../utils/oclif/cli_helper';
-import { basename, downloadFile, extractFileFromZip, getErrorMessage } from '../../utils/global';
-import tmp from 'tmp';
-import { Logger } from 'winston';
 
 /**
  * This class is used to prepare profile controls from one SRG or STIG baseline
@@ -331,8 +331,8 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         logger.debug('  Using `tags.legacy` to determine new Control Name/Id');
         controlId = control.tags.legacy?.map((value) => {
           const control = (flags.controlPrefix === 'V')
-            ? value.match(/^V-\d+/)?.toString()
-            : value.match(/^SV-\d+/)?.toString();
+            ? (/^V-\d+/.exec(value))?.toString()
+            : (/^SV-\d+/.exec(value))?.toString();
           return (control === undefined) ? '' : control;
         }).find(Boolean);
         // If there isn't a legacy tag, use the XCCDF Id (see note above)

@@ -1,6 +1,6 @@
-import { Flags } from '@oclif/core';
-import { ExecJSON } from 'inspecjs';
 import fs from 'fs';
+import { Flags } from '@oclif/core';
+import type { ExecJSON } from 'inspecjs';
 import { BaseCommand } from '../../../utils/oclif/base_command';
 
 export default class WriteTarget extends BaseCommand<typeof WriteTarget> {

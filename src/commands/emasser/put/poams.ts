@@ -1,17 +1,13 @@
 import fs from 'fs';
-import _ from 'lodash';
 import { readFile } from 'fs/promises';
-import { colorize } from 'json-colorizer';
+import { POAMApi } from '@mitre/emass_client';
+import type { MilestonesRequiredPutMilestonesInner as MilestonesRequiredPut, PoamResponsePostPutDelete } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
-
+import { colorize } from 'json-colorizer';
+import _ from 'lodash';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg } from '../../../utils/emasser/utilities';
-
-import { POAMApi } from '@mitre/emass_client';
-// import {MilestonesGet, PoamResponsePut,
-//   PoamGet as Poams} from '@mitre/emass_client/dist/api'
-import { MilestonesRequiredPutMilestonesInner as MilestonesRequiredPut, PoamResponsePostPutDelete } from '@mitre/emass_client/dist/api';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
 
 /**
  * Interface representing a Plan of Action and Milestones (POAMs) object.
@@ -62,7 +58,7 @@ import { MilestonesRequiredPutMilestonesInner as MilestonesRequiredPut, PoamResp
  * @property {string} [nonPersonnelResourcesNonfundingObstacle] - Non-funding obstacle for non-personnel resources.
  * @property {string} [nonPersonnelResourcesNonfundingObstacleOtherReason] - Other reason for non-funding obstacle for non-personnel resources.
  */
-interface Poams {
+type Poams = {
   // Required Fields - Declared as undefined but validated later
   poamId?: number;
   displayPoamId?: string;
@@ -73,7 +69,7 @@ interface Poams {
   resources?: string;
 
   // Conditional Fields
-  milestones?: Array<MilestonesRequiredPut>;
+  milestones?: MilestonesRequiredPut[];
   pocFirstName?: string;
   pocLastName?: string;
   pocEmail?: string;
@@ -116,7 +112,7 @@ interface Poams {
   nonPersonnelResourcesUnfundedAmount?: number;
   nonPersonnelResourcesNonfundingObstacle?: string;
   nonPersonnelResourcesNonfundingObstacleOtherReason?: string;
-}
+};
 
 function getAllJsonExamples(): Record<string, unknown> {
   return {
@@ -409,7 +405,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         }
 
         // Add the milestone object
-        const milestoneArray: Array<MilestonesRequiredPut> = [];
+        const milestoneArray: MilestonesRequiredPut[] = [];
         dataObj.milestones?.forEach((milestone: MilestonesRequiredPut) => {
           const milestoneObj: MilestonesRequiredPut = { description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: false };
           // isActive is used to prevent uploading duplicate/undesired milestones via the
@@ -445,7 +441,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         }
 
         // Add the milestone object
-        const milestoneArray: Array<MilestonesRequiredPut> = [];
+        const milestoneArray: MilestonesRequiredPut[] = [];
         dataObj.milestones?.forEach((milestone: MilestonesRequiredPut) => {
           const milestoneObj: MilestonesRequiredPut = { description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: false };
           // isActive is used to prevent uploading duplicate/undesired milestones via the

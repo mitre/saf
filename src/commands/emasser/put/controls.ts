@@ -1,16 +1,14 @@
 import fs from 'fs';
 import { readFile } from 'fs/promises';
-import { colorize } from 'json-colorizer';
+import { ControlsApi } from '@mitre/emass_client';
+import type { ControlsResponsePut } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
-
+import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
 
-import { ControlsApi } from '@mitre/emass_client';
-import { ControlsResponsePut } from '@mitre/emass_client/dist/api';
-
-interface Controls {
+type Controls = {
   // Required Fields
   acronym?: string;
   responsibleEntities?: string;
@@ -43,7 +41,7 @@ interface Controls {
   applicationLayer?: string;
   databaseLayer?: string;
   operatingSystemLayer?: string;
-}
+};
 
 function getAllJsonExamples(): Record<string, unknown> {
   return {

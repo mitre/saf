@@ -1,15 +1,18 @@
-import { colorize } from 'json-colorizer';
+import { ArtifactsApi, ArtifactsExportApi } from '@mitre/emass_client';
+import type { ArtifactsResponseGet } from '@mitre/emass_client/dist/api';
 import { Args, Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { ApiConfig } from '../../../utils/emasser/api_config';
-import { ArtifactsApi, ArtifactsExportApi } from '@mitre/emass_client';
-import { ArtifactsResponseGet } from '@mitre/emass_client/dist/api';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, FlagOptions,
+import {
+  displayError,
   getDescriptionForEndpoint,
   getExamplesForEndpoint,
   getFlagsForEndpoint,
-  saveFile } from '../../../utils/emasser/utilities';
+  saveFile,
+  type FlagOptions,
+} from '../../../utils/emasser/utilities';
 import { getErrorMessage } from '../../../utils/global';
 
 const endpoint = 'artifacts';
@@ -40,12 +43,12 @@ export default class EmasserGetArtifacts extends Command {
     const { args, flags } = await this.parse(EmasserGetArtifacts);
     const apiCxn = new ApiConnection();
 
-    interface ApiResponse {
+    type ApiResponse = {
       config: {
         url: string;
       };
       data: string | object;
-    }
+    };
 
     if (args.name === 'forSystem') {
       const getArtifacts = new ArtifactsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);

@@ -1,20 +1,20 @@
-import { ExecJSON } from 'inspecjs';
-import { Flags } from '@oclif/core';
 import fs from 'fs';
 import https from 'https';
-import { MsftSecureScoreResults as Mapper } from '@mitre/hdf-converters';
 import { ClientSecretCredential } from '@azure/identity';
 import {
   Client,
-  ClientOptions,
+  type ClientOptions,
   PageIterator,
-  PageIteratorCallback,
+  type PageIteratorCallback,
 } from '@microsoft/microsoft-graph-client';
-import {
+import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials';
+import type {
   SecureScore,
   SecureScoreControlProfile,
 } from '@microsoft/microsoft-graph-types';
-import { TokenCredentialAuthenticationProvider } from '@microsoft/microsoft-graph-client/authProviders/azureTokenCredentials';
+import { MsftSecureScoreResults as Mapper } from '@mitre/hdf-converters';
+import { Flags } from '@oclif/core';
+import type { ExecJSON } from 'inspecjs';
 import { basename } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 

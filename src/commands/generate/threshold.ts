@@ -1,9 +1,9 @@
-import { Flags } from '@oclif/core';
-import { ContextualizedProfile, convertFileContextual } from 'inspecjs';
-import _ from 'lodash';
 import fs from 'fs';
+import { Flags } from '@oclif/core';
+import { convertFileContextual, type ContextualizedProfile } from 'inspecjs';
+import _ from 'lodash';
 import YAML from 'yaml';
-import { ThresholdValues } from '../../types/threshold';
+import type { ThresholdValues } from '../../types/threshold';
 import { calculateCompliance, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject } from '../../utils/threshold';
 import { BaseCommand } from '../../utils/oclif/base_command';
 

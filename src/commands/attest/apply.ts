@@ -1,10 +1,10 @@
-import { Flags } from '@oclif/core';
-import { ExecJSON } from 'inspecjs';
-import { addAttestationToHDF, Attestation, parseXLSXAttestations } from '@mitre/hdf-converters';
-import _ from 'lodash';
-import yaml from 'yaml';
 import fs from 'fs';
 import path from 'path';
+import { Flags } from '@oclif/core';
+import _ from 'lodash';
+import type { ExecJSON } from 'inspecjs';
+import { addAttestationToHDF, parseXLSXAttestations, type Attestation } from '@mitre/hdf-converters';
+import yaml from 'yaml';
 import { basename } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
