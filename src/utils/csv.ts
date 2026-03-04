@@ -35,7 +35,7 @@ function descriptionsToString(
       description => description.label === 'caveat',
     );
     if (caveats.length > 0) {
-      descriptions = descriptions.filter( // skipcq: JS-0083
+      descriptions = descriptions.filter(
         description => description.label !== 'caveat',
       );
       for (const caveat of caveats) {
@@ -43,9 +43,9 @@ function descriptionsToString(
       }
     }
 
-    descriptions.forEach((description: ExecJSON.ControlDescription) => {
+    for (const description of descriptions) {
       result += `${description.label}: ${description.data}\r\n\r\n`;
-    });
+    }
   }
 
   return result;
@@ -54,7 +54,7 @@ function descriptionsToString(
 function segmentsToString(segments: HDFControlSegment[] | undefined): string {
   if (segments) {
     let result = '';
-    segments.forEach((segment: HDFControlSegment) => {
+    for (const segment of segments) {
       result += segment.message
         ? `${segment.status.toUpperCase()} -- Test: ${
           segment.code_desc
@@ -62,7 +62,7 @@ function segmentsToString(segments: HDFControlSegment[] | undefined): string {
         : `${segment.status.toUpperCase()} -- Test: ${
           segment.code_desc
         }\r\n\r\n`;
-    });
+    }
     return result;
   }
 
@@ -91,8 +91,8 @@ export function convertRow(
     fix = getDescription(control.data.descriptions, 'fix') || '';
   }
 
-  for (const field of fieldsToAdd) { // skipcq: JS-0044
-    switch (field) { // skipcq: JS-0047
+  for (const field of fieldsToAdd) {
+    switch (field) {
       // Results Set
       case csvExportFields[0]: {
         result[csvExportFields[0]] = filename;

@@ -33,17 +33,17 @@ function convertEpochToDateTime(dataObject: object): object {
   const jsonData: Record<string, any> = {};
   for (const key of (Object.keys(dataObject) as (keyof typeof dataObject)[])) {
     if (Array.isArray(dataObject[key])) {
-      let jsonObj: Record<string, any> = {}; // skipcq: JS-0242
+      let jsonObj: Record<string, any>;
       const hash_array: object[] = [];
       const data_array: object[] = Object.values(dataObject[key]);
-      data_array.forEach((dataObj: object) => {
+      for (const dataObj of data_array) {
         if (typeof data_array[0] === 'string') {
           hash_array.push(dataObj);
         } else {
           jsonObj = convertEpochToDateTime(dataObj);
           hash_array.push(jsonObj);
         }
-      });
+      }
       jsonData[key] = hash_array;
     } else if (dataObject[key] !== null) {
       const value: string = key;
@@ -143,7 +143,7 @@ export function outputFormat(data: object, doConversion = true): string {
                 } else {
                   for (const key2 of (Object.keys(obj) as (keyof typeof obj)[])) {
                     if (Array.isArray(obj[key2])) {
-                      let jsonObj: Record<string, any> = {}; // skipcq: JS-0242
+                      let jsonObj: Record<string, any> = {};
                       const data_array: object[] = Object.values(obj[key2]);
                       const hash_array: object[] = [];
                       for (const dataObject of data_array) {
@@ -186,7 +186,7 @@ export function outputFormat(data: object, doConversion = true): string {
         const newData: Record<string, any> = {};
         const dataObj: Record<string, any> = {};
         for (const key1 of (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[])) {
-          const jsonData: Record<string, any> = {}; // skipcq: JS-0242
+          const jsonData: Record<string, any> = {};
           switch (key1) {
             case 'meta': {
               jsonData[key1] = formatDataObj[key1];
@@ -209,7 +209,7 @@ export function outputFormat(data: object, doConversion = true): string {
                 const obj: object = formatDataObj[key1];
                 for (const key2 of (Object.keys(obj) as (keyof typeof obj)[])) {
                   if (Array.isArray(obj[key2])) {
-                    let jsonObj: Record<string, any> = {}; // skipcq: JS-0242
+                    let jsonObj: Record<string, any> = {};
                     const data_array: object[] = Object.values(obj[key2]);
                     const hash_array: object[] = [];
                     for (const dataObject of data_array) {
@@ -250,13 +250,13 @@ export function outputFormat(data: object, doConversion = true): string {
 
     if (typeof formatDataObj === 'string') {
       return formatDataObj;
-    } // skipcq: JS-0056
+    }
 
     return JSON.stringify(formatDataObj, null, 2);
   } catch {
     if (typeof formatDataObj === 'string') {
       return formatDataObj;
-    } // skipcq: JS-0056
+    }
 
     return JSON.stringify(formatDataObj, null, 2);
   }

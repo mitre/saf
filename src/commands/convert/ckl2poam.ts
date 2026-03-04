@@ -308,9 +308,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
           sheet
             .cell(`Q${currentRow}`)
             .value(
-              cklSeverityToRelevanceOfThreat(
-                vulnerability.Severity || '',
-              ),
+              cklSeverityToRelevanceOfThreat(),
             );
           // Likelihood
           sheet

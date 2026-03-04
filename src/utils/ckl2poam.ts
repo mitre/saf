@@ -5,7 +5,7 @@ import type { Vulnerability } from '../types/stig';
 const prompt = promptSync();
 
 export function extractSTIGUrl(findingDetails: string): string {
-  const matches = findingDetails.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w\-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[.!/\\\w]*))?)/gs); // skipcq: JS-0113
+  const matches = findingDetails.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w\-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[.!/\\\w]*))?)/gs);
   if (matches) {
     let match = '';
     for (const link of matches) {
@@ -45,21 +45,12 @@ export function cklSeverityToPOAMSeverity(severity: string): string {
   }
 }
 
-export function cklSeverityToRelevanceOfThreat(severity: string) {
-  let severityAsThreat = '';
-  switch (severity) {
-    default: {
-      severityAsThreat = 'Moderate';
-
-      break;
-    }
-  }
-
-  return severityAsThreat;
+export function cklSeverityToRelevanceOfThreat() {
+  return 'Moderate';
 }
 
-export function cklSeverityToLikelihood(severity: string) { // skipcq: JS-0045
-  switch (severity) { // skipcq: JS-0045, JS-0047
+export function cklSeverityToLikelihood(severity: string) {
+  switch (severity) {
     case 'none': {
       return '';
     }
@@ -79,8 +70,8 @@ export function cklSeverityToLikelihood(severity: string) { // skipcq: JS-0045
   }
 }
 
-export function cklSeverityToImpact(severity: string) { // skipcq: JS-0045
-  switch (severity) { // skipcq: JS-0045, JS-0047
+export function cklSeverityToImpact(severity: string) {
+  switch (severity) {
     case 'none': {
       return '';
     }
@@ -100,8 +91,8 @@ export function cklSeverityToImpact(severity: string) { // skipcq: JS-0045
   }
 }
 
-export function cklSeverityToResidualRiskLevel(severity: string) { // skipcq: JS-0045
-  switch (severity) { // skipcq: JS-0045, JS-0047
+export function cklSeverityToResidualRiskLevel(severity: string) {
+  switch (severity) {
     case 'none': {
       return '';
     }
@@ -129,8 +120,8 @@ export function createCVD(vulnerability: Vulnerability): string {
   return `Rule Title: ${vulnerability.Rule_Title}\r\n\r\n${vulnerability.FINDING_DETAILS}`;
 }
 
-export function convertToRawSeverity(severity: string) { // skipcq: JS-0045
-  switch (severity) { // skipcq: JS-0047
+export function convertToRawSeverity(severity: string) {
+  switch (severity) {
     case 'none': {
       return 'Unknown';
     }
@@ -171,7 +162,7 @@ export function replaceSpecialCharacters(text: string): string {
 }
 
 function cleanComments(comments: string): string {
-  return comments.replace(/Automated(.*?)project\.\n/, '').replaceAll(/Profile shasum.*/sg, '').trim(); // skipcq: JS-0113
+  return comments.replace(/Automated(.*?)project\.\n/, '').replaceAll(/Profile shasum.*/sg, '').trim();
 }
 
 export function combineComments(vulnerability: Vulnerability, host: string) {
@@ -184,7 +175,7 @@ export function combineComments(vulnerability: Vulnerability, host: string) {
 
 export function extractSolution(findingDetails: string): string | undefined {
   if (findingDetails.includes('Solution')) {
-    const matches = findingDetails.match(/Solution(.*)Message/gs); // skipcq: JS-0113
+    const matches = findingDetails.match(/Solution(.*)Message/gs);
     if (matches && matches.length > 0) {
       const text = matches.join('').split('Solution : ')[1].trim();
       if (text.includes('Message:')) {

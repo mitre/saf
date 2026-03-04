@@ -159,7 +159,7 @@ export class ApiConfig {
         ? true
         : envValue === 'false'
           ? false
-          : isNaN(Number(envValue))
+          : Number.isNaN(Number(envValue)) // eslint-disable-line unicorn/no-nested-ternary
             ? envValue
             : Number(envValue);
 
