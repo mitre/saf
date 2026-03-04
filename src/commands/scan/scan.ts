@@ -9,7 +9,8 @@ export default class Scan extends Command {
     help: Flags.help({ char: 'h' }),
   };
 
-  async run() {
+  run() {
     console.log('\u001B[93mVisit https://saf.mitre.org/#/validate to explore and run inspec profiles\u001B[0m');
+    return Promise.resolve();
   }
 }

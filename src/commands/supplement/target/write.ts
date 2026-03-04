@@ -43,6 +43,7 @@ export default class WriteTarget extends BaseCommand<typeof WriteTarget> {
           `Couldn't parse target data: ${
             error instanceof Error ? error.message : JSON.stringify(error)
           }`,
+          { cause: error },
         );
       }
     } else if (flags.targetData) {

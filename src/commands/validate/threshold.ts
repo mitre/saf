@@ -50,7 +50,7 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
 
   async run() { // skipcq: JS-R1005
     const { flags } = await this.parse(Threshold);
-    let thresholds: ThresholdValues = {};
+    let thresholds: ThresholdValues;
     // inline does not seem to support the controls array option
     if (flags.templateInline) {
       // Need to do some processing to convert this into valid JSON
@@ -87,7 +87,7 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
     // Total Pass/Fail/Skipped/No Impact/Error
     const targets = ['passed.total', 'failed.total', 'skipped.total', 'no_impact.total', 'error.total'];
     for (const statusThreshold of targets) {
-      const [statusName, _total] = statusThreshold.split('.');
+      const [statusName] = statusThreshold.split('.');
       if (_.get(thresholds, statusThreshold) !== undefined && typeof _.get(thresholds, statusThreshold) !== 'object') {
         try {
           exitNonZeroIfTrue(
@@ -144,7 +144,7 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
     for (const [severity, targetPaths] of Object.entries(severityTargetsObject)) {
       const criticalStatusCounts = extractStatusCounts(parsedExecJSON.contains[0] as ContextualizedProfile, severity);
       for (const statusCountThreshold of targetPaths) {
-        const [statusName, _total, thresholdType] = statusCountThreshold.split('.');
+        const [statusName, , thresholdType] = statusCountThreshold.split('.');
         if (thresholdType === 'min' && _.get(thresholds, statusCountThreshold) !== undefined) {
           try {
             exitNonZeroIfTrue(
@@ -175,7 +175,7 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
 
     // Expect Control IDs to match placed severities
     const controlIdMap = getControlIdMap(parsedExecJSON.contains[0] as ContextualizedProfile);
-    for (const [_severity, targetPaths] of Object.entries(statusSeverityPaths)) {
+    for (const [, targetPaths] of Object.entries(statusSeverityPaths)) {
       for (const targetPath of targetPaths) {
         const expectedControlIds: string[] | undefined = _.get(thresholds, targetPath);
         const actualControlIds: string[] | undefined = _.get(controlIdMap, targetPath);

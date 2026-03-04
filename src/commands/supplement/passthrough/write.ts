@@ -43,6 +43,7 @@ export default class WritePassthrough extends BaseCommand<typeof WritePassthroug
           `Couldn't parse passthrough data: ${
             error instanceof Error ? error.message : JSON.stringify(error)
           }`,
+          { cause: error },
         );
       }
     } else if (flags.passthroughData) {

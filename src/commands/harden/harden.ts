@@ -9,7 +9,8 @@ export default class Harden extends Command {
     help: Flags.help({ char: 'h' }),
   };
 
-  async run() {
+  run() {
     console.log('\u001B[93mVisit https://saf.mitre.org/#/harden to explore and run hardening scripts\u001B[0m');
+    return Promise.resolve();
   }
 }
