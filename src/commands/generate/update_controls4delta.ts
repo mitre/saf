@@ -122,7 +122,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     logger.warn(colors.yellow('║ Profile controls are formatted using Rubocop  ║'));
     logger.warn(colors.yellow('╚═══════════════════════════════════════════════╝'));
 
-    let inspecProfile: Profile = new Profile();
+    let inspecProfile: Profile;
     GenerateUpdateControls.backupDir = path.join(path.dirname(flags.controlsDir), 'oldControls');
 
     addToProcessLogData('==================== Update Controls for Delta Process =====================');
