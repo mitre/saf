@@ -141,11 +141,11 @@ export default class Summary extends Command {
       const executionData = loadExecJSONs(this.parsedFlags.input);
       this.logger.verbose(`Loaded execution data from ${this.parsedFlags.input.length} file(s)`);
       const summaries = calculateSummariesForExecJSONs(executionData);
-      this.logger.verbose(`Calculated summaries for ${executionData.length} execution data`);
+      this.logger.verbose(`Calculated summaries for ${Object.keys(executionData).length} execution data`);
       const totals = calculateTotalCountsForSummaries(summaries);
-      this.logger.verbose(`Calculated total counts for ${summaries.length} summaries`);
+      this.logger.verbose(`Calculated total counts for ${Object.keys(summaries).length} summaries`);
       const complianceScores = calculateComplianceScoresForExecJSONs(executionData);
-      this.logger.verbose(`Calculated compliance scores for ${executionData.length} execution data`);
+      this.logger.verbose(`Calculated compliance scores for ${Object.keys(executionData).length} execution data`);
       const printableSummaries = Object.entries(totals).map(([profileName, profileMetrics]) => {
         this.logger.verbose(`Building printable summary for profile: ${profileName}`);
         return createPrintableSummary(profileName, profileMetrics, executionData, complianceScores);
@@ -157,7 +157,7 @@ export default class Summary extends Command {
       if (error instanceof Error) {
         this.logger.error(`Error occurred: ${error.message}`);
       } else {
-        this.logger.error(`An unknown error occurred: ${error}`);
+        this.logger.error(`An unknown error occurred: ${String(error)}`);
       }
 
       process.exit(1);
