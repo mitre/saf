@@ -98,7 +98,7 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       // Save the flags to the log object
       addToProcessLogData('Process Flags ============================================');
       for (const key in flags) {
-        if (Object.prototype.hasOwnProperty.call(flags, key)) {
+        if (Object.hasOwn(flags, key)) {
           addToProcessLogData(key + '=' + flags[key as keyof typeof flags]);
         }
       }
@@ -326,7 +326,7 @@ async function getFlags(): Promise<any> {
   addToProcessLogData('Process Flags ============================================');
 
   for (const tagName in answers) {
-    if (Object.prototype.hasOwnProperty.call(answers, tagName)) {
+    if (Object.hasOwn(answers, tagName)) {
       const answerValue = _.get(answers, tagName);
       if (answerValue !== null) {
         addToProcessLogData(tagName + '=' + answerValue);

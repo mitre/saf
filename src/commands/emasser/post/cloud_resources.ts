@@ -174,19 +174,19 @@ function addRequiredFieldsToRequestBody(dataObj: CloudResource): CloudResource {
  */
 function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): void {
   // Add object optional entries
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'cspAccountId')) {
+  if (Object.hasOwn(dataObj, 'cspAccountId')) {
     bodyObject.cspAccountId = dataObj.cspAccountId;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'cspRegion')) {
+  if (Object.hasOwn(dataObj, 'cspRegion')) {
     bodyObject.cspRegion = dataObj.cspRegion;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'initiatedBy')) {
+  if (Object.hasOwn(dataObj, 'initiatedBy')) {
     bodyObject.initiatedBy = dataObj.initiatedBy;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'isBaseline')) {
+  if (Object.hasOwn(dataObj, 'isBaseline')) {
     bodyObject.isBaseline = dataObj.isBaseline;
   }
 
@@ -207,31 +207,31 @@ function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): v
       isCompliant: entryObject.isCompliant,
       policyDefinitionTitle: entryObject.policyDefinitionTitle,
     };
-    if (Object.prototype.hasOwnProperty.call(entryObject, 'assessmentProcedure')) {
+    if (Object.hasOwn(entryObject, 'assessmentProcedure')) {
       complianceResultsObj.assessmentProcedure = entryObject.assessmentProcedure;
     }
 
-    if (Object.prototype.hasOwnProperty.call(entryObject, 'complianceCheckTimestamp')) {
+    if (Object.hasOwn(entryObject, 'complianceCheckTimestamp')) {
       complianceResultsObj.complianceCheckTimestamp = entryObject.complianceCheckTimestamp;
     }
 
-    if (Object.prototype.hasOwnProperty.call(entryObject, 'complianceReason')) {
+    if (Object.hasOwn(entryObject, 'complianceReason')) {
       complianceResultsObj.complianceReason = entryObject.complianceReason;
     }
 
-    if (Object.prototype.hasOwnProperty.call(entryObject, 'control')) {
+    if (Object.hasOwn(entryObject, 'control')) {
       complianceResultsObj.control = entryObject.control;
     }
 
-    if (Object.prototype.hasOwnProperty.call(entryObject, 'policyDeploymentName')) {
+    if (Object.hasOwn(entryObject, 'policyDeploymentName')) {
       complianceResultsObj.policyDeploymentName = entryObject.policyDeploymentName;
     }
 
-    if (Object.prototype.hasOwnProperty.call(entryObject, 'policyDeploymentVersion')) {
+    if (Object.hasOwn(entryObject, 'policyDeploymentVersion')) {
       complianceResultsObj.policyDeploymentVersion = entryObject.policyDeploymentVersion;
     }
 
-    if (Object.prototype.hasOwnProperty.call(entryObject, 'severity')) {
+    if (Object.hasOwn(entryObject, 'severity')) {
       complianceResultsObj.severity = entryObject.severity;
     }
 

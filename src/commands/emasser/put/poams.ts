@@ -187,23 +187,23 @@ function addRequiredFieldsToRequestBody(dataObj: Poams): Poams {
  * it copies their values to the corresponding properties in the body object.
  */
 function addConditionalFields(bodyObject: Poams, dataObj: Poams): void {
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'pocFirstName')) {
+  if (Object.hasOwn(dataObj, 'pocFirstName')) {
     bodyObject.pocFirstName = dataObj.pocFirstName;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'pocLastName')) {
+  if (Object.hasOwn(dataObj, 'pocLastName')) {
     bodyObject.pocLastName = dataObj.pocLastName;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'pocEmail')) {
+  if (Object.hasOwn(dataObj, 'pocEmail')) {
     bodyObject.pocEmail = dataObj.pocEmail;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'pocPhoneNumber')) {
+  if (Object.hasOwn(dataObj, 'pocPhoneNumber')) {
     bodyObject.pocPhoneNumber = dataObj.pocPhoneNumber;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'severity')) {
+  if (Object.hasOwn(dataObj, 'severity')) {
     bodyObject.severity = dataObj.severity;
   }
 }
@@ -216,111 +216,111 @@ function addConditionalFields(bodyObject: Poams, dataObj: Poams): void {
  */
 // skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
 function addOptionalFields(bodyObject: Poams, dataObj: Poams): void {
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'externalUid')) {
+  if (Object.hasOwn(dataObj, 'externalUid')) {
     bodyObject.externalUid = dataObj.externalUid;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'controlAcronym')) {
+  if (Object.hasOwn(dataObj, 'controlAcronym')) {
     bodyObject.controlAcronym = dataObj.controlAcronym;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'assessmentProcedure')) {
+  if (Object.hasOwn(dataObj, 'assessmentProcedure')) {
     bodyObject.assessmentProcedure = dataObj.assessmentProcedure;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'securityChecks')) {
+  if (Object.hasOwn(dataObj, 'securityChecks')) {
     bodyObject.securityChecks = dataObj.securityChecks;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'rawSeverity')) {
+  if (Object.hasOwn(dataObj, 'rawSeverity')) {
     bodyObject.rawSeverity = dataObj.rawSeverity;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'relevanceOfThreat')) {
+  if (Object.hasOwn(dataObj, 'relevanceOfThreat')) {
     bodyObject.relevanceOfThreat = dataObj.relevanceOfThreat;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'likelihood')) {
+  if (Object.hasOwn(dataObj, 'likelihood')) {
     bodyObject.likelihood = dataObj.likelihood;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'impact')) {
+  if (Object.hasOwn(dataObj, 'impact')) {
     bodyObject.impact = dataObj.impact;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'impactDescription')) {
+  if (Object.hasOwn(dataObj, 'impactDescription')) {
     bodyObject.impactDescription = dataObj.impactDescription;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'residualRiskLevel')) {
+  if (Object.hasOwn(dataObj, 'residualRiskLevel')) {
     bodyObject.residualRiskLevel = dataObj.residualRiskLevel;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'recommendations')) {
+  if (Object.hasOwn(dataObj, 'recommendations')) {
     bodyObject.recommendations = dataObj.recommendations;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'mitigations')) {
+  if (Object.hasOwn(dataObj, 'mitigations')) {
     bodyObject.mitigations = dataObj.mitigations;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'resultingResidualRiskLevelAfterProposedMitigations')) {
+  if (Object.hasOwn(dataObj, 'resultingResidualRiskLevelAfterProposedMitigations')) {
     bodyObject.resultingResidualRiskLevelAfterProposedMitigations = dataObj.resultingResidualRiskLevelAfterProposedMitigations;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'predisposingConditions')) {
+  if (Object.hasOwn(dataObj, 'predisposingConditions')) {
     bodyObject.predisposingConditions = dataObj.predisposingConditions;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'threatDescription')) {
+  if (Object.hasOwn(dataObj, 'threatDescription')) {
     bodyObject.threatDescription = dataObj.threatDescription;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'devicesAffected')) {
+  if (Object.hasOwn(dataObj, 'devicesAffected')) {
     bodyObject.devicesAffected = dataObj.devicesAffected;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'identifiedInCFOAuditOrOtherReview')) {
+  if (Object.hasOwn(dataObj, 'identifiedInCFOAuditOrOtherReview')) {
     bodyObject.identifiedInCFOAuditOrOtherReview = dataObj.identifiedInCFOAuditOrOtherReview;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'personnelResourcesFundedBaseHours')) {
+  if (Object.hasOwn(dataObj, 'personnelResourcesFundedBaseHours')) {
     bodyObject.personnelResourcesFundedBaseHours = dataObj.personnelResourcesFundedBaseHours;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'personnelResourcesCostCode')) {
+  if (Object.hasOwn(dataObj, 'personnelResourcesCostCode')) {
     bodyObject.personnelResourcesCostCode = dataObj.personnelResourcesCostCode;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'personnelResourcesUnfundedBaseHours')) {
+  if (Object.hasOwn(dataObj, 'personnelResourcesUnfundedBaseHours')) {
     bodyObject.personnelResourcesUnfundedBaseHours = dataObj.personnelResourcesUnfundedBaseHours;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'personnelResourcesNonfundingObstacle')) {
+  if (Object.hasOwn(dataObj, 'personnelResourcesNonfundingObstacle')) {
     bodyObject.personnelResourcesNonfundingObstacle = dataObj.personnelResourcesNonfundingObstacle;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'personnelResourcesNonfundingObstacleOtherReason')) {
+  if (Object.hasOwn(dataObj, 'personnelResourcesNonfundingObstacleOtherReason')) {
     bodyObject.personnelResourcesNonfundingObstacleOtherReason = dataObj.personnelResourcesNonfundingObstacleOtherReason;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'nonPersonnelResourcesFundedAmount')) {
+  if (Object.hasOwn(dataObj, 'nonPersonnelResourcesFundedAmount')) {
     bodyObject.nonPersonnelResourcesFundedAmount = dataObj.nonPersonnelResourcesFundedAmount;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'nonPersonnelResourcesCostCode')) {
+  if (Object.hasOwn(dataObj, 'nonPersonnelResourcesCostCode')) {
     bodyObject.nonPersonnelResourcesCostCode = dataObj.nonPersonnelResourcesCostCode;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'nonPersonnelResourcesUnfundedAmount')) {
+  if (Object.hasOwn(dataObj, 'nonPersonnelResourcesUnfundedAmount')) {
     bodyObject.nonPersonnelResourcesUnfundedAmount = dataObj.nonPersonnelResourcesUnfundedAmount;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'nonPersonnelResourcesNonfundingObstacle')) {
+  if (Object.hasOwn(dataObj, 'nonPersonnelResourcesNonfundingObstacle')) {
     bodyObject.nonPersonnelResourcesNonfundingObstacle = dataObj.nonPersonnelResourcesNonfundingObstacle;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'nonPersonnelResourcesNonfundingObstacleOtherReason')) {
+  if (Object.hasOwn(dataObj, 'nonPersonnelResourcesNonfundingObstacleOtherReason')) {
     bodyObject.nonPersonnelResourcesNonfundingObstacleOtherReason = dataObj.nonPersonnelResourcesNonfundingObstacleOtherReason;
   }
 }
@@ -372,7 +372,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         printHelpMsg(HELP_MSG);
         process.exit(1);
       // Risk Accepted POA&M Item cannot be saved with a Scheduled Completion Date or Milestones.
-      } else if (Object.prototype.hasOwnProperty.call(dataObj, 'scheduledCompletionDate') || Object.prototype.hasOwnProperty.call(dataObj, 'milestones')) {
+      } else if (Object.hasOwn(dataObj, 'scheduledCompletionDate') || Object.hasOwn(dataObj, 'milestones')) {
         printRedMsg('When status is "Risk Accepted" POA&Ms CAN NOT be saved with the following parameters/fields:');
         printRedMsg('    scheduledCompletionDate, or milestone');
         printHelpMsg(HELP_MSG);
@@ -389,7 +389,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
       // API call will return and error if scheduledCompletionDate for Approved review status POA&Ms
 
       // POA&M Items that have a status of “Ongoing” cannot be saved without Milestones.
-      if (!(Object.prototype.hasOwnProperty.call(dataObj, 'milestones'))) {
+      if (!(Object.hasOwn(dataObj, 'milestones'))) {
         printRedMsg('When status is "Ongoing" and updating a POA&M a Milestone is required');
         printHelpMsg(HELP_MSG);
         process.exit(1);
@@ -400,7 +400,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         process.exit(1);
       } else {
         // Add the POA&M schedule completion date if provided (backend may return an error)
-        if (Object.prototype.hasOwnProperty.call(dataObj, 'scheduledCompletionDate')) {
+        if (Object.hasOwn(dataObj, 'scheduledCompletionDate')) {
           bodyObject.scheduledCompletionDate = dataObj.scheduledCompletionDate;
         }
 
@@ -410,7 +410,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
           const milestoneObj: MilestonesRequiredPut = { description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: false };
           // isActive is used to prevent uploading duplicate/undesired milestones via the
           // POA&M PUT call and must be set to false, otherwise a new milestone is created
-          if (Object.prototype.hasOwnProperty.call(milestone, 'isActive')) {
+          if (Object.hasOwn(milestone, 'isActive')) {
             milestoneObj.isActive = milestone.isActive;
           }
 
@@ -424,9 +424,9 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
 
     case 'Completed': {
       // Completed POA&M Item require the completionDate, comments, and Milestones.
-      if (!(Object.prototype.hasOwnProperty.call(dataObj, 'comments'))
-        || !(Object.prototype.hasOwnProperty.call(dataObj, 'completionDate'))
-        || !(Object.prototype.hasOwnProperty.call(dataObj, 'milestones'))) {
+      if (!(Object.hasOwn(dataObj, 'comments'))
+        || !(Object.hasOwn(dataObj, 'completionDate'))
+        || !(Object.hasOwn(dataObj, 'milestones'))) {
         printRedMsg('When status is "Completed" the following parameters/fields are required:');
         printRedMsg('    comments, completionDate, and milestones');
         printHelpMsg(HELP_MSG);
@@ -436,7 +436,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         bodyObject.comments = dataObj.comments;
         bodyObject.completionDate = dataObj.completionDate;
         // Add the POA&M schedule completion date if provided (backend may return an error)
-        if (Object.prototype.hasOwnProperty.call(dataObj, 'scheduledCompletionDate')) {
+        if (Object.hasOwn(dataObj, 'scheduledCompletionDate')) {
           bodyObject.scheduledCompletionDate = dataObj.scheduledCompletionDate;
         }
 
@@ -446,7 +446,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
           const milestoneObj: MilestonesRequiredPut = { description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: false };
           // isActive is used to prevent uploading duplicate/undesired milestones via the
           // POA&M PUT call and must be set to false, otherwise a new milestone is created
-          if (Object.prototype.hasOwnProperty.call(milestone, 'isActive')) {
+          if (Object.hasOwn(milestone, 'isActive')) {
             milestoneObj.isActive = milestone.isActive;
           }
 

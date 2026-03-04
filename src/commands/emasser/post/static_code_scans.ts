@@ -110,7 +110,7 @@ function addApplicationFindingsFields(bodyObject: StaticCodeRequest, dataObj: St
     let i = 0;
     dataObj.applicationFindings?.forEach((appFindings: StaticCodeApplicationPost) => {
       // If clearing findings
-      if (Object.prototype.hasOwnProperty.call(appFindings, 'clearFindings')) {
+      if (Object.hasOwn(appFindings, 'clearFindings')) {
         findingsObj.clearFindings = appFindings.clearFindings;
         findingsArray.push(findingsObj);
       // Adding findings
@@ -127,7 +127,7 @@ function addApplicationFindingsFields(bodyObject: StaticCodeRequest, dataObj: St
         findingsObj.scanDate = appFindings.scanDate;
 
         // rawSeverity is an optional field
-        if (Object.prototype.hasOwnProperty.call(appFindings, 'rawSeverity')) {
+        if (Object.hasOwn(appFindings, 'rawSeverity')) {
           findingsObj.rawSeverity = appFindings.rawSeverity;
         }
 

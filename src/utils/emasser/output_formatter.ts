@@ -100,7 +100,7 @@ export function outputFormat(data: object, doConversion = true): string {
   }
 
   try {
-    if (Object.prototype.hasOwnProperty.call(data, 'headers')) {
+    if (Object.hasOwn(data, 'headers')) {
       // Need to use the non null assertion (!) or return and empty objet as _.get can return undefined
       formatDataObj = _.get(data, 'data') || {};
     }

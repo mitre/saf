@@ -44,35 +44,35 @@ function addRequiredFieldsToRequestBody(dataObj: Artifacts): Artifacts {
 }
 
 function addOptionalFields(bodyObject: Artifacts, dataObj: Artifacts): void {
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'name')) {
+  if (Object.hasOwn(dataObj, 'name')) {
     bodyObject.name = dataObj.name;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'description')) {
+  if (Object.hasOwn(dataObj, 'description')) {
     bodyObject.description = dataObj.description;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'referencePageNumber')) {
+  if (Object.hasOwn(dataObj, 'referencePageNumber')) {
     bodyObject.referencePageNumber = dataObj.referencePageNumber;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'controls')) {
+  if (Object.hasOwn(dataObj, 'controls')) {
     bodyObject.controls = dataObj.controls;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'assessmentProcedures')) {
+  if (Object.hasOwn(dataObj, 'assessmentProcedures')) {
     bodyObject.assessmentProcedures = dataObj.assessmentProcedures;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'expirationDate')) {
+  if (Object.hasOwn(dataObj, 'expirationDate')) {
     bodyObject.expirationDate = dataObj.expirationDate;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'lastReviewedDate')) {
+  if (Object.hasOwn(dataObj, 'lastReviewedDate')) {
     bodyObject.lastReviewedDate = dataObj.lastReviewedDate;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'signedDate')) {
+  if (Object.hasOwn(dataObj, 'signedDate')) {
     bodyObject.signedDate = dataObj.signedDate;
   }
 }

@@ -97,10 +97,10 @@ export class ApiConfig {
 
     // Get provided certificate(s). Require either a .pfx certificate,
     // or a client and key .pem certificates
-    if (Object.prototype.hasOwnProperty.call(this.envConfig, 'EMASSER_CA_FILE_PATH') && this.envConfig.EMASSER_CA_FILE_PATH !== '') {
+    if (Object.hasOwn(this.envConfig, 'EMASSER_CA_FILE_PATH') && this.envConfig.EMASSER_CA_FILE_PATH !== '') {
       this.caCert = this.envConfig.EMASSER_CA_FILE_PATH;
-    } else if (Object.prototype.hasOwnProperty.call(this.envConfig, 'EMASSER_KEY_FILE_PATH') && this.envConfig.EMASSER_KEY_FILE_PATH !== ''
-      && Object.prototype.hasOwnProperty.call(this.envConfig, 'EMASSER_CERT_FILE_PATH') && this.envConfig.EMASSER_CERT_FILE_PATH !== '') {
+    } else if (Object.hasOwn(this.envConfig, 'EMASSER_KEY_FILE_PATH') && this.envConfig.EMASSER_KEY_FILE_PATH !== ''
+      && Object.hasOwn(this.envConfig, 'EMASSER_CERT_FILE_PATH') && this.envConfig.EMASSER_CERT_FILE_PATH !== '') {
       // We have the .pem certificate files
       this.keyCert = this.envConfig.EMASSER_KEY_FILE_PATH;
       this.clientCert = this.envConfig.EMASSER_CERT_FILE_PATH;
@@ -122,7 +122,7 @@ export class ApiConfig {
    * The error will have a name property set to 'EVNF'.
    */
   getRequiredEnv(key: string): string {
-    if (this.envConfig && Object.prototype.hasOwnProperty.call(this.envConfig, key)) {
+    if (this.envConfig && Object.hasOwn(this.envConfig, key)) {
       const value = this.envConfig[key];
 
       if (typeof value === 'string') {
@@ -153,7 +153,7 @@ export class ApiConfig {
    * @returns {T} - The environment variable value if valid, otherwise the default value.
    */
   getOptionalEnv<T>(key: string, defaultValue: T): T {
-    if (this.envConfig && Object.prototype.hasOwnProperty.call(this.envConfig, key)) {
+    if (this.envConfig && Object.hasOwn(this.envConfig, key)) {
       const envValue = this.envConfig[key];
       const value = envValue === 'true'
         ? true

@@ -164,7 +164,7 @@ function addRequiredFieldsToRequestBody(dataObj: Software): Software {
  * @param dataObj - The source object from which fields will be copied if they exist.
  */
 function addConditionalFields(bodyObject: Software, dataObj: Software): void {
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'publicFacingFqdn')) {
+  if (Object.hasOwn(dataObj, 'publicFacingFqdn')) {
     bodyObject.approvalDate = dataObj.approvalDate;
   }
 }
@@ -178,132 +178,132 @@ function addConditionalFields(bodyObject: Software, dataObj: Software): void {
 // skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
 
 function addOptionalFields(bodyObject: Software, dataObj: Software): void {
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'softwareType')) {
+  if (Object.hasOwn(dataObj, 'softwareType')) {
     bodyObject.softwareType = dataObj.softwareType;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'parentSystem')) {
+  if (Object.hasOwn(dataObj, 'parentSystem')) {
     bodyObject.parentSystem = dataObj.parentSystem;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'subsystem')) {
+  if (Object.hasOwn(dataObj, 'subsystem')) {
     bodyObject.subsystem = dataObj.subsystem;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'network')) {
+  if (Object.hasOwn(dataObj, 'network')) {
     bodyObject.network = dataObj.network;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'hostingEnvironment')) {
+  if (Object.hasOwn(dataObj, 'hostingEnvironment')) {
     bodyObject.hostingEnvironment = dataObj.hostingEnvironment;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'softwareDependencies')) {
+  if (Object.hasOwn(dataObj, 'softwareDependencies')) {
     bodyObject.softwareDependencies = dataObj.softwareDependencies;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'cryptographicHash')) {
+  if (Object.hasOwn(dataObj, 'cryptographicHash')) {
     bodyObject.cryptographicHash = dataObj.cryptographicHash;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'inServiceData')) {
+  if (Object.hasOwn(dataObj, 'inServiceData')) {
     bodyObject.inServiceData = dataObj.inServiceData;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'itBudgetUii')) {
+  if (Object.hasOwn(dataObj, 'itBudgetUii')) {
     bodyObject.itBudgetUii = dataObj.itBudgetUii;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'fiscalYear')) {
+  if (Object.hasOwn(dataObj, 'fiscalYear')) {
     bodyObject.fiscalYear = dataObj.fiscalYear;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'popEndDate')) {
+  if (Object.hasOwn(dataObj, 'popEndDate')) {
     bodyObject.popEndDate = dataObj.popEndDate;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'licenseOrContract')) {
+  if (Object.hasOwn(dataObj, 'licenseOrContract')) {
     bodyObject.licenseOrContract = dataObj.licenseOrContract;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'licenseTerm')) {
+  if (Object.hasOwn(dataObj, 'licenseTerm')) {
     bodyObject.licenseTerm = dataObj.licenseTerm;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'costPerLicense')) {
+  if (Object.hasOwn(dataObj, 'costPerLicense')) {
     bodyObject.costPerLicense = dataObj.costPerLicense;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'totalLicenses')) {
+  if (Object.hasOwn(dataObj, 'totalLicenses')) {
     bodyObject.totalLicenses = dataObj.totalLicenses;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'totalLicenseCost')) {
+  if (Object.hasOwn(dataObj, 'totalLicenseCost')) {
     bodyObject.totalLicenseCost = dataObj.totalLicenseCost;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'licensesUsed')) {
+  if (Object.hasOwn(dataObj, 'licensesUsed')) {
     bodyObject.licensesUsed = dataObj.licensesUsed;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'licensePoc')) {
+  if (Object.hasOwn(dataObj, 'licensePoc')) {
     bodyObject.licensePoc = dataObj.licensePoc;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'licenseRenewalDate')) {
+  if (Object.hasOwn(dataObj, 'licenseRenewalDate')) {
     bodyObject.licenseRenewalDate = dataObj.licenseRenewalDate;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'licenseExpirationDate ')) {
+  if (Object.hasOwn(dataObj, 'licenseExpirationDate ')) {
     bodyObject.licenseExpirationDate = dataObj.licenseExpirationDate;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'approvalStatus')) {
+  if (Object.hasOwn(dataObj, 'approvalStatus')) {
     bodyObject.approvalStatus = dataObj.approvalStatus;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'releaseDate')) {
+  if (Object.hasOwn(dataObj, 'releaseDate')) {
     bodyObject.releaseDate = dataObj.releaseDate;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'maintenanceDate')) {
+  if (Object.hasOwn(dataObj, 'maintenanceDate')) {
     bodyObject.maintenanceDate = dataObj.maintenanceDate;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'retirementDate')) {
+  if (Object.hasOwn(dataObj, 'retirementDate')) {
     bodyObject.retirementDate = dataObj.retirementDate;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'endOfLifeSupportDate')) {
+  if (Object.hasOwn(dataObj, 'endOfLifeSupportDate')) {
     bodyObject.endOfLifeSupportDate = dataObj.endOfLifeSupportDate;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'extendedEndOfLifeSupportDate')) {
+  if (Object.hasOwn(dataObj, 'extendedEndOfLifeSupportDate')) {
     bodyObject.extendedEndOfLifeSupportDate = dataObj.extendedEndOfLifeSupportDate;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'criticalAsset')) {
+  if (Object.hasOwn(dataObj, 'criticalAsset')) {
     bodyObject.criticalAsset = dataObj.criticalAsset;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'location')) {
+  if (Object.hasOwn(dataObj, 'location')) {
     bodyObject.location = dataObj.location;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'purpose')) {
+  if (Object.hasOwn(dataObj, 'purpose')) {
     bodyObject.purpose = dataObj.purpose;
   }
 
   // VA Only
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'unsupportedOperatingSystem')) {
+  if (Object.hasOwn(dataObj, 'unsupportedOperatingSystem')) {
     bodyObject.unsupportedOperatingSystem = dataObj.unsupportedOperatingSystem;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'unapprovedSoftwareFromTrm')) {
+  if (Object.hasOwn(dataObj, 'unapprovedSoftwareFromTrm')) {
     bodyObject.unapprovedSoftwareFromTrm = dataObj.unapprovedSoftwareFromTrm;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'approvedWaiver')) {
+  if (Object.hasOwn(dataObj, 'approvedWaiver')) {
     bodyObject.approvedWaiver = dataObj.approvedWaiver;
   }
 }

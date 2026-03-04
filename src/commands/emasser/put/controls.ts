@@ -82,93 +82,93 @@ function addRequiredFieldsToRequestBody(dataObj: Controls): Controls {
 }
 
 function addConditionalFields(bodyObject: Controls, dataObj: Controls): void {
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'commonControlProvider')) {
+  if (Object.hasOwn(dataObj, 'commonControlProvider')) {
     bodyObject.commonControlProvider = dataObj.commonControlProvider;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'naJustification')) {
+  if (Object.hasOwn(dataObj, 'naJustification')) {
     bodyObject.naJustification = dataObj.naJustification;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'slcmCriticality')) {
+  if (Object.hasOwn(dataObj, 'slcmCriticality')) {
     bodyObject.slcmCriticality = dataObj.slcmCriticality;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'slcmFrequency')) {
+  if (Object.hasOwn(dataObj, 'slcmFrequency')) {
     bodyObject.slcmFrequency = dataObj.slcmFrequency;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'slcmMethod')) {
+  if (Object.hasOwn(dataObj, 'slcmMethod')) {
     bodyObject.slcmMethod = dataObj.slcmMethod;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'slcmReporting')) {
+  if (Object.hasOwn(dataObj, 'slcmReporting')) {
     bodyObject.slcmReporting = dataObj.slcmReporting;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'slcmTracking')) {
+  if (Object.hasOwn(dataObj, 'slcmTracking')) {
     bodyObject.slcmTracking = dataObj.slcmTracking;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'slcmComments')) {
+  if (Object.hasOwn(dataObj, 'slcmComments')) {
     bodyObject.slcmComments = dataObj.slcmComments;
   }
 }
 
 function addOptionalFields(bodyObject: Controls, dataObj: Controls): void {
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'implementationStatus')) {
+  if (Object.hasOwn(dataObj, 'implementationStatus')) {
     bodyObject.implementationStatus = dataObj.implementationStatus;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'severity')) {
+  if (Object.hasOwn(dataObj, 'severity')) {
     bodyObject.severity = dataObj.severity;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'vulnerabiltySummary')) {
+  if (Object.hasOwn(dataObj, 'vulnerabiltySummary')) {
     bodyObject.vulnerabiltySummary = dataObj.vulnerabiltySummary;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'recommendations')) {
+  if (Object.hasOwn(dataObj, 'recommendations')) {
     bodyObject.recommendations = dataObj.recommendations;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'relevanceOfThreat')) {
+  if (Object.hasOwn(dataObj, 'relevanceOfThreat')) {
     bodyObject.relevanceOfThreat = dataObj.relevanceOfThreat;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'likelihood')) {
+  if (Object.hasOwn(dataObj, 'likelihood')) {
     bodyObject.likelihood = dataObj.likelihood;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'impact')) {
+  if (Object.hasOwn(dataObj, 'impact')) {
     bodyObject.impact = dataObj.impact;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'impactDescription')) {
+  if (Object.hasOwn(dataObj, 'impactDescription')) {
     bodyObject.impactDescription = dataObj.impactDescription;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'residualRiskLevel')) {
+  if (Object.hasOwn(dataObj, 'residualRiskLevel')) {
     bodyObject.residualRiskLevel = dataObj.residualRiskLevel;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'testMethod')) {
+  if (Object.hasOwn(dataObj, 'testMethod')) {
     bodyObject.testMethod = dataObj.testMethod;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'mitigations')) {
+  if (Object.hasOwn(dataObj, 'mitigations')) {
     bodyObject.mitigations = dataObj.mitigations;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'applicationLayer')) {
+  if (Object.hasOwn(dataObj, 'applicationLayer')) {
     bodyObject.applicationLayer = dataObj.applicationLayer;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'databaseLayer')) {
+  if (Object.hasOwn(dataObj, 'databaseLayer')) {
     bodyObject.databaseLayer = dataObj.databaseLayer;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'operatingSystemLayer')) {
+  if (Object.hasOwn(dataObj, 'operatingSystemLayer')) {
     bodyObject.operatingSystemLayer = dataObj.operatingSystemLayer;
   }
 }
@@ -190,7 +190,7 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
   // ----------------------------------------------------------------------------------------
   const HELP_MSG = 'Invoke saf emasser put controls [-h, --help] for additional help';
   // Only process if we have an Implementation Status (optional field)
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'implementationStatus')) {
+  if (Object.hasOwn(dataObj, 'implementationStatus')) {
     // The implementation Status is always required in any of these cases
     bodyObject.implementationStatus = dataObj.implementationStatus;
 
@@ -198,10 +198,10 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
       case 'Planned':
       case 'Implemented': {
         // No need to check for controlDesignation and estimatedCompletionDate, they are required fields
-        if (!(Object.prototype.hasOwnProperty.call(dataObj, 'responsibleEntities')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmCriticality'))
-          || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmFrequency')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmMethod'))
-          || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmReporting')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmTracking'))
-          || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmComments'))) {
+        if (!(Object.hasOwn(dataObj, 'responsibleEntities')) || !(Object.hasOwn(dataObj, 'slcmCriticality'))
+          || !(Object.hasOwn(dataObj, 'slcmFrequency')) || !(Object.hasOwn(dataObj, 'slcmMethod'))
+          || !(Object.hasOwn(dataObj, 'slcmReporting')) || !(Object.hasOwn(dataObj, 'slcmTracking'))
+          || !(Object.hasOwn(dataObj, 'slcmComments'))) {
           printRedMsg('Missing one of these parameters/fields:');
           printRedMsg('    responsibleEntities, slcmCriticality, slcmFrequency,');
           printRedMsg('    slcmMethod,slcmReporting, slcmTracking, slcmComments');
@@ -222,7 +222,7 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
 
       case 'Not Applicable': {
         // No need to check for controlDesignation, it is a required field
-        if ((Object.prototype.hasOwnProperty.call(dataObj, 'naJustification') && Object.prototype.hasOwnProperty.call(dataObj, 'responsibleEntities'))) {
+        if ((Object.hasOwn(dataObj, 'naJustification') && Object.hasOwn(dataObj, 'responsibleEntities'))) {
           bodyObject.naJustification = dataObj.naJustification;
           bodyObject.responsibleEntities = dataObj.responsibleEntities;
         } else {
@@ -237,10 +237,10 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
 
       case 'Manually Inherited': {
         // No need to check for controlDesignation and estimatedCompletionDate, they are required fields
-        if (!(Object.prototype.hasOwnProperty.call(dataObj, 'commonControlProvider')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'responsibleEntities'))
-          || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmCriticality')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmFrequency'))
-          || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmMethod')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmReporting'))
-          || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmTracking')) || !(Object.prototype.hasOwnProperty.call(dataObj, 'slcmComments'))) {
+        if (!(Object.hasOwn(dataObj, 'commonControlProvider')) || !(Object.hasOwn(dataObj, 'responsibleEntities'))
+          || !(Object.hasOwn(dataObj, 'slcmCriticality')) || !(Object.hasOwn(dataObj, 'slcmFrequency'))
+          || !(Object.hasOwn(dataObj, 'slcmMethod')) || !(Object.hasOwn(dataObj, 'slcmReporting'))
+          || !(Object.hasOwn(dataObj, 'slcmTracking')) || !(Object.hasOwn(dataObj, 'slcmComments'))) {
           printRedMsg('Missing one of these parameters/fields:');
           printRedMsg('    commonControlProvider, responsibleEntities, slcmCriticality,');
           printRedMsg('    slcmFrequency, slcmMethod, slcmReporting, slcmTracking, slcmComments');
@@ -262,7 +262,7 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
 
       case 'Inherited': {
         // No need to check for controlDesignation, it is a required field
-        if ((Object.prototype.hasOwnProperty.call(dataObj, 'commonControlProvider'))) {
+        if ((Object.hasOwn(dataObj, 'commonControlProvider'))) {
           bodyObject.commonControlProvider = dataObj.commonControlProvider;
         } else {
           printRedMsg('When implementationStatus value is "Inherited" the following field is required: commonControlProvider');

@@ -6,7 +6,7 @@ import {
   getExistingDescribeFromControl,
   processInSpecProfile,
   processXCCDF,
-  Profile,
+  type Profile,
 } from '@mitre/inspec-objects';
 import { Flags } from '@oclif/core';
 import colors from 'colors';
@@ -129,7 +129,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     addToProcessLogData(`Date: ${new Date().toISOString()}`);
     addToProcessLogData('\nProcess Flags ===========================================');
     for (const key in flags) {
-      if (Object.prototype.hasOwnProperty.call(flags, key)) {
+      if (Object.hasOwn(flags, key)) {
         addToProcessLogData(key + '=' + flags[key as keyof typeof flags]);
       }
     }

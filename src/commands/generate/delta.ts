@@ -214,7 +214,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       // Save the flags to the log object
       addToProcessLogData('Process Flags ===========================================');
       for (const key in flags) {
-        if (Object.prototype.hasOwnProperty.call(flags, key)) {
+        if (Object.hasOwn(flags, key)) {
           addToProcessLogData(key + '=' + flags[key as keyof typeof flags]);
         }
       }
@@ -1181,7 +1181,7 @@ async function getFlags(): Promise<any> {
     addToProcessLogData('generateReport=true');
 
     for (const tagName in answers) {
-      if (Object.prototype.hasOwnProperty.call(answers, tagName)) {
+      if (Object.hasOwn(answers, tagName)) {
         const answerValue = _.get(answers, tagName);
         if (answerValue !== null) {
           addToProcessLogData(tagName + '=' + answerValue);
@@ -1218,7 +1218,7 @@ async function getFlags(): Promise<any> {
   };
 
   for (const tagName in answers) {
-    if (Object.prototype.hasOwnProperty.call(answers, tagName)) {
+    if (Object.hasOwn(answers, tagName)) {
       const answerValue = _.get(answers, tagName);
       if (answerValue !== null) {
         addToProcessLogData(tagName + '=' + answerValue);

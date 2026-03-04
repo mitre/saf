@@ -159,7 +159,7 @@ async function processPrompt() {
 
   // Add required content to the collection
   for (const tagName in requiredContent) {
-    if (Object.prototype.hasOwnProperty.call(requiredContent, tagName)) {
+    if (Object.hasOwn(requiredContent, tagName)) {
       const answerValue = _.get(requiredContent, tagName);
       if (answerValue !== null) {
         interactiveValues[tagName] = answerValue;
@@ -221,7 +221,7 @@ async function processPrompt() {
 
   // Add certs content to the collection
   for (const tagName in requiredCerts) {
-    if (Object.prototype.hasOwnProperty.call(requiredCerts, tagName)) {
+    if (Object.hasOwn(requiredCerts, tagName)) {
       const answerValue = _.get(requiredCerts, tagName);
       if (answerValue !== null) {
         interactiveValues[tagName] = answerValue;
@@ -301,7 +301,7 @@ async function processPrompt() {
 
   // Add optional content to the collection
   for (const tagName in optionalContent) {
-    if (Object.prototype.hasOwnProperty.call(optionalContent, tagName)) {
+    if (Object.hasOwn(optionalContent, tagName)) {
       const answerValue = _.get(optionalContent, tagName);
       if (answerValue !== null) {
         interactiveValues[tagName] = answerValue;
@@ -361,7 +361,7 @@ function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: Record
       const [key, _value_] = trimmedLine.split('='); // skipcq: JS-0356
 
       // If the key exists in the updates object, update the value
-      if (Object.prototype.hasOwnProperty.call(updates, key)) {
+      if (Object.hasOwn(updates, key)) {
         // wrap string values with single-quotes
         return isNumeric(updates[key])
           ? `${key}=${updates[key]}`

@@ -210,15 +210,15 @@ function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerRe
  */
 function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerResource): void {
   // Add object optional entries
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'namespace')) {
+  if (Object.hasOwn(dataObj, 'namespace')) {
     bodyObject.namespace = dataObj.namespace;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'podIp')) {
+  if (Object.hasOwn(dataObj, 'podIp')) {
     bodyObject.podIp = dataObj.podIp;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'podName')) {
+  if (Object.hasOwn(dataObj, 'podName')) {
     bodyObject.podName = dataObj.podName;
   }
 
@@ -238,15 +238,15 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
     const benchmarksObj: Benchmarks = { benchmark: entryObject.benchmark, results: [] };
     // These are required
     // Check for the optional entry (isBaseline, version, and release)
-    if (Object.prototype.hasOwnProperty.call(entryObject, 'isBaseline')) {
+    if (Object.hasOwn(entryObject, 'isBaseline')) {
       benchmarksObj.isBaseline = entryObject.isBaseline;
     }
 
-    if (Object.prototype.hasOwnProperty.call(entryObject, 'version')) {
+    if (Object.hasOwn(entryObject, 'version')) {
       benchmarksObj.version = entryObject.version;
     }
 
-    if (Object.prototype.hasOwnProperty.call(entryObject, 'release')) {
+    if (Object.hasOwn(entryObject, 'release')) {
       benchmarksObj.release = entryObject.release;
     }
 
@@ -255,7 +255,7 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
       // These are required
       const resultsObj: Results = { ruleId: resultObj.ruleId, status: resultObj.status, lastSeen: resultObj.lastSeen };
       // Check for the optional entry
-      if (Object.prototype.hasOwnProperty.call(resultObj, 'message')) {
+      if (Object.hasOwn(resultObj, 'message')) {
         resultsObj.message = resultObj.message;
       }
 

@@ -124,7 +124,7 @@ async function getFlags(): Promise<unknown> {
   };
 
   for (const tagName in answers) {
-    if (Object.prototype.hasOwnProperty.call(answers, tagName)) {
+    if (Object.hasOwn(answers, tagName)) {
       const answerValue = _.get(answers, tagName);
       if (answerValue !== null) {
         interactiveValues[tagName] = answerValue;
@@ -298,7 +298,7 @@ async function getCklMetaData(): Promise<unknown> {
   }
 
   for (const tagName in assets) {
-    if (Object.prototype.hasOwnProperty.call(assets, tagName)) {
+    if (Object.hasOwn(assets, tagName)) {
       const answerValue = _.get(assets, tagName);
       if (!isEmpty(answerValue)) {
         interactiveValues[tagName] = answerValue;

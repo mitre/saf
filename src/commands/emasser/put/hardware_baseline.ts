@@ -123,15 +123,15 @@ function addRequiredFieldsToRequestBody(dataObj: Hardware): Hardware {
  * @param dataObj - The source object from which fields will be copied if they exist.
  */
 function addConditionalFields(bodyObject: Hardware, dataObj: Hardware): void {
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'publicFacingFqdn')) {
+  if (Object.hasOwn(dataObj, 'publicFacingFqdn')) {
     bodyObject.publicFacingFqdn = dataObj.publicFacingFqdn;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'publicFacingIpAddress')) {
+  if (Object.hasOwn(dataObj, 'publicFacingIpAddress')) {
     bodyObject.publicFacingIpAddress = dataObj.publicFacingIpAddress;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'publicFacingUrls')) {
+  if (Object.hasOwn(dataObj, 'publicFacingUrls')) {
     bodyObject.publicFacingUrls = dataObj.publicFacingUrls;
   }
 }
@@ -143,55 +143,55 @@ function addConditionalFields(bodyObject: Hardware, dataObj: Hardware): void {
  * @param dataObj - The source object containing optional fields.
  */
 function addOptionalFields(bodyObject: Hardware, dataObj: Hardware): void {
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'componentType')) {
+  if (Object.hasOwn(dataObj, 'componentType')) {
     bodyObject.componentType = dataObj.componentType;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'nickname')) {
+  if (Object.hasOwn(dataObj, 'nickname')) {
     bodyObject.nickname = dataObj.nickname;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'assetIpAddress')) {
+  if (Object.hasOwn(dataObj, 'assetIpAddress')) {
     bodyObject.assetIpAddress = dataObj.assetIpAddress;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'publicFacing')) {
+  if (Object.hasOwn(dataObj, 'publicFacing')) {
     bodyObject.publicFacing = dataObj.publicFacing;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'virtualAsset')) {
+  if (Object.hasOwn(dataObj, 'virtualAsset')) {
     bodyObject.virtualAsset = dataObj.virtualAsset;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'manufacturer')) {
+  if (Object.hasOwn(dataObj, 'manufacturer')) {
     bodyObject.manufacturer = dataObj.manufacturer;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'modelNumber')) {
+  if (Object.hasOwn(dataObj, 'modelNumber')) {
     bodyObject.modelNumber = dataObj.modelNumber;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'serialNumber')) {
+  if (Object.hasOwn(dataObj, 'serialNumber')) {
     bodyObject.serialNumber = dataObj.serialNumber;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'osIosFwVersion')) {
+  if (Object.hasOwn(dataObj, 'osIosFwVersion')) {
     bodyObject.osIosFwVersion = dataObj.osIosFwVersion;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'memorySizeType')) {
+  if (Object.hasOwn(dataObj, 'memorySizeType')) {
     bodyObject.memorySizeType = dataObj.memorySizeType;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'location')) {
+  if (Object.hasOwn(dataObj, 'location')) {
     bodyObject.location = dataObj.location;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'approvalStatus')) {
+  if (Object.hasOwn(dataObj, 'approvalStatus')) {
     bodyObject.approvalStatus = dataObj.approvalStatus;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'criticalAsset')) {
+  if (Object.hasOwn(dataObj, 'criticalAsset')) {
     bodyObject.criticalAsset = dataObj.criticalAsset;
   }
 }
