@@ -1,17 +1,13 @@
-import fs from 'fs'
-import _ from 'lodash'
-import {readFile} from 'fs/promises'
-import {colorize} from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
-
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {displayError, FlagOptions, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg} from '../../../utils/emasser/utilities'
-
-import {POAMApi} from '@mitre/emass_client'
-// import {MilestonesGet, PoamResponsePut,
-//   PoamGet as Poams} from '@mitre/emass_client/dist/api'
-import {MilestonesRequiredPutMilestonesInner as MilestonesRequiredPut, PoamResponsePostPutDelete} from '@mitre/emass_client/dist/api'
+import fs from 'fs';
+import { readFile } from 'fs/promises';
+import { POAMApi } from '@mitre/emass_client';
+import type { MilestonesRequiredPutMilestonesInner as MilestonesRequiredPut, PoamResponsePostPutDelete } from '@mitre/emass_client/dist/api';
+import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
+import _ from 'lodash';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg } from '../../../utils/emasser/utilities';
 
 /**
  * Interface representing a Plan of Action and Milestones (POAMs) object.
@@ -62,61 +58,61 @@ import {MilestonesRequiredPutMilestonesInner as MilestonesRequiredPut, PoamRespo
  * @property {string} [nonPersonnelResourcesNonfundingObstacle] - Non-funding obstacle for non-personnel resources.
  * @property {string} [nonPersonnelResourcesNonfundingObstacleOtherReason] - Other reason for non-funding obstacle for non-personnel resources.
  */
-interface Poams {
+type Poams = {
   // Required Fields - Declared as undefined but validated later
-  poamId?: number
-  displayPoamId?: string
-  status?: string
-  vulnerabilityDescription?: string
-  sourceIdentifyingVulnerability?: string
-  pocOrganization?: string
-  resources?: string
+  poamId?: number;
+  displayPoamId?: string;
+  status?: string;
+  vulnerabilityDescription?: string;
+  sourceIdentifyingVulnerability?: string;
+  pocOrganization?: string;
+  resources?: string;
 
   // Conditional Fields
-  milestones?: Array<MilestonesRequiredPut>
-  pocFirstName?: string
-  pocLastName?: string
-  pocEmail?: string
-  pocPhoneNumber?: string
-  scheduledCompletionDate?: string
-  completionDate?: string
-  comments?: string
+  milestones?: MilestonesRequiredPut[];
+  pocFirstName?: string;
+  pocLastName?: string;
+  pocEmail?: string;
+  pocPhoneNumber?: string;
+  scheduledCompletionDate?: string;
+  completionDate?: string;
+  comments?: string;
   // Conditional but certain eMASS instances may
   // require the severity Risk Analysis field
-  severity?: string
+  severity?: string;
 
   // Optional
-  externalUid?: string
-  controlAcronym?: string
-  assessmentProcedure?: string
-  securityChecks?: string
-  rawSeverity?: string
-  impactDescription?: string
-  recommendations?: string
-  resultingResidualRiskLevelAfterProposedMitigations?: string
-  predisposingConditions?: string
-  threatDescription?: string
-  devicesAffected?: string
+  externalUid?: string;
+  controlAcronym?: string;
+  assessmentProcedure?: string;
+  securityChecks?: string;
+  rawSeverity?: string;
+  impactDescription?: string;
+  recommendations?: string;
+  resultingResidualRiskLevelAfterProposedMitigations?: string;
+  predisposingConditions?: string;
+  threatDescription?: string;
+  devicesAffected?: string;
   // Optional but certain eMASS instances
   // may require these Risk Analysis fields
-  mitigations?: string
-  relevanceOfThreat?: string
-  likelihood?: string
-  impact?: string
-  residualRiskLevel?: string
+  mitigations?: string;
+  relevanceOfThreat?: string;
+  likelihood?: string;
+  impact?: string;
+  residualRiskLevel?: string;
   // Optional for Army and USCG - Required (Conditional) for VA
-  identifiedInCFOAuditOrOtherReview?: boolean
-  personnelResourcesFundedBaseHours?: number
-  personnelResourcesCostCode?: string
-  personnelResourcesUnfundedBaseHours?: number
-  personnelResourcesNonfundingObstacle?: string
-  personnelResourcesNonfundingObstacleOtherReason?: string
-  nonPersonnelResourcesFundedAmount?: number
-  nonPersonnelResourcesCostCode?: string
-  nonPersonnelResourcesUnfundedAmount?: number
-  nonPersonnelResourcesNonfundingObstacle?: string
-  nonPersonnelResourcesNonfundingObstacleOtherReason?: string
-}
+  identifiedInCFOAuditOrOtherReview?: boolean;
+  personnelResourcesFundedBaseHours?: number;
+  personnelResourcesCostCode?: string;
+  personnelResourcesUnfundedBaseHours?: number;
+  personnelResourcesNonfundingObstacle?: string;
+  personnelResourcesNonfundingObstacleOtherReason?: string;
+  nonPersonnelResourcesFundedAmount?: number;
+  nonPersonnelResourcesCostCode?: string;
+  nonPersonnelResourcesUnfundedAmount?: number;
+  nonPersonnelResourcesNonfundingObstacle?: string;
+  nonPersonnelResourcesNonfundingObstacleOtherReason?: string;
+};
 
 function getAllJsonExamples(): Record<string, unknown> {
   return {
@@ -124,7 +120,7 @@ function getAllJsonExamples(): Record<string, unknown> {
     ...getJsonExamples('poams-post-put-required-va'),
     ...getJsonExamples('poams-put-conditional'),
     ...getJsonExamples('poams-post-put-optional'),
-  }
+  };
 }
 
 /**
@@ -136,8 +132,8 @@ function getAllJsonExamples(): Record<string, unknown> {
  */
 function assertParamExists(object: string, value: string | number | undefined | null): void {
   if (value === undefined) {
-    printRedMsg(`Missing required parameter/field: ${object}`)
-    throw new Error('Value not defined')
+    printRedMsg(`Missing required parameter/field: ${object}`);
+    throw new Error('Value not defined');
   }
 }
 
@@ -153,30 +149,30 @@ function assertParamExists(object: string, value: string | number | undefined | 
  * @throws Will throw an error if any required field is missing in the input `dataObj`.
  */
 function addRequiredFieldsToRequestBody(dataObj: Poams): Poams {
-  const bodyObj: Poams = {}
+  const bodyObj: Poams = {};
   try {
-    assertParamExists('poamId', dataObj.poamId)
-    assertParamExists('displayPoamId', dataObj.displayPoamId)
-    assertParamExists('status', dataObj.status)
-    assertParamExists('vulnerabilityDescription', dataObj.vulnerabilityDescription)
-    assertParamExists('sourceIdentifyingVulnerability', dataObj.sourceIdentifyingVulnerability)
-    assertParamExists('pocOrganization', dataObj.pocOrganization)
-    assertParamExists('resources', dataObj.resources)
+    assertParamExists('poamId', dataObj.poamId);
+    assertParamExists('displayPoamId', dataObj.displayPoamId);
+    assertParamExists('status', dataObj.status);
+    assertParamExists('vulnerabilityDescription', dataObj.vulnerabilityDescription);
+    assertParamExists('sourceIdentifyingVulnerability', dataObj.sourceIdentifyingVulnerability);
+    assertParamExists('pocOrganization', dataObj.pocOrganization);
+    assertParamExists('resources', dataObj.resources);
   } catch (error) {
-    console.log('Required JSON fields are:')
-    console.log(colorize(JSON.stringify(getJsonExamples('poams-put-required'), null, 2)))
-    throw error
+    console.log('Required JSON fields are:');
+    console.log(colorize(JSON.stringify(getJsonExamples('poams-put-required'), null, 2)));
+    throw error;
   }
 
-  bodyObj.poamId = dataObj.poamId
-  bodyObj.displayPoamId = dataObj.displayPoamId
-  bodyObj.status = dataObj.status
-  bodyObj.vulnerabilityDescription = dataObj.vulnerabilityDescription
-  bodyObj.sourceIdentifyingVulnerability = dataObj.sourceIdentifyingVulnerability
-  bodyObj.pocOrganization = dataObj.pocOrganization
-  bodyObj.resources = dataObj.resources
+  bodyObj.poamId = dataObj.poamId;
+  bodyObj.displayPoamId = dataObj.displayPoamId;
+  bodyObj.status = dataObj.status;
+  bodyObj.vulnerabilityDescription = dataObj.vulnerabilityDescription;
+  bodyObj.sourceIdentifyingVulnerability = dataObj.sourceIdentifyingVulnerability;
+  bodyObj.pocOrganization = dataObj.pocOrganization;
+  bodyObj.resources = dataObj.resources;
 
-  return bodyObj
+  return bodyObj;
 }
 
 /**
@@ -191,24 +187,24 @@ function addRequiredFieldsToRequestBody(dataObj: Poams): Poams {
  * it copies their values to the corresponding properties in the body object.
  */
 function addConditionalFields(bodyObject: Poams, dataObj: Poams): void {
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'pocFirstName')) {
-    bodyObject.pocFirstName = dataObj.pocFirstName
+  if (Object.hasOwn(dataObj, 'pocFirstName')) {
+    bodyObject.pocFirstName = dataObj.pocFirstName;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'pocLastName')) {
-    bodyObject.pocLastName = dataObj.pocLastName
+  if (Object.hasOwn(dataObj, 'pocLastName')) {
+    bodyObject.pocLastName = dataObj.pocLastName;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'pocEmail')) {
-    bodyObject.pocEmail = dataObj.pocEmail
+  if (Object.hasOwn(dataObj, 'pocEmail')) {
+    bodyObject.pocEmail = dataObj.pocEmail;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'pocPhoneNumber')) {
-    bodyObject.pocPhoneNumber = dataObj.pocPhoneNumber
+  if (Object.hasOwn(dataObj, 'pocPhoneNumber')) {
+    bodyObject.pocPhoneNumber = dataObj.pocPhoneNumber;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'severity')) {
-    bodyObject.severity = dataObj.severity
+  if (Object.hasOwn(dataObj, 'severity')) {
+    bodyObject.severity = dataObj.severity;
   }
 }
 
@@ -220,112 +216,112 @@ function addConditionalFields(bodyObject: Poams, dataObj: Poams): void {
  */
 // skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
 function addOptionalFields(bodyObject: Poams, dataObj: Poams): void {
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'externalUid')) {
-    bodyObject.externalUid = dataObj.externalUid
+  if (Object.hasOwn(dataObj, 'externalUid')) {
+    bodyObject.externalUid = dataObj.externalUid;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'controlAcronym')) {
-    bodyObject.controlAcronym = dataObj.controlAcronym
+  if (Object.hasOwn(dataObj, 'controlAcronym')) {
+    bodyObject.controlAcronym = dataObj.controlAcronym;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'assessmentProcedure')) {
-    bodyObject.assessmentProcedure = dataObj.assessmentProcedure
+  if (Object.hasOwn(dataObj, 'assessmentProcedure')) {
+    bodyObject.assessmentProcedure = dataObj.assessmentProcedure;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'securityChecks')) {
-    bodyObject.securityChecks = dataObj.securityChecks
+  if (Object.hasOwn(dataObj, 'securityChecks')) {
+    bodyObject.securityChecks = dataObj.securityChecks;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'rawSeverity')) {
-    bodyObject.rawSeverity = dataObj.rawSeverity
+  if (Object.hasOwn(dataObj, 'rawSeverity')) {
+    bodyObject.rawSeverity = dataObj.rawSeverity;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'relevanceOfThreat')) {
-    bodyObject.relevanceOfThreat = dataObj.relevanceOfThreat
+  if (Object.hasOwn(dataObj, 'relevanceOfThreat')) {
+    bodyObject.relevanceOfThreat = dataObj.relevanceOfThreat;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'likelihood')) {
-    bodyObject.likelihood = dataObj.likelihood
+  if (Object.hasOwn(dataObj, 'likelihood')) {
+    bodyObject.likelihood = dataObj.likelihood;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'impact')) {
-    bodyObject.impact = dataObj.impact
+  if (Object.hasOwn(dataObj, 'impact')) {
+    bodyObject.impact = dataObj.impact;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'impactDescription')) {
-    bodyObject.impactDescription = dataObj.impactDescription
+  if (Object.hasOwn(dataObj, 'impactDescription')) {
+    bodyObject.impactDescription = dataObj.impactDescription;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'residualRiskLevel')) {
-    bodyObject.residualRiskLevel = dataObj.residualRiskLevel
+  if (Object.hasOwn(dataObj, 'residualRiskLevel')) {
+    bodyObject.residualRiskLevel = dataObj.residualRiskLevel;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'recommendations')) {
-    bodyObject.recommendations = dataObj.recommendations
+  if (Object.hasOwn(dataObj, 'recommendations')) {
+    bodyObject.recommendations = dataObj.recommendations;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'mitigations')) {
-    bodyObject.mitigations = dataObj.mitigations
+  if (Object.hasOwn(dataObj, 'mitigations')) {
+    bodyObject.mitigations = dataObj.mitigations;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'resultingResidualRiskLevelAfterProposedMitigations')) {
-    bodyObject.resultingResidualRiskLevelAfterProposedMitigations = dataObj.resultingResidualRiskLevelAfterProposedMitigations
+  if (Object.hasOwn(dataObj, 'resultingResidualRiskLevelAfterProposedMitigations')) {
+    bodyObject.resultingResidualRiskLevelAfterProposedMitigations = dataObj.resultingResidualRiskLevelAfterProposedMitigations;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'predisposingConditions')) {
-    bodyObject.predisposingConditions = dataObj.predisposingConditions
+  if (Object.hasOwn(dataObj, 'predisposingConditions')) {
+    bodyObject.predisposingConditions = dataObj.predisposingConditions;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'threatDescription')) {
-    bodyObject.threatDescription = dataObj.threatDescription
+  if (Object.hasOwn(dataObj, 'threatDescription')) {
+    bodyObject.threatDescription = dataObj.threatDescription;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'devicesAffected')) {
-    bodyObject.devicesAffected = dataObj.devicesAffected
+  if (Object.hasOwn(dataObj, 'devicesAffected')) {
+    bodyObject.devicesAffected = dataObj.devicesAffected;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'identifiedInCFOAuditOrOtherReview')) {
-    bodyObject.identifiedInCFOAuditOrOtherReview = dataObj.identifiedInCFOAuditOrOtherReview
+  if (Object.hasOwn(dataObj, 'identifiedInCFOAuditOrOtherReview')) {
+    bodyObject.identifiedInCFOAuditOrOtherReview = dataObj.identifiedInCFOAuditOrOtherReview;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'personnelResourcesFundedBaseHours')) {
-    bodyObject.personnelResourcesFundedBaseHours = dataObj.personnelResourcesFundedBaseHours
+  if (Object.hasOwn(dataObj, 'personnelResourcesFundedBaseHours')) {
+    bodyObject.personnelResourcesFundedBaseHours = dataObj.personnelResourcesFundedBaseHours;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'personnelResourcesCostCode')) {
-    bodyObject.personnelResourcesCostCode = dataObj.personnelResourcesCostCode
+  if (Object.hasOwn(dataObj, 'personnelResourcesCostCode')) {
+    bodyObject.personnelResourcesCostCode = dataObj.personnelResourcesCostCode;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'personnelResourcesUnfundedBaseHours')) {
-    bodyObject.personnelResourcesUnfundedBaseHours = dataObj.personnelResourcesUnfundedBaseHours
+  if (Object.hasOwn(dataObj, 'personnelResourcesUnfundedBaseHours')) {
+    bodyObject.personnelResourcesUnfundedBaseHours = dataObj.personnelResourcesUnfundedBaseHours;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'personnelResourcesNonfundingObstacle')) {
-    bodyObject.personnelResourcesNonfundingObstacle = dataObj.personnelResourcesNonfundingObstacle
+  if (Object.hasOwn(dataObj, 'personnelResourcesNonfundingObstacle')) {
+    bodyObject.personnelResourcesNonfundingObstacle = dataObj.personnelResourcesNonfundingObstacle;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'personnelResourcesNonfundingObstacleOtherReason')) {
-    bodyObject.personnelResourcesNonfundingObstacleOtherReason = dataObj.personnelResourcesNonfundingObstacleOtherReason
+  if (Object.hasOwn(dataObj, 'personnelResourcesNonfundingObstacleOtherReason')) {
+    bodyObject.personnelResourcesNonfundingObstacleOtherReason = dataObj.personnelResourcesNonfundingObstacleOtherReason;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'nonPersonnelResourcesFundedAmount')) {
-    bodyObject.nonPersonnelResourcesFundedAmount = dataObj.nonPersonnelResourcesFundedAmount
+  if (Object.hasOwn(dataObj, 'nonPersonnelResourcesFundedAmount')) {
+    bodyObject.nonPersonnelResourcesFundedAmount = dataObj.nonPersonnelResourcesFundedAmount;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'nonPersonnelResourcesCostCode')) {
-    bodyObject.nonPersonnelResourcesCostCode = dataObj.nonPersonnelResourcesCostCode
+  if (Object.hasOwn(dataObj, 'nonPersonnelResourcesCostCode')) {
+    bodyObject.nonPersonnelResourcesCostCode = dataObj.nonPersonnelResourcesCostCode;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'nonPersonnelResourcesUnfundedAmount')) {
-    bodyObject.nonPersonnelResourcesUnfundedAmount = dataObj.nonPersonnelResourcesUnfundedAmount
+  if (Object.hasOwn(dataObj, 'nonPersonnelResourcesUnfundedAmount')) {
+    bodyObject.nonPersonnelResourcesUnfundedAmount = dataObj.nonPersonnelResourcesUnfundedAmount;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'nonPersonnelResourcesNonfundingObstacle')) {
-    bodyObject.nonPersonnelResourcesNonfundingObstacle = dataObj.nonPersonnelResourcesNonfundingObstacle
+  if (Object.hasOwn(dataObj, 'nonPersonnelResourcesNonfundingObstacle')) {
+    bodyObject.nonPersonnelResourcesNonfundingObstacle = dataObj.nonPersonnelResourcesNonfundingObstacle;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'nonPersonnelResourcesNonfundingObstacleOtherReason')) {
-    bodyObject.nonPersonnelResourcesNonfundingObstacleOtherReason = dataObj.nonPersonnelResourcesNonfundingObstacleOtherReason
+  if (Object.hasOwn(dataObj, 'nonPersonnelResourcesNonfundingObstacleOtherReason')) {
+    bodyObject.nonPersonnelResourcesNonfundingObstacleOtherReason = dataObj.nonPersonnelResourcesNonfundingObstacleOtherReason;
   }
 }
 
@@ -365,27 +361,26 @@ function addOptionalFields(bodyObject: Poams, dataObj: Poams): void {
  * The function uses `printRedMsg` to display error messages and `printHelpMsg` to display help messages.
  * It exits the process with a status code of 1 if any validation fails.
 */
-// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
-function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skipcq: JS-0044
-  const HELP_MSG = 'Invoke saf emasser post poams [-h, --help] for additional help'
+function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void {
+  const HELP_MSG = 'Invoke saf emasser post poams [-h, --help] for additional help';
   switch (dataObj.status) {
     case 'Risk Accepted': {
       if (dataObj.comments === undefined) {
-        printRedMsg('When status is "Risk Accepted" the following parameter/field is required:')
-        printRedMsg('    comments')
-        printHelpMsg(HELP_MSG)
-        process.exit(1)
+        printRedMsg('When status is "Risk Accepted" the following parameter/field is required:');
+        printRedMsg('    comments');
+        printHelpMsg(HELP_MSG);
+        process.exit(1);
       // Risk Accepted POA&M Item cannot be saved with a Scheduled Completion Date or Milestones.
-      } else if (Object.prototype.hasOwnProperty.call(dataObj, 'scheduledCompletionDate') || Object.prototype.hasOwnProperty.call(dataObj, 'milestones')) {
-        printRedMsg('When status is "Risk Accepted" POA&Ms CAN NOT be saved with the following parameters/fields:')
-        printRedMsg('    scheduledCompletionDate, or milestone')
-        printHelpMsg(HELP_MSG)
-        process.exit(1)
+      } else if (Object.hasOwn(dataObj, 'scheduledCompletionDate') || Object.hasOwn(dataObj, 'milestones')) {
+        printRedMsg('When status is "Risk Accepted" POA&Ms CAN NOT be saved with the following parameters/fields:');
+        printRedMsg('    scheduledCompletionDate, or milestone');
+        printHelpMsg(HELP_MSG);
+        process.exit(1);
       } else {
-        bodyObject.comments = dataObj.comments
+        bodyObject.comments = dataObj.comments;
       }
 
-      break
+      break;
     }
 
     case 'Ongoing': {
@@ -393,108 +388,96 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
       // API call will return and error if scheduledCompletionDate for Approved review status POA&Ms
 
       // POA&M Items that have a status of “Ongoing” cannot be saved without Milestones.
-      if (!(Object.prototype.hasOwnProperty.call(dataObj, 'milestones'))) {
-        printRedMsg('When status is "Ongoing" and updating a POA&M a Milestone is required')
-        printHelpMsg(HELP_MSG)
-        process.exit(1)
+      if (!(Object.hasOwn(dataObj, 'milestones'))) {
+        printRedMsg('When status is "Ongoing" and updating a POA&M a Milestone is required');
+        printHelpMsg(HELP_MSG);
+        process.exit(1);
       // If we have a milestone, ensure the required fields are provided.
       } else if (!(_.some(dataObj.milestones, 'description')) || !(_.some(dataObj.milestones, 'scheduledCompletionDate'))) {
-        printRedMsg('Milestone object requires the following fields:')
-        printRedMsg('    "milestones": [{"description": "The milestone description", "scheduledCompletionDate": Unix date format }], ')
-        process.exit(1)
+        printRedMsg('Milestone object requires the following fields:');
+        printRedMsg('    "milestones": [{"description": "The milestone description", "scheduledCompletionDate": Unix date format }], ');
+        process.exit(1);
       } else {
         // Add the POA&M schedule completion date if provided (backend may return an error)
-        if (Object.prototype.hasOwnProperty.call(dataObj, 'scheduledCompletionDate')) {
-          bodyObject.scheduledCompletionDate = dataObj.scheduledCompletionDate
+        if (Object.hasOwn(dataObj, 'scheduledCompletionDate')) {
+          bodyObject.scheduledCompletionDate = dataObj.scheduledCompletionDate;
         }
 
         // Add the milestone object
-        const milestoneArray: Array<MilestonesRequiredPut> = []
-        dataObj.milestones?.forEach((milestone: MilestonesRequiredPut) => {
-          const milestoneObj: MilestonesRequiredPut = {description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: false}
-          // isActive is used to prevent uploading duplicate/undesired milestones via the
-          // POA&M PUT call and must be set to false, otherwise a new milestone is created
-          if (Object.prototype.hasOwnProperty.call(milestone, 'isActive')) {
-            milestoneObj.isActive = milestone.isActive
-          }
-
-          milestoneArray.push(milestoneObj)
-        })
-        bodyObject.milestones = [...milestoneArray]
+        // isActive is used to prevent uploading duplicate/undesired milestones via the POA&M PUT call and must be set to false, otherwise a new milestone is created
+        bodyObject.milestones = dataObj.milestones?.map(milestone => ({ description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: Object.hasOwn(milestone, 'isActive') ? milestone.isActive : false })) || [];
       }
 
-      break
+      break;
     }
 
     case 'Completed': {
       // Completed POA&M Item require the completionDate, comments, and Milestones.
-      if (!(Object.prototype.hasOwnProperty.call(dataObj, 'comments'))
-        || !(Object.prototype.hasOwnProperty.call(dataObj, 'completionDate'))
-        || !(Object.prototype.hasOwnProperty.call(dataObj, 'milestones'))) {
-        printRedMsg('When status is "Completed" the following parameters/fields are required:')
-        printRedMsg('    comments, completionDate, and milestones')
-        printHelpMsg(HELP_MSG)
-        process.exit(1)
+      if (!(Object.hasOwn(dataObj, 'comments'))
+        || !(Object.hasOwn(dataObj, 'completionDate'))
+        || !(Object.hasOwn(dataObj, 'milestones'))) {
+        printRedMsg('When status is "Completed" the following parameters/fields are required:');
+        printRedMsg('    comments, completionDate, and milestones');
+        printHelpMsg(HELP_MSG);
+        process.exit(1);
       } else {
         // Add the POA&M schedule and completion date, comments
-        bodyObject.comments = dataObj.comments
-        bodyObject.completionDate = dataObj.completionDate
+        bodyObject.comments = dataObj.comments;
+        bodyObject.completionDate = dataObj.completionDate;
         // Add the POA&M schedule completion date if provided (backend may return an error)
-        if (Object.prototype.hasOwnProperty.call(dataObj, 'scheduledCompletionDate')) {
-          bodyObject.scheduledCompletionDate = dataObj.scheduledCompletionDate
+        if (Object.hasOwn(dataObj, 'scheduledCompletionDate')) {
+          bodyObject.scheduledCompletionDate = dataObj.scheduledCompletionDate;
         }
 
         // Add the milestone object
-        const milestoneArray: Array<MilestonesRequiredPut> = []
-        dataObj.milestones?.forEach((milestone: MilestonesRequiredPut) => {
-          const milestoneObj: MilestonesRequiredPut = {description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: false}
-          // isActive is used to prevent uploading duplicate/undesired milestones via the
-          // POA&M PUT call and must be set to false, otherwise a new milestone is created
-          if (Object.prototype.hasOwnProperty.call(milestone, 'isActive')) {
-            milestoneObj.isActive = milestone.isActive
-          }
-
-          milestoneArray.push(milestoneObj)
-        })
-        bodyObject.milestones = [...milestoneArray]
+        // isActive is used to prevent uploading duplicate/undesired milestones via the POA&M PUT call and must be set to false, otherwise a new milestone is created
+        bodyObject.milestones = dataObj.milestones?.map(milestone => ({ description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: Object.hasOwn(milestone, 'isActive') ? milestone.isActive : false })) || [];
       }
 
-      break
+      break;
     }
 
     case 'Not Applicable': {
-      printRedMsg('POA&M Items with a status of "Not Applicable" will be updated through test result creation.')
-      process.exit(0)
-      break
+      printRedMsg('POA&M Items with a status of "Not Applicable" will be updated through test result creation.');
+      process.exit(0);
+      break;
     }
 
     case 'Archived': {
-      printHelpMsg('Archived POA&M Items cannot be updated')
-      process.exit(0)
-      break
+      printHelpMsg('Archived POA&M Items cannot be updated');
+      process.exit(0);
+      break;
     }
 
     default: {
-      printRedMsg('The "status" field must one of the following:')
-      printRedMsg('    Risk Accepted, Ongoing, or Completed')
-      printRedMsg(`Status provided was: ${dataObj.status}`)
-      process.exit(1)
-      break
+      printRedMsg('The "status" field must one of the following:');
+      printRedMsg('    Risk Accepted, Ongoing, or Completed');
+      printRedMsg(`Status provided was: ${dataObj.status}`);
+      process.exit(1);
+      break;
     }
   }
 
   // POC checks: If any poc information is provided all POC fields are required
-  let missingFields = ''
-  if ((_.get(dataObj, 'pocFirstName') === undefined)) missingFields = 'pocFirstName'
-  if ((_.get(dataObj, 'pocLastName') === undefined)) missingFields += (missingFields === '') ? 'pocLastName' : ', pocLastName'
-  if ((_.get(dataObj, 'pocEmail') === undefined)) missingFields += (missingFields === '') ? 'pocEmail' : ', pocEmail'
-  if ((_.get(dataObj, 'pocPhoneNumber') === undefined)) missingFields += (missingFields === '') ? 'pocPhoneNumber' : ', pocPhoneNumber'
-  const totalPocMissingFields = missingFields.split(',').length
+  let missingFields = '';
+  if ((_.get(dataObj, 'pocFirstName') === undefined)) {
+    missingFields = 'pocFirstName';
+  }
+  if ((_.get(dataObj, 'pocLastName') === undefined)) {
+    missingFields += (missingFields === '') ? 'pocLastName' : ', pocLastName';
+  }
+  if ((_.get(dataObj, 'pocEmail') === undefined)) {
+    missingFields += (missingFields === '') ? 'pocEmail' : ', pocEmail';
+  }
+  if ((_.get(dataObj, 'pocPhoneNumber') === undefined)) {
+    missingFields += (missingFields === '') ? 'pocPhoneNumber' : ', pocPhoneNumber';
+  }
+  const totalPocMissingFields = missingFields.split(',').length;
   if ((totalPocMissingFields >= 1 && totalPocMissingFields < 4) && missingFields !== '') {
-    printRedMsg('If any POC fields are provided (pocFirstName, pocLastName, pocEmail, pocPhoneNumber) than all POC fields are required:')
-    printRedMsg(`    Missing field(s): ${missingFields}`)
-    printHelpMsg(HELP_MSG)
-    process.exit(1)
+    printRedMsg('If any POC fields are provided (pocFirstName, pocLastName, pocEmail, pocPhoneNumber) than all POC fields are required:');
+    printRedMsg(`    Missing field(s): ${missingFields}`);
+    printHelpMsg(HELP_MSG);
+    process.exit(1);
   }
 }
 
@@ -513,101 +496,99 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
  * @returns The newly generated Poams object with the required, conditional, and optional fields.
  */
 function generateBodyObj(dataObject: Poams): Poams {
-  let bodyObj: Poams = {}
+  let bodyObj: Poams = {};
   try {
-    bodyObj = addRequiredFieldsToRequestBody(dataObject)
-    processBusinessLogic(bodyObj, dataObject)
-    addConditionalFields(bodyObj, dataObject)
-    addOptionalFields(bodyObj, dataObject)
+    bodyObj = addRequiredFieldsToRequestBody(dataObject);
+    processBusinessLogic(bodyObj, dataObject);
+    addConditionalFields(bodyObj, dataObject);
+    addOptionalFields(bodyObj, dataObject);
   } catch {
-    process.exit(1)
+    process.exit(1);
   }
 
-  return bodyObj
+  return bodyObj;
 }
 
-const CMD_HELP = 'saf emasser put poams -h or --help'
+const CMD_HELP = 'saf emasser put poams -h or --help';
 export default class EmasserPutPoams extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]\n\x1B[93m NOTE: see EXAMPLES for command usages\x1B[0m'
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command usages\u001B[0m';
 
-  static readonly description = 'Update a Plan of Action and Milestones (POA&M) into a systems.'
+  static readonly description = 'Update a Plan of Action and Milestones (POA&M) into a systems.';
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing the POA&M information based on defined business rules.',
     'Required JSON parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('poams-put-required'), null, 2)),
-    '\x1B[1mRequired for VA but Conditional for Army and USCG JSON parameters/fields are:\x1B[0m',
+    '\u001B[1mRequired for VA but Conditional for Army and USCG JSON parameters/fields are:\u001B[0m',
     colorize(JSON.stringify(getJsonExamples('poams-post-put-required-va'), null, 2)),
     'Conditional JSON parameters/fields are: ',
     colorize(JSON.stringify(getJsonExamples('poams-put-conditional'), null, 2)),
     'Optional JSON parameters/fields are:',
     colorize(JSON.stringify(getJsonExamples('poams-post-put-optional'), null, 2)),
-    '\x1B[1m\x1B[32mAll accepted parameters/fields are:\x1B[0m',
+    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
     colorize(getAllJsonExamples()),
-  ]
+  ];
 
   static readonly flags = {
-    help: Flags.help({char: 'h', description: 'Show eMASSer CLI help for the PUT POA&Ms command'}),
-    ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
-  }
+    help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the PUT POA&Ms command' }),
+    ...getFlagsForEndpoint(process.argv),
+  };
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserPutPoams)
-    const apiCxn = new ApiConnection()
-    const updatePoam = new POAMApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+    const { flags } = await this.parse(EmasserPutPoams);
+    const apiCxn = new ApiConnection();
+    const updatePoam = new POAMApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    const requestBodyArray: Poams[] = []
+    const requestBodyArray: Poams[] = [];
 
     // Check if a POA&Ms json file was provided
     if (!fs.existsSync(flags.dataFile)) {
-      console.error('\x1B[91m» POA&M(s) data file (.json) not found or invalid:', flags.dataFile, '\x1B[0m')
-      process.exit(1)
+      console.error('\u001B[91m» POA&M(s) data file (.json) not found or invalid:', flags.dataFile, '\u001B[0m');
+      process.exit(1);
     }
 
     try {
       // Read and parse the JSON file
-      const fileContent = await readFile(flags.dataFile, 'utf8')
-      const data: unknown = JSON.parse(fileContent)
+      const fileContent = await readFile(flags.dataFile, 'utf8');
+      const data: unknown = JSON.parse(fileContent);
 
       // POA&Ms json file provided, check if we have multiple POA&Ms to process
       if (Array.isArray(data)) {
-        data.forEach((dataObject: Poams) => {
-          // Generate the put request object based on business logic
-          requestBodyArray.push(generateBodyObj(dataObject))
-        })
-      } else if (typeof data === 'object' && data !== null) {
-        const dataObject: Poams = data
         // Generate the put request object based on business logic
-        requestBodyArray.push(generateBodyObj(dataObject))
+        requestBodyArray.push(...data.map(dataObject => generateBodyObj(dataObject)));
+      } else if (_.isObject(data) && data !== null) {
+        const dataObject: Poams = data;
+        // Generate the put request object based on business logic
+        requestBodyArray.push(generateBodyObj(dataObject));
       } else {
-        console.error('\x1B[91m» Invalid data format in POA&Ms file\x1B[0m')
-        process.exit(1)
+        console.error('\u001B[91m» Invalid data format in POA&Ms file\u001B[0m');
+        process.exit(1);
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error('\x1B[91m» Error reading POA&Ms data file, possible malformed json. Please use the -h flag for help.\x1B[0m')
-        console.error('\x1B[93m→ Error message was:', error.message, '\x1B[0m')
+        console.error('\u001B[91m» Error reading POA&Ms data file, possible malformed json. Please use the -h flag for help.\u001B[0m');
+        console.error('\u001B[93m→ Error message was:', error.message, '\u001B[0m');
       } else {
-        console.error('\x1B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\x1B[0m')
+        console.error('\u001B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\u001B[0m');
       }
-      process.exit(1)
+      process.exit(1);
     }
 
     // Call the endpoint
     updatePoam.updatePoamBySystemId(flags.systemId, requestBodyArray).then((response: PoamResponsePostPutDelete) => {
-      console.log(colorize(outputFormat(response)))
-    }).catch((error: unknown) => displayError(error, 'POA&Ms'))
+      console.log(colorize(outputFormat(response)));
+    }).catch((error: unknown) => displayError(error, 'POA&Ms'));
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & {exitCode?: number}): Promise<void> {
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \x1B[93m${CMD_HELP}\x1B[0m`))
+      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
-      this.warn(err)
+      this.warn(err);
     }
+    return Promise.resolve();
   }
 }
