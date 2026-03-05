@@ -124,7 +124,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   static oldControlsLength = 0;
   static newControlsLength = 0;
 
-  async run() { // skipcq: JS-0044, JS-R1005
+  async run() {
     const { flags } = await this.parse(GenerateDelta);
 
     // If not interactive must provide either -X or -U
@@ -145,21 +145,21 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     GenerateDelta.logger = createWinstonLogger('generate:delta', 'debug');
 
     // Flag variables
-    let inspecJsonFile = '';
-    let xccdfXmlFile = '';
-    let xccdfContent = '';
-    let deltaOutputDir = '';
-    let ovalXmlFile = '';
+    let inspecJsonFile: string;
+    let xccdfXmlFile: string;
+    let xccdfContent: string;
+    let deltaOutputDir: string;
+    let ovalXmlFile: string;
     let reportFile = '';
-    let idType = '';
-    let runMapControls = true;
-    let controlsDir = '';
-    let logLevel = '';
+    let idType: string;
+    let runMapControls: boolean;
+    let controlsDir: string;
+    let logLevel: string;
 
     // Process variables
     let existingProfile: any | null = null;
     let ovalDefinitions: any = {};
-    let processedXCCDF: any = {};
+    let processedXCCDF: any;
     let markDownFile = '';
     let outputProfileFolderPath = '';
     let mappedControls: any = {};
@@ -213,10 +213,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
       // Save the flags to the log object
       addToProcessLogData('Process Flags ===========================================');
-      for (const key in flags) {
-        if (Object.hasOwn(flags, key)) {
-          addToProcessLogData(key + '=' + flags[key as keyof typeof flags]);
-        }
+      for (const [key, value] of Object.entries(flags)) {
+        addToProcessLogData(`${key}=${value instanceof URL ? value.toString() : String(value)}`);
       }
     } else {
       return;
@@ -345,14 +343,14 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // to have the new name/Id. So, for each control, modify the control file in the old controls
         // directory with the proper name and Id, than regenerate json profile summary.
 
-        for (const key in controls) { // skipcq: JS-0051
-          const sourceShortControlFile = path.join(shortProfileDir, `${controls[key]}.rb`);
-          const mappedShortControlFile = path.join(shortMappedDir, `${controls[key]}.rb`);
+        for (const [key, value] of Object.entries(controls)) {
+          const sourceShortControlFile = path.join(shortProfileDir, `${value}.rb`);
+          const mappedShortControlFile = path.join(shortMappedDir, `${value}.rb`);
 
-          const sourceControlFile = path.join(controlsDir, `${controls[key]}.rb`);
-          const mappedControlFile = path.join(mappedDir, `${controls[key]}.rb`);
+          const sourceControlFile = path.join(controlsDir, `${value}.rb`);
+          const mappedControlFile = path.join(mappedDir, `${value}.rb`);
 
-          printYellowGreen('Mapping (From --> To): ', `${controls[key]} --> ${key}`);
+          printYellowGreen('Mapping (From --> To): ', `${value} --> ${key}`);
 
           let lines;
           if (fs.existsSync(sourceControlFile)) {
@@ -365,9 +363,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             return;
           }
 
-          // If the key equals the controls[key], the update_controls4delta process was ran
+          // If the key equals the value, the update_controls4delta process was ran
           // and the controls were properly updated to the proper control number and name.
-          if (controls[key] === key) {
+          if (value === key) {
             // The controls are up to date with the xccdf
             printYellowGreen('   Control is Current: ', `${sourceShortControlFile}`);
             // Saved processed control to the 'mapped_controls' directory
@@ -377,12 +375,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             printYellowGreen('   Processing control: ', `${sourceShortControlFile}`);
             // Find the line with the control name and replace it with the new control name
             // single or double quotes are used on this line, check for both
-            // Template literals (`${controls[key]}`) must be used with dynamically created regular expression (RegExp() not / ... /)
-            const controlLineIndex = lines.findIndex(line => new RegExp(`control ['"]${controls[key]}['"] do`).test(line));
+            // Template literals (`${value}`) must be used with dynamically created regular expression (RegExp() not / ... /)
+            const controlLineIndex = lines.findIndex(line => new RegExp(`control ['"]${value}['"] do`).test(line));
             if (controlLineIndex === -1) {
               printBgRedRed('    Control not found:', ` ${sourceControlFile}\n`);
             } else {
-              lines[controlLineIndex] = lines[controlLineIndex].replace(new RegExp(`control ['"]${controls[key]}['"] do`), `control '${key}' do`);
+              lines[controlLineIndex] = lines[controlLineIndex].replace(new RegExp(`control ['"]${value}['"] do`), `control '${key}' do`);
 
               // Saved processed control to the 'mapped_controls' directory
               printYellowGreen('    Processed control: ', `${mappedShortControlFile}`);
@@ -503,8 +501,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
           let index = -1;
 
-          for (const i in controls) { // skipcq: JS-0051
-            const controlLine = controls[i].code.split('\n')[0];
+          for (const [i, c] of controls.entries()) {
+            const controlLine = c.code.split('\n')[0];
             // NOTE: The control.id can be in the form of V-123456 or SV-123456
             //       check the entire value or just the numeric value for a match
             if (controlLine.includes(control.id) || controlLine.includes(control.id.split('-')[1])) {
@@ -702,9 +700,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
             // Check if we have added an entry for the old control being processed
             // The result[0].item.id is the old control id
-            for (const key in controlMappings) {
+            for (const key of Object.keys(controlMappings)) {
               if (controlMappings[key] === result[0].item.id) {
-                delete controlMappings[key]; // skipcq: JS-0320
+                delete controlMappings[key];
                 // Lets now check if this entry was previously processed
                 if (controlIdToScoreMap.has(result[0].item.id)) {
                   const score = controlIdToScoreMap.get(result[0].item.id);
@@ -1180,13 +1178,10 @@ async function getFlags(): Promise<any> {
 
     addToProcessLogData('generateReport=true');
 
-    for (const tagName in answers) {
-      if (Object.hasOwn(answers, tagName)) {
-        const answerValue = _.get(answers, tagName);
-        if (answerValue !== null) {
-          addToProcessLogData(tagName + '=' + answerValue);
-          interactiveValues[tagName] = answerValue;
-        }
+    for (const [tagName, answerValue] of Object.entries(answers)) {
+      if (answerValue !== null) {
+        addToProcessLogData(`${tagName}=${answerValue}`);
+        interactiveValues[tagName] = answerValue;
       }
     }
   } else {
@@ -1217,13 +1212,10 @@ async function getFlags(): Promise<any> {
     }),
   };
 
-  for (const tagName in answers) {
-    if (Object.hasOwn(answers, tagName)) {
-      const answerValue = _.get(answers, tagName);
-      if (answerValue !== null) {
-        addToProcessLogData(tagName + '=' + answerValue);
-        interactiveValues[tagName] = answerValue;
-      }
+  for (const [tagName, answerValue] of Object.entries(answers)) {
+    if (answerValue !== null) {
+      addToProcessLogData(`${tagName}=${answerValue}`);
+      interactiveValues[tagName] = answerValue;
     }
   }
 

@@ -97,10 +97,8 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
 
       // Save the flags to the log object
       addToProcessLogData('Process Flags ============================================');
-      for (const key in flags) {
-        if (Object.hasOwn(flags, key)) {
-          addToProcessLogData(key + '=' + flags[key as keyof typeof flags]);
-        }
+      for (const [key, value] of Object.entries(flags)) {
+        addToProcessLogData(`${key}=${value}`);
       }
     } else {
       return;
@@ -113,22 +111,21 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       let rows: ControlSetRows = convertRows(contextualizedEvaluation, basename(inputFile), includeFields.split(','));
       rows = rows.map((row, index) => {
         const cleanedRow: Record<string, string> = {};
-        for (const key in row) {
-          if (row[key] !== undefined) {
-            if ((row[key]).length > 32_767 && truncateFields) {
+        for (const [key, value] of Object.entries(row)) {
+          if (value !== undefined) {
+            if (value.length > 32_767 && truncateFields) {
               if ('ID' in row) {
                 console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
               } else {
                 console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
               }
 
-              cleanedRow[key] = _.truncate(row[key], { length: 32_757, omission: 'TRUNCATED' });
+              cleanedRow[key] = _.truncate(value, { length: 32_757, omission: 'TRUNCATED' });
             } else {
-              cleanedRow[key] = row[key];
+              cleanedRow[key] = value;
             }
           }
         }
-
         return cleanedRow;
       });
 
@@ -325,12 +322,9 @@ async function getFlags(): Promise<any> {
 
   addToProcessLogData('Process Flags ============================================');
 
-  for (const tagName in answers) {
-    if (Object.hasOwn(answers, tagName)) {
-      const answerValue = _.get(answers, tagName);
-      if (answerValue !== null) {
-        addToProcessLogData(tagName + '=' + answerValue);
-      }
+  for (const [tagName, answerValue] of Object.entries(answers)) {
+    if (answerValue !== null) {
+      addToProcessLogData(tagName + '=' + answerValue);
     }
   }
 

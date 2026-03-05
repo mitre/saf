@@ -158,12 +158,9 @@ async function processPrompt() {
   };
 
   // Add required content to the collection
-  for (const tagName in requiredContent) {
-    if (Object.hasOwn(requiredContent, tagName)) {
-      const answerValue = _.get(requiredContent, tagName);
-      if (answerValue !== null) {
-        interactiveValues[tagName] = answerValue;
-      }
+  for (const [tagName, answerValue] of Object.entries(requiredContent)) {
+    if (answerValue !== null) {
+      interactiveValues[tagName] = answerValue;
     }
   }
 
@@ -220,12 +217,9 @@ async function processPrompt() {
     };
 
   // Add certs content to the collection
-  for (const tagName in requiredCerts) {
-    if (Object.hasOwn(requiredCerts, tagName)) {
-      const answerValue = _.get(requiredCerts, tagName);
-      if (answerValue !== null) {
-        interactiveValues[tagName] = answerValue;
-      }
+  for (const [tagName, answerValue] of Object.entries(requiredCerts)) {
+    if (answerValue !== null) {
+      interactiveValues[tagName] = answerValue;
     }
   }
 
@@ -300,12 +294,9 @@ async function processPrompt() {
   };
 
   // Add optional content to the collection
-  for (const tagName in optionalContent) {
-    if (Object.hasOwn(optionalContent, tagName)) {
-      const answerValue = _.get(optionalContent, tagName);
-      if (answerValue !== null) {
-        interactiveValues[tagName] = answerValue;
-      }
+  for (const [tagName, answerValue] of Object.entries(optionalContent)) {
+    if (answerValue !== null) {
+      interactiveValues[tagName] = String(answerValue);
     }
   }
   // Save content to the .env file
