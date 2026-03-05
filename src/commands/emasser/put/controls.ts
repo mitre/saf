@@ -4,9 +4,10 @@ import { ControlsApi } from '@mitre/emass_client';
 import type { ControlsResponsePut } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
+import _ from 'lodash';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg } from '../../../utils/emasser/utilities';
 
 type Controls = {
   // Required Fields
@@ -341,11 +342,9 @@ export default class EmasserPutControls extends Command {
 
       // Security Control information json file provided, check if we have multiple content to process
       if (Array.isArray(data)) {
-        data.forEach((dataObject: Controls) => {
-          // Generate the put request object based on business logic
-          requestBodyArray.push(generateBodyObj(dataObject));
-        });
-      } else if (typeof data === 'object' && data !== null) {
+        // Generate the put request object based on business logic
+        requestBodyArray.push(...data.map(dataObject => generateBodyObj(dataObject)));
+      } else if (_.isObject(data) && data !== null) {
         const dataObject: Controls = data;
         // Generate the put request object based on business logic
         requestBodyArray.push(generateBodyObj(dataObject));
@@ -368,8 +367,7 @@ export default class EmasserPutControls extends Command {
     }).catch((error: unknown) => displayError(error, 'Controls'));
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
@@ -377,5 +375,6 @@ export default class EmasserPutControls extends Command {
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }

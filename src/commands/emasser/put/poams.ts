@@ -7,7 +7,7 @@ import { colorize } from 'json-colorizer';
 import _ from 'lodash';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg } from '../../../utils/emasser/utilities';
 
 /**
  * Interface representing a Plan of Action and Milestones (POAMs) object.
@@ -361,8 +361,7 @@ function addOptionalFields(bodyObject: Poams, dataObj: Poams): void {
  * The function uses `printRedMsg` to display error messages and `printHelpMsg` to display help messages.
  * It exits the process with a status code of 1 if any validation fails.
 */
-// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
-function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skipcq: JS-0044
+function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void {
   const HELP_MSG = 'Invoke saf emasser post poams [-h, --help] for additional help';
   switch (dataObj.status) {
     case 'Risk Accepted': {
@@ -405,18 +404,8 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         }
 
         // Add the milestone object
-        const milestoneArray: MilestonesRequiredPut[] = [];
-        dataObj.milestones?.forEach((milestone: MilestonesRequiredPut) => {
-          const milestoneObj: MilestonesRequiredPut = { description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: false };
-          // isActive is used to prevent uploading duplicate/undesired milestones via the
-          // POA&M PUT call and must be set to false, otherwise a new milestone is created
-          if (Object.hasOwn(milestone, 'isActive')) {
-            milestoneObj.isActive = milestone.isActive;
-          }
-
-          milestoneArray.push(milestoneObj);
-        });
-        bodyObject.milestones = [...milestoneArray];
+        // isActive is used to prevent uploading duplicate/undesired milestones via the POA&M PUT call and must be set to false, otherwise a new milestone is created
+        bodyObject.milestones = dataObj.milestones?.map(milestone => ({ description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: Object.hasOwn(milestone, 'isActive') ? milestone.isActive : false })) || [];
       }
 
       break;
@@ -441,18 +430,8 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         }
 
         // Add the milestone object
-        const milestoneArray: MilestonesRequiredPut[] = [];
-        dataObj.milestones?.forEach((milestone: MilestonesRequiredPut) => {
-          const milestoneObj: MilestonesRequiredPut = { description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: false };
-          // isActive is used to prevent uploading duplicate/undesired milestones via the
-          // POA&M PUT call and must be set to false, otherwise a new milestone is created
-          if (Object.hasOwn(milestone, 'isActive')) {
-            milestoneObj.isActive = milestone.isActive;
-          }
-
-          milestoneArray.push(milestoneObj);
-        });
-        bodyObject.milestones = [...milestoneArray];
+        // isActive is used to prevent uploading duplicate/undesired milestones via the POA&M PUT call and must be set to false, otherwise a new milestone is created
+        bodyObject.milestones = dataObj.milestones?.map(milestone => ({ description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: Object.hasOwn(milestone, 'isActive') ? milestone.isActive : false })) || [];
       }
 
       break;
@@ -553,7 +532,7 @@ export default class EmasserPutPoams extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the PUT POA&Ms command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -576,11 +555,9 @@ export default class EmasserPutPoams extends Command {
 
       // POA&Ms json file provided, check if we have multiple POA&Ms to process
       if (Array.isArray(data)) {
-        data.forEach((dataObject: Poams) => {
-          // Generate the put request object based on business logic
-          requestBodyArray.push(generateBodyObj(dataObject));
-        });
-      } else if (typeof data === 'object' && data !== null) {
+        // Generate the put request object based on business logic
+        requestBodyArray.push(...data.map(dataObject => generateBodyObj(dataObject)));
+      } else if (_.isObject(data) && data !== null) {
         const dataObject: Poams = data;
         // Generate the put request object based on business logic
         requestBodyArray.push(generateBodyObj(dataObject));
@@ -604,8 +581,7 @@ export default class EmasserPutPoams extends Command {
     }).catch((error: unknown) => displayError(error, 'POA&Ms'));
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
@@ -613,5 +589,6 @@ export default class EmasserPutPoams extends Command {
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }

@@ -4,7 +4,7 @@ import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 const CMD_HELP = 'saf emasser put milestones -h or --help';
 export default class EmasserPutMilestones extends Command {
@@ -38,14 +38,13 @@ export default class EmasserPutMilestones extends Command {
     }).catch((error: unknown) => displayError(error, 'Milestones'));
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display
-    // what fields are required, otherwise show the error
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }

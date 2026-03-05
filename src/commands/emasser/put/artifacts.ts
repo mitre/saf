@@ -1,12 +1,13 @@
 import fs from 'fs';
 import { readFile } from 'fs/promises';
 import { ArtifactsApi } from '@mitre/emass_client';
-import type { ArtifactsResponseGetDataInner as Artifacts, ArtifactsResponsePutPost } from '@mitre/emass_client/dist/api'; // skipcq: JS-R1000
+import type { ArtifactsResponseGetDataInner as Artifacts, ArtifactsResponsePutPost } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
+import _ from 'lodash';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
 
 function getAllJsonExamples(): Record<string, unknown> {
   return {
@@ -131,11 +132,9 @@ export default class EmasserPutArtifacts extends Command {
 
       // Process the Artifacts data
       if (Array.isArray(data)) {
-        data.forEach((dataObject: Artifacts) => {
-          // Generate the PUT request object based on business logic
-          requestBodyArray.push(generateBodyObj(dataObject));
-        });
-      } else if (typeof data === 'object' && data !== null) {
+        // Generate the PUT request object based on business logic
+        requestBodyArray.push(...data.map(dataObject => generateBodyObj(dataObject)));
+      } else if (_.isObject(data) && data !== null) {
         const dataObject: Artifacts = data;
         // Generate the PUT request object based on business logic
         requestBodyArray.push(generateBodyObj(dataObject));
@@ -159,14 +158,13 @@ export default class EmasserPutArtifacts extends Command {
     }).catch((error: unknown) => displayError(error, 'Artifacts'));
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display
-    // what fields are required, otherwise show the error
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }
