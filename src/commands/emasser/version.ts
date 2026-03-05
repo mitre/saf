@@ -6,7 +6,8 @@ export default class EmasserGetVersion extends Command {
 
   static examples = ['<%= config.bin %> <%= command.id %>'];
 
-  async run(): Promise<void> { // skipcq: JS-0116, JS-0105
+  run(): Promise<void> {
     console.log('\u001B[93m', name + ': ' + version, '\u001B[0m');
+    return Promise.resolve();
   }
 }

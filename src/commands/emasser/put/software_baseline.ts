@@ -11,7 +11,6 @@ import {
   getFlagsForEndpoint,
   getJsonExamples,
   printRedMsg,
-  type FlagOptions,
 } from '../../../utils/emasser/utilities';
 
 /**
@@ -188,8 +187,6 @@ function addConditionalFields(bodyObject: Software, dataObj: Software): void {
  * @param bodyObject - The target object to which optional fields will be added.
  * @param dataObj - The source object containing optional fields.
  */
-// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
-
 function addOptionalFields(bodyObject: Software, dataObj: Software): void {
   if (Object.hasOwn(dataObj, 'softwareType')) {
     bodyObject.softwareType = dataObj.softwareType;
@@ -368,7 +365,7 @@ export default class EmasserSoftwareBaseline extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the PUT Software Baseline command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -391,10 +388,8 @@ export default class EmasserSoftwareBaseline extends Command {
 
       // Software Baseline json file provided, check if we have multiples process
       if (Array.isArray(data)) {
-        data.forEach((dataObject: Software) => {
-          // Generate the put request object
-          requestBodyArray.push(generateBodyObj(dataObject));
-        });
+        // Generate the put request object
+        requestBodyArray.push(...data.map(dataObject => generateBodyObj(dataObject)));
       } else if (typeof data === 'object' && data !== null) {
         const dataObject: Software = data;
         // Generate the put request object
@@ -419,8 +414,7 @@ export default class EmasserSoftwareBaseline extends Command {
     }).catch((error: unknown) => displayError(error, 'Software Baseline'));
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
@@ -428,5 +422,6 @@ export default class EmasserSoftwareBaseline extends Command {
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }

@@ -11,7 +11,7 @@ import {
 } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
-import _, { isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import { getJsonMetaDataExamples } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 import { printGreen, printYellow } from '../../utils/oclif/cli_helper';
