@@ -195,24 +195,22 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
     await XlsxPopulate.fromFileAsync(flags.input).then((workBook: any) => {
       const completedIds: string[] = []; // Numbers such as 1.10 can get parsed 1.1 which will over-write controls, keep track of existing controls to prevent this
 
-      workBook.sheets().forEach((sheet: any) => {
+      for (const sheet of workBook.sheets()) {
         const usedRange = sheet.usedRange();
         if (usedRange) {
           // Get data from the spreadsheet into a 2D array
           const extractedData: (string | number)[][] = usedRange.value();
           // Map the data into an object array
-          const headers = extractedData[0];
-          const mappedRecords = extractedData.slice(1).map((record) => {
+          const headers = extractedData[0].map(String);
+          const mappedRecords = extractedData.slice(1).map((row) => {
             const mappedRecord: Record<string, string> = {};
-            record.forEach((record, index) => {
-              if (typeof record === 'string') {
-                mappedRecord[headers[index]] = record;
+            for (const [index, cellValue] of row.entries()) {
+              if (_.isString(cellValue)) {
+                mappedRecord[headers[index]] = cellValue;
+              } else if (_.isNumber(cellValue)) {
+                mappedRecord[headers[index]] = cellValue.toString();
               }
-
-              if (typeof record === 'number') {
-                mappedRecord[headers[index]] = record.toString();
-              }
-            });
+            }
             return mappedRecord;
           });
           // Convert the mapped objects into controls
@@ -259,7 +257,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
             }
           }
         }
-      });
+      }
     }).catch(() => {
       // Assume we have a CSV file
       // Read the input file into lines

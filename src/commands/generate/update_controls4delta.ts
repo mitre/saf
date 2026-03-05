@@ -107,9 +107,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
   // Class common variables
   static backupDir = '';
 
-  // skipcq: JS-R1005
-
-  async run(): Promise<any> { // skipcq: JS-0044
+  async run(): Promise<any> {
     const { flags } = await this.parse(GenerateUpdateControls);
 
     if (!flags.xccdfXmlFile && !flags.xccdfUrl) {
@@ -128,10 +126,8 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     addToProcessLogData('==================== Update Controls for Delta Process =====================');
     addToProcessLogData(`Date: ${new Date().toISOString()}`);
     addToProcessLogData('\nProcess Flags ===========================================');
-    for (const key in flags) {
-      if (Object.hasOwn(flags, key)) {
-        addToProcessLogData(key + '=' + flags[key as keyof typeof flags]);
-      }
+    for (const [key, value] of Object.entries(flags)) {
+      addToProcessLogData(`${key}=${value instanceof URL ? value.toString() : String(value)}`);
     }
 
     // -------------------------------------------------------------------------
@@ -149,7 +145,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       }
     // XCCDF is an URL
     } else {
-      logger.info(`Verifying that the URL contains a valid XCCDF: ${flags.xccdfUrl}...`);
+      logger.info(`Verifying that the URL contains a valid XCCDF: ${flags.xccdfUrl instanceof URL ? flags.xccdfUrl.toString() : String(flags.xccdfUrl)}...`);
       const tmpobj = tmp.dirSync({ unsafeCleanup: true });
       let fileBuffer: Buffer | null = null;
       let url;
@@ -214,10 +210,10 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       } catch (error: unknown) {
         if (error instanceof Error) {
           logger.error(`ERROR: Checking if controls directory is empty, received: ${error.message}`);
-          throw new Error(`Error checking controls directory, error: ${error.message}`);
+          throw new Error(`Error checking controls directory, error: ${error.message}`, { cause: error });
         } else {
           logger.error('ERROR: An unknown error occurred while checking the controls directory.');
-          throw new Error('Error checking controls directory. Unknown error encountered.');
+          throw new Error('Error checking controls directory. Unknown error encountered.', { cause: error });
         }
       }
     } else {
@@ -234,7 +230,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     // Process the InSpec json content, convert entries into a Profile object
     logger.info('Processing the Input execution/profile JSON summary...');
     if (flags.inspecJsonFile) {
-      logger.info(`  Using execution/profile summary file: ${basename(flags.inspecJsonFile)}`); // skipcq: JS-0339
+      logger.info(`  Using execution/profile summary file: ${basename(flags.inspecJsonFile)}`);
       try {
         if (fs.lstatSync(flags.inspecJsonFile).isFile()) {
           const inspecJsonFile = flags.inspecJsonFile;
@@ -256,7 +252,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         }
         // Fallback for non-Error objects
         logger.error(`ERROR: An unknown error occurred while processing Input execution/profile JSON ${flags.inspecJsonFile}.`);
-        throw new Error('Unknown error occurred while processing the input JSON.');
+        throw new Error('Unknown error occurred while processing the input JSON.', { cause: error });
       }
     } else {
       // Generate the profile json
@@ -275,7 +271,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         }
         // Handle cases where error is not an instance of Error
         logger.error('ERROR: An unknown error occurred while generating the profile JSON.');
-        throw new Error('Unknown error occurred while generating the profile JSON.');
+        throw new Error('Unknown error occurred while generating the profile JSON.', { cause: error });
       }
     }
 
@@ -368,7 +364,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         const index = control.tags.nist.findIndex(value => /Rev_[0-9]/g.test(value));
         if (index !== -1) {
           const badNistTag = control.tags.nist.splice(index, 1);
-          logger.debug(`  Removed invalid tags.nist Rev version: ${badNistTag}`);
+          logger.debug(`  Removed invalid tags.nist Rev version: ${badNistTag.join(',')}`);
         }
       }
 

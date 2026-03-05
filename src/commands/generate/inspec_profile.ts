@@ -110,7 +110,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
       attributeNamePrefix: '@_',
     };
     const xmlDoc = new XMLParser(options).parse(xccdf);
-    let outDir = '';
+    let outDir: string;
     const isSTIG = (_.get(xmlDoc, 'xccdf:Benchmark.xccdf:title.#text') === undefined);
     logger.info(`Processing Benchmark Type: ${(isSTIG) ? 'STIG' : 'CIS'}`);
     if (flags.output === 'profile') {
