@@ -285,10 +285,11 @@ export function getDescription(
  */
 export function checkInput(guessOptions: { data: string; filename: string }, desiredType: INPUT_TYPES, desiredFormat: string): void {
   const detectedType = fingerprint({ data: guessOptions.data, filename: basename(guessOptions.filename) });
-  if (!(detectedType === desiredType))
+  if (!(detectedType === desiredType)) {
     throw new Error(`Unable to process input file\
       \nDetected input type: ${detectedType === INPUT_TYPES.NOT_FOUND ? 'unknown or none' : `${detectedType} - did you mean to run the ${detectedType} to HDF converter instead?`}\
       \nPlease ensure the input is a valid ${desiredFormat}`);
+  }
 }
 
 /**
@@ -302,7 +303,9 @@ export function checkInput(guessOptions: { data: string; filename: string }, des
  *          falls back to converting the error to a string.
  */
 export function getErrorMessage(error: unknown): string {
-  if (error instanceof Error) return error.message;
+  if (error instanceof Error) {
+    return error.message;
+  }
   try {
     return JSON.stringify(error);
   } catch {

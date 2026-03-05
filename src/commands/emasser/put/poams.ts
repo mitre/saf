@@ -481,10 +481,18 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
 
   // POC checks: If any poc information is provided all POC fields are required
   let missingFields = '';
-  if ((_.get(dataObj, 'pocFirstName') === undefined)) missingFields = 'pocFirstName';
-  if ((_.get(dataObj, 'pocLastName') === undefined)) missingFields += (missingFields === '') ? 'pocLastName' : ', pocLastName';
-  if ((_.get(dataObj, 'pocEmail') === undefined)) missingFields += (missingFields === '') ? 'pocEmail' : ', pocEmail';
-  if ((_.get(dataObj, 'pocPhoneNumber') === undefined)) missingFields += (missingFields === '') ? 'pocPhoneNumber' : ', pocPhoneNumber';
+  if ((_.get(dataObj, 'pocFirstName') === undefined)) {
+    missingFields = 'pocFirstName';
+  }
+  if ((_.get(dataObj, 'pocLastName') === undefined)) {
+    missingFields += (missingFields === '') ? 'pocLastName' : ', pocLastName';
+  }
+  if ((_.get(dataObj, 'pocEmail') === undefined)) {
+    missingFields += (missingFields === '') ? 'pocEmail' : ', pocEmail';
+  }
+  if ((_.get(dataObj, 'pocPhoneNumber') === undefined)) {
+    missingFields += (missingFields === '') ? 'pocPhoneNumber' : ', pocPhoneNumber';
+  }
   const totalPocMissingFields = missingFields.split(',').length;
   if ((totalPocMissingFields >= 1 && totalPocMissingFields < 4) && missingFields !== '') {
     printRedMsg('If any POC fields are provided (pocFirstName, pocLastName, pocEmail, pocPhoneNumber) than all POC fields are required:');

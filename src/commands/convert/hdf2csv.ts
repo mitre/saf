@@ -221,8 +221,11 @@ async function saveCSV(filename: fs.PathLike | fs.promises.FileHandle, data: str
 function convertToCSV(data: stringify.Input, options: stringify.Options | undefined): Promise<string> {
   return new Promise((resolve, reject) => {
     stringify.stringify(data, options, (err, output: string | PromiseLike<string>) => {
-      if (err) reject(err);
-      else resolve(output);
+      if (err) {
+        reject(err);
+      } else {
+        resolve(output);
+      }
     });
   });
 }

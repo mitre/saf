@@ -38,6 +38,7 @@ export default defineConfig([
     },
     rules: {
       // any is unfortunately used frequently throughout our types as a shortcut around dealing with parsing json for the most part.  it'll take time to rework things to make our types safer
+      curly: 'error',
       'prefer-object-has-own': 'error',
       '@stylistic/quotes': ['error', 'single', { avoidEscape: true }],
       '@typescript-eslint/consistent-type-definitions': ['error', 'type'],

@@ -23,7 +23,9 @@ export function saveProcessLogData() {
 
   // If the file does not exist, it will be created.
   const writeStream = fs.createWriteStream(logFileName);
-  for (const value of processLogData) writeStream.write(`${value}\n`);
+  for (const value of processLogData) {
+    writeStream.write(`${value}\n`);
+  }
 
   // Close the stream to ensure data is flushed and written
   writeStream.close();

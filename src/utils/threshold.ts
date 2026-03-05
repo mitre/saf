@@ -197,7 +197,9 @@ export function getDescriptionContentsOrUndefined(
   label: string,
   descriptions?: ExecJSON.ControlDescription[] | Record<string, unknown> | null,
 ): unknown {
-  if (!descriptions) return undefined;
+  if (!descriptions) {
+    return undefined;
+  }
 
   if (Array.isArray(descriptions)) {
     for (const description of descriptions) {
@@ -287,30 +289,32 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
       message: [],
       control_status: cklControlStatus(control, true),
     };
-    if (control.hdf.segments) for (const segment of control.hdf.segments) {
-      switch (segment.status) {
-        case 'skipped': {
-          extracted.message.push(`SKIPPED -- Test: ${segment.code_desc}\nMessage: ${segment.skip_message}\n`);
-          break;
-        }
+    if (control.hdf.segments) {
+      for (const segment of control.hdf.segments) {
+        switch (segment.status) {
+          case 'skipped': {
+            extracted.message.push(`SKIPPED -- Test: ${segment.code_desc}\nMessage: ${segment.skip_message}\n`);
+            break;
+          }
 
-        case 'failed': {
-          extracted.message.push(`FAILED -- Test: ${segment.code_desc}\nMessage: ${segment.message}\n`);
-          break;
-        }
+          case 'failed': {
+            extracted.message.push(`FAILED -- Test: ${segment.code_desc}\nMessage: ${segment.message}\n`);
+            break;
+          }
 
-        case 'passed': {
-          extracted.message.push(`PASS -- ${segment.code_desc}\n`);
-          break;
-        }
+          case 'passed': {
+            extracted.message.push(`PASS -- ${segment.code_desc}\n`);
+            break;
+          }
 
-        case 'error': {
-          extracted.message.push(`PROFILE_ERROR -- Test: ${segment.code_desc}\nMessage: ${segment.code_desc}\n`);
-          break;
-        }
+          case 'error': {
+            extracted.message.push(`PROFILE_ERROR -- Test: ${segment.code_desc}\nMessage: ${segment.code_desc}\n`);
+            break;
+          }
 
-        default: {
-          break;
+          default: {
+            break;
+          }
         }
       }
     }

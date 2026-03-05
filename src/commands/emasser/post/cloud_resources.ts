@@ -248,7 +248,9 @@ function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): v
  * @returns True if the object is a CloudResource, false otherwise.
  */
 function isValidCloudResource(obj: unknown): obj is CloudResource {
-  if (typeof obj !== 'object' || obj === null) return false;
+  if (typeof obj !== 'object' || obj === null) {
+    return false;
+  }
   const requiredFields = ['provider', 'resourceId', 'resourceName', 'resourceType', 'complianceResults'];
   return requiredFields.every(field => field in obj);
 }
