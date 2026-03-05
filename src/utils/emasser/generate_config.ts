@@ -2,7 +2,6 @@ import { input, confirm, password, select } from '@inquirer/prompts';
 import colors from 'colors';
 import dotenv from 'dotenv';
 import fse from 'fs-extra';
-import _ from 'lodash';
 
 const PROMPT_MESSAGE = [
   'Provide the eMASS API key (EMASSER_API_KEY) - valid key is > 30 alpha numeric characters:',

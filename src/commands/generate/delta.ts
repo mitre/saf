@@ -17,7 +17,7 @@ import { Flags } from '@oclif/core';
 import colors from 'colors';
 import fse from 'fs-extra';
 import Fuse from 'fuse.js';
-import _, { isEmpty } from 'lodash';
+import { isEmpty } from 'lodash';
 import tmp from 'tmp';
 import type winston from 'winston';
 import { createWinstonLogger } from '../../utils/logging';
@@ -270,7 +270,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // Handle cases where error is not an instance of Error
         // logger.error('ERROR: An unknown error occurred while generating the profile JSON.')
         this.logThis('ERROR: An unknown error occurred while generating the profile JSON.', 'error');
-        throw new Error('Unknown error occurred while generating the profile JSON.');
+        throw new Error('Unknown error occurred while generating the profile JSON.', { cause: error });
       }
     }
 
@@ -755,8 +755,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     return controlMappings;
   }
 
-  getMappedStatisticsValidation(totalMappedControls: number, statValidation: string): string { // skipcq: JS-0105
-    let evalStats = '';
+  getMappedStatisticsValidation(totalMappedControls: number, statValidation: string): string {
     const match = GenerateDelta.match;
     const misMatch = GenerateDelta.posMisMatch;
     const statMach = ((match + misMatch) === totalMappedControls);
@@ -765,11 +764,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     const newXccdfControl = GenerateDelta.newXccdfControl;
     const statTotalMatch = ((totalMappedControls + dupMatch + noMatch + newXccdfControl) === GenerateDelta.newControlsLength);
 
-    evalStats = statValidation === 'totalMapped'
+    return statValidation === 'totalMapped'
       ? `(${match}+${misMatch}=${totalMappedControls}) ${statMach}`
       : `(${match}+${misMatch}+${dupMatch}+${noMatch}+${newXccdfControl}=${GenerateDelta.newControlsLength}) ${statTotalMatch}`;
-
-    return evalStats;
   }
 
   requiredFlagsProvided(flags: any): boolean { // skipcq: JS-0105
