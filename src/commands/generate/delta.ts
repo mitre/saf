@@ -840,7 +840,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               xccdfContent = fileBuffer.toString();
             }
           } catch (error) {
-            saveLogs(`Processing File failed.', ${error}`);
+            saveLogs(`Processing File failed.', ${error instanceof Error ? error : String(error)}`);
             await sleep(2000).then(() => process.exit(1));
           }
         }
@@ -878,7 +878,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             xccdfContent = fileBuffer.toString();
           }
         } catch (error) {
-          saveLogs(`Processing URL failed.', ${error}`);
+          saveLogs(`Processing URL failed.', ${error instanceof Error ? error : String(error)}`);
           await sleep(2000).then(() => process.exit(1));
         }
       })();
@@ -926,7 +926,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
       return mappedDir;
     } catch (error: unknown) {
-      throw new Error(getErrorMessage(error));
+      throw new Error(getErrorMessage(error), { cause: error });
     }
   }
 
@@ -1269,7 +1269,6 @@ function isXccdfFile(xccdfXmlFile: string): boolean {
         const err = `  ERROR: File not found: ${xccdfXmlFile}. Run the --help command for more information on expected input files.`;
         GenerateDelta.logger.error(err);
         addToProcessLogData(err);
-        isXccdf = false;
       } else {
         const err = `  ERROR: Unable to process the XCCDF XML file ${xccdfXmlFile} because: ${error.message}`;
         GenerateDelta.logger.error(err);
