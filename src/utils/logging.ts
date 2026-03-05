@@ -1,5 +1,5 @@
 import { contextualizeEvaluation, type ContextualizedControl, type ExecJSON } from 'inspecjs';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { createLogger, format, type transport, transports, type Logger } from 'winston';
 
 /**
