@@ -39,11 +39,11 @@ import { InitMockServer } from './mock.server';
 
 describe('Test eMASSer API CLI (GET) commands', () => {
   const mocServer = new InitMockServer();
-  let responseDataObj: Map<string, unknown>;
   const testOk = { status: 200, statusText: 'OK' };
 
   it('Successfully tested endpoint - Test Connection', async () => {
     const getTestApi = new TestApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await getTestApi.testConnection().then((response: SystemResponse) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -60,6 +60,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - System', async () => {
     const getSystems = new SystemsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await getSystems.getSystem(123).then((response: SystemResponse) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -76,6 +77,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - Systems', async () => {
     const getSystems = new SystemsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await getSystems.getSystems().then((response: SystemsResponse) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -92,6 +94,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - Roles', async () => {
     const getSystemRoles = new SystemRolesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await getSystemRoles.getSystemRoles().then((response: SystemRolesResponse) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -108,6 +111,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - Controls', async () => {
     const getControls = new ControlsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await getControls.getSystemControls(34, 'acronym').then((response: CacResponseGet) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -124,6 +128,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - Test Results', async () => {
     const getControls = new TestResultsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await getControls.getSystemTestResults(34, 'acronym').then((response: TestResultsResponseGet) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -140,6 +145,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - POA&Ms (for system)', async () => {
     const getPoams = new POAMApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await getPoams.getSystemPoams(34, 56).then((response: PoamResponseGetSystems) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -156,6 +162,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - POA&Ms (for poam Id)', async () => {
     const getPoams = new POAMApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await getPoams.getSystemPoamsByPoamId(34, 56).then((response: PoamResponseGetPoams) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -172,6 +179,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - Milestones (for poam Id', async () => {
     const getMilestones = new MilestonesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await getMilestones.getSystemMilestonesByPoamId(36, 76, 89).then((response: MilestoneResponseGet) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -188,6 +196,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - Milestones (for poamId & milestone Id', async () => {
     const getMilestones = new MilestonesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await getMilestones.getSystemMilestonesByPoamIdAndMilestoneId(36, 76, 89).then((response: MilestoneResponseGetMilestone) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -204,6 +213,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - Artifacts', async () => {
     const getArtifacs = new ArtifactsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await getArtifacs.getSystemArtifacts(34, 56).then((response: ArtifactsResponseGet) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -220,6 +230,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - Artifacts (export)', async () => {
     const getArtifacs = new ArtifactsExportApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await getArtifacs.getSystemArtifactsExport(34, 'thisfile', false).then((response: unknown) => {
       if (typeof response === 'object' && response !== null) {
         responseDataObj = new Map(Object.entries(response as Record<string, unknown>));
@@ -240,6 +251,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - CAC', async () => {
     const getCac = new CACApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await getCac.getSystemCac(34, 'acronym').then((response: CacResponseGet) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -256,6 +268,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - PAC', async () => {
     const getPac = new PACApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await getPac.getSystemPac(34).then((response: PacResponseGet) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -272,6 +285,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - Hardware Baseline', async () => {
     const hardware = new HardwareBaselineApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await hardware.getSystemHwBaseline(1, 2, 3).then((response: HwBaselineResponseGet) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -288,6 +302,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - Software Baseline', async () => {
     const software = new SoftwareBaselineApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await software.getSystemSwBaseline(34).then((response: SwBaselineResponseGet) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -304,6 +319,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - Workflow Definitions', async () => {
     const apiCon = new WorkflowDefinitionsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await apiCon.getWorkflowDefinitions(false, 'type').then((response: WorkflowDefinitionResponseGet) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -320,6 +336,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - Workflow Instances (all)', async () => {
     const apiCon = new WorkflowInstancesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await apiCon.getSystemWorkflowInstances(false, false, 1, 2).then((response: WorkflowInstancesResponseGet) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -336,6 +353,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - Workflow Instances (for workflow Id)', async () => {
     const apiCon = new WorkflowInstancesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await apiCon.getSystemWorkflowInstancesByWorkflowInstanceId(2).then((response: WorkflowInstanceResponseGet) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -352,6 +370,7 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   it('Successfully tested endpoint - CMMC Assessment', async () => {
     const apiCon = new CMMCAssessmentsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+    let responseDataObj: Map<string, unknown>;
     await apiCon.getCmmcAssessments(34).then((response: CmmcResponseGet) => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
@@ -429,8 +448,9 @@ describe('Test eMASSer API CLI (GET) commands', () => {
 
   for (const [key, values] of dashboardsMap) {
     it(`Successfully tested endpoint - Dashboard (${key})`, async () => {
-      const DashboardClass = eval(values[0]); // skipcq: JS-0060
+      const DashboardClass = eval(values[0]);
       const getDashboard = new DashboardClass(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
+      let responseDataObj: Map<string, unknown>;
       await getDashboard[values[1]](45, false, 1, 2000).then((response: object) => {
         responseDataObj = new Map(Object.entries(response));
       }).catch((error: unknown) => {
