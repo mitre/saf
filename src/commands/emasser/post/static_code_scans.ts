@@ -11,7 +11,7 @@ import { colorize } from 'json-colorizer';
 import _ from 'lodash';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
 
 /**
  * Generates a JSON string based on the provided action.
@@ -108,7 +108,7 @@ function addApplicationFindingsFields(bodyObject: StaticCodeRequest, dataObj: St
   try {
     let findingsObj: StaticCodeApplicationPost = {};
     let i = 0;
-    dataObj.applicationFindings?.forEach((appFindings: StaticCodeApplicationPost) => {
+    for (const appFindings of (dataObj.applicationFindings || [])) {
       // If clearing findings
       if (Object.hasOwn(appFindings, 'clearFindings')) {
         findingsObj.clearFindings = appFindings.clearFindings;
@@ -134,7 +134,7 @@ function addApplicationFindingsFields(bodyObject: StaticCodeRequest, dataObj: St
         findingsArray.push(findingsObj);
         findingsObj = {};
       }
-    });
+    }
   } catch (error) {
     console.log('Required JSON fields are:');
     console.log(colorize(JSON.stringify(getJsonExamples('scan_findings-applicationFindings'), null, 2)));
@@ -171,7 +171,7 @@ export default class EmasserPostStaticCodeScans extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Static Code Scans command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -211,7 +211,7 @@ export default class EmasserPostStaticCodeScans extends Command {
             process.exit(1);
           }
 
-          let bodyObj: StaticCodeRequest = {} as StaticCodeRequest;
+          let bodyObj: StaticCodeRequest;
           try {
             bodyObj = addApplicationToRequestBody(item as StaticCodeRequest);
             addApplicationFindingsFields(bodyObj, item as StaticCodeRequest);
@@ -223,7 +223,7 @@ export default class EmasserPostStaticCodeScans extends Command {
       } else if (typeof data === 'object') {
         // Ensure it's a valid object
         const dataObject = data as StaticCodeRequest;
-        let bodyObj: StaticCodeRequest = {} as StaticCodeRequest;
+        let bodyObj: StaticCodeRequest;
         try {
           bodyObj = addApplicationToRequestBody(dataObject);
           addApplicationFindingsFields(bodyObj, dataObject);
@@ -243,14 +243,13 @@ export default class EmasserPostStaticCodeScans extends Command {
     }).catch((error: unknown) => displayError(error, 'Static Code Scans'));
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display
-    // what fields are required, otherwise show the error
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }

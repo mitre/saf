@@ -1,5 +1,4 @@
 import { RegistrationApi } from '@mitre/emass_client';
-import type { Register } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
@@ -17,8 +16,7 @@ export default class EmasserPostRegister extends Command {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the Register (POST) a certificate & obtain the API-key' }),
   };
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  async run(): Promise<void> { // skipcq: JS-0105
+  async run(): Promise<void> {
     const apiCxn = new ApiConnection();
     const headers = {
       'Content-Type': 'application/json',
@@ -27,8 +25,13 @@ export default class EmasserPostRegister extends Command {
     apiCxn.axiosInstances.defaults.headers.common = headers;
     const registerAPI = new RegistrationApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    registerAPI.registerUser().then((response: Register) => {
+    try {
+      const response = await registerAPI.registerUser();
       console.log(colorize(outputFormat(response, false)));
-    }).catch((error: unknown) => displayError(error, 'Register Certificate'));
+    } catch (error: unknown) {
+      displayError(error, 'Register Certificate');
+    }
+
+    return;
   }
 }

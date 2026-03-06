@@ -1,12 +1,12 @@
 import fs from 'fs';
 import { readFile } from 'fs/promises';
 import { SoftwareBaselineApi } from '@mitre/emass_client';
-import type { SwBaselineResponsePostPut } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
+import _ from 'lodash';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
 import { getErrorMessage } from '../../../utils/global';
 
 /**
@@ -175,8 +175,6 @@ function addConditionalFields(bodyObject: Software, dataObj: Software): void {
  * @param bodyObject - The target object to which optional fields will be added.
  * @param dataObj - The source object from which optional fields will be copied.
  */
-// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
-
 function addOptionalFields(bodyObject: Software, dataObj: Software): void {
   if (Object.hasOwn(dataObj, 'softwareType')) {
     bodyObject.softwareType = dataObj.softwareType;
@@ -355,7 +353,7 @@ export default class EmasserSoftwareBaseline extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Software Baseline command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -378,11 +376,9 @@ export default class EmasserSoftwareBaseline extends Command {
 
       // Process the Software data file
       if (Array.isArray(data)) {
-        data.forEach((dataObject: Software) => {
-          // Generate the post request object based on business logic
-          requestBodyArray.push(generateBodyObj(dataObject));
-        });
-      } else if (typeof data === 'object') {
+        // Generate the post request object based on business logic
+        requestBodyArray.push(...data.map(dataObject => generateBodyObj(dataObject)));
+      } else if (_.isObject(data)) {
         const dataObject: Software = data;
         // Generate the post request object based on business logic
         requestBodyArray.push(generateBodyObj(dataObject));
@@ -393,19 +389,21 @@ export default class EmasserSoftwareBaseline extends Command {
     }
 
     // Call the endpoint
-    swBaseline.addSwBaselineAssets(flags.systemId, requestBodyArray).then((response: SwBaselineResponsePostPut) => {
+    try {
+      const response = await swBaseline.addSwBaselineAssets(flags.systemId, requestBodyArray);
       console.log(colorize(outputFormat(response, false)));
-    }).catch((error: unknown) => displayError(error, 'Software Baseline'));
+    } catch (error: unknown) {
+      displayError(error, 'Software Baseline');
+    }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display
-    // what fields are required, otherwise show the error
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }

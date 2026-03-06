@@ -7,7 +7,7 @@ import { colorize } from 'json-colorizer';
 import _ from 'lodash';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg } from '../../../utils/emasser/utilities';
 import { getErrorMessage } from '../../../utils/global';
 
 /**
@@ -219,7 +219,6 @@ function addConditionalFields(bodyObject: Poams, dataObj: Poams): void {
  * @param bodyObject - The target object to which optional fields will be added.
  * @param dataObj - The source object containing optional fields.
  */
-// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
 function addOptionalFields(bodyObject: Poams, dataObj: Poams): void {
   if (Object.hasOwn(dataObj, 'externalUid')) {
     bodyObject.externalUid = dataObj.externalUid;
@@ -361,8 +360,7 @@ function addOptionalFields(bodyObject: Poams, dataObj: Poams): void {
  * The function uses `printRedMsg` to display error messages and `printHelpMsg` to display help messages.
  * It exits the process with a status code of 1 if any validation fails.
  */
-// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
-function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skipcq: JS-0044
+function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void {
   const HELP_MSG = 'Invoke saf emasser post poams [-h, --help] for additional help';
   switch (dataObj.status) {
     case 'Risk Accepted': {
@@ -402,12 +400,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         bodyObject.scheduledCompletionDate = dataObj.scheduledCompletionDate;
 
         // Add the milestone object
-        const milestoneArray: MilestonesGet[] = [];
-        dataObj.milestones?.forEach((milestone: MilestonesGet) => {
-          const milestoneObj: MilestonesGet = { description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate };
-          milestoneArray.push(milestoneObj);
-        });
-        bodyObject.milestones = [...milestoneArray];
+        bodyObject.milestones = dataObj.milestones ? dataObj.milestones.map(milestone => ({ description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate })) : [];
       }
 
       break;
@@ -429,12 +422,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void { // skip
         bodyObject.scheduledCompletionDate = dataObj.scheduledCompletionDate;
 
         // Add the milestone object
-        const milestoneArray: MilestonesGet[] = [];
-        dataObj.milestones?.forEach((milestone: MilestonesGet) => {
-          const milestoneObj: MilestonesGet = { description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate };
-          milestoneArray.push(milestoneObj);
-        });
-        bodyObject.milestones = [...milestoneArray];
+        bodyObject.milestones = dataObj.milestones ? dataObj.milestones.map(milestone => ({ description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate })) : [];
       }
 
       break;
@@ -518,7 +506,7 @@ export default class EmasserPostPoams extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST POA&Ms command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -541,11 +529,9 @@ export default class EmasserPostPoams extends Command {
 
       // POA&Ms json file provided, check if we have multiple POA&Ms to process
       if (Array.isArray(data)) {
-        data.forEach((dataObject: Poams) => {
-          // Generate the post request object based on business logic
-          requestBodyArray.push(generateBodyObj(dataObject));
-        });
-      } else if (typeof data === 'object') {
+        // Generate the post request object based on business logic
+        requestBodyArray.push(...data.map(dataObject => generateBodyObj(dataObject)));
+      } else if (_.isObject(data)) {
         const dataObject: Poams = data;
         // Generate the post request object based on business logic
         requestBodyArray.push(generateBodyObj(dataObject));
@@ -561,14 +547,13 @@ export default class EmasserPostPoams extends Command {
     }).catch((error: unknown) => displayError(error, 'POA&Ms'));
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display
-    // what fields are required, otherwise show the error
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }
