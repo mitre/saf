@@ -1,7 +1,6 @@
 import fs from 'fs';
 import { readFile } from 'fs/promises';
 import { HardwareBaselineApi } from '@mitre/emass_client';
-import type { HwBaselineResponsePostPut as HwBaselineResponse } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
@@ -11,7 +10,6 @@ import {
   getFlagsForEndpoint,
   getJsonExamples,
   printRedMsg,
-  type FlagOptions,
 } from '../../../utils/emasser/utilities';
 
 /**
@@ -239,7 +237,6 @@ function isHardware(obj: unknown): obj is Hardware {
 
   const hardwareObj = obj as Partial<Hardware>;
   // Check that required fields, if present, have the correct type
-  // skipcq: JS-W1041 - Skip complex boolean return
   if (hardwareObj.assetName !== undefined && typeof hardwareObj.assetName !== 'string') {
     return false;
   }
@@ -270,7 +267,7 @@ export default class EmasserHardwareBaseline extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Hardware Baseline command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -291,11 +288,7 @@ export default class EmasserHardwareBaseline extends Command {
       const data: unknown = JSON.parse(fileContent);
 
       if (Array.isArray(data)) {
-        for (const dataObject of data) {
-          if (isHardware(dataObject)) {
-            requestBodyArray.push(generateBodyObj(dataObject));
-          }
-        }
+        requestBodyArray.push(...data.filter(dataObject => isHardware(dataObject)).map(dataObject => generateBodyObj(dataObject)));
       } else if (isHardware(data)) {
         requestBodyArray.push(generateBodyObj(data));
       }
@@ -310,19 +303,21 @@ export default class EmasserHardwareBaseline extends Command {
     }
 
     // Call the endpoint
-    hwBaseline.addHwBaselineAssets(flags.systemId, requestBodyArray).then((response: HwBaselineResponse) => {
+    try {
+      const response = await hwBaseline.addHwBaselineAssets(flags.systemId, requestBodyArray);
       console.log(colorize(outputFormat(response, false)));
-    }).catch((error: unknown) => displayError(error, 'Hardware Baseline'));
+    } catch (error: unknown) {
+      displayError(error, 'Hardware Baseline');
+    }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display
-    // what fields are required, otherwise show the error
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }
