@@ -5,7 +5,7 @@ import tmp from 'tmp';
 import { assert, describe, expect, it } from 'vitest';
 
 // Functional tests
-describe('Test generate delta command', () => {
+describe.sequential('Test generate delta command', () => {
   const tmpobj = tmp.dirSync({ unsafeCleanup: true });
 
   // should process delta request with rule id type

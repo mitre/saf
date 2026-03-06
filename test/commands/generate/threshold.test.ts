@@ -5,7 +5,7 @@ import tmp from 'tmp';
 import { describe, expect, it } from 'vitest';
 import YAML from 'yaml';
 
-describe('Generate threshold', () => {
+describe.sequential('Generate threshold', () => {
   const tmpobj = tmp.dirSync({ unsafeCleanup: true });
 
   it('when provided an output file to store threshold', async () => {

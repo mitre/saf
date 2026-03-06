@@ -5,7 +5,7 @@ import tmp from 'tmp';
 import { describe, expect, it } from 'vitest';
 import { omitHDFChangingFields } from '../utils';
 
-describe('Test supplement target', () => {
+describe.sequential('Test supplement target', () => {
   const tmpobj = tmp.dirSync({ unsafeCleanup: true });
   fs.copyFileSync(path.resolve('./test/sample_data/HDF/input/minimal_hdf.json'), path.resolve(`${tmpobj.name}/minimal_hdf.json`));
 

@@ -145,7 +145,7 @@ describe('getDescription', () => {
   });
 });
 
-describe('getInstalledPath', () => {
+describe.sequential('getInstalledPath', () => {
   beforeEach(() => {
     vi.resetModules();
   });
@@ -348,7 +348,7 @@ describe('getDescription', () => {
 
 vi.mock('@mitre/hdf-converters', { spy: true });
 
-describe('checkInput', () => {
+describe.sequential('checkInput', () => {
   beforeEach(() => {
     vi.resetModules();
   });

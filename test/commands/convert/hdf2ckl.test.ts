@@ -5,7 +5,7 @@ import tmp from 'tmp';
 import { describe, expect, it } from 'vitest';
 import { omitChecklistChangingFields } from '../utils';
 
-describe('Test hdf2checklist', () => {
+describe.sequential('Test hdf2checklist', () => {
   const tmpobj = tmp.dirSync({ unsafeCleanup: true });
 
   it('hdf-converter output test - defaults', async () => {
