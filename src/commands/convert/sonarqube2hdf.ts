@@ -58,6 +58,11 @@ export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
       required: false,
       description: 'Include raw input requests in HDF JSON file',
     }),
+    issueStatuses: Flags.string({
+      char: 's',
+      required: false,
+      description: 'Comma-separated list of issue statuses to include (e.g. "OPEN,CONFIRMED,ACCEPTED"). Overrides automatic status discovery from the server.',
+    }),
   };
 
   async run() {
@@ -70,6 +75,7 @@ export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
       flags.pullRequestID,
       flags.organization,
       flags.includeRaw,
+      flags.issueStatuses,
     );
     fs.writeFileSync(
       checkSuffix(flags.output),
