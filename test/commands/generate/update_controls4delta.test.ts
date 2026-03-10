@@ -17,7 +17,7 @@ describe('Test generate update_controls4delta command', () => {
     // safely rename files without affecting the repository fixtures
     fs.cpSync(sourceControlsDir, tempControlsDir, {recursive: true})
 
-    const stdout = await runCommand<{name: string}>([
+    await runCommand<{name: string}>([
       'generate update_controls4delta',
       '-J', path.resolve('./test/sample_data/inspec/json/profile_and_controls/Windows_Server_2019_v1r3_mini-profile.json'),
       '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2019_V3R2_xccdf.xml'),
