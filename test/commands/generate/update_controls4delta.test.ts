@@ -6,7 +6,6 @@ import {describe, expect, it} from 'vitest'
 
 // Functional tests
 describe('Test generate update_controls4delta command', () => {
-
   // This command updates controls in place, so tests must operate on a temp copy
   // of the fixture controls rather than the checked-in sample files
   it('should rename legacy controls to the new XCCDF control ids', async () => {
@@ -45,5 +44,4 @@ describe('Test generate update_controls4delta command', () => {
     expect(fs.existsSync(path.join(tempControlsDir, 'V-93473.rb'))).to.eql(false)
     expect(fs.existsSync(path.join(tempControlsDir, 'V-93461.rb'))).to.eql(false)
   })
-
 })
