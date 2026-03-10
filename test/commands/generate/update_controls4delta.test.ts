@@ -4,6 +4,7 @@ import path from 'path'
 import tmp from 'tmp'
 import {describe, expect, it} from 'vitest'
 
+// Functional tests
 describe('Test generate update_controls4delta command', () => {
 
   // This command updates controls in place, so tests must operate on a temp copy
@@ -44,6 +45,5 @@ describe('Test generate update_controls4delta command', () => {
     expect(fs.existsSync(path.join(tempControlsDir, 'V-93473.rb'))).to.eql(false)
     expect(fs.existsSync(path.join(tempControlsDir, 'V-93461.rb'))).to.eql(false)
   })
-
 
 })
