@@ -78,9 +78,9 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     addToProcessLogData('================== HDF2CSV CLI Process ===================');
     addToProcessLogData(`Date: ${new Date().toISOString()}\n`);
 
-    let inputFile = '';
-    let outputFile = '';
-    let includeFields = '';
+    let inputFile;
+    let outputFile;
+    let includeFields;
     let truncateFields = false;
 
     if (flags.interactive) {
@@ -98,7 +98,7 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       // Save the flags to the log object
       addToProcessLogData('Process Flags ============================================');
       for (const [key, value] of Object.entries(flags)) {
-        addToProcessLogData(`${key}=${value}`);
+        addToProcessLogData(`${key}=${String(value)}`);
       }
     } else {
       return;
@@ -204,10 +204,10 @@ async function saveCSV(filename: fs.PathLike | fs.promises.FileHandle, data: str
     try {
       await fse.writeFile(filename, csvData, 'utf8');
     } catch (error) {
-      printRed(`\nError writing CSV file: ${error}\n`);
+      printRed(`\nError writing CSV file: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}\n`);
     }
   } catch (error) {
-    printRed(`\nError processing data to convert to CSV: ${error}\n`);
+    printRed(`\nError processing data to convert to CSV: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}\n`);
   }
 }
 
@@ -327,7 +327,7 @@ async function getFlags(): Promise<any> {
 
   for (const [tagName, answerValue] of Object.entries(answers)) {
     if (answerValue !== null) {
-      addToProcessLogData(tagName + '=' + answerValue);
+      addToProcessLogData(`${tagName}=${_.isArray(answerValue) ? answerValue.join(',') : String(answerValue)}`);
     }
   }
 

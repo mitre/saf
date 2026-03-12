@@ -57,8 +57,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
   }
 
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display what fields
-    // are required, otherwise show the error
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err?.message?.includes('See more help with --help')) {
       this.warn(err.message.replace('--help', `\u001B[93m${process.argv.at(-2)} ${process.argv.at(-1)} -h or --help\u001B[0m`));
     } else {

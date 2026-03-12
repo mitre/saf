@@ -194,7 +194,7 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
       }
 
       logger.info('Starting collection of Findings');
-      let queryParams: Record<string, unknown> = {
+      const queryParams: Record<string, unknown> = {
         Filters: filters,
         MaxResults: API_MAX_RESULTS,
       };
@@ -224,8 +224,6 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
 
       logger.info('Starting collection of enabled security standards');
       const enabledStandards: StandardsSubscription[] = [];
-
-      queryParams = _.omit(queryParams, ['Filters']);
 
       // Get active security standards subscriptions (enabled standards)
       while (first || nextToken !== undefined) {
@@ -257,7 +255,7 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
         first = true;
         const standardsControls: StandardsControl[] = [];
 
-        while (nextToken !== undefined) {
+        while (first || nextToken !== undefined) {
           first = false;
           logger.debug(`Querying for NextToken: ${nextToken}`);
           const getEnabledStandardsResult: DescribeStandardsControlsCommandOutput

@@ -318,14 +318,13 @@ export default class HDF2CKL extends Command {
     }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  async catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display what fields
-    // are required, otherwise show the error
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('--help', '\u001B[93m<cli-command> -h or --help\u001B[0m'));
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }

@@ -116,7 +116,7 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
     if (flags.input && flags.output) {
       const outputFolder = flags.output?.replace('.json', '') || 'asff-output';
       fs.mkdirSync(outputFolder);
-      flags.input.forEach(async (input: string) => {
+      for (const input of flags.input) {
         // If we have a GUID
         if (/^(\w){30}$/.test(input)) {
           const hdf = await mapper.toHdf(input);
@@ -135,7 +135,7 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
         } else {
           // If we have a filename
           const executions = await this.searchExecutions(mapper, input);
-          executions.forEach(async (execution) => {
+          for (const execution of executions) {
             const hdf = await mapper.toHdf(_.get(execution, 'meta.guid'));
             fs.writeFileSync(
               path.join(
@@ -148,9 +148,9 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
               ),
               JSON.stringify(hdf, null, 2),
             );
-          });
+          }
         }
-      });
+      }
     } else if (flags.input && !flags.output) {
       logger.error('Please provide an output HDF folder');
       throw new Error('Please provide an output HDF folder');

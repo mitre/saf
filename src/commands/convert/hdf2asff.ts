@@ -170,10 +170,10 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
                 && _.get(error, 'code') === 'NetworkingError'
               ) {
                 console.error(
-                  `Failed to upload controls: ${error}; Using --certificate to provide your own SSL intermediary certificate (in .crt format) or use the flag --insecure to ignore SSL might resolve this issue`,
+                  `Failed to upload controls: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}; Using --certificate to provide your own SSL intermediary certificate (in .crt format) or use the flag --insecure to ignore SSL might resolve this issue`,
                 );
               } else {
-                console.error(`Failed to upload controls: ${error}`);
+                console.error(`Failed to upload controls: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}`);
               }
             }
           }),

@@ -44,7 +44,7 @@ export default class CKL2HDF extends BaseCommand<typeof CKL2HDF> {
         JSON.stringify(converter.toHdf(), null, 2),
       );
     } catch (error) {
-      console.error(`Error converting to hdf:\n${error}`);
+      console.error(`Error converting to hdf:\n${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}`);
     }
   }
 }

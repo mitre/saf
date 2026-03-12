@@ -4,7 +4,6 @@ import { Flags } from '@oclif/core';
 import { XMLParser } from 'fast-xml-parser';
 import moment from 'moment';
 import promptSync from 'prompt-sync';
-import { createLogger, format, transports } from 'winston';
 import XlsxPopulate from 'xlsx-populate';
 import files from '../../resources/files.json';
 import type { STIG, Vulnerability, STIGHolder } from '../../types/stig';
@@ -24,19 +23,10 @@ import {
   replaceSpecialCharacters,
 } from '../../utils/ckl2poam';
 import { basename, dataURLtoU8Array } from '../../utils/global';
+import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
 const prompt = promptSync();
-const { printf } = format;
-
-const fmt = printf(({ level, file, message }) => {
-  return `${level.toUpperCase()}: ${file}: ${message}`;
-});
-
-const logger = createLogger({
-  format: fmt,
-  transports: [new transports.Console()],
-});
 
 const STARTING_ROW = 8; // The row we start inserting controls into
 
@@ -87,6 +77,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
 
   async run() {
     const { flags } = await this.parse(CKL2POAM);
+    const logger = createWinstonLogger('ckl2poam', flags.logLevel);
 
     const officeOrgsAndDeviceNames = Object.fromEntries(flags.input.map((fileName: string) => {
       let officeOrg = flags.officeOrg;
@@ -108,21 +99,13 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
         return;
       }
 
-      logger.log({
-        level: 'info',
-        file: fileName,
-        message: 'Opening file',
-      });
+      logger.info(`${fileName}: Opening file`);
 
       let data;
       try {
         data = await readFile(fileName, { encoding: 'utf8' });
       } catch (readFileError) {
-        logger.log({
-          level: 'error',
-          file: fileName,
-          message: `An error occurred opening the file ${fileName}: ${readFileError}`,
-        });
+        logger.error(`${fileName}: An error occurred opening the file ${fileName}: ${readFileError instanceof Error ? readFileError.message : JSON.stringify(readFileError)}`);
         throw readFileError;
       }
 
@@ -150,11 +133,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
       try {
         result = parser.parse(data);
       } catch (parseFileError) {
-        logger.log({
-          level: 'error',
-          file: fileName,
-          message: `An error occurred parsing the file: ${parseFileError}`,
-        });
+        logger.error(`${fileName}: An error occurred parsing the file: ${parseFileError instanceof Error ? parseFileError.message : JSON.stringify(parseFileError)}`);
         throw parseFileError;
       }
 
@@ -162,11 +141,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
       let vulnerabilities: Vulnerability[] = [];
       const iStigs: STIGHolder[] = [];
       const stigs = result.CHECKLIST.STIGS;
-      logger.log({
-        level: 'info',
-        file: fileName,
-        message: `Found ${stigs?.length} STIGs`,
-      });
+      logger.info(`${fileName}: Found ${stigs?.length} STIGs`);
 
       // Get nested iSTIGs
       if (stigs) {
@@ -178,11 +153,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
           }
         }
       }
-      logger.log({
-        level: 'info',
-        file: fileName,
-        message: `Found ${iStigs.length} iSTIGs`,
-      });
+      logger.info(`${fileName}: Found ${iStigs.length} iSTIGs`);
 
       // Get the controls/vulnerabilities from each stig
       for (const iSTIG of iStigs) {
@@ -217,11 +188,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
           ];
         }
       }
-      logger.log({
-        level: 'info',
-        file: fileName,
-        message: `Found ${vulnerabilities.length} vulnerabilities`,
-      });
+      logger.info(`${fileName}: Found ${vulnerabilities.length} vulnerabilities`);
 
       const officeOrg = officeOrgsAndDeviceNames[fileName].officeOrg;
       const deviceName = officeOrgsAndDeviceNames[fileName].deviceName;
