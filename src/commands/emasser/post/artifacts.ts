@@ -3,12 +3,11 @@ import os from 'os';
 import path from 'path';
 import { Command, Flags } from '@oclif/core';
 import { ArtifactsApi } from '@mitre/emass_client';
-import type { ArtifactsResponsePutPost } from '@mitre/emass_client/dist/api';
 import AdmZip from 'adm-zip';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 const CMD_HELP = 'saf emasser post artifacts -h or --help';
 export default class EmasserPostArtifacts extends Command {
@@ -36,7 +35,7 @@ export default class EmasserPostArtifacts extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Artifacts command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -50,11 +49,12 @@ export default class EmasserPostArtifacts extends Command {
         const isBulk = Boolean(flags.fileName[0].endsWith('.zip'));
         const fileStream: fs.ReadStream = fs.createReadStream(flags.fileName[0]);
 
-        artifactApi.addArtifactsBySystemId(
-          flags.systemId, fileStream, isBulk, flags.isTemplate, flags.type, flags.category).then(
-          (response: ArtifactsResponsePutPost) => {
-            console.log(colorize(outputFormat(response, false)));
-          }).catch((error: unknown) => displayError(error, 'Artifacts'));
+        try {
+          const response = await artifactApi.addArtifactsBySystemId(flags.systemId, fileStream, isBulk, flags.isTemplate, flags.type, flags.category);
+          console.log(colorize(outputFormat(response, false)));
+        } catch (error: unknown) {
+          displayError(error, 'Artifacts');
+        }
       } else {
         console.error('\u001B[91m» Artifact file not found:', flags.fileName[0], '\u001B[0m');
       }
@@ -65,14 +65,14 @@ export default class EmasserPostArtifacts extends Command {
       const zip = new AdmZip();
 
       // Add all files to the zip archive
-      flags.fileName.forEach((inputFile: string) => {
+      for (const inputFile of flags.fileName) {
         if (fs.existsSync(inputFile)) {
           zip.addLocalFile(inputFile);
         } else {
           console.error('\u001B[91m» Artifact file not found:', inputFile, '\u001B[0m');
           process.exit(1);
         }
-      });
+      }
 
       // Generate a temporary zip file in the system's temp directory
       const zipper = path.join(os.tmpdir(), 'zipper.zip');
@@ -81,20 +81,22 @@ export default class EmasserPostArtifacts extends Command {
       // Read the generated zip file as a stream
       const fileStream: fs.ReadStream = fs.createReadStream(zipper);
 
-      artifactApi.addArtifactsBySystemId(flags.systemId, fileStream, true, flags.isTemplate, flags.type, flags.category).then((response: ArtifactsResponsePutPost) => {
+      try {
+        const response = await artifactApi.addArtifactsBySystemId(flags.systemId, fileStream, true, flags.isTemplate, flags.type, flags.category);
         console.log(colorize(outputFormat(response, false)));
-      }).catch((error: unknown) => displayError(error, 'Artifacts'));
+      } catch (error: unknown) {
+        displayError(error, 'Artifacts');
+      }
     }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display
-    // what fields are required, otherwise show the error
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }

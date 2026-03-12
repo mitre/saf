@@ -1,5 +1,4 @@
 import { SystemRolesApi } from '@mitre/emass_client';
-import type { SystemRolesResponse, SystemRolesCategoryResponse } from '@mitre/emass_client/dist/api';
 import { Args, Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
@@ -9,7 +8,6 @@ import {
   getDescriptionForEndpoint,
   getExamplesForEndpoint,
   getFlagsForEndpoint,
-  type FlagOptions,
 } from '../../../utils/emasser/utilities';
 
 const endpoint = 'roles';
@@ -23,7 +21,7 @@ export default class EmasserGetRoles extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the GET Roles command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   // NOTE: The way args are being implemented are mainly for the purposes of help clarity, there is, displays
@@ -43,26 +41,32 @@ export default class EmasserGetRoles extends Command {
 
     if (args.name === 'all') {
       // Order is important here
-      getSystemRoles.getSystemRoles().then((response: SystemRolesResponse) => {
+      try {
+        const response = await getSystemRoles.getSystemRoles();
         console.log(colorize(outputFormat(response)));
-      }).catch((error: unknown) => displayError(error, 'Roles'));
+      } catch (error: unknown) {
+        displayError(error, 'Roles');
+      }
     } else if (args.name === 'byCategory') {
       // Order is important here
-      getSystemRoles.getSystemRolesByCategoryId(flags.roleCategory, flags.role, flags.policy, flags.includeDecommissioned).then((response: SystemRolesCategoryResponse) => {
+      try {
+        const response = await getSystemRoles.getSystemRolesByCategoryId(flags.roleCategory, flags.role, flags.policy, flags.includeDecommissioned);
         console.log(colorize(outputFormat(response)));
-      }).catch((error: unknown) => displayError(error, 'Roles'));
+      } catch (error: unknown) {
+        displayError(error, 'Roles');
+      }
     } else {
-      throw this.error;
+      throw new Error(`Unexpected argument: ${args.name}`);
     }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async
-  async catch(error: unknown) {
+  protected catch(error: unknown): Promise<void> {
     if (error instanceof Error) {
       this.warn(error.message);
     } else {
       const suggestions = 'get roles [-h or --help]\n\tget roles all\n\tget roles byCategory';
       this.warn('Invalid arguments\nTry this 👇:\n\t' + suggestions);
     }
+    return Promise.resolve();
   }
 }

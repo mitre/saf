@@ -5,7 +5,7 @@ import os from 'os';
 export default class EmasserSayHello extends Command {
   static readonly hidden = true;
 
-  async run(): Promise<void> { // skipcq: JS-0116, JS-0105
+  run(): Promise<void> {
     const users = ['rookie', 'greenhorn', 'novice', 'expert', 'oracle', 'maestro'];
     let user = users[Math.floor(Math.random() * 6)];
     try {
@@ -13,5 +13,6 @@ export default class EmasserSayHello extends Command {
     } finally {
       console.log('\u001B[96m', `Hello ${user} - enjoy using ${name} ${version}!`, '\u001B[0m');
     }
+    return Promise.resolve();
   }
 }

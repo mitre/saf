@@ -1756,11 +1756,13 @@ export function saveFile(dir: string, filename: string, data: any): void {
 
   // Save to file
   const outDir = path.join(dir, filename);
-  fs.writeFile(outDir, data, (err) => {
-    if (err) {
-      console.error(`Error saving file to: ${outDir}. Cause: ${err}`);
+  try {
+    fs.writeFileSync(outDir, data);
+  } catch (error) {
+    if (error) {
+      console.error(`Error saving file to: ${outDir}. Cause: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
     }
-  });
+  }
 }
 
 /**

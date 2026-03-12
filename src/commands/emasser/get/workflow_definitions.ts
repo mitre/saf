@@ -1,10 +1,9 @@
 import { WorkflowDefinitionsApi } from '@mitre/emass_client';
-import type { WorkflowDefinitionResponseGet } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetWorkflowDefinitions extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]';
@@ -15,18 +14,20 @@ export default class EmasserGetWorkflowDefinitions extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the GET Workflow Definitions command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async
   async run(): Promise<void> {
     const { flags } = await this.parse(EmasserGetWorkflowDefinitions);
     const apiCxn = new ApiConnection();
     const getWorkflow = new WorkflowDefinitionsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
     // Order is important here
-    getWorkflow.getWorkflowDefinitions(flags.includeInactive, flags.registrationType).then((response: WorkflowDefinitionResponseGet) => {
+    try {
+      const response = await getWorkflow.getWorkflowDefinitions(flags.includeInactive, flags.registrationType);
       console.log(colorize(outputFormat(response)));
-    }).catch((error: unknown) => displayError(error, 'Workflow Definitions'));
+    } catch (error: unknown) {
+      displayError(error, 'Workflow Definitions');
+    }
   }
 }

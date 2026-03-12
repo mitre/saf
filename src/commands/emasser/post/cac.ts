@@ -1,10 +1,10 @@
 import { CACApi } from '@mitre/emass_client';
-import type { CacResponsePost, CacGet as CAC } from '@mitre/emass_client/dist/api';
+import type { CacGet as CAC } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 const CMD_HELP = 'saf emasser post cac -h or --help';
 export default class EmasserPostCac extends Command {
@@ -16,7 +16,7 @@ export default class EmasserPostCac extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST CAC command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -31,19 +31,21 @@ export default class EmasserPostCac extends Command {
       },
     ];
 
-    addCac.addSystemCac(flags.systemId, requestBodyArray).then((response: CacResponsePost) => {
+    try {
+      const response = await addCac.addSystemCac(flags.systemId, requestBodyArray);
       console.log(colorize(outputFormat(response, false)));
-    }).catch((error: unknown) => displayError(error, 'CAC'));
+    } catch (error: unknown) {
+      displayError(error, 'CAC');
+    }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display
-    // what fields are required, otherwise show the error
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }

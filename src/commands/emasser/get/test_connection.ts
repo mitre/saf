@@ -1,5 +1,4 @@
 import { TestApi } from '@mitre/emass_client';
-import type { Test } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
@@ -17,22 +16,25 @@ export default class EmasserGetTestConnection extends Command {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the GET Test Connection command' }),
   };
 
-  async run(): Promise<void> { // skipcq: JS-0105, JS-0116
+  async run(): Promise<void> {
     const apiCxn = new ApiConnection();
     const getTestApi = new TestApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    getTestApi.testConnection().then((response: Test) => {
+    try {
+      const response = await getTestApi.testConnection();
       console.log(colorize(outputFormat(response)));
-    }).catch((error: unknown) => displayError(error, 'Test Connection'));
+    } catch (error: unknown) {
+      displayError(error, 'Test Connection');
+    }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async
-  async catch(error: unknown) {
+  protected catch(error: unknown): Promise<void> {
     if (error instanceof Error) {
       this.warn(error.message);
     } else {
       const suggestions = 'get test_connection [-h or --help]';
       this.warn('Invalid arguments\nTry this 👇:\n\t' + suggestions);
     }
+    return Promise.resolve();
   }
 }

@@ -38,7 +38,6 @@ import {
   getFlagsForEndpoint,
   getExamplesForEndpoint,
   getDescriptionForEndpoint,
-  type FlagOptions,
 } from '../../../utils/emasser/utilities';
 
 const endpoint = 'dashboards';
@@ -52,7 +51,7 @@ export default class EmasserGetDashboards extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the GET Dashboards command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   // NOTE: The way args are being implemented are mainly for the purposes of identifying which
@@ -149,9 +148,7 @@ export default class EmasserGetDashboards extends Command {
     cmmc_requirement_objectives_details: Args.string({ name: 'cmmc_requirement_objectives_details', description: 'Get CMMC assessment requirement objectives details dashboard information', required: false }),
   };
 
-  // skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
-
-  async run(): Promise<void> { // skipcq: JS-0044
+  async run(): Promise<void> {
     const { args, flags } = await this.parse(EmasserGetDashboards);
     const apiCxn = new ApiConnection();
 
@@ -159,9 +156,12 @@ export default class EmasserGetDashboards extends Command {
       case 'status_details': {
         const getDashboard = new SystemStatusDashboardApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemStatusDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemStatusDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -169,9 +169,12 @@ export default class EmasserGetDashboards extends Command {
       case 'terms_conditions_details': {
         const getDashboard = new SystemTermsConditionsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemTermsConditionsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemTermsConditionsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -179,9 +182,12 @@ export default class EmasserGetDashboards extends Command {
       case 'terms_conditions_summary': {
         const getDashboard = new SystemTermsConditionsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemTermsConditionsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemTermsConditionsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -189,9 +195,12 @@ export default class EmasserGetDashboards extends Command {
       case 'connectivity_ccsd_details': {
         const getDashboard = new SystemConnectivityCCSDDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemConnectivityCcsdDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemConnectivityCcsdDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -199,9 +208,12 @@ export default class EmasserGetDashboards extends Command {
       case 'connectivity_ccsd_summary': {
         const getDashboard = new SystemConnectivityCCSDDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemConnectivityCcsdSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemConnectivityCcsdSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -209,9 +221,12 @@ export default class EmasserGetDashboards extends Command {
       case 'atc_iatc_details': {
         const getDashboard = new SystemATCIATCDashboardApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemAtcIatcDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemAtcIatcDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -219,9 +234,12 @@ export default class EmasserGetDashboards extends Command {
       case 'questionnaire_summary': {
         const getDashboard = new SystemQuestionnaireDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemQuestionnaireSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemQuestionnaireSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -229,9 +247,12 @@ export default class EmasserGetDashboards extends Command {
       case 'questionnaire_details': {
         const getDashboard = new SystemQuestionnaireDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemQuestionnaireDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemQuestionnaireDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -239,9 +260,12 @@ export default class EmasserGetDashboards extends Command {
       case 'workflows_history_summary': {
         const getDashboard = new SystemWorkflowsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemWorkflowsHistorySummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemWorkflowsHistorySummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -249,9 +273,12 @@ export default class EmasserGetDashboards extends Command {
       case 'workflows_history_details': {
         const getDashboard = new SystemWorkflowsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemWorkflowsHistoryDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemWorkflowsHistoryDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -259,9 +286,12 @@ export default class EmasserGetDashboards extends Command {
       case 'workflows_history_stage_details': {
         const getDashboard = new SystemWorkflowsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemWorkflowsHistoryStageDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemWorkflowsHistoryStageDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -269,9 +299,12 @@ export default class EmasserGetDashboards extends Command {
       case 'control_compliance_summary': {
         const getDashboard = new SystemSecurityControlsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemControlComplianceSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemControlComplianceSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -279,9 +312,12 @@ export default class EmasserGetDashboards extends Command {
       case 'security_control_details': {
         const getDashboard = new SystemSecurityControlsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemSecurityControlDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemSecurityControlDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -289,9 +325,12 @@ export default class EmasserGetDashboards extends Command {
       case 'assessment_procedures_details': {
         const getDashboard = new SystemSecurityControlsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemAssessmentProceduresDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemAssessmentProceduresDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -299,9 +338,12 @@ export default class EmasserGetDashboards extends Command {
       case 'poam_summary': {
         const getDashboard = new SystemPOAMDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemPoamSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemPoamSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -309,9 +351,12 @@ export default class EmasserGetDashboards extends Command {
       case 'poam_details': {
         const getDashboard = new SystemPOAMDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemPoamDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemPoamDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -319,9 +364,12 @@ export default class EmasserGetDashboards extends Command {
       case 'artifacts_summary': {
         const getDashboard = new SystemArtifactsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemArtifactsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemArtifactsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -329,9 +377,12 @@ export default class EmasserGetDashboards extends Command {
       case 'artifacts_details': {
         const getDashboard = new SystemArtifactsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemArtifactsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemArtifactsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -339,9 +390,12 @@ export default class EmasserGetDashboards extends Command {
       case 'hardware_summary': {
         const getDashboard = new SystemHardwareDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemHardwareSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemHardwareSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -349,9 +403,12 @@ export default class EmasserGetDashboards extends Command {
       case 'hardware_details': {
         const getDashboard = new SystemHardwareDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemHardwareDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemHardwareDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -359,9 +416,12 @@ export default class EmasserGetDashboards extends Command {
       case 'sensor_hardware_summary': {
         const getDashboard = new SystemSensorHardwareDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemSensorHardwareSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemSensorHardwareSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -369,9 +429,12 @@ export default class EmasserGetDashboards extends Command {
       case 'sensor_hardware_details': {
         const getDashboard = new SystemSensorHardwareDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemSensorHardwareDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemSensorHardwareDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -379,9 +442,12 @@ export default class EmasserGetDashboards extends Command {
       case 'software_summary': {
         const getDashboard = new SystemSoftwareDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemSoftwareSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemSoftwareSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -389,9 +455,12 @@ export default class EmasserGetDashboards extends Command {
       case 'software_details': {
         const getDashboard = new SystemSoftwareDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemSoftwareDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemSoftwareDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -399,9 +468,12 @@ export default class EmasserGetDashboards extends Command {
       case 'sensor_software_summary': {
         const getDashboard = new SystemSensorSoftwareDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemSensorSoftwareSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemSensorSoftwareSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -409,9 +481,12 @@ export default class EmasserGetDashboards extends Command {
       case 'sensor_software_details': {
         const getDashboard = new SystemSensorSoftwareDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemSensorSoftwareDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemSensorSoftwareDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -419,9 +494,12 @@ export default class EmasserGetDashboards extends Command {
       case 'sensor_software_counts': {
         const getDashboard = new SystemSensorSoftwareDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemSensorSoftwareCounts(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemSensorSoftwareCounts(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -429,9 +507,12 @@ export default class EmasserGetDashboards extends Command {
       case 'critical_assets_summary': {
         const getDashboard = new SystemCriticalAssetsDashboardApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemCriticalAssetsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemCriticalAssetsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -439,9 +520,12 @@ export default class EmasserGetDashboards extends Command {
       case 'vulnerability_summary': {
         const getDashboard = new SystemVulnerabilityDashboardApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemVulnerabilitySummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemVulnerabilitySummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -449,9 +533,12 @@ export default class EmasserGetDashboards extends Command {
       case 'device_findings_summary': {
         const getDashboard = new SystemDeviceFindingsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemDeviceFindingsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemDeviceFindingsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -459,9 +546,12 @@ export default class EmasserGetDashboards extends Command {
       case 'device_findings_details': {
         const getDashboard = new SystemDeviceFindingsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemDeviceFindingsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemDeviceFindingsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -469,9 +559,12 @@ export default class EmasserGetDashboards extends Command {
       case 'application_findings_summary': {
         const getDashboard = new SystemApplicationFindingsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemApplicationFindingsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemApplicationFindingsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -479,9 +572,12 @@ export default class EmasserGetDashboards extends Command {
       case 'application_findings_details': {
         const getDashboard = new SystemApplicationFindingsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemApplicationFindingsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemApplicationFindingsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -489,9 +585,12 @@ export default class EmasserGetDashboards extends Command {
       case 'ports_protocols_summary': {
         const getDashboard = new SystemPortsProtocolsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemPortsProtocolsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemPortsProtocolsSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -499,9 +598,12 @@ export default class EmasserGetDashboards extends Command {
       case 'ports_protocols_details': {
         const getDashboard = new SystemPortsProtocolsDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemPortsProtocolsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemPortsProtocolsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -509,9 +611,12 @@ export default class EmasserGetDashboards extends Command {
       case 'integration_status_summary': {
         const getDashboard = new SystemCONMONIntegrationStatusDashboardApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemCommonIntegrationStatusSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemCommonIntegrationStatusSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -519,9 +624,12 @@ export default class EmasserGetDashboards extends Command {
       case 'associations_details': {
         const getDashboard = new SystemAssociationsDashboardApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemAssociationsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemAssociationsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -529,9 +637,12 @@ export default class EmasserGetDashboards extends Command {
       case 'user_assignments_details': {
         const getDashboard = new UserSystemAssignmentsDashboardApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getUserSystemAssignmentsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getUserSystemAssignmentsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -539,9 +650,12 @@ export default class EmasserGetDashboards extends Command {
       case 'org_migration_status': {
         const getDashboard = new OrganizationMigrationStatusDashboardApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getOrganizationMigrationStatusSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getOrganizationMigrationStatusSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -549,9 +663,12 @@ export default class EmasserGetDashboards extends Command {
       case 'system_migration_status': {
         const getDashboard = new SystemMigrationStatusDashboardApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemMigrationStatusSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemMigrationStatusSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -559,9 +676,12 @@ export default class EmasserGetDashboards extends Command {
       case 'fisma_metrics': {
         const getDashboard = new SystemFISMAMetricsDashboardApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemFismaMetrics(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemFismaMetrics(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -569,9 +689,12 @@ export default class EmasserGetDashboards extends Command {
       case 'coast_guard_fisma_metrics': {
         const getDashboard = new CoastGuardSystemFISMAMetricsDashboardApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getCoastGuardSystemFismaMetrics(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getCoastGuardSystemFismaMetrics(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -579,9 +702,12 @@ export default class EmasserGetDashboards extends Command {
       case 'privacy_summary': {
         const getDashboard = new SystemPrivacyDashboardApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getSystemPrivacySummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getSystemPrivacySummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -589,9 +715,12 @@ export default class EmasserGetDashboards extends Command {
       case 'fisma_saop_summary': {
         const getDashboard = new VAOMBFISMADashboardApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getVaOmbFsmaSaopSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getVaOmbFsmaSaopSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -599,9 +728,12 @@ export default class EmasserGetDashboards extends Command {
       case 'va_icamp_tableau_poam_details': {
         const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getVaSystemIcampTableauPoamDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getVaSystemIcampTableauPoamDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -609,9 +741,12 @@ export default class EmasserGetDashboards extends Command {
       case 'va_aa_summary': {
         const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getVaSystemAaSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getVaSystemAaSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -619,9 +754,12 @@ export default class EmasserGetDashboards extends Command {
       case 'va_a2_summary': {
         const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getVaSystemA2Summary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getVaSystemA2Summary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -629,9 +767,12 @@ export default class EmasserGetDashboards extends Command {
       case 'va_pl_109_summary': {
         const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getVaSystemPl109ReportingSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getVaSystemPl109ReportingSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -639,9 +780,12 @@ export default class EmasserGetDashboards extends Command {
       case 'va_fisma_inventory_summary': {
         const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getVaSystemFismaInvetorySummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getVaSystemFismaInvetorySummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -649,9 +793,12 @@ export default class EmasserGetDashboards extends Command {
       case 'va_fisma_inventory_crypto_summary': {
         const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getVaSystemFismaInvetoryCryptoSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getVaSystemFismaInvetoryCryptoSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -659,9 +806,12 @@ export default class EmasserGetDashboards extends Command {
       case 'va_threat_risk_summary': {
         const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getVaSystemThreatRiskSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getVaSystemThreatRiskSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -669,9 +819,12 @@ export default class EmasserGetDashboards extends Command {
       case 'va_threat_source_details': {
         const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getVaSystemThreatSourceDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getVaSystemThreatSourceDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -679,9 +832,12 @@ export default class EmasserGetDashboards extends Command {
       case 'va_threat_architecture_details': {
         const getDashboard = new VASystemDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getVaSystemThreatArchitectureDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getVaSystemThreatArchitectureDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -689,9 +845,12 @@ export default class EmasserGetDashboards extends Command {
       case 'cmmc_status_summary': {
         const getDashboard = new CMMCAssessmentDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getCmmcAssessmentStatusSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getCmmcAssessmentStatusSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -699,9 +858,12 @@ export default class EmasserGetDashboards extends Command {
       case 'cmmc_compliance_summary': {
         const getDashboard = new CMMCAssessmentDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getCmmcAssessmentRequirementsComplianceSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getCmmcAssessmentRequirementsComplianceSummary(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -709,9 +871,12 @@ export default class EmasserGetDashboards extends Command {
       case 'cmmc_security_requirements_details': {
         const getDashboard = new CMMCAssessmentDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getCmmcAssessmentSecurityRequirementsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getCmmcAssessmentSecurityRequirementsDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
@@ -719,26 +884,29 @@ export default class EmasserGetDashboards extends Command {
       case 'cmmc_requirement_objectives_details': {
         const getDashboard = new CMMCAssessmentDashboardsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
         // Order is important here
-        getDashboard.getCmmcAssessmentRequirementObjectivesDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize).then((response: object) => {
+        try {
+          const response = await getDashboard.getCmmcAssessmentRequirementObjectivesDetails(flags.orgId, flags.excludeInherited, flags.pageIndex, flags.pageSize);
           console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Dashboard'));
+        } catch (error: unknown) {
+          displayError(error, 'Dashboard');
+        }
 
         break;
       }
 
       default: {
-        throw this.error;
+        throw new Error(`Unexpected argument: ${args.name}`);
       }
     }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async
-  async catch(error: unknown) {
+  protected catch(error: unknown): Promise<void> {
     if (error instanceof Error) {
       this.warn(error.message);
     } else {
       const suggestions = 'get dashboards [-h or --help] for available arguments';
       this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
     }
+    return Promise.resolve();
   }
 }

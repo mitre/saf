@@ -1,7 +1,6 @@
 import fs from 'fs';
 import { readFile } from 'fs/promises';
 import { HardwareBaselineApi } from '@mitre/emass_client';
-import type { HwBaselineResponsePostPut as HwBaselineResponse } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import _ from 'lodash';
@@ -284,9 +283,12 @@ export default class EmasserHardwareBaseline extends Command {
     }
 
     // Call the endpoint
-    hwBaseline.updateHwBaselineAssets(flags.systemId, requestBodyArray).then((response: HwBaselineResponse) => {
+    try {
+      const response = await hwBaseline.updateHwBaselineAssets(flags.systemId, requestBodyArray);
       console.log(colorize(outputFormat(response, false)));
-    }).catch((error: unknown) => displayError(error, 'Hardware Baseline'));
+    } catch (error: unknown) {
+      displayError(error, 'Hardware Baseline');
+    }
   }
 
   protected catch(err: Error & { exitCode?: number }): Promise<void> {

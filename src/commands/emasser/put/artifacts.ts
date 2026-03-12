@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { readFile } from 'fs/promises';
 import { ArtifactsApi } from '@mitre/emass_client';
-import type { ArtifactsResponseGetDataInner as Artifacts, ArtifactsResponsePutPost } from '@mitre/emass_client/dist/api';
+import type { ArtifactsResponseGetDataInner as Artifacts } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import _ from 'lodash';
@@ -153,9 +153,12 @@ export default class EmasserPutArtifacts extends Command {
     }
 
     // Call API endpoint
-    artifactApi.updateArtifactBySystemId(flags.systemId, requestBodyArray).then((response: ArtifactsResponsePutPost) => {
+    try {
+      const response = await artifactApi.updateArtifactBySystemId(flags.systemId, requestBodyArray);
       console.log(colorize(outputFormat(response, false)));
-    }).catch((error: unknown) => displayError(error, 'Artifacts'));
+    } catch (error: unknown) {
+      displayError(error, 'Artifacts');
+    }
   }
 
   protected catch(err: Error & { exitCode?: number }): Promise<void> {

@@ -1,13 +1,9 @@
 import { SoftwareBaselineApi } from '@mitre/emass_client';
-import type {
-  SwBaselineResponseDelete,
-  SwBaselineRequestDeleteBodyInner as SwDeleteBody,
-} from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 const CMD_HELP = 'saf emasser delete software_baseline -h or --help';
 export default class EmasserDeleteSoftwareBaseline extends Command {
@@ -19,7 +15,7 @@ export default class EmasserDeleteSoftwareBaseline extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show help for the SAF CLI eMASSer DELETE Software Baseline command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -27,25 +23,24 @@ export default class EmasserDeleteSoftwareBaseline extends Command {
     const apiCxn = new ApiConnection();
     const delSwBaseline = new SoftwareBaselineApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    const requestBodyArray: SwDeleteBody[] = [];
-    flags.assetsSoftwareId.forEach((softwareId: string) => {
-      requestBodyArray.push({ softwareId: softwareId }); // skipcq: JS-0240
-    });
+    const requestBodyArray = flags.assetsSoftwareId.map(softwareId => ({ softwareId }));
 
     // Call the endpoint
-    delSwBaseline.deleteSwBaselineAssets(flags.systemId, requestBodyArray).then((response: SwBaselineResponseDelete) => {
+    try {
+      const response = await delSwBaseline.deleteSwBaselineAssets(flags.systemId, requestBodyArray);
       console.log(colorize(outputFormat(response, false)));
-    }).catch((error: unknown) => displayError(error, 'Software Baseline'));
+    } catch (error: unknown) {
+      displayError(error, 'Software Baseline');
+    }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display
-    // what fields are required, otherwise show the error
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }

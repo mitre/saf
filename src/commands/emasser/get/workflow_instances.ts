@@ -1,6 +1,4 @@
 import { WorkflowInstancesApi } from '@mitre/emass_client';
-import type { WorkflowInstancesResponseGet,
-  WorkflowInstanceResponseGet } from '@mitre/emass_client/dist/api';
 import { Args, Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
@@ -10,7 +8,6 @@ import {
   getDescriptionForEndpoint,
   getExamplesForEndpoint,
   getFlagsForEndpoint,
-  type FlagOptions,
 } from '../../../utils/emasser/utilities';
 
 const endpoint = 'workflow_instances';
@@ -24,7 +21,7 @@ export default class EmasserGetWorkflowInstances extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the GET Workflow Instances command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   // NOTE: The way args are being implemented are mainly for clarity purposes, there is, it displays
@@ -44,26 +41,32 @@ export default class EmasserGetWorkflowInstances extends Command {
 
     if (args.name === 'all') {
       // Order is important here
-      getWorkflowInstances.getSystemWorkflowInstances(flags.includeComments, flags.includeDecommissionSystems, flags.pageIndex, flags.sinceDate, flags.status).then((response: WorkflowInstancesResponseGet) => {
+      try {
+        const response = await getWorkflowInstances.getSystemWorkflowInstances(flags.includeComments, flags.includeDecommissionSystems, flags.pageIndex, flags.sinceDate, flags.status);
         console.log(colorize(outputFormat(response)));
-      }).catch((error: unknown) => displayError(error, 'Workflow Instances'));
+      } catch (error: unknown) {
+        displayError(error, 'Workflow Instances');
+      }
     } else if (args.name === 'byInstanceId') {
       // Order is important here
-      getWorkflowInstances.getSystemWorkflowInstancesByWorkflowInstanceId(flags.workflowInstanceId).then((response: WorkflowInstanceResponseGet) => {
+      try {
+        const response = await getWorkflowInstances.getSystemWorkflowInstancesByWorkflowInstanceId(flags.workflowInstanceId);
         console.log(colorize(outputFormat(response)));
-      }).catch((error: unknown) => displayError(error, 'Workflow Instances'));
+      } catch (error: unknown) {
+        displayError(error, 'Workflow Instances');
+      }
     } else {
-      throw this.error;
+      throw new Error(`Unexpected argument: ${args.name}`);
     }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async
-  async catch(error: unknown) {
+  protected catch(error: unknown): Promise<void> {
     if (error instanceof Error) {
       this.warn(error);
     } else {
       const suggestions = 'get workflow_instances [-h or --help]\n\tget workflow_instances all\n\tget workflow_instances byInstanceId';
       this.warn('Invalid arguments\nTry this 👇:\n\t' + suggestions);
     }
+    return Promise.resolve();
   }
 }

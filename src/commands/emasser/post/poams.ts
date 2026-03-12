@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { readFile } from 'fs/promises';
 import { POAMApi } from '@mitre/emass_client';
-import type { MilestonesGet, PoamResponsePostPutDelete } from '@mitre/emass_client/dist/api';
+import type { MilestonesGet } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import _ from 'lodash';
@@ -542,9 +542,12 @@ export default class EmasserPostPoams extends Command {
     }
 
     // Call the endpoint
-    addPoam.addPoamBySystemId(flags.systemId, requestBodyArray).then((response: PoamResponsePostPutDelete) => {
+    try {
+      const response = await addPoam.addPoamBySystemId(flags.systemId, requestBodyArray);
       console.log(colorize(outputFormat(response, false)));
-    }).catch((error: unknown) => displayError(error, 'POA&Ms'));
+    } catch (error: unknown) {
+      displayError(error, 'POA&Ms');
+    }
   }
 
   protected catch(err: Error & { exitCode?: number }): Promise<void> {

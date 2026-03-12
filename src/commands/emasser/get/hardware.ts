@@ -1,10 +1,9 @@
 import { HardwareBaselineApi } from '@mitre/emass_client';
-import type { HwBaselineResponseGet } from '@mitre/emass_client/dist/api';
 import { Args, Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetHardwareBaseline extends Command {
   static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n \u001B[93m NOTE: see EXAMPLES for argument case format\u001B[0m';
@@ -24,7 +23,7 @@ export default class EmasserGetHardwareBaseline extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the GET Hardware Baseline command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   // NOTE: The way args are being implemented are mainly for clarity purposes, there is, it displays
@@ -43,22 +42,24 @@ export default class EmasserGetHardwareBaseline extends Command {
 
     if (args.name === 'baseline') {
       // Order is important here
-      getHardwareBaseline.getSystemHwBaseline(flags.systemId, flags.pageIndex, flags.pageSize)
-        .then((response: HwBaselineResponseGet) => {
-          console.log(colorize(outputFormat(response)));
-        }).catch((error: unknown) => displayError(error, 'Hardware'));
+      try {
+        const response = await getHardwareBaseline.getSystemHwBaseline(flags.systemId, flags.pageIndex, flags.pageSize);
+        console.log(colorize(outputFormat(response)));
+      } catch (error: unknown) {
+        displayError(error, 'Hardware');
+      }
     } else {
-      throw this.error;
+      throw new Error(`Unexpected argument: ${args.name}`);
     }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async
-  async catch(error: unknown) {
+  protected catch(error: unknown): Promise<void> {
     if (error instanceof Error) {
       this.warn(error);
     } else {
       const suggestions = 'get hardware [-h or --help]\n\tget hardware baseline';
       this.warn('Invalid arguments\nTry this 👇:\n\t' + suggestions);
     }
+    return Promise.resolve();
   }
 }

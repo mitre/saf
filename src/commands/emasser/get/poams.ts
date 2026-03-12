@@ -1,5 +1,4 @@
 import { POAMApi } from '@mitre/emass_client';
-import type { PoamResponseGetSystems, PoamResponseGetPoams } from '@mitre/emass_client/dist/api';
 import { Args, Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
@@ -9,7 +8,6 @@ import {
   getDescriptionForEndpoint,
   getExamplesForEndpoint,
   getFlagsForEndpoint,
-  type FlagOptions,
 } from '../../../utils/emasser/utilities';
 
 const endpoint = 'poams';
@@ -23,7 +21,7 @@ export default class EmasserGetPoams extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the GET POA&Ms command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   // NOTE: The way args are being implemented are mainly for the purposes of help clarity, there is, displays
@@ -43,26 +41,32 @@ export default class EmasserGetPoams extends Command {
 
     if (args.name === 'forSystem') {
       // Order is important here
-      getPoams.getSystemPoams(flags.systemId, flags.scheduledCompletionDateStart, flags.scheduledCompletionDateEnd, flags.controlAcronyms, flags.ccis, flags.systemOnly).then((response: PoamResponseGetSystems) => {
+      try {
+        const response = await getPoams.getSystemPoams(flags.systemId, flags.scheduledCompletionDateStart, flags.scheduledCompletionDateEnd, flags.controlAcronyms, flags.ccis, flags.systemOnly);
         console.log(colorize(outputFormat(response)));
-      }).catch((error: unknown) => displayError(error, 'POA&Ms'));
+      } catch (error: unknown) {
+        displayError(error, 'POA&Ms');
+      }
     } else if (args.name === 'byPoamId') {
       // Order is important here
-      getPoams.getSystemPoamsByPoamId(flags.systemId, flags.poamId).then((response: PoamResponseGetPoams) => {
+      try {
+        const response = await getPoams.getSystemPoamsByPoamId(flags.systemId, flags.poamId);
         console.log(colorize(outputFormat(response)));
-      }).catch((error: unknown) => displayError(error, 'POA&Ms'));
+      } catch (error: unknown) {
+        displayError(error, 'POA&Ms');
+      }
     } else {
-      throw this.error;
+      throw new Error(`Unexpected argument: ${args.name}`);
     }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async
-  async catch(error: unknown) {
+  protected catch(error: unknown): Promise<void> {
     if (error instanceof Error) {
       this.warn(error.message);
     } else {
       const suggestions = 'get poams [-h or --help]\n\tget poams forSystem\n\tget poams byPoamId';
       this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
     }
+    return Promise.resolve();
   }
 }

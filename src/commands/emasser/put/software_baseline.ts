@@ -2,7 +2,6 @@ import fs from 'fs';
 import { readFile } from 'fs/promises';
 import { colorize } from 'json-colorizer';
 import { SoftwareBaselineApi } from '@mitre/emass_client';
-import type { SwBaselineResponsePostPut as SwBaselineResponse } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
@@ -409,14 +408,16 @@ export default class EmasserSoftwareBaseline extends Command {
     }
 
     // Call the endpoint
-    swBaseline.updateSwBaselineAssets(flags.systemId, requestBodyArray).then((response: SwBaselineResponse) => {
+    try {
+      const response = await swBaseline.updateSwBaselineAssets(flags.systemId, requestBodyArray);
       console.log(colorize(outputFormat(response, false)));
-    }).catch((error: unknown) => displayError(error, 'Software Baseline'));
+    } catch (error: unknown) {
+      displayError(error, 'Software Baseline');
+    }
   }
 
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display
-    // what fields are required, otherwise show the error
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {

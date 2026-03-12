@@ -1,10 +1,9 @@
 import { ControlsApi } from '@mitre/emass_client';
-import type { CacResponseGet } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetControls extends Command {
   static readonly usage = '<%= command.id %> [FLAGS]';
@@ -15,7 +14,7 @@ export default class EmasserGetControls extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the GET Controls command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -24,18 +23,21 @@ export default class EmasserGetControls extends Command {
     const getControls = new ControlsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
     // Order is important here
-    getControls.getSystemControls(flags.systemId, flags.acronyms).then((response: CacResponseGet) => {
+    try {
+      const response = await getControls.getSystemControls(flags.systemId, flags.acronyms);
       console.log(colorize(outputFormat(response)));
-    }).catch((error: unknown) => displayError(error, 'Controls'));
+    } catch (error: unknown) {
+      displayError(error, 'Controls');
+    }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async
-  async catch(error: unknown) {
+  protected catch(error: unknown): Promise<void> {
     if (error instanceof Error) {
       this.warn(error.message);
     } else {
       const suggestions = 'get controls [-h or --help]';
       this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
     }
+    return Promise.resolve();
   }
 }

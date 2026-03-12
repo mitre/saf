@@ -1,5 +1,4 @@
 import { MilestonesApi } from '@mitre/emass_client';
-import type { MilestoneResponseGet, MilestoneResponseGetMilestone } from '@mitre/emass_client/dist/api';
 import { Args, Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
@@ -9,7 +8,6 @@ import {
   getDescriptionForEndpoint,
   getExamplesForEndpoint,
   getFlagsForEndpoint,
-  type FlagOptions,
 } from '../../../utils/emasser/utilities';
 
 const endpoint = 'milestones';
@@ -23,7 +21,7 @@ export default class EmasserGetMilestones extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the GET Milestones command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   // NOTE: The way args are being implemented are mainly for the purposes of help clarity, there is, displays
@@ -43,26 +41,32 @@ export default class EmasserGetMilestones extends Command {
 
     if (args.name === 'byPoamId') {
       // Order is important here
-      getMilestones.getSystemMilestonesByPoamId(flags.systemId, flags.poamId, flags.scheduledCompletionDateStart, flags.scheduledCompletionDateEnd).then((response: MilestoneResponseGet) => {
+      try {
+        const response = await getMilestones.getSystemMilestonesByPoamId(flags.systemId, flags.poamId, flags.scheduledCompletionDateStart, flags.scheduledCompletionDateEnd);
         console.log(colorize(outputFormat(response)));
-      }).catch((error: unknown) => displayError(error, 'Milestones'));
+      } catch (error: unknown) {
+        displayError(error, 'Milestones');
+      }
     } else if (args.name === 'byMilestoneId') {
       // Order is important here
-      getMilestones.getSystemMilestonesByPoamIdAndMilestoneId(flags.systemId, flags.poamId, flags.milestoneId).then((response: MilestoneResponseGetMilestone) => {
+      try {
+        const response = await getMilestones.getSystemMilestonesByPoamIdAndMilestoneId(flags.systemId, flags.poamId, flags.milestoneId);
         console.log(colorize(outputFormat(response)));
-      }).catch((error: unknown) => displayError(error, 'Milestones'));
+      } catch (error: unknown) {
+        displayError(error, 'Milestones');
+      }
     } else {
-      throw this.error;
+      throw new Error(`Unexpected argument: ${args.name}`);
     }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async
-  async catch(error: unknown) {
+  protected catch(error: unknown): Promise<void> {
     if (error instanceof Error) {
       this.warn(error.message);
     } else {
       const suggestions = 'get milestones [-h or --help]\n\tget milestones byPoamId\n\tget milestones byMilestoneId';
       this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
     }
+    return Promise.resolve();
   }
 }

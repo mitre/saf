@@ -33,8 +33,7 @@ export default class EmasserBuildConfig extends Command {
 
   static readonly examples = ['<%= config.bin %> <%= command.id %>'];
 
-  // skipcq: JS-0116, JS-0105
   async run(): Promise<void> {
-    generateConfig(); // skipcq: JS-0328
+    await generateConfig();
   }
 }

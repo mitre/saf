@@ -1,10 +1,9 @@
 import { SystemsApi } from '@mitre/emass_client';
-import type { SystemResponse } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetSystem extends Command {
   static readonly usage = '<%= command.id %> [FLAG]';
@@ -15,7 +14,7 @@ export default class EmasserGetSystem extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the GET System command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -24,18 +23,21 @@ export default class EmasserGetSystem extends Command {
     const getSystems = new SystemsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
     // Order is important here
-    getSystems.getSystem(flags.systemId, flags.includePackage, flags.policy).then((response: SystemResponse) => {
+    try {
+      const response = await getSystems.getSystem(flags.systemId, flags.includePackage, flags.policy);
       console.log(colorize(outputFormat(response)));
-    }).catch((error: unknown) => displayError(error, 'Systems'));
+    } catch (error: unknown) {
+      displayError(error, 'Systems');
+    }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to be async
-  async catch(error: unknown) {
+  protected catch(error: unknown): Promise<void> {
     if (error instanceof Error) {
       this.warn(error.message);
     } else {
       const suggestions = 'get system [-h or --help]';
       this.warn('Invalid arguments\nTry this 👇:\n\t' + suggestions);
     }
+    return Promise.resolve();
   }
 }

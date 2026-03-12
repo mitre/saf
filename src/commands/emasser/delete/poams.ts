@@ -1,13 +1,9 @@
 import { POAMApi } from '@mitre/emass_client';
-import type {
-  PoamResponsePostPutDelete,
-  PoamRequestDeleteBodyInner as PoamDeleteBody,
-} from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 const CMD_HELP = 'saf emasser delete poams -h or --help';
 export default class EmasserDeletePoams extends Command {
@@ -19,7 +15,7 @@ export default class EmasserDeletePoams extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show help for the SAF CLI eMASSer DELETE POA&Ms command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -27,25 +23,24 @@ export default class EmasserDeletePoams extends Command {
     const apiCxn = new ApiConnection();
     const delPoam = new POAMApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    const requestBodyArray: PoamDeleteBody[] = [];
-    flags.poamsId.forEach((poamId: number) => {
-      requestBodyArray.push({ poamId: poamId }); // skipcq: JS-0240
-    });
+    const requestBodyArray = flags.poamsId.map(poamId => ({ poamId }));
 
     // Call the endpoint
-    delPoam.deletePoam(flags.systemId, requestBodyArray).then((response: PoamResponsePostPutDelete) => {
+    try {
+      const response = await delPoam.deletePoam(flags.systemId, requestBodyArray);
       console.log(colorize(outputFormat(response, false)));
-    }).catch((error: unknown) => displayError(error, 'POA&Ms'));
+    } catch (error: unknown) {
+      displayError(error, 'POA&Ms');
+    }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display
-    // what fields are required, otherwise show the error
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }

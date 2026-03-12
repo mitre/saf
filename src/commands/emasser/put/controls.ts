@@ -1,7 +1,6 @@
 import fs from 'fs';
 import { readFile } from 'fs/promises';
 import { ControlsApi } from '@mitre/emass_client';
-import type { ControlsResponsePut } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import _ from 'lodash';
@@ -362,9 +361,12 @@ export default class EmasserPutControls extends Command {
       process.exit(1);
     }
 
-    updateControl.updateControlBySystemId(flags.systemId, requestBodyArray).then((response: ControlsResponsePut) => {
+    try {
+      const response = await updateControl.updateControlBySystemId(flags.systemId, requestBodyArray);
       console.log(colorize(outputFormat(response)));
-    }).catch((error: unknown) => displayError(error, 'Controls'));
+    } catch (error: unknown) {
+      displayError(error, 'Controls');
+    }
   }
 
   protected catch(err: Error & { exitCode?: number }): Promise<void> {

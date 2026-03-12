@@ -1,13 +1,12 @@
 import fs from 'fs';
 import { readFile } from 'fs/promises';
 import { CloudResourceResultsApi } from '@mitre/emass_client';
-import type { CloudResourcesResponsePost } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import _ from 'lodash';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
 
 /**
  * Represents a cloud resource with compliance results.
@@ -113,7 +112,7 @@ function addRequiredFieldsToRequestBody(dataObj: CloudResource): CloudResource {
     complianceResults: [],
   };
 
-  const complianceResultsArray: ComplianceResults[] = [];
+  let complianceResultsArray: ComplianceResults[];
 
   try {
     assertParamExists('provider', dataObj.provider);
@@ -121,19 +120,15 @@ function addRequiredFieldsToRequestBody(dataObj: CloudResource): CloudResource {
     assertParamExists('resourceName', dataObj.resourceName);
     assertParamExists('resourceType', dataObj.resourceType);
 
-    let i = 0;
-    dataObj.complianceResults.forEach((entryObject: ComplianceResults) => {
+    complianceResultsArray = dataObj.complianceResults.map((entryObject, i) => {
       assertParamExists(`dataObj.complianceResults[${i}].cspPolicyDefinitionId`, entryObject.cspPolicyDefinitionId);
       assertParamExists(`dataObj.complianceResults[${i}].isCompliant`, entryObject.isCompliant);
       assertParamExists(`dataObj.complianceResults[${i}].policyDefinitionTitle`, entryObject.policyDefinitionTitle);
-      i++;
-
-      const complianceResultsObj: ComplianceResults = {
+      return ({
         cspPolicyDefinitionId: entryObject.cspPolicyDefinitionId,
         isCompliant: entryObject.isCompliant,
         policyDefinitionTitle: entryObject.policyDefinitionTitle,
-      };
-      complianceResultsArray.push(complianceResultsObj);
+      });
     });
   } catch (error) {
     console.log('Required JSON fields are:');
@@ -191,17 +186,12 @@ function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): v
   }
 
   // Add optional tags objects if available
-  if (dataObj.tags && typeof dataObj.tags === 'object') {
-    const tagsObj: Tags = {};
-    for (const key of Object.keys(dataObj.tags)) {
-      tagsObj[key] = dataObj.tags?.[key]; // Ensure type safety
-    }
-    bodyObject.tags = tagsObj;
+  if (dataObj.tags && _.isObject(dataObj.tags)) {
+    bodyObject.tags = structuredClone(dataObj.tags);
   }
 
   // Add optional compliance results fields
-  const complianceResultsArray: ComplianceResults[] = [];
-  dataObj.complianceResults.forEach((entryObject: ComplianceResults) => {
+  bodyObject.complianceResults = dataObj.complianceResults.map((entryObject) => {
     const complianceResultsObj: ComplianceResults = {
       cspPolicyDefinitionId: entryObject.cspPolicyDefinitionId,
       isCompliant: entryObject.isCompliant,
@@ -235,10 +225,8 @@ function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): v
       complianceResultsObj.severity = entryObject.severity;
     }
 
-    complianceResultsArray.push(complianceResultsObj);
+    return complianceResultsObj;
   });
-
-  bodyObject.complianceResults = complianceResultsArray;
 }
 
 /**
@@ -274,7 +262,7 @@ export default class EmasserPostCloudResources extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Cloud Resource Results command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -333,19 +321,21 @@ export default class EmasserPostCloudResources extends Command {
     }
 
     // Call the endpoint
-    addCloudResource.addCloudResourcesBySystemId(flags.systemId, requestBodyArray).then((response: CloudResourcesResponsePost) => {
+    try {
+      const response = await addCloudResource.addCloudResourcesBySystemId(flags.systemId, requestBodyArray);
       console.log(colorize(outputFormat(response, false)));
-    }).catch((error: unknown) => displayError(error, 'Cloud Resources'));
+    } catch (error: unknown) {
+      displayError(error, 'Cloud Resources');
+    }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display
-    // what fields are required, otherwise show the error
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }

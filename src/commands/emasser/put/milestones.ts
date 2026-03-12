@@ -1,5 +1,5 @@
 import { MilestonesApi } from '@mitre/emass_client';
-import type { MilestoneResponsePut, MilestonesGet as Milestones } from '@mitre/emass_client/dist/api';
+import type { MilestonesGet as Milestones } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
@@ -16,7 +16,7 @@ export default class EmasserPutMilestones extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the PUT Milestones command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -33,9 +33,12 @@ export default class EmasserPutMilestones extends Command {
     ];
 
     // Call API endpoint
-    putMilestones.updateMilestoneBySystemIdAndPoamId(flags.systemId, flags.poamId, requestBodyArray).then((response: MilestoneResponsePut) => {
+    try {
+      const response = await putMilestones.updateMilestoneBySystemIdAndPoamId(flags.systemId, flags.poamId, requestBodyArray);
       console.log(colorize(outputFormat(response, false)));
-    }).catch((error: unknown) => displayError(error, 'Milestones'));
+    } catch (error: unknown) {
+      displayError(error, 'Milestones');
+    }
   }
 
   protected catch(err: Error & { exitCode?: number }): Promise<void> {

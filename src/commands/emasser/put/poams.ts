@@ -1,7 +1,7 @@
 import fs from 'fs';
 import { readFile } from 'fs/promises';
 import { POAMApi } from '@mitre/emass_client';
-import type { MilestonesRequiredPutMilestonesInner as MilestonesRequiredPut, PoamResponsePostPutDelete } from '@mitre/emass_client/dist/api';
+import type { MilestonesRequiredPutMilestonesInner as MilestonesRequiredPut } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import _ from 'lodash';
@@ -576,14 +576,16 @@ export default class EmasserPutPoams extends Command {
     }
 
     // Call the endpoint
-    updatePoam.updatePoamBySystemId(flags.systemId, requestBodyArray).then((response: PoamResponsePostPutDelete) => {
+    try {
+      const response = await updatePoam.updatePoamBySystemId(flags.systemId, requestBodyArray);
       console.log(colorize(outputFormat(response)));
-    }).catch((error: unknown) => displayError(error, 'POA&Ms'));
+    } catch (error: unknown) {
+      displayError(error, 'POA&Ms');
+    }
   }
 
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display
-    // what fields are required, otherwise show the error
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {

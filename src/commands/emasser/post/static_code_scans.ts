@@ -2,7 +2,7 @@ import fs from 'fs';
 import { readFile } from 'fs/promises';
 import { StaticCodeScansApi } from '@mitre/emass_client';
 import type {
-  StaticCodeApplicationPost, StaticCodeResponsePost,
+  StaticCodeApplicationPost,
   StaticCodeRequestPostBody as StaticCodeRequest,
   StaticCodeRequestPostBodyApplication as ApplicationRequestBody,
 } from '@mitre/emass_client/dist/api';
@@ -238,9 +238,12 @@ export default class EmasserPostStaticCodeScans extends Command {
     }
 
     // Call the API endpoint
-    addStaticCodeScans.addStaticCodeScansBySystemId(flags.systemId, requestBodyArray).then((response: StaticCodeResponsePost) => {
+    try {
+      const response = await addStaticCodeScans.addStaticCodeScansBySystemId(flags.systemId, requestBodyArray);
       console.log(colorize(outputFormat(response, false)));
-    }).catch((error: unknown) => displayError(error, 'Static Code Scans'));
+    } catch (error: unknown) {
+      displayError(error, 'Static Code Scans');
+    }
   }
 
   protected catch(err: Error & { exitCode?: number }): Promise<void> {

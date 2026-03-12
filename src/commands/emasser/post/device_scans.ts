@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import { DeviceScanResultsApi } from '@mitre/emass_client';
-import type { DeviceScanResultsResponsePost } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { CLIError } from '@oclif/core/errors';
 import { colorize } from 'json-colorizer';
@@ -73,25 +72,27 @@ export default class EmasserPostDeviceScans extends Command {
         throw new CLIError(`If the scan type is "acasAsrArf" or "policyAuditor" a .zip file is expected not a ${path.extname(flags.filename)} file`);
       }
     } catch (error) {
-      console.error(`\u001B[91m » ${error} \u001B[0m`);
+      console.error(`\u001B[91m » ${String(error)} \u001B[0m`);
       process.exit(1);
     }
 
     const fileStream: fs.ReadStream = fs.createReadStream(flags.filename);
 
-    addDeviceScans.addScanResultsBySystemId(flags.systemId, flags.scanType, fileStream, flags.isBaseline).then((response: DeviceScanResultsResponsePost) => {
+    try {
+      const response = await addDeviceScans.addScanResultsBySystemId(flags.systemId, flags.scanType, fileStream, flags.isBaseline);
       console.log(colorize(outputFormat(response, false)));
-    }).catch((error: unknown) => displayError(error, 'Device Scans'));
+    } catch (error: unknown) {
+      displayError(error, 'Device Scans');
+    }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display
-    // what fields are required, otherwise show the error
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }

@@ -1,13 +1,12 @@
 import fs from 'fs';
 import { readFile } from 'fs/promises';
 import { ContainerScanResultsApi } from '@mitre/emass_client';
-import type { ContainersResponsePost } from '@mitre/emass_client/dist/api';
 import { Command, Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import _ from 'lodash';
 import { ApiConnection } from '../../../utils/emasser/api_connection';
 import { outputFormat } from '../../../utils/emasser/output_formatter';
-import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg, type FlagOptions } from '../../../utils/emasser/utilities';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
 
 /**
  * Represents a container resource with associated metadata and benchmarks.
@@ -152,9 +151,12 @@ function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerRe
 
     let i = 0;
     let j = 0;
+    // disabling these eslint rules since I don't want to touch the logic as I'm confused by the same resultsArray being appended to even between benchmarks without being reset in the middle
+    // eslint-disable-next-line unicorn/no-array-for-each
     dataObj.benchmarks.forEach((entryObject: Benchmarks) => {
       assertParamExists(`benchmarks[${i}].benchmark`, entryObject.benchmark);
 
+      // eslint-disable-next-line unicorn/no-array-for-each
       entryObject.results.forEach((resultObj: Results) => {
         assertParamExists(`benchmarks.results[${j}].ruleId`, resultObj.ruleId);
         assertParamExists(`benchmarks.results[${j}].lastSeen`, resultObj.lastSeen);
@@ -234,6 +236,8 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
   const benchmarksArray: Benchmarks[] = [];
   const resultsArray: Results[] = [];
   // Add the optional benchmark entries
+  // disabling these eslint rules since I don't want to touch the logic as I'm confused by the same resultsArray being appended to even between benchmarks without being reset in the middle
+  // eslint-disable-next-line unicorn/no-array-for-each
   dataObj.benchmarks.forEach((entryObject: Benchmarks) => {
     const benchmarksObj: Benchmarks = { benchmark: entryObject.benchmark, results: [] };
     // These are required
@@ -251,6 +255,7 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
     }
 
     // Add the optional Results entries
+    // eslint-disable-next-line unicorn/no-array-for-each
     entryObject.results.forEach((resultObj: Results) => {
       // These are required
       const resultsObj: Results = { ruleId: resultObj.ruleId, status: resultObj.status, lastSeen: resultObj.lastSeen };
@@ -314,7 +319,7 @@ export default class EmasserContainerScans extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Container Scan Results command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -374,19 +379,21 @@ export default class EmasserContainerScans extends Command {
     }
 
     // Call the API endpoint
-    addContainer.addContainerSansBySystemId(flags.systemId, requestBodyArray).then((response: ContainersResponsePost) => {
+    try {
+      const response = await addContainer.addContainerSansBySystemId(flags.systemId, requestBodyArray);
       console.log(colorize(outputFormat(response, false)));
-    }).catch((error: unknown) => displayError(error, 'Container Scans'));
+    } catch (error: unknown) {
+      displayError(error, 'Container Scans');
+    }
   }
 
-  // skipcq: JS-0116 - Base class (CommandError) expects expected catch to return a Promise
-  protected async catch(err: Error & { exitCode?: number }): Promise<void> {
-    // If error message is for missing flags, display
-    // what fields are required, otherwise show the error
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
       this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
     } else {
       this.warn(err);
     }
+    return Promise.resolve();
   }
 }
