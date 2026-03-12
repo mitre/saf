@@ -29,8 +29,8 @@ export default class CreateAttestations extends BaseCommand<typeof CreateAttesta
     format: Flags.string({ char: 't', description: '(optional) The output file type', default: 'json', options: ['json', 'xlsx', 'yml', 'yaml'] }),
   };
 
-  promptForever(promptValue: string): string { // skipcq: JS-0105
-    while (true) { // skipcq: JS-0003
+  promptForever(promptValue: string): string {
+    while (true) {
       const ret = prompt(promptValue);
       if (ret.trim() !== '') {
         return ret;
@@ -38,10 +38,10 @@ export default class CreateAttestations extends BaseCommand<typeof CreateAttesta
     }
   }
 
-  getStatus(): 'passed' | 'failed' { // skipcq: JS-0105
+  getStatus(): 'passed' | 'failed' {
     const validPassResponses = new Set(['p', 'passed', 'pass']);
     const validFailResponses = new Set(['f', 'failed', 'fail', 'failure']);
-    while (true) { // skipcq: JS-0003
+    while (true) {
       const input = prompt('Enter status ((p)assed/(f)ailed): ') || '';
       if (validPassResponses.has(input.trim().toLowerCase())) {
         return 'passed';
@@ -95,7 +95,7 @@ export default class CreateAttestations extends BaseCommand<typeof CreateAttesta
         }
       }
     } else {
-      while (true) { // skipcq: JS-0003
+      while (true) {
         const input = prompt("Enter a control ID or enter 'q' to exit: ");
         if (input.trim().toLowerCase() === 'q') {
           break;
@@ -112,21 +112,20 @@ export default class CreateAttestations extends BaseCommand<typeof CreateAttesta
       }
 
       case 'xlsx': {
-        XlsxPopulate.fromDataAsync(dataURLtoU8Array(files.AttestationTemplate.data)).then((workBook: any) => {
-          const sheet = workBook.sheet(0); // Attestations worksheet
-          let currentRow = 2;
-          for (const attestation of attestations) {
-            sheet.cell(`A${currentRow}`).value(attestation.control_id);
-            sheet.cell(`B${currentRow}`).value(attestation.explanation);
-            sheet.cell(`C${currentRow}`).value(attestation.frequency);
-            sheet.cell(`D${currentRow}`).value(attestation.status);
-            sheet.cell(`E${currentRow}`).value(attestation.updated);
-            sheet.cell(`F${currentRow}`).value(attestation.updated_by);
-            currentRow++;
-          }
+        const workBook = await XlsxPopulate.fromDataAsync(dataURLtoU8Array(files.AttestationTemplate.data));
+        const sheet = workBook.sheet(0); // Attestations worksheet
+        let currentRow = 2;
+        for (const attestation of attestations) {
+          sheet.cell(`A${currentRow}`).value(attestation.control_id);
+          sheet.cell(`B${currentRow}`).value(attestation.explanation);
+          sheet.cell(`C${currentRow}`).value(attestation.frequency);
+          sheet.cell(`D${currentRow}`).value(attestation.status);
+          sheet.cell(`E${currentRow}`).value(attestation.updated);
+          sheet.cell(`F${currentRow}`).value(attestation.updated_by);
+          currentRow++;
+        }
 
-          return workBook.toFileAsync(flags.output);
-        });
+        await workBook.toFileAsync(flags.output);
         break;
       }
 

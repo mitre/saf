@@ -96,8 +96,8 @@ export default class IonChannel2HDF extends BaseCommand<typeof IonChannel2HDF> {
         logger.info(`Pulling findings from ${project.name}`);
         apiClient.projectId = project.id;
         apiClient.analysisId = project.analysis_summary.analysis_id;
-        let filename = '';
-        let json = {};
+        let filename;
+        let json;
         if (flags.raw) {
           filename = project.name + '_raw.json';
           json = await apiClient.getAnalysis().then(({ analysis }) => analysis);
@@ -123,8 +123,8 @@ export default class IonChannel2HDF extends BaseCommand<typeof IonChannel2HDF> {
         logger.info(`Pulling findings from ${projectName}`);
         await apiClient.setProject(projectName);
         logger.debug(`Set project ID ${apiClient.projectId}`);
-        let filename = '';
-        let json = {};
+        let filename;
+        let json;
         if (flags.raw) {
           filename = projectName + '_raw.json';
           json = await apiClient.getAnalysis().then(({ analysis }) => analysis);

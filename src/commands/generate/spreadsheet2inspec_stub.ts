@@ -144,7 +144,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
     }
 
     let metadata: InSpecMetaData = {};
-    let mappings: Record<string, string | string[] | number> = {};
+    let mappings: Record<string, string | string[] | number>;
 
     // Read metadata file if passed
     if (flags.metadata) {
@@ -192,7 +192,8 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
     }
     fs.writeFileSync(path.join(flags.output, 'README.md'), `# ${profileInfo.name}\n${profileInfo.summary}\n---\n${YAML.stringify(readableMetadata)}`);
 
-    await XlsxPopulate.fromFileAsync(flags.input).then((workBook: any) => {
+    try {
+      const workBook = await XlsxPopulate.fromFileAsync(flags.input);
       const completedIds: string[] = []; // Numbers such as 1.10 can get parsed 1.1 which will over-write controls, keep track of existing controls to prevent this
 
       for (const sheet of workBook.sheets()) {
@@ -258,7 +259,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
           }
         }
       }
-    }).catch(() => {
+    } catch {
       // Assume we have a CSV file
       // Read the input file into lines
       const inputDataLines = fs.readFileSync(flags.input, 'utf8').split('\n');
@@ -320,7 +321,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
 
         inspecControls.push(newControl as unknown as InSpecControl);
       }
-    });
+    }
 
     // Convert all extracted controls to Ruby/InSpec code
     for (const control of inspecControls) {
