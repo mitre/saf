@@ -1,4 +1,4 @@
-import _ from 'lodash'
+import _ from 'lodash';
 
 /**
  * Generates a formatted error message from the provided data object.
@@ -17,14 +17,14 @@ import _ from 'lodash'
  * 'Unknown' and an error message of 'Unable to access error message(s)'.
  */
 export function outputError(data: object): string {
-  let result: object = {meta: {code: (_.has(data, 'status')) ? _.get(data, 'status') : 'Unknown',
-    errorMessage: (_.has(data, 'code')) ? _.get(data, 'code') : 'Unable to access error message(s)'}}
+  let result: object = { meta: { code: (_.has(data, 'status')) ? _.get(data, 'status') : 'Unknown',
+    errorMessage: (_.has(data, 'code')) ? _.get(data, 'code') : 'Unable to access error message(s)' } };
 
   if (_.has(data, 'response.data')) {
-    result = _.get(data, 'response.data') || result
+    result = _.get(data, 'response.data') || result;
   } else if (_.has(data, 'response.status')) {
-    result = {meta: {code: _.get(data, 'response.status'), errorMessage: _.get(data, 'response.statusText')}}
+    result = { meta: { code: _.get(data, 'response.status'), errorMessage: _.get(data, 'response.statusText') } };
   }
 
-  return JSON.stringify(result, null, 2)
+  return JSON.stringify(result, null, 2);
 }

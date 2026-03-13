@@ -1,23 +1,21 @@
-export interface CSVControl {
-  V_ID: string
-  Severity: string
-  CCI: string
-  Version: string
-  Title: string
-  Description: string
-  Service: string
-  'IA Controls': string
-  ruleID: string
-  fixid: string
-  fixtext: string
-  checkid: string
-  checktext: string
-  '': string
-  Response: string
-}
+export type CSVControl = {
+  V_ID: string;
+  Severity: string;
+  CCI: string;
+  Version: string;
+  Title: string;
+  Description: string;
+  Service: string;
+  'IA Controls': string;
+  ruleID: string;
+  fixid: string;
+  fixtext: string;
+  checkid: string;
+  checktext: string;
+  '': string;
+  Response: string;
+};
 
-export type ControlSetRow = {
-  [key: string]: string
-}
+export type ControlSetRow = Record<string, string>;
 
-export type ControlSetRows = ControlSetRow[]
+export type ControlSetRows = ControlSetRow[];
