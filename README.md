@@ -1147,6 +1147,7 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
 
   EXAMPLES
     $ saf convert sonarqube2hdf -n sonar_project_key -u http://sonar:9000 --auth abcdefg -p 123 -o scan_results.json -w
+    $ saf convert sonarqube2hdf -n sonar_project_key -u http://sonar:9000 --auth abcdefg -o scan_results.json -s "ACCEPTED,IN_SANDBOX"
 ```
 
 [top](#convert-other-formats-to-hdf)
