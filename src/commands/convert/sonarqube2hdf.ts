@@ -7,7 +7,7 @@ import { BaseCommand } from '../../utils/oclif/base_command';
 export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
   static readonly usage
     = '<%= command.id %> -n <sonar-project-key> -u <http://your.sonar.instance:9000> -a <your-sonar-api-key>'
-      + '[ -b <target-branch> | -p <pull-request-id> ] [ -g <organization-name> ] -o <hdf-scan-results-json> [-h] [-w]';
+      + '[ -b <target-branch> | -p <pull-request-id> ] [ -g <organization-name> ] -o <hdf-scan-results-json> [-h] [-w] [-s <statuses-to-exclude>]';
 
   static readonly description
     = 'Pull SonarQube vulnerabilities for the specified project name and optional branch \n'
@@ -58,10 +58,13 @@ export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
       required: false,
       description: 'Include raw input requests in HDF JSON file',
     }),
-    issueStatuses: Flags.string({
+    excludeIssueStatuses: Flags.string({
       char: 's',
       required: false,
-      description: 'Comma-separated list of issue statuses to include (e.g. "OPEN,CONFIRMED,ACCEPTED"). Overrides automatic status discovery from the server.',
+      description: 'Comma-separated list of issue statuses to EXCLUDE from results '
+        + '(e.g. "ACCEPTED,IN_SANDBOX"). Replaces the default exclusions '
+        + '(FALSE_POSITIVE, FIXED for SonarQube 10.4+; CLOSED for older versions). '
+        + 'Omit this flag to use defaults.',
     }),
   };
 
@@ -75,7 +78,7 @@ export default class Sonarqube2HDF extends BaseCommand<typeof Sonarqube2HDF> {
       flags.pullRequestID,
       flags.organization,
       flags.includeRaw,
-      flags.issueStatuses,
+      flags.excludeIssueStatuses,
     );
     fs.writeFileSync(
       checkSuffix(flags.output),
