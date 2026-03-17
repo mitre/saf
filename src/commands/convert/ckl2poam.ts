@@ -2,6 +2,7 @@ import { mkdir, readFile } from 'fs/promises';
 import path from 'path';
 import { Flags } from '@oclif/core';
 import { XMLParser } from 'fast-xml-parser';
+import _ from 'lodash';
 import moment from 'moment';
 import promptSync from 'prompt-sync';
 import XlsxPopulate from 'xlsx-populate';
@@ -120,7 +121,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
         parseTagValue: false,
         parseAttributeValue: false,
         isArray: (name, jpath, isLeafNode, isAttribute) => {
-          return !isAttribute && jpath.includes('.');
+          return !isAttribute && _.isString(jpath) && jpath.includes('.');
         },
         trimValues: false,
         tagValueProcessor: (_tagName, tagValue) => {
