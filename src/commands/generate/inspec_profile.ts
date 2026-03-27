@@ -108,6 +108,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     const options = {
       ignoreAttributes: false,
       attributeNamePrefix: '@_',
+      processEntities: { maxTotalExpansions: 100000 },
     };
     const xmlDoc = new XMLParser(options).parse(xccdf);
     let outDir: string;
