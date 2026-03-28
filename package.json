@@ -83,7 +83,7 @@
     "@types/mock-fs": "^4.13.4",
     "eslint": "^10.0.2",
     "eslint-plugin-n": "^17.24.0",
-    "eslint-plugin-unicorn": "^63.0.0",
+    "eslint-plugin-unicorn": "^64.0.0",
     "jsdom": "^29.0.0",
     "marked": "~17.0.0",
     "mock-fs": "^5.2.0",
