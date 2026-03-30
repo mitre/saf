@@ -195,7 +195,7 @@ async function saveCSV(filename: fs.PathLike | fs.promises.FileHandle, data: str
   // CSV options
   const options = {
     header: true, // Include column headers
-    columns: Object.keys(data[0]), // Ensure consistent column order
+    columns: Object.keys(data[0] as Record<string, string>), // Ensure consistent column order
     delimiter: ',', // Customize delimiter (using standard comma)
   };
 
