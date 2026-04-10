@@ -1,6 +1,6 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
-import { INPUT_TYPES, NetsparkerMapper as Mapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, NetsparkerResults as Mapper } from '@mitre/hdf-converters';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -46,7 +46,7 @@ export default class Netsparker2HDF extends BaseCommand<typeof Netsparker2HDF> {
     const converter = new Mapper(data, flags.includeRaw);
     fs.writeFileSync(
       checkSuffix(flags.output),
-      JSON.stringify(converter.toHdf(), null, 2),
+      JSON.stringify(await converter.toHdf(), null, 2),
     );
   }
 }
