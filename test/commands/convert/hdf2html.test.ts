@@ -23,7 +23,7 @@ describe('Test hdf2html triple_overlay_profile_example with default (administrat
 describe('Test hdf2html with manager report type and two input files', () => {
   const tmpobj = tmp.dirSync({ unsafeCleanup: true });
 
-  it('hdf-converter output test', () => {
+  it('hdf-converter output test', async () => {
     await runCommand<{ name: string }>([
       'convert hdf2html',
       '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'), path.resolve('./test/sample_data/HDF/input/vSphere8_report.json'),
@@ -38,7 +38,7 @@ describe('Test hdf2html with manager report type and two input files', () => {
 describe('Test hdf2html with executive report type', () => {
   const tmpobj = tmp.dirSync({ unsafeCleanup: true });
 
-  it('hdf-converter output test', () => {
+  it('hdf-converter output test', async () => {
     await runCommand<{ name: string }>([
       'convert hdf2html',
       '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'),
