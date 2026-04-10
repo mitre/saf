@@ -1123,7 +1123,7 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
                               request ID name from an API and convert into a
                               Heimdall Data Format JSON file
   USAGE
-    $ saf convert sonarqube2hdf -n <sonar-project-key> -u <http://your.sonar.instance:9000> -a <your-sonar-api-key> [ -b <target-branch> | -p <pull-request-id> ] -o <hdf-scan-results-json>
+    $ saf convert sonarqube2hdf -n <sonar-project-key> -u <http://your.sonar.instance:9000> -a <your-sonar-api-key> [ -b <target-branch> | -p <pull-request-id> ] [-s <statuses-to-exclude>] -o <hdf-scan-results-json>
 
   FLAGS
     -a, --auth=<your-sonar-api-key>               (required) SonarQube API Key / User Token - please ensure that the user has permissions for the project (including seeing the code)
@@ -1133,6 +1133,10 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
     -b, --branch=<target-branch>                  Requires Sonarqube Developer Edition or above
     -p, --pullRequestID=<pull-request-id>         Requires Sonarqube Developer Edition or above
     -g, --organization=<value>                    SonarQube organization name - used as a default when necessary to access rule descriptions
+    -s, --excludeIssueStatuses=<value>            Comma-separated list of issue statuses to EXCLUDE from results
+                                                  (e.g. "ACCEPTED,IN_SANDBOX"). Replaces the default exclusions
+                                                  (FALSE_POSITIVE, FIXED for SonarQube 10.4+; CLOSED for older versions).
+                                                  Omit this flag to use defaults.
     -w, --includeRaw                              Include raw input requests in HDF JSON file
 
   GLOBAL FLAGS
@@ -1143,6 +1147,7 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
 
   EXAMPLES
     $ saf convert sonarqube2hdf -n sonar_project_key -u http://sonar:9000 --auth abcdefg -p 123 -o scan_results.json -w
+    $ saf convert sonarqube2hdf -n sonar_project_key -u http://sonar:9000 --auth abcdefg -o scan_results.json -s "ACCEPTED,IN_SANDBOX"
 ```
 
 [top](#convert-other-formats-to-hdf)
