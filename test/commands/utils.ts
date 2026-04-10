@@ -36,5 +36,5 @@ export function omitChecklistChangingFields(input: string) {
 
 export function omitHtmlChangingfields(input: string) {
   return input.replace(/(tailwindcss .+ \|)/, 'TAILWIND VERSION')
-    .replace(/TW Elements \d+\.\d+\.\d+/, 'TW ELEMENTS VERSION')
+    .replace(/TW Elements \d+\.\d+\.\d+/, 'TW ELEMENTS VERSION');
 }
