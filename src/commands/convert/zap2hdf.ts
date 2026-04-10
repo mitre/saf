@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { INPUT_TYPES, ZapMapper as Mapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, ZapResults as Mapper } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
@@ -50,7 +50,7 @@ export default class Zap2HDF extends BaseCommand<typeof Zap2HDF> {
     );
     fs.writeFileSync(
       checkSuffix(flags.output),
-      JSON.stringify(converter.toHdf(), null, 2),
+      JSON.stringify(await converter.toHdf(), null, 2),
     );
   }
 }
