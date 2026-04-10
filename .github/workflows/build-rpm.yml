@@ -7,24 +7,27 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   build-deploy:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     container:
-      image: registry.access.redhat.com/ubi8/nodejs-18:latest
+      image: registry.access.redhat.com/ubi9/nodejs-22:latest
       options: -u 0 # dnf needs root
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           path: saf
 
       - name: setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: "18"
+          node-version: "22"
           check-latest: true
           cache: 'npm'
           cache-dependency-path: ./saf/package-lock.json
@@ -36,7 +39,7 @@ jobs:
         working-directory: ./saf
         run: |
           rm -rf test
-          npm ci
+          npm ci --omit=dev
 
       - name: set filename envvar
         working-directory: ./saf

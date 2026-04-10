@@ -1,7 +1,7 @@
-# emasser CLI Features and Capabilities
+# SAF CLI eMASSer Features and Capabilities
 
 ## Environment Variables
-To facilitate setting the required environment variables the `emasser ` SAF CLI utilized the zero-dependency module to load these variables from a `.env` file.  See [Generating an eMASS Configuration File](#generating-an-emass-configuration-file)
+To facilitate setting the required environment variables the `SAF CLI eMASSer` utilizes a zero-dependency module to load Required/Optional variables from a `.env` file.  See [Generating an eMASS Configuration File](#generating-an-emass-configuration-file)
 
 ### Configuring the `.env` File
 An `.env-example` file is provided with the required and optional fields.
@@ -13,12 +13,15 @@ Place the file on the  path where the `emasser` command is executed.
 ### Required Environment Variables
 The following environment variables are required:
 * EMASSER_API_KEY=`<API key>`
-* EMASSER_USER_UID=`<unique identifier for the API Key`
 * EMASSER_HOST_URL=`<FQDN of the eMASS server>`
-* EMASSER_KEY_FILE_PATH=`<path to your eMASS key in PEM format>`
-* EMASSER_CERT_FILE_PATH=`<path to your eMASS certificate in PEM format>`
-* EMASSER_KEY_FILE_PASSWORD=`<password for the key given in EMASSER_KEY_FILE_PATH>`
+* EMASSER_KEY_FILE_PATH=`<<The eMASS key.pem private key file in PEM format (if provided, the CERT is required)>>`
+* EMASSER_CERT_FILE_PATH=`<The eMASS client.pem certificate file in PEM format (if provided, the KEY is required)>`
+* EMASSER_CA_FILE_PATH=`<The eMASS CA certificate (if provided no Key or Client PEM is needed)>`
+* EMASSER_KEY_FILE_PASSWORD=`<The certificate passphrase>`
 
+### Optional but required by most eMASS integrations
+* EMASSER_USER_UID=`<Unique user identifier associated with the API Key (api-key)`
+  
 ### Optional Environment Variables
 The following environment variables are *optional:
 * EMASSER_PORT=`<The server communication port number (default is 443)`
@@ -27,6 +30,7 @@ The following environment variables are *optional:
 * EMASSER_DEBUGGING=`<set debugging - true or false (default false)>`
 * EMASSER_CLI_DISPLAY_NULL=`<display null value fields - true or false (default true)>`
 * EMASSER_EPOCH_TO_DATETIME=`<convert epoch to data/time value - true or false (default false)>`
+* EMASSER_DOWNLOAD_DIR=`<directory where exported files are saved (default eMASSerDownloads)>`
   
 \* If not provided defaults are used
 
@@ -36,13 +40,13 @@ The proper format to set these variables in the `.env` files is as follows:
 ```
 ***NOTE***
 
-The `emasser` commands requires access to an eMASS instance. Authentication and authorization to an eMASS instance is **not** a function of `emasser` and needs to be accomplished with the eMASS instance owner organization. Further information about eMASS credential requirements refer to [Defense Counterintelligence and Security Agency](https://www.dcsa.mil/is/emass/) about eMASS access.
+The `eMASSer` commands requires access to an eMASS instance. Authentication and authorization to an eMASS instance is **not** a function of `eMASSer CLI` and needs to be accomplished with the eMASS instance owner organization. Further information about eMASS credential requirements refer to [Defense Counterintelligence and Security Agency](https://www.dcsa.mil/is/emass/) about eMASS access.
 
 Fo instruction on how to request an eMASS visit [eMASS Account Process Request and API Registration](https://github.com/mitre/emasser/wiki/eMASS-Account-Process-Request-and-API-Registration)
 
 ---
-## Common emasser Endpoint Requests Information
-  - The eMASS API provides the capability of updating multiple entries within several endpoints, however the `SAF CLI emasser`, in some cases only supports updating one entry at the time.
+## Common eMASSer Endpoint Requests Information
+  - The eMASS API provides the capability of updating multiple entries within several endpoints, however the `SAF CLI eMASSer`, in some cases only supports updating one entry at the time.
 
 ## API Endpoints Provided
 
@@ -62,88 +66,79 @@ Fo instruction on how to request an eMASS visit [eMASS Account Process Request a
 * [/api/systems/{systemId}/artifacts-export](#get-artifacts)
 * [/api/systems/{systemId}/approval/cac](#get-cac)
 * [/api/systems/{systemId}/approval/pac](#get-pac)
+* [/api/systems/{systemId}/hw-baseline](#get-hardware)
+* [/api/systems/{systemId}/sw-baseline](#get-sotware)
 * [/api/cmmc-assessments](#get-cmmc)
 * [/api/workflow-definitions](#get-workflow_definitions)
 * [/api/systems/{systemId}/workflow-instances](#get-workflow_instances)
-* [/api/dashboards/system-status-details](#get-dashboards)
-* [/api/dashboards/system-control-compliance-summary](#get-dashboards)
-* [/api/dashboards/system-security-controls-details](#get-dashboards)
-* [/api/dashboards/system-assessment-procedures-details](#get-dashboards)
-* [/api/dashboards/system-poam-summary](#get-dashboards)
-* [/api/dashboards/system-poam-details](#get-dashboards)
-* [/api/dashboards/system-artifacts-summary](#get-dashboards)
-* [/api/dashboards/system-artifacts-details](#get-dashboards)
-* [/api/dashboards/system-hardware-summary](#get-dashboards)
-* [/api/dashboards/system-hardware-details](#get-dashboards)
-* [/api/dashboards/system-sensor-hardware-summary](#get-dashboards)
-* [/api/dashboards/system-sensor-hardware-details](#get-dashboards)
-* [/api/dashboards/system-software-summary](#get-dashboards)
-* [/api/dashboards/system-software-details](#get-dashboards)
-* [/api/dashboards/system-ports-protocols-summary](#get-dashboards)
-* [/api/dashboards/system-ports-protocols-details](#get-dashboards)
-* [/api/dashboards/system-conmon-integration-status-summary](#get-dashboards)
-* [/api/dashboards/system-associations-details](#get-dashboards)
-* [/api/dashboards/user-system-assignments-details](#get-dashboards)
-* [/api/dashboards/system-privacy-summary](#get-dashboards)
-* [/api/dashboards/va-omb-fisma-saop-summary](#get-dashboards)
-* [/api/dashboards/va-system-aa-summary](#get-dashboards)
-* [/api/dashboards/va-system-a2-summary](#get-dashboards)
-* [/api/dashboards/va-system-pl-109-reporting-summary](#get-dashboards)
-* [/api/dashboards/va-system-fisma-inventory-summary](#get-dashboards)
-* [/api/dashboards/va-system-fisma-inventory-crypto-summary](#get-dashboards)
-* [/api/dashboards/va-system-threat-risks-summary](#get-dashboards)
-* [/api/dashboards/va-system-threat-sources-details](#get-dashboards)
-* [/api/dashboards/va-system-threat-architecture-details](#get-dashboards)
+* [/api/dashboards/{endpoint}](#get-dashboards)
   
 ### POST
+* [/api/api-key](#post-register-cert)
 * [/api/systems/{systemId}/test-results](#post-test_results)
 * [/api/systems/{systemId}/poam](#post-poams)
 * [/api/systems/{systemId}/poam/{poamId}/milestones](#post-milestones)
 * [/api/systems/{systemId}/artifacts](#post-artifacts)
 * [/api/systems/{systemId}/approval/cac](#post-cac)
 * [/api/systems/{systemId}/approval/pac](#post-pac)
-* [/api/systems/{systemId}/static-code-scans](#post-static_code_scans)
+* [/api/systems/{systemId}/hw-baseline](#post-hardware)
+* [/api/systems/{systemId}/sw-baseline](#post-software)
+* [/api/systems/{systemId}/device-scan-results](#post-device-scan-results)
 * [/api/systems/{systemId}/cloud-resource-results](#post-cloud_resource)
 * [/api/systems/{systemId}/container-scan-results](#post-container_scans)
+* [/api/systems/{systemId}/static-code-scans](#post-static_code_scans)
 
 ### PUT
 * [/api/systems/{systemId}/controls](#put-controls)
 * [/api/systems/{systemId}/poams](#put-poams)
 * [/api/systems/{systemId}/poams/{poamId}/milestones](#put-milestones)
 * [/api/systems/{systemId}/artifacts](#put-artifacts)
+* [/api/systems/{systemId}/hw-baseline](#put-hardware)
+* [/api/systems/{systemId}/sw-baseline](#put-software)
 
 ### DELETE
 * [/api/systems/{systemId}/poams](#delete-poams)
 * [/api/systems/{systemId}/poams/{poamId}/milestones](#delete-milestones)
 * [/api/systems/{systemId}/artifacts](#delete-artifacts)
+* [/api/systems/{systemId}/hw-baseline](#delete-hardware)
+* [/api/systems/{systemId}/sw-baseline](#delete-software)
 
 ## Generating an eMASS Configuration File
 Provided with the eMASS API CLI is an interactive command line user interface for generating the configuration file `.env` required to connect to an eMASS instance(s).
 
 ```
-Generate a configuration file (.env) for accessing an eMASS instance(s).
+Generate a configuration file (.env) for accessing an eMASS instances.
 
 USAGE
   $ saf emasser configure
 
 DESCRIPTION
   Generate a configuration file (.env) for accessing an eMASS instances.
+  Authentication to an eMASS instances requires a PKI-valid/trusted client
+  certificate. The eMASSer CLI accepts a Key/Client pair certificates (.pem) or
+  a CA certificate (.pem or .crt). A Unique user identifier (user-uid) is used by
+  most eMASS integration, however certain integrations, the user-uid is not required
 
-  The following variables are required:
-  EMASSER_API_KEY           <The eMASS API key (api-key) - valid key is > 30 alpha numeric characters>
-  EMASSER_USER_UID          <The eMASS User Unique Identifier (user-uid)>
-  EMASSER_HOST_URL          <The Full Qualified Domain Name (FQDN) for the eMASS server>
-  EMASSER_KEY_FILE_PATH     <The eMASS key.pem private encrypting the key in PEM format (file, include the path)>
-  EMASSER_CERT_FILE_PATH    <The eMASS cert.pem containing the certificate information in PEM format (file, include the path)>
-  EMASSER_KEY_FILE_PASSWORD <The password for the private encryption key.pem file>
 
-  The following variables are optional, if not provided defaults are used:
-  EMASSER_PORT                <The server communication port number (default is 443)>
-  EMASSER_REQUEST_CERT        <Server requests a certificate from connecting clients - true or false (default true)>
-  EMASSER_REJECT_UNAUTHORIZED <Reject clients with invalid certificates - true or false (default true)>
-  EMASSER_DEBUGGING           <Set debugging on (true) or off (false) (default false)>
-  EMASSER_CLI_DISPLAY_NULL    <Display null value fields - true or false (default true)>
-  EMASSER_EPOCH_TO_DATETIME   <Convert epoch to data/time value - true or false (default false)>
+  Required eMASS configuration variables:
+        EMASSER_API_KEY           <The eMASS API key (api-key) - valid key is > 30 alpha numeric characters>
+        EMASSER_HOST_URL          <The Full Qualified Domain Name (FQDN) for the eMASS server>
+        EMASSER_KEY_FILE_PATH     <The eMASS key.pem private key file in PEM format (if provided the CERT is required)>
+        EMASSER_CERT_FILE_PATH    <The eMASS client.pem certificate file in PEM format (if provided the KEY is required)>
+        EMASSER_CA_FILE_PATH      <The eMASS CA certificate (if provided no Key or Client PEM is needed)>
+        EMASSER_KEY_FILE_PASSWORD <The password for the private encryption key.pem file>
+  Certain eMASS integrations may not require (most do) this variable:
+        EMASSER_USER_UID          <The eMASS User Unique Identifier (user-uid)>
+
+  Optional eMASS configuration variables, if not provided defaults are used:
+        EMASSER_PORT                <The server communication port number (default is 443)>
+        EMASSER_REQUEST_CERT        <Server requests a certificate from connecting clients - true or false (default true)>
+        EMASSER_REJECT_UNAUTHORIZED <Reject clients with invalid certificates - true or false (default true)>
+        EMASSER_DEBUGGING           <Set debugging on (true) or off (false) (default false)>
+        EMASSER_CLI_DISPLAY_NULL    <Display null value fields - true or false (default true)>
+        EMASSER_EPOCH_TO_DATETIME   <Convert epoch to data/time value - true or false (default false)>
+        EMASSER_DOWNLOAD_DIR         <Directory where the CLI exports files (default eMASSerDownloads)>
+
 
 EXAMPLES
   $ saf emasser configure
@@ -185,13 +180,15 @@ Each CLI endpoint command have several layers of help.
       emasser get cmmc                  View Cybersecurity Maturity Model Certification (CMMC) Assessments
       emasser get controls              Get system Security Control information for both the Implementation Plan and Risk Assessment
       emasser get dashboards            Retrieves a pre-defined dashboard by orgId
+      emasser get hardware              View all hardware baseline for a system available on the eMASS instance
       emasser get milestones            Retrieve milestones by system by systemID/poamID or systemID/poamID/milestoneID combination
       emasser get pac                   View one or many Package Approval Chain (PAC) in a system specified system ID
       emasser get poams                 Retrieve Poams for a system or system/poam Id combination
       emasser get roles                 Retrieve all available system roles, or filter by options
+      emasser get software              View all software baseline for a system available on the eMASS instance
       emasser get system                Get system information for a specific system defined by ID (systemId)
       emasser get systems               Get available systems filter on provided options
-      emasser get test_connection       Test if eMASS url is set to a correct host
+      emasser get test_connection       Test if eMASSer is properly configured to a valid eMASS URL
       emasser get test_results          Get test results for a specific system defined by ID (systemId)
       emasser get workflow_definitions  View all workflow schemas available on the eMASS instance
       emasser get workflow_instances    Retrieve all workflow instances or workflow instances noted by workflowInstanceID
@@ -209,7 +206,7 @@ Each CLI endpoint command have several layers of help.
       export     Exports the milestone(s) for provided system (Id) and file name
 
     FLAGS
-      -h, --help  Show emasser CLI help for the GET Artifacts endpoint
+      -h, --help  Show eMASSer CLI help for the GET Artifacts endpoint
 
     DESCRIPTION
       Retrieve artifacts for a system or system/filename combination
@@ -227,13 +224,15 @@ Each CLI endpoint command have several layers of help.
       export     Exports the milestone(s) for provided system (Id) and file name
 
     FLAGS
-      -h, --help              Show emasser CLI help for the GET Artifacts endpoint
-      -f, --filename=<value>  (required) The artifact file name
-      -s, --systemId=<value>  (required) The system identification number      
-      -C, --[no-]compress     Boolean - Compress true or false
+      -h, --help                Show eMASSer CLI help for the GET Artifacts command
+      -s, --systemId=<value>    (required) The system identification number     
+      -f, --filename=<value>    (required) The artifact file name       
+      -C, --[no-]compress       Boolean - Compress true or false
+      -P, --[no-]printToStdOut  Boolean - Print to standard output
 
     DESCRIPTION
-      Retrieves the file artifacts (if compress is true the file binary contents are returned, otherwise the file textual contents are returned.)
+      Retrieves an artifact file for selected system
+      (file is sent to EMASSER_DOWNLOAD_DIR (defaults to eMASSerDownloads) if flag [-P, --printToStdOut] not provided)
 
     EXAMPLES
       $ saf emasser get artifacts export [-s, --systemId] <value> [-f, --filename] <value> [options]
@@ -258,7 +257,7 @@ The Test Connection endpoint provides the ability to verify connection to the we
 
     $ emasser get test_connection
 
-A return of success from the call indicates that the CLI can reach the configure server URL.
+A return of success from the call indicates that the CLI can reach the configured server URL.
 References [Required Environment Variables](#required-environment-variables) for the necessary environment variables.
 
 [top](#api-endpoints-provided)
@@ -275,7 +274,7 @@ USAGE
   $ saf emasser get system [options]
 
 FLAGS
-  -h, --help                 Show emasser CLI help for the GET System endpoint
+  -h, --help                 Show eMASSer CLI help for the GET System endpoint
   -s, --systemId=<value>     (required) The system identification number  
   -I, --[no-]includePackage  Boolean - include system packages
   -p, --policy=<option>      Filter on policy
@@ -315,7 +314,7 @@ USAGE
   $ saf emasser get systems [options]
 
 FLAGS
-  -h, --help                        Show emasser CLI help for the GET Systems endpoint
+  -h, --help                        Show eMASSer CLI help for the GET Systems endpoint
   -D, --[no-]includeDecommissioned  Boolean - include decommissioned systems
   -I, --[no-]includePackage         Boolean - include system packages
   -M, --[no-]includeDitprMetrics    Boolean - include DoD Information Technology metrics
@@ -362,7 +361,7 @@ ARGUMENTS
   byCategory  Retrieves role(s) - filtered by [options] params
 
 FLAGS
-  -h, --help  Show emasser CLI help for the GET Roles endpoint
+  -h, --help  Show eMASSer CLI help for the GET Roles endpoint
 
 DESCRIPTION
   Retrieve all available system roles, or filter by options
@@ -396,7 +395,7 @@ USAGE
   $ saf emasser get controls [options]
 
 FLAGS
-  -h, --help              Show emasser CLI help for the GET Controls endpoint
+  -h, --help              Show eMASSer CLI help for the GET Controls endpoint
   -s, --systemId=<value>  (required) The system identification number
   -A, --[no-]acronyms     The system acronym(s) e.g "AC-1, AC-2" - if not provided all controls for systemId are returned
 
@@ -428,7 +427,7 @@ USAGE
   $ saf emasser get test_results [options]
 
 FLAGS
-  -h, --help                     Show emasser CLI help for the GET Test Results endpoint
+  -h, --help                     Show eMASSer CLI help for the GET Test Results endpoint
   -s, --systemId=<value>         (required) The system identification number
   -L, --[no-]latestOnly          Boolean - Filter on latest only
   -a, --controlAcronyms=<value>  The system acronym(s) e.g "AC-1, AC-2"
@@ -462,7 +461,7 @@ EXAMPLES
 There are two endpoints for system poams `forSystem` and `byPoamId`
 
 - forSystem - Retrieves all poams for specified system ID
-    ```
+    ```shell
     USAGE
       $ saf emasser get poams [ARGUMENT]
 
@@ -471,7 +470,7 @@ There are two endpoints for system poams `forSystem` and `byPoamId`
       byPoamId   Retrieves Poams for specified system and poam ID
 
     FLAGS
-      -h, --help                              Show emasser CLI help for the GET POA&Ms endpoint
+      -h, --help                              Show eMASSer CLI help for the GET POA&Ms endpoint
       -s, --systemId=<value>                  (required) The system identification number    
       -Y, --[no-]systemOnly                   Boolean - Return only systems
       -a, --controlAcronyms=<value>           The system acronym(s) e.g "AC-1, AC-2"
@@ -512,7 +511,7 @@ There are two endpoints for system poams `forSystem` and `byPoamId`
       byPoamId   Retrieves Poams for specified system and poam ID
 
     FLAGS
-      -h, --help              Show emasser CLI help for the GET POA&Ms endpoint
+      -h, --help              Show eMASSer CLI help for the GET POA&Ms endpoint
       -p, --poamId=<value>    (required) The poam identification number
       -s, --systemId=<value>  (required) The system identification number
 
@@ -545,7 +544,7 @@ There are two endpoints for system milestones `byPoamId` and `byMilestoneId`
       byMilestoneId  Retrieves milestone(s) for specified system, poam, and milestone Id
 
     FLAGS
-      -h, --help                                  Show emasser CLI help for the GET Milestones endpoint
+      -h, --help                                  Show eMASSer CLI help for the GET Milestones endpoint
       -p, --poamId=<value>                        (required) Unique poam identifier
       -s, --systemId=<value>                      (required) Unique system identifier    
       -c, --scheduledCompletionDateEnd=<value>    Unix time format (e.g. 1499990400)
@@ -582,7 +581,7 @@ There are two endpoints for system milestones `byPoamId` and `byMilestoneId`
       byMilestoneId  Retrieves milestone(s) for specified system, poam, and milestone Id
 
     FLAGS
-      -h, --help                 Show emasser CLI help for the GET Milestones endpoint
+      -h, --help                 Show eMASSer CLI help for the GET Milestones endpoint
       -m, --milestoneId=<value>  (required) Unique milestone identifier
       -p, --poamId=<value>       (required) The poam identification number
       -s, --systemId=<value>     (required) The system identification number
@@ -608,7 +607,7 @@ There are two endpoints for system milestones `byPoamId` and `byMilestoneId`
 There are two endpoints for artifacts `forSystem` and `export`
 
 - forSystem - Retrieves one or many artifacts in a system specified system ID
-    ```
+    ```shell
     USAGE
       $ saf emasser get artifacts [ARGUMENT]
 
@@ -617,7 +616,7 @@ There are two endpoints for artifacts `forSystem` and `export`
       export     Exports the milestone(s) for provided system (Id) and file name
 
     FLAGS
-      -h, --help                     Show emasser CLI help for the GET Artifacts endpoint
+      -h, --help                     Show eMASSer CLI help for the GET Artifacts endpoint
       -s, --systemId=<value>         (required) Unique system identifier    
       -a, --controlAcronyms=<value>  The system acronym(s) e.g "AC-1, AC-2"
       -c, --ccis=<value>             The system CCIS string numerical value
@@ -656,7 +655,7 @@ There are two endpoints for artifacts `forSystem` and `export`
     export     Exports the milestone(s) for provided system (Id) and file name
 
   FLAGS
-    -h, --help              Show emasser CLI help for the GET Artifacts endpoint
+    -h, --help              Show eMASSer CLI help for the GET Artifacts endpoint
     -s, --systemId=<value>  (required) The system identification number  
     -f, --filename=<value>  (required) The artifact file name    
     -C, --[no-]compress     Boolean - Compress true or false
@@ -685,12 +684,12 @@ There are two endpoints for artifacts `forSystem` and `export`
 
 ----
 To view one or many Control Approval Chain (CAC) in a system specified system ID use the following command:
-  ```
+  ```shell
   USAGE
     $ saf emasser get cac [options]
 
   FLAGS
-    -h, --help                     Show emasser CLI help for the GET CAC endpoint
+    -h, --help                     Show eMASSer CLI help for the GET CAC endpoint
     -s, --systemId=<value>         (required) The system identification number  
     -a, --controlAcronyms=<value>  The system acronym(s) e.g "AC-1, AC-2"
 
@@ -718,12 +717,12 @@ To view one or many Control Approval Chain (CAC) in a system specified system ID
 ----
 To view one or many Package Approval Chain (PAC) in a system specified system ID use the following command:
 
-  ```
+  ```shell
   USAGE
     $ saf emasser get pac [options]
 
   FLAGS
-    -h, --help              Show emasser CLI help for the GET PAC endpoint
+    -h, --help              Show eMASSer CLI help for the GET PAC endpoint
     -s, --systemId=<value>  (required) The system identification number
 
   DESCRIPTION
@@ -739,6 +738,97 @@ To view one or many Package Approval Chain (PAC) in a system specified system ID
     |--systemId   |Integer - Unique system identifier |
 
 [top](#api-endpoints-provided)
+### ```get hardware```
+
+---
+To view Hardware Baseline assets use the following command:
+
+  ```shell
+  USAGE
+    $ saf emasser get hardware [ARGUMENT] [FLAGS]
+    NOTE: see EXAMPLES for argument case format
+
+  ARGUMENTS
+    baseline  Retrieves all hardware baseline for a system
+
+  FLAGS
+    -h, --help               Show eMASSer CLI help for the GET Hardware Baseline command  
+    -s, --systemId=<value>   (required) The system identification number
+    -S, --pageSize=<value>   The number of entries per page (default 20000)
+    -i, --pageIndex=<value>  The index of the starting page (default first page 0)
+
+  DESCRIPTION
+    View all hardware baseline for a system available on the eMASS instance
+
+  EXAMPLES
+    Retrieve baselines without pagination
+
+      $ saf emasser get hardware baseline [-s, --systemId] <value> [options]
+
+    Retrieve baselines with pagination
+
+      $ saf emasser get hardware baseline [-s, --systemId] <value> [-S, --pageSize]=<value> [-i, --pageIndex]=<value>
+  ```
+  - required flag (parameter):
+
+    |parameter    | type or values                    |
+    |-------------|:----------------------------------|
+    |--systemId   |Integer - Unique system identifier |
+
+  - Optional flags (parameters) are:
+
+    |parameter          | type or values                                                |
+    |-------------------|:--------------------------------------------------------------|
+    |-i, --pageIndex        |Integer - The index of the starting page (default first page 0)|
+    |-s, --pageSize         |Integer - The number of entries per page (default 20000)       |
+
+  
+[top](#api-endpoints-provided)
+### ```get software```
+
+---
+To view Software Baseline assets use the following command:
+
+  ```shell
+  USAGE
+    $ saf emasser get software [ARGUMENT] [FLAGS]
+    NOTE: see EXAMPLES for argument case format
+
+  ARGUMENTS
+    baseline  Retrieves all software baseline for a system
+
+  FLAGS
+    -h, --help               Show eMASSer CLI help for the GET Software Baseline command  
+    -s, --systemId=<value>   (required) The system identification number    
+    -S, --pageSize=<value>   The number of entries per page (default 20000)
+    -i, --pageIndex=<value>  The index of the starting page (default first page 0)
+
+  DESCRIPTION
+    View all software baseline for a system available on the eMASS instance
+
+  EXAMPLES
+    Retrieve baselines without pagination
+
+      $ saf emasser get software baseline [-s, --systemId] <value> [options]
+
+    Retrieve baselines with pagination
+
+      $ saf emasser get software baseline [-s, --systemId] <value> [-S, --pageSize]=<value> [-i, --pageIndex]=<value>
+  ```
+  - required flag (parameter):
+
+    |parameter    | type or values                    |
+    |-------------|:----------------------------------|
+    |-s, --systemId   |Integer - Unique system identifier |
+  
+  - Optional flags (parameters) are:
+
+    |parameter          | type or values                                                |
+    |-------------------|:--------------------------------------------------------------|
+    |-i, --pageIndex        |Integer - The index of the starting page (default first page 0)|
+    |-s, --pageSize         |Integer - The number of entries per page (default 20000)       |
+
+[top](#api-endpoints-provided)
 ### ```get cmmc```
 
 ----
@@ -748,7 +838,7 @@ To view Cybersecurity Maturity Model Certification (CMMC) Assessments use the fo
     $ saf emasser get cmmc [options]
 
   FLAGS
-    -h, --help               Show emasser CLI help for the GET CMMC endpoint  
+    -h, --help               Show eMASSer CLI help for the GET CMMC endpoint  
     -d, --sinceDate=<value>  (required) The CMMC date. Unix date format
 
   DESCRIPTION
@@ -773,7 +863,7 @@ To view Workflow Definitions use the following command:
     $ saf emasser get workflow_definitions [options]
 
   FLAGS
-    -h, --help                       Show emasser CLI help for the GET Workflow Definitions endpoint
+    -h, --help                       Show eMASSer CLI help for the GET Workflow Definitions endpoint
     -i, --[no-]includeInactive       Boolean - Include inactive workflows
     -r, --registrationType=<option>  The registration type - must be a valid type
                                     <options: assessAndAuthorize|assessOnly|guest|regular|functional|cloudServiceProvider|commonControlProvider>
@@ -808,7 +898,7 @@ There are two endpoints to view workflow instances `all` and `byInstanceId`
       byInstanceId  Retrieves workflow(s) instance by ID
 
     FLAGS
-      -h, --help                            Show emasser CLI help for the GET Workflow Instances endpoint
+      -h, --help                            Show eMASSer CLI help for the GET Workflow Instances endpoint
       -C, --[no-]includeComments            Boolean - Include transition comments
       -D, --[no-]includeDecommissionSystems Boolean - Include decommissioned systems
       -p, --pageIndex=<value>               The page number to query     
@@ -842,7 +932,7 @@ There are two endpoints to view workflow instances `all` and `byInstanceId`
       byInstanceId  Retrieves workflow(s) instance by ID
 
     FLAGS
-      -h, --help                        Show emasser CLI help for the GET Workflow Instances endpoint
+      -h, --help                        Show eMASSer CLI help for the GET Workflow Instances endpoint
       -w, --workflowInstanceId=<value>  (required) Unique workflow instance identifier
 
     DESCRIPTION
@@ -863,54 +953,83 @@ There are two endpoints to view workflow instances `all` and `byInstanceId`
 ----
 The Dashboards endpoints provide the ability to view data contained in dashboard exports. In the eMASS front end, these dashboard exports are generated as Excel exports.
 
-```
-USAGE
-  $ saf emasser get dashboards [ARGUMENT]
+  ```shell
+  USAGE
+    $ saf emasser get dashboards [ARGUMENT] [FLAGS]
+    NOTE: see EXAMPLES for argument case format
 
-ARGUMENTS
-  status_details                  Get systems status detail dashboard information
-  control_compliance_summary      Get control compliance summary dashboard information
-  security_control_details        Get security control details dashboard information
-  assessment_procedures_details   Get assessment procedures details dashboard information
-  poam_summary                    Get systems POA&Ms summary dashboard information
-  poam_details                    Get system POA&Ms details dashboard information
-  artifacts_summary               Get artifacts summary dashboard information
-  artifacts_details               Get artifacts details dashboard information
-  hardware_summary                Get hardware summary dashboard information
-  hardware_details                Get hardware details dashboard information
-  sensor_hardware_summary         Get sensor hardware summary dashboard information
-  sensor_hardware_details         Get sensor hardware details dashboard information
-  software_summary                Get software baseline summary dashboard information
-  software_details                Get software baseline details dashboard information
-  ports_protocols_summary         Get ports and protocols summary dashboard information
-  ports_protocols_details         Get ports and protocols details dashboard information
-  integration_status_summary      Get CONMON integration status summary dashboard information
-  associations_details            Get system associations details dashboard information
-  assignments_details             Get user system assignments details dashboard information
-  privacy_summary                 Get system privacy summary dashboard information
-  fisma_saop_summary              Get VA OMB-FISMA SAOP summary dashboard information
-  va_aa_summary                   Get VA system A&A summary dashboard information
-  va_a2_summary                   Get VA system A2.0 summary dashboard information
-  va_pl_109_summary               Get VA System P.L. 109 reporting summary dashboard information
-  fisma_inventory_summary         Get VA system FISMA inventory summary dashboard information
-  fisma_inventory_crypto_summary  Get VA system FISMA inventory summary dashboard information
-  va_threat_risk_summary          Get VA threat risk summary dashboard information
-  va_threat_source_details        Get VA threat source details dashboard information
-  va_threat_architecture_details  Get VA threat architecture details dashboard information
+  ARGUMENTS
+    status_details                       Get systems status detail dashboard information
+    terms_conditions_summary             Get system terms and conditions summary dashboard information
+    terms_conditions_details             Get system terms and conditions details dashboard information
+    connectivity_ccsd_summary            Get system connectivity CCSD summary dashboard information
+    connectivity_ccsd_details            Get system connectivity CCSD details dashboard information
+    atc_iatc_details                     Get system ATC/IATC details dashboard information
+    questionnaire_summary                Get system questionnaire summary dashboard information
+    questionnaire_details                Get system questionnaire details dashboard information
+    workflows_history_summary            Get system workflow history summary dashboard information
+    workflows_history_details            Get system workflow history details dashboard information
+    workflows_history_stage_details      Get system workflow history stage details dashboard information
+    control_compliance_summary           Get control compliance summary dashboard information
+    security_control_details             Get security control details dashboard information
+    assessment_procedures_details        Get assessment procedures details dashboard information
+    poam_summary                         Get systems POA&Ms summary dashboard information
+    poam_details                         Get system POA&Ms details dashboard information
+    artifacts_summary                    Get artifacts summary dashboard information
+    artifacts_details                    Get artifacts details dashboard information
+    hardware_summary                     Get hardware summary dashboard information
+    hardware_details                     Get hardware details dashboard information
+    sensor_hardware_summary              Get sensor hardware summary dashboard information
+    sensor_hardware_details              Get sensor hardware details dashboard information
+    software_summary                     Get software baseline summary dashboard information
+    software_details                     Get software baseline details dashboard information
+    sensor_software_summary              Get sensor software summary dashboard information
+    sensor_software_details              Get sensor software details dashboard information
+    sensor_software_counts               Get sensor software counts dashboard information
+    critical_assets_summary              Get critical assets summary dashboard information
+    vulnerability_summary                Get vulnerability summary dashboard information
+    device_findings_summary              Get device findings summary dashboard information
+    device_findings_details              Get device findings details dashboard information
+    application_findings_summary         Get application findings summary dashboard information
+    application_findings_details         Get application findings details dashboard information
+    ports_protocols_summary              Get ports and protocols summary dashboard information
+    ports_protocols_details              Get ports and protocols details dashboard information
+    integration_status_summary           Get CONMON integration status summary dashboard information
+    associations_details                 Get system associations details dashboard information
+    user_assignments_details             Get user system assignments details dashboard information
+    org_migration_status                 Get organization migration status dashboard information
+    system_migration_status              Get system migration status dashboard information
+    fisma_metrics                        Get FISMA metrics dashboard information
+    coast_guard_fisma_metrics            Get Coast Guard FISMA metrics dashboard information
+    privacy_summary                      Get system privacy summary dashboard information
+    fisma_saop_summary                   Get VA OMB-FISMA SAOP summary dashboard information
+    va_icamp_tableau_poam_details        Get VA system ICAMP Tableau POA&M details dashboard information
+    va_aa_summary                        Get VA system A&A summary dashboard information
+    va_a2_summary                        Get VA system A2.0 summary dashboard information
+    va_pl_109_summary                    Get VA System P.L. 109 reporting summary dashboard information
+    va_fisma_inventory_summary           Get VA system FISMA inventory summary dashboard information
+    va_fisma_inventory_crypto_summary    Get VA system FISMA inventory summary dashboard information
+    va_threat_risk_summary               Get VA threat risk summary dashboard information
+    va_threat_source_details             Get VA threat source details dashboard information
+    va_threat_architecture_details       Get VA threat architecture details dashboard information
+    cmmc_status_summary                  Get CMMC assessment status summary dashboard information
+    cmmc_compliance_summary              Get CMMC assessment requirements compliance summary dashboard information
+    cmmc_security_requirements_details   Get CMMC assessment security requirements details dashboard information
+    cmmc_requirement_objectives_details  Get CMMC assessment requirement objectives details dashboard information
 
-FLAGS
-  -h, --help                  Show emasser CLI help for the GET Dashboards endpoint
-  -I, --[no-]excludeInherited Boolean - exclude inherited data (default false)
-  -i, --pageIndex=<value>     The index of the starting page (default first page 0)
-  -o, --orgId=<value>         (required) The organization identification number
-  -s, --pageSize=<value>      The number of entries per page (default 20000)
+  FLAGS
+    -I, --[no-]excludeInherited  Boolean - exclude inherited data (default false)
+    -h, --help                   Show eMASSer CLI help for the GET Dashboards command
+    -i, --pageIndex=<value>      The index of the starting page (default first page 0)
+    -o, --orgId=<value>          (required) The organization identification number
+    -s, --pageSize=<value>       The number of entries per page (default 20000)
 
-DESCRIPTION
-  Retrieves a pre-defined dashboard by orgId
+  DESCRIPTION
+    Retrieves a pre-defined dashboard by orgId
 
-EXAMPLES
-  $ saf emasser get dashboards [dashboard name] [flag] [options]
-```
+  EXAMPLES
+    $ saf emasser get dashboards [dashboard name] [-o, --orgId] <value> [options]
+  ```
 All endpoint calls utilize the same parameter values, they are:
   - Required flag (parameter):
 
@@ -926,127 +1045,29 @@ All endpoint calls utilize the same parameter values, they are:
     |--pageIndex        |Integer - The index of the starting page (default first page 0)|
     |--pageSize         |Integer - The number of entries per page (default 20000)       |
 
-Available commands are:
-  - Get systems status detail dashboard information
-    ```
-    $ saf emasser get dashboards status_details [-o, --orgId] <value> [options]
-    ```
-  - Get systems control compliance summary dashboard information    
-    ```
-    $ saf emasser get dashboards control_compliance_summary [-o, --orgId] <value> [options]
-    ```
-  - Get systems security control details dashboard information
-    ```
-    $ saf emasser get dashboards security_control_details [-o, --orgId] <value> [options]
-    ```
-  - Get systems assessment procedures details dashboard information
-    ```
-    $ saf emasser get dashboards assessment_procedures_details [-o, --orgId] <value> [options]
-    ```
-  - Get systems POA&Ms summary dashboard information
-    ```
-    $ saf emasser get dashboards poam_summary [-o, --orgId] <value> [options]
-    ```
-  - Get system POA&Ms details dashboard information
-    ```
-    $ saf emasser get dashboards poam_details [-o, --orgId] <value> [options]
-    ```
-  - Get artifacts summary dashboard information
-    ```
-    $ saf emasser get dashboards artifacts_summary [-o, --orgId] <value> [options]
-    ```
-  - Get artifacts details dashboard information
-    ```
-    $ saf emasser get dashboards artifacts_details [-o, --orgId] <value> [options]
-    ```
-  - Get system hardware summary dashboard information
-    ```
-    $ saf emasser get dashboards hardware_summary [-o, --orgId] <value> [options]
-    ```
-  - Get system hardware details dashboard information
-    ```
-    $ saf emasser get dashboards hardware_details [-o, --orgId] <value> [options]
-    ```
-  - Get sensor hardware summary dashboard information
-    ```
-    $ saf emasser get dashboards sensor_hardware_summary [-o, --orgId] <value> [options]
-    ```
-  - Get sensor hardware details dashboard information
-    ```
-    $ saf emasser get dashboards sensor_hardware_details [-o, --orgId] <value> [options]
-    ```
-  - Get software baseline summary dashboard information
-    ```
-    $ saf emasser get dashboards software_summary [-o, --orgId] <value> [options]
-    ```
-  - Get software baseline details dashboard information
-    ```
-    $ saf emasser get dashboards software_details [-o, --orgId] <value> [options]
-    ```
-  - Get ports and protocols summary dashboard information
-    ```
-    $ saf emasser get dashboards ports_protocols_summary [-o, --orgId] <value> [options]
-    ```
-  - Get ports and protocols details dashboard information
-    ```
-    $ saf emasser get dashboards ports_protocols_details [-o, --orgId] <value> [options]
-    ```
-  - Get CONMON integration status summary dashboard information
-    ```
-    $ saf emasser get dashboards integration_status_summary [-o, --orgId] <value> [options]
-    ```
-  - Get system associations details dashboard information
-    ```
-    $ saf emasser get dashboards associations_details [-o, --orgId] <value> [options]
-    ```
-  - Get user system assignments details dashboard information
-    ```
-    $ saf emasser get dashboards assignments_details [-o, --orgId] <value> [options]
-    ```
-  - Get user system privacy summary dashboard information
-    ```
-    $ saf emasser get dashboards privacy_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA OMB-FISMA SAOP summary dashboard information
-    ```
-    $ saf emasser get dashboards fisma_saop_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA system A&A summary dashboard information
-    ```
-    $ saf emasser get dashboards va_aa_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA system A2.0 summary dashboard information
-    ```
-    $ saf emasser get dashboards va_a2_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA System P.L. 109 reporting summary dashboard information
-    ```
-    $ saf emasser get dashboards va_pl_109_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA system FISMA inventory summary dashboard information
-    ```
-    $ saf emasser get dashboards fisma_inventory_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA system FISMA inventory summary dashboard information
-    ```
-    $ saf emasser get dashboards fisma_inventory_crypto_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA threat risk summary dashboard information
-    ```
-    $ saf emasser get dashboards va_threat_risk_summary [-o, --orgId] <value> [options]
-    ```
-  - Get VA threat source details dashboard information
-    ```
-    $ saf emasser get dashboards va_threat_source_details [-o, --orgId] <value> [options]
-    ```
-  - Get VA threat architecture details dashboard information
-    ```
-    $ saf emasser get dashboards va_threat_architecture_details [-o, --orgId] <value> [options]
-    ```
-
 [top](#api-endpoints-provided)
 
 ## Usage - POST
+
+### ``post register cert``
+---
+The Registration endpoint provides the ability to register a certificate & obtain an API-key.
+
+  ```shell
+  USAGE
+    $ saf emasser post register
+
+  FLAGS
+    -h, --help  Show eMASSer CLI help for the Register (POST) a certificate & obtain the API-key
+
+  DESCRIPTION
+    The Registration endpoint provides the ability to register a certificate & obtain an API-key
+
+  EXAMPLES
+    $ saf emasser post register
+  ```
+
+[top](#post)
 
 ### ``post test_results``
 ---
@@ -1067,48 +1088,37 @@ Test Result add (POST) endpoint API business rules.
 ---
 Add (POST) test results CLI usage
 
-  ```
+  ```shell
   USAGE
-    $ saf emasser post test_results [options]
+    $ saf emasser post test_results [FLAGS]
 
   FLAGS
-    -h, --help                       Post (add) test results to a system's Assessment Procedures (CCIs)
-    -s, --systemId=<value>           (required) The system identification number
-    -t, --testDate=<value>           (required) The date test was conducted, Unix time format  
-    -b, --testedBy=<value>           (required) The person that conducted the test (Last Name, First)
-    -c, --cci=<value>                (required) The system CCI string numerical value
-    -d, --description=<value>        (required) The description of test result. 4000 Characters    
-    -S, --complianceStatus=<option>  (required) The system CCI string numerical value
-                                    <options: Compliant|Non-Compliant|Not Applicable>
+    -h, --help                         Show eMASSer CLI help for the POST Test Results command  
+    -s, --systemId=<value>             (required) The system identification number
+    -a, --assessmentProcedure=<value>  (required) The Security Control Assessment Procedure being assessed    
+    -b, --testedBy=<value>             (required) The person that conducted the test (Last Name, First)    
+    -t, --testDate=<value>             (required) The date test was conducted, Unix time format    
+    -d, --description=<value>          (required) The description of test result. 4000 Characters
+    -S, --complianceStatus=<option>    (required) The compliance status of the test result
+                                        <options: Compliant|Non-Compliant|Not Applicable>
 
   DESCRIPTION
-    Add test results for a system's Assessment Procedures (CCIs) which determine Security Control compliance
+    Add test results for a system's Assessment Procedures which determine Security Control compliance
+    See the FLAGS section for required fields and acceptable values
 
   EXAMPLES
-    $ saf emasser post test_results [-s,--systemId] [-c,--cci] [-b,--testedBy] [-t,--testDate] [-d,--description] [-S,--complianceStatus]
+    $ saf emasser post test_results [-s,--systemId] [-a,--assessmentProcedure] [-b,--testedBy] [-t,--testDate] [-d,--description] [-S,--complianceStatus]
   ```
 Note: If no POA&Ms or AP exist for the control (system), the following message is returned:
 "You have entered a Non-Compliant Test Result. You must create a POA&M Item for this Control and/or AP if one does not already exist."
-
-  - required parameter are:
-
-    |parameter          | type or values                                              |
-    |-------------------|:------------------------------------------------------------|
-    |--systemId         |Integer - Unique system identifier                           |
-    |--cci              |String - CCI associated with the test result. e.g "00221"    |
-    |--testedBy         |String - Last Name, First Name. 100 Characters.              |
-    |--testDate         |Date - Unix time format (e.g. 1499990400)                    |
-    |--description      |String - Include description of test result. 4000 Characters |
-    |--complianceStatus |Possible values: Compliant, Non-Compliant, Not Applicable    |
-
 
 [top](#post)
 
 ### ``post poams``
 ---
-## Plan of Action and Milestones (POA&M) add (POST) endpoint API business rules.
+#### Plan of Action and Milestones (POA&M) add (POST) endpoint API business rules.
 
-### Requirements based on `status` field value
+##### Requirements based on `status` field value
 
   |status          |Required Fields
   |----------------|--------------------------------------------------------
@@ -1117,14 +1127,14 @@ Note: If no POA&Ms or AP exist for the control (system), the following message i
   |Completed       |`scheduledCompletionDate`, `comments`, `resources`, `completionDate`, `milestones` (at least 1)
   |Not Applicable  |POAM can not be created
 
-### POC fields requirements
+##### POC fields requirements
 If a POC email is supplied, the application will attempt to locate a user
 already registered within the application and pre-populate any information
 not explicitly supplied in the request. If no such user is found, these
 fields are required within the request.
   - `pocOrganization`, `pocFirstName`, `pocLastName`, `pocEmail`, `pocPhoneNumber`
 
-### Business logic for adding POA&Ms
+##### Business logic for adding POA&Ms
 - POA&M Items cannot be saved if associated Security Control or AP is inherited.
 - POA&M Items cannot be created manually if a Security Control or AP is Not Applicable.
 - Completed POA&M Item cannot be saved if Completion Date is in the future.
@@ -1141,7 +1151,7 @@ fields are required within the request.
 - POA&M Items with a status of "Not Applicable" will be updated through test result creation.
 - If the Security Control or Assessment Procedure does not exist in the system we may have to just import POA&M Item at the System Level.
 
-### POA&M parameters/fields character limitations
+##### POA&M parameters/fields character limitations
 - Fields that can not exceed 100 characters:
   - Office / Organization (`pocOrganization`)
   - First Name            (`pocFirstName`)
@@ -1159,50 +1169,58 @@ fields are required within the request.
   - Milestone Description            (`description`)
   - Mitigation Justification         (`mitigation`)
 
-### Add (POST) POA&Ms CLI usages
-```
-USAGE
-  $ saf emasser post poams [options]
+##### Add (POST) POA&Ms CLI usages
+```shell
+  USAGE
+    $ saf emasser post poams [FLAGS]
+    NOTE: see EXAMPLES for command usages
 
-FLAGS
-  -h, --help              Post (add) a Plan of Action and Milestones (POA&M) item(s) in a system. See emasser Features (emasserFeatures.md) for additional information.
-  -s, --systemId=<value>  (required) The system identification number
-  -f, --poamFile=<value>  (required) A well formed JSON file with the POA&M(s) to be added to the specified system. It can ba a single object or an array of objects.
+  FLAGS
+    -h, --help              Show eMASSer CLI help for the POST POA&Ms command
+    -s, --systemId=<value>  (required) The system identification number
+    -f, --dataFile=<value>  (required) A well formed JSON file containing the data to add. It can ba a single object or an array of objects.
 
-DESCRIPTION
-  Add a Plan of Action and Milestones (POA&M) into a systems.
+  DESCRIPTION
+    Add a Plan of Action and Milestones (POA&M) into a systems.
+    This CLI expects an input file containing the necessary fields to add a POA&M. The content
+    of the file must be in compliance with the eMASS API defined business rules for adding POA&Ms.
 
-EXAMPLES
-  $ saf emasser post poams [-s,--systemId] [-f,--poamFile]
+  EXAMPLES
+    $ saf emasser post poams [-s,--systemId] [-f,--dataFile]
 ```
 
 **Note:** The input file should be a well formed JSON containing the POA&M information based on defined business rules. 
  
 ---
-### Required JSON parameter/fields are:
+##### Required JSON parameter/fields are:
 ```json
   {
     "status": "One of the following: [Ongoing, Risk Accepted, Completed, Not Applicable]",
     "vulnerabilityDescription": "POA&M vulnerability description",
-    "sourceIdentVuln": "Source that identifies the vulnerability",
+    "sourceIdentifyingVulnerability": "Source that identifies the vulnerability",
     "pocOrganization": "Organization/Office represented",
     "resources": "List of resources used"
   }
 ```
-- required parameter are:
 
-  |parameter                  | type or values                                                 |
-  |---------------------------|:---------------------------------------------------------------|
-  |--systemId                 |Integer - Unique system identifier                              |
-  |--status                   |Possible Values: Ongoing,Risk Accepted,Completed,Not Applicable |
-  |--vulnerabilityDescription |String - Vulnerability description for the POA&M Item           |
-  |--sourceIdentVuln          |String - Include Source Identifying Vulnerability text          |
-  |--pocOrganization          |String - Organization/Office represented       |
-  |--resources                |String - List of resources used. Character Limit = 250          |
+##### Required for VA but Conditional for Army and USCG JSON parameters/fields are:
+```json
+  {
+    "identifiedInCFOAuditOrOtherReview": "If not specified, this field will be set to false because it does not accept a null value (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesFundedBaseHours": "Hours for personnel resources that are founded (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesCostCode": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesUnfundedBaseHours": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesNonfundingObstacle": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesNonfundingObstacleOtherReason": "Reason (text 2,000 char) (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesFundedAmount": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesCostCode": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesUnfundedAmount": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesNonfundingObstacle": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesNonfundingObstacleOtherReason": "Reason (text 2,000 char) (Required for VA. Optional for Army and USCG)"
+  }
+```
 
-  ** If any poc information is provided all POC fields are required. See additional details for POC fields below.
-
-### Conditional JSON parameters/fields are:
+##### Conditional JSON parameters/fields are:
 ```json
   {
     "milestones": [
@@ -1211,67 +1229,91 @@ EXAMPLES
         "scheduledCompletionDate": "Milestone scheduled completion date (Unix format)"
       }
     ],
-    "pocFirstName": "The system acronym(s) e.g AC-1, AC-2",
-    "pocLastName": "The system CCIS string numerical value",
-    "pocEmail": "Security Checks that are associated with the POA&M",
-    "pocPhoneNumber": "One of the following [I, II, III]",
-    "severity": "One of the following [Very Low, Low, Moderate, High, Very High]",
-    "scheduledCompletionDate": "One of the following [Very Low, Low, Moderate, High, Very High]",
-    "completionDate": "Description of Security Control impact",
-    "comments": "Description of the security control impact"
+    "pocFirstName": "First name of POC (only if Last Name, Email, or Phone Number have data)",
+    "pocLastName": "Last name of POC (only if First Name, Email, or Phone Number have data)",
+    "pocEmail": "Email address of POC (only if First Name, Last Name, or Phone Number have data)",
+    "pocPhoneNumber": "Phone number of POC (only if First Name, Last Name, or Email have data)",
+    "severity": "Risk Analysis field, maybe required by certain eMASS instances. Required for approved items",
+    "scheduledCompletionDate": "Required for ongoing and completed POA&M items",
+    "completionDate": "Field is required for completed POA&M items",
+    "comments": "Field is required for completed and risk accepted POA&M items"
   }
 ```
-- conditional flags (parameters) are:
 
-  |parameter                 | type or values                                                          |
-  |--------------------------|:------------------------------------------------------------------------|
-  |--pocFirstName            |String - First name of POC                                               |
-  |--pocLastName             |String - Last name of POC                                                |
-  |--pocEmail                |String - Email address of POC                                            | 
-  |--pocPhoneNumber          |String - Phone number of POC (area code) ***-**** format                 |     
-  |--severity                |Possible values - Very Low, Low, Moderate, High, Very High               |
-  |--scheduledCompletionDate |Date - Required for ongoing and completed POA&M items. Unix time format  |
-  |--completionDate          |Date - Field is required for completed POA&M items. Unix time format     |
-  |--comments                |String - Field is required for completed and risk accepted POA&M items.  |  
-  |--milestones              |JSON -  Object                                                           |
-  |--description             |String - The milestone description                                       |  
-  |--scheduledCompletionDate |Date - Required for ongoing and completed POA&M items. Unix time format  |  
-
-
-### Optional JSON parameters/fields
+##### Optional JSON parameters/fields
 ```json
   {
     "externalUid": "External ID associated with the POA&M",
     "controlAcronym": "The system acronym(s) e.g AC-1, AC-2",
-    "cci": "The system CCIS string numerical value",
+    "assessmentProcedure": "The Security Control Assessment Procedures being associated with the POA&M Item",
     "securityChecks": "Security Checks that are associated with the POA&M",
-    "rawSeverity": "One of the following [I, II, III]",
-    "relevanceOfThreat": "One of the following [Very Low, Low, Moderate, High, Very High]",
-    "likelihood": "One of the following [Very Low, Low, Moderate, High, Very High]",
-    "impact": "Description of Security Control impact",
+    "rawSeverity": "One of the following [Very Low, Low, Moderate, High, Very High]",
+    "relevanceOfThreat": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",
+    "likelihood": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",
+    "impact": "Risk Analysis field, maybe required by certain eMASS instances. Description of Security Control impact",
+    "residualRiskLevel": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",
+    "mitigations": "Risk Analysis field, maybe required by certain eMASS instances. Mitigation explanation",
     "impactDescription": "Description of the security control impact",
-    "residualRiskLevel": "One of the following [Very Low, Low, Moderate, High, Very High]",
     "recommendations": "Any recommendations content",
-    "mitigation": "Mitigation explanation"
+    "resultingResidualRiskLevelAfterProposedMitigations": "One of the following [Very Low, Low, Moderate, High, Very High] (Navy only)",
+    "predisposingConditions": "Conditions (Navy only)",
+    "threatDescription": "Threat description (Navy only)",
+    "devicesAffected": "List of affected devices by hostname. If all devices are affected, use `system` or `all` (Navy only)"
   }
 ```
-- optional flags (parameters) are:
 
-  |parameter           | type or values                                                                           |
-  |--------------------|:-----------------------------------------------------------------------------------------|
-  |--externalUid       |String - External unique identifier for use with associating POA&M Items                  |
-  |--controlAcronym    |String - Control acronym associated with the POA&M Item. NIST SP 800-53 Revision 4 defined|
-  |--cci               |String - CCI associated with the test result                                              |
-  |--securityChecks    |String - Security Checks that are associated with the POA&M                               |
-  |--rawSeverity       |Possible values: I, II, III                                                               |
-  |--relevanceOfThreat |Possible values: Very Low, Low, Moderate, High, Very High                                 |
-  |--likelihood        |Possible values: Very Low, Low, Moderate, High, Very High                                 |
-  |--impact            |Possible values: Very Low, Low, Moderate, High, Very High                                 |
-  |--impactDescription |String - Include description of Security Control’s impact                                 |
-  |--residualRiskLevel |Possible values: Very Low, Low, Moderate, High, Very High                                 |
-  |--recommendations   |String - Include recommendations                                                          |
-  |--mitigation        |String - Include mitigation explanation                                                   |
+##### All accepted parameters/fields are:
 
+```json
+  {
+    "status": "One of the following: [Ongoing, Risk Accepted, Completed, Not Applicable]",
+    "vulnerabilityDescription": "POA&M vulnerability description",
+    "sourceIdentifyingVulnerability": "Source that identifies the vulnerability",
+    "pocOrganization": "Organization/Office represented",
+    "resources": "List of resources used",
+    "identifiedInCFOAuditOrOtherReview": "If not specified, this field will be set to false because it does not accept a null value (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesFundedBaseHours": "Hours for personnel resources that are founded (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesCostCode": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesUnfundedBaseHours": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesNonfundingObstacle": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesNonfundingObstacleOtherReason": "Reason (text 2,000 char) (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesFundedAmount": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesCostCode": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesUnfundedAmount": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesNonfundingObstacle": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesNonfundingObstacleOtherReason": "Reason (text 2,000 char) (Required for VA. Optional for Army and USCG)",
+    "milestones": [
+      {
+        "description": "The milestone description",
+        "scheduledCompletionDate": "Milestone scheduled completion date (Unix format)"
+      }
+    ],
+    "pocFirstName": "First name of POC (only if Last Name, Email, or Phone Number have data)",
+    "pocLastName": "Last name of POC (only if First Name, Email, or Phone Number have data)",
+    "pocEmail": "Email address of POC (only if First Name, Last Name, or Phone Number have data)",
+    "pocPhoneNumber": "Phone number of POC (only if First Name, Last Name, or Email have data)",
+    "severity": "Risk Analysis field, maybe required by certain eMASS instances. Required for approved items",
+    "scheduledCompletionDate": "Required for ongoing and completed POA&M items",
+    "completionDate": "Field is required for completed POA&M items",
+    "comments": "Field is required for completed and risk accepted POA&M items",
+    "externalUid": "External ID associated with the POA&M",
+    "controlAcronym": "The system acronym(s) e.g AC-1, AC-2",
+    "assessmentProcedure": "The Security Control Assessment Procedures being associated with the POA&M Item",
+    "securityChecks": "Security Checks that are associated with the POA&M",
+    "rawSeverity": "One of the following [Very Low, Low, Moderate, High, Very High]",
+    "relevanceOfThreat": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",
+    "likelihood": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",
+    "impact": "Risk Analysis field, maybe required by certain eMASS instances. Description of Security Control impact",
+    "residualRiskLevel": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",
+    "mitigations": "Risk Analysis field, maybe required by certain eMASS instances. Mitigation explanation",
+    "impactDescription": "Description of the security control impact",
+    "recommendations": "Any recommendations content",
+    "resultingResidualRiskLevelAfterProposedMitigations": "One of the following [Very Low, Low, Moderate, High, Very High] (Navy only)",
+    "predisposingConditions": "Conditions (Navy only)",
+    "threatDescription": "Threat description (Navy only)",
+    "devicesAffected": "List of affected devices by hostname. If all devices are affected, use `system` or `all` (Navy only)"
+  }
+```
 
 [top](#post)
 
@@ -1279,9 +1321,9 @@ EXAMPLES
 ---
 Add (POST) milestones to one or many POA&M items in a system
 
-```
+```shell
 USAGE
-  $ saf emasser post milestones [options]
+   $ saf emasser post milestones -s <value> -p <value> -d <description> -c <completion-date>
 
 FLAGS
   -h, --help                             Post (add) milestones to one or many POA&M items in a system
@@ -1292,87 +1334,80 @@ FLAGS
 
 DESCRIPTION
   Add milestones to one or many POA&M items in a system
+  Milestones provide specific information about the status
+  of processes used to mitigate risks and weakness findings.
 
 EXAMPLES
   $ saf emasser post milestones [-s,--systemId] [-p,--poamId] [-d,--description] [-c,--scheduledCompletionDate]
 ```
-  - required parameter are:
-
-    |parameter                  | type or values                                      |
-    |---------------------------|:----------------------------------------------------|
-    |--systemId                 |Integer - Unique system identifier                   |
-    |--poamId                   |Integer - Unique item identifier                     |
-    |--description              |String - Milestone item description. 2000 Characters |
-    |--scheduledCompletionDate  |Date - Schedule completion date. Unix date format    |
-
 
 [top](#post)
 
 ### ``post artifacts``
 ---
-### Upload artifacts one or many artifacts in a system
+#### Upload artifacts one or many artifacts in a system
 
-The body of a request through the Artifacts POST endpoint accepts a single binary file with extension ".zip" only. This .zip file should contain one or more files corresponding to existing artifacts or new artifacts that will be created upon successful receipt. Filename uniqueness within an eMASS system will be enforced by the API.
+The body of a request through the Artifacts POST endpoint accepts a single binary file.
+Two Artifact POST methods are currently accepted: individual and bulk.
+Filename uniqueness within an eMASS system will be enforced by the API for both methods.
+For POST requests that should result in a single artifact, the request should include the file.
 
-### Business rules
-Upon successful receipt of a file, if a file within the .zip is matched via filename to an artifact existing within the application, the file associated with the artifact will be updated. If no artifact is matched via filename to the application, a new artifact will be created with the following default values. 
-```
+#### Business rules
+Upon successful receipt of one or many artifacts, if a file is matched via filename to an
+artifact existing within the application, the file associated with the artifact will be updated.
+If no artifact is matched via filename to the application, a new artifact will be created with
+the following default values. Any values not specified below will be null.
+```shell
   - isTemplate: false
   - type: other
   - category: evidence
 ```
 Any values not specified below will be null.
 
-### Accepted artifact files are:
-  - .docx,.doc,.txt,.rtf,.xfdl,.xml,.mht,.mhtml,.html,.htm,.pdf
-  - .mdb,.accdb,.ppt,.pptx,.xls,.xlsx,.csv,.log
-  - .jpeg,.jpg,.tiff,.bmp,.tif,.png,.gif
-  - .zip,.rar,.msg,.vsd,.vsw,.vdx, .z{#}, .ckl,.avi,.vsdx
-  
-### Artifacts rules and limitations
+#### Artifacts rules and limitations
 - Artifact cannot be saved if File Name (fileName) exceeds 1,000 characters
-- Artifact cannot be saved if Description (description) exceeds 2,000 characters
+- Artifact cannot be saved if Name (name) exceeds 100 characters
+- Artifact cannot be saved if Description (description) exceeds 10,000 characters
 - Artifact cannot be saved if Reference Page Number (refPageNumber) exceeds 50 characters
+- Artifact cannot be saved if the file does not have an allowable file extension/type.
 - Artifact version cannot be saved if an Artifact with the same file name already exist in the system.
 - Artifact cannot be saved if the file size exceeds 30MB.
 - Artifact cannot be saved if the Last Review Date is set in the future.
-  
+- Artifact cannot be saved if the following fields are missing data:
+  -  Filename
+  -  Type
+  -  Category
 ---
-### Add (POST) Artifacts CLI usages
-```
+#### Add (POST) Artifacts CLI usages
+```shell
 USAGE
-  $ saf emasser post artifacts [options]
+  $ saf emasser post artifacts [FLAGS]
+  NOTE: see EXAMPLES for command options
 
 FLAGS
-  -h, --help               Post (add) artifact file(s) to a system
-  -i, --input=<value>...   (required) Artifact file(s) to post to the given system, can have multiple (space separated)
-  -s, --systemId=<value>   (required) The system identification number
-  -T, --[no-]isTemplate    Boolean - Indicates whether an artifact is a template.
-  -c, --category=<option>  Artifact category <options: Implementation Guidance|Evidence>
-  -t, --type=<option>      Artifact file type <options: Procedure|Diagram|Policy|Labor|Document|Image|Other|Scan Result|Auditor Report>
+  -h, --help                 Post (add) artifact file(s) to a system
+  -f, --fileName=<value>...  (required) Artifact file(s) to post to the given system, can have multiple (space separated)
+  -s, --systemId=<value>     (required) The system identification number
+  -T, --[no-]isTemplate      Boolean - Indicates whether an artifact is a template.
+  -c, --category=<option>    Artifact category [default: Evidence] Various artifact category are accepted (defined by the eMASS administrator)
+  -t, --type=<option>        Artifact file type [default: Other] Various artifact file type are accepted (defined by the eMASS administrator)
 
 DESCRIPTION
-  Uploads [FILES] to the given [SYSTEM_ID] as artifacts
+  Uploads a single or multiple artifacts to a system.
+  The single file can be an individual artifact or a .zip
+  file containing multiple artifacts. If multiple files are
+  provided they are archived into a zip file and sent as bulk.
 
 EXAMPLES
-  $ saf emasser post artifacts [-s,--systemId] [-i,--input] [options]
+  Add a single artifact file
+    $ saf emasser post artifacts [-s,--systemId] [-f,--fileName] <path-to-file> [FLAGS]
+
+  Add multiple artifact files
+    $ saf emasser post artifacts [-s,--systemId] [-f,--fileName] <path-to-file1> <path-to-file2> ... [FLAGS]
+
+  Add bulk artifact file (.zip)
+    $ saf emasser post artifacts [-s,--systemId] [-f,--fileName] <path-to-zip-file> [FLAGS]
 ```
-
-- required parameter are:
-
-  |parameter       | type or values                                      |
-  |----------------|:----------------------------------------------------|
-  |--systemId      |Integer - Unique system identifier                   |
-  |--input         |String - File names (to include path) to be uploaded into eMASS as artifacts |
-
-- optional parameter are:
-
-  |parameter       | type or values                                        |
-  |----------------|:------------------------------------------------------| 
-  |--isTemplate    |Boolean - Indicates whether an artifact is a template|
-  |--type          |Possible Values: Procedure, Diagram, Policy, Labor, Document, Image, Other, Scan Result, Auditor Report|
-  |--category      |Possible Values: Implementation Guidance, Evidence    |
-
 
 [top](#post)
 
@@ -1380,15 +1415,15 @@ EXAMPLES
 ----
 Add a Control Approval Chain (CAC) items in a system
 
-### Business Rule
+#### Business Rule
 - Comments are not required at the first role of the CAC but are required at the second role of the CAC. 
 - Comments cannot exceed 10,000 characters.
 
-### Add (POST) CAC CLI usages
+#### Add (POST) CAC CLI usages
 
- ```
+ ```shell
 USAGE
-  $ saf emasser post cac [options]
+  $ saf emasser post cac [FLAGS]
 
 FLAGS
   -h, --help                    Post (add) control to second stage of CAC
@@ -1403,19 +1438,6 @@ EXAMPLES
   $ saf emasser post cac [-s,--systemId] [-a,--controlAcronym] [options]
 
  ```
-  - required parameter are:
-
-    |parameter          | type or values                                              |
-    |-------------------|:------------------------------------------------------------|
-    |--systemId         |Integer - Unique system identifier                           |
-    |--controlAcronym   |String - Control acronym associated with the POA&M Item. NIST SP 800-53 Revision 4 defined |
-
-  - conditional flag (parameter):
-
-    |parameter          | type or values                             |
-    |-------------------|:-------------------------------------------|
-    |--comments         |String -The control approval chain comments |
-
 
 [top](#post)
 
@@ -1423,11 +1445,11 @@ EXAMPLES
 ----
 Add new Package Approval Chain (PAC) workflow(s) for a system
 
-### Add (POST) PAC CLI usages
+#### Add (POST) PAC CLI usages
 
-```
+```shell
 USAGE
-  $ saf emasser post pac [options]
+  $ saf emasser post pac [FLAGS]
 
 FLAGS
   -h, --help               Post (add) a Package Approval Chain (PAC) item in a system
@@ -1443,118 +1465,277 @@ DESCRIPTION
 EXAMPLES
   $ saf emasser post pac [-s,--systemId] [-w,--workflow] [-n,--name] [-c,--comments]
 ```
-  - required parameter are:
-
-    |parameter     | type or values                                                            |
-    |--------------|:--------------------------------------------------------------------------|
-    |--systemId    |Integer - Unique system identifier                                         |
-    |--workflow    |Possible Values: Assess and Authorize, Assess Only, Security Plan Approval |
-    |--name        |String - Package name. 100 Characters                                      |
-    |--comments    |String - Comments submitted upon initiation of the indicated workflow, 4,000 character|
-
 
 [top](#post)
 
-### ``post static_code_scans``
+### ``post hardware``
 ----
-To add (POST) static code scans use the following command:
+Add one or many hardware assets to a system.
 
+  ```shell
+  USAGE
+    $ saf emasser post hardware_baseline [FLAGS]
+    NOTE: see EXAMPLES for command usages
+
+  FLAGS
+    -h, --help              Show eMASSer CLI help for the POST Hardware Baseline command  
+    -s, --systemId=<value>  (required) The system identification number    
+    -f, --dataFile=<value>  (required) A well formed JSON file containing the data to add. It can ba a single object or an array of objects.
+
+  DESCRIPTION
+    Add one or many hardware assets to a system.
+    The CLI expects an input JSON file containing the required, conditional
+    and optional fields for the hardware asset(s) being added to the system.
+
+  EXAMPLES
+    $ saf emasser post hardware_baseline [-s,--systemId] [-f,--dataFile]
+  ```
+
+**Note:** The input file should be a well formed JSON containing the Hardware Assets information. 
+#### Required JSON parameter/field is:
+```json
+  {
+    "assetName": "Name of the hardware asset"
+  }
 ```
-USAGE
-  $ saf emasser post static_code_scans [options]
-
-FLAGS
-  -h, --help                       Post (upload) static code scans, can also clear application's findings
-  -s, --systemId=<value>           (required) The system identification number
-  -f, --statiCodeScanFile=<value>  (required) A well formed JSON file with application scan findings. It can ba a single object or an array of objects.
-
-DESCRIPTION
-  upload application scan findings into a system's assets module
-
-EXAMPLES
-  $ saf emasser post static_code_scans [-s,--systemId] [-f,--cloudResourceFile]
+#### Conditional JSON parameters/fields are:
+```json
+  {
+    "publicFacingFqdn": "Public facing FQDN. Only applicable if Public Facing is set to true",
+    "publicFacingIpAddress": "Public facing IP address. Only applicable if Public Facing is set to true",
+    "publicFacingUrls": "Public facing URL(s). Only applicable if Public Facing is set to true"
+  }
 ```
+#### Optional JSON parameters/fields are:
+```json
+  {
+    "componentType": "Public facing FQDN. Only applicable if Public Facing is set to true",
+    "nickname": "Public facing IP address. Only applicable if Public Facing is set to true",
+    "assetIpAddress": "IP address of the hardware asset",
+    "publicFacing": "Public facing is defined as any asset that is accessible from a commercial connection",
+    "virtualAsset": "Determine if this is a virtual hardware asset",
+    "manufacturer": "Manufacturer of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",
+    "modelNumber": "Model number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",
+    "serialNumber": "Serial number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",
+    "osIosFwVersion": "OS/iOS/FW version of the hardware asset",
+    "memorySizeType": "Memory size / type of the hardware asset",
+    "location": "Location of the hardware asset",
+    "approvalStatus": "Approval status of the hardware asset",
+    "criticalAsset": "Indicates whether the asset is a critical information system asset"
+  }
+```
+#### All accepted parameters/fields are:
+```json
+  {
+    "assetName": "Name of the hardware asset",
+    "publicFacingFqdn": "Public facing FQDN. Only applicable if Public Facing is set to true",
+    "publicFacingIpAddress": "Public facing IP address. Only applicable if Public Facing is set to true",
+    "publicFacingUrls": "Public facing URL(s). Only applicable if Public Facing is set to true",
+    "assetName": "Name of the hardware asset",
+    "publicFacingFqdn": "Public facing FQDN. Only applicable if Public Facing is set to true",
+    "publicFacingIpAddress": "Public facing IP address. Only applicable if Public Facing is set to true",
+    "publicFacingUrls": "Public facing URL(s). Only applicable if Public Facing is set to true",
+    "publicFacingIpAddress": "Public facing IP address. Only applicable if Public Facing is set to true",
+    "publicFacingUrls": "Public facing URL(s). Only applicable if Public Facing is set to true",
+    "componentType": "Public facing FQDN. Only applicable if Public Facing is set to true",
+    "nickname": "Public facing IP address. Only applicable if Public Facing is set to true",
+    "assetIpAddress": "IP address of the hardware asset",
+    "publicFacing": "Public facing is defined as any asset that is accessible from a commercial connection",
+    "virtualAsset": "Determine if this is a virtual hardware asset",
+    "manufacturer": "Manufacturer of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",
+    "modelNumber": "Model number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",
+    "serialNumber": "Serial number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",
+    "osIosFwVersion": "OS/iOS/FW version of the hardware asset",
+    "memorySizeType": "Memory size / type of the hardware asset",
+    "location": "Location of the hardware asset",
+    "approvalStatus": "Approval status of the hardware asset",
+    "criticalAsset": "Indicates whether the asset is a critical information system asset"
+  }
+```
+[top](#post)
 
-**Note:** The input file `[-f,--statiCodeScanFile]` should be a well formed JSON containing application scan findings. 
+### ``post software``
+----
+Add one or many software assets to a system.
 
+  ```shell
+  USAGE
+    $ saf emasser post software_baseline [FLAGS]
+    NOTE: see EXAMPLES for command usages
+
+  FLAGS
+    -h, --help              Show eMASSer CLI help for the POST Software Baseline command 
+    -s, --systemId=<value>  (required) The system identification number  
+    -f, --dataFile=<value>  (required) A well formed JSON file containing the data to add. It can ba a single object or an array of objects.
+
+  DESCRIPTION
+    Add one or many software assets to a system.
+    The CLI expects an input JSON file containing the required, conditional
+    and optional fields for the software asset(s) being added to the system.
+
+  EXAMPLES
+    $ saf emasser post software_baseline [-s,--systemId] [-f,--dataFile]
+  ```
+
+**Note:** The input file should be a well formed JSON containing the Software Assets information. 
+#### Required JSON parameter/field is:
+```json
+  {
+    "softwareVendor": "Vendor of the software asset",
+    "softwareName": "Name of the software asset",
+    "version": "Version of the software asset"
+  }
+```
+#### Conditional JSON parameters/fields are:
+```json
+  {
+    "approvalDate": "Approval date of the software asset. If Approval Status is set to “Unapproved” or “In Progress”, Approval Date will be set to null"
+  }
+```
+#### Optional JSON parameters/fields are:
+```json
+  {
+    "softwareType": "Type of the software asset",
+    "parentSystem": "Parent system of the software asset",
+    "subsystem": "Subsystem of the software asset",
+    "network": "Network of the software asset",
+    "hostingEnvironment": "Hosting environment of the software asset",
+    "softwareDependencies": "Dependencies for the software asset",
+    "cryptographicHash": "Cryptographic hash for the software asset",
+    "inServiceData": "Date the sotware asset was added to the network",
+    "itBudgetUii": "IT budget UII for the software asset",
+    "fiscalYear": "Fiscal year (FY) for the software asset",
+    "popEndDate": "Period of performance (POP) end date for the software asset",
+    "licenseOrContract": "License or contract for the software asset",
+    "licenseTerm": "License term for the software asset",
+    "costPerLicense": "Cost per license for the software asset",
+    "totalLicenses": "Number of total licenses for the software asset",
+    "totalLicenseCost": "Total cost of the licenses for the software asset",
+    "licensesUsed": "Number of licenses used for the software asset",
+    "licensePoc": "Point of contact (POC) for the software asset",
+    "licenseRenewalDate": "License renewal date for the software asset",
+    "licenseExpirationDate": "License expiration date for the software asset",
+    "approvalStatus": "Approval status of the software asset",
+    "releaseDate": "Release date of the software asset",
+    "maintenanceDate": "Maintenance date of the software asset",
+    "retirementDate": "Retirement date of the software asset",
+    "endOfLifeSupportDate": "End of life/support date of the software asset",
+    "extendedEndOfLifeSupportDate": "Extended End of Life/Support Date cannot occur prior to the End of Life/Support Date",
+    "criticalAsset": "Indicates whether the asset is a critical information system asset",
+    "location": "Location of the software asset",
+    "purpose": "Purpose of the software asset",
+    "unsupportedOperatingSystem": "Unsupported operating system (VA only)",
+    "unapprovedSoftwareFromTrm": "Unapproved software from TRM (VA only)",
+    "approvedWaiver": "Approved waiver (VA only)"
+  }
+```
+#### All accepted parameters/fields are:
+```json
+  {
+    "softwareVendor": "Vendor of the software asset",
+    "softwareName": "Name of the software asset",
+    "version": "Version of the software asset",
+    "approvalDate": "Approval date of the software asset. If Approval Status is set to “Unapproved” or “In Progress”, Approval Date will be set to null",
+    "softwareType": "Type of the software asset",
+    "parentSystem": "Parent system of the software asset",
+    "subsystem": "Subsystem of the software asset",
+    "network": "Network of the software asset",
+    "hostingEnvironment": "Hosting environment of the software asset",
+    "softwareDependencies": "Dependencies for the software asset",
+    "cryptographicHash": "Cryptographic hash for the software asset",
+    "inServiceData": "Date the sotware asset was added to the network",
+    "itBudgetUii": "IT budget UII for the software asset",
+    "fiscalYear": "Fiscal year (FY) for the software asset",
+    "popEndDate": "Period of performance (POP) end date for the software asset",
+    "licenseOrContract": "License or contract for the software asset",
+    "licenseTerm": "License term for the software asset",
+    "costPerLicense": "Cost per license for the software asset",
+    "totalLicenses": "Number of total licenses for the software asset",
+    "totalLicenseCost": "Total cost of the licenses for the software asset",
+    "licensesUsed": "Number of licenses used for the software asset",
+    "licensePoc": "Point of contact (POC) for the software asset",
+    "licenseRenewalDate": "License renewal date for the software asset",
+    "licenseExpirationDate": "License expiration date for the software asset",
+    "approvalStatus": "Approval status of the software asset",
+    "releaseDate": "Release date of the software asset",
+    "maintenanceDate": "Maintenance date of the software asset",
+    "retirementDate": "Retirement date of the software asset",
+    "endOfLifeSupportDate": "End of life/support date of the software asset",
+    "extendedEndOfLifeSupportDate": "Extended End of Life/Support Date cannot occur prior to the End of Life/Support Date",
+    "criticalAsset": "Indicates whether the asset is a critical information system asset",
+    "location": "Location of the software asset",
+    "purpose": "Purpose of the software asset",
+    "unsupportedOperatingSystem": "Unsupported operating system (VA only)",
+    "unapprovedSoftwareFromTrm": "Unapproved software from TRM (VA only)",
+    "approvedWaiver": "Approved waiver (VA only)"
+  }
+```
+[top](#post)
+
+### ```post device scan results```
 ---
-### Required `application` JSON object parameter/fields are:
-```json
-  {
-    "applicationName": "Name of the software application that was assessed",
-    "version": "The version of the application"
-  }
+Add (upload) device scan results in the assets module for a system
+
+#### Business Rules
+The body of a request through the Device Scan Results POST endpoint accepts a single binary file.
+Specific file extensions are expected depending upon the scanType parameter.
+For example, .ckl or .cklb files are accepted when using scanType is set to disaStigViewerCklCklb.
+
+When the scan type is an acasAsrArf or policyAuditor, a .zip file is expected which should contain
+a single scan result (for example, a single pair of .asr and .arf files).
+
+Single files are expected for all other scan types as this endpoint requires files to be uploaded consecutively as opposed to in bulk.
+
+Current scan types that are supported:
+ - ACAS: ASR/ARF
+ - ACAS: NESSUS
+ - DISA STIG Viewer: CKL/CKLB
+ - DISA STIG Viewer: CMRS
+ - Policy Auditor
+ - SCAP Compliance Checker
+
+The parameter (flag) isBaseline (Boolean) is used if the imported file represents a baseline scan.
+Importing as a baseline scan, which assumes a common set of scan policies are used when conducting
+a scan, will replace a device's findings for a specific Benchmark.
+
+**NOTE:** Applicable to ASR/ARF scans only.
+
+
+#### Add (POST) a Scan Result CLI usages
+```shell
+  USAGE
+    $ saf emasser post device_scans [FLAGS]
+
+  FLAGS
+    -h, --help               Show eMASSer CLI help for the POST Device Scan Results command
+    -s, --systemId=<value>   (required) The system identification number  
+    -f, --filename=<value>   (required) The device scan result file to be uploaded.  
+    -S, --scanType=<option>  (required) The type of scan being uploaded
+                             <options: acasAsrArf|acasNessus|disaStigViewerCklCklb|disaStigViewerCmrs|policyAuditor|scapComplianceChecker>  
+    -B, --[no-]isBaseline    Indicates if the scan is a baseline scan
+
+  DESCRIPTION
+    Add (upload) device scan results in the assets module for a system
+    Supported scan types: ACAS, DISA STIG Viewer, Policy Auditor, SCAP Compliance Checker
+    See the [-S, --scanType] command line flag for acceptable option names for scan type
+
+  EXAMPLES
+    Add a DISA STIG Viewer file (disaStigViewerCklCklb)
+      $ saf emasser post device_scans [-s, --systemId] <value> [-f, --dataFile] <filename.ckl or filename.cklb> [-S, --scanType] <disaStigViewerCklCklb>  [-B, --[no-]isBaseline]
+
+    Add an ACAS (acasAsrArf) or Policy Auditor (policyAuditor)
+      $ saf emasser post device_scans [-s, --systemId] <value> [-f, --dataFile] <filename.zip> [-S, --scanType] <acasAsrArf or policyAuditor> [-B, --[no-]isBaseline]
+
+    All other supported scan types, a single file is expected
+      $ saf emasser post device_scans [-s, --systemId] <value> [-f, --dataFile] <path-to-file> [-S, --scanType] <acasNessus or disaStigViewerCmrs or scapComplianceChecker>  [-B, --[no-]isBaseline]
 ```
-### Required `applicationFindings` JSON array parameters/fields are:
-```json
-  {
-    "applicationFindings": [
-      {
-        "codeCheckName": "Name of the software vulnerability or weakness",
-        "scanDate": "The scan date, Unix date format",
-        "resourceName": "Friendly name of Cloud resource",
-        "cweId": "The Common Weakness Enumerator (CWE) identifier",
-        "count": "Number of instances observed for a specified finding",
-        "rawSeverity": "OPTIONAL - One of the following [Low, Medium, Moderate, High, Critical]"
-      }
-    ]
-  }
-```
-  - required parameter are:
-
-    |parameter          | type or values                                             |
-    |-------------------|:-----------------------------------------------------------|
-    |--systemId         |Integer - Unique system identifier                          |
-    |--applicationName  |String - Name of the software application that was assessed |
-    |--version          |String - The version of the application                     |
-    |--codeCheckName    |Strings - Name of the software vulnerability or weakness    |
-    |--scanDate         |Date - The findings scan date - Unix time format            |
-    |--cweId            |String - The Common Weakness Enumerator (CWE) identifier    |
-
-  - optional flags (parameters) are:
-
-    |parameter          | type or values                                        |
-    |-------------------|:------------------------------------------------------|
-    |--rawSeverity*     |Possible Values: Low, Medium, Moderate, High, Critical |  
-    |--count            |Integer - Number of instances observed for a specified |
-
-\*rawSeverity: In eMASS, values of "Critical" will appear as "Very High", and values of "Medium" will appear as "Moderate". Any values not listed as options in the list above will map to "Unknown" and appear as blank values.
-
-### To clear (POST) static code scans use the following command:
-  ```
-  $ saf emasser post static_code_scans [-s,--systemId] [-f,--cloudResourceFile]
-  ```
-With the following JSON content:  
-  ```json
-  {
-    "application": {
-      "applicationName": "Name of the software application that was assessed",
-      "version": "The version of the application"
-    },
-    "applicationFindings": [
-      {
-        "clearFindings": true
-      }
-    ]
-  }
-  ```
-  - required parameter are:
-
-    |parameter          | type or values                                             |
-    |-------------------|:-----------------------------------------------------------|
-    |--systemId         |Integer - Unique system identifier                          |
-    |--applicationName  |String - Name of the software application that was assessed |
-    |--clearFindings*   |Boolean - To clear an application's findings set it to true |
-
-\*The clearFindings field is an optional field, but required with a value of "True" to clear out all application findings for a single application/version pairing.
-
 [top](#post)
 
 ### ```post cloud_resource```
 ---
-## Add Cloud Resource Results scans in the assets module for a system.
+Add Cloud Resource Results scans in the assets module for a system.
 
-### Cloud Resource parameters/fields character limitations
+#### Cloud Resource parameters/fields character limitations
 - Fields that can not exceed 50 characters:
   - Policy Deployment Version (`policyDeploymentVersion`)
 - Fields that can not exceed 100 characters:
@@ -1575,28 +1756,29 @@ With the following JSON content:
 - Fields that can not exceed 2000 characters:
   - Policy Short Title    (`policyDefinitionTitle`)
 
-### Add (POST) Cloud Resources CLI usages
+#### Add (POST) Cloud Resources CLI usages
 
-```
+```shell
 USAGE
-  $ saf emasser post cloud_resources [options]
+  $ saf emasser post cloud_resources [FLAGS]
+  NOTE: see EXAMPLES for command usages
 
 FLAGS
-  -h, --help                       Post (add) cloud resources and their scan results in the assets module for a system
-  -s, --systemId=<value>           (required) The system identification number
-  -f, --cloudResourceFile=<value>  (required) A well formed JSON file with the cloud resources and their scan results. It can ba a single object or an array of objects.
+  -h, --help              Show eMASSer CLI help for the POST Cloud Resource Results command
+  -s, --systemId=<value>  (required) The system identification number  
+  -f, --dataFile=<value>  (required) A well formed JSON file containing the data to add. It can ba a single object or an array of objects.
 
 DESCRIPTION
   Add a cloud resource and their scan results in the assets module for a system
 
 EXAMPLES
-  $ saf emasser post cloud_resources [-s,--systemId] [-f,--cloudResourceFile]
+  $ saf emasser post cloud_resources [-s,--systemId] [-f,--dataFile]
 ```
 
-**Note:** The input file `[-f, --cloudResourceFile]`should be a well formed JSON containing the cloud resources and their scan results information.
+**Note:** The input file `[-f, --dataFile]`should be a well formed JSON containing the Cloud Resources and their scan results information.
 
 ---
-###  Required JSON parameter/fields are:
+####  Required JSON parameter/fields are:
 ```json
   {
     "provider": "Cloud service provider name",
@@ -1612,20 +1794,8 @@ EXAMPLES
     ]
   }
 ```
-  - required parameter are:
 
-    |parameter               | type or values                                                            |
-    |------------------------|:--------------------------------------------------------------------------|
-    |--systemId              |Integer - Unique system identifier                                         |
-    |--provider              |string - Cloud service provider name                                       |
-    |--resourceId            |String - Unique identifier/resource namespace for policy compliance result |
-    |--resourceName          |String - Friendly name of Cloud resource                                   |
-    |--resourceType          |String - Type of Cloud resource                                            |
-    |--cspPolicyDefinitionId |String - Unique identifier/compliance namespace for CSP/Resource\'s policy definition/compliance check|
-    |--isCompliant | Boolean - Compliance status of the policy for the identified cloud resource         |
-    |--policyDefinitionTitle | String - Friendly policy/compliance check title. Recommend short title    |
-
-### Optional JSON parameters/fields are:
+#### Optional JSON parameters/fields are:
 ```json
   {
     "cspAccountId": "System/owner's CSP account ID/number",
@@ -1648,35 +1818,44 @@ EXAMPLES
     ]
   }
 ```
-  - optional flags (parameters) are:
-
-    |parameter          | type or values                                        |
-    |-------------------|:------------------------------------------------------|
-    |--initiatedBy      |String - Person initiating the process email address |  
-    |--cspAccountId     |String - System/owner\'s CSP account ID/number |
-    |--cspRegion        |String - CSP region of system |
-    |--isBaseline       |Boolean - Flag that indicates in results is a baseline |    
-    |Tags Object (tags)|
-    |--text | String - Text that specifies the tag type |
-    |Compliance Results Array Objects (complianceResults)|
-    |--assessmentProcedure      |String - Comma separated correlation to Assessment Procedure (i.e. CCI number for DoD Control Set) |
-    |--complianceCheckTimestamp |Date - The compliance check date - Unix time format |
-    |--complianceReason         |String - Reason/comments for compliance result |
-    |--control                  |String - Comma separated correlation to Security Control (e.g. exact NIST Control acronym) |
-    |--policyDeploymentName     |String - Name of policy deployment |
-    |--policyDeploymentVersion  |String - Version of policy deployment |
-    |--severity                 |Possible Values: Low, Medium, High, Critical |
-    
-
+#### All accepted parameters/fields are:
+```json
+  {
+    "provider": "Cloud service provider name",
+    "resourceId": "Unique identifier/resource namespace for policy compliance result",
+    "resourceName": "Friendly name of Cloud resource",
+    "resourceType": "The cloud resource type",
+    "complianceResults": [
+      {
+        "cspPolicyDefinitionId": "Unique identifier/compliance namespace for CSP/Resource's policy definition/compliance check",
+        "isCompliant": "True/false flag for compliance status of the policy for the identified cloud resource",
+        "policyDefinitionTitle": "Friendly policy/compliance check title. Recommend short title",
+        "assessmentProcedure": "Comma separated correlation to Assessment Procedure (i.e. CCI number for DoD Control Set)",
+        "complianceCheckTimestamp": "Unix date format",
+        "complianceReason": "Reason/comments for compliance result",
+        "control": "Comma separated correlation to Security Control (e.g. exact NIST Control acronym)",
+        "policyDeploymentName": "Name of policy deployment",
+        "policyDeploymentVersion": "Version of policy deployment",
+        "severity": "One of the following [Low, Medium, High, Critical]"
+      }
+    ],
+    "cspAccountId": "System/owner's CSP account ID/number",
+    "cspRegion": "CSP region of system",
+    "initiatedBy": "Email of POC",
+    "isBaseline": "True/false flag for providing results as baseline. If true, all existing compliance results for the resourceId will be replaced by results in the current call",
+    "tags": {
+      "test": "Informational tags associated to results for other metadata"
+    }
+  } 
+```
 
 [top](#post)
 
-
 ### ```post container_scans```
 ---
-## Add Container Scan Results in the assets module for a system.
+Add Container Scan Results in the assets module for a system.
 
-### Container Scan Results parameters/fields character limitations
+#### Container Scan Results parameters/fields character limitations
 - Fields that can not exceed 100 characters:
   - STIG Benchmark ID      (`benchmark`)
   - Container Namespace    (`namespace`)
@@ -1688,28 +1867,27 @@ EXAMPLES
 - Fields that can not exceed 1000 characters:
   - Result Comments (`message`)
 
-### Add (POST) Container Scan Results CLI usages
+#### Add (POST) Container Scan Results CLI usages
 
-```
+```shell
 USAGE
-  $ saf emasser post container_scans [options]
+  $ saf emasser post container_scans [FLAGS]
 
 FLAGS
-  -h, --help                           Post (upload) one or many containers and their scan results for a system
-  -s, --systemId=<value>               (required) The system identification number
-  -f, --containerCodeScanFile=<value>  (required) A well formed JSON file with container scan results. It can ba a single object or an array of objects.
+  -h, --help              Show eMASSer CLI help for the POST Container Scan Results command
+  -s, --systemId=<value>  (required) The system identification number
+  -f, --dataFile=<value>  (required) A well formed JSON file with container scan results. It can ba a single object or an array of objects.
 
 DESCRIPTION
   Upload containers and their scan results in the assets module for a system
 
 EXAMPLES
-  $ saf emasser post container_scans [-s,--systemId] [-f,--containerCodeScanFile]
- 
+  $ saf emasser post container_scans [-s,--systemId] [-f,--dataFile]
 ```
-**Note:** The input file `[-f, --containerCodeScanFile]` should be a well formed JSON containing the container scan results information.
+**Note:** The input file `[-f, --dataFile]` should be a well formed JSON containing the Container Scan results information.
 
 ---
-### Required JSON parameter/fields are:
+#### Required JSON parameter/fields are:
 ```json
   {
     "containerId": "Unique identifier of the container",
@@ -1729,22 +1907,8 @@ EXAMPLES
     ]
   }
 ```
-  - required parameter are:
 
-    |parameter               | type or values                                                            |
-    |------------------------|:--------------------------------------------------------------------------|
-    |--systemId              |Integer - Unique system identifier                                         |
-    |--containerId           |String - Unique identifier of the container  |
-    |--containerName         |String - Friendly name of the container      |
-    |--time                  |Date   - Datetime of scan/result. Unix date format |
-    |Bench Marks Object (benchmarks)|
-    |--benchmark         |String - Identifier of the benchmark/grouping of compliance results  |
-    |Results Object (results)|
-    |--ruleId            |String - Identifier for the compliance result, vulnerability, etc.
-    |--status            |String - Benchmark result status
-    |--lastSeen          |Date - Date last seen, Unix date format
-
-### Optional JSON parameters/fields are:
+#### Optional JSON parameters/fields are:
 ```json
   {
     "namespace": "Namespace of container in container orchestration (e.g. Kubernetes namespace)",
@@ -1756,6 +1920,8 @@ EXAMPLES
     "benchmarks": [
       {
         "isBaseline": "True/false flag for providing results as baseline. If true, all existing compliance results for the provided benchmark within the container will be replaced by results in the current call",
+        "verion": "The benchmark version",
+        "release": "The benchmark release",
         "results": [
           {
             "message": "Comments for the result"
@@ -1765,31 +1931,152 @@ EXAMPLES
     ]
   }
 ```
-  - optional flags (parameters) are:
+#### All accepted parameters/fields are:
+```json
+  {
+    "containerId": "Unique identifier of the container",
+    "containerName": "Friendly name of the container",
+    "time": "Datetime of scan/result. Unix date format",
+    "benchmarks": [
+      {
+        "benchmark": "Identifier of the benchmark/grouping of compliance results. (e.g. for STIG results, provide the benchmark id for the STIG technology)",
+        "results": [
+          {
+            "ruleId": "Identifier for the compliance result, vulnerability, etc. the result is for. (e.g. for STIGs, use the SV-XXXrXX identifier; for CVEs, the CVE-XXXX-XXX identifier, etc.).",
+            "lastSeen": "Datetime last seen. Unix date format",
+            "status": "One of the following [Pass,Fail,Other,Not Reviewed,Not Checked,Not Applicable]",
+            "message": "Comments for the result"
+          }
+        ],
+        "isBaseline": "True/false flag for providing results as baseline. If true, all existing compliance results for the provided benchmark within the container will be replaced by results in the current call",
+        "verion": "The benchmark version",
+        "release": "The benchmark release"
+      }
+    ],
+    "namespace": "Namespace of container in container orchestration (e.g. Kubernetes namespace)",
+    "podIp": "IP address of pod (e.g. Kubernetes assigned IP)",
+    "podName": "Name of pod (e.g. Kubernetes pod)",
+    "tags": {
+      "test": "Informational tags associated to results for other metadata"
+    }
+  }
+```
+[top](#post)
 
-    |parameter                   | type or values                                        |
-    |----------------------------|:------------------------------------------------------|
-    |--podName          |String - Name of pod (e.g. Kubernetes pod) |
-    |--podIp            |String - IP address of pod  |
-    |--namespace        |String - Namespace of container in container orchestration (e.g. Kubernetes namespace)|
-    |Tags Object (tags)|
-    |--text | String - Text that specifies the tag type |
-    |Bench Marks Object (benchmarks)
-    |--isBaseline       |Boolean - True/false flag for providing results as baseline. If true, all existing compliance results for the provided benchmark within the container will be replaced by results in the current call|
-    |Results Object (results)|
-    |--message           |String - Comments for the result
+### ``post static_code_scans``
+----
+To add (POST) static code scans use the following command:
 
+```shell
+  USAGE
+    $ saf emasser post static_code_scans [FLAGS]
+    NOTE: see EXAMPLES for command usages
+
+  FLAGS
+    -h, --help              Show eMASSer CLI help for the POST Static Code Scans command
+    -s, --systemId=<value>  (required) The system identification number  
+    -f, --dataFile=<value>  (required) A well formed JSON file containing the data to add. It can ba a single object or an array of objects.
+
+  DESCRIPTION
+    Upload application scan findings into a system's assets module
+
+  EXAMPLES
+    $ saf emasser post static_code_scans [-s,--systemId] [-f,--dataFile]
+```
+
+**Note:** The input file `[-f,--dataFile]` should be a well formed JSON containing application scan findings. 
+
+---
+#### Add Findings
+##### Required `application` JSON object parameter/fields are:
+```json
+  {
+    "application": {
+      "applicationName": "Name of the software application that was assessed",
+      "version": "The version of the application"
+    }
+  }
+```
+##### Required `applicationFindings` JSON array parameters/fields are:
+```json
+  {
+    "applicationFindings": [
+      {
+        "codeCheckName": "Name of the software vulnerability or weakness",
+        "scanDate": "The scan date, Unix date format",
+        "cweId": "The Common Weakness Enumerator (CWE) identifier",
+        "count": "Number of instances observed for a specified finding",
+        "rawSeverity": "OPTIONAL - One of the following [Low, Medium, Moderate, High, Critical]"
+      }
+    ]
+  }
+```
+
+\*rawSeverity: In eMASS, values of "Critical" will appear as "Very High", and values of "Medium" will appear as "Moderate". Any values not listed as options in the list above will map to "Unknown" and appear as blank values.
+##### All accepted parameters/fields are:
+```json
+  {
+    "application": {
+      "applicationName": "Name of the software application that was assessed",
+      "version": "The version of the application"
+    },
+    "applicationFindings": [
+      {
+        "codeCheckName": "Name of the software vulnerability or weakness",
+        "scanDate": "The scan date, Unix date format",
+        "cweId": "The Common Weakness Enumerator (CWE) identifier",
+        "count": "Number of instances observed for a specified finding",
+        "rawSeverity": "OPTIONAL - One of the following [Low, Medium, Moderate, High, Critical]"
+      }
+    ]
+  }
+```
+#### Clear Findings (can only be used on a single application with a single finding)
+##### Required "application" JSON object parameter/fields are:
+```json
+  {
+    "application": {
+      "applicationName": "Name of the software application that was assessed",
+      "version": "The version of the application"
+    }
+  }
+```
+##### Required "applicationFindings" JSON array object field(s):
+```json
+  {
+    "applicationFindings": [
+      {
+        "clearFindings": "To clear an application's findings, use only the field clearFindings and set it to true."
+      }
+    ]
+  }
+```
+##### All accepted parameters/fields are:
+```json
+  {
+    "application": {
+      "applicationName": "Name of the software application that was assessed",
+      "version": "The version of the application"
+    },
+    "applicationFindings": [
+      {
+        "clearFindings": "To clear an application's findings, use only the field clearFindings and set it to true."
+      }
+    ]
+  }
+```
+\*The clearFindings field is an optional field, but required with a value of "True" to clear out all application findings for a single application/version pairing.
 
 [top](#post)
 
 ## Usage - PUT
 
-### ``put controls``
+### ```put controls```
 
 ----
-## Security Control update (PUT) endpoint API business rules.
+#### Security Control update (PUT) endpoint API business rules.
 
-### Requirements based on `implementationStatus` field value
+#### Requirements based on `implementationStatus` field value
 
   |Value                   |Required Fields
   |------------------------|--------------------------------------------------------
@@ -1801,7 +2088,7 @@ Implementation Plan cannot be updated if a Security Control is "Inherited" excep
   - Common Control Provider (`commonControlProvider`)
   - Security Control Designation (`controlDesignation`)
 
-### Security Controls parameters/fields character limitations  
+#### Security Controls parameters/fields character limitations  
 - Implementation Plan information cannot be saved if the fields below exceed 2,000 character limits:
   - N/A Justification        (`naJustification`)
   - Responsible Entities     (`responsibleEntities`) 
@@ -1817,27 +2104,28 @@ Implementation Plan cannot be updated if a Security Control is "Inherited" excep
 Implementation Plan information cannot be updated if Security Control does not exist in the system record.
 
 ---
-### Update (PUT) System Controls CLI usages
+#### Update (PUT) System Controls CLI usages
 
-```
+```shell
 USAGE
-  $ saf emasser put controls [options]
+  $ saf emasser put controls [FLAGS]
+  NOTE: see EXAMPLES for command usages
 
 FLAGS
-  -h, --help                 Put (update) control information in a system for one or many controls. See emasser Features (emasserFeatures.md) for additional information.
-  -s, --systemId=<value>     (required) The system identification number
-  -f, --controlFile=<value>  (required) A well formed JSON file with the Security Control information to be updated to the specified system. It can ba a single object or an array of objects.
+  -h, --help              Show eMASSer CLI help for the PUT Controls command
+  -s, --systemId=<value>  (required) The system identification number
+  -f, --dataFile=<value>  (required) A well formed JSON file containing the data to be updated. It can ba a single object or an array of objects.
 
 DESCRIPTION
   Update Security Control information of a system for both the Implementation Plan and Risk Assessment.
 
 EXAMPLES
-  $ saf emasser put controls [-s,--systemId] [-f,--controlsFile]
+    $ saf emasser put controls [-s,--systemId] [-f, --dataFile]
 ```
 **Note:** The input file should be a well formed JSON containing the Security Control information based on defined business rules. 
  
 ---
-### Required JSON parameter/fields are:
+#### Required JSON parameter/fields are:
 ```json
   {
     "acronym": "System acronym, required to match the NIST SP 800-53 Revision 4.",
@@ -1847,18 +2135,7 @@ EXAMPLES
     "implementationNarrative": "Includes Security Control comments"
   }
 ```
-- required parameter are:
-
-  |parameter                 | type or values                                                           |
-  |--------------------------|:-------------------------------------------------------------------------|
-  |--systemId                |Integer - Unique system identifier                                        |
-  |--acronym                 |String - The system acronym(s) e.g "AC-1, AC-2"                           |
-  |--responsibleEntities     |String - Description of the responsible entities for the Security Control |
-  |--controlDesignation      |Possible values: Common, System-Specific, or Hybrid                       |
-  |--estimatedCompletionDate |Date - Unix time format (e.g. 1499990400)                                 |
-  |--implementationNarrative |String - Security control comments                                        |            
-
-### Conditional JSON parameters/fields are:
+ #### Conditional JSON parameters/fields are:
 ```json
   {
     "commonControlProvider": "One of the following [DoD, Component, Enclave]",
@@ -1884,7 +2161,7 @@ EXAMPLES
   |--slcmTracking          |String - The System-Level Continuous Monitoring tracking |
   |--slcmComments          |String, - Additional comments for Security Control regarding SLCM |
 
-### Optional JSON parameters/fields are:
+#### Optional JSON parameters/fields are:
 ```json
   {
     "implementationStatus": "One of the following [Planned,Implemented,Inherited,Not Applicable,Manually Inherited]",
@@ -1896,31 +2173,52 @@ EXAMPLES
     "impact": "One of the following [Very Low, Low, Moderate, High, Very High]",
     "impactDescription": "Include description of Security Controls impact",
     "residualRiskLevel": "One of the following [Very Low, Low, Moderate, High, Very High]",
-    "testMethod": "One of the following [Test, Interview, Examine, Test,Interview, Test,Examine, Interview,Examine, Test,Interview,Examine]"
+    "testMethod": "One of the following [Test, Interview, Examine, Test,Interview, Test,Examine, Interview,Examine, Test,Interview,Examine]",
+    "mitigations": "One of the following [Very Low, Low, Moderate, High, Very High]",
+    "applicationLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)",
+    "databaseLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)",
+    "operatingSystemLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)"
   }
 ```
-- optional flags (parameters) are:
-
-  |parameter              | type or values                                |
-  |-----------------------|:----------------------------------------------|
-  |--implementationStatus |Possible values: Planned, Implemented, Inherited, Not Applicable, or Manually Inherited|
-  |--severity             |Possible values: Very Low, Low, Moderate, High, Very High |
-  |--vulnerabilitySummary |String - The security control vulnerability summary |
-  |--recommendations      |String - The security control vulnerability recommendation |
-  |--relevanceOfThreat    |Possible values: Very Low, Low, Moderate, High, Very High |
-  |--likelihood           |Possible values: Very Low, Low, Moderate, High, Very High |
-  |--impact               |Possible values: Very Low, Low, Moderate, High, Very High |
-  |--impactDescription    |String, - Description of the security control impact |
-  |--residualRiskLevel    |Possible values: Very Low, Low, Moderate, High, Very High |
-  |--testMethod           |Possible values: Test, Interview, Examine, Test,Interview, Test,Examine, Interview,Examine, Test,Interview,Examine|
-
+#### All accepted parameters/fields are:
+```json
+  {
+    "acronym": "System acronym, required to match the NIST SP 800-53 Revision 4.",
+    "responsibleEntities": "Include written description of Responsible Entities that are responsible for the Security Control.",
+    "controlDesignation": "One of the following: [Common, System-Specific, Hybrid]",
+    "estimatedCompletionDate": "Estimation completion date - Field is required for Implementation Plan",
+    "implementationNarrative": "Includes Security Control comments",
+    "commonControlProvider": "Indicate the type of Common Control Provider for an “Inherited” Security Control. One of the following [DoD, Component, Enclave]",
+    "naJustification": "Provide justification for Security Controls deemed Not Applicable to the system",
+    "slcmCriticality": "Criticality of Security Control regarding system-level continuous monitoring (SLCM) ",
+    "slcmFrequency": "One of the following [Constantly,Daily,Weekly,Monthly,Quarterly,Semi-Annually,Annually,Every Two Years,Every Three Years,Undetermined]",
+    "slcmMethod": "One of the following [Automated, Semi-Automated, Manual, Undetermined]",
+    "slcmReporting": "Organization/Office represented",
+    "slcmTracking": "The System-Level Continuous Monitoring tracking",
+    "slcmComments": " Additional comments for Security Control regarding SLCM",
+    "implementationStatus": "One of the following [Planned,Implemented,Inherited,Not Applicable,Manually Inherited]",
+    "severity": "One of the following [Very Low, Low, Moderate, High, Very High]",
+    "vulnerabilitySummary": "Include vulnerability summary",
+    "recommendations": "The include recommendations",
+    "relevanceOfThreat": "One of the following [Very Low, Low, Moderate, High, Very High]",
+    "likelihood": "One of the following [Very Low, Low, Moderate, High, Very High]",
+    "impact": "One of the following [Very Low, Low, Moderate, High, Very High]",
+    "impactDescription": "Include description of Security Controls impact",
+    "residualRiskLevel": "One of the following [Very Low, Low, Moderate, High, Very High]",
+    "testMethod": "One of the following [Test, Interview, Examine, Test,Interview, Test,Examine, Interview,Examine, Test,Interview,Examine]",
+    "mitigations": "One of the following [Very Low, Low, Moderate, High, Very High]",
+    "applicationLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)",
+    "databaseLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)",
+    "operatingSystemLayer": "If the Financial Management (Navy) overlay is applied to the system, this field can be populated (Navy only)"
+  }
+```
 [top](#put)
 
 ### ``put poams``
 ----
-## Plan of Action and Milestones (POA&M) update (PUT) endpoint API business rules.
+#### Plan of Action and Milestones (POA&M) update (PUT) endpoint API business rules.
 
-### Requirements based on `status` field value
+#### Requirements based on `status` field value
 
   |status          |Required Fields
   |----------------|--------------------------------------------------------
@@ -1929,11 +2227,11 @@ EXAMPLES
   |Completed       |`scheduledCompletionDate`, `comments`, `resources`, `completionDate`, `milestones` (at least 1)
   |Not Applicable  |POAM can not be created
 
-### POC fields requirements
+#### POC fields requirements
 If a POC email is supplied, the application will attempt to locate a user already registered within the application and pre-populate any information not explicitly supplied in the request. If no such user is found, these fields are required within the request.
   - pocOrganization, pocFirstName, pocLastName, pocEmail, pocPhoneNumber
 
-### Business logic for updating POA&Ms
+#### Business logic for updating POA&Ms
 - POA&M Item cannot be saved if associated Security Control or AP is inherited.
 - POA&M Item cannot be created manually if a Security Control or AP is Not Applicable.
 - Completed POA&M Item cannot be saved if Completion Date is in the future.
@@ -1965,7 +2263,7 @@ The following parameters/fields have the following character limitations:
 - POA&M Items cannot be saved if Milestone Description (description) exceeds 2,000 characters.
 
 
-### POA&M parameters/fields character limitations
+#### POA&M parameters/fields character limitations
 - Fields that can not exceed 100 characters:
   - Office / Organization (`pocOrganization`)
   - First Name            (`pocFirstName`)
@@ -1985,51 +2283,56 @@ The following parameters/fields have the following character limitations:
 
 
 ---
-### Updating (PUT) POA&Ms CLI usages
-```
+#### Updating (PUT) POA&Ms CLI usages
+```shell
 USAGE
-  $ saf emasser put poams [options]
+  $ saf emasser put poams [FLAGS]
+  NOTE: see EXAMPLES for command usages
 
 FLAGS
-  -h, --help              Put (update) a Plan of Action and Milestones (POA&M) item(s) in a system. See emasser Features (emasserFeatures.md) for additional information.
+  -h, --help               Show eMASSer CLI help for the PUT Controls command
   -s, --systemId=<value>  (required) The system identification number
-  -f, --poamFile=<value>  (required) A well formed JSON file with the POA&M(s) to be updated to the specified system. It can ba a single object or an array of objects.
+  -f, --dataFile=<value>  (required) A well formed JSON file containing the data to be updated. It can ba a single object or an array of objects.
 
 DESCRIPTION
   Update a Plan of Action and Milestones (POA&M) into a systems.
 
 EXAMPLES
-  $ saf emasser put poams [-s,--systemId] [-f,--poamFile]
+  $ saf emasser put poams [-s,--systemId] [-f,--dataFile]
 ```
 
 **Note:** The input file should be a well formed JSON containing the POA&M information based on defined business rules. 
  
 ---
-### Required JSON parameter/fields are:
+#### Required JSON parameter/fields are:
 ```json
   {
     "poamId": "Unique identifier representing the nth POAM item entered into the site database.",
     "displayPoamId": "Globally unique identifier for individual POA&M Items, seen on the front-end as ID",
     "status": "One of the following: [Ongoing, Risk Accepted, Completed, Not Applicable]",
     "vulnerabilityDescription": "POA&M vulnerability description",
-    "sourceIdentVuln": "Source that identifies the vulnerability",
+    "sourceIdentifyingVulnerability": "Source that identifies the vulnerability",
     "pocOrganization": "Organization/Office represented",
     "resources": "List of resources used"
   }
 ```
-- required parameter are:
-
-  |parameter                  | type or values                                                 |
-  |---------------------------|:---------------------------------------------------------------|
-  |--systemId                 |Integer - Unique system identifier                              |
-  |--displayPoamId            |Integer - Globally unique identifier for individual POA&M Items |
-  |--status                   |Possible Values: Ongoing,Risk Accepted,Completed,Not Applicable |
-  |--vulnerabilityDescription |String - Vulnerability description for the POA&M Item           |
-  |--sourceIdentVuln          |String - Include Source Identifying Vulnerability text          |
-  |--pocOrganization          |String - Organization/Office represented                        |
-  |--resources                |String - List of resources used. Character Limit = 250          |
-
-### Conditional JSON parameters/fields are:
+#### Required for VA but Conditional for Army and USCG JSON parameters/fields are:
+```json
+  {
+    "identifiedInCFOAuditOrOtherReview": "If not specified, this field will be set to false because it does not accept a null value (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesFundedBaseHours": "Hours for personnel resources that are founded (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesCostCode": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesUnfundedBaseHours": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesNonfundingObstacle": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesNonfundingObstacleOtherReason": "Reason (text 2,000 char) (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesFundedAmount": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesCostCode": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesUnfundedAmount": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesNonfundingObstacle": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesNonfundingObstacleOtherReason": "Reason (text 2,000 char) (Required for VA. Optional for Army and USCG)"
+  }
+```  
+#### Conditional JSON parameters/fields are:
 ```json
   {
     "milestones": [
@@ -2037,17 +2340,17 @@ EXAMPLES
         "milestoneId": "Unique milestone identifier",
         "description": "The milestone description",
         "scheduledCompletionDate": "Milestone scheduled completion date (Unix format)",
-        "isActive": "To prevent uploading duplicate/undesired milestones through the POA&M PUT you must include an isActive field for the milestone and set it to equal to false"
+        "isActive": "To prevent uploading duplicate/undesired milestones through the POA&M PUT include the isActive=false. If absent or set to true a new Milestone is created"
       }
     ],
-    "pocFirstName": "The system acronym(s) e.g AC-1, AC-2",
-    "pocLastName": "The system CCIS string numerical value",
-    "pocEmail": "Security Checks that are associated with the POA&M",
-    "pocPhoneNumber": "One of the following [I, II, III]",
-    "severity": "One of the following [Very Low, Low, Moderate, High, Very High]",
-    "scheduledCompletionDate": "One of the following [Very Low, Low, Moderate, High, Very High]",
-    "completionDate": "Description of Security Control impact",
-    "comments": "Description of the security control impact"
+    "pocFirstName": "First name of POC (only if Last Name, Email, or Phone Number have data)",
+    "pocLastName": "Last name of POC (only if First Name, Email, or Phone Number have data)",
+    "pocEmail": "Email address of POC (only if First Name, Last Name, or Phone Number have data)",
+    "pocPhoneNumber": "Phone number of POC (only if First Name, Last Name, or Email have data)",
+    "severity": "Risk Analysis field, maybe required by certain eMASS instances. Required for approved items",
+    "scheduledCompletionDate": "POA&M Items with a review status of “Approved” and a status of “Completed” or “Ongoing” cannot update Scheduled Completion Date.",
+    "completionDate": "Field is required for completed POA&M items",
+    "comments": "Field is required for completed and risk accepted POA&M items"
   }
 ```
   - conditional flags (parameters) are:
@@ -2068,41 +2371,83 @@ EXAMPLES
     ** If a POC email is supplied, the application will attempt to locate a user already registered within the application and pre-populate any information not explicitly supplied in the request. If no such user is found, these fields are required within the request:
       pocFirstName, pocLastName, pocPhoneNumber
 
-### Optional JSON parameters/fields are:
+#### Optional JSON parameters/fields are:
 ```json
-{
+  {
     "externalUid": "External ID associated with the POA&M",
     "controlAcronym": "The system acronym(s) e.g AC-1, AC-2",
-    "cci": "The system CCIS string numerical value",
+    "assessmentProcedure": "The Security Control Assessment Procedures being associated with the POA&M Item",
     "securityChecks": "Security Checks that are associated with the POA&M",
-    "rawSeverity": "One of the following [I, II, III]",
-    "relevanceOfThreat": "One of the following [Very Low, Low, Moderate, High, Very High]",
-    "likelihood": "One of the following [Very Low, Low, Moderate, High, Very High]",
-    "impact": "Description of Security Control impact",
+    "rawSeverity": "One of the following [Very Low, Low, Moderate, High, Very High]",
+    "relevanceOfThreat": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",
+    "likelihood": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",
+    "impact": "Risk Analysis field, maybe required by certain eMASS instances. Description of Security Control impact",
+    "residualRiskLevel": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",
+    "mitigations": "Risk Analysis field, maybe required by certain eMASS instances. Mitigation explanation",
     "impactDescription": "Description of the security control impact",
-    "residualRiskLevel": "One of the following [Very Low, Low, Moderate, High, Very High]",
     "recommendations": "Any recommendations content",
-    "mitigation": "Mitigation explanation"
+    "resultingResidualRiskLevelAfterProposedMitigations": "One of the following [Very Low, Low, Moderate, High, Very High] (Navy only)",
+    "predisposingConditions": "Conditions (Navy only)",
+    "threatDescription": "Threat description (Navy only)",
+    "devicesAffected": "List of affected devices by hostname. If all devices are affected, use `system` or `all` (Navy only)"
   }
 ```
-  - optional flags (parameters) are:
 
-    |parameter           | type or values                                                                           |
-    |--------------------|:-----------------------------------------------------------------------------------------|
-    |--externalUid       |String - External unique identifier for use with associating POA&M Items                  |
-    |--controlAcronym    |String - Control acronym associated with the POA&M Item. NIST SP 800-53 Revision 4 defined|
-    |--cci               |String - CCI associated with the test result                                              |
-    |--securityChecks    |String - Security Checks that are associated with the POA&M                               |
-    |--rawSeverity       |Possible values: I, II, III                                                               |
-    |--relevanceOfThreat |Possible values: Very Low, Low, Moderate, High, Very High                                 |
-    |--likelihood        |Possible values: Very Low, Low, Moderate, High, Very High                                 |
-    |--impact            |Possible values: Very Low, Low, Moderate, High, Very High                                 |
-    |--impactDescription |String - Include description of Security Control’s impact                                 |
-    |--residualRiskLevel |Possible values: Very Low, Low, Moderate, High, Very High                                 |
-    |--recommendations   |String - Include recommendations                                                          |
-    |--mitigation        |String - Include mitigation explanation. 2000 Characters                                  |
-
-
+#### All accepted parameters/fields are:
+```json
+  {
+    "poamId": "Unique identifier representing the nth POAM item entered into the site database.",
+    "displayPoamId": "Globally unique identifier for individual POA&M Items, seen on the front-end as ID",
+    "status": "One of the following: [Ongoing, Risk Accepted, Completed, Not Applicable]",
+    "vulnerabilityDescription": "POA&M vulnerability description",
+    "sourceIdentifyingVulnerability": "Source that identifies the vulnerability",
+    "pocOrganization": "Organization/Office represented",
+    "resources": "List of resources used",
+    "identifiedInCFOAuditOrOtherReview": "If not specified, this field will be set to false because it does not accept a null value (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesFundedBaseHours": "Hours for personnel resources that are founded (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesCostCode": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesUnfundedBaseHours": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesNonfundingObstacle": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "personnelResourcesNonfundingObstacleOtherReason": "Reason (text 2,000 char) (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesFundedAmount": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesCostCode": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesUnfundedAmount": "Funded based hours (100.00) (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesNonfundingObstacle": "Values are specific per eMASS instance (Required for VA. Optional for Army and USCG)",
+    "nonPersonnelResourcesNonfundingObstacleOtherReason": "Reason (text 2,000 char) (Required for VA. Optional for Army and USCG)",
+    "milestones": [
+      {
+        "milestoneId": "Unique milestone identifier",
+        "description": "The milestone description",
+        "scheduledCompletionDate": "Milestone scheduled completion date (Unix format)",
+        "isActive": "To prevent uploading duplicate/undesired milestones through the POA&M PUT include the isActive=false. If absent or set to true a new Milestone is created"
+      }
+    ],
+    "pocFirstName": "First name of POC (only if Last Name, Email, or Phone Number have data)",
+    "pocLastName": "Last name of POC (only if First Name, Email, or Phone Number have data)",
+    "pocEmail": "Email address of POC (only if First Name, Last Name, or Phone Number have data)",
+    "pocPhoneNumber": "Phone number of POC (only if First Name, Last Name, or Email have data)",
+    "severity": "Risk Analysis field, maybe required by certain eMASS instances. Required for approved items",
+    "scheduledCompletionDate": "POA&M Items with a review status of “Approved” and a status of “Completed” or “Ongoing” cannot update Scheduled Completion Date.",
+    "completionDate": "Field is required for completed POA&M items",
+    "comments": "Field is required for completed and risk accepted POA&M items",
+    "externalUid": "External ID associated with the POA&M",
+    "controlAcronym": "The system acronym(s) e.g AC-1, AC-2",
+    "assessmentProcedure": "The Security Control Assessment Procedures being associated with the POA&M Item",
+    "securityChecks": "Security Checks that are associated with the POA&M",
+    "rawSeverity": "One of the following [Very Low, Low, Moderate, High, Very High]",
+    "relevanceOfThreat": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",
+    "likelihood": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",
+    "impact": "Risk Analysis field, maybe required by certain eMASS instances. Description of Security Control impact",
+    "residualRiskLevel": "Risk Analysis field, maybe required by certain eMASS instances. One of the following [Very Low, Low, Moderate, High, Very High]",
+    "mitigations": "Risk Analysis field, maybe required by certain eMASS instances. Mitigation explanation",
+    "impactDescription": "Description of the security control impact",
+    "recommendations": "Any recommendations content",
+    "resultingResidualRiskLevelAfterProposedMitigations": "One of the following [Very Low, Low, Moderate, High, Very High] (Navy only)",
+    "predisposingConditions": "Conditions (Navy only)",
+    "threatDescription": "Threat description (Navy only)",
+    "devicesAffected": "List of affected devices by hostname. If all devices are affected, use `system` or `all` (Navy only)"
+  }
+```  
 [top](#put)
 
 ### ``put milestones``
@@ -2110,17 +2455,17 @@ EXAMPLES
 ----
 Update (PUT) one or many milestones for a POA&M items in a system
 
-```
+```shell
 USAGE
   $ saf emasser put milestones [options]
 
 FLAGS
-  -h, --help                             Show emasser CLI help for the PUT Milestones endpoint
+  -h, --help                             Show eMASSer CLI help for the PUT Milestones endpoint
   -s, --systemId=<value>                 (required) The system identification number
   -p, --poamId=<value>                   (required) The poam identification number
+  -d, --description=<value>              (required) The milestone description
   -m, --milestoneId=<value>              (required) Unique milestone identifier
   -c, --scheduledCompletionDate=<value>  The scheduled completion date - Unix time format
-  -d, --description=<value>              The milestone description
 
 DESCRIPTION
   Update milestone(s) for specified system, poam, and milestone Id
@@ -2129,102 +2474,302 @@ EXAMPLES
   $ saf emasser put milestones [-s,--systemId] [-p,--poamId] [-m,--milestoneId] [-d,--description] [-c,--scheduledCompletionDate]
 ```
 
-  - required parameter are:
-
-    |parameter                  | type or values                                      |
-    |---------------------------|:----------------------------------------------------|
-    |--systemId                 |Integer - Unique system identifier                   |
-    |--poamId                   |Integer - Unique poam identifier                     |
-    |--milestoneId              |Integer - Unique milestone identifier                |
-    |--description              |String - Milestone item description. 2000 Characters |
-    |--scheduledCompletionDate  |Date - Schedule completion date. Unix date format    |
-
-
 [top](#put)
 
 ### ``put artifacts``
 ----
-### Update one or many artifacts in a system
+Update one or many artifacts in a system
 
-### Accepted artifact files are:
-- .docx,.doc,.txt,.rtf,.xfdl,.xml,.mht,.mhtml,.html,.htm,.pdf
-- .mdb,.accdb,.ppt,.pptx,.xls,.xlsx,.csv,.log
-- .jpeg,.jpg,.tiff,.bmp,.tif,.png,.gif
-- .zip,.rar,.msg,.vsd,.vsw,.vdx, .z{#}, .ckl,.avi,.vsdx
-### Business Rules
+#### Business Rules
 - Artifact cannot be saved if File Name (fileName) exceeds 1,000 characters
-- Artifact cannot be saved if Description (description) exceeds 2,000 characters
+- Artifact cannot be saved if Name (name) exceeds 100 characters
+- Artifact cannot be saved if Description (description) exceeds 10,000 characters
 - Artifact cannot be saved if Reference Page Number (refPageNumber) exceeds 50 characters
 - Artifact cannot be saved if the file does not have an allowable file extension/type.
 - Artifact version cannot be saved if an Artifact with the same file name already exist in the system.
 - Artifact cannot be saved if the file size exceeds 30MB.
 - Artifact cannot be saved if the Last Review Date is set in the future.
+- Artifact cannot be saved if the following fields are missing data:
+  -  Filename
+  -  Type
+  -  Category
 
 ---
-### Update (PUT) Artifacts CLI usages
+#### Update (PUT) Artifacts CLI usages
+
+```shell
+  USAGE
+    $ saf emasser put artifacts [FLAGS]
+    NOTE: see EXAMPLES for command usages
+
+  FLAGS
+    -h, --help              Show eMASSer CLI help for the PUT Artifacts command
+    -s, --systemId=<value>  (required) The system identification number
+    -f, --dataFile=<value>  (required) A well formed JSON file containing the data to be updated. It can ba a single object or an array of objects.
+
+  DESCRIPTION
+    Updates artifacts for a system with provided entries
+
+  EXAMPLES
+    $ saf emasser put artifacts [-s,--systemId] [-f,--dataFile]
 
 ```
-USAGE
-  $ saf emasser put artifacts [options]
+The input file should be a well formed JSON containing the POA&M information based on defined business rules.
 
-FLAGS
-  -h, --help                            Put (update) one or many artifacts in a system
-  -s, --systemId=<value>                (required) The system identification number
-  -f, --filename=<value>                (required) Artifact file name to update for the given system
-  -T, --[no-]isTemplate                 (required) Boolean - Indicates whether an artifact is a template.
-  -g, --category=<option>               (required) Artifact category <options: Implementation Guidance|Evidence>
-  -t, --type=<option>                   (required) Artifact file type
-                                        <options: Procedure|Diagram|Policy|Labor|Document|Image|Other|Scan Result|Auditor Report>
-  -d, --description=<value>             The artifact(s) description
-  -p, --refPageNumber=<value>           Artifact reference page number
-  -c, --ccis=<value>                    CCIs associated with artifact
-  -C, --controls=<value>                Control acronym associated with the artifact. NIST SP 800-53 Revision 4 defined.
-  -D, --artifactExpirationDate=<value>  Date artifact expires and requires review
-  -R, --lastReviewDate=<value>          Date artifact was last reviewed
-
-DESCRIPTION
-  Updates artifacts for a system with provided entries
-
-EXAMPLES
-  $ saf emasser put artifacts [-s,--systemId] [-f,--filename] [--isTemplate,--no-isTemplate] [-t,--type] [-g--category] [options]
+#### Required JSON parameter/fields are:
+```json
+  {
+    "filename": "Artifact file name to update for the given system",
+    "isTemplate": "Indicates whether an artifact is a template",
+    "type": "The type of artifact. Possible values are: Procedure, Diagram, Policy, Labor, Document, Image, Other, Scan Result, Auditor Report. May accept other values set by system administrators",
+    "category": "Artifact category. Possible values are: Implementation Guidance or Evidence. May accept other values set by system administrators"
+  }
 ```
-  - required parameter are:
+#### Optional JSON parameters/fields are:
+```json
+  {
+    "name": "The artifact name",
+    "artifactDescription": "The artifact(s) description",
+    "refPageNumber": "Artifact reference page number",
+    "controls": "Control acronym associated with the artifact. NIST SP 800-53 Revision 4 defined",
+    "assessmentProcedures": "The Security Control Assessment Procedure being associated with the artifact",
+    "expirationDate": "Date artifact expires and requires review",
+    "lastReviewDate": "Date artifact was last reviewed",
+    "signedDate": "Date artifact was signed"
+  }
+```
+#### All accepted parameters/fields are:
+```json
+  {
+    "filename": "Artifact file name to update for the given system",
+    "isTemplate": "Indicates whether an artifact is a template",
+    "type": "The type of artifact. Possible values are: Procedure, Diagram, Policy, Labor, Document, Image, Other, Scan Result, Auditor Report. May accept other values set by system administrators",
+    "category": "Artifact category. Possible values are: Implementation Guidance or Evidence. May accept other values set by system administrators",
+    "name": "The artifact name",
+    "artifactDescription": "The artifact(s) description",
+    "refPageNumber": "Artifact reference page number",
+    "controls": "Control acronym associated with the artifact. NIST SP 800-53 Revision 4 defined",
+    "assessmentProcedures": "The Security Control Assessment Procedure being associated with the artifact",
+    "expirationDate": "Date artifact expires and requires review",
+    "lastReviewDate": "Date artifact was last reviewed",
+    "signedDate": "Date artifact was signed"
+  }
+```
 
-    |parameter     | type or values                                      |
-    |--------------|:----------------------------------------------------|
-    |--systemId    |Integer - Unique system identifier                   |
-    |--filename    |String - File name should match exactly one file within the provided zip file|
-    |              |Binary  - Application/zip file. Max 30MB per artifact |
-    |--isTemplate  |Boolean - Indicates whether an artifact is a template|
-    |--category    |Possible Values: Implementation Guidance, Evidence    |    
-    |--type        |Possible Values: Procedure, Diagram, Policy, Labor, Document, Image, Other, Scan Result, Auditor Report|
+[top](#put)
 
-  - optional parameter are:
+### ```put hardware```
+---
+Update one or many hardware assets to a system.
+  ```shell
+  USAGE
+    $ saf emasser put hardware_baseline [FLAGS]
+    NOTE: see EXAMPLES for command usages
 
-    |parameter                | type or values                                        |
-    |-------------------------|:------------------------------------------------------| 
-    |--description            |String - Artifact description. 2000 Characters         |
-    |--refPageNumber          |String - Artifact reference page number. 50 Characters |
-    |--ccis                   |String -  CCIs associated with artifact                |
-    |--controls               |String - Control acronym associated with the artifact. NIST SP 800-53 Revision 4 defined|
-    |--artifactExpirationDate |Date - Date Artifact expires and requires review. In Unix Date Format|
-    |--lastReviewDate         |Date - Date Artifact was last reviewed. In Unix Date Format          |
+  FLAGS
+    -h, --help              Show eMASSer CLI help for the PUT Hardware Baseline command
+    -s, --systemId=<value>  (required) The system identification number  
+    -f, --dataFile=<value>  (required) A well formed JSON file containing the data to be updated. It can ba a single object or an array of objects.
 
+  DESCRIPTION
+    Update one or many hardware assets to a system.
+    The CLI expects an input JSON file containing the required, conditional
+    and optional fields for the hardware asset(s) being added to the system.
 
+  EXAMPLES
+    $ saf emasser put hardware_baseline [-s,--systemId] [-f,--dataFile]
+```
+The input file [-f, --dataFile] should be a well formed JSON containing Hardware Assets.
+
+#### Required JSON parameter/field is:
+```json
+  {
+    "hardwareId": "GUID identifying the specific hardware asset",
+    "assetName": "Name of the hardware asset"
+  }
+```
+#### Conditional JSON parameters/fields are:
+```json
+  {
+    "publicFacingFqdn": "Public facing FQDN. Only applicable if Public Facing is set to true",
+    "publicFacingIpAddress": "Public facing IP address. Only applicable if Public Facing is set to true",
+    "publicFacingUrls": "Public facing URL(s). Only applicable if Public Facing is set to true"
+  }
+```
+#### Optional JSON parameters/fields are:
+```json
+  {
+    "componentType": "Public facing FQDN. Only applicable if Public Facing is set to true",
+    "nickname": "Public facing IP address. Only applicable if Public Facing is set to true",
+    "assetIpAddress": "IP address of the hardware asset",
+    "publicFacing": "Public facing is defined as any asset that is accessible from a commercial connection",
+    "virtualAsset": "Determine if this is a virtual hardware asset",
+    "manufacturer": "Manufacturer of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",
+    "modelNumber": "Model number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",
+    "serialNumber": "Serial number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",
+    "osIosFwVersion": "OS/iOS/FW version of the hardware asset",
+    "memorySizeType": "Memory size / type of the hardware asset",
+    "location": "Location of the hardware asset",
+    "approvalStatus": "Approval status of the hardware asset",
+    "criticalAsset": "Indicates whether the asset is a critical information system asset"
+  }
+```
+#### All accepted parameters/fields are:
+```json
+  {
+    "hardwareId": "GUID identifying the specific hardware asset",
+    "assetName": "Name of the hardware asset",
+    "publicFacingFqdn": "Public facing FQDN. Only applicable if Public Facing is set to true",
+    "publicFacingIpAddress": "Public facing IP address. Only applicable if Public Facing is set to true",
+    "publicFacingUrls": "Public facing URL(s). Only applicable if Public Facing is set to true",
+    "componentType": "Public facing FQDN. Only applicable if Public Facing is set to true",
+    "nickname": "Public facing IP address. Only applicable if Public Facing is set to true",
+    "assetIpAddress": "IP address of the hardware asset",
+    "publicFacing": "Public facing is defined as any asset that is accessible from a commercial connection",
+    "virtualAsset": "Determine if this is a virtual hardware asset",
+    "manufacturer": "Manufacturer of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",
+    "modelNumber": "Model number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",
+    "serialNumber": "Serial number of the hardware asset. Populated with “Virtual” by default if Virtual Asset is true",
+    "osIosFwVersion": "OS/iOS/FW version of the hardware asset",
+    "memorySizeType": "Memory size / type of the hardware asset",
+    "location": "Location of the hardware asset",
+    "approvalStatus": "Approval status of the hardware asset",
+    "criticalAsset": "Indicates whether the asset is a critical information system asset"
+  }
+```
+[top](#put)
+
+### ```put software```
+---
+Update one or many software assets to a system.
+```shell
+  USAGE
+    $ saf emasser put software_baseline [FLAGS]
+    NOTE: see EXAMPLES for command usages
+
+  FLAGS
+    -h, --help              Show eMASSer CLI help for the PUT Software Baseline command
+    -s, --systemId=<value>  (required) The system identification number  
+    -f, --dataFile=<value>  (required) A well formed JSON file containing the data to be updated. It can ba a single object or an array of objects.
+
+  DESCRIPTION
+    Update one or many software assets to a system.
+    The CLI expects an input JSON file containing the required, conditional
+    and optional fields for the software asset(s) being added to the system.
+
+  EXAMPLES
+    $ saf emasser put software_baseline [-s,--systemId] [-f,--dataFile]
+```
+The input file [-f, --dataFile] should be a well formed JSON containing Software Assets.
+
+#### Required JSON parameter/field is:
+```json
+  {
+    "softwareId": "GUID identifying the specific software asset",
+    "softwareVendor": "Vendor of the software asset",
+    "softwareName": "Name of the software asset",
+    "version": "Version of the software asset"
+  }
+```
+#### Conditional JSON parameters/fields are:
+```json
+  {
+    "approvalDate": "Approval date of the software asset. If Approval Status is set to “Unapproved” or “In Progress”, Approval Date will be set to null"
+  }
+```
+#### Optional JSON parameters/fields are:
+```json
+  {
+    "softwareType": "Type of the software asset",
+    "parentSystem": "Parent system of the software asset",
+    "subsystem": "Subsystem of the software asset",
+    "network": "Network of the software asset",
+    "hostingEnvironment": "Hosting environment of the software asset",
+    "softwareDependencies": "Dependencies for the software asset",
+    "cryptographicHash": "Cryptographic hash for the software asset",
+    "inServiceData": "Date the sotware asset was added to the network",
+    "itBudgetUii": "IT budget UII for the software asset",
+    "fiscalYear": "Fiscal year (FY) for the software asset",
+    "popEndDate": "Period of performance (POP) end date for the software asset",
+    "licenseOrContract": "License or contract for the software asset",
+    "licenseTerm": "License term for the software asset",
+    "costPerLicense": "Cost per license for the software asset",
+    "totalLicenses": "Number of total licenses for the software asset",
+    "totalLicenseCost": "Total cost of the licenses for the software asset",
+    "licensesUsed": "Number of licenses used for the software asset",
+    "licensePoc": "Point of contact (POC) for the software asset",
+    "licenseRenewalDate": "License renewal date for the software asset",
+    "licenseExpirationDate": "License expiration date for the software asset",
+    "approvalStatus": "Approval status of the software asset",
+    "releaseDate": "Release date of the software asset",
+    "maintenanceDate": "Maintenance date of the software asset",
+    "retirementDate": "Retirement date of the software asset",
+    "endOfLifeSupportDate": "End of life/support date of the software asset",
+    "extendedEndOfLifeSupportDate": "Extended End of Life/Support Date cannot occur prior to the End of Life/Support Date",
+    "criticalAsset": "Indicates whether the asset is a critical information system asset",
+    "location": "Location of the software asset",
+    "purpose": "Purpose of the software asset",
+    "unsupportedOperatingSystem": "Unsupported operating system (VA only)",
+    "unapprovedSoftwareFromTrm": "Unapproved software from TRM (VA only)",
+    "approvedWaiver": "Approved waiver (VA only)"
+  }
+```
+#### All accepted parameters/fields are:
+```json
+  {
+    "softwareId": "GUID identifying the specific software asset",
+    "softwareVendor": "Vendor of the software asset",
+    "softwareName": "Name of the software asset",
+    "version": "Version of the software asset",
+    "approvalDate": "Approval date of the software asset. If Approval Status is set to “Unapproved” or “In Progress”, Approval Date will be set to null",
+    "softwareType": "Type of the software asset",
+    "parentSystem": "Parent system of the software asset",
+    "subsystem": "Subsystem of the software asset",
+    "network": "Network of the software asset",
+    "hostingEnvironment": "Hosting environment of the software asset",
+    "softwareDependencies": "Dependencies for the software asset",
+    "cryptographicHash": "Cryptographic hash for the software asset",
+    "inServiceData": "Date the sotware asset was added to the network",
+    "itBudgetUii": "IT budget UII for the software asset",
+    "fiscalYear": "Fiscal year (FY) for the software asset",
+    "popEndDate": "Period of performance (POP) end date for the software asset",
+    "licenseOrContract": "License or contract for the software asset",
+    "licenseTerm": "License term for the software asset",
+    "costPerLicense": "Cost per license for the software asset",
+    "totalLicenses": "Number of total licenses for the software asset",
+    "totalLicenseCost": "Total cost of the licenses for the software asset",
+    "licensesUsed": "Number of licenses used for the software asset",
+    "licensePoc": "Point of contact (POC) for the software asset",
+    "licenseRenewalDate": "License renewal date for the software asset",
+    "licenseExpirationDate": "License expiration date for the software asset",
+    "approvalStatus": "Approval status of the software asset",
+    "releaseDate": "Release date of the software asset",
+    "maintenanceDate": "Maintenance date of the software asset",
+    "retirementDate": "Retirement date of the software asset",
+    "endOfLifeSupportDate": "End of life/support date of the software asset",
+    "extendedEndOfLifeSupportDate": "Extended End of Life/Support Date cannot occur prior to the End of Life/Support Date",
+    "criticalAsset": "Indicates whether the asset is a critical information system asset",
+    "location": "Location of the software asset",
+    "purpose": "Purpose of the software asset",
+    "unsupportedOperatingSystem": "Unsupported operating system (VA only)",
+    "unapprovedSoftwareFromTrm": "Unapproved software from TRM (VA only)",
+    "approvedWaiver": "Approved waiver (VA only)"
+  }
+ ``` 
 [top](#put)
 
 ## Usage - DELETE
 
-### ``delete poams``
+### ```delete poams```
 
 ----
 Remove (DELETE) POA&Ms CLI usages
-```
+```shell
 USAGE
   $ saf emasser delete poams [options]
 
 FLAGS
-  -h, --help                Show emasser CLI help for the DELETE POA&M endpoint
+  -h, --help                Show eMASSer CLI help for the DELETE POA&M endpoint
   -s, --systemId=<value>    (required) The system identification number
   -P, --poamsId=<value>...  (required) Unique POA&M identification number, can have multiple (space separated)
 
@@ -2236,7 +2781,7 @@ EXAMPLES
 ```
 [top](#delete)
 
-### ``delete milestones``
+### ```delete milestones```
 
 ----
 Remove milestones in a system for one or many POA&M items
@@ -2246,12 +2791,12 @@ To delete a milestone the record must be inactive by having the field `isActive`
 The last milestone can not be deleted, at-least on must exist.
 
 Remove (DELETE) Milestones CLI usages
-```
+```shell
 USAGE
   $ saf emasser delete milestones [options]
 
 FLAGS
-  -h, --help                     Show emasser CLI help for the DELETE Milestones endpoint
+  -h, --help                     Show eMASSer CLI help for the DELETE Milestones endpoint
   -s, --systemId=<value>         (required) The system identification number
   -p, --poamId=<value>           (required) The poam identification number
   -M, --milestonesId=<value>...  (required) Unique milestone identifier, can have multiple (space separated)
@@ -2267,18 +2812,18 @@ EXAMPLES
 
 [top](#delete)
 
-### ``delete artifacts``
+### ```delete artifacts```
 
 ---
 Remove one or many artifacts in a system
 
 Remove (DELETE) Artifact files CLI usages
-```
+```shell
 USAGE
   $ saf emasser delete artifacts [options]
 
 FLAGS
-  -h, --help                 Show emasser CLI help for the DELETE POA&M endpoint
+  -h, --help                 Show eMASSer CLI help for the DELETE POA&M endpoint
   -s, --systemId=<value>     (required) The system identification number
   -F, --fileName=<value>...  (required) The artifact file name to remove, can have multiple (space separated)
 
@@ -2290,4 +2835,44 @@ EXAMPLES
 ```
 **Note** Multiple artifacts can be deleted by including multiple file names separated by a space.
 
+[top](#delete)
+
+### ```delete hardware```
+---
+Remove one or many Hardware items in a system identified by system and hardware Id
+```shell
+USAGE
+  $ saf emasser delete hardware_baseline [FLAGS]
+
+FLAGS
+  -h, --help                         Show help for the SAF CLI eMASSer DELETE Hardware Baseline command
+  -s, --systemId=<value>             (required) The system identification number
+  -a, --assetsHardwareId=<value>...  (required) Unique GUID identifying a specific hardware asset, can have multiple (space separated)
+
+DESCRIPTION
+  Remove one or many Hardware items in a system identified by system and hardware Id
+
+EXAMPLES
+  $ saf emasser delete hardware_baseline [-s,--systemId] [-a,--assetsHardwareId] <hardware-id> <hardware-id> ...
+```  
+[top](#delete)
+
+### ```delete software```
+---
+Remove one or many Software items in a system identified by system and software Id
+```shell
+  USAGE
+    $ saf emasser delete software_baseline [FLAGS]
+
+  FLAGS
+    -h, --help                         Show help for the SAF CLI eMASSer DELETE Software Baseline command
+    -s, --systemId=<value>             (required) The system identification number  
+    -a, --assetsSoftwareId=<value>...  (required) Unique GUID identifying a specific software asset, can have multiple (space separated)
+
+  DESCRIPTION
+    Remove one or many Software items in a system identified by system and software Id
+
+  EXAMPLES
+    $ saf emasser delete software_baseline [-s,--systemId] [-a,--assetsSoftwareId] <software-id> <software-id> ...
+```
 [top](#delete)

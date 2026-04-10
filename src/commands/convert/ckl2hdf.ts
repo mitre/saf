@@ -1,29 +1,50 @@
-import {Command, Flags} from '@oclif/core'
-import fs from 'fs'
-import {ChecklistResults as Mapper} from '@mitre/hdf-converters'
-import {checkInput, checkSuffix} from '../../utils/global'
+import { Flags } from '@oclif/core';
+import fs from 'fs';
+import { ChecklistResults as Mapper, INPUT_TYPES } from '@mitre/hdf-converters';
+import { checkInput, checkSuffix } from '../../utils/global';
+import { BaseCommand } from '../../utils/oclif/base_command';
 
-export default class CKL2HDF extends Command {
-  static usage = 'convert ckl2hdf -i <ckl-xml> -o <hdf-scan-results-json> [-h] [-s] [-w]'
+export default class CKL2HDF extends BaseCommand<typeof CKL2HDF> {
+  static readonly usage
+    = '<%= command.id %> -i <ckl-xml> -o <hdf-scan-results-json> [-r]';
 
-  static description = 'Translate a Checklist XML file into a Heimdall Data Format JSON file'
+  static readonly description
+    = 'Translate a Checklist XML file into a Heimdall Data Format JSON file';
 
-  static examples = ['saf convert ckl2hdf -i ckl_results.xml -o output-hdf-name.json']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> -i ckl_results.xml -o output-hdf-name.json'];
 
-  static flags = {
-    help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Input Checklist XML File'}),
-    output: Flags.string({char: 'o', required: true, description: 'Output HDF JSON File'}),
-    'with-raw': Flags.boolean({char: 'w', required: false, description: 'Include raw input file in HDF JSON file'}),
-  }
+  static readonly flags = {
+    input: Flags.string({
+      char: 'i',
+      required: true,
+      description: 'Input Checklist XML File',
+    }),
+    output: Flags.string({
+      char: 'o',
+      required: true,
+      description: 'Output HDF JSON File',
+    }),
+    includeRaw: Flags.boolean({
+      char: 'r',
+      required: false,
+      description: 'Include raw input file in HDF JSON file',
+    }),
+  };
 
   async run() {
-    const {flags} = await this.parse(CKL2HDF)
+    const { flags } = await this.parse(CKL2HDF);
 
-    const data = fs.readFileSync(flags.input, 'utf8')
-    checkInput({data, filename: flags.input}, 'checklist', 'DISA Checklist')
+    const data = fs.readFileSync(flags.input, 'utf8');
+    checkInput({ data, filename: flags.input }, INPUT_TYPES.CHECKLIST, 'DISA Checklist');
 
-    const converter = new Mapper(data, flags['with-raw'])
-    fs.writeFileSync(checkSuffix(flags.output), JSON.stringify(converter.toHdf()))
+    try {
+      const converter = new Mapper(data, flags.includeRaw);
+      fs.writeFileSync(
+        checkSuffix(flags.output),
+        JSON.stringify(converter.toHdf(), null, 2),
+      );
+    } catch (error) {
+      console.error(`Error converting to hdf:\n${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}`);
+    }
   }
 }

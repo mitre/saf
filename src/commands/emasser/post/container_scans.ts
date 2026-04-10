@@ -1,43 +1,83 @@
-import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
-import {ContainersApi} from '@mitre/emass_client'
-import {ContainersResponsePost} from '@mitre/emass_client/dist/api'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
-import {outputError} from '../../../utils/emasser/outputError'
-import {readFile} from 'fs/promises'
-import _ from 'lodash'
-import fs from 'fs'
+import fs from 'fs';
+import { readFile } from 'fs/promises';
+import { ContainerScanResultsApi } from '@mitre/emass_client';
+import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
+import _ from 'lodash';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
 
-interface ContainerResource {
-  containerId: string,
-  containerName: string,
-  podName?: string,
-  podIp?: string,
-  namespace?: string,
-  time: number,
-  tags?: Tags|any,
-  benchmarks: Benchmarks[]
-}
+/**
+ * Represents a container resource with associated metadata and benchmarks.
+ *
+ * @interface ContainerResource
+ *
+ * @property {string} containerId - The unique identifier of the container. (Required)
+ * @property {string} containerName - The name of the container. (Required)
+ * @property {number} time - The timestamp associated with the container resource. (Required)
+ * @property {Benchmarks[]} benchmarks - An array of benchmark results for the container. (Required)
+ * @property {string} [podName] - The name of the pod in which the container is running. (Optional)
+ * @property {string} [podIp] - The IP address of the pod in which the container is running. (Optional)
+ * @property {string} [namespace] - The namespace in which the container is running. (Optional)
+ * @property {Tags|any} [tags] - Additional tags or metadata associated with the container. (Optional)
+ */
+type ContainerResource = {
+  // Required
+  containerId: string;
+  containerName: string;
+  time: number;
+  benchmarks: Benchmarks[];
+  // Optional
+  podName?: string;
+  podIp?: string;
+  namespace?: string;
+  tags?: Tags;
+};
 
-interface Tags {
-  [key: string]: string;
-}
+/**
+ * Represents a collection of tags where each tag is a key-value pair.
+ * The key is a string representing the tag name, and the value is a string representing the tag value.
+ */
+type Tags = Record<string, string>;
 
-interface Benchmarks {
-  benchmark: string,
-  isBaseline?: boolean,
-  results: Results[],
-}
+/**
+ * Represents the benchmarks for a container scan.
+ */
+type Benchmarks = {
+  // Required
+  benchmark: string;
+  results: Results[];
+  // Optional
+  isBaseline?: boolean;
+  version?: string;
+  release?: string;
+};
 
-interface Results {
-  ruleId: string,
-  status: StatusEnum,
-  lastSeen: number,
-  message?: string,
-}
+/**
+ * Represents the results of a container scan.
+ */
+type Results = {
+  // Required
+  ruleId: string;
+  status: StatusEnum;
+  lastSeen: number;
+  // Optional
+  message?: string;
+};
 
+/**
+ * Enum representing the status of a container scan.
+ *
+ * @readonly
+ * @enum {string}
+ * @property {string} Pass - The scan passed.
+ * @property {string} Fail - The scan failed.
+ * @property {string} Other - The scan has a status other than pass or fail.
+ * @property {string} NotReviewed - The scan has not been reviewed.
+ * @property {string} NotChecked - The scan has not been checked.
+ * @property {string} NotApplicable - The scan is not applicable.
+ */
 export declare const StatusEnum: {
   readonly Pass: 'Pass';
   readonly Fail: 'Fail';
@@ -45,224 +85,315 @@ export declare const StatusEnum: {
   readonly NotReviewed: 'Not Reviewed';
   readonly NotChecked: 'Not Checked';
   readonly NotApplicable: 'Not Applicable';
-}
+};
+/**
+ * Represents the possible status values for the StatusEnum type.
+ * This type is derived from the keys of the StatusEnum object.
+ */
+
 export declare type StatusEnum = typeof StatusEnum[keyof typeof StatusEnum];
 
-function printRedMsg(msg: string) {
-  console.log('\x1B[91m', msg, '\x1B[0m')
+/**
+ * Combines JSON examples from 'container_scans-required' and
+ * 'container_scans-optional' into a single JSON string.
+ *
+ * @returns {string} A JSON string that merges the required and
+ *                   optional container scan examples.
+ */
+function getAllJsonExamples(): string {
+  return JSON.stringify(
+    _.merge({},
+      getJsonExamples('container_scans-required'),
+      getJsonExamples('container_scans-optional'),
+    ),
+  );
 }
 
-function assertParamExists(object: string, value: string|boolean|number|undefined|null): void {
+/**
+ * Asserts that a parameter exists by checking if the value is not undefined.
+ * If the value is undefined, it prints an error message and throws an error.
+ *
+ * @param object - The name of the parameter or field being checked.
+ * @param value - The value of the parameter or field which can be of type string, boolean, number, undefined, or null.
+ * @throws {Error} Throws an error if the value is undefined.
+ */
+function assertParamExists(object: string, value: string | boolean | number | undefined | null): void {
   if (value === undefined) {
-    printRedMsg(`Missing required parameter/field: ${object}`)
-    throw new Error('Value not defined')
+    printRedMsg(`Missing required parameter/field: ${object}`);
+    throw new Error('Value not defined');
   }
 }
 
+/**
+ * Adds required fields to the request body for a container resource.
+ *
+ * This function ensures that the required fields are present in the input data object
+ * and constructs a new container resource object with the required fields populated.
+ * If any required field is missing, an error is thrown and the required fields are logged.
+ *
+ * @param {ContainerResource} dataObj - The input container resource object.
+ * @returns {ContainerResource} - The new container resource object with required fields populated.
+ * @throws Will throw an error if any required field is missing in the input data object.
+ */
 function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerResource {
   const bodyObj: ContainerResource = {
     containerId: '',
     containerName: '',
     time: 0,
     benchmarks: [],
-  }
-  const benchmarksArray: Benchmarks[] = []
-  const resultsArray: Results[] = []
+  };
+  const benchmarksArray: Benchmarks[] = [];
+  const resultsArray: Results[] = [];
   try {
-    assertParamExists('containerId', dataObj.containerId)
-    assertParamExists('containerName', dataObj.containerName)
-    assertParamExists('time', dataObj.time)
+    assertParamExists('containerId', dataObj.containerId);
+    assertParamExists('containerName', dataObj.containerName);
+    assertParamExists('time', dataObj.time);
 
-    let i = 0
-    let j = 0
+    let i = 0;
+    let j = 0;
+    // disabling these eslint rules since I don't want to touch the logic as I'm confused by the same resultsArray being appended to even between benchmarks without being reset in the middle
+    // eslint-disable-next-line unicorn/no-array-for-each
     dataObj.benchmarks.forEach((entryObject: Benchmarks) => {
-      assertParamExists(`benchmarks[${i}].benchmark`, entryObject.benchmark)
+      assertParamExists(`benchmarks[${i}].benchmark`, entryObject.benchmark);
 
+      // eslint-disable-next-line unicorn/no-array-for-each
       entryObject.results.forEach((resultObj: Results) => {
-        assertParamExists(`benchmarks.results[${j}].ruleId`, resultObj.ruleId)
-        assertParamExists(`benchmarks.results[${j}].lastSeen`, resultObj.lastSeen)
-        assertParamExists(`benchmarks.results[${j}].status`, resultObj.status)
-        j++
+        assertParamExists(`benchmarks.results[${j}].ruleId`, resultObj.ruleId);
+        assertParamExists(`benchmarks.results[${j}].lastSeen`, resultObj.lastSeen);
+        assertParamExists(`benchmarks.results[${j}].status`, resultObj.status);
+        j++;
 
-        const resultsObj: Results = {
-          ruleId: '',
-          status: 'Pass',
-          lastSeen: 0,
-        }
-        resultsObj.ruleId = resultObj.ruleId
-        resultsObj.lastSeen = resultObj.lastSeen
-        resultsObj.status = resultObj.status
-        resultsArray.push(resultsObj)
-      })
+        const resultsObj: Results = { ruleId: resultObj.ruleId, lastSeen: resultObj.lastSeen, status: resultObj.status };
+        resultsArray.push(resultsObj);
+      });
 
-      i++
+      i++;
       const benchMarksObj: Benchmarks = {
-        benchmark: '',
-        results: [],
-      }
-      benchMarksObj.benchmark = entryObject.benchmark
-      benchMarksObj.results = resultsArray
-      benchmarksArray.push(benchMarksObj)
-    })
+        benchmark: entryObject.benchmark,
+        results: resultsArray,
+      };
+      benchmarksArray.push(benchMarksObj);
+    });
   } catch (error) {
-    console.log('Required JSON fields are:')
-    console.log(colorize(JSON.stringify(getJsonExamples('container_scans-required'), null, 2)))
-    throw error
+    console.log('Required JSON fields are:');
+    console.log(colorize(JSON.stringify(getJsonExamples('container_scans-required'), null, 2)));
+    throw error;
   }
 
-  bodyObj.containerId = dataObj.containerId
-  bodyObj.containerName = dataObj.containerName
-  bodyObj.time = dataObj.time
-  bodyObj.benchmarks = benchmarksArray
+  bodyObj.containerId = dataObj.containerId;
+  bodyObj.containerName = dataObj.containerName;
+  bodyObj.time = dataObj.time;
+  bodyObj.benchmarks = benchmarksArray;
 
-  return bodyObj
+  return bodyObj;
 }
 
+/**
+ * Adds optional fields from the `dataObj` to the `bodyObject`.
+ *
+ * @param bodyObject - The target object to which optional fields will be added.
+ * @param dataObj - The source object containing optional fields.
+ *
+ * The function performs the following operations:
+ * - Adds `namespace`, `podIp`, and `podName` fields if they exist in `dataObj`.
+ * - Adds `tags` object if it exists in `dataObj`.
+ * - Adds `benchmarks` array if it exists in `dataObj`, including optional fields within each benchmark and its results.
+ *
+ * The `benchmarks` array in `dataObj` is expected to contain objects with the following structure:
+ * - `benchmark` (required)
+ * - `isBaseline` (optional)
+ * - `version` (optional)
+ * - `release` (optional)
+ * - `results` (required array) containing objects with the following structure:
+ *   - `ruleId` (required)
+ *   - `status` (required)
+ *   - `lastSeen` (required)
+ *   - `message` (optional)
+ */
 function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerResource): void {
   // Add object optional entries
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'namespace')) {
-    bodyObject.namespace = dataObj.namespace
+  if (Object.hasOwn(dataObj, 'namespace')) {
+    bodyObject.namespace = dataObj.namespace;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'podIp')) {
-    bodyObject.podIp = dataObj.podIp
+  if (Object.hasOwn(dataObj, 'podIp')) {
+    bodyObject.podIp = dataObj.podIp;
   }
 
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'podName')) {
-    bodyObject.podName = dataObj.podName
+  if (Object.hasOwn(dataObj, 'podName')) {
+    bodyObject.podName = dataObj.podName;
   }
 
   // Add optional tags objects if available
-  if (Object.prototype.hasOwnProperty.call(dataObj, 'tags')) {
+  if (dataObj.tags && typeof dataObj.tags === 'object') {
     const tagsObj: Tags = {};
-    (Object.keys(dataObj.tags) as (keyof typeof dataObj.tags)[]).forEach(key => {
-      tagsObj[key.toString()] = dataObj.tags[key]
-    })
-    bodyObject.tags = tagsObj
+    for (const key of Object.keys(dataObj.tags)) {
+      tagsObj[key] = dataObj.tags?.[key]; // Ensure type safety
+    }
+    bodyObject.tags = tagsObj;
   }
 
-  const benchmarksArray: Benchmarks[] = []
-  const resultsArray: Results[] = []
+  const benchmarksArray: Benchmarks[] = [];
+  const resultsArray: Results[] = [];
   // Add the optional benchmark entries
+  // disabling these eslint rules since I don't want to touch the logic as I'm confused by the same resultsArray being appended to even between benchmarks without being reset in the middle
+  // eslint-disable-next-line unicorn/no-array-for-each
   dataObj.benchmarks.forEach((entryObject: Benchmarks) => {
-    const benchmarksObj: Benchmarks = {
-      benchmark: '',
-      results: [],
-    }
+    const benchmarksObj: Benchmarks = { benchmark: entryObject.benchmark, results: [] };
     // These are required
-    benchmarksObj.benchmark = entryObject.benchmark
-    // Check for the optional entry
-    if (Object.prototype.hasOwnProperty.call(entryObject, 'isBaseline')) {
-      benchmarksObj.isBaseline = entryObject.isBaseline
+    // Check for the optional entry (isBaseline, version, and release)
+    if (Object.hasOwn(entryObject, 'isBaseline')) {
+      benchmarksObj.isBaseline = entryObject.isBaseline;
     }
 
-    // Add the optional results entries
+    if (Object.hasOwn(entryObject, 'version')) {
+      benchmarksObj.version = entryObject.version;
+    }
+
+    if (Object.hasOwn(entryObject, 'release')) {
+      benchmarksObj.release = entryObject.release;
+    }
+
+    // Add the optional Results entries
+    // eslint-disable-next-line unicorn/no-array-for-each
     entryObject.results.forEach((resultObj: Results) => {
-      const resultsObj: Results = {
-        ruleId: '',
-        status: 'Pass',
-        lastSeen: 0,
-      }
       // These are required
-      resultsObj.ruleId = resultObj.ruleId
-      resultsObj.status = resultObj.status
-      resultsObj.lastSeen = resultObj.lastSeen
+      const resultsObj: Results = { ruleId: resultObj.ruleId, status: resultObj.status, lastSeen: resultObj.lastSeen };
       // Check for the optional entry
-      if (Object.prototype.hasOwnProperty.call(resultObj, 'isBaseline')) {
-        resultsObj.message = resultObj.message
+      if (Object.hasOwn(resultObj, 'message')) {
+        resultsObj.message = resultObj.message;
       }
 
-      resultsArray.push(resultsObj)
-    })
-    benchmarksObj.results = resultsArray
-    benchmarksArray.push(benchmarksObj)
-  })
+      resultsArray.push(resultsObj);
+    });
+    benchmarksObj.results = resultsArray;
+    benchmarksArray.push(benchmarksObj);
+  });
 
-  bodyObject.benchmarks = benchmarksArray
+  bodyObject.benchmarks = benchmarksArray;
 }
 
+/**
+ * Checks if the given object is a valid ContainerResource.
+ *
+ * A valid ContainerResource is an object that:
+ * - Is of type 'object' and not null.
+ * - Contains the properties 'containerId', 'containerName', 'time', and 'benchmarks'.
+ * - The 'containerId' property is a string.
+ * - The 'containerName' property is a string.
+ * - The 'time' property is a number.
+ * - The 'benchmarks' property is an array.
+ *
+ * @param obj - The object to check.
+ * @returns True if the object is a valid ContainerResource, false otherwise.
+ */
+function isValidContainerResource(obj: unknown): obj is ContainerResource {
+  return typeof obj === 'object'
+    && obj !== null
+    && 'containerId' in obj
+    && 'containerName' in obj
+    && 'time' in obj
+    && 'benchmarks' in obj
+    && typeof (obj as ContainerResource).containerId === 'string'
+    && typeof (obj as ContainerResource).containerName === 'string'
+    && typeof (obj as ContainerResource).time === 'number'
+    && Array.isArray((obj as ContainerResource).benchmarks);
+}
+
+const CMD_HELP = 'saf emasser post container_scans -h or --help';
 export default class EmasserContainerScans extends Command {
-  static usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command usages\u001B[0m';
 
-  static description = 'Upload containers and their scan results in the assets module for a system'
+  static readonly description = 'Upload containers and their scan results in the assets module for a system';
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--containerCodeScanFile]',
+  static readonly examples = [
+    '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing the container scan results information.',
     'Required JSON parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('container_scans-required'), null, 2)),
     'Optional JSON parameters/fields are:',
-    colorize(JSON.stringify(getJsonExamples('container_scans-optional'), null, 2))]
+    colorize(JSON.stringify(getJsonExamples('container_scans-optional'), null, 2)),
+    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
+    colorize(getAllJsonExamples()),
+  ];
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Post (upload) one or many containers and their scan results for a system'}),
-    ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
-  }
+  static readonly flags = {
+    help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Container Scan Results command' }),
+    ...getFlagsForEndpoint(process.argv),
+  };
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserContainerScans)
-    const apiCxn = new ApiConnection()
-    const addContainer = new ContainersApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+    const { flags } = await this.parse(EmasserContainerScans);
+    const apiCxn = new ApiConnection();
+    const addContainer = new ContainerScanResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    const requestBodyArray: ContainerResource[] = []
+    const requestBodyArray: ContainerResource[] = [];
 
-    // Check if a Cloud Resource json file was provided
-    if (fs.existsSync(flags.containerCodeScanFile)) {
-      let data: any
-      try {
-        data = JSON.parse(await readFile(flags.containerCodeScanFile, 'utf8'))
-      } catch (error: any) {
-        if (error.code === 'ENOENT') {
-          console.log('Container Scan Results JSON file not found!')
-          process.exit(1)
-        } else {
-          console.log('Error reading Container Scan Results file, possible malformed json. Please use the -h flag for help.')
-          console.log('Error message was:', error.message)
-          process.exit(1)
-        }
-      }
-
-      // Create request body based on key/pair values provide in the input file
-      if (Array.isArray(data)) {
-        data.forEach((dataObject: ContainerResource) => {
-          let bodyObj: ContainerResource = {
-            containerId: '',
-            containerName: '',
-            time: 0,
-            benchmarks: [],
-          }
-          // Add required fields to request array object based on business logic
-          try {
-            bodyObj = addRequiredFieldsToRequestBody(dataObject)
-            addOptionalFields(bodyObj, dataObject)
-            requestBodyArray.push(bodyObj)
-          } catch {
-            process.exit(1)
-          }
-        })
-      } else if (typeof data === 'object') {
-        const dataObject: ContainerResource = data
-        let bodyObj: ContainerResource = {
-          containerId: '',
-          containerName: '',
-          time: 0,
-          benchmarks: [],
-        }
-        // Add required fields to request array object based on business logic
-        try {
-          bodyObj = addRequiredFieldsToRequestBody(dataObject)
-          addOptionalFields(bodyObj, dataObject)
-          requestBodyArray.push(bodyObj)
-        } catch {
-          process.exit(1)
-        }
-      }
-    } else {
-      console.error('Invalid or Container Scan Results JSON file not found on the provided directory:', flags.containerCodeScanFile)
-      process.exit(1)
+    // Check if a Container Scans json file was provided
+    if (!fs.existsSync(flags.dataFile)) {
+      console.error(`\u001B[91m» Container Scan Results data file (.json) not found or invalid: ${flags.dataFile}\u001B[0m`);
+      process.exit(1);
     }
 
-    addContainer.addContainerSansBySystemId(flags.systemId, requestBodyArray).then((response: ContainersResponsePost) => {
-      console.log(colorize(outputFormat(response, false)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    try {
+      const fileContent = await readFile(flags.dataFile, 'utf8');
+      const data: unknown = JSON.parse(fileContent);
+
+      if (Array.isArray(data)) {
+        for (const item of data) {
+          if (isValidContainerResource(item)) {
+            processContainerResource(item);
+          } else {
+            console.error('\u001B[91m» Invalid container resource format detected.\u001B[0m');
+            process.exit(1);
+          }
+        }
+      } else if (typeof data === 'object' && data !== null && isValidContainerResource(data)) {
+        processContainerResource(data);
+      } else {
+        console.error('\u001B[91m» Invalid data format in Container Scan Results JSON file.\u001B[0m');
+        process.exit(1);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('\u001B[91m» Error reading Container Scan Results data file, possible malformed JSON. Please use the -h flag for help.\u001B[0m');
+        console.error('\u001B[93m→ Error message was:', error.message, '\u001B[0m');
+      } else {
+        console.error('\u001B[91m» Unknown error occurred while reading the file.\u001B[0m');
+      }
+      process.exit(1);
+    }
+
+    /**
+    * Processes a single container resource object and adds it to the request body array.
+    */
+    function processContainerResource(dataObject: ContainerResource): void {
+      try {
+        const bodyObj: ContainerResource = addRequiredFieldsToRequestBody(dataObject);
+        addOptionalFields(bodyObj, dataObject);
+        requestBodyArray.push(bodyObj);
+      } catch {
+        console.error('\u001B[91m» Error processing container resource.\u001B[0m');
+        process.exit(1);
+      }
+    }
+
+    // Call the API endpoint
+    try {
+      const response = await addContainer.addContainerSansBySystemId(flags.systemId, requestBodyArray);
+      console.log(colorize(outputFormat(response, false)));
+    } catch (error: unknown) {
+      displayError(error, 'Container Scans');
+    }
+  }
+
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
+    } else {
+      this.warn(err);
+    }
+    return Promise.resolve();
   }
 }

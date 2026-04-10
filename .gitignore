@@ -6,7 +6,10 @@ generatedMD.md
 /lib
 /tmp
 /bin/deepsource
+/test/logs
+/test/sample_data/inspec/json/profile_and_controls/mapped_controls
 node_modules
+eMASSerDownloads
 **/.DS_Store
 *.*.un~
 *.*.swp
@@ -16,3 +19,6 @@ out
 **/saf-cli.log
 *.html
 saf-cli.log
+CliProcessOutput.log
+deltaProcessReport.md
+tsconfig.tsbuildinfo

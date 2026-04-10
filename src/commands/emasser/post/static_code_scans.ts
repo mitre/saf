@@ -1,168 +1,258 @@
-import fs from 'fs'
-import _ from 'lodash'
-import {readFile} from 'fs/promises'
-import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
-
-import {outputError} from '../../../utils/emasser/outputError'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint, getJsonExamples} from '../../../utils/emasser/utilities'
-
-import {StaticCodeScansApi} from '@mitre/emass_client'
-import {StaticCodeApplication, StaticCodeResponsePost,
+import fs from 'fs';
+import { readFile } from 'fs/promises';
+import { StaticCodeScansApi } from '@mitre/emass_client';
+import type {
+  StaticCodeApplicationPost,
   StaticCodeRequestPostBody as StaticCodeRequest,
-  StaticCodeRequestPostBodyApplication as ApplicationRequestBody} from '@mitre/emass_client/dist/api'
+  StaticCodeRequestPostBodyApplication as ApplicationRequestBody,
+} from '@mitre/emass_client/dist/api';
+import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
+import _ from 'lodash';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
+import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
 
-function printRedMsg(msg: string) {
-  console.log('\x1B[91m', msg, '\x1B[0m')
+/**
+ * Generates a JSON string based on the provided action.
+ *
+ * @param action - The action to determine which JSON examples to merge.
+ *                 Valid values are 'add' and 'clear'.
+ *                 - 'add': Merges 'scan_findings-application' and 'scan_findings-applicationFindings'.
+ *                 - 'clear': Merges 'scan_findings-application' and 'scan_findings-clearFindings'.
+ * @returns A JSON string representing the merged examples for the specified action.
+ *          Returns an empty string if the action is not recognized.
+ */
+function getAllJsonExamples(action: string): string {
+  if (action === 'add') {
+    return JSON.stringify(
+      _.merge({},
+        getJsonExamples('scan_findings-application'),
+        getJsonExamples('scan_findings-applicationFindings'),
+      ),
+    );
+  }
+
+  if (action === 'clear') {
+    return JSON.stringify(
+      _.merge({},
+        getJsonExamples('scan_findings-application'),
+        getJsonExamples('scan_findings-clearFindings'),
+      ),
+    );
+  }
+
+  return '';
 }
 
-function assertParamExists(object: string, value: string|boolean|number|undefined|null): void {
+/**
+ * Asserts that a parameter exists and is not undefined.
+ *
+ * @param {string} object - The name of the parameter or field being checked.
+ * @param {string | boolean | number | undefined | null} value - The value of the parameter or field to check.
+ * @throws {Error} Throws an error if the value is undefined.
+ */
+function assertParamExists(object: string, value: string | boolean | number | undefined | null): void {
   if (value === undefined) {
-    printRedMsg(`Missing required parameter/field: ${object}`)
-    throw new Error('Value not defined')
+    printRedMsg(`Missing required parameter/field: ${object}`);
+    throw new Error('Value not defined');
   }
 }
 
+/**
+ * Adds application details to the request body for a static code scan.
+ *
+ * @param {StaticCodeRequest} dataObj - The input data object containing application details.
+ * @returns {StaticCodeRequest} The request body with the application details added.
+ * @throws Will throw an error if required application details are missing.
+ */
 function addApplicationToRequestBody(dataObj: StaticCodeRequest): StaticCodeRequest {
-  const bodyObj: ApplicationRequestBody = {
-    applicationName: '',
-    version: '',
-  }
-  const requestBody: StaticCodeRequest = {}
+  const bodyObj: ApplicationRequestBody = { applicationName: '', version: '' };
+  const requestBody: StaticCodeRequest = {};
 
   try {
-    assertParamExists('application.applicationName', dataObj.application?.applicationName)
-    assertParamExists('application.version', dataObj.application?.version)
+    assertParamExists('application.applicationName', dataObj.application?.applicationName);
+    assertParamExists('application.version', dataObj.application?.version);
   } catch (error) {
-    console.log('Required JSON fields are:')
-    console.log(colorize(JSON.stringify(getJsonExamples('scan_findings-application'), null, 2)))
-    throw error
+    console.log('Required JSON fields are:');
+    console.log(colorize(JSON.stringify(getJsonExamples('scan_findings-application'), null, 2)));
+    throw error;
   }
 
-  bodyObj.applicationName = dataObj.application?.applicationName
-  bodyObj.version = dataObj.application?.version
+  bodyObj.applicationName = dataObj.application?.applicationName;
+  bodyObj.version = dataObj.application?.version;
 
-  requestBody.application = bodyObj
+  requestBody.application = bodyObj;
 
-  return requestBody
+  return requestBody;
 }
 
+/**
+ * Adds application findings fields from the data object to the body object.
+ *
+ * @param bodyObject - The object to which the application findings will be added.
+ * @param dataObj - The object containing the application findings data.
+ *
+ * @throws Will throw an error if required fields are missing in the application findings.
+ *
+ * The function processes each finding in the `dataObj.applicationFindings` array.
+ * If a finding has the `clearFindings` property, it adds it directly to the `findingsArray`.
+ * Otherwise, it validates the presence of required fields (`codeCheckName`, `count`,
+ * `cweId`, `scanDate`) and optionally includes the `rawSeverity` field if present.
+ *
+ * The processed findings are then added to the `bodyObject.applicationFindings` array.
+ */
 function addApplicationFindingsFields(bodyObject: StaticCodeRequest, dataObj: StaticCodeRequest): void {
-  const findingsArray: StaticCodeApplication[] = []
+  const findingsArray: StaticCodeApplicationPost[] = [];
 
   try {
-    let findingsObj: StaticCodeApplication = {}
-    let i = 0
-    dataObj.applicationFindings?.forEach((appFindings: StaticCodeApplication) => {
-      if (Object.prototype.hasOwnProperty.call(appFindings, 'clearFindings')) {
-        findingsObj.clearFindings = appFindings.clearFindings
-        findingsArray.push(findingsObj)
+    let findingsObj: StaticCodeApplicationPost = {};
+    let i = 0;
+    for (const appFindings of (dataObj.applicationFindings || [])) {
+      // If clearing findings
+      if (Object.hasOwn(appFindings, 'clearFindings')) {
+        findingsObj.clearFindings = appFindings.clearFindings;
+        findingsArray.push(findingsObj);
+      // Adding findings
       } else {
-        assertParamExists(`applicationFindings[${i}].codeCheckName`, appFindings.codeCheckName)
-        assertParamExists(`applicationFindings[${i}].count`, appFindings.count)
-        assertParamExists(`applicationFindings[${i}].cweId`, appFindings.cweId)
-        assertParamExists(`applicationFindings[${i}].scanDate`, appFindings.scanDate)
-        i++
+        assertParamExists(`applicationFindings[${i}].codeCheckName`, appFindings.codeCheckName);
+        assertParamExists(`applicationFindings[${i}].count`, appFindings.count);
+        assertParamExists(`applicationFindings[${i}].cweId`, appFindings.cweId);
+        assertParamExists(`applicationFindings[${i}].scanDate`, appFindings.scanDate);
+        i++;
 
-        findingsObj.codeCheckName = appFindings.codeCheckName
-        findingsObj.count = appFindings.count
-        findingsObj.cweId = appFindings.cweId
-        findingsObj.scanDate = appFindings.scanDate
+        findingsObj.codeCheckName = appFindings.codeCheckName;
+        findingsObj.count = appFindings.count;
+        findingsObj.cweId = appFindings.cweId;
+        findingsObj.scanDate = appFindings.scanDate;
 
         // rawSeverity is an optional field
-        if (Object.prototype.hasOwnProperty.call(appFindings, 'rawSeverity')) {
-          findingsObj.rawSeverity = appFindings.rawSeverity
+        if (Object.hasOwn(appFindings, 'rawSeverity')) {
+          findingsObj.rawSeverity = appFindings.rawSeverity;
         }
 
-        findingsArray.push(findingsObj)
-        findingsObj = {}
+        findingsArray.push(findingsObj);
+        findingsObj = {};
       }
-    })
+    }
   } catch (error) {
-    console.log('Required JSON fields are:')
-    console.log(colorize(JSON.stringify(getJsonExamples('scan_findings-applicationFindings'), null, 2)))
-    throw error
+    console.log('Required JSON fields are:');
+    console.log(colorize(JSON.stringify(getJsonExamples('scan_findings-applicationFindings'), null, 2)));
+    throw error;
   }
 
-  bodyObject.applicationFindings = findingsArray
+  bodyObject.applicationFindings = findingsArray;
 }
 
+const CMD_HELP = 'saf emasser post static_code_scans -h or --help';
 export default class EmasserPostStaticCodeScans extends Command {
-  static usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command usages\u001B[0m';
 
-  static description = "upload application scan findings into a system's assets module"
+  static readonly description = "Upload application scan findings into a system's assets module";
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--cloudResourceFile]',
-    'The input file should be a well formed JSON containing application scan findings.',
+  static readonly examples = [
+    '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
+    'The input file should be a well formed JSON containing static code scan findings.',
+    '\u001B[1m\u001B[46mAdd Findings\u001B[0m',
     'Required "application" JSON object parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('scan_findings-application'), null, 2)),
     'Required "applicationFindings" JSON array parameters/fields are:',
     colorize(JSON.stringify(getJsonExamples('scan_findings-applicationFindings'), null, 2)),
-    'Required "applicationFindings" JSON array for clearing findings for an application is:',
-    colorize(JSON.stringify(getJsonExamples('scan_findings-clearFindings'), null, 2))]
+    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
+    colorize(getAllJsonExamples('add')),
+    '\u001B[1m\u001B[46mClear Findings\u001B[0m \u001B[33m(can only be used on a single application with a single finding)\u001B[0m',
+    'Required "application" JSON object parameter/fields are: ',
+    colorize(JSON.stringify(getJsonExamples('scan_findings-application'), null, 2)),
+    'Required "applicationFindings" JSON array object field(s):',
+    colorize(JSON.stringify(getJsonExamples('scan_findings-clearFindings'), null, 2)),
+    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
+    colorize(getAllJsonExamples('clear')),
+  ];
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Post (upload) static code scans, can also clear application\'s findings'}),
-    ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
-  }
+  static readonly flags = {
+    help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Static Code Scans command' }),
+    ...getFlagsForEndpoint(process.argv),
+  };
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserPostStaticCodeScans)
-    const apiCxn = new ApiConnection()
-    const addStaticCodeScans = new StaticCodeScansApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+    const { flags } = await this.parse(EmasserPostStaticCodeScans);
+    const apiCxn = new ApiConnection();
+    const addStaticCodeScans = new StaticCodeScansApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    const requestBodyArray: StaticCodeRequest[] = []
+    const requestBodyArray: StaticCodeRequest[] = [];
 
     // Check if a Cloud Resource json file was provided
-    if (fs.existsSync(flags.statiCodeScanFile)) {
-      let data: any
+    if (fs.existsSync(flags.dataFile)) {
+      let data: unknown;
       try {
-        data = JSON.parse(await readFile(flags.statiCodeScanFile, 'utf8'))
-      } catch (error: any) {
-        if (error.code === 'ENOENT') {
-          console.log('Scan Findings JSON file not found!')
-          process.exit(1)
+        const fileContent = await readFile(flags.dataFile, 'utf8');
+        data = JSON.parse(fileContent);
+      } catch (error: unknown) {
+        if (error instanceof Error) {
+          console.error('\u001B[91m» Error reading Static Code Scans data file, possible malformed JSON. Please use the -h flag for help.\u001B[0m');
+          console.error('\u001B[93m→ Error message was:', error.message, '\u001B[0m');
         } else {
-          console.log('Error reading Scan Findings file, possible malformed json. Please use the -h flag for help.')
-          console.log('Error message was:', error.message)
-          process.exit(1)
+          console.error('\u001B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\u001B[0m');
         }
+        process.exit(1);
+      }
+
+      // Ensure `data` is either an array or object before using it
+      if (!data || (typeof data !== 'object' && !Array.isArray(data))) {
+        console.error('\u001B[91m» Invalid data format: Expected an object or array.\u001B[0m');
+        process.exit(1);
       }
 
       // Create request body based on key/pair values provide in the input file
       if (Array.isArray(data)) {
-        data.forEach((dataObject: StaticCodeRequest) => {
-          let bodyObj: StaticCodeRequest = {}
-          // Add required fields to request array object based on business logic
-          try {
-            bodyObj = addApplicationToRequestBody(dataObject)
-            addApplicationFindingsFields(bodyObj, dataObject)
-            requestBodyArray.push(bodyObj)
-          } catch {
-            process.exit(1)
+        for (const item of data) {
+          if (typeof item !== 'object' || item === null) {
+            console.error('\u001B[91m» Invalid item in array: Expected an object.\u001B[0m');
+            process.exit(1);
           }
-        })
+
+          let bodyObj: StaticCodeRequest;
+          try {
+            bodyObj = addApplicationToRequestBody(item as StaticCodeRequest);
+            addApplicationFindingsFields(bodyObj, item as StaticCodeRequest);
+            requestBodyArray.push(bodyObj);
+          } catch {
+            process.exit(1);
+          }
+        }
       } else if (typeof data === 'object') {
-        const dataObject: StaticCodeRequest = data
-        let bodyObj: StaticCodeRequest = {}
-        // Add required fields to request array object based on business logic
+        // Ensure it's a valid object
+        const dataObject = data as StaticCodeRequest;
+        let bodyObj: StaticCodeRequest;
         try {
-          bodyObj = addApplicationToRequestBody(dataObject)
-          addApplicationFindingsFields(bodyObj, dataObject)
-          requestBodyArray.push(bodyObj)
+          bodyObj = addApplicationToRequestBody(dataObject);
+          addApplicationFindingsFields(bodyObj, dataObject);
+          requestBodyArray.push(bodyObj);
         } catch {
-          process.exit(1)
+          process.exit(1);
         }
       }
     } else {
-      console.error('Invalid or Scan Findings JSON file not found on the provided directory:', flags.statiCodeScanFile)
-      process.exit(1)
+      console.error('\u001B[91m» Static Code Scans data file (.json) not found or invalid:', flags.dataFile, '\u001B[0m');
+      process.exit(1);
     }
 
-    addStaticCodeScans.addStaticCodeScansBySystemId(flags.systemId, requestBodyArray).then((response: StaticCodeResponsePost) => {
-      console.log(colorize(outputFormat(response, false)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    // Call the API endpoint
+    try {
+      const response = await addStaticCodeScans.addStaticCodeScansBySystemId(flags.systemId, requestBodyArray);
+      console.log(colorize(outputFormat(response, false)));
+    } catch (error: unknown) {
+      displayError(error, 'Static Code Scans');
+    }
+  }
+
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
+    } else {
+      this.warn(err);
+    }
+    return Promise.resolve();
   }
 }

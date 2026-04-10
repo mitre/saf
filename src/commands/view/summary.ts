@@ -1,23 +1,23 @@
-import {Command, Flags} from '@oclif/core'
-import {createWinstonLogger} from '../../utils/logging'
-import {loadExecJSONs} from '../../utils/ohdf/dataLoader'
-import {calculateSummariesForExecJSONs, calculateTotalCountsForSummaries, calculateComplianceScoresForExecJSONs} from '../../utils/ohdf/calculations'
-import {createPrintableSummary, printAndWriteOutput} from '../../utils/ohdf/outputGenerator'
+import { Command, Flags } from '@oclif/core';
+import { createWinstonLogger } from '../../utils/logging';
+import { calculateSummariesForExecJSONs, calculateTotalCountsForSummaries, calculateComplianceScoresForExecJSONs } from '../../utils/ohdf/calculations';
+import { loadExecJSONs } from '../../utils/ohdf/data_loader';
+import { createPrintableSummary, printAndWriteOutput } from '../../utils/ohdf/output_generator';
 
 /** The prefix used for logging messages in this command */
-const VIEW_SUMMARY = 'view summary:'
+const VIEW_SUMMARY = 'view summary:';
 
 /** The help group for input/output related flags */
-const IO_GROUP = 'I/O'
+const IO_GROUP = 'I/O';
 
 /** The help group for formatting related flags */
-const FORMATTING_GROUP = 'formatting'
+const FORMATTING_GROUP = 'formatting';
 
 /** The default log level for this command */
-const DEFAULT_LOG_LEVEL = 'info'
+const DEFAULT_LOG_LEVEL = 'info';
 
 /** The available format options for the output */
-const FORMAT_OPTIONS = ['json', 'yaml', 'markdown']
+const FORMAT_OPTIONS = ['json', 'yaml', 'markdown'];
 
 /**
  * CommandFlags interface represents the flags that can be passed to the command.
@@ -30,7 +30,7 @@ const FORMAT_OPTIONS = ['json', 'yaml', 'markdown']
  * @property {string} [logLevel] - The level of logging to use (e.g., 'info', 'debug'). This is optional.
  * @property {unknown} help - The help flag. The type is unknown because it can be a boolean or a string depending on the command line library used.
  */
-interface CommandFlags {
+type CommandFlags = {
   input: string[];
   output?: string;
   format: string;
@@ -39,13 +39,16 @@ interface CommandFlags {
   'title-table'?: boolean;
   logLevel?: string;
   help: string | undefined;
-}
+};
 
 /**
  * Summary Class
  *
- * This class represents a command in the CLI that provides a quick compliance overview of an HDF file.
- * It includes methods to convert the data to different formats (JSON, YAML, Markdown) and to print the data to the console or write it to a file.
+ * This class represents a command in the CLI that provides a quick compliance
+ * overview of an HDF file.
+ *
+ * It includes methods to convert the data to different formats (JSON, YAML,
+ * Markdown) and to print the data to the console or write it to a file.
  *
  * @class
  * @public
@@ -55,48 +58,57 @@ export default class Summary extends Command {
   /**
    * @property {string[]} aliases - Alternative command name.
    */
-  static aliases = ['summary']
+  static readonly aliases = ['summary'];
 
   /**
    * @property {ReturnType<typeof createWinstonLogger>} logger - Winston logger for this command.
    */
-  private logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View Summary:');
+  private logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View Summary');
 
   /**
    * @property {string} description - Command description displayed in the help message.
    */
-  static description = 'Generate a comprehensive summary of compliance data, including totals and counts, from your HDF files.\n The output can be displayed in the console, or exported as YAML, JSON, or a GitHub-flavored Markdown table.';
+  static readonly description = 'Generate a comprehensive summary of compliance data, including totals and counts, from your HDF files.\n'
+    + 'The output can be displayed in the console, or exported as YAML, JSON, or a GitHub-flavored Markdown table.';
 
-  static flags = {
-    input: Flags.string({char: 'i', required: true, multiple: true, description: 'Specify input HDF file(s)', helpGroup: IO_GROUP}),
-    output: Flags.string({char: 'o', description: 'Specify output file(s)', helpGroup: IO_GROUP}),
-    format: Flags.string({char: 'f', description: 'Specify output format', helpGroup: FORMATTING_GROUP, options: FORMAT_OPTIONS, default: 'yaml'}),
-    stdout: Flags.boolean({char: 's', description: 'Enable printing to console', default: true, allowNo: true, helpGroup: IO_GROUP}),
-    'print-pretty': Flags.boolean({char: 'r', description: 'Enable human-readable data output', helpGroup: FORMATTING_GROUP, default: true, allowNo: true}),
-    'title-table': Flags.boolean({char: 't', description: 'Add titles to the markdown table(s)', helpGroup: FORMATTING_GROUP, default: true, allowNo: true}),
-    logLevel: Flags.string({char: 'l', description: 'Set log level', helpGroup: 'debugging', default: DEFAULT_LOG_LEVEL}),
-    help: Flags.help({char: 'h', description: 'Show help information', helpGroup: 'help'}),
+  static readonly flags = {
+    input: Flags.string({ char: 'i', required: true, multiple: true, description: 'Specify input HDF file(s)', helpGroup: IO_GROUP }),
+    output: Flags.string({ char: 'o', description: 'Specify output file(s)', helpGroup: IO_GROUP }),
+    format: Flags.string({ char: 'f', description: 'Specify output format', helpGroup: FORMATTING_GROUP, options: FORMAT_OPTIONS, default: 'yaml' }),
+    stdout: Flags.boolean({ char: 's', description: 'Enable printing to console', default: true, allowNo: true, helpGroup: IO_GROUP }),
+    'print-pretty': Flags.boolean({ char: 'r', description: 'Enable human-readable data output', helpGroup: FORMATTING_GROUP, default: true, allowNo: true }),
+    'title-table': Flags.boolean({ char: 't', description: 'Add titles to the markdown table(s)', helpGroup: FORMATTING_GROUP, default: true, allowNo: true }),
+    logLevel: Flags.string({ char: 'l', description: 'Set log level', helpGroup: 'debugging', default: DEFAULT_LOG_LEVEL }),
+    help: Flags.help({ char: 'h', description: 'Show help information', helpGroup: 'help' }),
   };
 
-  static examples = [
+  static readonly examples = [
     // Basic usage
-    "$ saf summary -i input.hdf                                              # Summarize 'input.hdf' single HDF file",
+    "\u001B[93mSummarize 'input.hdf' single HDF file\n"
+    + '\u001B[93m  $\u001B[34m saf summary -i input.hdf',
 
     // Specify output format
-    '$ saf summary -i input.json --format=json                               # Specify Formats',
-    '$ saf summary -i input.json --format=markdown --no-stdout -o output.md  # Output GitHub Flavored Markdown Table, skip the console, and save to \'output.md\'',
+    '\u001B[93mSpecify Formats\n'
+    + '\u001B[93m  $\u001B[34m saf summary -i input.hdf input.json --format=json',
+
+    '\u001B[93mOutput GitHub Flavored Markdown Table, skip the console, and save to \'output.md\n'
+    + '\u001B[93m  $\u001B[34m saf summary -i input.hdf input.json --format=markdown --no-stdout -o output.md',
 
     // Multiple input files
-    '$ saf summary --input input1.hdf --input input2.hdf                     # Summarize multiple HDF files',
-    '$ saf summary --input input1.hdf input2.hdf',
+    '\u001B[93mSummarize multiple HDF files\n'
+    + '\u001B[93m  $\u001B[34m saf summary --input input1.hdf --input input2.hdf\n'
+    + '\u001B[93m  $\u001B[34m saf summary --input input1.hdf input2.hdf',
 
     // Specify output file
-    "$ saf summary -i input.hdf --output output.json                         # Save summary to 'output.json' and print to the console",
+    "\u001B[93mSave summary to 'output.json' and print to the console\n"
+    + '\u001B[93m  $\u001B[34m saf summary -i input.hdf --output output.json',
 
     // Enable and disable flags
-    '$ saf summary --input input.hdf --pretty-print                          # Enable human-readable output',
-    '$ saf summary -i input.hdf --no-pretty-print                            # Useful for scripts or data-processing (RAW yaml/json/etc.)',
-  ]
+    '\u001B[93mEnable human-readable output\n'
+    + '\u001B[93m  $\u001B[34m saf summary --input input.hdf --pretty-print',
+    '\u001B[93mUseful for scripts or data-processing (RAW yaml/json/etc.)\n'
+    + '\u001B[93m  $\u001B[34m saf summary -i input.hdf --no-pretty-print',
+  ];
 
   /**
    * @private
@@ -121,34 +133,34 @@ export default class Summary extends Command {
    */
   async run() {
     try {
-      const {flags} = await this.parse(Summary)
-      this.parsedFlags = flags as CommandFlags
-      const {format, 'print-pretty': printPretty, stdout, output, 'title-table': titleTable, logLevel} = flags
-      this.logger = createWinstonLogger(VIEW_SUMMARY, (logLevel ?? process.env.LOG_LEVEL ?? 'info'))
-      this.logger.verbose('Parsed command line flags')
-      const executionData = loadExecJSONs(this.parsedFlags.input)
-      this.logger.verbose(`Loaded execution data from ${this.parsedFlags.input.length} file(s)`)
-      const summaries = calculateSummariesForExecJSONs(executionData)
-      this.logger.verbose(`Calculated summaries for ${executionData.length} execution data`)
-      const totals = calculateTotalCountsForSummaries(summaries)
-      this.logger.verbose(`Calculated total counts for ${summaries.length} summaries`)
-      const complianceScores = calculateComplianceScoresForExecJSONs(executionData)
-      this.logger.verbose(`Calculated compliance scores for ${executionData.length} execution data`)
+      const { flags } = await this.parse(Summary);
+      this.parsedFlags = flags as CommandFlags;
+      const { format, 'print-pretty': printPretty, stdout, output, 'title-table': titleTable, logLevel } = flags;
+      this.logger = createWinstonLogger(VIEW_SUMMARY, (logLevel ?? process.env.LOG_LEVEL ?? 'info'));
+      this.logger.verbose('Parsed command line flags');
+      const executionData = loadExecJSONs(this.parsedFlags.input);
+      this.logger.verbose(`Loaded execution data from ${this.parsedFlags.input.length} file(s)`);
+      const summaries = calculateSummariesForExecJSONs(executionData);
+      this.logger.verbose(`Calculated summaries for ${Object.keys(executionData).length} execution data`);
+      const totals = calculateTotalCountsForSummaries(summaries);
+      this.logger.verbose(`Calculated total counts for ${Object.keys(summaries).length} summaries`);
+      const complianceScores = calculateComplianceScoresForExecJSONs(executionData);
+      this.logger.verbose(`Calculated compliance scores for ${Object.keys(executionData).length} execution data`);
       const printableSummaries = Object.entries(totals).map(([profileName, profileMetrics]) => {
-        this.logger.verbose(`Building printable summary for profile: ${profileName}`)
-        return createPrintableSummary(profileName, profileMetrics, executionData, complianceScores)
-      })
-      this.logger.verbose(`Generated ${printableSummaries.length} printable summaries`)
-      printAndWriteOutput({printableSummaries, titleTable, format, printPretty, stdout, output})
-      this.logger.verbose('Printed and wrote the output')
+        this.logger.verbose(`Building printable summary for profile: ${profileName}`);
+        return createPrintableSummary(profileName, profileMetrics, executionData, complianceScores);
+      });
+      this.logger.verbose(`Generated ${printableSummaries.length} printable summaries`);
+      printAndWriteOutput({ printableSummaries, titleTable, format, printPretty, stdout, output });
+      this.logger.verbose('Printed and wrote the output');
     } catch (error) {
       if (error instanceof Error) {
-        this.logger.error(`Error occurred: ${error.message}`)
+        this.logger.error(`Error occurred: ${error.message}`);
       } else {
-        this.logger.error(`An unknown error occurred: ${error}`)
+        this.logger.error(`An unknown error occurred: ${String(error)}`);
       }
 
-      process.exit(1)
+      process.exit(1);
     }
   }
 }

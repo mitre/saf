@@ -1,26 +1,29 @@
 name: Build macOS Installer
+
 on:
   push:
     branches: [ main ]
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
 
 jobs:
   build-deploy:
-    runs-on: macos-12
+    runs-on: macos-15
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: "18"
+          node-version: "22"
           check-latest: true
           cache: 'npm'
 
       - name: Install project dependencies
-        run: npm ci
+        run: npm ci --omit=dev
 
       - name: Remove testing resources
         run: rm -rf test
@@ -32,9 +35,9 @@ jobs:
         run: |
           cd dist/macos
           for file in saf-*.pkg; do
-                  prefix=${file%-*-*.pkg}
-                  suffix=${file#saf-*-*-*}
-                  mv "$file" "$prefix-$suffix"
+            prefix=${file%-*-*.pkg}
+            suffix=${file#saf-*-*-*}
+            mv "$file" "$prefix-$suffix"
           done
 
       - name: Upload SAF-CLI macOS Installer Artifact

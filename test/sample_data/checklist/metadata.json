@@ -1,1 +1,19 @@
-{"benchmark":{"title":"My title","version":"1.0.0","plaintext":"This is my release"},"stigid":null,"role":"Domain Controller","type":"Computing","hostname":"localhost","ip":null,"mac":null,"tech_area":"Other Review","target_key":null,"web_or_database":false,"web_db_site":null,"web_db_instance":null}
+{
+  "profiles": [
+    {
+      "name": "Red Hat Enterprise Linux 7 STIG",
+      "version": 2,
+      "releasenumber": 6,
+      "releasedate": "2024/06/08",
+      "showCalendar": false
+    }
+  ],
+  "marking": "CUI",
+  "hostname": "localhost",
+  "hostip": "127.0.0.1",
+  "role": "Domain Controller",
+  "assettype": "Computing",
+  "techarea": "Other Review",
+  "webordatabase": "false",
+  "vulidmapping": "id"
+}

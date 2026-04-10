@@ -1,19 +1,30 @@
 {
   "compilerOptions": {
+    "target": "esnext",
+    "lib": ["esnext"],
+
     "module": "nodenext",
     "moduleResolution": "nodenext",
-    "noImplicitAny": true,
-    "resolveJsonModule": true,
-    "declaration": true,
-    "importHelpers": true,
-    "esModuleInterop": true,
-    "outDir": "lib",
+
     "rootDir": "src",
+    "outDir": "lib",
+
     "strict": true,
-    "skipLibCheck": true,
-    "target": "es2022",
+    "noImplicitAny": true,
+
+    "declaration": true,
+    "declarationMap": true,
     "sourceMap": true,
-    "types": ["node", "jest"]
+    "inlineSources": true,
+
+    "incremental": true,
+
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+
+    "skipLibCheck": true,
+
+    "types": ["node"]
   },
   "include": ["src/**/*"]
 }

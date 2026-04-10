@@ -5,12 +5,12 @@
  * @property {number} compliance - The compliance score.
  * @property {[key: string]: unknown} - Allows for the spread operator in the `createPrintableSummary` method.
  */
-export interface PrintableSummary {
+export type PrintableSummary = {
   profileName: string;
   resultSets: string[];
   compliance: number;
   [key: string]: unknown;
-}
+};
 
 /**
  * Represents the data structure used in the application.
@@ -24,7 +24,7 @@ export interface PrintableSummary {
  * @property {number} total - The total number of tests.
  * @property {number} default - The default value.
  */
-export interface Data {
+export type Data = {
   [key: string]: Record<string, number> | number;
   compliance: number;
   passed: Record<string, number>;
@@ -34,7 +34,7 @@ export interface Data {
   error: Record<string, number>;
   total: number;
   default: number;
-}
+};
 
 /**
  * Represents a type that can be either a single Data object, an array of Data objects,
@@ -45,9 +45,9 @@ export type DataOrArray = Data | Data[] | PrintableSummary | PrintableSummary[];
 
 /**
  * Represents the possible values for the row names in the generated Markdown table.
- * The possible values are 'Total', 'Critical', 'High', 'Medium', 'Low', and 'Not Applicable'.
+ * The possible values are 'Total', 'Critical', 'High', 'Medium', 'Low'.
  */
-export type RowType = 'total' | 'critical' | 'high' | 'medium' | 'low' | 'Not Applicable';
+export type RowType = 'total' | 'critical' | 'high' | 'medium' | 'low';
 
 /**
  * Represents the possible values for the column names in the generated Markdown table.
@@ -64,11 +64,11 @@ export type ColumnType = 'compliance' | 'passed' | 'failed' | 'skipped' | 'no_im
  * @property {boolean} stdout - Whether to print the output to the console.
  * @property {string} [output] - The path of the file to write the output to. If not provided, the output is not written to a file.
  */
-export interface PrintAndWriteOutputArgs {
+export type PrintAndWriteOutputArgs = {
   printableSummaries: PrintableSummary[];
   titleTable: boolean;
   format: string;
   printPretty: boolean;
   stdout: boolean;
   output?: string;
-}
+};

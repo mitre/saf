@@ -1,146 +1,212 @@
-import {Command, Flags} from '@oclif/core'
-import flat from 'flat'
-import YAML from 'yaml'
-import fs from 'fs'
-import {ContextualizedProfile, convertFileContextual} from 'inspecjs'
-import _ from 'lodash'
-import {ThresholdValues} from '../../types/threshold'
-import {calculateCompliance, exitNonZeroIfTrue, extractStatusCounts, getControlIdMap, renameStatusName, severityTargetsObject, statusSeverityPaths, totalMax, totalMin} from '../../utils/threshold'
-import {expect} from 'chai'
+import fs from 'fs';
+import { Flags } from '@oclif/core';
+import { expect } from 'chai';
+import { convertFileContextual, type ContextualizedProfile } from 'inspecjs';
+import _ from 'lodash';
+import YAML from 'yaml';
+import type { ThresholdValues } from '../../types/threshold';
+import { BaseCommand } from '../../utils/oclif/base_command';
+import {
+  calculateCompliance,
+  exitNonZeroIfTrue,
+  extractStatusCounts,
+  getControlIdMap,
+  renameStatusName,
+  severityTargetsObject,
+  statusSeverityPaths,
+  totalMax,
+  totalMin,
+  unflattenThreshold,
+} from '../../utils/threshold';
 
-export default class Threshold extends Command {
-  static usage = 'validate threshold -i <hdf-json> [-h] [-T <flattened-threshold-json> | -F <template-file>]'
+export default class Threshold extends BaseCommand<typeof Threshold> {
+  static readonly usage = '<%= command.id %> -i <hdf-json> [-I <flattened-threshold-json> | -T <template-file>] [-h] [-L info|warn|debug|verbose]';
 
-  static description = 'Validate the compliance and status counts of an HDF file'
+  static readonly description = 'Validate the compliance and status counts of an HDF file';
 
-  static examples = ['saf validate threshold -i rhel7-results.json -F output.yaml']
+  static readonly examples = [
+    {
+      description: '\u001B[93mProviding a threshold template file\u001B[0m',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -T threshold.yaml',
+    },
+    {
+      description: '\u001B[93mSpecifying the threshold inline\u001B[0m',
+      command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -I "{compliance.min: 80}, {passed.total.min: 18}, {failed.total.max: 2}"',
+    },
+  ];
 
-  static flags = {
-    help: Flags.help({char: 'h'}),
-    input: Flags.string({char: 'i', required: true, description: 'Input HDF JSON File'}),
-    templateInline: Flags.string({char: 'T', required: false, exclusive: ['templateFile'], description: 'Flattened JSON containing your validation thresholds (Intended for backwards compatibility with InSpec Tools)'}),
-    templateFile: Flags.string({char: 'F', required: false, exclusive: ['templateInline'], description: 'Expected data template, generate one with "saf generate threshold"'}),
-  }
+  static readonly flags = {
+    input: Flags.string({
+      char: 'i', required: true, description: 'The HDF JSON File to be validated by the threshold values' }),
+    templateInline: Flags.string({
+      char: 'I', required: false, exclusive: ['templateFile'],
+      description: 'An inline (on the command line) flattened JSON containing the validation thresholds (Intended for backwards compatibility with InSpec Tools)',
+    }),
+    templateFile: Flags.string({
+      char: 'T', required: false, exclusive: ['templateInline'],
+      description: 'A threshold YAML file containing expected threshold values. Generate it using the "saf generate threshold" command',
+    }),
+  };
 
-  async run() {
-    const {flags} = await this.parse(Threshold)
-    let thresholds: ThresholdValues = {}
+  async run() { // skipcq: JS-R1005
+    const { flags } = await this.parse(Threshold);
+    let thresholds: ThresholdValues;
+    // inline does not seem to support the controls array option
     if (flags.templateInline) {
       // Need to do some processing to convert this into valid JSON
-      const flattenedObjects = flags.templateInline.split(',').map((value: string) => value.trim().replace('{', '').replace('}', ''))
-      const toUnpack: Record<string, number> = {}
+      const flattenedObjects = flags.templateInline.split(',').map((value: string) => value.trim().replace('{', '').replace('}', ''));
+      const toUnpack: Record<string, number> = {};
       for (const flattenedObject of flattenedObjects) {
-        const [key, value] = flattenedObject.split(':')
-        toUnpack[key] = Number.parseInt(value, 10)
+        const [key, value] = flattenedObject.split(':');
+        toUnpack[key] = Number.parseInt(value, 10);
       }
 
-      thresholds = flat.unflatten(toUnpack)
+      thresholds = unflattenThreshold(toUnpack);
     } else if (flags.templateFile) {
-      const parsed = YAML.parse(fs.readFileSync(flags.templateFile, 'utf8'))
-      thresholds = Object.values(parsed).every(key => typeof key === 'number') ? flat.unflatten(parsed) : parsed
+      const parsed = YAML.parse(fs.readFileSync(flags.templateFile, 'utf8'));
+      thresholds = Object.values(parsed).every(key => typeof key === 'number') ? unflattenThreshold(parsed) : parsed;
     } else {
-      console.log('Please provide an inline compliance template or a compliance file.')
-      console.log('See https://github.com/mitre/saf#compliance for more information')
-      return
+      console.log('Please provide an inline compliance template or a compliance file.');
+      console.log('See https://github.com/mitre/saf/wiki/Validation-with-Thresholds for more information');
+      return;
     }
 
-    const parsedExecJSON = convertFileContextual(fs.readFileSync(flags.input, 'utf8'))
-    const overallStatusCounts = extractStatusCounts(parsedExecJSON.contains[0] as ContextualizedProfile)
-
+    const parsedExecJSON = convertFileContextual(fs.readFileSync(flags.input, 'utf8'));
+    const overallStatusCounts = extractStatusCounts(parsedExecJSON.contains[0] as ContextualizedProfile);
     if (thresholds.compliance) {
-      const overallCompliance = calculateCompliance(overallStatusCounts)
-      exitNonZeroIfTrue(Boolean(thresholds.compliance.min && overallCompliance < thresholds.compliance.min), 'Overall compliance minimum was not satisfied') // Compliance Minimum
-      exitNonZeroIfTrue(Boolean(thresholds.compliance.max && overallCompliance > thresholds.compliance.max), 'Overall compliance maximum was not satisfied') // Compliance Maximum
+      const overallCompliance = calculateCompliance(overallStatusCounts);
+      try {
+        exitNonZeroIfTrue(Boolean(thresholds.compliance.min && overallCompliance < thresholds.compliance.min), 'Overall compliance minimum was not satisfied'); // Compliance Minimum
+        exitNonZeroIfTrue(Boolean(thresholds.compliance.max && overallCompliance > thresholds.compliance.max), 'Overall compliance maximum was not satisfied'); // Compliance Maximum
+      } catch {
+        process.exitCode = 1;
+        return;
+      }
     }
 
     // Total Pass/Fail/Skipped/No Impact/Error
-    const targets = ['passed.total', 'failed.total', 'skipped.total', 'no_impact.total', 'error.total']
+    const targets = ['passed.total', 'failed.total', 'skipped.total', 'no_impact.total', 'error.total'];
     for (const statusThreshold of targets) {
-      const [statusName, _total] = statusThreshold.split('.')
+      const [statusName] = statusThreshold.split('.');
       if (_.get(thresholds, statusThreshold) !== undefined && typeof _.get(thresholds, statusThreshold) !== 'object') {
-        exitNonZeroIfTrue(
-          Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName)) !==
-            _.get(thresholds, statusThreshold),
-          ),
-          `${statusThreshold}: Threshold not met. Number of received total ${statusThreshold.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is not equal to your set threshold for the number of ${statusThreshold.split('.')[0]} controls (${_.get(thresholds, statusThreshold)})`,
-        )
+        try {
+          exitNonZeroIfTrue(
+            Boolean(
+              _.get(overallStatusCounts, renameStatusName(statusName))
+              !== _.get(thresholds, statusThreshold),
+            ),
+            `${statusThreshold}: Threshold not met. Number of received total ${statusThreshold.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is not equal to your set threshold for the number of ${statusThreshold.split('.')[0]} controls (${_.get(thresholds, statusThreshold)})`,
+          );
+        } catch {
+          process.exitCode = 1;
+          return;
+        }
       }
     }
 
     for (const totalMinimum of totalMin) {
-      const [statusName] = totalMinimum.split('.')
+      const [statusName] = totalMinimum.split('.');
       if (_.get(thresholds, totalMinimum) !== undefined) {
-        exitNonZeroIfTrue(
-          Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName)) <
-            _.get(thresholds, totalMinimum),
-          ),
-          `${totalMinimum}: Threshold not met. Number of received total ${totalMinimum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${totalMinimum.split('.')[0]} controls (${_.get(thresholds, totalMinimum)})`,
-        )
+        try {
+          exitNonZeroIfTrue(
+            Boolean(
+              _.get(overallStatusCounts, renameStatusName(statusName))
+              < _.get(thresholds, totalMinimum),
+            ),
+            `${totalMinimum}: Threshold not met. Number of received total ${totalMinimum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${totalMinimum.split('.')[0]} controls (${_.get(thresholds, totalMinimum)})`,
+          );
+        } catch {
+          process.exitCode = 1;
+          return;
+        }
       }
     }
 
     for (const totalMaximum of totalMax) {
-      const [statusName] = totalMaximum.split('.')
+      const [statusName] = totalMaximum.split('.');
       if (_.get(thresholds, totalMaximum) !== undefined) {
-        exitNonZeroIfTrue(
-          Boolean(
-            _.get(overallStatusCounts, renameStatusName(statusName)) >
-            _.get(thresholds, totalMaximum),
-          ),
-          `${totalMaximum}: Threshold not met. Number of received total ${totalMaximum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${totalMaximum.split('.')[0]} controls (${_.get(thresholds, totalMaximum)})`,
-        )
+        try {
+          exitNonZeroIfTrue(
+            Boolean(
+              _.get(overallStatusCounts, renameStatusName(statusName))
+              > _.get(thresholds, totalMaximum),
+            ),
+            `${totalMaximum}: Threshold not met. Number of received total ${totalMaximum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${totalMaximum.split('.')[0]} controls (${_.get(thresholds, totalMaximum)})`,
+          );
+        } catch {
+          process.exitCode = 1;
+          return;
+        }
       }
     }
 
     // All Severities Pass/Fail/Skipped/No Impact/Error
     for (const [severity, targetPaths] of Object.entries(severityTargetsObject)) {
-      const criticalStatusCounts = extractStatusCounts(parsedExecJSON.contains[0] as ContextualizedProfile, severity)
+      const criticalStatusCounts = extractStatusCounts(parsedExecJSON.contains[0] as ContextualizedProfile, severity);
       for (const statusCountThreshold of targetPaths) {
-        const [statusName, _total, thresholdType] = statusCountThreshold.split('.')
+        const [statusName, , thresholdType] = statusCountThreshold.split('.');
         if (thresholdType === 'min' && _.get(thresholds, statusCountThreshold) !== undefined) {
-          exitNonZeroIfTrue(
-            Boolean(
-              _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold),
-            ),
-            `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
-          )
+          try {
+            exitNonZeroIfTrue(
+              Boolean(
+                _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold),
+              ),
+              `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
+            );
+          } catch {
+            process.exitCode = 1;
+            return;
+          }
         } else if (thresholdType === 'max' && _.get(thresholds, statusCountThreshold) !== undefined) {
-          exitNonZeroIfTrue(
-            Boolean(
-              _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold),
-            ),
-            `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
-          )
+          try {
+            exitNonZeroIfTrue(
+              Boolean(
+                _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold),
+              ),
+              `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
+            );
+          } catch {
+            process.exitCode = 1;
+            return;
+          }
         }
       }
     }
 
     // Expect Control IDs to match placed severities
-    const controlIdMap = getControlIdMap(parsedExecJSON.contains[0] as ContextualizedProfile)
-    for (const [_severity, targetPaths] of Object.entries(statusSeverityPaths)) {
+    const controlIdMap = getControlIdMap(parsedExecJSON.contains[0] as ContextualizedProfile);
+    for (const [, targetPaths] of Object.entries(statusSeverityPaths)) {
       for (const targetPath of targetPaths) {
-        const expectedControlIds: string[] | undefined = _.get(thresholds, targetPath)
-        const actualControlIds: string[] | undefined = _.get(controlIdMap, targetPath)
+        const expectedControlIds: string[] | undefined = _.get(thresholds, targetPath);
+        const actualControlIds: string[] | undefined = _.get(controlIdMap, targetPath);
         if (expectedControlIds) {
           for (const expectedControlId of expectedControlIds) {
             try {
-              expect(actualControlIds).to.contain(expectedControlId)
+              expect(actualControlIds).to.contain(expectedControlId);
             } catch {
-              exitNonZeroIfTrue(true, `Expected ${targetPath} to contain ${expectedControlId} controls but it only contained [${actualControlIds?.join(', ')}]`) // Chai doesn't print the actual object diff anymore
+              try {
+                exitNonZeroIfTrue(true, `Expected ${targetPath} to contain ${expectedControlId} controls but it only contained [${actualControlIds?.join(', ')}]`); // Chai doesn't print the actual object diff anymore
+              } catch {
+                process.exitCode = 1;
+                return;
+              }
             }
           }
 
           try {
-            expect(expectedControlIds.length).to.equal(actualControlIds?.length)
+            expect(expectedControlIds.length).to.equal(actualControlIds?.length);
           } catch {
-            exitNonZeroIfTrue(true, `Expected ${targetPath} to contain ${expectedControlIds.length} controls but it contained ${actualControlIds?.length}`)
+            try {
+              exitNonZeroIfTrue(true, `Expected ${targetPath} to contain ${expectedControlIds.length} controls but it contained ${actualControlIds?.length}`);
+            } catch {
+              process.exitCode = 1;
+              return;
+            }
           }
         }
       }
     }
 
-    console.log('All validation tests passed')
+    console.log('All validation tests passed');
   }
 }

@@ -1,39 +1,45 @@
-import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
+import { ArtifactsApi } from '@mitre/emass_client';
+import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
+import { displayError, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
-import {outputError} from '../../../utils/emasser/outputError'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
-
-import {ArtifactsApi} from '@mitre/emass_client'
-import {ArtifactsResponseDel,
-  ArtifactsRequestDeleteBodyInner as ArtifactDeleteBody} from '@mitre/emass_client/dist/api'
-
+const CMD_HELP = 'saf emasser delete artifacts -h or --help';
 export default class EmasserDeleteArtifacts extends Command {
-  static usage = '<%= command.id %> [options]';
+  static readonly usage = '<%= command.id %> [FLAGS]';
 
-  static description = 'Remove one or many artifacts in a system identified by system Id';
+  static readonly description = 'Remove one or many artifacts in a system identified by system Id';
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-F,--fileName]'];
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--fileName] <path-to-file1> <path-to-file2> ...'];
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the DELETE POA&M endpoint'}),
-    ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
-  }
+  static readonly flags = {
+    help: Flags.help({ char: 'h', description: 'Show help for the SAF CLI eMASSer DELETE Artifacts command' }),
+    ...getFlagsForEndpoint(process.argv),
+  };
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserDeleteArtifacts)
-    const apiCxn = new ApiConnection()
-    const delArtifact = new ArtifactsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+    const { flags } = await this.parse(EmasserDeleteArtifacts);
+    const apiCxn = new ApiConnection();
+    const delArtifact = new ArtifactsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    const requestBodyArray: ArtifactDeleteBody[] = []
-    flags.fileName.forEach((filename: string) => {
-      requestBodyArray.push({filename: filename.replace(',', '')})
-    })
+    const requestBodyArray = flags.fileName.map(filename => ({ filename: filename.replace(',', '') }));
 
-    delArtifact.deleteArtifact(flags.systemId, requestBodyArray).then((response: ArtifactsResponseDel) => {
-      console.log(colorize(outputFormat(response, false)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    try {
+      const response = await delArtifact.deleteArtifact(flags.systemId, requestBodyArray);
+      console.log(colorize(outputFormat(response, false)));
+    } catch (error: unknown) {
+      displayError(error, 'Artifacts');
+    }
+  }
+
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
+    } else {
+      this.warn(err);
+    }
+    return Promise.resolve();
   }
 }

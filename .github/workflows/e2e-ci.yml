@@ -6,25 +6,75 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: read
+
 jobs:
   build:
-    runs-on: ubuntu-22.04
-
+    strategy:
+      fail-fast: true
+      matrix:
+       platform: [ ubuntu, macos, windows ]
+    runs-on: ${{ matrix.platform }}-latest
     steps:
-     - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
-     - name: Setup Node.js
-       uses: actions/setup-node@v4
-       with:
-        node-version: "18"
-        check-latest: true
-        cache: 'npm'
+      - name: Setup Node.js on ${{ matrix.platform }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          check-latest: true
+          cache: 'npm'
 
-     - name: Install dependencies
-       run: npm ci
+      - name: Install cinc-auditor on windows
+        if: ${{ matrix.platform == 'windows' }}
+        shell: pwsh
+        run: |
+          Start-Process powershell -Verb RunAs
+          . { iwr -useb https://omnitruck.cinc.sh/install.ps1 } | iex; install -project cinc-auditor
+          $env:Path = $env:Path + ';C:\cinc-project\cinc-auditor\bin' + ';C:\cinc-project\cinc-auditor\embedded\bin'
+          cinc-auditor -v
 
-     - name: Prepack
-       run: npm run prepack
+      - name: Install cinc-auditor on ubuntu or macos
+        if: ${{ matrix.platform == 'ubuntu' || matrix.platform == 'macos' }}
+        run: |
+          curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
 
-     - name: Run e2e tests
-       run: npm run test
+      - name: Install dependencies, compile, and run tests on ${{ matrix.platform }}
+        run: |
+          npm ci
+          npm run prepack
+          npm run test:ci
+
+      - name: Sanity check that the SAF CLI works with no dev dependencies on windows
+        if: ${{ matrix.platform == 'windows' }}
+        shell: pwsh
+        run: |
+          npm ci --omit=dev
+          npm run prepack
+          $stderrFile = New-TemporaryFile
+          ./bin/run -v 2> $stderrFile.FullName 1> $null
+          $exitCode = $LASTEXITCODE
+          $stderr = Get-Content $stderrFile.FullName -Raw
+          Remove-Item $stderrFile
+          if ($exitCode -eq 0) {
+            if (($null -ne $stderr) -and ($stderr.Trim())) {
+              Write-Host "Failed: received the following stderr:`n$stderr"
+              exit 1
+            }
+          } else {
+            Write-Host "Failed: received a non-zero exit code when doing 'saf -v'"
+            exit 1
+          }
+
+      - name: Sanity check that the SAF CLI works with no dev dependencies on ubuntu or macos
+        if: ${{ matrix.platform == 'ubuntu' || matrix.platform == 'macos' }}
+        run: |
+          npm ci --omit=dev
+          npm run prepack
+          if stderr=$(./bin/run -v 2>&1 1>/dev/null); then
+            [ -z "$stderr" ] || (printf "Failed: received the following stderr:\n%s\n" "$stderr"; exit 1)
+          else
+            echo "Failed: received a non-zero exit code when doing `saf -v`"
+            exit 1
+          fi

@@ -2,5 +2,11 @@
     "sonarlint.connectedMode.project": {
         "connectionId": "SAF",
         "projectKey": "mitre_saf"
+    },
+    "editor.defaultFormatter": null,
+    "editor.formatOnType": true,
+    "editor.formatOnPaste": true,
+    "[json]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
     }
 }

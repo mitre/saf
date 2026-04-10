@@ -16,7 +16,7 @@ BuildRoot: %{buildroot}
 BuildArch: noarch
 ExclusiveArch: %{nodejs_arches} noarch
 
-Requires: nodejs > 18.18.2
+Requires: nodejs > 22.0.0
 
 AutoReqProv: no
 
@@ -29,10 +29,8 @@ rm ./saf/bin/node # need to delete bundled node so that we use the system node i
 
 %install
 rm -rf %{buildroot}
-
 mkdir -p %{buildroot}/opt/saf
 cp -r ./saf %{buildroot}/opt
-
 mkdir -p %{buildroot}%{_bindir}
 ln -s /opt/saf/bin/saf %{buildroot}%{_bindir}/saf
 

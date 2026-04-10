@@ -1,32 +1,43 @@
-import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {ControlsApi} from '@mitre/emass_client'
-import {CacResponseGet} from '@mitre/emass_client/dist/api'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {outputError} from '../../../utils/emasser/outputError'
-import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
+import { ControlsApi } from '@mitre/emass_client';
+import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
+import { displayError, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetControls extends Command {
-  static usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [FLAGS]';
 
-  static description = 'Get system Security Control information for both the Implementation Plan and Risk Assessment'
+  static readonly description = 'Get system Security Control information for both the Implementation Plan and Risk Assessment';
 
-  static examples = ['<%= config.bin %> <%= command.id %> --systemId <value> [option]']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s, --systemId] <value> [option]'];
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Show emasser CLI help for the GET Controls endpoint'}),
-    ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
-  }
+  static readonly flags = {
+    help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the GET Controls command' }),
+    ...getFlagsForEndpoint(process.argv),
+  };
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserGetControls)
-    const apiCxn = new ApiConnection()
-    const getControls = new ControlsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+    const { flags } = await this.parse(EmasserGetControls);
+    const apiCxn = new ApiConnection();
+    const getControls = new ControlsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
     // Order is important here
-    getControls.getSystemControls(flags.systemId, flags.acronyms).then((response: CacResponseGet) => {
-      console.log(colorize(outputFormat(response)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    try {
+      const response = await getControls.getSystemControls(flags.systemId, flags.acronyms);
+      console.log(colorize(outputFormat(response)));
+    } catch (error: unknown) {
+      displayError(error, 'Controls');
+    }
+  }
+
+  protected catch(error: unknown): Promise<void> {
+    if (error instanceof Error) {
+      this.warn(error.message);
+    } else {
+      const suggestions = 'get controls [-h or --help]';
+      this.warn('Invalid arguments\nTry this:\n\t' + suggestions);
+    }
+    return Promise.resolve();
   }
 }

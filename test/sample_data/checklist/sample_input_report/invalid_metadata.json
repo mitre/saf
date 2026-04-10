@@ -1,0 +1,19 @@
+{
+  "profiles": [
+    {
+      "name": "My benchmark",
+      "title": "RHEL 219",
+      "version": 12,
+      "releasenumber": 23,
+      "releasedate": "2024/07/10",
+      "showCalendar": true
+    }
+  ],
+  "marking": "CUI",
+  "hostip": "invalid",
+  "role": "Workstation",
+  "assettype": "Not a real assettype",
+  "techarea": "Traditional Security",
+  "webordatabase": "false",
+  "vulidmapping": "id"
+}

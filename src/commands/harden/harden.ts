@@ -1,15 +1,16 @@
-import {Command, Flags} from '@oclif/core'
+import { Command, Flags } from '@oclif/core';
 
 export default class Harden extends Command {
-  static aliases = ['harden']
+  static readonly aliases = ['harden'];
 
-  static description = 'Visit https://saf.mitre.org/#/harden to explore and run hardening scripts'
+  static readonly description = 'Visit https://saf.mitre.org/#/harden to explore and run hardening scripts';
 
-  static flags = {
-    help: Flags.help({char: 'h'}),
-  }
+  static readonly flags = {
+    help: Flags.help({ char: 'h' }),
+  };
 
-  async run() {
-    console.log('Visit https://saf.mitre.org/#/harden to explore and run hardening scripts')
+  run() {
+    console.log('\u001B[93mVisit https://saf.mitre.org/#/harden to explore and run hardening scripts\u001B[0m');
+    return Promise.resolve();
   }
 }

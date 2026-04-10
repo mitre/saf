@@ -1,41 +1,52 @@
-import colorize from 'json-colorizer'
-import {Command, Flags} from '@oclif/core'
+import { PACApi } from '@mitre/emass_client';
+import type { PacGet as PAC } from '@mitre/emass_client/dist/api';
+import { Command, Flags } from '@oclif/core';
+import { colorize } from 'json-colorizer';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
+import { displayError, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
-import {outputError} from '../../../utils/emasser/outputError'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
-
-import {PACApi} from '@mitre/emass_client'
-import {PacResponsePost,
-  PacGet as PAC} from '@mitre/emass_client/dist/api'
-
+const CMD_HELP = 'saf emasser post pac -h or --help';
 export default class EmasserPostPac extends Command {
-  static usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [FLAGS]';
 
-  static description = 'Add new Package Approval Chain (PAC) workflow(s) for a system'
+  static readonly description = 'Add new Package Approval Chain (PAC) workflow(s) for a system';
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-w,--workflow] [-n,--name] [-c,--comments]']
+  static readonly examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-w,--workflow] [-n,--name] [-c,--comments]'];
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) a Package Approval Chain (PAC) item in a system'}),
-    ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
-  }
+  static readonly flags = {
+    help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Package Approval Chain (PAC) command' }),
+    ...getFlagsForEndpoint(process.argv),
+  };
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserPostPac)
-    const apiCxn = new ApiConnection()
-    const addPac = new PACApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+    const { flags } = await this.parse(EmasserPostPac);
+    const apiCxn = new ApiConnection();
+    const addPac = new PACApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    const requestBodyArray: PAC[] = []
-    requestBodyArray.push({
-      workflow: flags.workflow,
-      name: flags.name,
-      comments: flags.comments,
-    })
+    const requestBodyArray: PAC[] = [
+      {
+        workflow: flags.workflow,
+        name: flags.name,
+        comments: flags.comments,
+      },
+    ];
 
-    addPac.addSystemPac(flags.systemId, requestBodyArray).then((response: PacResponsePost) => {
-      console.log(colorize(outputFormat(response, false)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+    try {
+      const response = await addPac.addSystemPac(flags.systemId, requestBodyArray);
+      console.log(colorize(outputFormat(response, false)));
+    } catch (error: unknown) {
+      displayError(error, 'PAC');
+    }
+  }
+
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
+    } else {
+      this.warn(err);
+    }
+    return Promise.resolve();
   }
 }

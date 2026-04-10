@@ -1,48 +1,102 @@
-import colorize from 'json-colorizer'
-import {Zip} from 'zip-lib'
-import {Command, Flags} from '@oclif/core'
-import {ArtifactsApi} from '@mitre/emass_client'
-import {ArtifactsResponsePutPost} from '@mitre/emass_client/dist/api'
-import {ApiConnection} from '../../../utils/emasser/apiConnection'
-import {outputFormat} from '../../../utils/emasser/outputFormatter'
-import {FlagOptions, getFlagsForEndpoint} from '../../../utils/emasser/utilities'
-import {outputError} from '../../../utils/emasser/outputError'
-import fs, {ReadStream} from 'fs'
-import os from 'os'
-import path from 'path'
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
+import { Command, Flags } from '@oclif/core';
+import { ArtifactsApi } from '@mitre/emass_client';
+import AdmZip from 'adm-zip';
+import { colorize } from 'json-colorizer';
+import { ApiConnection } from '../../../utils/emasser/api_connection';
+import { outputFormat } from '../../../utils/emasser/output_formatter';
+import { displayError, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
+const CMD_HELP = 'saf emasser post artifacts -h or --help';
 export default class EmasserPostArtifacts extends Command {
-  static usage = '<%= command.id %> [options]'
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command options\u001B[0m';
 
-  static description = 'Uploads [FILES] to the given [SYSTEM_ID] as artifacts'
+  static readonly description = 'Uploads a single or multiple artifacts to a system.\n'
+    + 'The single file can be an individual artifact or a .zip\n'
+    + 'file containing multiple artifacts. If multiple files are\n'
+    + 'provided they are archived into a zip file and sent as bulk.';
 
-  static examples = ['<%= config.bin %> <%= command.id %> [-s,--systemId] [-i,--input] [options]']
+  static readonly examples = [
+    {
+      description: 'Add a single artifact file',
+      command: '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--fileName] <path-to-file> [FLAGS]',
+    },
+    {
+      description: 'Add multiple artifact files',
+      command: '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--fileName] <path-to-file1> <path-to-file2> ... [FLAGS]',
+    },
+    {
+      description: 'Add bulk artifact file (.zip)',
+      command: '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--fileName] <path-to-zip-file> [FLAGS]',
+    },
+  ];
 
-  static flags = {
-    help: Flags.help({char: 'h', description: 'Post (add) artifact file(s) to a system'}),
-    ...getFlagsForEndpoint(process.argv) as FlagOptions, // skipcq: JS-0349
-  }
+  static readonly flags = {
+    help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Artifacts command' }),
+    ...getFlagsForEndpoint(process.argv),
+  };
 
   async run(): Promise<void> {
-    const {flags} = await this.parse(EmasserPostArtifacts)
-    const apiCxn = new ApiConnection()
-    const artifactApi = new ArtifactsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances)
+    const { flags } = await this.parse(EmasserPostArtifacts);
+    const apiCxn = new ApiConnection();
+    const artifactApi = new ArtifactsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
-    // Create the archive object, add all files
-    const archiver = new Zip()
-    flags.input.forEach((inputFile: string) => {
-      if (fs.existsSync(inputFile)) {
-        archiver.addFile(inputFile)
+    // Check if we have a single file, could be a zip file
+    if (flags.fileName.length === 1 || flags.fileName[0].endsWith('.zip')) {
+      if (fs.existsSync(flags.fileName[0])) {
+        const isBulk = Boolean(flags.fileName[0].endsWith('.zip'));
+        const fileStream: fs.ReadStream = fs.createReadStream(flags.fileName[0]);
+
+        try {
+          const response = await artifactApi.addArtifactsBySystemId(flags.systemId, fileStream, isBulk, flags.isTemplate, flags.type, flags.category);
+          console.log(colorize(outputFormat(response, false)));
+        } catch (error: unknown) {
+          displayError(error, 'Artifacts');
+        }
+      } else {
+        console.error('\u001B[91m» Artifact file not found:', flags.fileName[0], '\u001B[0m');
       }
-    })
 
-    // Generate zip file
-    const zipper = path.join(os.tmpdir(), 'zipper.zip')
-    await archiver.archive(zipper)
-    const fileStream: ReadStream = fs.createReadStream(zipper)
+    // Multiple files, create a zip file
+    } else {
+      // Create a new AdmZip instance
+      const zip = new AdmZip();
 
-    artifactApi.addArtifactsBySystemId(flags.systemId, fileStream, String(flags.isTemplate), flags.type, flags.category).then((response: ArtifactsResponsePutPost) => {
-      console.log(colorize(outputFormat(response, false)))
-    }).catch((error:any) => console.error(colorize(outputError(error))))
+      // Add all files to the zip archive
+      for (const inputFile of flags.fileName) {
+        if (fs.existsSync(inputFile)) {
+          zip.addLocalFile(inputFile);
+        } else {
+          console.error('\u001B[91m» Artifact file not found:', inputFile, '\u001B[0m');
+          process.exit(1);
+        }
+      }
+
+      // Generate a temporary zip file in the system's temp directory
+      const zipper = path.join(os.tmpdir(), 'zipper.zip');
+      zip.writeZip(zipper); // Write the zip file to disk
+
+      // Read the generated zip file as a stream
+      const fileStream: fs.ReadStream = fs.createReadStream(zipper);
+
+      try {
+        const response = await artifactApi.addArtifactsBySystemId(flags.systemId, fileStream, true, flags.isTemplate, flags.type, flags.category);
+        console.log(colorize(outputFormat(response, false)));
+      } catch (error: unknown) {
+        displayError(error, 'Artifacts');
+      }
+    }
+  }
+
+  protected catch(err: Error & { exitCode?: number }): Promise<void> {
+    // If error message is for missing flags, display what fields are required, otherwise show the error
+    if (err.message.includes('See more help with --help')) {
+      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
+    } else {
+      this.warn(err);
+    }
+    return Promise.resolve();
   }
 }

@@ -27,5 +27,9 @@
     low: 0
     total: 0
   no_impact:
-    none: 33
+    critical: 0
+    high: 3
+    medium: 30
+    low: 0
+    none: 0
     total: 33
