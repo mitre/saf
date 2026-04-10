@@ -1,5 +1,5 @@
 import fs from 'fs';
-import { INPUT_TYPES, XCCDFResultsMapper as Mapper } from '@mitre/hdf-converters';
+import { INPUT_TYPES, XCCDFResultsResults as Mapper } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
 import { checkInput, checkSuffix } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
@@ -45,7 +45,7 @@ export default class XCCDFResults2HDF extends BaseCommand<typeof XCCDFResults2HD
     const converter = new Mapper(data, flags.includeRaw);
     fs.writeFileSync(
       checkSuffix(flags.output),
-      JSON.stringify(converter.toHdf(), null, 2),
+      JSON.stringify(await converter.toHdf(), null, 2),
     );
   }
 }
