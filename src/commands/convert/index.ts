@@ -5,6 +5,7 @@ import {
   AnchoreGrypeMapper,
   ASFFResults,
   BurpSuiteMapper,
+  CheckovMapper,
   ChecklistResults,
   ConveyorResults,
   CycloneDXSBOMResults,
@@ -85,7 +86,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         }
 
         // catch all other cases:
-        // 'anchoregrype', 'burp', 'conveyor' 'checklist', 'dbProtect', 'dependencyTrack', 'fortify',
+        // 'anchoregrype', 'burp', 'checkov', 'conveyor' 'checklist', 'dbProtect', 'dependencyTrack', 'fortify',
         // 'jfrog', 'msft_secure_score', 'nessus', 'netsparker', 'neuvector' 'nikto',
         // 'prisma', 'sarif', 'cyclonedx_sbom', 'scoutsuite', 'snyk', 'trufflehog',
         // 'twistlock', 'xccdf'
@@ -138,6 +139,15 @@ export default class Convert extends BaseCommand<typeof Convert> {
 
       case 'burp': {
         converter = new BurpSuiteMapper(fs.readFileSync(flags.input, 'utf8'));
+        fs.writeFileSync(
+          checkSuffix(flags.output),
+          JSON.stringify(converter.toHdf(), null, 2),
+        );
+        break;
+      }
+
+      case 'checkov': {
+        converter = new CheckovMapper(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
           JSON.stringify(converter.toHdf(), null, 2),
