@@ -563,13 +563,13 @@ convert hdf2html             Translate an HDF file into a Heimdall Report HTML f
         Executive: Profile Info + Statuses + Compliance Level
         Manager: Executive + Test Results and Details
         Administrator: Manager + Test Code
-        <options: executive|manager|administrator>
+        <options: Executive|Manager|Administrator>
 
   DESCRIPTION
     Translate an HDF file into a Heimdall Report HTML file
 
   EXAMPLES
-    $ saf convert hdf2html -i hdf_input.json -o report.html -t manager 
+    $ saf convert hdf2html -i hdf_input.json -o report.html -t Manager 
 ```
 [top](#convert-hdf-to-other-formats)
 

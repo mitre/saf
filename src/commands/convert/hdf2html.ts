@@ -8,7 +8,7 @@ export default class HDF2HTML extends Command {
 
   static readonly description = 'Translate an HDF file into a Heimdall Report HTML file';
 
-  static readonly examples = ['saf convert hdf2html -i hdf_input.json -o report.html -t manager'];
+  static readonly examples = ['saf convert hdf2html -i hdf_input.json -o report.html -t Manager'];
 
   static readonly flags = {
     help: Flags.help({ char: 'h' }),
