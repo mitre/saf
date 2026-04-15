@@ -2,6 +2,7 @@ name: Push SAF-CLI to NPM and GPR
 on:
   release:
     types: [published]
+  workflow_dispatch:
 
 permissions:
   id-token: write # required for trusted publishing's use of OIDC
@@ -22,20 +23,17 @@ jobs:
           registry-url: "https://registry.npmjs.org"
           cache: 'npm'
 
-      - name: Manually update npm to 11.5.1 or later which is the required version for trusted publishing to work # this step can be removed after the ubuntu runner has the correct minimum version of npm installed
-        run: npm install -g npm@latest
-
       - name: Remove testing resources
         run: rm -rf test
 
       - name: Install project dependencies
-        run: npm ci
+        run: npx -y npm@latest ci
 
       - name: Pack all items that are published as packages
-        run: npm pack
+        run: npx -y npm@latest pack
 
       - name: Publish SAF CLI to NPM
-        run: npm publish --access public mitre-saf-*.tgz
+        run: npx -y npm@latest publish --access public mitre-saf-*.tgz
 
       # Setup .npmrc file to publish to GitHub Package Registry
       - uses: actions/setup-node@v6
@@ -46,6 +44,6 @@ jobs:
 
       # Publish SAF CLI to GitHub Package Registry
       - name: Publish SAF CLI to GPR
-        run: npm publish --access public mitre-saf-*.tgz
+        run: npx -y npm@latest publish --access public mitre-saf-*.tgz
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
