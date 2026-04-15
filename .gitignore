@@ -17,7 +17,6 @@ out
 .env
 *.tgz
 **/saf-cli.log
-*.html
 saf-cli.log
 CliProcessOutput.log
 deltaProcessReport.md
