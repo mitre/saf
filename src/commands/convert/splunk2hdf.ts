@@ -1,5 +1,5 @@
 import { Flags } from '@oclif/core';
-import { SplunkMapper } from '@mitre/hdf-converters/lib/src/splunk-mapper';
+import { SplunkMapper } from '@mitre/hdf-converters';
 import { table } from 'table';
 import _ from 'lodash';
 import fs from 'fs';
