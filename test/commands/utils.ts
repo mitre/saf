@@ -40,5 +40,5 @@ export function omitHtmlChangingFields(input: string) {
 }
 
 export function normalizeNewLines(input: string): string {
-  return input.replace(/\r\n/g, "\n");
+  return input.replaceAll('\r\n', '\n');
 }
