@@ -34,7 +34,11 @@ export function omitChecklistChangingFields(input: string) {
     .replace(/<!--Heimdall Version :: \S+-->/, '');
 }
 
-export function omitHtmlChangingfields(input: string) {
+export function omitHtmlChangingFields(input: string) {
   return input.replace(/(tailwindcss .+ \|)/, 'TAILWIND VERSION')
     .replace(/TW Elements \d+\.\d+\.\d+/, 'TW ELEMENTS VERSION');
+}
+
+export function normalizeNewLines(input: string): string {
+  return input.replace(/\r\n/g, "\n");
 }
