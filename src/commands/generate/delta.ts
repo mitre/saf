@@ -16,15 +16,13 @@ import {
 import { Flags } from '@oclif/core';
 import colors from 'colors';
 import fse from 'fs-extra';
-import Fuse from 'fuse.js';
-import { isEmpty } from 'lodash';
 import tmp from 'tmp';
 import type winston from 'winston';
+import { applyRequirementFirstPipeline } from '../../utils/delta-matching';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 import {
   addToProcessLogData,
-  printBgMagentaRed,
   printBgRed,
   printBgRedRed,
   printBgYellow,
@@ -603,129 +601,72 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   // @param oldProfile - The profile containing the old controls.
   // @param newProfile - The profile containing the new controls.
   async mapControls(oldProfile: Profile, newProfile: Profile): Promise<object> {
-    /*
-    If a control isn't found to have a match at all, then req is missing or has been dropped
-    Delta *should* be removing it automatically
-    */
+    // Requirement-first pipeline (see src/utils/delta-matching.ts):
+    //   Tier 1  Exact SRG-OS block with single old candidate     -> deterministic accept
+    //   Tier 2  Multiple old candidates in the SRG block         -> CCI Jaccard tiebreak
+    //   Tier 3  No SRG overlap                                   -> Fuse fallback with
+    //                                                              auto-detected vendor-
+    //                                                              prefix stripping and
+    //                                                              keys=['title','gtitle']
+    //
+    // 1:N splits (multiple new controls resolving to the same old) are
+    // preserved as primary + related links. Both land in the returned
+    // controlMappings so downstream file-writing copies the old Ruby
+    // body to every new control that shares the requirement.
+    //
+    // Existing static counters on GenerateDelta are reused to keep the
+    // summary output format stable; `dupMatch` is repurposed to count
+    // `related` links (it used to count rejected duplicates in the
+    // former 1:1 model).
     const oldControls: Control[] = oldProfile.controls;
     const newControls: Control[] = newProfile.controls;
     GenerateDelta.oldControlsLength = oldControls.length;
     GenerateDelta.newControlsLength = newControls.length;
 
-    const fuseOptions = {
-      // isCaseSensitive: false,
-      includeScore: true,
-      shouldSort: true,
-      includeMatches: true,
-      // findAllMatches: false,
-      // minMatchCharLength: 1,
-      // location: 0,
-      // A threshold of 0.0 requires a perfect match (of both letters and location),
-      //   threshold of 1.0 would match anything
-      threshold: 0.4,
-      // distance: 100,
-      // useExtendedSearch: false,
-
-      // text / character movements are inherent when text is changed
-      ignoreLocation: true,
-      // puts weight on length of field, skews results since often text is expanded in revisions
-      ignoreFieldNorm: true,
-      // fieldNormWeight: 1,
-      keys: ['title'],
-    };
     const controlMappings: Record<string, string> = {};
 
     printCyan('Mapping Process ===========================================================================');
-    // Create fuse object for searching through matchList
-    const fuse = await new Fuse(oldControls, fuseOptions);
+    printYellow('Using requirement-first pipeline: SRG-ID blocking + CCI Jaccard tiebreak + vendor-prefix-normalized Fuse fallback\n');
 
-    // Map that holds processed controls and their scores
-    // Need to check if a control is process multiple-times and determine which
-    // control has the lower score
-    const controlIdToScoreMap = new Map();
-    for (const newControl of newControls) {
-      // Ensure the newControl.id is a string and has no leading or trailing slashes
-      const newControlId = basename(newControl.id);
+    const links = applyRequirementFirstPipeline(oldProfile, newProfile);
 
-      // Check for existence of title, remove non-displayed characters
-      // TODO: Determine whether removing symbols other than non-displayed characters is helpful // skipcq: JS-0099
-      // words separated by newlines don't have spaces between them
-      if (newControl.title) {
-        // Regex: [\w\s]     -> match word characters and whitespace
-        //        [\r\t\f\v] -> carriage return, tab, form feed and vertical tab
-        const result = fuse.search(newControl.title.replaceAll(/[^\w\s]|[\r\t\f\v]/g, '').replaceAll('\n', ''));
-        if (isEmpty(result)) {
-          printYellowGreen('     New XCCDF Control:', ` ${newControlId}`);
-          printBgYellow('* No Mapping Provided *\n');
-          GenerateDelta.newXccdfControl++;
-          continue;
-        }
+    // Cheap lookup tables for per-link logging
+    const oldById = new Map(oldControls.map((c) => [c.id, c]));
+    const newByBasename = new Map(
+      newControls.map((c) => [basename(c.id), c]),
+    );
 
-        printYellowBgGreen('Processing New Control: ', `${newControlId}`);
-        printYellowBgGreen('     New Control Title: ', `${this.updateTitle(newControl.title)}`);
+    for (const link of links) {
+      const newId = basename(link.newId);
+      const oldCtl = link.oldId ? oldById.get(link.oldId) : undefined;
+      const newCtl = newByBasename.get(newId);
 
-        if (result[0]?.score && result[0].score < 0.3) { // skipcq: JS-W1044
-          if (controlIdToScoreMap.has(result[0].item.id)) {
-            const score = controlIdToScoreMap.get(result[0].item.id);
-
-            if (result[0].score < score) {
-              controlIdToScoreMap.set(result[0].item.id, result[0].score);
-            } else {
-              printBgMagentaRed('     Old Control Title:', ` ${this.updateTitle(result[0].item.title)}`);
-              printBgMagentaRed('       Duplicate Match:', ` ${result[0].item.id} --> ${newControlId}`);
-              printBgMagentaRed('        Matching Score:', ` ${result[0].score}\n`);
-              GenerateDelta.dupMatch++;
-              continue;
-            }
-          }
-
-          if (typeof newControlId === 'string'
-            && typeof result[0].item.id === 'string') {
-            // Check non displayed characters of title
-            printYellowGreen('     Old Control Title: ', `${this.updateTitle(result[0].item.title)}`);
-            // NOTE: We determined that 0.1 needs to be reviewed due to possible
-            // words exchange that could alter the entire meaning of the title.
-
-            if (result[0].score > 0.1) {
-              // TODO: modify output report or logger to show potential mismatches // skipcq: JS-0099
-              // alternatively: add a match decision feature for high-scoring results
-              printBgRed('** Potential Mismatch **');
-              GenerateDelta.posMisMatch++;
-            } else {
-              GenerateDelta.match++;
-            }
-
-            printYellowGreen('  Best Match Candidate: ', `${result[0].item.id} --> ${newControlId}`);
-            printYellowGreen('        Matching Score: ', `${result[0].score}\n`);
-
-            // Check if we have added an entry for the old control being processed
-            // The result[0].item.id is the old control id
-            for (const key of Object.keys(controlMappings)) {
-              if (controlMappings[key] === result[0].item.id) {
-                delete controlMappings[key];
-                // Lets now check if this entry was previously processed
-                if (controlIdToScoreMap.has(result[0].item.id)) {
-                  const score = controlIdToScoreMap.get(result[0].item.id);
-                  if (score > 0.1) {
-                    GenerateDelta.posMisMatch--;
-                  } else {
-                    GenerateDelta.match--;
-                  }
-                  GenerateDelta.noMatch++;
-                }
-                break;
-              }
-            }
-            controlMappings[newControlId] = result[0].item.id;
-            controlIdToScoreMap.set(result[0].item.id, result[0].score);
-          }
-        } else {
-          printBgRedRed('     Old Control Title:', ` ${this.updateTitle(result[0].item.title)}`);
-          printBgRedRed('    No Match Found for:', ` ${result[0].item.id} --> ${newControlId}`);
-          printBgRedRed('        Matching Score:', ` ${result[0].score} \n`);
-          GenerateDelta.noMatch++;
-        }
+      if (link.matchMethod === 'none') {
+        printYellowGreen('     New XCCDF Control:', ` ${newId}`);
+        printBgRedRed(
+          '    No Match Found for:',
+          ` ${newId}${link.srg ? ` (SRG=${link.srg})` : ''}\n`,
+        );
+        GenerateDelta.noMatch++;
+        continue;
       }
+
+      // Every non-none link resolves to an old control and goes into the
+      // returned map. Primary and related both need the old Ruby body.
+      controlMappings[newId] = link.oldId as string;
+
+      printYellowBgGreen('Processing New Control: ', `${newId}`);
+      if (newCtl?.title) {
+        printYellowBgGreen('     New Control Title: ', `${this.updateTitle(newCtl.title)}`);
+      }
+      if (oldCtl?.title) {
+        printYellowGreen('     Old Control Title: ', `${this.updateTitle(oldCtl.title)}`);
+      }
+
+      this.logMatchMethod(link);
+      this.tickMatchCounter(link);
+
+      printYellowGreen('  Best Match Candidate: ', `${link.oldId} --> ${newId}\n`);
     }
 
     printCyan('Mapping Results ===========================================================================');
@@ -742,31 +683,105 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     printYellowGreen('     Total Controls Found on XCCDF: ', `${GenerateDelta.newControlsLength}\n`);
 
     printCyan('Match Statistics =========================');
-    printYellowGreen('                    Match Controls: ', `${GenerateDelta.match}`);
-    printYellowGreen('        Possible Mismatch Controls: ', `${GenerateDelta.posMisMatch}`);
-    printYellowGreen('          Duplicate Match Controls: ', `${GenerateDelta.dupMatch}`);
+    printYellowGreen('         Match (primary, high conf): ', `${GenerateDelta.match}`);
+    printYellowGreen('     Match (primary, lower score) : ', `${GenerateDelta.posMisMatch}`);
+    printYellowGreen('     Related (share old body w/ a primary): ', `${GenerateDelta.dupMatch}`);
     printYellowGreen('                 No Match Controls: ', `${GenerateDelta.noMatch}`);
-    printYellowGreen('                New XCDDF Controls: ', `${GenerateDelta.newXccdfControl}\n`);
+    printYellowGreen('         (legacy) New XCCDF Controls: ', `${GenerateDelta.newXccdfControl}\n`);
 
     printCyan('Statistics Validation =============================================');
-    printYellowGreen('Match + Mismatch = Total Mapped Controls: ', `${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}`);
-    printYellowGreen('  Total Processed = Total XCCDF Controls: ', `${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`);
+    printYellowGreen('  Match + Mismatch + Related = Total Mapped: ', `${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}`);
+    printYellowGreen('          Total Processed = Total XCCDF: ', `${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`);
 
     return controlMappings;
   }
 
+  /**
+   * Emit the per-link match-method log line. Kept separate from
+   * tickMatchCounter so the output format can evolve independently of
+   * the stats bookkeeping.
+   */
+  private logMatchMethod(link: {
+    matchMethod: string;
+    relationship: string;
+    confidence: number;
+    srg?: string | null;
+  }): void {
+    const confidencePct = (link.confidence * 100).toFixed(0) + '%';
+    switch (link.matchMethod) {
+      case 'srg-deterministic':
+        printYellowGreen(
+          '       Match method:',
+          ` SRG deterministic (${link.srg}) [${link.relationship}]`,
+        );
+        break;
+      case 'srg-cci-tiebreak':
+        printYellowGreen(
+          '       Match method:',
+          ` SRG block + CCI tiebreak (Jaccard=${confidencePct}) [${link.relationship}]`,
+        );
+        if (link.relationship === 'primary' && link.confidence < 0.5) {
+          printBgRed('** Potential Mismatch **');
+        }
+        break;
+      case 'fuse-fallback':
+        printYellowGreen(
+          '       Match method:',
+          ` Fuse title-fuzzy (no SRG overlap, confidence=${confidencePct}) [${link.relationship}]`,
+        );
+        if (link.relationship === 'primary' && link.confidence < 0.9) {
+          printBgRed('** Potential Mismatch **');
+        }
+        break;
+    }
+  }
+
+  /**
+   * Advance the GenerateDelta static counters for a single link so the
+   * end-of-run stats match reality.
+   *
+   *   match        -> primary link, high confidence
+   *   posMisMatch  -> primary link, lower confidence (still accepted)
+   *   dupMatch     -> related link (shares old body with an earlier primary)
+   */
+  private tickMatchCounter(link: {
+    matchMethod: string;
+    relationship: string;
+    confidence: number;
+  }): void {
+    if (link.relationship === 'related') {
+      GenerateDelta.dupMatch++;
+      return;
+    }
+    // Primary threshold per tier: deterministic is always strong; CCI
+    // tiebreak is strong at Jaccard >= 0.5; fuse-fallback is strong at
+    // confidence >= 0.9 (equivalent to Fuse score <= 0.1).
+    const strong =
+      link.matchMethod === 'srg-deterministic' ||
+      (link.matchMethod === 'srg-cci-tiebreak' && link.confidence >= 0.5) ||
+      (link.matchMethod === 'fuse-fallback' && link.confidence >= 0.9);
+    if (strong) {
+      GenerateDelta.match++;
+    } else {
+      GenerateDelta.posMisMatch++;
+    }
+  }
+
   getMappedStatisticsValidation(totalMappedControls: number, statValidation: string): string {
+    // In the requirement-first pipeline `dupMatch` counts `related` links,
+    // which ARE included in controlMappings (they share a body with a
+    // primary). `newXccdfControl` is kept at 0 because the new pipeline
+    // doesn't have a distinct "no Fuse candidate" bucket — those fall
+    // into `noMatch`.
     const match = GenerateDelta.match;
     const misMatch = GenerateDelta.posMisMatch;
-    const statMach = ((match + misMatch) === totalMappedControls);
-    const dupMatch = GenerateDelta.dupMatch;
+    const related = GenerateDelta.dupMatch;
     const noMatch = GenerateDelta.noMatch;
-    const newXccdfControl = GenerateDelta.newXccdfControl;
-    const statTotalMatch = ((totalMappedControls + dupMatch + noMatch + newXccdfControl) === GenerateDelta.newControlsLength);
-
+    const statMappedMatches = (match + misMatch + related) === totalMappedControls;
+    const statProcessedTotal = (totalMappedControls + noMatch) === GenerateDelta.newControlsLength;
     return statValidation === 'totalMapped'
-      ? `(${match}+${misMatch}=${totalMappedControls}) ${statMach}`
-      : `(${match}+${misMatch}+${dupMatch}+${noMatch}+${newXccdfControl}=${GenerateDelta.newControlsLength}) ${statTotalMatch}`;
+      ? `(${match}+${misMatch}+${related}=${totalMappedControls}) ${statMappedMatches}`
+      : `(${totalMappedControls}+${noMatch}=${GenerateDelta.newControlsLength}) ${statProcessedTotal}`;
   }
 
   requiredFlagsProvided(flags: any): boolean { // skipcq: JS-0105
