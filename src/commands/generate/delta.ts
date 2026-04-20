@@ -18,8 +18,9 @@ import colors from 'colors';
 import fse from 'fs-extra';
 import tmp from 'tmp';
 import type winston from 'winston';
+import type { Logger } from 'winston';
 import { applyRequirementFirstPipeline } from '../../utils/delta-matching';
-import { createWinstonLogger } from '../../utils/logging';
+import { createDeltaLogger, createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 import {
   addToProcessLogData,
@@ -625,8 +626,13 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
     const controlMappings: Record<string, string> = {};
 
-    printCyan('Mapping Process ===========================================================================');
-    printYellow('Using requirement-first pipeline: SRG-ID blocking + CCI Jaccard tiebreak + vendor-prefix-normalized Fuse fallback\n');
+    // User-facing CLI output + file log via Winston transports.
+    // File path matches the legacy saveProcessLogData default so any
+    // existing operator workflows that read this file continue to work.
+    const log = createDeltaLogger('CliProcessOutput.log');
+
+    log.info('Mapping Process ===========================================================================');
+    log.info('Using requirement-first pipeline: SRG-ID blocking + CCI Jaccard tiebreak + vendor-prefix-normalized Fuse fallback\n');
 
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
 
@@ -642,10 +648,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       const newCtl = newByBasename.get(newId);
 
       if (link.matchMethod === 'none') {
-        printYellowGreen('     New XCCDF Control:', ` ${newId}`);
-        printBgRedRed(
-          '    No Match Found for:',
-          ` ${newId}${link.srg ? ` (SRG=${link.srg})` : ''}\n`,
+        log.info(`     New XCCDF Control:  ${newId}`);
+        log.error(
+          `    No Match Found for:  ${newId}${link.srg ? ` (SRG=${link.srg})` : ''}\n`,
         );
         GenerateDelta.noMatch++;
         continue;
@@ -655,43 +660,43 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       // returned map. Primary and related both need the old Ruby body.
       controlMappings[newId] = link.oldId as string;
 
-      printYellowBgGreen('Processing New Control: ', `${newId}`);
+      log.info(`Processing New Control:  ${newId}`);
       if (newCtl?.title) {
-        printYellowBgGreen('     New Control Title: ', `${this.updateTitle(newCtl.title)}`);
+        log.info(`     New Control Title:  ${this.updateTitle(newCtl.title)}`);
       }
       if (oldCtl?.title) {
-        printYellowGreen('     Old Control Title: ', `${this.updateTitle(oldCtl.title)}`);
+        log.info(`     Old Control Title:  ${this.updateTitle(oldCtl.title)}`);
       }
 
-      this.logMatchMethod(link);
+      this.logMatchMethod(log, link);
       this.tickMatchCounter(link);
 
-      printYellowGreen('  Best Match Candidate: ', `${link.oldId} --> ${newId}\n`);
+      log.info(`  Best Match Candidate:  ${link.oldId} --> ${newId}\n`);
     }
 
-    printCyan('Mapping Results ===========================================================================');
-    printYellow('\tOld Control -> New Control');
+    log.info('Mapping Results ===========================================================================');
+    log.info('\tOld Control -> New Control');
     for (const [key, value] of Object.entries(controlMappings)) {
-      printGreen(`\t   ${value} -> ${key}`);
+      log.info(`\t   ${value} -> ${key}`);
     }
 
     const totalMappedControls = Object.keys(controlMappings).length;
-    printYellowGreen('Total Mapped Controls: ', `${totalMappedControls}\n`);
+    log.info(`Total Mapped Controls:  ${totalMappedControls}\n`);
 
-    printCyan('Control Counts ===========================');
-    printYellowGreen('Total Controls Available for Delta: ', `${GenerateDelta.oldControlsLength}`);
-    printYellowGreen('     Total Controls Found on XCCDF: ', `${GenerateDelta.newControlsLength}\n`);
+    log.info('Control Counts ===========================');
+    log.info(`Total Controls Available for Delta:  ${GenerateDelta.oldControlsLength}`);
+    log.info(`     Total Controls Found on XCCDF:  ${GenerateDelta.newControlsLength}\n`);
 
-    printCyan('Match Statistics =========================');
-    printYellowGreen('                    Match Controls: ', `${GenerateDelta.match}`);
-    printYellowGreen('        Possible Mismatch Controls: ', `${GenerateDelta.posMisMatch}`);
-    printYellowGreen('          Related Match Controls: ', `${GenerateDelta.dupMatch}`);
-    printYellowGreen('                 No Match Controls: ', `${GenerateDelta.noMatch}`);
-    printYellowGreen('                New XCDDF Controls: ', `${GenerateDelta.newXccdfControl}\n`);
+    log.info('Match Statistics =========================');
+    log.info(`                    Match Controls:  ${GenerateDelta.match}`);
+    log.info(`        Possible Mismatch Controls:  ${GenerateDelta.posMisMatch}`);
+    log.info(`          Related Match Controls:  ${GenerateDelta.dupMatch}`);
+    log.info(`                 No Match Controls:  ${GenerateDelta.noMatch}`);
+    log.info(`                New XCDDF Controls:  ${GenerateDelta.newXccdfControl}\n`);
 
-    printCyan('Statistics Validation =============================================');
-    printYellowGreen('Match + Mismatch + Related = Total Mapped: ', `${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}`);
-    printYellowGreen('  Total Processed = Total XCCDF Controls: ', `${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`);
+    log.info('Statistics Validation =============================================');
+    log.info(`Match + Mismatch + Related = Total Mapped:  ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}`);
+    log.info(`  Total Processed = Total XCCDF Controls:  ${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`);
 
     return controlMappings;
   }
@@ -701,36 +706,36 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
    * tickMatchCounter so the output format can evolve independently of
    * the stats bookkeeping.
    */
-  private logMatchMethod(link: {
-    matchMethod: string;
-    relationship: string;
-    confidence: number;
-    srg?: string | null;
-  }): void {
+  private logMatchMethod(
+    log: Logger,
+    link: {
+      matchMethod: string;
+      relationship: string;
+      confidence: number;
+      srg?: string | null;
+    },
+  ): void {
     const confidencePct = (link.confidence * 100).toFixed(0) + '%';
     switch (link.matchMethod) {
       case 'srg-deterministic':
-        printYellowGreen(
-          '       Match method:',
-          ` SRG deterministic (${link.srg}) [${link.relationship}]`,
+        log.info(
+          `       Match method:  SRG deterministic (${link.srg}) [${link.relationship}]`,
         );
         break;
       case 'srg-cci-tiebreak':
-        printYellowGreen(
-          '       Match method:',
-          ` SRG block + CCI tiebreak (Jaccard=${confidencePct}) [${link.relationship}]`,
+        log.info(
+          `       Match method:  SRG block + CCI tiebreak (Jaccard=${confidencePct}) [${link.relationship}]`,
         );
         if (link.relationship === 'primary' && link.confidence < 0.5) {
-          printBgRed('** Potential Mismatch **');
+          log.warn('** Potential Mismatch **');
         }
         break;
       case 'fuse-fallback':
-        printYellowGreen(
-          '       Match method:',
-          ` Fuse title-fuzzy (no SRG overlap, confidence=${confidencePct}) [${link.relationship}]`,
+        log.info(
+          `       Match method:  Fuse title-fuzzy (no SRG overlap, confidence=${confidencePct}) [${link.relationship}]`,
         );
         if (link.relationship === 'primary' && link.confidence < 0.9) {
-          printBgRed('** Potential Mismatch **');
+          log.warn('** Potential Mismatch **');
         }
         break;
     }
