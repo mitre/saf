@@ -78,6 +78,33 @@ export function extractCcis(control: ControlLike): Set<string> {
 }
 
 /**
+ * Token-level Jaccard similarity between two strings. Lowercased,
+ * whitespace-split, empty tokens dropped. 0.0 when either side is empty.
+ *
+ * Used as a block-internal tiebreaker in Tier 2 when multiple old
+ * candidates share the new control's SRG *and* its CCI set — distinct
+ * control titles (modulo normalized vendor prefix) still discriminate.
+ */
+export function tokenJaccard(a: string, b: string): number {
+  const toks = (s: string) =>
+    new Set(
+      s
+        .toLowerCase()
+        .split(/\s+/)
+        .filter((t) => t.length > 0),
+    );
+  const ta = toks(a);
+  const tb = toks(b);
+  if (ta.size === 0 || tb.size === 0) return 0;
+  let intersectionSize = 0;
+  for (const x of ta) {
+    if (tb.has(x)) intersectionSize++;
+  }
+  const unionSize = ta.size + tb.size - intersectionSize;
+  return intersectionSize / unionSize;
+}
+
+/**
  * Jaccard similarity between two CCI sets. Returns 0.0 when both sides
  * are empty (no signal to differentiate) — callers must treat that as
  * "tied" not "match".
@@ -273,27 +300,57 @@ export function applyRequirementFirstPipeline(
       continue;
     }
 
-    // Tier 2: multiple candidates in this SRG block. Rank by CCI Jaccard
-    // against the new control; highest wins. Ties broken by insertion
-    // order (stable).
+    // Tier 2: multiple candidates in this SRG block. Rank by a composite
+    // score of CCI Jaccard (primary signal) + normalized-title Jaccard
+    // (tiebreak — catches the N:N-in-one-SRG cross-vendor case where
+    // every candidate has identical CCIs). Prefer unclaimed candidates
+    // so distinct new controls don't all pile onto the same old; only
+    // fall back to a claimed candidate (→ `related`) when every old in
+    // the block is already taken.
     const newCcis = extractCcis(newControl);
-    let bestIdx = 0;
-    let bestScore = -1;
+    const newNormTitle = normalizeTitle(safeTitle(newControl.title), newPrefix);
+
+    let bestUnclaimedIdx = -1;
+    let bestUnclaimedComposite = -1;
+    let bestUnclaimedCci = 0;
+    let bestClaimedIdx = -1;
+    let bestClaimedComposite = -1;
+    let bestClaimedCci = 0;
+
     for (let i = 0; i < candidates.length; i++) {
-      const score = cciJaccard(newCcis, extractCcis(candidates[i]));
-      if (score > bestScore) {
-        bestScore = score;
-        bestIdx = i;
+      const cci = cciJaccard(newCcis, extractCcis(candidates[i]));
+      const oldNormTitle = normalizeTitle(
+        safeTitle(candidates[i].title),
+        oldPrefix,
+      );
+      const title = tokenJaccard(newNormTitle, oldNormTitle);
+      const composite = 0.7 * cci + 0.3 * title;
+
+      if (claimedOldIds.has(candidates[i].id)) {
+        if (composite > bestClaimedComposite) {
+          bestClaimedComposite = composite;
+          bestClaimedCci = cci;
+          bestClaimedIdx = i;
+        }
+      } else if (composite > bestUnclaimedComposite) {
+        bestUnclaimedComposite = composite;
+        bestUnclaimedCci = cci;
+        bestUnclaimedIdx = i;
       }
     }
-    const winner = candidates[bestIdx];
+
+    const winnerIdx =
+      bestUnclaimedIdx !== -1 ? bestUnclaimedIdx : bestClaimedIdx;
+    const winnerCci =
+      bestUnclaimedIdx !== -1 ? bestUnclaimedCci : bestClaimedCci;
+    const winner = candidates[winnerIdx];
     const primary = !claimedOldIds.has(winner.id);
     if (primary) claimedOldIds.add(winner.id);
     links.push({
       oldId: winner.id,
       newId: newControl.id,
       matchMethod: 'srg-cci-tiebreak',
-      confidence: Math.max(bestScore, 0),
+      confidence: Math.max(winnerCci, 0),
       relationship: primary ? 'primary' : 'related',
       srg,
     });

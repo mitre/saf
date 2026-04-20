@@ -7,6 +7,7 @@ import {
   extractCcis,
   extractSrgId,
   normalizeTitle,
+  tokenJaccard,
 } from '../../../src/utils/delta-matching';
 
 // Minimal Control-shaped test fixtures. The real inspec-objects Control has
@@ -149,6 +150,37 @@ describe('extractCcis', () => {
   });
 });
 
+describe('tokenJaccard', () => {
+  it('returns 1.0 for identical strings', () => {
+    expect(
+      tokenJaccard('must configure auditd', 'must configure auditd'),
+    ).toBe(1);
+  });
+
+  it('returns 0.0 for completely disjoint token sets', () => {
+    expect(tokenJaccard('foo bar', 'baz qux')).toBe(0);
+  });
+
+  it('returns the correct fraction for partial token overlap', () => {
+    // {a,b,c} vs {b,c,d} -> intersect=2, union=4 -> 0.5
+    expect(tokenJaccard('a b c', 'b c d')).toBe(0.5);
+  });
+
+  it('is whitespace-tolerant', () => {
+    expect(tokenJaccard('a  b   c', ' a b c ')).toBe(1);
+  });
+
+  it('returns 0.0 when either side is empty', () => {
+    expect(tokenJaccard('', 'a b c')).toBe(0);
+    expect(tokenJaccard('a b c', '')).toBe(0);
+    expect(tokenJaccard('', '')).toBe(0);
+  });
+
+  it('is case-insensitive', () => {
+    expect(tokenJaccard('Foo Bar', 'foo bar')).toBe(1);
+  });
+});
+
 describe('cciJaccard', () => {
   it('returns 1.0 for identical sets', () => {
     const a = new Set(['CCI-1', 'CCI-2']);
@@ -284,6 +316,58 @@ describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
       srg: 'SRG-OS-000366-GPOS-00153',
     });
     expect(links[0].confidence).toBe(1);
+  });
+
+  it('assigns each of N new controls to its title-closest UNCLAIMED old candidate when CCI Jaccard is tied across the SRG block', () => {
+    // Classic cross-vendor N:N-in-same-SRG scenario (Windows 2019->2022 style,
+    // AL2023 SRG-OS-000480-GPOS-00227 cluster). All candidates tie on CCI so
+    // the tiebreak must fall through to normalized-title similarity, AND the
+    // allocator must prefer unclaimed candidates so every new gets a distinct
+    // old (not all crowding onto the first candidate).
+    const oldProfile = {
+      controls: [
+        mkControl(
+          'SV-OLD-alpha',
+          'SRG-OS-X',
+          ['CCI-A'],
+          'RHEL 9 must configure alpha service.',
+        ),
+        mkControl(
+          'SV-OLD-beta',
+          'SRG-OS-X',
+          ['CCI-A'],
+          'RHEL 9 must configure beta service.',
+        ),
+      ],
+    };
+    const newProfile = {
+      controls: [
+        mkControl(
+          'SV-NEW-alpha',
+          'SRG-OS-X',
+          ['CCI-A'],
+          'Amazon Linux 2023 must configure alpha service.',
+        ),
+        mkControl(
+          'SV-NEW-beta',
+          'SRG-OS-X',
+          ['CCI-A'],
+          'Amazon Linux 2023 must configure beta service.',
+        ),
+      ],
+    };
+    const links = applyRequirementFirstPipeline(oldProfile, newProfile);
+    const byNewId = Object.fromEntries(links.map((l) => [l.newId, l]));
+    expect(byNewId['SV-NEW-alpha']).toMatchObject({
+      oldId: 'SV-OLD-alpha',
+      matchMethod: 'srg-cci-tiebreak',
+      relationship: 'primary',
+    });
+    expect(byNewId['SV-NEW-beta']).toMatchObject({
+      oldId: 'SV-OLD-beta',
+      matchMethod: 'srg-cci-tiebreak',
+      relationship: 'primary',
+    });
   });
 
   it('maps N new controls sharing one old (1:N split) with the first-seen as primary and the rest as related', () => {

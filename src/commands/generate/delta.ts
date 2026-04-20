@@ -697,46 +697,40 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   }
 
   /**
-   * Emit the per-link match-method log line into the provided log shim.
-   * Kept separate from tickMatchCounter so the output format can evolve
-   * independently of the stats bookkeeping.
+   * Emit the per-link match-method log line. Kept separate from
+   * tickMatchCounter so the output format can evolve independently of
+   * the stats bookkeeping.
    */
-  private logMatchMethodInto(
-    log: {
-      match: (label: string, val: string) => void;
-      warn: (msg: string) => void;
-    },
-    link: {
-      matchMethod: string;
-      relationship: string;
-      confidence: number;
-      srg?: string | null;
-    },
-  ): void {
+  private logMatchMethod(link: {
+    matchMethod: string;
+    relationship: string;
+    confidence: number;
+    srg?: string | null;
+  }): void {
     const confidencePct = (link.confidence * 100).toFixed(0) + '%';
     switch (link.matchMethod) {
       case 'srg-deterministic':
-        log.match(
+        printYellowGreen(
           '       Match method:',
           ` SRG deterministic (${link.srg}) [${link.relationship}]`,
         );
         break;
       case 'srg-cci-tiebreak':
-        log.match(
+        printYellowGreen(
           '       Match method:',
           ` SRG block + CCI tiebreak (Jaccard=${confidencePct}) [${link.relationship}]`,
         );
         if (link.relationship === 'primary' && link.confidence < 0.5) {
-          log.warn('** Potential Mismatch **');
+          printBgRed('** Potential Mismatch **');
         }
         break;
       case 'fuse-fallback':
-        log.match(
+        printYellowGreen(
           '       Match method:',
           ` Fuse title-fuzzy (no SRG overlap, confidence=${confidencePct}) [${link.relationship}]`,
         );
         if (link.relationship === 'primary' && link.confidence < 0.9) {
-          log.warn('** Potential Mismatch **');
+          printBgRed('** Potential Mismatch **');
         }
         break;
     }
