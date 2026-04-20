@@ -1,6 +1,9 @@
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import * as winston from 'winston';
-import { createWinstonLogger } from '../../../src/utils/logging';
+import { createDeltaLogger, createWinstonLogger } from '../../../src/utils/logging';
 
 vi.mock('winston', { spy: true });
 
@@ -31,5 +34,59 @@ describe('createWinstonLogger', () => {
         },
       ),
     );
+  });
+});
+
+describe('createDeltaLogger', () => {
+  const tmpLogFile = () =>
+    path.join(os.tmpdir(), `saf-delta-test-${Date.now()}-${Math.random().toString(36).slice(2)}.log`);
+
+  const waitForFlush = () => new Promise((r) => setTimeout(r, 150));
+
+  it('writes messages to the specified log file in plain text (no ANSI color codes)', async () => {
+    const logFile = tmpLogFile();
+    const logger = createDeltaLogger(logFile);
+
+    logger.info('Match Controls:  5');
+    logger.warn('** Potential Mismatch **');
+    logger.error('No Match Found for:  SV-123');
+
+    await waitForFlush();
+
+    const fileContent = fs.readFileSync(logFile, 'utf-8');
+    expect(fileContent).toContain('Match Controls:  5');
+    expect(fileContent).toContain('** Potential Mismatch **');
+    expect(fileContent).toContain('No Match Found for:  SV-123');
+
+    // File must be plain text — no ANSI escape sequences leaked from console transport
+    expect(fileContent).not.toMatch(/\x1b\[/);
+  });
+
+  it('preserves the literal message as-is (no winston prefix or level label leaks into stdout)', async () => {
+    const logFile = tmpLogFile();
+    const logger = createDeltaLogger(logFile);
+
+    // Winston's Console transport writes via process.stdout.write, not console.log
+    const writes: string[] = [];
+    const origWrite = process.stdout.write.bind(process.stdout);
+    process.stdout.write = ((chunk: unknown, ...rest: unknown[]) => {
+      writes.push(typeof chunk === 'string' ? chunk : String(chunk));
+      return origWrite(chunk as never, ...(rest as []));
+    }) as typeof process.stdout.write;
+
+    try {
+      logger.info('Total Mapped Controls:  42');
+      await waitForFlush();
+    } finally {
+      process.stdout.write = origWrite;
+    }
+
+    // ANSI-strip then search. The raw message must be there with no winston
+    // level or timestamp prefix baked in.
+    const joined = writes.join('').replace(/\x1b\[[0-9;]+m/g, '');
+    expect(joined).toContain('Total Mapped Controls:  42');
+    expect(joined).not.toMatch(/\binfo:\s/);
+    expect(joined).not.toMatch(/\bERROR:\s/);
+    expect(joined).not.toMatch(/\d{4}-\d{2}-\d{2}/); // no ISO timestamp
   });
 });

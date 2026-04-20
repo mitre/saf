@@ -45,6 +45,50 @@ const syslogColors = {
  * @returns {Logger}              - A Winston logger.
  */
 
+/**
+ * createDeltaLogger creates a Winston logger purpose-built for user-facing
+ * CLI command output (as distinct from createWinstonLogger's diagnostic
+ * stream). It writes the literal message to both:
+ *
+ *   - stdout via a Console transport, colorized by log level using the
+ *     shared syslogColors scheme (info=cyan, warn=magenta, error=red).
+ *     No timestamp prefix — the output reads like the direct console.log
+ *     calls it replaces.
+ *   - the provided log file via a File transport, plain text (ANSI codes
+ *     are NOT written to the file; they're applied only in the console
+ *     transport's format chain).
+ *
+ * Replaces the legacy `colors` + `print*` wrapper + module-level
+ * `processLogData` buffer pattern in src/utils/oclif/cli_helper.ts.
+ */
+export function createDeltaLogger(logFile: string): Logger {
+  const colorizer = format.colorize({ colors: syslogColors });
+  const plainMessage = format.printf((info) =>
+    typeof info.message === 'string'
+      ? info.message
+      : JSON.stringify(info.message),
+  );
+
+  return createLogger({
+    level: 'info',
+    transports: [
+      new transports.Console({
+        format: format.combine(
+          format((info) => ({
+            ...info,
+            message: colorizer.colorize(info.level, info.message as string),
+          }))(),
+          plainMessage,
+        ),
+      }),
+      new transports.File({
+        filename: logFile,
+        format: plainMessage,
+      }),
+    ],
+  });
+}
+
 export function createWinstonLogger(module = 'SAF CLI', level = 'info'): Logger {
   const colorizer = format.colorize({ colors: syslogColors });
 
