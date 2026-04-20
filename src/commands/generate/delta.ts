@@ -683,54 +683,60 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     printYellowGreen('     Total Controls Found on XCCDF: ', `${GenerateDelta.newControlsLength}\n`);
 
     printCyan('Match Statistics =========================');
-    printYellowGreen('         Match (primary, high conf): ', `${GenerateDelta.match}`);
-    printYellowGreen('     Match (primary, lower score) : ', `${GenerateDelta.posMisMatch}`);
-    printYellowGreen('     Related (share old body w/ a primary): ', `${GenerateDelta.dupMatch}`);
+    printYellowGreen('                    Match Controls: ', `${GenerateDelta.match}`);
+    printYellowGreen('        Possible Mismatch Controls: ', `${GenerateDelta.posMisMatch}`);
+    printYellowGreen('          Related Match Controls: ', `${GenerateDelta.dupMatch}`);
     printYellowGreen('                 No Match Controls: ', `${GenerateDelta.noMatch}`);
-    printYellowGreen('         (legacy) New XCCDF Controls: ', `${GenerateDelta.newXccdfControl}\n`);
+    printYellowGreen('                New XCDDF Controls: ', `${GenerateDelta.newXccdfControl}\n`);
 
     printCyan('Statistics Validation =============================================');
-    printYellowGreen('  Match + Mismatch + Related = Total Mapped: ', `${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}`);
-    printYellowGreen('          Total Processed = Total XCCDF: ', `${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`);
+    printYellowGreen('Match + Mismatch + Related = Total Mapped: ', `${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}`);
+    printYellowGreen('  Total Processed = Total XCCDF Controls: ', `${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`);
 
     return controlMappings;
   }
 
   /**
-   * Emit the per-link match-method log line. Kept separate from
-   * tickMatchCounter so the output format can evolve independently of
-   * the stats bookkeeping.
+   * Emit the per-link match-method log line into the provided log shim.
+   * Kept separate from tickMatchCounter so the output format can evolve
+   * independently of the stats bookkeeping.
    */
-  private logMatchMethod(link: {
-    matchMethod: string;
-    relationship: string;
-    confidence: number;
-    srg?: string | null;
-  }): void {
+  private logMatchMethodInto(
+    log: {
+      match: (label: string, val: string) => void;
+      warn: (msg: string) => void;
+    },
+    link: {
+      matchMethod: string;
+      relationship: string;
+      confidence: number;
+      srg?: string | null;
+    },
+  ): void {
     const confidencePct = (link.confidence * 100).toFixed(0) + '%';
     switch (link.matchMethod) {
       case 'srg-deterministic':
-        printYellowGreen(
+        log.match(
           '       Match method:',
           ` SRG deterministic (${link.srg}) [${link.relationship}]`,
         );
         break;
       case 'srg-cci-tiebreak':
-        printYellowGreen(
+        log.match(
           '       Match method:',
           ` SRG block + CCI tiebreak (Jaccard=${confidencePct}) [${link.relationship}]`,
         );
         if (link.relationship === 'primary' && link.confidence < 0.5) {
-          printBgRed('** Potential Mismatch **');
+          log.warn('** Potential Mismatch **');
         }
         break;
       case 'fuse-fallback':
-        printYellowGreen(
+        log.match(
           '       Match method:',
           ` Fuse title-fuzzy (no SRG overlap, confidence=${confidencePct}) [${link.relationship}]`,
         );
         if (link.relationship === 'primary' && link.confidence < 0.9) {
-          printBgRed('** Potential Mismatch **');
+          log.warn('** Potential Mismatch **');
         }
         break;
     }

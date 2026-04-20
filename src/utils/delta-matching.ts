@@ -47,9 +47,10 @@ function tokensBeforeModal(title: string): string[] {
  */
 export type ControlLike = {
   id: string;
+  title?: string | null;
   tags?: {
-    gtitle?: string;
-    cci?: string[];
+    gtitle?: string | null;
+    cci?: string[] | null;
   };
 };
 
@@ -61,6 +62,10 @@ export type ControlLike = {
  */
 export function extractSrgId(control: ControlLike): string | null {
   return control.tags?.gtitle ?? null;
+}
+
+function safeTitle(title: string | null | undefined): string {
+  return title ?? '';
 }
 
 /**
@@ -174,10 +179,10 @@ export function applyRequirementFirstPipeline(
   // (e.g. "RHEL 9" vs "Amazon Linux 2023") doesn't bleed into the fuzzy
   // scores in tier 3.
   const oldPrefix = autoDetectPrefix(
-    oldProfile.controls.map((c) => c.title ?? ''),
+    oldProfile.controls.map((c) => safeTitle(c.title)),
   );
   const newPrefix = autoDetectPrefix(
-    newProfile.controls.map((c) => c.title ?? ''),
+    newProfile.controls.map((c) => safeTitle(c.title)),
   );
 
   // Pre-compute a Fuse index over normalized old-control titles + gtitles.
@@ -186,7 +191,7 @@ export function applyRequirementFirstPipeline(
   type SearchRecord = { originalId: string; title: string; gtitle: string };
   const searchCorpus: SearchRecord[] = oldProfile.controls.map((c) => ({
     originalId: c.id,
-    title: normalizeTitle(c.title ?? '', oldPrefix),
+    title: normalizeTitle(safeTitle(c.title), oldPrefix),
     gtitle: c.tags?.gtitle ?? '',
   }));
   const fuse =
@@ -217,7 +222,7 @@ export function applyRequirementFirstPipeline(
       // Tier 3 — fuzzy fallback. Normalize the new control's title with
       // its corpus's detected prefix, then search Fuse over old titles.
       if (fuse) {
-        const searchQuery = normalizeTitle(newControl.title ?? '', newPrefix);
+        const searchQuery = normalizeTitle(safeTitle(newControl.title), newPrefix);
         if (searchQuery) {
           const results = fuse.search(searchQuery);
           const best = results[0];
