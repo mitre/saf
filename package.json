@@ -88,6 +88,7 @@
     "marked": "~18.0.0",
     "mock-fs": "^5.2.0",
     "oclif": "^4.8.8",
+    "tsx": "^4.21.0",
     "typescript-eslint": "^8.56.1",
     "vitest": "^4.0.1"
   },
