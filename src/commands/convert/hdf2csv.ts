@@ -2,7 +2,6 @@ import fs, { promises as fse } from 'fs';
 import path from 'path';
 import { checkbox, input, select } from '@inquirer/prompts';
 import { Flags } from '@oclif/core';
-import colors from 'colors';
 import * as stringify from 'csv-stringify';
 import { EventEmitter } from 'events';
 import { contextualizeEvaluation, type ContextualizedEvaluation } from 'inspecjs';
@@ -10,14 +9,12 @@ import _ from 'lodash';
 import type { ControlSetRows } from '../../types/csv';
 import { convertRow, csvExportFields } from '../../utils/csv';
 import { basename } from '../../utils/global';
+import { createDeltaLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
-import {
-  addToProcessLogData,
-  printGreen,
-  printMagenta,
-  printRed,
-  printYellow,
-  saveProcessLogData } from '../../utils/oclif/cli_helper';
+
+// Module-level logger shared by this command's helpers. Writes to
+// stdout (colorized by level) and to CliProcessOutput.log.
+const log = createDeltaLogger('CliProcessOutput.log');
 
 export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   static readonly usage
@@ -75,8 +72,8 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   async run() {
     const { flags } = await this.parse(HDF2CSV);
 
-    addToProcessLogData('================== HDF2CSV CLI Process ===================');
-    addToProcessLogData(`Date: ${new Date().toISOString()}\n`);
+    log.info('================== HDF2CSV CLI Process ===================');
+    log.info(`Date: ${new Date().toISOString()}\n`);
 
     let inputFile;
     let outputFile;
@@ -96,9 +93,9 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       truncateFields = flags.noTruncate;
 
       // Save the flags to the log object
-      addToProcessLogData('Process Flags ============================================');
+      log.info('Process Flags ============================================');
       for (const [key, value] of Object.entries(flags)) {
-        addToProcessLogData(`${key}=${String(value)}`);
+        log.info(`${key}=${String(value)}`);
       }
     } else {
       return;
@@ -131,12 +128,10 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
 
       try {
         await saveCSV(outputFile, rows);
-        printGreen('\nTranslation completed successfully\n');
+        log.info('\nTranslation completed successfully\n');
       } catch (error: any) {
         const error_ = error.code === 'EISDIR' ? new Error('The CSV output file name was not provided.') : error;
-        printRed(`\nTranslation failed: ${error_}\n`);
-      } finally {
-        saveProcessLogData();
+        log.error(`\nTranslation failed: ${error_}\n`);
       }
     }
   }
@@ -146,12 +141,12 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     let strMsg = 'Warning: The following errors occurred:\n';
 
     if (!flags.input) {
-      strMsg += colors.dim('  Missing required flag input (HDF file)\n');
+      strMsg += '  Missing required flag input (HDF file)\n';
       missingFlags = true;
     }
 
     if (!flags.output) {
-      strMsg += colors.dim('  Missing required flag output (CSV file)\n');
+      strMsg += '  Missing required flag output (CSV file)\n';
       missingFlags = true;
     }
 
@@ -204,10 +199,10 @@ async function saveCSV(filename: fs.PathLike | fs.promises.FileHandle, data: str
     try {
       await fse.writeFile(filename, csvData, 'utf8');
     } catch (error) {
-      printRed(`\nError writing CSV file: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}\n`);
+      log.error(`\nError writing CSV file: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}\n`);
     }
   } catch (error) {
-    printRed(`\nError processing data to convert to CSV: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}\n`);
+    log.error(`\nError processing data to convert to CSV: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}\n`);
   }
 }
 
@@ -256,12 +251,12 @@ async function getFlags(): Promise<any> {
   const { default: fileSelector } = await import('inquirer-file-selector');
   const { default: chalk } = await import('chalk');
 
-  printYellow('Provide the necessary information:');
-  printGreen('  Required flag - HDF file to convert to a CSV formatted file');
-  printGreen('  Required flag - Translation output directory (where the CSV file is written to)');
-  printGreen('  Required flag - CSV output file name (default name is hdf2csv.csv)');
-  printGreen('  Required flag - Field(s) (at least one) to include in output CSV (comma delineated)');
-  printMagenta('  Optional flag - Truncate fields that exceed Excel cell limit (32,767 characters)\n');
+  log.info('Provide the necessary information:');
+  log.info('  Required flag - HDF file to convert to a CSV formatted file');
+  log.info('  Required flag - Translation output directory (where the CSV file is written to)');
+  log.info('  Required flag - CSV output file name (default name is hdf2csv.csv)');
+  log.info('  Required flag - Field(s) (at least one) to include in output CSV (comma delineated)');
+  log.info('  Optional flag - Truncate fields that exceed Excel cell limit (32,767 characters)\n');
 
   type ChoiceItems = {
     name: string;
@@ -323,11 +318,11 @@ async function getFlags(): Promise<any> {
     }),
   };
 
-  addToProcessLogData('Process Flags ============================================');
+  log.info('Process Flags ============================================');
 
   for (const [tagName, answerValue] of Object.entries(answers)) {
     if (answerValue !== null) {
-      addToProcessLogData(`${tagName}=${_.isArray(answerValue) ? answerValue.join(',') : String(answerValue)}`);
+      log.info(`${tagName}=${_.isArray(answerValue) ? answerValue.join(',') : String(answerValue)}`);
     }
   }
 

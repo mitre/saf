@@ -9,20 +9,11 @@ import {
   type Profile,
 } from '@mitre/inspec-objects';
 import { Flags } from '@oclif/core';
-import colors from 'colors';
 import tmp from 'tmp';
 import type { Logger } from 'winston';
 import { basename, downloadFile, extractFileFromZip, getErrorMessage } from '../../utils/global';
-import { createWinstonLogger } from '../../utils/logging';
+import { createDeltaLogger, createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
-import {
-  printGreen,
-  printRed,
-  printBoldRedGreen,
-  printYellowGreen,
-  addToProcessLogData,
-  saveProcessLogData,
-} from '../../utils/oclif/cli_helper';
 
 /**
  * This class is used to prepare profile controls from one SRG or STIG baseline
@@ -116,18 +107,22 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
 
     const logger = createWinstonLogger('generate:update_controls', flags.logLevel);
 
-    logger.warn(colors.yellow('╔═══════════════════════════════════════════════╗'));
-    logger.warn(colors.yellow('║ Profile controls are formatted using Rubocop  ║'));
-    logger.warn(colors.yellow('╚═══════════════════════════════════════════════╝'));
+    logger.warn('╔═══════════════════════════════════════════════╗');
+    logger.warn('║ Profile controls are formatted using Rubocop  ║');
+    logger.warn('╚═══════════════════════════════════════════════╝');
 
     let inspecProfile: Profile;
     GenerateUpdateControls.backupDir = path.join(path.dirname(flags.controlsDir), 'oldControls');
 
-    addToProcessLogData('==================== Update Controls for Delta Process =====================');
-    addToProcessLogData(`Date: ${new Date().toISOString()}`);
-    addToProcessLogData('\nProcess Flags ===========================================');
+    // User-facing CLI output + file log. Writes to CliProcessOutput.log
+    // (same sink the legacy saveProcessLogData defaulted to).
+    const log = createDeltaLogger('CliProcessOutput.log');
+
+    log.info('==================== Update Controls for Delta Process =====================');
+    log.info(`Date: ${new Date().toISOString()}`);
+    log.info('\nProcess Flags ===========================================');
     for (const [key, value] of Object.entries(flags)) {
-      addToProcessLogData(`${key}=${value instanceof URL ? value.toString() : String(value)}`);
+      log.info(`${key}=${value instanceof URL ? value.toString() : String(value)}`);
     }
 
     // -------------------------------------------------------------------------
@@ -477,34 +472,30 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
 
     // listen for the logger finish event to know when logging has completely finished
     logger.on('finish', () => {
-      addToProcessLogData('\nProcess Statistics ===========================================================================\n');
+      log.info('\nProcess Statistics ===========================================================================\n');
 
       if (flags.formatControls) {
-        printGreen('╔════════════════════════════════════════════════════════════════════════════════╗');
-        printGreen('║ Controls were formatted the same way `generate delta` will update the controls ║');
-        printGreen('╚════════════════════════════════════════════════════════════════════════════════╝');
+        log.info('╔════════════════════════════════════════════════════════════════════════════════╗');
+        log.info('║ Controls were formatted the same way `generate delta` will update the controls ║');
+        log.info('╚════════════════════════════════════════════════════════════════════════════════╝');
       } else {
-        printRed('╔════════════════════════════════════════════════════════════════════════════════════╗');
-        printRed('║ Controls were NOT formatted the same way `generate delta` will update the controls ║');
-        printRed('╚════════════════════════════════════════════════════════════════════════════════════╝');
+        log.error('╔════════════════════════════════════════════════════════════════════════════════════╗');
+        log.error('║ Controls were NOT formatted the same way `generate delta` will update the controls ║');
+        log.error('╚════════════════════════════════════════════════════════════════════════════════════╝');
       }
 
-      printYellowGreen('\n     Total skipped files (no mapping to new control Id):', `${skipped.toString().padStart(4)}`);
-      printYellowGreen('Total processed files (found mapping to new control Id): ', `${processed.toString().padStart(3)}`);
+      log.info(`\n     Total skipped files (no mapping to new control Id): ${skipped.toString().padStart(4)}`);
+      log.info(`Total processed files (found mapping to new control Id):  ${processed.toString().padStart(3)}`);
 
-      printYellowGreen('\n    Total controls with correct identification: ', `${isCorrectControl.toString().padStart(3)}`);
-      printYellowGreen('Total new controls found in the XCCDF guidance: ', `${newControls.toString().padStart(3)}`);
+      log.info(`\n    Total controls with correct identification:  ${isCorrectControl.toString().padStart(3)}`);
+      log.info(`Total new controls found in the XCCDF guidance:  ${newControls.toString().padStart(3)}`);
 
-      printYellowGreen('\nSkipped control(s) (not included in XCCDF guidance): ', `${skippedControls.toString()}`);
-      printYellowGreen('\n  New control(s) found (included in XCCDF guidance): ', `${newControlsFound.toString()}`);
+      log.info(`\nSkipped control(s) (not included in XCCDF guidance):  ${skippedControls.toString()}`);
+      log.info(`\n  New control(s) found (included in XCCDF guidance):  ${newControlsFound.toString()}`);
 
       if (notInProfileJSON > 0) {
-        printBoldRedGreen('\nTotal skipped metadata update (not found in Input execution/profile JSON file): ', `${notInProfileJSON.toString().padStart(3)}`);
-        printBoldRedGreen('Control(s) skipped metadata update: ', `${skipMetadataUpdate.toString()}`);
-      }
-
-      if (flags.logLevel !== 'info') {
-        saveProcessLogData();
+        log.error(`\nTotal skipped metadata update (not found in Input execution/profile JSON file):  ${notInProfileJSON.toString().padStart(3)}`);
+        log.error(`Control(s) skipped metadata update:  ${skipMetadataUpdate.toString()}`);
       }
     });
 

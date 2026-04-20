@@ -14,7 +14,11 @@ import { colorize } from 'json-colorizer';
 import { isEmpty } from 'lodash';
 import { getJsonMetaDataExamples } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
-import { printGreen, printYellow } from '../../utils/oclif/cli_helper';
+import { createDeltaLogger } from '../../utils/logging';
+
+// Module-level logger shared by interactive prompts. Writes to stdout
+// and to CliProcessOutput.log.
+const log = createDeltaLogger('CliProcessOutput.log');
 
 export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLMetadata> {
   static readonly usage = '<%= command.id %> [-h] [-L info|warn|debug|verbose] [-o <value> | --interactive]';
@@ -98,8 +102,8 @@ async function getFlags(): Promise<unknown> {
 
   // Variable used to store the prompts (question and answers)
   const interactiveValues: Record<string, unknown> = {};
-  printYellow('Provide the necessary information:');
-  printGreen('  Required flag - The metadata json file to be generated (full path to include file name)');
+  log.info('Provide the necessary information:');
+  log.info('  Required flag - The metadata json file to be generated (full path to include file name)');
 
   const answers = {
     outputDirectory: await fileSelector({
@@ -146,9 +150,9 @@ async function getCklMetaData(): Promise<unknown> {
   // Variable used to store the prompts (question and answers)
   const interactiveValues: Record<string, unknown> = {};
 
-  printYellow('This process collects information necessary to generate a checklist metadata used by the "saf convert hdf2ckl" command.');
-  printYellow('Not all fields are visible in the STIG Viewer, some are used for references and may not generate a ckl exactly as the STIG Viewer.\n');
-  printGreen('Please fill in the following fields to the best of your ability, if you do not have a value, please leave the field empty.');
+  log.info('This process collects information necessary to generate a checklist metadata used by the "saf convert hdf2ckl" command.');
+  log.info('Not all fields are visible in the STIG Viewer, some are used for references and may not generate a ckl exactly as the STIG Viewer.\n');
+  log.info('Please fill in the following fields to the best of your ability, if you do not have a value, please leave the field empty.');
 
   // Collect the "profiles" metadata information
   let addProfile = true;
