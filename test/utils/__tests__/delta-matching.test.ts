@@ -2,12 +2,14 @@ import { describe, expect, it } from 'vitest';
 import {
   applyRequirementFirstPipeline,
   autoDetectPrefix,
+  buildDeltaJsonPayload,
   buildSrgIndex,
   cciJaccard,
   extractCcis,
   extractSrgId,
   normalizeTitle,
   tokenJaccard,
+  type LinkRecord,
 } from '../../../src/utils/delta-matching';
 
 // Minimal Control-shaped test fixtures. The real inspec-objects Control has
@@ -618,5 +620,41 @@ describe('applyRequirementFirstPipeline — potentialMismatch flag', () => {
     expect(link.matchMethod).toBe('fuse-fallback');
     expect(link.confidence).toBeGreaterThanOrEqual(0.9);
     expect(link.potentialMismatch).toBe(false);
+  });
+});
+
+describe('buildDeltaJsonPayload', () => {
+  const sampleLink: LinkRecord = {
+    oldId: 'SV-OLD',
+    newId: 'SV-NEW',
+    matchMethod: 'srg-deterministic',
+    confidence: 1,
+    relationship: 'primary',
+    srg: 'SRG-OS-X',
+    potentialMismatch: false,
+  };
+
+  it('merges the text diff object with a links array under a single `links` key', () => {
+    const diff = { ignoreFormattingDiff: 'abc', rawDiff: 'def' };
+    const payload = buildDeltaJsonPayload({ diff, links: [sampleLink] });
+    expect(payload).toEqual({
+      ignoreFormattingDiff: 'abc',
+      rawDiff: 'def',
+      links: [sampleLink],
+    });
+  });
+
+  it('accepts an empty links array (non-M runs or mapping-skipped cases)', () => {
+    const diff = { ignoreFormattingDiff: 'x', rawDiff: 'y' };
+    const payload = buildDeltaJsonPayload({ diff, links: [] });
+    expect(payload.links).toEqual([]);
+    expect(payload).toHaveProperty('ignoreFormattingDiff', 'x');
+    expect(payload).toHaveProperty('rawDiff', 'y');
+  });
+
+  it('lets links override any pre-existing links field in diff (defensive spread order)', () => {
+    const diff = { rawDiff: 'z', links: ['stale'] };
+    const payload = buildDeltaJsonPayload({ diff, links: [sampleLink] });
+    expect(payload.links).toEqual([sampleLink]);
   });
 });

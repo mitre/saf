@@ -228,6 +228,26 @@ function computePotentialMismatch(
 }
 
 /**
+ * Assemble the object written to `delta.json`. Spreads the text-diff
+ * object (`ignoreFormattingDiff` + `rawDiff`) and appends the
+ * machine-readable `links` array. Single source of truth for the
+ * delta.json schema; update here when the shape changes.
+ *
+ * `links` is applied last so it wins over any stale key in the diff
+ * object (defensive — `updatedResult.diff` should not carry a `links`
+ * key, but this keeps the contract explicit).
+ */
+export function buildDeltaJsonPayload({
+  diff,
+  links,
+}: {
+  diff: Record<string, unknown>;
+  links: LinkRecord[];
+}): Record<string, unknown> {
+  return { ...diff, links };
+}
+
+/**
  * Minimal-shape Profile pair -> LinkRecord per new control.
  *
  * Tier 1 (this commit): deterministic SRG block with single candidate.

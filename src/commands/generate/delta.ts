@@ -18,7 +18,11 @@ import fse from 'fs-extra';
 import tmp from 'tmp';
 import type winston from 'winston';
 import type { Logger } from 'winston';
-import { applyRequirementFirstPipeline } from '../../utils/delta-matching';
+import {
+  applyRequirementFirstPipeline,
+  buildDeltaJsonPayload,
+  type LinkRecord,
+} from '../../utils/delta-matching';
 import { createDeltaLogger, createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 import { basename, downloadFile, extractFileFromZip, getErrorMessage } from '../../utils/global';
@@ -112,6 +116,10 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   static newXccdfControl = 0;
   static oldControlsLength = 0;
   static newControlsLength = 0;
+  // Populated by mapControls when runMapControls is on. Consumed by
+  // the delta.json write site to persist per-control match decisions
+  // alongside the text diff. Empty array when mapControls did not run.
+  static links: LinkRecord[] = [];
 
   async run() {
     const { flags } = await this.parse(GenerateDelta);
@@ -521,7 +529,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         }
 
         this.logThis(`  Writing delta file for ${existingProfile.title}`, 'info');
-        fs.writeFileSync(path.join(outputProfileFolderPath, 'delta.json'), JSON.stringify(updatedResult.diff, null, 2));
+        const deltaJsonPayload = buildDeltaJsonPayload({
+          diff: updatedResult.diff as Record<string, unknown>,
+          links: GenerateDelta.links,
+        });
+        fs.writeFileSync(path.join(outputProfileFolderPath, 'delta.json'), JSON.stringify(deltaJsonPayload, null, 2));
 
         if (reportFile) {
           // logger.debug('  Writing report markdown file')
@@ -619,6 +631,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     log.info('Using requirement-first pipeline: SRG-ID blocking + CCI Jaccard tiebreak + vendor-prefix-normalized Fuse fallback\n');
 
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
+    GenerateDelta.links = links;
 
     // Cheap lookup tables for per-link logging
     const oldById = new Map(oldControls.map((c) => [c.id, c]));
