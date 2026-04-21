@@ -173,6 +173,7 @@ export type LinkRecord = {
   confidence: number;
   relationship: 'primary' | 'related' | 'no-match';
   srg?: string | null;
+  potentialMismatch: boolean;
 };
 
 export type ProfileLike = {
@@ -189,6 +190,42 @@ export type ProfileLike = {
  * unrelated content.
  */
 const FUSE_ACCEPT_THRESHOLD = 0.45;
+
+/**
+ * Primary Tier-2 links with a CCI Jaccard below this threshold are flagged
+ * as `potentialMismatch`. The algorithm still accepts them (they are the
+ * best candidate in their SRG block), but reviewers should confirm the
+ * carried-forward control body still fits the new requirement.
+ */
+export const TIER2_MISMATCH_THRESHOLD = 0.5;
+
+/**
+ * Primary Tier-3 (Fuse-fallback) links with a confidence below this
+ * threshold are flagged as `potentialMismatch`. Fuse already gates
+ * acceptance at `1 - FUSE_ACCEPT_THRESHOLD` (= 0.55 confidence), so the
+ * flag fires across the [0.55, 0.9) band: accepted but soft.
+ */
+export const TIER3_MISMATCH_THRESHOLD = 0.9;
+
+/**
+ * Compute the `potentialMismatch` flag for a link from its (matchMethod,
+ * relationship, confidence) tuple. Related and no-match links never flag
+ * (the flag is about soft primary matches). Tier 1 is always trusted.
+ */
+function computePotentialMismatch(
+  matchMethod: MatchMethod,
+  relationship: 'primary' | 'related' | 'no-match',
+  confidence: number,
+): boolean {
+  if (relationship !== 'primary') return false;
+  if (matchMethod === 'srg-cci-tiebreak') {
+    return confidence < TIER2_MISMATCH_THRESHOLD;
+  }
+  if (matchMethod === 'fuse-fallback') {
+    return confidence < TIER3_MISMATCH_THRESHOLD;
+  }
+  return false;
+}
 
 /**
  * Minimal-shape Profile pair -> LinkRecord per new control.
@@ -260,15 +297,22 @@ export function applyRequirementFirstPipeline(
             const matchedOldId = best.item.originalId;
             const primary = !claimedOldIds.has(matchedOldId);
             if (primary) claimedOldIds.add(matchedOldId);
+            const confidence = 1 - best.score;
+            const relationship = primary ? 'primary' : 'related';
             links.push({
               oldId: matchedOldId,
               newId: newControl.id,
               matchMethod: 'fuse-fallback',
               // Invert Fuse score (0=perfect, 1=no match) into a
               // 0-1 confidence where 1.0 is perfect.
-              confidence: 1 - best.score,
-              relationship: primary ? 'primary' : 'related',
+              confidence,
+              relationship,
               srg: srg ?? null,
+              potentialMismatch: computePotentialMismatch(
+                'fuse-fallback',
+                relationship,
+                confidence,
+              ),
             });
             continue;
           }
@@ -281,6 +325,7 @@ export function applyRequirementFirstPipeline(
         confidence: 0,
         relationship: 'no-match',
         srg: srg ?? null,
+        potentialMismatch: false,
       });
       continue;
     }
@@ -289,13 +334,19 @@ export function applyRequirementFirstPipeline(
       const winner = candidates[0];
       const primary = !claimedOldIds.has(winner.id);
       if (primary) claimedOldIds.add(winner.id);
+      const relationship = primary ? 'primary' : 'related';
       links.push({
         oldId: winner.id,
         newId: newControl.id,
         matchMethod: 'srg-deterministic',
         confidence: 1,
-        relationship: primary ? 'primary' : 'related',
+        relationship,
         srg,
+        potentialMismatch: computePotentialMismatch(
+          'srg-deterministic',
+          relationship,
+          1,
+        ),
       });
       continue;
     }
@@ -346,13 +397,20 @@ export function applyRequirementFirstPipeline(
     const winner = candidates[winnerIdx];
     const primary = !claimedOldIds.has(winner.id);
     if (primary) claimedOldIds.add(winner.id);
+    const confidence = Math.max(winnerCci, 0);
+    const relationship = primary ? 'primary' : 'related';
     links.push({
       oldId: winner.id,
       newId: newControl.id,
       matchMethod: 'srg-cci-tiebreak',
-      confidence: Math.max(winnerCci, 0),
-      relationship: primary ? 'primary' : 'related',
+      confidence,
+      relationship,
       srg,
+      potentialMismatch: computePotentialMismatch(
+        'srg-cci-tiebreak',
+        relationship,
+        confidence,
+      ),
     });
   }
   return links;

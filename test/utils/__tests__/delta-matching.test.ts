@@ -504,3 +504,119 @@ describe('applyRequirementFirstPipeline — Tier 3 (Fuse fallback)', () => {
     expect(links[0].oldId).toBeNull();
   });
 });
+
+describe('applyRequirementFirstPipeline — potentialMismatch flag', () => {
+  it('is false for Tier 1 deterministic primary matches (single-candidate SRG blocks are always trusted)', () => {
+    const oldProfile = {
+      controls: [
+        mkControl('SV-OLD', 'SRG-OS-A', ['CCI-1'], 'RHEL 9 must do X.'),
+      ],
+    };
+    const newProfile = {
+      controls: [
+        mkControl('SV-NEW', 'SRG-OS-A', ['CCI-1'], 'Amazon Linux 2023 must do X.'),
+      ],
+    };
+    const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
+    expect(link.matchMethod).toBe('srg-deterministic');
+    expect(link.potentialMismatch).toBe(false);
+  });
+
+  it('is true for Tier 2 primary when CCI Jaccard is below 0.5 (weak block-internal evidence)', () => {
+    // Two old candidates in the SRG block force Tier 2. Winner has Jaccard
+    // 1/3 = 0.333 (below the 0.5 Tier-2 threshold) -> flagged.
+    const oldProfile = {
+      controls: [
+        mkControl('SV-OLD-A', 'SRG-OS-B', ['CCI-1', 'CCI-2', 'CCI-3'], 'RHEL 9 must alpha.'),
+        mkControl('SV-OLD-B', 'SRG-OS-B', ['CCI-9'], 'RHEL 9 must beta.'),
+      ],
+    };
+    const newProfile = {
+      controls: [
+        mkControl('SV-NEW', 'SRG-OS-B', ['CCI-1'], 'Amazon Linux 2023 must alpha.'),
+      ],
+    };
+    const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
+    expect(link.matchMethod).toBe('srg-cci-tiebreak');
+    expect(link.relationship).toBe('primary');
+    expect(link.confidence).toBeLessThan(0.5);
+    expect(link.potentialMismatch).toBe(true);
+  });
+
+  it('is false for Tier 2 primary when CCI Jaccard is at least 0.5 (strong block-internal evidence)', () => {
+    const oldProfile = {
+      controls: [
+        mkControl('SV-OLD-A', 'SRG-OS-C', ['CCI-1', 'CCI-2'], 'RHEL 9 must alpha.'),
+        mkControl('SV-OLD-B', 'SRG-OS-C', ['CCI-9'], 'RHEL 9 must beta.'),
+      ],
+    };
+    const newProfile = {
+      controls: [
+        mkControl('SV-NEW', 'SRG-OS-C', ['CCI-1', 'CCI-2'], 'Amazon Linux 2023 must alpha.'),
+      ],
+    };
+    const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
+    expect(link.matchMethod).toBe('srg-cci-tiebreak');
+    expect(link.relationship).toBe('primary');
+    expect(link.confidence).toBeGreaterThanOrEqual(0.5);
+    expect(link.potentialMismatch).toBe(false);
+  });
+
+  it('is false for Tier 2 related links regardless of confidence (related never flags)', () => {
+    // N:1 split — two new controls compete for the single old SV-OLD with
+    // equal Jaccard. Earlier wins primary, later becomes related. The
+    // related link's confidence mirrors the primary's; flag must stay false.
+    const oldProfile = {
+      controls: [
+        mkControl('SV-OLD', 'SRG-OS-D', ['CCI-1'], 'RHEL 9 must do Y.'),
+      ],
+    };
+    const newProfile = {
+      controls: [
+        mkControl('SV-NEW-1', 'SRG-OS-D', ['CCI-1'], 'Amazon Linux 2023 must do Y (one).'),
+        mkControl('SV-NEW-2', 'SRG-OS-D', ['CCI-1'], 'Amazon Linux 2023 must do Y (two).'),
+      ],
+    };
+    const links = applyRequirementFirstPipeline(oldProfile, newProfile);
+    const related = links.find((l) => l.relationship === 'related');
+    expect(related).toBeDefined();
+    expect(related?.potentialMismatch).toBe(false);
+  });
+
+  it('is false for no-match links (no candidate to be suspicious of)', () => {
+    const oldProfile = {
+      controls: [
+        mkControl('SV-OLD', 'SRG-OS-E', ['CCI-1'], 'RHEL 9 must do Z.'),
+      ],
+    };
+    const newProfile = {
+      controls: [
+        // Different SRG, different CCI, completely unrelated title -> no match possible
+        mkControl('SV-NEW', 'SRG-OS-ZZZ-UNIQUE', ['CCI-999'], 'Amazon Linux 2023 must rotate quantum entropy wells.'),
+      ],
+    };
+    const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
+    expect(link.matchMethod).toBe('none');
+    expect(link.potentialMismatch).toBe(false);
+  });
+
+  it('is false for Tier 3 primary when Fuse confidence is at least 0.9 (near-identical titles post-normalization)', () => {
+    // Same fixture as the existing Tier 3 happy-path test: cross-vendor
+    // titles that collapse to "must be a vendor-supported release." after
+    // prefix stripping. Fuse confidence > 0.9 -> not flagged.
+    const oldProfile = {
+      controls: [
+        mkControl('SV-OLD', 'SRG-OS-F-111', ['CCI-X'], 'RHEL 9 must be a vendor-supported release.'),
+      ],
+    };
+    const newProfile = {
+      controls: [
+        mkControl('SV-NEW', 'SRG-OS-F-222', ['CCI-X'], 'Amazon Linux 2023 must be a vendor-supported release.'),
+      ],
+    };
+    const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
+    expect(link.matchMethod).toBe('fuse-fallback');
+    expect(link.confidence).toBeGreaterThanOrEqual(0.9);
+    expect(link.potentialMismatch).toBe(false);
+  });
+});

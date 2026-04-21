@@ -710,18 +710,15 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         log.info(
           `       Match method:  SRG block + CCI tiebreak (Jaccard=${confidencePct}) [${link.relationship}]`,
         );
-        if (link.relationship === 'primary' && link.confidence < 0.5) {
-          log.warn('** Potential Mismatch **');
-        }
         break;
       case 'fuse-fallback':
         log.info(
           `       Match method:  Fuse title-fuzzy (no SRG overlap, confidence=${confidencePct}) [${link.relationship}]`,
         );
-        if (link.relationship === 'primary' && link.confidence < 0.9) {
-          log.warn('** Potential Mismatch **');
-        }
         break;
+    }
+    if (link.potentialMismatch) {
+      log.warn('** Potential Mismatch **');
     }
   }
 
