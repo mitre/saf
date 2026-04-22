@@ -17,7 +17,6 @@
     "@mitre/inspec-objects": "2.3.0",
     "@oclif/core": "^4.2.10",
     "@oclif/plugin-help": "^6.0.9",
-    "@oclif/plugin-plugins": "^5.0.14",
     "@oclif/plugin-version": "^2.0.11",
     "@oclif/plugin-warn-if-update-available": "^3.0.15",
     "@smithy/node-http-handler": "^4.0.0",
@@ -128,7 +127,6 @@
     "bin": "saf",
     "plugins": [
       "@oclif/plugin-version",
-      "@oclif/plugin-plugins",
       "@oclif/plugin-help",
       "@oclif/plugin-warn-if-update-available"
     ],
