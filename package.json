@@ -67,7 +67,7 @@
     "tsimportlib": "^0.0.5",
     "tslib": "^2",
     "typescript": "^6.0.2",
-    "uuid": "^13.0.0",
+    "uuid": "^14.0.0",
     "winston": "^3.10.0",
     "xlsx-populate": "^1.21.0",
     "yaml": "^2.3.2"
