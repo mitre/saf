@@ -26,7 +26,7 @@ const COMPLIANCE_MODALS = new Set([
 
 function tokensBeforeModal(title: string): string[] {
   const tokens = title.split(/\s+/);
-  const modalIdx = tokens.findIndex((t) =>
+  const modalIdx = tokens.findIndex(t =>
     COMPLIANCE_MODALS.has(t.toLowerCase()),
   );
   return modalIdx === -1 ? tokens : tokens.slice(0, modalIdx);
@@ -65,7 +65,7 @@ function safeTitle(title: string | null | undefined): string {
  * controls share an SRG with the same old-profile control (1:N splits).
  */
 export function extractCcis(control: ControlLike): Set<string> {
-  return new Set(control.tags?.cci ?? []);
+  return new Set(control.tags?.cci);
 }
 
 /**
@@ -82,14 +82,14 @@ export function tokenJaccard(a: string, b: string): number {
       s
         .toLowerCase()
         .split(/\s+/)
-        .filter((t) => t.length > 0),
+        .filter(t => t.length > 0),
     );
   const ta = toks(a);
   const tb = toks(b);
-  if (ta.size === 0 || tb.size === 0) return 0;
+  if (ta.size === 0 || tb.size === 0) { return 0; }
   let intersectionSize = 0;
   for (const x of ta) {
-    if (tb.has(x)) intersectionSize++;
+    if (tb.has(x)) { intersectionSize++; }
   }
   const unionSize = ta.size + tb.size - intersectionSize;
   return intersectionSize / unionSize;
@@ -101,10 +101,10 @@ export function tokenJaccard(a: string, b: string): number {
  * "tied" not "match".
  */
 export function cciJaccard(a: Set<string>, b: Set<string>): number {
-  if (a.size === 0 && b.size === 0) return 0;
+  if (a.size === 0 && b.size === 0) { return 0; }
   let intersectionSize = 0;
   for (const x of a) {
-    if (b.has(x)) intersectionSize++;
+    if (b.has(x)) { intersectionSize++; }
   }
   const unionSize = a.size + b.size - intersectionSize;
   return intersectionSize / unionSize;
@@ -123,7 +123,7 @@ export function buildSrgIndex(
   const index = new Map<string, ControlLike[]>();
   for (const c of controls) {
     const srg = extractSrgId(c);
-    if (srg === null) continue;
+    if (srg === null) { continue; }
     const bucket = index.get(srg);
     if (bucket) {
       bucket.push(c);
@@ -151,11 +151,11 @@ export function buildSrgIndex(
  *                 but know all the related new controls.
  *   - `no-match`  Paired with matchMethod=`none`.
  */
-export type MatchMethod =
-  | 'srg-deterministic'
-  | 'srg-cci-tiebreak'
-  | 'fuse-fallback'
-  | 'none';
+export type MatchMethod
+  = | 'srg-deterministic'
+    | 'srg-cci-tiebreak'
+    | 'fuse-fallback'
+    | 'none';
 
 export type LinkRecord = {
   oldId: string | null;
@@ -218,7 +218,7 @@ function computePotentialMismatch(
   relationship: 'primary' | 'related' | 'no-match',
   confidence: number,
 ): boolean {
-  if (relationship !== 'primary') return false;
+  if (relationship !== 'primary') { return false; }
   if (matchMethod === 'srg-cci-tiebreak') {
     return confidence < TIER2_MISMATCH_THRESHOLD;
   }
@@ -288,7 +288,7 @@ type SearchRecord = { originalId: string; title: string; gtitle: string };
 // describing the one method we call sidesteps the namespace collision
 // and documents exactly what tier 3 consumes.
 type FuseSearcher = {
-  search(query: string): Array<{ item: SearchRecord; score?: number }>;
+  search(query: string): { item: SearchRecord; score?: number }[];
 };
 
 type TierContext = {
@@ -308,7 +308,7 @@ function claimOrRelate(
   oldId: string,
   claimedOldIds: Set<string>,
 ): 'primary' | 'related' {
-  if (claimedOldIds.has(oldId)) return 'related';
+  if (claimedOldIds.has(oldId)) { return 'related'; }
   claimedOldIds.add(oldId);
   return 'primary';
 }
@@ -402,19 +402,19 @@ function tier2CciTiebreak(
   let bestUnclaimed: ScoredCandidate | null = null;
   let bestClaimed: ScoredCandidate | null = null;
 
-  for (let i = 0; i < candidates.length; i++) {
-    const cci = cciJaccard(newCcis, extractCcis(candidates[i]));
+  for (const [i, candidate] of candidates.entries()) {
+    const cci = cciJaccard(newCcis, extractCcis(candidate));
     const oldNormTitle = normalizeTitle(
-      safeTitle(candidates[i].title),
+      safeTitle(candidate.title),
       ctx.oldPrefix,
     );
     const title = tokenJaccard(newNormTitle, oldNormTitle);
     const composite
       = TIER2_COMPOSITE_CCI_WEIGHT * cci
-      + TIER2_COMPOSITE_TITLE_WEIGHT * title;
+        + TIER2_COMPOSITE_TITLE_WEIGHT * title;
     const slot: ScoredCandidate = { idx: i, composite, cci };
-    if (ctx.claimedOldIds.has(candidates[i].id)) {
-      if (!bestClaimed || composite > bestClaimed.composite) bestClaimed = slot;
+    if (ctx.claimedOldIds.has(candidate.id)) {
+      if (!bestClaimed || composite > bestClaimed.composite) { bestClaimed = slot; }
     } else if (!bestUnclaimed || composite > bestUnclaimed.composite) {
       bestUnclaimed = slot;
     }
@@ -445,12 +445,12 @@ function tier3FuseFallback(
   srg: string | null,
   ctx: TierContext,
 ): LinkRecord | null {
-  if (!ctx.fuse) return null;
+  if (!ctx.fuse) { return null; }
   const searchQuery = normalizeTitle(
     safeTitle(newControl.title),
     ctx.newPrefix,
   );
-  if (!searchQuery) return null;
+  if (!searchQuery) { return null; }
   const results = ctx.fuse.search(searchQuery);
   const best = results[0];
   if (best?.score === undefined || best.score >= FUSE_ACCEPT_THRESHOLD) {
@@ -486,30 +486,30 @@ export function applyRequirementFirstPipeline(
   // (e.g. "RHEL 9" vs "Amazon Linux 2023") doesn't bleed into the fuzzy
   // scores in tier 3.
   const oldPrefix = autoDetectPrefix(
-    oldProfile.controls.map((c) => safeTitle(c.title)),
+    oldProfile.controls.map(c => safeTitle(c.title)),
   );
   const newPrefix = autoDetectPrefix(
-    newProfile.controls.map((c) => safeTitle(c.title)),
+    newProfile.controls.map(c => safeTitle(c.title)),
   );
 
   // Pre-compute a Fuse index over normalized old-control titles + gtitles.
   // Only built when tier 3 will actually fire (there's at least one old
   // control to search against).
-  const searchCorpus: SearchRecord[] = oldProfile.controls.map((c) => ({
+  const searchCorpus: SearchRecord[] = oldProfile.controls.map(c => ({
     originalId: c.id,
     title: normalizeTitle(safeTitle(c.title), oldPrefix),
     gtitle: c.tags?.gtitle ?? '',
   }));
-  const fuse =
-    searchCorpus.length > 0
+  const fuse
+    = searchCorpus.length > 0
       ? new Fuse(searchCorpus, {
-          includeScore: true,
-          shouldSort: true,
-          threshold: 0.5,
-          ignoreLocation: true,
-          ignoreFieldNorm: true,
-          keys: ['title', 'gtitle'],
-        })
+        includeScore: true,
+        shouldSort: true,
+        threshold: 0.5,
+        ignoreLocation: true,
+        ignoreFieldNorm: true,
+        keys: ['title', 'gtitle'],
+      })
       : null;
 
   // Track which old control has already been claimed as `primary`. If a
@@ -547,8 +547,8 @@ export function applyRequirementFirstPipeline(
  * prefix is empty or not present at the start.
  */
 export function normalizeTitle(title: string, prefix: string): string {
-  if (!prefix) return title;
-  if (title === prefix) return '';
+  if (!prefix) { return title; }
+  if (title === prefix) { return ''; }
   if (title.startsWith(prefix + ' ')) {
     return title.slice(prefix.length + 1);
   }
@@ -565,9 +565,9 @@ export function normalizeTitle(title: string, prefix: string): string {
  * (feature-focused corpora like Google Chrome STIG).
  */
 export function autoDetectPrefix(titles: string[], threshold = 0.5): string {
-  if (titles.length === 0) return '';
+  if (titles.length === 0) { return ''; }
   const leading = titles.map(tokensBeforeModal);
-  const maxLen = Math.max(...leading.map((l) => l.length));
+  const maxLen = Math.max(...leading.map(l => l.length));
   for (let n = maxLen; n > 0; n--) {
     const counts = new Map<string, number>();
     for (const l of leading) {

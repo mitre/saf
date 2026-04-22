@@ -25,7 +25,7 @@ import {
 
 const fixtureDir = path.resolve(__dirname, '../../sample_data/delta-matching');
 
-function loadFixture(file: string): { controls: Array<Record<string, unknown>> } {
+function loadFixture(file: string): { controls: Record<string, unknown>[] } {
   return JSON.parse(fs.readFileSync(path.join(fixtureDir, file), 'utf8'));
 }
 
@@ -35,7 +35,7 @@ describe('Cross-vendor integration: RHEL 9 -> Amazon Linux 2023 mini', () => {
 
   const links = applyRequirementFirstPipeline(oldProfile, newProfile);
   const byNew: Record<string, LinkRecord> = Object.fromEntries(
-    links.map((l) => [l.newId, l]),
+    links.map(l => [l.newId, l]),
   );
 
   it('produces exactly one link per target rule', () => {
@@ -44,7 +44,7 @@ describe('Cross-vendor integration: RHEL 9 -> Amazon Linux 2023 mini', () => {
   });
 
   it('meets the >=90% mapping target (primary + related)', () => {
-    const mapped = links.filter((l) => l.relationship !== 'no-match');
+    const mapped = links.filter(l => l.relationship !== 'no-match');
     const rate = mapped.length / links.length;
     expect(rate).toBeGreaterThanOrEqual(0.9);
     expect(mapped).toHaveLength(10);
@@ -58,7 +58,7 @@ describe('Cross-vendor integration: RHEL 9 -> Amazon Linux 2023 mini', () => {
     expect(byMethod['srg-deterministic']).toBe(6);
     expect(byMethod['srg-cci-tiebreak']).toBe(3);
     expect(byMethod['fuse-fallback']).toBe(1);
-    expect(byMethod['none']).toBe(1);
+    expect(byMethod.none).toBe(1);
   });
 
   it('pins Tier-1 deterministic mappings (single-candidate SRG blocks)', () => {
@@ -159,7 +159,7 @@ describe('Cross-vendor integration: RHEL 9 -> Amazon Linux 2023 mini', () => {
   });
 
   it('flags exactly one control as potentialMismatch (regression guard on the threshold)', () => {
-    const flagged = links.filter((l) => l.potentialMismatch);
+    const flagged = links.filter(l => l.potentialMismatch);
     expect(flagged).toHaveLength(1);
     expect(flagged[0].newId).toBe('SV-273902');
   });

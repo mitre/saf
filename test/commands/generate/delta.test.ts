@@ -119,5 +119,4 @@ describe.sequential('Test generate delta command', () => {
     expect(stdout).to.include('Best Match Candidate:  V-93207 --> SV-254241');
     expect(stdout).to.include('Best Match Candidate:  V-93461 --> SV-254242');
   });
-
 });

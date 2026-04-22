@@ -659,9 +659,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     GenerateDelta.links = links;
 
     // Cheap lookup tables for per-link logging
-    const oldById = new Map(oldControls.map((c) => [c.id, c]));
+    const oldById = new Map(oldControls.map(c => [c.id, c]));
     const newByBasename = new Map(
-      newControls.map((c) => [basename(c.id), c]),
+      newControls.map(c => [basename(c.id), c]),
     );
 
     for (const link of links) {
@@ -680,7 +680,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
       // Every non-none link resolves to an old control and goes into the
       // returned map. Primary and related both need the old Ruby body.
-      controlMappings[newId] = link.oldId as string;
+      controlMappings[newId] = link.oldId!;
 
       log.info(`Processing New Control:  ${newId}`);
       if (newCtl?.title) {
@@ -731,21 +731,24 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   private logMatchMethod(log: Logger, link: LinkRecord): void {
     const confidencePct = (link.confidence * 100).toFixed(0) + '%';
     switch (link.matchMethod) {
-      case 'srg-deterministic':
+      case 'srg-deterministic': {
         log.info(
           `       Match method:  SRG deterministic (${link.srg}) [${link.relationship}]`,
         );
         break;
-      case 'srg-cci-tiebreak':
+      }
+      case 'srg-cci-tiebreak': {
         log.info(
           `       Match method:  SRG block + CCI tiebreak (Jaccard=${confidencePct}) [${link.relationship}]`,
         );
         break;
-      case 'fuse-fallback':
+      }
+      case 'fuse-fallback': {
         log.info(
           `       Match method:  Fuse title-fuzzy (no SRG overlap, confidence=${confidencePct}) [${link.relationship}]`,
         );
         break;
+      }
     }
     if (link.potentialMismatch) {
       log.warn('** Potential Mismatch **');

@@ -101,7 +101,7 @@ export function createDeltaLogger(
   }
 
   const colorizer = format.colorize({ colors: syslogColors });
-  const plainMessage = format.printf((info) =>
+  const plainMessage = format.printf(info =>
     typeof info.message === 'string'
       ? info.message
       : JSON.stringify(info.message),
@@ -112,7 +112,7 @@ export function createDeltaLogger(
     transports: [
       new transports.Console({
         format: format.combine(
-          format((info) => ({
+          format(info => ({
             ...info,
             message: colorizer.colorize(info.level, info.message as string),
           }))(),

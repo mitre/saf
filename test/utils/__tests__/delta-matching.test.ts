@@ -25,7 +25,7 @@ const mkControl = (
   id,
   title,
   tags: {
-    ...(gtitle !== undefined ? { gtitle } : {}),
+    ...(gtitle === undefined ? {} : { gtitle }),
     ...(ccis.length > 0 ? { cci: ccis } : {}),
   },
 });
@@ -218,11 +218,11 @@ describe('buildSrgIndex', () => {
       mkControl('SV-c', 'SRG-OS-001-GPOS-X'),
     ];
     const index = buildSrgIndex(controls);
-    expect(index.get('SRG-OS-001-GPOS-X')?.map((c) => c.id)).toEqual([
+    expect(index.get('SRG-OS-001-GPOS-X')?.map(c => c.id)).toEqual([
       'SV-a',
       'SV-c',
     ]);
-    expect(index.get('SRG-OS-002-GPOS-X')?.map((c) => c.id)).toEqual([
+    expect(index.get('SRG-OS-002-GPOS-X')?.map(c => c.id)).toEqual([
       'SV-b',
     ]);
   });
@@ -234,7 +234,7 @@ describe('buildSrgIndex', () => {
     ];
     const index = buildSrgIndex(controls);
     expect(index.size).toBe(1);
-    expect(index.get('SRG-OS-001-GPOS-X')?.map((c) => c.id)).toEqual(['SV-b']);
+    expect(index.get('SRG-OS-001-GPOS-X')?.map(c => c.id)).toEqual(['SV-b']);
   });
 
   it('returns an empty Map for empty input', () => {
@@ -361,7 +361,7 @@ describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
       ],
     };
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
-    const byNewId = Object.fromEntries(links.map((l) => [l.newId, l]));
+    const byNewId = Object.fromEntries(links.map(l => [l.newId, l]));
     expect(byNewId['SV-NEW-alpha']).toMatchObject({
       oldId: 'SV-OLD-alpha',
       matchMethod: 'srg-cci-tiebreak',
@@ -397,7 +397,7 @@ describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
       ],
     };
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
-    const byNewId = Object.fromEntries(links.map((l) => [l.newId, l]));
+    const byNewId = Object.fromEntries(links.map(l => [l.newId, l]));
     expect(byNewId['SV-NEW-1']).toMatchObject({
       oldId: 'SV-OLD',
       matchMethod: 'srg-deterministic',
@@ -582,7 +582,7 @@ describe('applyRequirementFirstPipeline — potentialMismatch flag', () => {
       ],
     };
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
-    const related = links.find((l) => l.relationship === 'related');
+    const related = links.find(l => l.relationship === 'related');
     expect(related).toBeDefined();
     expect(related?.potentialMismatch).toBe(false);
   });
@@ -629,7 +629,7 @@ describe('Tier-2 composite weight constants', () => {
   it('sum to 1.0 (fairness invariant)', () => {
     expect(
       TIER2_COMPOSITE_CCI_WEIGHT + TIER2_COMPOSITE_TITLE_WEIGHT,
-    ).toBeCloseTo(1.0, 10);
+    ).toBeCloseTo(1, 10);
   });
 
   it('CCI weight dominates title weight', () => {

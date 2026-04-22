@@ -60,13 +60,13 @@ describe('createDeltaLogger', () => {
 
     await flushAndEnd(logger);
 
-    const fileContent = fs.readFileSync(logFile, 'utf-8');
+    const fileContent = fs.readFileSync(logFile, 'utf8');
     expect(fileContent).toContain('Match Controls:  5');
     expect(fileContent).toContain('** Potential Mismatch **');
     expect(fileContent).toContain('No Match Found for:  SV-123');
 
     // File must be plain text — no ANSI escape sequences leaked from console transport
-    expect(fileContent).not.toMatch(/\x1b\[/);
+    expect(fileContent).not.toMatch(/\u001B\[/);
   });
 
   it('refuses to open a log file that already exists as a symlink', () => {
@@ -92,7 +92,7 @@ describe('createDeltaLogger', () => {
 
     await flushAndEnd(logger);
 
-    const fileContent = fs.readFileSync(logFile, 'utf-8');
+    const fileContent = fs.readFileSync(logFile, 'utf8');
     expect(fileContent).toContain('included');
     expect(fileContent).not.toContain('suppressed');
   });
@@ -118,7 +118,7 @@ describe('createDeltaLogger', () => {
 
     // ANSI-strip then search. The raw message must be there with no winston
     // level or timestamp prefix baked in.
-    const joined = writes.join('').replace(/\x1b\[[0-9;]+m/g, '');
+    const joined = writes.join('').replaceAll(/\u001B\[[0-9;]+m/g, '');
     expect(joined).toContain('Total Mapped Controls:  42');
     expect(joined).not.toMatch(/\binfo:\s/);
     expect(joined).not.toMatch(/\bERROR:\s/);
