@@ -21,6 +21,7 @@ import type { Logger } from 'winston';
 import {
   applyRequirementFirstPipeline,
   buildDeltaJsonPayload,
+  type DeltaDiff,
   type LinkRecord,
 } from '../../utils/delta-matching';
 import { createWinstonLogger, lazyDeltaLogger } from '../../utils/logging';
@@ -44,7 +45,7 @@ const log = lazyDeltaLogger('CliProcessOutput.log');
 *        a - report file (.md), mapping statistics (CliProcessOutput.log)
 */
 export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
-  static readonly description = 'Update an existing InSpec profile with new or updated XCCDF guidance';
+  static readonly description = 'Update an existing InSpec profile with new or updated XCCDF guidance. With -M (runMapControls), uses a 3-tier SRG/CCI requirement-first matcher for cross-vendor deltas (e.g. RHEL 9 → Amazon Linux 2023) and persists per-control match decisions into delta.json\'s links[] field.';
 
   static readonly flags = {
     inspecJsonFile: Flags.string({
@@ -551,7 +552,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
         this.logThis(`  Writing delta file for ${existingProfile.title}`, 'info');
         const deltaJsonPayload = buildDeltaJsonPayload({
-          diff: updatedResult.diff as Record<string, unknown>,
+          diff: updatedResult.diff as DeltaDiff,
           links: GenerateDelta.links,
         });
         fs.writeFileSync(
@@ -573,7 +574,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               + `        Possible Mismatch Controls: ${GenerateDelta.posMisMatch}\n`
               + `          Duplicate Match Controls: ${GenerateDelta.dupMatch}\n`
               + `                 No Match Controls: ${GenerateDelta.noMatch}\n`
-              + `                New XCDDF Controls: ${GenerateDelta.newXccdfControl}\n\n`
+              + `                New XCCDF Controls: ${GenerateDelta.newXccdfControl}\n\n`
               + 'Statistics Validation ------------------------------------------\n'
               + `Match + Mismatch = Total Mapped Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}\n`
               + `  Total Processed = Total XCCDF Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`
@@ -713,7 +714,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     log.info(`        Possible Mismatch Controls:  ${GenerateDelta.posMisMatch}`);
     log.info(`          Related Match Controls:  ${GenerateDelta.dupMatch}`);
     log.info(`                 No Match Controls:  ${GenerateDelta.noMatch}`);
-    log.info(`                New XCDDF Controls:  ${GenerateDelta.newXccdfControl}\n`);
+    log.info(`                New XCCDF Controls:  ${GenerateDelta.newXccdfControl}\n`);
 
     log.info('Statistics Validation =============================================');
     log.info(`Match + Mismatch + Related = Total Mapped:  ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}`);

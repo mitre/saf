@@ -15,15 +15,6 @@ import Fuse from 'fuse.js';
  */
 
 /**
- * Given the rule titles of a STIG benchmark, discover the dominant leading
- * token prefix (e.g. "RHEL 9", "The Apache web server") that the vendor
- * used on (nearly) every rule. That prefix is then stripped before fuzzy
- * comparison so cross-vendor deltas aren't dragged down by vendor-name
- * drift.
- *
- * Returns '' when no single prefix dominates the corpus.
- */
-/**
  * Modal verbs mark the start of a STIG rule's compliance statement
  * ("... must ...", "... will ...", "... shall ..."). Anything before the
  * first modal is "preamble" the vendor adds uniformly; anything after is
@@ -238,22 +229,55 @@ function computePotentialMismatch(
 }
 
 /**
- * Assemble the object written to `delta.json`. Spreads the text-diff
- * object (`ignoreFormattingDiff` + `rawDiff`) and appends the
- * machine-readable `links` array. Single source of truth for the
- * delta.json schema; update here when the shape changes.
+ * Shape of the text-diff portion of `delta.json`, produced by
+ * `@mitre/inspec-objects::updateProfileUsingXCCDF`. Carried as an opaque
+ * key bag because inspec-objects doesn't export a named type, but we
+ * lock in the keys downstream consumers rely on so a breaking change
+ * there is noisy here.
+ */
+export type DeltaDiff = {
+  ignoreFormattingDiff?: Record<string, unknown>;
+  rawDiff?: Record<string, unknown>;
+  markdown?: string;
+} & Record<string, unknown>;
+
+/**
+ * The complete `delta.json` payload. Consumers (adaptation queue
+ * tooling, the future profile-derivation skill, etc.) should treat this
+ * as the authoritative schema reference.
  *
- * `links` is applied last so it wins over any stale key in the diff
- * object (defensive — `updatedResult.diff` should not carry a `links`
- * key, but this keeps the contract explicit).
+ * Top-level keys:
+ *   - `ignoreFormattingDiff` (inherited) — whitespace-insensitive diff
+ *     of the rewritten controls/*.rb vs their originals.
+ *   - `rawDiff` (inherited) — byte-level diff, same scope.
+ *   - `markdown` (inherited, optional) — human-facing diff report.
+ *   - `links` (added by this command) — one LinkRecord per new-profile
+ *     control, describing which old control's body was carried forward:
+ *       * `oldId`             old control id, or `null` for no-match
+ *       * `newId`             new control id (always present)
+ *       * `matchMethod`       'srg-deterministic' | 'srg-cci-tiebreak' |
+ *                             'fuse-fallback' | 'none'
+ *       * `confidence`        0-1 tier-specific confidence
+ *       * `relationship`      'primary' | 'related' | 'no-match'
+ *       * `srg`               SRG-OS id from the new control, or null
+ *       * `potentialMismatch` soft-match flag for reviewer triage
+ *     See LinkRecord for per-field semantics.
+ */
+export type DeltaJsonPayload = DeltaDiff & { links: LinkRecord[] };
+
+/**
+ * Assemble the object written to `delta.json`. `links` is applied last
+ * so it wins over any stale key in the diff object (defensive —
+ * `updatedResult.diff` should not carry a `links` key, but this keeps
+ * the contract explicit).
  */
 export function buildDeltaJsonPayload({
   diff,
   links,
 }: {
-  diff: Record<string, unknown>;
+  diff: DeltaDiff;
   links: LinkRecord[];
-}): Record<string, unknown> {
+}): DeltaJsonPayload {
   return { ...diff, links };
 }
 
