@@ -37,60 +37,65 @@ const mkControl = (
 const profile = (...controls: ReturnType<typeof mkControl>[]) => ({ controls });
 
 describe('autoDetectPrefix', () => {
-  it('returns the dominant multi-token prefix from a uniform corpus', () => {
-    const titles = [
-      'RHEL 9 must be a vendor-supported release.',
-      'RHEL 9 vendor packaged system security patches and updates must be installed and up to date.',
-      'RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access.',
-      'RHEL 9 must enable the hardware random number generator entropy gatherer service.',
-    ];
-    expect(autoDetectPrefix(titles)).toBe('RHEL 9');
-  });
-
-  it('accepts a prefix that dominates at least 50% of titles when some outliers diverge', () => {
-    // 4 of 5 rules start with "Nutanix VMM" (80%); one outlier uses "Nutanix OS".
-    // At the 2-token level "Nutanix VMM" is dominant -> accept.
-    const titles = [
-      'Nutanix VMM must be configured to remove ypserv.',
-      'Nutanix VMM must limit the number of concurrent sessions to 10.',
-      'Nutanix VMM must configure the firewall to control remote access.',
-      'Nutanix VMM must be a vendor-supported release.',
-      'Nutanix OS must monitor SSH access.',
-    ];
-    expect(autoDetectPrefix(titles)).toBe('Nutanix VMM');
-  });
-
-  it('falls back to a shorter common prefix when no long prefix dominates', () => {
-    // 50/50 split between "Nutanix VMM" and "Nutanix OS" -> shortest common "Nutanix"
-    const titles = [
-      'Nutanix VMM must be configured to remove ypserv.',
-      'Nutanix OS must monitor SSH access.',
-      'Nutanix VMM must limit concurrent sessions.',
-      'Nutanix OS must configure the firewall.',
-    ];
-    expect(autoDetectPrefix(titles)).toBe('Nutanix');
-  });
-
-  it('returns empty string when no prefix reaches the threshold', () => {
-    // Feature-focused corpus (Google Chrome style) -- rules lead with the feature name
-    const titles = [
-      'Firewall traversal from remote host must be disabled.',
-      'Sites ability for showing desktop notifications must be disabled.',
-      'Sites ability to show pop-ups must be disabled.',
-      'Default search provider must be enabled.',
-      'Default download directory must be configured.',
-    ];
-    expect(autoDetectPrefix(titles)).toBe('');
-  });
-
-  it('stops the detected prefix before a modal verb so semantic content is not consumed', () => {
-    const titles = [
-      'The Apache web server must perform server-side session management.',
-      'The Apache web server must use encryption strength in accordance with the categorization of data hosted by the server.',
-      'The Apache web server must produce log records containing sufficient information.',
-      'The Apache web server must limit the number of allowed simultaneous session requests.',
-    ];
-    expect(autoDetectPrefix(titles)).toBe('The Apache web server');
+  // Data-driven cases — one arrange-then-assert shape; each row exercises
+  // a distinct prefix-shape scenario (uniform majority, dominant-with-
+  // outliers, 50/50 fallback to shorter common prefix, no dominant prefix,
+  // modal-verb boundary).
+  it.each<{ name: string; titles: string[]; expected: string }>([
+    {
+      name: 'returns the dominant multi-token prefix from a uniform corpus',
+      titles: [
+        'RHEL 9 must be a vendor-supported release.',
+        'RHEL 9 vendor packaged system security patches and updates must be installed and up to date.',
+        'RHEL 9 must display the Standard Mandatory DOD Notice and Consent Banner before granting local or remote access.',
+        'RHEL 9 must enable the hardware random number generator entropy gatherer service.',
+      ],
+      expected: 'RHEL 9',
+    },
+    {
+      name: 'accepts a prefix that dominates at least 50% of titles when some outliers diverge',
+      titles: [
+        'Nutanix VMM must be configured to remove ypserv.',
+        'Nutanix VMM must limit the number of concurrent sessions to 10.',
+        'Nutanix VMM must configure the firewall to control remote access.',
+        'Nutanix VMM must be a vendor-supported release.',
+        'Nutanix OS must monitor SSH access.',
+      ],
+      expected: 'Nutanix VMM',
+    },
+    {
+      name: 'falls back to a shorter common prefix when no long prefix dominates',
+      titles: [
+        'Nutanix VMM must be configured to remove ypserv.',
+        'Nutanix OS must monitor SSH access.',
+        'Nutanix VMM must limit concurrent sessions.',
+        'Nutanix OS must configure the firewall.',
+      ],
+      expected: 'Nutanix',
+    },
+    {
+      name: 'returns empty string when no prefix reaches the threshold',
+      titles: [
+        'Firewall traversal from remote host must be disabled.',
+        'Sites ability for showing desktop notifications must be disabled.',
+        'Sites ability to show pop-ups must be disabled.',
+        'Default search provider must be enabled.',
+        'Default download directory must be configured.',
+      ],
+      expected: '',
+    },
+    {
+      name: 'stops the detected prefix before a modal verb so semantic content is not consumed',
+      titles: [
+        'The Apache web server must perform server-side session management.',
+        'The Apache web server must use encryption strength in accordance with the categorization of data hosted by the server.',
+        'The Apache web server must produce log records containing sufficient information.',
+        'The Apache web server must limit the number of allowed simultaneous session requests.',
+      ],
+      expected: 'The Apache web server',
+    },
+  ])('$name', ({ titles, expected }) => {
+    expect(autoDetectPrefix(titles)).toBe(expected);
   });
 });
 
@@ -251,20 +256,10 @@ describe('buildSrgIndex', () => {
 describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
   it('matches a new-profile control 1:1 to the old control sharing the same SRG-OS ID when only one candidate exists', () => {
     const oldProfile = profile(
-      mkControl(
-        'SV-257879',
-        'SRG-OS-000185-GPOS-00079',
-        ['CCI-001199', 'CCI-002475', 'CCI-002476'],
-        'RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure.',
-      ),
+      mkControl('SV-257879', 'SRG-OS-000185-GPOS-00079', ['CCI-001199', 'CCI-002475', 'CCI-002476'], 'RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure.'),
     );
     const newProfile = profile(
-      mkControl(
-        'SV-273994',
-        'SRG-OS-000185-GPOS-00079',
-        ['CCI-001199', 'CCI-002475', 'CCI-002476'],
-        'Amazon Linux 2023 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure.',
-      ),
+      mkControl('SV-273994', 'SRG-OS-000185-GPOS-00079', ['CCI-001199', 'CCI-002475', 'CCI-002476'], 'Amazon Linux 2023 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure.'),
     );
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     expect(links).toHaveLength(1);
@@ -280,32 +275,12 @@ describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
 
   it('picks the old candidate with the highest CCI Jaccard when one SRG has multiple old candidates (1:1 from an N-old block)', () => {
     const oldProfile = profile(
-      mkControl(
-        'SV-OLD-A',
-        'SRG-OS-000366-GPOS-00153',
-        ['CCI-A'],
-        'RHEL 9 must check GPG signature of locally installed packages.',
-      ),
-      mkControl(
-        'SV-OLD-B',
-        'SRG-OS-000366-GPOS-00153',
-        ['CCI-A', 'CCI-B'],
-        'RHEL 9 must ensure cryptographic verification of vendor software packages.',
-      ),
-      mkControl(
-        'SV-OLD-C',
-        'SRG-OS-000366-GPOS-00153',
-        ['CCI-D'],
-        'RHEL 9 must have GPG signature verification enabled for all software repositories.',
-      ),
+      mkControl('SV-OLD-A', 'SRG-OS-000366-GPOS-00153', ['CCI-A'], 'RHEL 9 must check GPG signature of locally installed packages.'),
+      mkControl('SV-OLD-B', 'SRG-OS-000366-GPOS-00153', ['CCI-A', 'CCI-B'], 'RHEL 9 must ensure cryptographic verification of vendor software packages.'),
+      mkControl('SV-OLD-C', 'SRG-OS-000366-GPOS-00153', ['CCI-D'], 'RHEL 9 must have GPG signature verification enabled for all software repositories.'),
     );
     const newProfile = profile(
-      mkControl(
-        'SV-NEW-1',
-        'SRG-OS-000366-GPOS-00153',
-        ['CCI-A', 'CCI-B'],
-        'Amazon Linux 2023 must ensure cryptographic verification of vendor software packages.',
-      ),
+      mkControl('SV-NEW-1', 'SRG-OS-000366-GPOS-00153', ['CCI-A', 'CCI-B'], 'Amazon Linux 2023 must ensure cryptographic verification of vendor software packages.'),
     );
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     expect(links).toHaveLength(1);
@@ -327,32 +302,12 @@ describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
     // allocator must prefer unclaimed candidates so every new gets a distinct
     // old (not all crowding onto the first candidate).
     const oldProfile = profile(
-      mkControl(
-        'SV-OLD-alpha',
-        'SRG-OS-X',
-        ['CCI-A'],
-        'RHEL 9 must configure alpha service.',
-      ),
-      mkControl(
-        'SV-OLD-beta',
-        'SRG-OS-X',
-        ['CCI-A'],
-        'RHEL 9 must configure beta service.',
-      ),
+      mkControl('SV-OLD-alpha', 'SRG-OS-X', ['CCI-A'], 'RHEL 9 must configure alpha service.'),
+      mkControl('SV-OLD-beta', 'SRG-OS-X', ['CCI-A'], 'RHEL 9 must configure beta service.'),
     );
     const newProfile = profile(
-      mkControl(
-        'SV-NEW-alpha',
-        'SRG-OS-X',
-        ['CCI-A'],
-        'Amazon Linux 2023 must configure alpha service.',
-      ),
-      mkControl(
-        'SV-NEW-beta',
-        'SRG-OS-X',
-        ['CCI-A'],
-        'Amazon Linux 2023 must configure beta service.',
-      ),
+      mkControl('SV-NEW-alpha', 'SRG-OS-X', ['CCI-A'], 'Amazon Linux 2023 must configure alpha service.'),
+      mkControl('SV-NEW-beta', 'SRG-OS-X', ['CCI-A'], 'Amazon Linux 2023 must configure beta service.'),
     );
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     const byNewId = Object.fromEntries(links.map(l => [l.newId, l]));
@@ -375,12 +330,7 @@ describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
     // claim SV-OLD is primary; subsequent controls in the same SRG block
     // become `related` so downstream tooling knows they share a body.
     const oldProfile = profile(
-      mkControl(
-        'SV-OLD',
-        'SRG-OS-000366-GPOS-00153',
-        ['CCI-A', 'CCI-B'],
-        'RHEL 9 must ensure cryptographic verification of vendor software packages.',
-      ),
+      mkControl('SV-OLD', 'SRG-OS-000366-GPOS-00153', ['CCI-A', 'CCI-B'], 'RHEL 9 must ensure cryptographic verification of vendor software packages.'),
     );
     const newProfile = profile(
       mkControl('SV-NEW-1', 'SRG-OS-000366-GPOS-00153', ['CCI-A', 'CCI-B']),
@@ -404,20 +354,10 @@ describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
     // Old has one control with a completely different SRG and no title
     // similarity; new should fall through all tiers to none.
     const oldProfile = profile(
-      mkControl(
-        'SV-OTHER',
-        'SRG-OS-111-GPOS-999',
-        ['CCI-ZZZ'],
-        'RHEL 9 must configure something totally unrelated.',
-      ),
+      mkControl('SV-OTHER', 'SRG-OS-111-GPOS-999', ['CCI-ZZZ'], 'RHEL 9 must configure something totally unrelated.'),
     );
     const newProfile = profile(
-      mkControl(
-        'SV-273999',
-        'SRG-OS-000439-GPOS-00195',
-        ['CCI-002605'],
-        'Amazon Linux 2023 must be a vendor-supported release.',
-      ),
+      mkControl('SV-273999', 'SRG-OS-000439-GPOS-00195', ['CCI-002605'], 'Amazon Linux 2023 must be a vendor-supported release.'),
     );
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     expect(links).toHaveLength(1);
@@ -435,12 +375,7 @@ describe('applyRequirementFirstPipeline — Tier 3 (Fuse fallback)', () => {
     // auto-detects the corpus vendor prefix ("RHEL 9" vs "Amazon Linux 2023"),
     // strips it, then fuzzy-matches on the remaining semantic content.
     const oldProfile = profile(
-      mkControl(
-        'SV-OLD',
-        'SRG-OS-111-GPOS-999',
-        ['CCI-X'],
-        'RHEL 9 must be a vendor-supported release.',
-      ),
+      mkControl('SV-OLD', 'SRG-OS-111-GPOS-999', ['CCI-X'], 'RHEL 9 must be a vendor-supported release.'),
     );
     const newProfile = profile(
       mkControl(
@@ -465,20 +400,10 @@ describe('applyRequirementFirstPipeline — Tier 3 (Fuse fallback)', () => {
 
   it('does NOT fuzzy-match two unrelated titles even with the same CCI when SRGs do not match', () => {
     const oldProfile = profile(
-      mkControl(
-        'SV-OLD',
-        'SRG-OS-111-GPOS-999',
-        ['CCI-X'],
-        'RHEL 9 must configure auditd rules for login events.',
-      ),
+      mkControl('SV-OLD', 'SRG-OS-111-GPOS-999', ['CCI-X'], 'RHEL 9 must configure auditd rules for login events.'),
     );
     const newProfile = profile(
-      mkControl(
-        'SV-NEW',
-        'SRG-OS-222-GPOS-888',
-        ['CCI-X'],
-        'Amazon Linux 2023 must disable kernel core dumps.',
-      ),
+      mkControl('SV-NEW', 'SRG-OS-222-GPOS-888', ['CCI-X'], 'Amazon Linux 2023 must disable kernel core dumps.'),
     );
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     expect(links).toHaveLength(1);
