@@ -30,6 +30,12 @@ const mkControl = (
   },
 });
 
+// Wraps an array of controls in the { controls } profile shape that
+// `applyRequirementFirstPipeline` expects. Call sites read as
+// `profile(a, b, c)` instead of `{ controls: [a, b, c] }`, which also
+// collapses the "arrange block" duplication that Sonar's CPD flags.
+const profile = (...controls: ReturnType<typeof mkControl>[]) => ({ controls });
+
 describe('autoDetectPrefix', () => {
   it('returns the dominant multi-token prefix from a uniform corpus', () => {
     const titles = [
@@ -244,26 +250,22 @@ describe('buildSrgIndex', () => {
 
 describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
   it('matches a new-profile control 1:1 to the old control sharing the same SRG-OS ID when only one candidate exists', () => {
-    const oldProfile = {
-      controls: [
-        mkControl(
-          'SV-257879',
-          'SRG-OS-000185-GPOS-00079',
-          ['CCI-001199', 'CCI-002475', 'CCI-002476'],
-          'RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure.',
-        ),
-      ],
-    };
-    const newProfile = {
-      controls: [
-        mkControl(
-          'SV-273994',
-          'SRG-OS-000185-GPOS-00079',
-          ['CCI-001199', 'CCI-002475', 'CCI-002476'],
-          'Amazon Linux 2023 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure.',
-        ),
-      ],
-    };
+    const oldProfile = profile(
+      mkControl(
+        'SV-257879',
+        'SRG-OS-000185-GPOS-00079',
+        ['CCI-001199', 'CCI-002475', 'CCI-002476'],
+        'RHEL 9 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure.',
+      ),
+    );
+    const newProfile = profile(
+      mkControl(
+        'SV-273994',
+        'SRG-OS-000185-GPOS-00079',
+        ['CCI-001199', 'CCI-002475', 'CCI-002476'],
+        'Amazon Linux 2023 local disk partitions must implement cryptographic mechanisms to prevent unauthorized disclosure.',
+      ),
+    );
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     expect(links).toHaveLength(1);
     expect(links[0]).toMatchObject({
@@ -277,38 +279,34 @@ describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
   });
 
   it('picks the old candidate with the highest CCI Jaccard when one SRG has multiple old candidates (1:1 from an N-old block)', () => {
-    const oldProfile = {
-      controls: [
-        mkControl(
-          'SV-OLD-A',
-          'SRG-OS-000366-GPOS-00153',
-          ['CCI-A'],
-          'RHEL 9 must check GPG signature of locally installed packages.',
-        ),
-        mkControl(
-          'SV-OLD-B',
-          'SRG-OS-000366-GPOS-00153',
-          ['CCI-A', 'CCI-B'],
-          'RHEL 9 must ensure cryptographic verification of vendor software packages.',
-        ),
-        mkControl(
-          'SV-OLD-C',
-          'SRG-OS-000366-GPOS-00153',
-          ['CCI-D'],
-          'RHEL 9 must have GPG signature verification enabled for all software repositories.',
-        ),
-      ],
-    };
-    const newProfile = {
-      controls: [
-        mkControl(
-          'SV-NEW-1',
-          'SRG-OS-000366-GPOS-00153',
-          ['CCI-A', 'CCI-B'],
-          'Amazon Linux 2023 must ensure cryptographic verification of vendor software packages.',
-        ),
-      ],
-    };
+    const oldProfile = profile(
+      mkControl(
+        'SV-OLD-A',
+        'SRG-OS-000366-GPOS-00153',
+        ['CCI-A'],
+        'RHEL 9 must check GPG signature of locally installed packages.',
+      ),
+      mkControl(
+        'SV-OLD-B',
+        'SRG-OS-000366-GPOS-00153',
+        ['CCI-A', 'CCI-B'],
+        'RHEL 9 must ensure cryptographic verification of vendor software packages.',
+      ),
+      mkControl(
+        'SV-OLD-C',
+        'SRG-OS-000366-GPOS-00153',
+        ['CCI-D'],
+        'RHEL 9 must have GPG signature verification enabled for all software repositories.',
+      ),
+    );
+    const newProfile = profile(
+      mkControl(
+        'SV-NEW-1',
+        'SRG-OS-000366-GPOS-00153',
+        ['CCI-A', 'CCI-B'],
+        'Amazon Linux 2023 must ensure cryptographic verification of vendor software packages.',
+      ),
+    );
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     expect(links).toHaveLength(1);
     // SV-OLD-B shares both CCIs -> Jaccard 1.0, best
@@ -328,38 +326,34 @@ describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
     // the tiebreak must fall through to normalized-title similarity, AND the
     // allocator must prefer unclaimed candidates so every new gets a distinct
     // old (not all crowding onto the first candidate).
-    const oldProfile = {
-      controls: [
-        mkControl(
-          'SV-OLD-alpha',
-          'SRG-OS-X',
-          ['CCI-A'],
-          'RHEL 9 must configure alpha service.',
-        ),
-        mkControl(
-          'SV-OLD-beta',
-          'SRG-OS-X',
-          ['CCI-A'],
-          'RHEL 9 must configure beta service.',
-        ),
-      ],
-    };
-    const newProfile = {
-      controls: [
-        mkControl(
-          'SV-NEW-alpha',
-          'SRG-OS-X',
-          ['CCI-A'],
-          'Amazon Linux 2023 must configure alpha service.',
-        ),
-        mkControl(
-          'SV-NEW-beta',
-          'SRG-OS-X',
-          ['CCI-A'],
-          'Amazon Linux 2023 must configure beta service.',
-        ),
-      ],
-    };
+    const oldProfile = profile(
+      mkControl(
+        'SV-OLD-alpha',
+        'SRG-OS-X',
+        ['CCI-A'],
+        'RHEL 9 must configure alpha service.',
+      ),
+      mkControl(
+        'SV-OLD-beta',
+        'SRG-OS-X',
+        ['CCI-A'],
+        'RHEL 9 must configure beta service.',
+      ),
+    );
+    const newProfile = profile(
+      mkControl(
+        'SV-NEW-alpha',
+        'SRG-OS-X',
+        ['CCI-A'],
+        'Amazon Linux 2023 must configure alpha service.',
+      ),
+      mkControl(
+        'SV-NEW-beta',
+        'SRG-OS-X',
+        ['CCI-A'],
+        'Amazon Linux 2023 must configure beta service.',
+      ),
+    );
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     const byNewId = Object.fromEntries(links.map(l => [l.newId, l]));
     expect(byNewId['SV-NEW-alpha']).toMatchObject({
@@ -380,22 +374,18 @@ describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
     // Primary/related disambiguates the split: the first new control to
     // claim SV-OLD is primary; subsequent controls in the same SRG block
     // become `related` so downstream tooling knows they share a body.
-    const oldProfile = {
-      controls: [
-        mkControl(
-          'SV-OLD',
-          'SRG-OS-000366-GPOS-00153',
-          ['CCI-A', 'CCI-B'],
-          'RHEL 9 must ensure cryptographic verification of vendor software packages.',
-        ),
-      ],
-    };
-    const newProfile = {
-      controls: [
-        mkControl('SV-NEW-1', 'SRG-OS-000366-GPOS-00153', ['CCI-A', 'CCI-B']),
-        mkControl('SV-NEW-2', 'SRG-OS-000366-GPOS-00153', ['CCI-A']),
-      ],
-    };
+    const oldProfile = profile(
+      mkControl(
+        'SV-OLD',
+        'SRG-OS-000366-GPOS-00153',
+        ['CCI-A', 'CCI-B'],
+        'RHEL 9 must ensure cryptographic verification of vendor software packages.',
+      ),
+    );
+    const newProfile = profile(
+      mkControl('SV-NEW-1', 'SRG-OS-000366-GPOS-00153', ['CCI-A', 'CCI-B']),
+      mkControl('SV-NEW-2', 'SRG-OS-000366-GPOS-00153', ['CCI-A']),
+    );
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     const byNewId = Object.fromEntries(links.map(l => [l.newId, l]));
     expect(byNewId['SV-NEW-1']).toMatchObject({
@@ -413,26 +403,22 @@ describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
   it('emits a no-match record for a new-profile control whose SRG has no candidates in old profile AND no fuzzy match found', () => {
     // Old has one control with a completely different SRG and no title
     // similarity; new should fall through all tiers to none.
-    const oldProfile = {
-      controls: [
-        mkControl(
-          'SV-OTHER',
-          'SRG-OS-111-GPOS-999',
-          ['CCI-ZZZ'],
-          'RHEL 9 must configure something totally unrelated.',
-        ),
-      ],
-    };
-    const newProfile = {
-      controls: [
-        mkControl(
-          'SV-273999',
-          'SRG-OS-000439-GPOS-00195',
-          ['CCI-002605'],
-          'Amazon Linux 2023 must be a vendor-supported release.',
-        ),
-      ],
-    };
+    const oldProfile = profile(
+      mkControl(
+        'SV-OTHER',
+        'SRG-OS-111-GPOS-999',
+        ['CCI-ZZZ'],
+        'RHEL 9 must configure something totally unrelated.',
+      ),
+    );
+    const newProfile = profile(
+      mkControl(
+        'SV-273999',
+        'SRG-OS-000439-GPOS-00195',
+        ['CCI-002605'],
+        'Amazon Linux 2023 must be a vendor-supported release.',
+      ),
+    );
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     expect(links).toHaveLength(1);
     expect(links[0].matchMethod).toBe('none');
@@ -448,26 +434,22 @@ describe('applyRequirementFirstPipeline — Tier 3 (Fuse fallback)', () => {
     // Tier 1 and 2 can't help because the SRG blocks don't overlap. Tier 3
     // auto-detects the corpus vendor prefix ("RHEL 9" vs "Amazon Linux 2023"),
     // strips it, then fuzzy-matches on the remaining semantic content.
-    const oldProfile = {
-      controls: [
-        mkControl(
-          'SV-OLD',
-          'SRG-OS-111-GPOS-999',
-          ['CCI-X'],
-          'RHEL 9 must be a vendor-supported release.',
-        ),
-      ],
-    };
-    const newProfile = {
-      controls: [
-        mkControl(
-          'SV-NEW',
-          'SRG-OS-222-GPOS-888', // different SRG — no tier-1/2 match
-          ['CCI-X'],
-          'Amazon Linux 2023 must be a vendor-supported release.',
-        ),
-      ],
-    };
+    const oldProfile = profile(
+      mkControl(
+        'SV-OLD',
+        'SRG-OS-111-GPOS-999',
+        ['CCI-X'],
+        'RHEL 9 must be a vendor-supported release.',
+      ),
+    );
+    const newProfile = profile(
+      mkControl(
+        'SV-NEW',
+        'SRG-OS-222-GPOS-888', // different SRG — no tier-1/2 match
+        ['CCI-X'],
+        'Amazon Linux 2023 must be a vendor-supported release.',
+      ),
+    );
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     expect(links).toHaveLength(1);
     expect(links[0]).toMatchObject({
@@ -482,26 +464,22 @@ describe('applyRequirementFirstPipeline — Tier 3 (Fuse fallback)', () => {
   });
 
   it('does NOT fuzzy-match two unrelated titles even with the same CCI when SRGs do not match', () => {
-    const oldProfile = {
-      controls: [
-        mkControl(
-          'SV-OLD',
-          'SRG-OS-111-GPOS-999',
-          ['CCI-X'],
-          'RHEL 9 must configure auditd rules for login events.',
-        ),
-      ],
-    };
-    const newProfile = {
-      controls: [
-        mkControl(
-          'SV-NEW',
-          'SRG-OS-222-GPOS-888',
-          ['CCI-X'],
-          'Amazon Linux 2023 must disable kernel core dumps.',
-        ),
-      ],
-    };
+    const oldProfile = profile(
+      mkControl(
+        'SV-OLD',
+        'SRG-OS-111-GPOS-999',
+        ['CCI-X'],
+        'RHEL 9 must configure auditd rules for login events.',
+      ),
+    );
+    const newProfile = profile(
+      mkControl(
+        'SV-NEW',
+        'SRG-OS-222-GPOS-888',
+        ['CCI-X'],
+        'Amazon Linux 2023 must disable kernel core dumps.',
+      ),
+    );
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     expect(links).toHaveLength(1);
     expect(links[0].matchMethod).toBe('none');
@@ -511,16 +489,12 @@ describe('applyRequirementFirstPipeline — Tier 3 (Fuse fallback)', () => {
 
 describe('applyRequirementFirstPipeline — potentialMismatch flag', () => {
   it('is false for Tier 1 deterministic primary matches (single-candidate SRG blocks are always trusted)', () => {
-    const oldProfile = {
-      controls: [
-        mkControl('SV-OLD', 'SRG-OS-A', ['CCI-1'], 'RHEL 9 must do X.'),
-      ],
-    };
-    const newProfile = {
-      controls: [
-        mkControl('SV-NEW', 'SRG-OS-A', ['CCI-1'], 'Amazon Linux 2023 must do X.'),
-      ],
-    };
+    const oldProfile = profile(
+      mkControl('SV-OLD', 'SRG-OS-A', ['CCI-1'], 'RHEL 9 must do X.'),
+    );
+    const newProfile = profile(
+      mkControl('SV-NEW', 'SRG-OS-A', ['CCI-1'], 'Amazon Linux 2023 must do X.'),
+    );
     const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
     expect(link.matchMethod).toBe('srg-deterministic');
     expect(link.potentialMismatch).toBe(false);
@@ -529,17 +503,13 @@ describe('applyRequirementFirstPipeline — potentialMismatch flag', () => {
   it('is true for Tier 2 primary when CCI Jaccard is below 0.5 (weak block-internal evidence)', () => {
     // Two old candidates in the SRG block force Tier 2. Winner has Jaccard
     // 1/3 = 0.333 (below the 0.5 Tier-2 threshold) -> flagged.
-    const oldProfile = {
-      controls: [
-        mkControl('SV-OLD-A', 'SRG-OS-B', ['CCI-1', 'CCI-2', 'CCI-3'], 'RHEL 9 must alpha.'),
-        mkControl('SV-OLD-B', 'SRG-OS-B', ['CCI-9'], 'RHEL 9 must beta.'),
-      ],
-    };
-    const newProfile = {
-      controls: [
-        mkControl('SV-NEW', 'SRG-OS-B', ['CCI-1'], 'Amazon Linux 2023 must alpha.'),
-      ],
-    };
+    const oldProfile = profile(
+      mkControl('SV-OLD-A', 'SRG-OS-B', ['CCI-1', 'CCI-2', 'CCI-3'], 'RHEL 9 must alpha.'),
+      mkControl('SV-OLD-B', 'SRG-OS-B', ['CCI-9'], 'RHEL 9 must beta.'),
+    );
+    const newProfile = profile(
+      mkControl('SV-NEW', 'SRG-OS-B', ['CCI-1'], 'Amazon Linux 2023 must alpha.'),
+    );
     const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
     expect(link.matchMethod).toBe('srg-cci-tiebreak');
     expect(link.relationship).toBe('primary');
@@ -548,17 +518,13 @@ describe('applyRequirementFirstPipeline — potentialMismatch flag', () => {
   });
 
   it('is false for Tier 2 primary when CCI Jaccard is at least 0.5 (strong block-internal evidence)', () => {
-    const oldProfile = {
-      controls: [
-        mkControl('SV-OLD-A', 'SRG-OS-C', ['CCI-1', 'CCI-2'], 'RHEL 9 must alpha.'),
-        mkControl('SV-OLD-B', 'SRG-OS-C', ['CCI-9'], 'RHEL 9 must beta.'),
-      ],
-    };
-    const newProfile = {
-      controls: [
-        mkControl('SV-NEW', 'SRG-OS-C', ['CCI-1', 'CCI-2'], 'Amazon Linux 2023 must alpha.'),
-      ],
-    };
+    const oldProfile = profile(
+      mkControl('SV-OLD-A', 'SRG-OS-C', ['CCI-1', 'CCI-2'], 'RHEL 9 must alpha.'),
+      mkControl('SV-OLD-B', 'SRG-OS-C', ['CCI-9'], 'RHEL 9 must beta.'),
+    );
+    const newProfile = profile(
+      mkControl('SV-NEW', 'SRG-OS-C', ['CCI-1', 'CCI-2'], 'Amazon Linux 2023 must alpha.'),
+    );
     const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
     expect(link.matchMethod).toBe('srg-cci-tiebreak');
     expect(link.relationship).toBe('primary');
@@ -570,17 +536,13 @@ describe('applyRequirementFirstPipeline — potentialMismatch flag', () => {
     // N:1 split — two new controls compete for the single old SV-OLD with
     // equal Jaccard. Earlier wins primary, later becomes related. The
     // related link's confidence mirrors the primary's; flag must stay false.
-    const oldProfile = {
-      controls: [
-        mkControl('SV-OLD', 'SRG-OS-D', ['CCI-1'], 'RHEL 9 must do Y.'),
-      ],
-    };
-    const newProfile = {
-      controls: [
-        mkControl('SV-NEW-1', 'SRG-OS-D', ['CCI-1'], 'Amazon Linux 2023 must do Y (one).'),
-        mkControl('SV-NEW-2', 'SRG-OS-D', ['CCI-1'], 'Amazon Linux 2023 must do Y (two).'),
-      ],
-    };
+    const oldProfile = profile(
+      mkControl('SV-OLD', 'SRG-OS-D', ['CCI-1'], 'RHEL 9 must do Y.'),
+    );
+    const newProfile = profile(
+      mkControl('SV-NEW-1', 'SRG-OS-D', ['CCI-1'], 'Amazon Linux 2023 must do Y (one).'),
+      mkControl('SV-NEW-2', 'SRG-OS-D', ['CCI-1'], 'Amazon Linux 2023 must do Y (two).'),
+    );
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     const related = links.find(l => l.relationship === 'related');
     expect(related).toBeDefined();
@@ -588,17 +550,13 @@ describe('applyRequirementFirstPipeline — potentialMismatch flag', () => {
   });
 
   it('is false for no-match links (no candidate to be suspicious of)', () => {
-    const oldProfile = {
-      controls: [
-        mkControl('SV-OLD', 'SRG-OS-E', ['CCI-1'], 'RHEL 9 must do Z.'),
-      ],
-    };
-    const newProfile = {
-      controls: [
-        // Different SRG, different CCI, completely unrelated title -> no match possible
-        mkControl('SV-NEW', 'SRG-OS-ZZZ-UNIQUE', ['CCI-999'], 'Amazon Linux 2023 must rotate quantum entropy wells.'),
-      ],
-    };
+    const oldProfile = profile(
+      mkControl('SV-OLD', 'SRG-OS-E', ['CCI-1'], 'RHEL 9 must do Z.'),
+    );
+    const newProfile = profile(
+      // Different SRG, different CCI, completely unrelated title -> no match possible
+      mkControl('SV-NEW', 'SRG-OS-ZZZ-UNIQUE', ['CCI-999'], 'Amazon Linux 2023 must rotate quantum entropy wells.'),
+    );
     const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
     expect(link.matchMethod).toBe('none');
     expect(link.potentialMismatch).toBe(false);
@@ -608,16 +566,12 @@ describe('applyRequirementFirstPipeline — potentialMismatch flag', () => {
     // Same fixture as the existing Tier 3 happy-path test: cross-vendor
     // titles that collapse to "must be a vendor-supported release." after
     // prefix stripping. Fuse confidence > 0.9 -> not flagged.
-    const oldProfile = {
-      controls: [
-        mkControl('SV-OLD', 'SRG-OS-F-111', ['CCI-X'], 'RHEL 9 must be a vendor-supported release.'),
-      ],
-    };
-    const newProfile = {
-      controls: [
-        mkControl('SV-NEW', 'SRG-OS-F-222', ['CCI-X'], 'Amazon Linux 2023 must be a vendor-supported release.'),
-      ],
-    };
+    const oldProfile = profile(
+      mkControl('SV-OLD', 'SRG-OS-F-111', ['CCI-X'], 'RHEL 9 must be a vendor-supported release.'),
+    );
+    const newProfile = profile(
+      mkControl('SV-NEW', 'SRG-OS-F-222', ['CCI-X'], 'Amazon Linux 2023 must be a vendor-supported release.'),
+    );
     const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
     expect(link.matchMethod).toBe('fuse-fallback');
     expect(link.confidence).toBeGreaterThanOrEqual(0.9);

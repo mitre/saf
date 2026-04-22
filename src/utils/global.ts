@@ -1,5 +1,6 @@
-import fs from 'fs';
-import path from 'path';
+import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 import { fingerprint, Assettype, INPUT_TYPES, Role, Techarea } from '@mitre/hdf-converters';
 import AdmZip from 'adm-zip';
 import appRootPath from 'app-root-path';
@@ -18,6 +19,45 @@ export function checkSuffix(input: string, suffix = '.json') {
   }
 
   return `${input}${suffix}`;
+}
+
+/**
+ * Resolve the absolute path of the `cinc-auditor` executable, or throw with
+ * a clear error if it's not installed / not in PATH. Used by the
+ * `generate delta` + `generate update_controls4delta` flows so the
+ * downstream `execFileSync` call receives a fully-qualified path rather
+ * than a bare binary name (satisfies Sonar S4036 — don't trust $PATH
+ * resolution at the moment of spawn).
+ *
+ * Cross-platform: uses `where` on Windows and `command -v` on POSIX.
+ * Memoizes the result per-process so subsequent calls don't re-probe.
+ */
+let _cincAuditorPath: string | undefined;
+export function resolveCincAuditor(): string {
+  if (_cincAuditorPath !== undefined) {
+    return _cincAuditorPath;
+  }
+  const isWindows = process.platform === 'win32';
+  // `execFileSync` with a fixed lookup command + fixed arg ('cinc-auditor')
+  // — no user input reaches the subprocess. `which`/`where` is available
+  // on all supported platforms (POSIX which, Windows where).
+  try {
+    const result = execFileSync(
+      isWindows ? 'where' : 'which',
+      ['cinc-auditor'],
+      { encoding: 'utf8' },
+    ).toString().trim().split(/\r?\n/)[0];
+    if (!result) {
+      throw new Error('cinc-auditor not found on PATH');
+    }
+    _cincAuditorPath = result;
+    return result;
+  } catch (error: unknown) {
+    throw new Error(
+      'cinc-auditor executable not found. Install cinc-auditor (https://cinc.sh/start/auditor/) and ensure it is on PATH before running `saf generate delta` without a pre-generated -J profile summary.',
+      { cause: error },
+    );
+  }
 }
 
 /**

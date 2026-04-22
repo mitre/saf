@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -17,7 +18,7 @@ const ansiRegex = new RegExp(String.raw`${ESC}\[[0-9;]+m`, 'g');
 const ansiPrefixRegex = new RegExp(String.raw`${ESC}\[`);
 
 const tmpLogFile = () =>
-  path.join(os.tmpdir(), `saf-delta-test-${Date.now()}-${Math.random().toString(36).slice(2)}.log`);
+  path.join(os.tmpdir(), `saf-delta-test-${Date.now()}-${randomBytes(8).toString('hex')}.log`);
 
 // Deterministic flush — ends the logger and resolves when every transport
 // has flushed. Avoids time-based `setTimeout(r, 150)` flakiness under CI.

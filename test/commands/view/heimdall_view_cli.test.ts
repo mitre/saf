@@ -1,6 +1,6 @@
-import type { AddressInfo } from 'net';
-import type { Server } from 'http';
-import path from 'path';
+import type { AddressInfo } from 'node:net';
+import type { Server } from 'node:http';
+import path from 'node:path';
 import { runCommand } from '@oclif/test';
 import axios from 'axios';
 import express from 'express';

@@ -26,7 +26,7 @@ import {
 } from '../../utils/delta_matching';
 import { createWinstonLogger, lazyDeltaLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
-import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveSafeChild } from '../../utils/global';
+import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveCincAuditor, resolveSafeChild } from '../../utils/global';
 
 // User-facing logger shared by `run()` and by the interactive-prompt /
 // validation helpers that live below the class. Writes colorized output
@@ -271,7 +271,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       try {
         this.logThis(`  Generating the summary file on directory: ${shortControlsDir}`, 'info');
         // Generate the profile controls summary from the `controlsDir` without the trailing "controls" directory
-        const inspecJsonFile = execFileSync('cinc-auditor', ['json', path.dirname(controlsDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
+        const inspecJsonFile = execFileSync(resolveCincAuditor(), ['json', path.dirname(controlsDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
         this.logThis('  Generated InSpec Profiles from InSpec JSON summary', 'info');
         existingProfile = processInSpecProfile(inspecJsonFile);
       } catch (error: unknown) {
@@ -411,7 +411,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // Get the directory name without the trailing "controls" directory
           // Here we are using the newly updated (mapped) controls
           // const profileDir = path.dirname(controlsDir)
-          const inspecJsonFileNew = execFileSync('cinc-auditor', ['json', path.dirname(mappedDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
+          const inspecJsonFileNew = execFileSync(resolveCincAuditor(), ['json', path.dirname(mappedDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
 
           // Replace existing profile (inputted JSON of source profile to be mapped)
           // Allow delta to take care of the rest
