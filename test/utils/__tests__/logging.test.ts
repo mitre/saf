@@ -41,7 +41,14 @@ describe('createDeltaLogger', () => {
   const tmpLogFile = () =>
     path.join(os.tmpdir(), `saf-delta-test-${Date.now()}-${Math.random().toString(36).slice(2)}.log`);
 
-  const waitForFlush = () => new Promise((r) => setTimeout(r, 150));
+  // Deterministic flush — ends the logger and resolves when every
+  // transport has flushed. Avoids the time-based `setTimeout(r, 150)`
+  // pattern which is flaky under CI load.
+  const flushAndEnd = (logger: import('winston').Logger): Promise<void> =>
+    new Promise<void>((resolve) => {
+      logger.on('finish', () => resolve());
+      logger.end();
+    });
 
   it('writes messages to the specified log file in plain text (no ANSI color codes)', async () => {
     const logFile = tmpLogFile();
@@ -51,7 +58,7 @@ describe('createDeltaLogger', () => {
     logger.warn('** Potential Mismatch **');
     logger.error('No Match Found for:  SV-123');
 
-    await waitForFlush();
+    await flushAndEnd(logger);
 
     const fileContent = fs.readFileSync(logFile, 'utf-8');
     expect(fileContent).toContain('Match Controls:  5');
@@ -83,7 +90,7 @@ describe('createDeltaLogger', () => {
     logger.info('suppressed');
     logger.warn('included');
 
-    await waitForFlush();
+    await flushAndEnd(logger);
 
     const fileContent = fs.readFileSync(logFile, 'utf-8');
     expect(fileContent).toContain('included');
@@ -104,7 +111,7 @@ describe('createDeltaLogger', () => {
 
     try {
       logger.info('Total Mapped Controls:  42');
-      await waitForFlush();
+      await flushAndEnd(logger);
     } finally {
       process.stdout.write = origWrite;
     }
