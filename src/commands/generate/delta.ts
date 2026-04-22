@@ -764,17 +764,15 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       GenerateDelta.dupMatch++;
       return;
     }
-    // Primary threshold per tier: deterministic is always strong; CCI
-    // tiebreak is strong at Jaccard >= 0.5; fuse-fallback is strong at
-    // confidence >= 0.9 (equivalent to Fuse score <= 0.1).
-    const strong =
-      link.matchMethod === 'srg-deterministic' ||
-      (link.matchMethod === 'srg-cci-tiebreak' && link.confidence >= 0.5) ||
-      (link.matchMethod === 'fuse-fallback' && link.confidence >= 0.9);
-    if (strong) {
-      GenerateDelta.match++;
-    } else {
+    // `potentialMismatch` is the single source of truth for "accepted
+    // primary but below the tier's strong-confidence threshold" — see
+    // computePotentialMismatch + TIER{2,3}_MISMATCH_THRESHOLD in
+    // delta-matching.ts. Reading the flag here keeps stats bookkeeping
+    // aligned with the tier definitions automatically.
+    if (link.potentialMismatch) {
       GenerateDelta.posMisMatch++;
+    } else {
+      GenerateDelta.match++;
     }
   }
 

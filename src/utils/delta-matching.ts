@@ -208,6 +208,16 @@ export const TIER2_MISMATCH_THRESHOLD = 0.5;
 export const TIER3_MISMATCH_THRESHOLD = 0.9;
 
 /**
+ * Tier-2 ranker composite weights: `composite = CCI_WEIGHT * cciJaccard
+ * + TITLE_WEIGHT * tokenJaccard(normalizedTitle)`. CCI dominates because
+ * it's the block-internal discriminator; title is a tiebreak for the
+ * N:N-in-one-SRG cross-vendor case where every candidate has identical
+ * CCIs. The two MUST sum to 1.0 — asserted in tests.
+ */
+export const TIER2_COMPOSITE_CCI_WEIGHT = 0.7;
+export const TIER2_COMPOSITE_TITLE_WEIGHT = 0.3;
+
+/**
  * Compute the `potentialMismatch` flag for a link from its (matchMethod,
  * relationship, confidence) tuple. Related and no-match links never flag
  * (the flag is about soft primary matches). Tier 1 is always trusted.
@@ -375,7 +385,9 @@ function tier2CciTiebreak(
       ctx.oldPrefix,
     );
     const title = tokenJaccard(newNormTitle, oldNormTitle);
-    const composite = 0.7 * cci + 0.3 * title;
+    const composite
+      = TIER2_COMPOSITE_CCI_WEIGHT * cci
+      + TIER2_COMPOSITE_TITLE_WEIGHT * title;
     const slot: ScoredCandidate = { idx: i, composite, cci };
     if (ctx.claimedOldIds.has(candidates[i].id)) {
       if (!bestClaimed || composite > bestClaimed.composite) bestClaimed = slot;

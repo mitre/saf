@@ -8,6 +8,8 @@ import {
   extractCcis,
   extractSrgId,
   normalizeTitle,
+  TIER2_COMPOSITE_CCI_WEIGHT,
+  TIER2_COMPOSITE_TITLE_WEIGHT,
   tokenJaccard,
   type LinkRecord,
 } from '../../../src/utils/delta-matching';
@@ -620,6 +622,20 @@ describe('applyRequirementFirstPipeline — potentialMismatch flag', () => {
     expect(link.matchMethod).toBe('fuse-fallback');
     expect(link.confidence).toBeGreaterThanOrEqual(0.9);
     expect(link.potentialMismatch).toBe(false);
+  });
+});
+
+describe('Tier-2 composite weight constants', () => {
+  it('sum to 1.0 (fairness invariant)', () => {
+    expect(
+      TIER2_COMPOSITE_CCI_WEIGHT + TIER2_COMPOSITE_TITLE_WEIGHT,
+    ).toBeCloseTo(1.0, 10);
+  });
+
+  it('CCI weight dominates title weight', () => {
+    expect(TIER2_COMPOSITE_CCI_WEIGHT).toBeGreaterThan(
+      TIER2_COMPOSITE_TITLE_WEIGHT,
+    );
   });
 });
 
