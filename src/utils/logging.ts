@@ -62,6 +62,30 @@ const syslogColors = {
  * Replaces the legacy `colors` + `print*` wrapper + module-level
  * `processLogData` buffer pattern in src/utils/oclif/cli_helper.ts.
  */
+
+/**
+ * Wrap `createDeltaLogger` in a lazy Proxy so the File transport isn't
+ * opened until the first call-site reads a property (e.g. `log.info(...)`).
+ * oclif imports command modules to read their static metadata (flags,
+ * description) even for `saf --help`, so module-level
+ * `const log = createDeltaLogger(...)` used to touch the filesystem on
+ * every invocation regardless of whether the owning command was the one
+ * the user actually asked for.
+ */
+export function lazyDeltaLogger(
+  logFile: string,
+  options: { level?: string } = {},
+): Logger {
+  let instance: Logger | null = null;
+  return new Proxy({} as Logger, {
+    get(_target, prop, receiver) {
+      instance ??= createDeltaLogger(logFile, options);
+      const value = Reflect.get(instance, prop, receiver);
+      return typeof value === 'function' ? value.bind(instance) : value;
+    },
+  });
+}
+
 export function createDeltaLogger(
   logFile: string,
   options: { level?: string } = {},

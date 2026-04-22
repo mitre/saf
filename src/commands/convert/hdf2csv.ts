@@ -9,12 +9,11 @@ import _ from 'lodash';
 import type { ControlSetRows } from '../../types/csv';
 import { convertRow, csvExportFields } from '../../utils/csv';
 import { basename } from '../../utils/global';
-import { createDeltaLogger } from '../../utils/logging';
+import { lazyDeltaLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
-// Module-level logger shared by this command's helpers. Writes to
-// stdout (colorized by level) and to CliProcessOutput.log.
-const log = createDeltaLogger('CliProcessOutput.log');
+// Logger shared by this command's helpers. Lazy — see lazyDeltaLogger.
+const log = lazyDeltaLogger('CliProcessOutput.log');
 
 export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   static readonly usage

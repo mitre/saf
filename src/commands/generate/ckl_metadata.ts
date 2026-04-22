@@ -14,11 +14,10 @@ import { colorize } from 'json-colorizer';
 import { isEmpty } from 'lodash';
 import { getJsonMetaDataExamples } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
-import { createDeltaLogger } from '../../utils/logging';
+import { lazyDeltaLogger } from '../../utils/logging';
 
-// Module-level logger shared by interactive prompts. Writes to stdout
-// and to CliProcessOutput.log.
-const log = createDeltaLogger('CliProcessOutput.log');
+// Logger shared by interactive prompts. Lazy — see lazyDeltaLogger.
+const log = lazyDeltaLogger('CliProcessOutput.log');
 
 export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLMetadata> {
   static readonly usage = '<%= command.id %> [-h] [-L info|warn|debug|verbose] [-o <value> | --interactive]';

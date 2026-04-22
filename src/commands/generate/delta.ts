@@ -23,14 +23,15 @@ import {
   buildDeltaJsonPayload,
   type LinkRecord,
 } from '../../utils/delta-matching';
-import { createDeltaLogger, createWinstonLogger } from '../../utils/logging';
+import { createWinstonLogger, lazyDeltaLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveSafeChild } from '../../utils/global';
 
-// Module-level user-facing logger shared by `run()` and by the
-// interactive prompt / validation helpers that live below the class.
-// Writes colorized output to stdout and plain text to CliProcessOutput.log.
-const log = createDeltaLogger('CliProcessOutput.log');
+// User-facing logger shared by `run()` and by the interactive-prompt /
+// validation helpers that live below the class. Writes colorized output
+// to stdout and plain text to CliProcessOutput.log. Lazily constructed —
+// see lazyDeltaLogger's JSDoc for why.
+const log = lazyDeltaLogger('CliProcessOutput.log');
 
 /**
  * This class extends the capabilities of the update_controls4delta providing the following capabilities:
@@ -137,6 +138,19 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     if (flags.runMapControls && !flags.controlsDir) {
       this.error('\u001B[31mIf not interactive and -M is provided the Controls Directory (-c) must be provided\u001B[0m');
     }
+
+    // Statics live for the process lifetime; explicitly reset them so that
+    // back-to-back invocations under `@oclif/test`'s runCommand (or any
+    // programmatic consumer) don't inherit counters / links from a prior
+    // run.
+    GenerateDelta.match = 0;
+    GenerateDelta.noMatch = 0;
+    GenerateDelta.dupMatch = 0;
+    GenerateDelta.posMisMatch = 0;
+    GenerateDelta.newXccdfControl = 0;
+    GenerateDelta.oldControlsLength = 0;
+    GenerateDelta.newControlsLength = 0;
+    GenerateDelta.links = [];
 
     // Set the log level to debug until we get the user selected level
     GenerateDelta.logger = createWinstonLogger('generate:delta', 'debug');
