@@ -403,7 +403,9 @@ describe('resolveSafeChild', () => {
   });
 
   afterEach(() => {
-    if (tmpBase) { fs.rmSync(tmpBase, { recursive: true, force: true }); }
+    if (tmpBase) {
+      fs.rmSync(tmpBase, { recursive: true, force: true });
+    }
   });
 
   it('resolves a simple child path under the base directory', () => {

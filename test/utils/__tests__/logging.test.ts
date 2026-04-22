@@ -3,9 +3,29 @@ import os from 'node:os';
 import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import * as winston from 'winston';
+import type { Logger } from 'winston';
 import { createDeltaLogger, createWinstonLogger } from '../../../src/utils/logging';
 
 vi.mock('winston', { spy: true });
+
+// ESC character (0x1B). Used to detect ANSI color sequences in the log
+// output. Built via String.fromCodePoint so eslint's `no-control-regex`
+// rule doesn't flag literal control chars in the test regex, and
+// String.raw so the `\[` backslash escape isn't double-escaped.
+const ESC = String.fromCodePoint(0x1B);
+const ansiRegex = new RegExp(String.raw`${ESC}\[[0-9;]+m`, 'g');
+const ansiPrefixRegex = new RegExp(String.raw`${ESC}\[`);
+
+const tmpLogFile = () =>
+  path.join(os.tmpdir(), `saf-delta-test-${Date.now()}-${Math.random().toString(36).slice(2)}.log`);
+
+// Deterministic flush — ends the logger and resolves when every transport
+// has flushed. Avoids time-based `setTimeout(r, 150)` flakiness under CI.
+const flushAndEnd = (logger: Logger): Promise<void> =>
+  new Promise<void>((resolve) => {
+    logger.on('finish', () => resolve());
+    logger.end();
+  });
 
 describe('createWinstonLogger', () => {
   it('should create a logger with the correct configuration', () => {
@@ -38,18 +58,6 @@ describe('createWinstonLogger', () => {
 });
 
 describe('createDeltaLogger', () => {
-  const tmpLogFile = () =>
-    path.join(os.tmpdir(), `saf-delta-test-${Date.now()}-${Math.random().toString(36).slice(2)}.log`);
-
-  // Deterministic flush — ends the logger and resolves when every
-  // transport has flushed. Avoids the time-based `setTimeout(r, 150)`
-  // pattern which is flaky under CI load.
-  const flushAndEnd = (logger: import('winston').Logger): Promise<void> =>
-    new Promise<void>((resolve) => {
-      logger.on('finish', () => resolve());
-      logger.end();
-    });
-
   it('writes messages to the specified log file in plain text (no ANSI color codes)', async () => {
     const logFile = tmpLogFile();
     const logger = createDeltaLogger(logFile);
@@ -66,7 +74,7 @@ describe('createDeltaLogger', () => {
     expect(fileContent).toContain('No Match Found for:  SV-123');
 
     // File must be plain text — no ANSI escape sequences leaked from console transport
-    expect(fileContent).not.toMatch(/\u001B\[/);
+    expect(fileContent).not.toMatch(ansiPrefixRegex);
   });
 
   it('refuses to open a log file that already exists as a symlink', () => {
@@ -118,7 +126,7 @@ describe('createDeltaLogger', () => {
 
     // ANSI-strip then search. The raw message must be there with no winston
     // level or timestamp prefix baked in.
-    const joined = writes.join('').replaceAll(/\u001B\[[0-9;]+m/g, '');
+    const joined = writes.join('').replaceAll(ansiRegex, '');
     expect(joined).toContain('Total Mapped Controls:  42');
     expect(joined).not.toMatch(/\binfo:\s/);
     expect(joined).not.toMatch(/\bERROR:\s/);

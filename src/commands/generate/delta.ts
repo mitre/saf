@@ -23,7 +23,7 @@ import {
   buildDeltaJsonPayload,
   type DeltaDiff,
   type LinkRecord,
-} from '../../utils/delta-matching';
+} from '../../utils/delta_matching';
 import { createWinstonLogger, lazyDeltaLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveSafeChild } from '../../utils/global';
@@ -333,7 +333,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // Process XCCDF of new profile to get controls
         processedXCCDF = processXCCDF(xccdfContent, false, idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions);
         // Create a dictionary mapping new control GIDs to their old control counterparts
-        mappedControls = await this.mapControls(existingProfile, processedXCCDF);
+        mappedControls = this.mapControls(existingProfile, processedXCCDF);
 
         // Iterate through each mapped control
         // key = new control, controls[key] = old control
@@ -627,8 +627,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   //
   // @param oldProfile - The profile containing the old controls.
   // @param newProfile - The profile containing the new controls.
-  async mapControls(oldProfile: Profile, newProfile: Profile): Promise<object> {
-    // Requirement-first pipeline (see src/utils/delta-matching.ts):
+  mapControls(oldProfile: Profile, newProfile: Profile): object {
+    // Requirement-first pipeline (see src/utils/delta_matching.ts):
     //   Tier 1  Exact SRG-OS block with single old candidate     -> deterministic accept
     //   Tier 2  Multiple old candidates in the SRG block         -> CCI Jaccard tiebreak
     //   Tier 3  No SRG overlap                                   -> Fuse fallback with
@@ -771,7 +771,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     // `potentialMismatch` is the single source of truth for "accepted
     // primary but below the tier's strong-confidence threshold" — see
     // computePotentialMismatch + TIER{2,3}_MISMATCH_THRESHOLD in
-    // delta-matching.ts. Reading the flag here keeps stats bookkeeping
+    // delta_matching.ts. Reading the flag here keeps stats bookkeeping
     // aligned with the tier definitions automatically.
     if (link.potentialMismatch) {
       GenerateDelta.posMisMatch++;

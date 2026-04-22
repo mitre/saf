@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import {
   applyRequirementFirstPipeline,
   type LinkRecord,
-} from '../../../src/utils/delta-matching';
+} from '../../../src/utils/delta_matching';
 
 /**
  * Integration-style test locking in the requirement-first pipeline's
@@ -51,10 +51,10 @@ describe('Cross-vendor integration: RHEL 9 -> Amazon Linux 2023 mini', () => {
   });
 
   it('distributes matches across all three tiers as designed', () => {
-    const byMethod = links.reduce<Record<string, number>>((acc, l) => {
-      acc[l.matchMethod] = (acc[l.matchMethod] ?? 0) + 1;
-      return acc;
-    }, {});
+    const byMethod: Record<string, number> = {};
+    for (const l of links) {
+      byMethod[l.matchMethod] = (byMethod[l.matchMethod] ?? 0) + 1;
+    }
     expect(byMethod['srg-deterministic']).toBe(6);
     expect(byMethod['srg-cci-tiebreak']).toBe(3);
     expect(byMethod['fuse-fallback']).toBe(1);

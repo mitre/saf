@@ -12,7 +12,7 @@ import {
   TIER2_COMPOSITE_TITLE_WEIGHT,
   tokenJaccard,
   type LinkRecord,
-} from '../../../src/utils/delta-matching';
+} from '../../../src/utils/delta_matching';
 
 // Minimal Control-shaped test fixtures. The real inspec-objects Control has
 // many more fields; these tests exercise only the fields our matcher reads.

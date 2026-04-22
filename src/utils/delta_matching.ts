@@ -33,6 +33,19 @@ function tokensBeforeModal(title: string): string[] {
 }
 
 /**
+ * Tokenize a string into a lowercase Set. Whitespace-split, empty tokens
+ * dropped. Module-scoped so it's not re-created per tokenJaccard call.
+ */
+function tokenizeSet(s: string): Set<string> {
+  return new Set(
+    s
+      .toLowerCase()
+      .split(/\s+/)
+      .filter(t => t.length > 0),
+  );
+}
+
+/**
  * Minimal structural shape the matcher needs from an InSpec control.
  * Matches the subset of `@mitre/inspec-objects`' Control that we read.
  */
@@ -77,19 +90,16 @@ export function extractCcis(control: ControlLike): Set<string> {
  * control titles (modulo normalized vendor prefix) still discriminate.
  */
 export function tokenJaccard(a: string, b: string): number {
-  const toks = (s: string) =>
-    new Set(
-      s
-        .toLowerCase()
-        .split(/\s+/)
-        .filter(t => t.length > 0),
-    );
-  const ta = toks(a);
-  const tb = toks(b);
-  if (ta.size === 0 || tb.size === 0) { return 0; }
+  const ta = tokenizeSet(a);
+  const tb = tokenizeSet(b);
+  if (ta.size === 0 || tb.size === 0) {
+    return 0;
+  }
   let intersectionSize = 0;
   for (const x of ta) {
-    if (tb.has(x)) { intersectionSize++; }
+    if (tb.has(x)) {
+      intersectionSize++;
+    }
   }
   const unionSize = ta.size + tb.size - intersectionSize;
   return intersectionSize / unionSize;
@@ -101,10 +111,14 @@ export function tokenJaccard(a: string, b: string): number {
  * "tied" not "match".
  */
 export function cciJaccard(a: Set<string>, b: Set<string>): number {
-  if (a.size === 0 && b.size === 0) { return 0; }
+  if (a.size === 0 && b.size === 0) {
+    return 0;
+  }
   let intersectionSize = 0;
   for (const x of a) {
-    if (b.has(x)) { intersectionSize++; }
+    if (b.has(x)) {
+      intersectionSize++;
+    }
   }
   const unionSize = a.size + b.size - intersectionSize;
   return intersectionSize / unionSize;
@@ -123,7 +137,9 @@ export function buildSrgIndex(
   const index = new Map<string, ControlLike[]>();
   for (const c of controls) {
     const srg = extractSrgId(c);
-    if (srg === null) { continue; }
+    if (srg === null) {
+      continue;
+    }
     const bucket = index.get(srg);
     if (bucket) {
       bucket.push(c);
@@ -218,7 +234,9 @@ function computePotentialMismatch(
   relationship: 'primary' | 'related' | 'no-match',
   confidence: number,
 ): boolean {
-  if (relationship !== 'primary') { return false; }
+  if (relationship !== 'primary') {
+    return false;
+  }
   if (matchMethod === 'srg-cci-tiebreak') {
     return confidence < TIER2_MISMATCH_THRESHOLD;
   }
@@ -308,7 +326,9 @@ function claimOrRelate(
   oldId: string,
   claimedOldIds: Set<string>,
 ): 'primary' | 'related' {
-  if (claimedOldIds.has(oldId)) { return 'related'; }
+  if (claimedOldIds.has(oldId)) {
+    return 'related';
+  }
   claimedOldIds.add(oldId);
   return 'primary';
 }
@@ -414,7 +434,9 @@ function tier2CciTiebreak(
         + TIER2_COMPOSITE_TITLE_WEIGHT * title;
     const slot: ScoredCandidate = { idx: i, composite, cci };
     if (ctx.claimedOldIds.has(candidate.id)) {
-      if (!bestClaimed || composite > bestClaimed.composite) { bestClaimed = slot; }
+      if (!bestClaimed || composite > bestClaimed.composite) {
+        bestClaimed = slot;
+      }
     } else if (!bestUnclaimed || composite > bestUnclaimed.composite) {
       bestUnclaimed = slot;
     }
@@ -445,12 +467,16 @@ function tier3FuseFallback(
   srg: string | null,
   ctx: TierContext,
 ): LinkRecord | null {
-  if (!ctx.fuse) { return null; }
+  if (!ctx.fuse) {
+    return null;
+  }
   const searchQuery = normalizeTitle(
     safeTitle(newControl.title),
     ctx.newPrefix,
   );
-  if (!searchQuery) { return null; }
+  if (!searchQuery) {
+    return null;
+  }
   const results = ctx.fuse.search(searchQuery);
   const best = results[0];
   if (best?.score === undefined || best.score >= FUSE_ACCEPT_THRESHOLD) {
@@ -547,8 +573,12 @@ export function applyRequirementFirstPipeline(
  * prefix is empty or not present at the start.
  */
 export function normalizeTitle(title: string, prefix: string): string {
-  if (!prefix) { return title; }
-  if (title === prefix) { return ''; }
+  if (!prefix) {
+    return title;
+  }
+  if (title === prefix) {
+    return '';
+  }
   if (title.startsWith(prefix + ' ')) {
     return title.slice(prefix.length + 1);
   }
@@ -565,8 +595,10 @@ export function normalizeTitle(title: string, prefix: string): string {
  * (feature-focused corpora like Google Chrome STIG).
  */
 export function autoDetectPrefix(titles: string[], threshold = 0.5): string {
-  if (titles.length === 0) { return ''; }
-  const leading = titles.map(tokensBeforeModal);
+  if (titles.length === 0) {
+    return '';
+  }
+  const leading = titles.map(t => tokensBeforeModal(t));
   const maxLen = Math.max(...leading.map(l => l.length));
   for (let n = maxLen; n > 0; n--) {
     const counts = new Map<string, number>();
