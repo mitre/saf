@@ -247,11 +247,198 @@ export function buildDeltaJsonPayload({
   return { ...diff, links };
 }
 
+type SearchRecord = { originalId: string; title: string; gtitle: string };
+
+// Fuse.js's default export is typed as both a class and a namespace,
+// which makes `Fuse<T>` ambiguous in type position. Structurally
+// describing the one method we call sidesteps the namespace collision
+// and documents exactly what tier 3 consumes.
+type FuseSearcher = {
+  search(query: string): Array<{ item: SearchRecord; score?: number }>;
+};
+
+type TierContext = {
+  oldPrefix: string;
+  newPrefix: string;
+  fuse: FuseSearcher | null;
+  claimedOldIds: Set<string>;
+};
+
+type ScoredCandidate = { idx: number; composite: number; cci: number };
+
 /**
- * Minimal-shape Profile pair -> LinkRecord per new control.
+ * Claim `oldId` as primary if not already claimed; otherwise mark as related.
+ * Mutates `claimedOldIds` in place.
+ */
+function claimOrRelate(
+  oldId: string,
+  claimedOldIds: Set<string>,
+): 'primary' | 'related' {
+  if (claimedOldIds.has(oldId)) return 'related';
+  claimedOldIds.add(oldId);
+  return 'primary';
+}
+
+/**
+ * Construct a successful LinkRecord (any tier). Derives
+ * `potentialMismatch` consistently via `computePotentialMismatch`.
+ */
+function makeLink(args: {
+  newControl: ControlLike;
+  oldId: string;
+  matchMethod: MatchMethod;
+  confidence: number;
+  srg: string | null;
+  relationship: 'primary' | 'related';
+}): LinkRecord {
+  return {
+    oldId: args.oldId,
+    newId: args.newControl.id,
+    matchMethod: args.matchMethod,
+    confidence: args.confidence,
+    relationship: args.relationship,
+    srg: args.srg,
+    potentialMismatch: computePotentialMismatch(
+      args.matchMethod,
+      args.relationship,
+      args.confidence,
+    ),
+  };
+}
+
+/** Emit a no-match link — same shape across all tier-miss paths. */
+function makeNoMatch(newControl: ControlLike, srg: string | null): LinkRecord {
+  return {
+    oldId: null,
+    newId: newControl.id,
+    matchMethod: 'none',
+    confidence: 0,
+    relationship: 'no-match',
+    srg,
+    potentialMismatch: false,
+  };
+}
+
+/**
+ * Tier 1: exactly one candidate in the SRG block. Deterministic link,
+ * confidence always 1.0.
+ */
+function tier1DeterministicMatch(
+  newControl: ControlLike,
+  candidate: ControlLike,
+  srg: string,
+  claimedOldIds: Set<string>,
+): LinkRecord {
+  return makeLink({
+    newControl,
+    oldId: candidate.id,
+    matchMethod: 'srg-deterministic',
+    confidence: 1,
+    srg,
+    relationship: claimOrRelate(candidate.id, claimedOldIds),
+  });
+}
+
+/**
+ * Tier 2: multiple candidates in this SRG block. Rank by a composite
+ * score of CCI Jaccard (primary signal) + normalized-title Jaccard
+ * (tiebreak — catches the N:N-in-one-SRG cross-vendor case where every
+ * candidate has identical CCIs). Prefer unclaimed candidates so distinct
+ * new controls don't all pile onto the same old; only fall back to a
+ * claimed candidate (emits `related`) when every old in the block is
+ * already taken.
  *
- * Tier 1 (this commit): deterministic SRG block with single candidate.
- * Later tiers appended by subsequent TDD cycles.
+ * The reported `confidence` is the winner's CCI Jaccard alone (not the
+ * composite), so downstream thresholds on `confidence` stay semantically
+ * "how well do the block-internal CCI sets overlap" — see beads memory
+ * `tier-2-composite-scoring`.
+ */
+function tier2CciTiebreak(
+  newControl: ControlLike,
+  candidates: ControlLike[],
+  srg: string,
+  ctx: TierContext,
+): LinkRecord {
+  const newCcis = extractCcis(newControl);
+  const newNormTitle = normalizeTitle(
+    safeTitle(newControl.title),
+    ctx.newPrefix,
+  );
+
+  let bestUnclaimed: ScoredCandidate | null = null;
+  let bestClaimed: ScoredCandidate | null = null;
+
+  for (let i = 0; i < candidates.length; i++) {
+    const cci = cciJaccard(newCcis, extractCcis(candidates[i]));
+    const oldNormTitle = normalizeTitle(
+      safeTitle(candidates[i].title),
+      ctx.oldPrefix,
+    );
+    const title = tokenJaccard(newNormTitle, oldNormTitle);
+    const composite = 0.7 * cci + 0.3 * title;
+    const slot: ScoredCandidate = { idx: i, composite, cci };
+    if (ctx.claimedOldIds.has(candidates[i].id)) {
+      if (!bestClaimed || composite > bestClaimed.composite) bestClaimed = slot;
+    } else if (!bestUnclaimed || composite > bestUnclaimed.composite) {
+      bestUnclaimed = slot;
+    }
+  }
+
+  // Invariant: tier 2 is only entered when candidates.length >= 2, so at
+  // least one of bestUnclaimed / bestClaimed is populated.
+  const winner = bestUnclaimed ?? bestClaimed!;
+  const winningCandidate = candidates[winner.idx];
+  return makeLink({
+    newControl,
+    oldId: winningCandidate.id,
+    matchMethod: 'srg-cci-tiebreak',
+    confidence: Math.max(winner.cci, 0),
+    srg,
+    relationship: claimOrRelate(winningCandidate.id, ctx.claimedOldIds),
+  });
+}
+
+/**
+ * Tier 3: no SRG candidates. Normalize the new control's title with its
+ * corpus prefix, search Fuse over old titles. Returns null when Fuse is
+ * unavailable (empty old profile), no query is extractable, or the best
+ * hit doesn't clear FUSE_ACCEPT_THRESHOLD — callers emit `makeNoMatch`.
+ */
+function tier3FuseFallback(
+  newControl: ControlLike,
+  srg: string | null,
+  ctx: TierContext,
+): LinkRecord | null {
+  if (!ctx.fuse) return null;
+  const searchQuery = normalizeTitle(
+    safeTitle(newControl.title),
+    ctx.newPrefix,
+  );
+  if (!searchQuery) return null;
+  const results = ctx.fuse.search(searchQuery);
+  const best = results[0];
+  if (best?.score === undefined || best.score >= FUSE_ACCEPT_THRESHOLD) {
+    return null;
+  }
+  // Invert Fuse score (0=perfect, 1=no match) into a 0-1 confidence
+  // where 1.0 is perfect.
+  const confidence = 1 - best.score;
+  return makeLink({
+    newControl,
+    oldId: best.item.originalId,
+    matchMethod: 'fuse-fallback',
+    confidence,
+    srg,
+    relationship: claimOrRelate(best.item.originalId, ctx.claimedOldIds),
+  });
+}
+
+/**
+ * Requirement-first cross-vendor matcher. For every control in the new
+ * profile, try (in order): Tier 1 deterministic SRG match, Tier 2
+ * composite CCI+title tiebreak, Tier 3 Fuse title fallback. Returns a
+ * LinkRecord per new control, including explicit no-match records so
+ * downstream consumers can iterate uniformly.
  */
 export function applyRequirementFirstPipeline(
   oldProfile: ProfileLike,
@@ -272,7 +459,6 @@ export function applyRequirementFirstPipeline(
   // Pre-compute a Fuse index over normalized old-control titles + gtitles.
   // Only built when tier 3 will actually fire (there's at least one old
   // control to search against).
-  type SearchRecord = { originalId: string; title: string; gtitle: string };
   const searchCorpus: SearchRecord[] = oldProfile.controls.map((c) => ({
     originalId: c.id,
     title: normalizeTitle(safeTitle(c.title), oldPrefix),
@@ -290,148 +476,32 @@ export function applyRequirementFirstPipeline(
         })
       : null;
 
-  const links: LinkRecord[] = [];
-
-  // Track which old control has already been claimed as `primary` by a new
-  // control within the same SRG block. If a second new control best-matches
-  // the same old control, it becomes `related` (1:N split — multiple new
-  // controls inherit one old body, but only the highest-Jaccard is primary).
+  // Track which old control has already been claimed as `primary`. If a
+  // second new control best-matches the same old, it becomes `related`
+  // (1:N split — multiple new controls inherit one old body, but only the
+  // highest-scoring is primary).
   const claimedOldIds = new Set<string>();
+  const ctx: TierContext = { oldPrefix, newPrefix, fuse, claimedOldIds };
 
+  const links: LinkRecord[] = [];
   for (const newControl of newProfile.controls) {
     const srg = extractSrgId(newControl);
     const candidates = srg ? (srgIndex.get(srg) ?? []) : [];
 
-    if (candidates.length === 0) {
-      // Tier 3 — fuzzy fallback. Normalize the new control's title with
-      // its corpus's detected prefix, then search Fuse over old titles.
-      if (fuse) {
-        const searchQuery = normalizeTitle(safeTitle(newControl.title), newPrefix);
-        if (searchQuery) {
-          const results = fuse.search(searchQuery);
-          const best = results[0];
-          if (
-            best?.score !== undefined &&
-            best.score < FUSE_ACCEPT_THRESHOLD
-          ) {
-            const matchedOldId = best.item.originalId;
-            const primary = !claimedOldIds.has(matchedOldId);
-            if (primary) claimedOldIds.add(matchedOldId);
-            const confidence = 1 - best.score;
-            const relationship = primary ? 'primary' : 'related';
-            links.push({
-              oldId: matchedOldId,
-              newId: newControl.id,
-              matchMethod: 'fuse-fallback',
-              // Invert Fuse score (0=perfect, 1=no match) into a
-              // 0-1 confidence where 1.0 is perfect.
-              confidence,
-              relationship,
-              srg: srg ?? null,
-              potentialMismatch: computePotentialMismatch(
-                'fuse-fallback',
-                relationship,
-                confidence,
-              ),
-            });
-            continue;
-          }
-        }
-      }
-      links.push({
-        oldId: null,
-        newId: newControl.id,
-        matchMethod: 'none',
-        confidence: 0,
-        relationship: 'no-match',
-        srg: srg ?? null,
-        potentialMismatch: false,
-      });
-      continue;
-    }
-
     if (candidates.length === 1) {
-      const winner = candidates[0];
-      const primary = !claimedOldIds.has(winner.id);
-      if (primary) claimedOldIds.add(winner.id);
-      const relationship = primary ? 'primary' : 'related';
-      links.push({
-        oldId: winner.id,
-        newId: newControl.id,
-        matchMethod: 'srg-deterministic',
-        confidence: 1,
-        relationship,
-        srg,
-        potentialMismatch: computePotentialMismatch(
-          'srg-deterministic',
-          relationship,
-          1,
-        ),
-      });
-      continue;
-    }
-
-    // Tier 2: multiple candidates in this SRG block. Rank by a composite
-    // score of CCI Jaccard (primary signal) + normalized-title Jaccard
-    // (tiebreak — catches the N:N-in-one-SRG cross-vendor case where
-    // every candidate has identical CCIs). Prefer unclaimed candidates
-    // so distinct new controls don't all pile onto the same old; only
-    // fall back to a claimed candidate (→ `related`) when every old in
-    // the block is already taken.
-    const newCcis = extractCcis(newControl);
-    const newNormTitle = normalizeTitle(safeTitle(newControl.title), newPrefix);
-
-    let bestUnclaimedIdx = -1;
-    let bestUnclaimedComposite = -1;
-    let bestUnclaimedCci = 0;
-    let bestClaimedIdx = -1;
-    let bestClaimedComposite = -1;
-    let bestClaimedCci = 0;
-
-    for (let i = 0; i < candidates.length; i++) {
-      const cci = cciJaccard(newCcis, extractCcis(candidates[i]));
-      const oldNormTitle = normalizeTitle(
-        safeTitle(candidates[i].title),
-        oldPrefix,
+      // Tier 1 requires a non-null SRG (candidates is populated via
+      // srgIndex which only stores non-null SRG keys).
+      links.push(
+        tier1DeterministicMatch(newControl, candidates[0], srg!, claimedOldIds),
       );
-      const title = tokenJaccard(newNormTitle, oldNormTitle);
-      const composite = 0.7 * cci + 0.3 * title;
-
-      if (claimedOldIds.has(candidates[i].id)) {
-        if (composite > bestClaimedComposite) {
-          bestClaimedComposite = composite;
-          bestClaimedCci = cci;
-          bestClaimedIdx = i;
-        }
-      } else if (composite > bestUnclaimedComposite) {
-        bestUnclaimedComposite = composite;
-        bestUnclaimedCci = cci;
-        bestUnclaimedIdx = i;
-      }
+    } else if (candidates.length > 1) {
+      links.push(tier2CciTiebreak(newControl, candidates, srg!, ctx));
+    } else {
+      links.push(
+        tier3FuseFallback(newControl, srg, ctx)
+        ?? makeNoMatch(newControl, srg),
+      );
     }
-
-    const winnerIdx =
-      bestUnclaimedIdx !== -1 ? bestUnclaimedIdx : bestClaimedIdx;
-    const winnerCci =
-      bestUnclaimedIdx !== -1 ? bestUnclaimedCci : bestClaimedCci;
-    const winner = candidates[winnerIdx];
-    const primary = !claimedOldIds.has(winner.id);
-    if (primary) claimedOldIds.add(winner.id);
-    const confidence = Math.max(winnerCci, 0);
-    const relationship = primary ? 'primary' : 'related';
-    links.push({
-      oldId: winner.id,
-      newId: newControl.id,
-      matchMethod: 'srg-cci-tiebreak',
-      confidence,
-      relationship,
-      srg,
-      potentialMismatch: computePotentialMismatch(
-        'srg-cci-tiebreak',
-        relationship,
-        confidence,
-      ),
-    });
   }
   return links;
 }
