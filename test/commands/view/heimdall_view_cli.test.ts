@@ -1,3 +1,4 @@
+import type { AddressInfo } from 'net';
 import type { Server } from 'http';
 import path from 'path';
 import { runCommand } from '@oclif/test';
@@ -16,21 +17,28 @@ describe('Test heimdall SAF CLI Command', () => {
 
 describe('Test Heimdall Embedded', () => {
   let server: Server;
+  let baseUrl: string;
 
   beforeAll(async () => {
     const installedPath = getInstalledPath('@mitre/saf');
     const staticFilesDirectory = path.join(installedPath, 'node_modules/@mitre/heimdall-lite/dist');
-    const predefinedLoadJSON = express.json(); // Replace this with your actual middleware
+    const predefinedLoadJSON = express.json();
+    // Bind to port 0 so the OS assigns a free port. Hardcoding 3000
+    // collides with anything already holding it on a dev machine
+    // (OrbStack / Docker Desktop / Colima / another server), making
+    // the test fail with EADDRINUSE and auto-skipping its siblings.
     server = express()
       .use(predefinedLoadJSON)
       .use(express.static(staticFilesDirectory))
       .use((_err: unknown, _req: express.Request, res: express.Response) => {
         res.status(500).send('Something broke!');
       })
-      .listen(3000);
+      .listen(0);
 
     await new Promise<void>((resolve) => {
       server.on('listening', () => {
+        const { port } = server.address() as AddressInfo;
+        baseUrl = `http://localhost:${port}`;
         resolve();
       });
     });
@@ -45,14 +53,14 @@ describe('Test Heimdall Embedded', () => {
   });
 
   it('should start the server on the specified port', async () => {
-    const response = await axios.get('http://localhost:3000');
+    const response = await axios.get(baseUrl);
     const dom = new JSDOM(response.data);
     const text = dom.window.document.body.textContent;
     assert.isNotNull(text);
   });
 
   it('should serve the Vue.js app', async () => {
-    const response = await axios.get('http://localhost:3000');
+    const response = await axios.get(baseUrl);
     const dom = new JSDOM(response.data);
     const appDiv = dom.window.document.querySelector('#app');
     assert.isNotNull(appDiv);
