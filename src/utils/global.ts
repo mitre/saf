@@ -1,4 +1,5 @@
 import fs from 'fs';
+import path from 'path';
 import { fingerprint, Assettype, INPUT_TYPES, Role, Techarea } from '@mitre/hdf-converters';
 import AdmZip from 'adm-zip';
 import appRootPath from 'app-root-path';
@@ -32,6 +33,42 @@ export function checkSuffix(input: string, suffix = '.json') {
  *
  * @returns {string} - The filename extracted from the full path. If the path does not contain a filename, an empty string is returned.
  */
+/**
+ * Resolve a child path under `baseDir` after realpath-canonicalizing both,
+ * and assert the result stays inside `baseDir`. Rejects symlink traversal
+ * and `..` escapes. Throws if:
+ *   - `baseDir` does not exist,
+ *   - the resolved child escapes `baseDir`, or
+ *   - any path segment under `baseDir` (up to the file's parent) is a symlink.
+ *
+ * Use before `fs.writeFileSync` when the child path is influenced by user
+ * input (CLI flags, parsed XCCDF content, etc.). `fs.writeFileSync` itself
+ * follows symlinks, so containment alone is insufficient — callers should
+ * also ensure the file's parent directory is not a symlink (asserted here).
+ */
+export function resolveSafeChild(baseDir: string, ...parts: string[]): string {
+  const resolvedBase = fs.realpathSync(baseDir);
+  const target = path.resolve(resolvedBase, ...parts);
+  const rel = path.relative(resolvedBase, target);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) {
+    throw new Error(
+      `Refusing to write outside output directory: ${target} is not inside ${resolvedBase}`,
+    );
+  }
+  // Walk from baseDir down to the file's parent; reject any symlink segment.
+  const parentDirParts = path.dirname(rel).split(path.sep).filter(Boolean);
+  let cursor = resolvedBase;
+  for (const segment of parentDirParts) {
+    cursor = path.join(cursor, segment);
+    if (fs.existsSync(cursor) && fs.lstatSync(cursor).isSymbolicLink()) {
+      throw new Error(
+        `Refusing to follow symlink under output directory: ${cursor}`,
+      );
+    }
+  }
+  return target;
+}
+
 export function basename(inputPath: string): string {
   // trim trailing whitespace and path separators
   // ('/'=linux or '\'=windows (note that this could be double backslash on occasion)) from the end of the string

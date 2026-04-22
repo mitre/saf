@@ -62,6 +62,34 @@ describe('createDeltaLogger', () => {
     expect(fileContent).not.toMatch(/\x1b\[/);
   });
 
+  it('refuses to open a log file that already exists as a symlink', () => {
+    const logFile = tmpLogFile();
+    const realTarget = tmpLogFile();
+    fs.writeFileSync(realTarget, 'pre-existing content\n');
+    fs.symlinkSync(realTarget, logFile);
+
+    try {
+      expect(() => createDeltaLogger(logFile)).toThrow(/symlink/);
+    } finally {
+      fs.rmSync(logFile, { force: true });
+      fs.rmSync(realTarget, { force: true });
+    }
+  });
+
+  it('honors the `level` option (drops lower levels)', async () => {
+    const logFile = tmpLogFile();
+    const logger = createDeltaLogger(logFile, { level: 'warn' });
+
+    logger.info('suppressed');
+    logger.warn('included');
+
+    await waitForFlush();
+
+    const fileContent = fs.readFileSync(logFile, 'utf-8');
+    expect(fileContent).toContain('included');
+    expect(fileContent).not.toContain('suppressed');
+  });
+
   it('preserves the literal message as-is (no winston prefix or level label leaks into stdout)', async () => {
     const logFile = tmpLogFile();
     const logger = createDeltaLogger(logFile);

@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { contextualizeEvaluation, type ContextualizedControl, type ExecJSON } from 'inspecjs';
 import _ from 'lodash';
 import { createLogger, format, type transport, transports, type Logger } from 'winston';
@@ -61,7 +62,20 @@ const syslogColors = {
  * Replaces the legacy `colors` + `print*` wrapper + module-level
  * `processLogData` buffer pattern in src/utils/oclif/cli_helper.ts.
  */
-export function createDeltaLogger(logFile: string): Logger {
+export function createDeltaLogger(
+  logFile: string,
+  options: { level?: string } = {},
+): Logger {
+  // Winston's File transport calls fs.createWriteStream which follows
+  // symlinks. A pre-existing `CliProcessOutput.log` planted as a symlink
+  // into a sensitive path would be appended to by every delta run. Refuse
+  // to open if the target already exists as a symlink.
+  if (fs.existsSync(logFile) && fs.lstatSync(logFile).isSymbolicLink()) {
+    throw new Error(
+      `Refusing to write to log file ${logFile}: path is a symlink`,
+    );
+  }
+
   const colorizer = format.colorize({ colors: syslogColors });
   const plainMessage = format.printf((info) =>
     typeof info.message === 'string'
@@ -70,7 +84,7 @@ export function createDeltaLogger(logFile: string): Logger {
   );
 
   return createLogger({
-    level: 'info',
+    level: options.level ?? 'info',
     transports: [
       new transports.Console({
         format: format.combine(
@@ -80,6 +94,7 @@ export function createDeltaLogger(logFile: string): Logger {
           }))(),
           plainMessage,
         ),
+        handleExceptions: true,
       }),
       new transports.File({
         filename: logFile,

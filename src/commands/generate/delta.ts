@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { EventEmitter } from 'events';
 import fs, { copyFileSync } from 'fs';
 import path from 'path';
@@ -25,7 +25,7 @@ import {
 } from '../../utils/delta-matching';
 import { createDeltaLogger, createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
-import { basename, downloadFile, extractFileFromZip, getErrorMessage } from '../../utils/global';
+import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveSafeChild } from '../../utils/global';
 
 // Module-level user-facing logger shared by `run()` and by the
 // interactive prompt / validation helpers that live below the class.
@@ -256,7 +256,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       try {
         this.logThis(`  Generating the summary file on directory: ${shortControlsDir}`, 'info');
         // Generate the profile controls summary from the `controlsDir` without the trailing "controls" directory
-        const inspecJsonFile = execSync(`cinc-auditor json '${path.dirname(controlsDir)}'`, { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
+        const inspecJsonFile = execFileSync('cinc-auditor', ['json', path.dirname(controlsDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
         this.logThis('  Generated InSpec Profiles from InSpec JSON summary', 'info');
         existingProfile = processInSpecProfile(inspecJsonFile);
       } catch (error: unknown) {
@@ -396,8 +396,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // Get the directory name without the trailing "controls" directory
           // Here we are using the newly updated (mapped) controls
           // const profileDir = path.dirname(controlsDir)
-          const inspecJsonFileNew = execSync(`cinc-auditor json '${path.dirname(mappedDir)}'`, { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
-          // const inspecJsonFileNew = execSync(`cinc-auditor json '${mappedDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
+          const inspecJsonFileNew = execFileSync('cinc-auditor', ['json', path.dirname(mappedDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
 
           // Replace existing profile (inputted JSON of source profile to be mapped)
           // Allow delta to take care of the rest
@@ -520,11 +519,19 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             //       method from inspect-objects
             const newControl = updateControl(existingProfile.controls[index], control, thisLogger);
             this.logThis(`Writing updated control with code block for: ${control.id}.`, 'info');
-            fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${basename(control.id)}.rb`), newControl.toRuby(processLogLevel));
+            // `basename(control.id)` strips path separators; `resolveSafeChild`
+            // rejects symlink traversal on the `controls/` subdirectory.
+            fs.writeFileSync(
+              resolveSafeChild(outputProfileFolderPath, 'controls', `${basename(control.id)}.rb`),
+              newControl.toRuby(processLogLevel),
+            );
           } else {
             // We didn't find a mapping for this control - Old style of updating controls
             this.logThis(`Writing new control without code block for: ${control.id}.`, 'info');
-            fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${basename(control.id)}.rb`), control.toRuby(processLogLevel));
+            fs.writeFileSync(
+              resolveSafeChild(outputProfileFolderPath, 'controls', `${basename(control.id)}.rb`),
+              control.toRuby(processLogLevel),
+            );
           }
         }
 
@@ -533,7 +540,10 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           diff: updatedResult.diff as Record<string, unknown>,
           links: GenerateDelta.links,
         });
-        fs.writeFileSync(path.join(outputProfileFolderPath, 'delta.json'), JSON.stringify(deltaJsonPayload, null, 2));
+        fs.writeFileSync(
+          resolveSafeChild(outputProfileFolderPath, 'delta.json'),
+          JSON.stringify(deltaJsonPayload, null, 2),
+        );
 
         if (reportFile) {
           // logger.debug('  Writing report markdown file')
@@ -703,15 +713,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
    * tickMatchCounter so the output format can evolve independently of
    * the stats bookkeeping.
    */
-  private logMatchMethod(
-    log: Logger,
-    link: {
-      matchMethod: string;
-      relationship: string;
-      confidence: number;
-      srg?: string | null;
-    },
-  ): void {
+  private logMatchMethod(log: Logger, link: LinkRecord): void {
     const confidencePct = (link.confidence * 100).toFixed(0) + '%';
     switch (link.matchMethod) {
       case 'srg-deterministic':
@@ -743,11 +745,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
    *   posMisMatch  -> primary link, lower confidence (still accepted)
    *   dupMatch     -> related link (shares old body with an earlier primary)
    */
-  private tickMatchCounter(link: {
-    matchMethod: string;
-    relationship: string;
-    confidence: number;
-  }): void {
+  private tickMatchCounter(link: LinkRecord): void {
     if (link.relationship === 'related') {
       GenerateDelta.dupMatch++;
       return;
