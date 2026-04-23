@@ -198,22 +198,22 @@ describe('tokenJaccard', () => {
 
 describe('cciJaccard', () => {
   it('returns 1.0 for identical sets', () => {
-    const a = new Set(['CCI-1', 'CCI-2']);
-    const b = new Set(['CCI-1', 'CCI-2']);
-    expect(cciJaccard(a, b)).toBe(1);
+    const setA = new Set(['CCI-1', 'CCI-2']);
+    const setB = new Set(['CCI-1', 'CCI-2']);
+    expect(cciJaccard(setA, setB)).toBe(1);
   });
 
   it('returns 0.0 for disjoint sets', () => {
-    const a = new Set(['CCI-1']);
-    const b = new Set(['CCI-2']);
-    expect(cciJaccard(a, b)).toBe(0);
+    const setA = new Set(['CCI-1']);
+    const setB = new Set(['CCI-2']);
+    expect(cciJaccard(setA, setB)).toBe(0);
   });
 
   it('returns the correct fraction for partial overlap', () => {
     // {1,2,3} vs {2,3,4} -> intersect = {2,3} (2), union = {1,2,3,4} (4) -> 0.5
-    const a = new Set(['CCI-1', 'CCI-2', 'CCI-3']);
-    const b = new Set(['CCI-2', 'CCI-3', 'CCI-4']);
-    expect(cciJaccard(a, b)).toBe(0.5);
+    const setA = new Set(['CCI-1', 'CCI-2', 'CCI-3']);
+    const setB = new Set(['CCI-2', 'CCI-3', 'CCI-4']);
+    expect(cciJaccard(setA, setB)).toBe(0.5);
   });
 
   it('returns 0.0 when both sets are empty (cannot differentiate)', () => {

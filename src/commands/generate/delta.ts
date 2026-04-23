@@ -669,7 +669,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       const oldCtl = link.oldId ? oldById.get(link.oldId) : undefined;
       const newCtl = newByBasename.get(newId);
 
-      if (link.matchMethod === 'none') {
+      // `none` links and (defensively) any link missing oldId are no-op
+      // for body-copying purposes.
+      if (link.matchMethod === 'none' || link.oldId === null) {
         log.info(`     New XCCDF Control:  ${newId}`);
         log.error(
           `    No Match Found for:  ${newId}${link.srg ? ` (SRG=${link.srg})` : ''}\n`,
@@ -680,7 +682,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
       // Every non-none link resolves to an old control and goes into the
       // returned map. Primary and related both need the old Ruby body.
-      controlMappings[newId] = link.oldId!;
+      controlMappings[newId] = link.oldId;
 
       log.info(`Processing New Control:  ${newId}`);
       if (newCtl?.title) {
@@ -690,8 +692,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         log.info(`     Old Control Title:  ${this.updateTitle(oldCtl.title)}`);
       }
 
-      this.logMatchMethod(log, link);
-      this.tickMatchCounter(link);
+      GenerateDelta.logMatchMethod(log, link);
+      GenerateDelta.tickMatchCounter(link);
 
       log.info(`  Best Match Candidate:  ${link.oldId} --> ${newId}\n`);
     }
@@ -728,7 +730,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
    * tickMatchCounter so the output format can evolve independently of
    * the stats bookkeeping.
    */
-  private logMatchMethod(log: Logger, link: LinkRecord): void {
+  private static logMatchMethod(log: Logger, link: LinkRecord): void {
     const confidencePct = (link.confidence * 100).toFixed(0) + '%';
     switch (link.matchMethod) {
       case 'srg-deterministic': {
@@ -749,6 +751,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         );
         break;
       }
+      default: {
+        // 'none' or any future MatchMethod: emit nothing here; the
+        // caller is expected to handle no-match logging separately.
+        break;
+      }
     }
     if (link.potentialMismatch) {
       log.warn('** Potential Mismatch **');
@@ -763,7 +770,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
    *   posMisMatch  -> primary link, lower confidence (still accepted)
    *   dupMatch     -> related link (shares old body with an earlier primary)
    */
-  private tickMatchCounter(link: LinkRecord): void {
+  private static tickMatchCounter(link: LinkRecord): void {
     if (link.relationship === 'related') {
       GenerateDelta.dupMatch++;
       return;

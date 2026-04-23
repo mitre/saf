@@ -443,8 +443,14 @@ function tier2CciTiebreak(
   }
 
   // Invariant: tier 2 is only entered when candidates.length >= 2, so at
-  // least one of bestUnclaimed / bestClaimed is populated.
-  const winner = bestUnclaimed ?? bestClaimed!;
+  // least one of bestUnclaimed / bestClaimed is populated. Explicit guard
+  // so the type narrows without a non-null assertion.
+  const winner = bestUnclaimed ?? bestClaimed;
+  if (winner === null) {
+    throw new Error(
+      'tier2CciTiebreak invariant violated: no candidate selected from a non-empty candidate list',
+    );
+  }
   const winningCandidate = candidates[winner.idx];
   return makeLink({
     newControl,
@@ -548,16 +554,18 @@ export function applyRequirementFirstPipeline(
   const links: LinkRecord[] = [];
   for (const newControl of newProfile.controls) {
     const srg = extractSrgId(newControl);
-    const candidates = srg ? (srgIndex.get(srg) ?? []) : [];
+    // `candidates` is non-empty only when `srg` is non-null (srgIndex
+    // only stores non-null SRG keys). The explicit `srg !== null` guard
+    // in the tier 1/2 branches narrows the type so neither tier needs
+    // a non-null assertion.
+    const candidates = srg === null ? [] : (srgIndex.get(srg) ?? []);
 
-    if (candidates.length === 1) {
-      // Tier 1 requires a non-null SRG (candidates is populated via
-      // srgIndex which only stores non-null SRG keys).
+    if (srg !== null && candidates.length === 1) {
       links.push(
-        tier1DeterministicMatch(newControl, candidates[0], srg!, claimedOldIds),
+        tier1DeterministicMatch(newControl, candidates[0], srg, claimedOldIds),
       );
-    } else if (candidates.length > 1) {
-      links.push(tier2CciTiebreak(newControl, candidates, srg!, ctx));
+    } else if (srg !== null && candidates.length > 1) {
+      links.push(tier2CciTiebreak(newControl, candidates, srg, ctx));
     } else {
       links.push(
         tier3FuseFallback(newControl, srg, ctx)
