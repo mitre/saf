@@ -572,11 +572,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               + `     Total Controls Found on XCCDF: ${GenerateDelta.newControlsLength}\n`
               + `                    Match Controls: ${GenerateDelta.match}\n`
               + `        Possible Mismatch Controls: ${GenerateDelta.posMisMatch}\n`
-              + `          Duplicate Match Controls: ${GenerateDelta.dupMatch}\n`
+              + `            Related Match Controls: ${GenerateDelta.dupMatch}\n`
               + `                 No Match Controls: ${GenerateDelta.noMatch}\n`
               + `                New XCCDF Controls: ${GenerateDelta.newXccdfControl}\n\n`
               + 'Statistics Validation ------------------------------------------\n'
-              + `Match + Mismatch = Total Mapped Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}\n`
+              + `Match + Mismatch + Related = Total Mapped Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}\n`
               + `  Total Processed = Total XCCDF Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`
               + updatedResult.markdown;
             fs.writeFileSync(markDownFile, reportData);

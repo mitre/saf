@@ -61,29 +61,15 @@ describe('Cross-vendor integration: RHEL 9 -> Amazon Linux 2023 mini', () => {
     expect(byMethod.none).toBe(1);
   });
 
-  it('pins Tier-1 deterministic mappings (single-candidate SRG blocks)', () => {
-    expect(byNew['SV-273801']).toMatchObject({
-      oldId: 'SV-257780',
-      matchMethod: 'srg-deterministic',
-      relationship: 'primary',
-    });
-    expect(byNew['SV-273803']).toMatchObject({
-      oldId: 'SV-257781',
-      matchMethod: 'srg-deterministic',
-      relationship: 'primary',
-    });
-    expect(byNew['SV-273804']).toMatchObject({
-      oldId: 'SV-257850',
-      matchMethod: 'srg-deterministic',
-      relationship: 'primary',
-    });
-    expect(byNew['SV-273805']).toMatchObject({
-      oldId: 'SV-257860',
-      matchMethod: 'srg-deterministic',
-      relationship: 'primary',
-    });
-    expect(byNew['SV-273806']).toMatchObject({
-      oldId: 'SV-257870',
+  it.each<[string, string]>([
+    ['SV-273801', 'SV-257780'],
+    ['SV-273803', 'SV-257781'],
+    ['SV-273804', 'SV-257850'],
+    ['SV-273805', 'SV-257860'],
+    ['SV-273806', 'SV-257870'],
+  ])('pins Tier-1 deterministic mapping %s -> %s (single-candidate SRG block)', (newId, oldId) => {
+    expect(byNew[newId]).toMatchObject({
+      oldId,
       matchMethod: 'srg-deterministic',
       relationship: 'primary',
     });
