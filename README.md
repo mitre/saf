@@ -55,6 +55,7 @@ For detailed information about development, testing , and contributing to the SA
       * [AWS Config to HDF](#aws-config-to-hdf)
       * [Burp Suite to HDF](#burp-suite-to-hdf)
       * [Checkov to HDF](#checkov-to-hdf)
+      * [CKL to HDF](#ckl-to-hdf)
       * [CKL to POA&amp;M](#ckl-to-poam)
       * [CycloneDX SBOM to HDF](#cyclonedx-sbom-to-hdf)
       * [DBProtect to HDF](#dbprotect-to-hdf)
@@ -688,6 +689,36 @@ convert checkov2hdf           Translate a Checkov JSON file into a Heimdall
   EXAMPLES
     $ saf convert checkov2hdf -i checkov_results.json -o output-hdf-name.json
 ```
+
+[top](#convert-other-formats-to-hdf)
+#### CKL to HDF
+```
+convert ckl2hdf               Translate a Checklist XML file into a Heimdall
+                              Data Format JSON file
+
+  USAGE
+    $ saf convert ckl2hdf -i <ckl-xml> -o <hdf-scan-results-json> [-h] [-r]
+
+  FLAGS
+    -i, --input=<ckl-xml>                  (required) Input Checklist XML File
+    -o, --output=<hdf-scan-results-json>   (required) Output HDF JSON File
+    -r, --includeRaw                       Include raw input file in HDF JSON file
+
+  GLOBAL FLAGS
+    -h, --help               Show CLI help
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+        --interactive        Collect input tags interactively (not available on all CLI commands)
+
+  DESCRIPTION
+    Translate a Checklist XML file into a Heimdall Data Format JSON file
+
+  EXAMPLES
+
+    $ saf convert ckl2hdf -i ckl_results.xml -o output-hdf-name.json
+
+```
+
 [top](#convert-other-formats-to-hdf)
 #### CKL to POA&M
 
