@@ -979,12 +979,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       }
       case 'error': {
         GenerateDelta.logger.error(logMsg);
-        log.info(logMsg);
+        log.error(logMsg);
         break;
       }
       default: {
         GenerateDelta.logger.warn(logMsg);
-        log.info(logMsg);
+        log.warn(logMsg);
         break;
       }
     }

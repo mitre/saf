@@ -29,7 +29,7 @@ export function checkSuffix(input: string, suffix = '.json') {
  * than a bare binary name (satisfies Sonar S4036 — don't trust $PATH
  * resolution at the moment of spawn).
  *
- * Cross-platform: uses `where` on Windows and `command -v` on POSIX.
+ * Cross-platform: uses `where` on Windows and `which` on POSIX.
  * Memoizes the result per-process so subsequent calls don't re-probe.
  */
 let _cincAuditorPath: string | undefined;
