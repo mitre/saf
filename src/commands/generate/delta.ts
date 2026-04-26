@@ -1,4 +1,4 @@
-import { execSync } from 'child_process';
+import { execFileSync } from 'child_process';
 import { EventEmitter } from 'events';
 import fs, { copyFileSync } from 'fs';
 import path from 'path';
@@ -14,30 +14,25 @@ import {
   type UpdatedProfileReturn,
 } from '@mitre/inspec-objects';
 import { Flags } from '@oclif/core';
-import colors from 'colors';
 import fse from 'fs-extra';
-import Fuse from 'fuse.js';
-import { isEmpty } from 'lodash';
 import tmp from 'tmp';
 import type winston from 'winston';
-import { createWinstonLogger } from '../../utils/logging';
-import { BaseCommand } from '../../utils/oclif/base_command';
+import type { Logger } from 'winston';
 import {
-  addToProcessLogData,
-  printBgMagentaRed,
-  printBgRed,
-  printBgRedRed,
-  printBgYellow,
-  printCyan,
-  printGreen,
-  printMagenta,
-  printRed,
-  printYellow,
-  printYellowBgGreen,
-  printYellowGreen,
-  saveProcessLogData,
-} from '../../utils/oclif/cli_helper';
-import { basename, downloadFile, extractFileFromZip, getErrorMessage } from '../../utils/global';
+  applyRequirementFirstPipeline,
+  buildDeltaJsonPayload,
+  type DeltaDiff,
+  type LinkRecord,
+} from '../../utils/delta_matching';
+import { createWinstonLogger, lazyDeltaLogger } from '../../utils/logging';
+import { BaseCommand } from '../../utils/oclif/base_command';
+import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveCincAuditor, resolveSafeChild } from '../../utils/global';
+
+// User-facing logger shared by `run()` and by the interactive-prompt /
+// validation helpers that live below the class. Writes colorized output
+// to stdout and plain text to CliProcessOutput.log. Lazily constructed —
+// see lazyDeltaLogger's JSDoc for why.
+const log = lazyDeltaLogger('CliProcessOutput.log');
 
 /**
  * This class extends the capabilities of the update_controls4delta providing the following capabilities:
@@ -50,7 +45,7 @@ import { basename, downloadFile, extractFileFromZip, getErrorMessage } from '../
 *        a - report file (.md), mapping statistics (CliProcessOutput.log)
 */
 export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
-  static readonly description = 'Update an existing InSpec profile with new or updated XCCDF guidance';
+  static readonly description = 'Update an existing InSpec profile with new or updated XCCDF guidance. With -M (runMapControls), uses a 3-tier SRG/CCI requirement-first matcher for cross-vendor deltas (e.g. RHEL 9 → Amazon Linux 2023) and persists per-control match decisions into delta.json\'s links[] field.';
 
   static readonly flags = {
     inspecJsonFile: Flags.string({
@@ -123,6 +118,10 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   static newXccdfControl = 0;
   static oldControlsLength = 0;
   static newControlsLength = 0;
+  // Populated by mapControls when runMapControls is on. Consumed by
+  // the delta.json write site to persist per-control match decisions
+  // alongside the text diff. Empty array when mapControls did not run.
+  static links: LinkRecord[] = [];
 
   async run() {
     const { flags } = await this.parse(GenerateDelta);
@@ -140,6 +139,19 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     if (flags.runMapControls && !flags.controlsDir) {
       this.error('\u001B[31mIf not interactive and -M is provided the Controls Directory (-c) must be provided\u001B[0m');
     }
+
+    // Statics live for the process lifetime; explicitly reset them so that
+    // back-to-back invocations under `@oclif/test`'s runCommand (or any
+    // programmatic consumer) don't inherit counters / links from a prior
+    // run.
+    GenerateDelta.match = 0;
+    GenerateDelta.noMatch = 0;
+    GenerateDelta.dupMatch = 0;
+    GenerateDelta.posMisMatch = 0;
+    GenerateDelta.newXccdfControl = 0;
+    GenerateDelta.oldControlsLength = 0;
+    GenerateDelta.newControlsLength = 0;
+    GenerateDelta.links = [];
 
     // Set the log level to debug until we get the user selected level
     GenerateDelta.logger = createWinstonLogger('generate:delta', 'debug');
@@ -165,12 +177,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     let mappedControls: any = {};
 
     const thisLogger = GenerateDelta.logger;
-    thisLogger.warn(colors.green('╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗'));
-    thisLogger.warn(colors.green('║ saf generate delta is officially released - report any questions/bugs to https://github.com/mitre/saf/issues ║'));
-    thisLogger.warn(colors.green('╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝'));
+    thisLogger.warn('╔══════════════════════════════════════════════════════════════════════════════════════════════════════════════╗');
+    thisLogger.warn('║ saf generate delta is officially released - report any questions/bugs to https://github.com/mitre/saf/issues ║');
+    thisLogger.warn('╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝');
 
-    addToProcessLogData('==================== Delta Process =====================');
-    addToProcessLogData(`Date: ${new Date().toISOString()}`);
+    log.info('==================== Delta Process =====================');
+    log.info(`Date: ${new Date().toISOString()}`);
 
     if (flags.interactive) {
       const interactiveFlags = await getFlags();
@@ -212,15 +224,15 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       logLevel = flags.logLevel;
 
       // Save the flags to the log object
-      addToProcessLogData('Process Flags ===========================================');
+      log.info('Process Flags ===========================================');
       for (const [key, value] of Object.entries(flags)) {
-        addToProcessLogData(`${key}=${value instanceof URL ? value.toString() : String(value)}`);
+        log.info(`${key}=${value instanceof URL ? value.toString() : String(value)}`);
       }
     } else {
       return;
     }
 
-    addToProcessLogData('\n');
+    log.info('\n');
     GenerateDelta.logger.level = logLevel;
 
     // -------------------------------------------------------------------------
@@ -259,7 +271,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       try {
         this.logThis(`  Generating the summary file on directory: ${shortControlsDir}`, 'info');
         // Generate the profile controls summary from the `controlsDir` without the trailing "controls" directory
-        const inspecJsonFile = execSync(`cinc-auditor json '${path.dirname(controlsDir)}'`, { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
+        const inspecJsonFile = execFileSync(resolveCincAuditor(), ['json', path.dirname(controlsDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
         this.logThis('  Generated InSpec Profiles from InSpec JSON summary', 'info');
         existingProfile = processInSpecProfile(inspecJsonFile);
       } catch (error: unknown) {
@@ -317,11 +329,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     try {
       if (runMapControls && controlsDir) {
         this.logThis('  Mapping controls (using fuzzy logic - lower value = best match) from the old profile to the new profile', 'info');
-        addToProcessLogData('Mapping controls (using fuzzy logic - lower value = best match) from the old profile to the new profile\n');
+        log.info('Mapping controls (using fuzzy logic - lower value = best match) from the old profile to the new profile\n');
         // Process XCCDF of new profile to get controls
         processedXCCDF = processXCCDF(xccdfContent, false, idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions);
         // Create a dictionary mapping new control GIDs to their old control counterparts
-        mappedControls = await this.mapControls(existingProfile, processedXCCDF);
+        mappedControls = this.mapControls(existingProfile, processedXCCDF);
 
         // Iterate through each mapped control
         // key = new control, controls[key] = old control
@@ -336,7 +348,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // const controls + path.sep + basename(controlsDir)
         // logger.info('  Updating controls with new control number')
         this.logThis('  Updating controls with new control number', 'info');
-        printCyan('Updating Controls ===========================================================================');
+        log.info('Updating Controls ===========================================================================');
 
         // We need to update controls that a mapping were found executing the mapControls method.
         // This is needed because when we re-generate the new profile summary we need the controls
@@ -350,16 +362,16 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           const sourceControlFile = path.join(controlsDir, `${value}.rb`);
           const mappedControlFile = path.join(mappedDir, `${value}.rb`);
 
-          printYellowGreen('Mapping (From --> To): ', `${value} --> ${key}`);
+          log.info(`${'Mapping (From --> To): '}  ${`${value} --> ${key}`}`);
 
           let lines;
           if (fs.existsSync(sourceControlFile)) {
             lines = fs.readFileSync(sourceControlFile, 'utf8').split('\n');
           } else {
-            printBgRedRed('    File not found at:', ` ${sourceControlFile}\n`);
-            printRed('╔═══════════════════════════════════════════════════════════════════════════════╗');
-            printRed('║ Make sure the appropriate Input execution/profile JSON file is being used (-J)║');
-            printRed('╚═══════════════════════════════════════════════════════════════════════════════╝');
+            log.error(`${'    File not found at:'}  ${` ${sourceControlFile}\n`}`);
+            log.error('╔═══════════════════════════════════════════════════════════════════════════════╗');
+            log.error('║ Make sure the appropriate Input execution/profile JSON file is being used (-J)║');
+            log.error('╚═══════════════════════════════════════════════════════════════════════════════╝');
             return;
           }
 
@@ -367,28 +379,28 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // and the controls were properly updated to the proper control number and name.
           if (value === key) {
             // The controls are up to date with the xccdf
-            printYellowGreen('   Control is Current: ', `${sourceShortControlFile}`);
+            log.info(`${'   Control is Current: '}  ${`${sourceShortControlFile}`}`);
             // Saved processed control to the 'mapped_controls' directory
-            printYellowGreen('    Processed control: ', `${mappedShortControlFile}\n`);
+            log.info(`${'    Processed control: '}  ${`${mappedShortControlFile}\n`}`);
             fs.writeFileSync(mappedControlFile, lines.join('\n'));
           } else {
-            printYellowGreen('   Processing control: ', `${sourceShortControlFile}`);
+            log.info(`${'   Processing control: '}  ${`${sourceShortControlFile}`}`);
             // Find the line with the control name and replace it with the new control name
             // single or double quotes are used on this line, check for both
             // Template literals (`${value}`) must be used with dynamically created regular expression (RegExp() not / ... /)
             const controlLineIndex = lines.findIndex(line => new RegExp(`control ['"]${value}['"] do`).test(line));
             if (controlLineIndex === -1) {
-              printBgRedRed('    Control not found:', ` ${sourceControlFile}\n`);
+              log.error(`${'    Control not found:'}  ${` ${sourceControlFile}\n`}`);
             } else {
               lines[controlLineIndex] = lines[controlLineIndex].replace(new RegExp(`control ['"]${value}['"] do`), `control '${key}' do`);
 
               // Saved processed control to the 'mapped_controls' directory
-              printYellowGreen('    Processed control: ', `${mappedShortControlFile}`);
+              log.info(`${'    Processed control: '}  ${`${mappedShortControlFile}`}`);
               fs.writeFileSync(mappedControlFile, lines.join('\n'));
 
               // TODO: Maybe copy files from the source directory and rename for duplicates and to preserve source files // skipcq: JS-0099
-              printYellowGreen('  Mapped control file: ', `${sourceShortControlFile} to reference ID ${key}`);
-              printYellowBgGreen('     New control name: ', `${key}.rb\n`);
+              log.info(`${'  Mapped control file: '}  ${`${sourceShortControlFile} to reference ID ${key}`}`);
+              log.info(`${'     New control name: '}  ${`${key}.rb\n`}`);
             }
           }
         }
@@ -399,8 +411,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // Get the directory name without the trailing "controls" directory
           // Here we are using the newly updated (mapped) controls
           // const profileDir = path.dirname(controlsDir)
-          const inspecJsonFileNew = execSync(`cinc-auditor json '${path.dirname(mappedDir)}'`, { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
-          // const inspecJsonFileNew = execSync(`cinc-auditor json '${mappedDir}'`, {encoding: 'utf8', maxBuffer: 50 * 1024 * 1024})
+          const inspecJsonFileNew = execFileSync(resolveCincAuditor(), ['json', path.dirname(mappedDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
 
           // Replace existing profile (inputted JSON of source profile to be mapped)
           // Allow delta to take care of the rest
@@ -523,16 +534,31 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             //       method from inspect-objects
             const newControl = updateControl(existingProfile.controls[index], control, thisLogger);
             this.logThis(`Writing updated control with code block for: ${control.id}.`, 'info');
-            fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${basename(control.id)}.rb`), newControl.toRuby(processLogLevel));
+            // `basename(control.id)` strips path separators; `resolveSafeChild`
+            // rejects symlink traversal on the `controls/` subdirectory.
+            fs.writeFileSync(
+              resolveSafeChild(outputProfileFolderPath, 'controls', `${basename(control.id)}.rb`),
+              newControl.toRuby(processLogLevel),
+            );
           } else {
             // We didn't find a mapping for this control - Old style of updating controls
             this.logThis(`Writing new control without code block for: ${control.id}.`, 'info');
-            fs.writeFileSync(path.join(outputProfileFolderPath, 'controls', `${basename(control.id)}.rb`), control.toRuby(processLogLevel));
+            fs.writeFileSync(
+              resolveSafeChild(outputProfileFolderPath, 'controls', `${basename(control.id)}.rb`),
+              control.toRuby(processLogLevel),
+            );
           }
         }
 
         this.logThis(`  Writing delta file for ${existingProfile.title}`, 'info');
-        fs.writeFileSync(path.join(outputProfileFolderPath, 'delta.json'), JSON.stringify(updatedResult.diff, null, 2));
+        const deltaJsonPayload = buildDeltaJsonPayload({
+          diff: updatedResult.diff as DeltaDiff,
+          links: GenerateDelta.links,
+        });
+        fs.writeFileSync(
+          resolveSafeChild(outputProfileFolderPath, 'delta.json'),
+          JSON.stringify(deltaJsonPayload, null, 2),
+        );
 
         if (reportFile) {
           // logger.debug('  Writing report markdown file')
@@ -546,11 +572,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               + `     Total Controls Found on XCCDF: ${GenerateDelta.newControlsLength}\n`
               + `                    Match Controls: ${GenerateDelta.match}\n`
               + `        Possible Mismatch Controls: ${GenerateDelta.posMisMatch}\n`
-              + `          Duplicate Match Controls: ${GenerateDelta.dupMatch}\n`
+              + `            Related Match Controls: ${GenerateDelta.dupMatch}\n`
               + `                 No Match Controls: ${GenerateDelta.noMatch}\n`
-              + `                New XCDDF Controls: ${GenerateDelta.newXccdfControl}\n\n`
+              + `                New XCCDF Controls: ${GenerateDelta.newXccdfControl}\n\n`
               + 'Statistics Validation ------------------------------------------\n'
-              + `Match + Mismatch = Total Mapped Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}\n`
+              + `Match + Mismatch + Related = Total Mapped Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}\n`
               + `  Total Processed = Total XCCDF Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`
               + updatedResult.markdown;
             fs.writeFileSync(markDownFile, reportData);
@@ -560,12 +586,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         }
 
         // Print the process output report to current directory
-        addToProcessLogData('Update Results ===========================================================================\n');
-        addToProcessLogData(updatedResult.markdown);
-        await sleep(2000).then(() => printGreen('\nDelta Process completed successfully\n'));
-        saveProcessLogData();
+        log.info('Update Results ===========================================================================\n');
+        log.info(updatedResult.markdown);
+        await sleep(2000).then(() => log.info('\nDelta Process completed successfully\n'));
       } else {
-        printRed('\nDelta Process failed\n');
+        log.error('\nDelta Process failed\n');
         saveLogs(
           `  ERROR: The updateProfileUsingXCCDF process failed to provide updated profiles, received: ${updatedResult}.`);
         await sleep(2000).then(() => process.exit(1));
@@ -573,12 +598,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     } else {
       if (!existingProfile) {
         this.logThis('  ERROR: Could not generate delta because the existingProfile variable was not satisfied.', 'error');
-        printRed('\nDelta Process failed\n');
+        log.error('\nDelta Process failed\n');
       }
 
       if (!xccdfContent) {
         this.logThis('  ERROR: Could not generate delta because the xccdfContent variable was not satisfied.', 'error');
-        printRed('\nDelta Process failed\n');
+        log.error('\nDelta Process failed\n');
       }
     }
   }
@@ -602,171 +627,181 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   //
   // @param oldProfile - The profile containing the old controls.
   // @param newProfile - The profile containing the new controls.
-  async mapControls(oldProfile: Profile, newProfile: Profile): Promise<object> {
-    /*
-    If a control isn't found to have a match at all, then req is missing or has been dropped
-    Delta *should* be removing it automatically
-    */
+  mapControls(oldProfile: Profile, newProfile: Profile): object {
+    // Requirement-first pipeline (see src/utils/delta_matching.ts):
+    //   Tier 1  Exact SRG-OS block with single old candidate     -> deterministic accept
+    //   Tier 2  Multiple old candidates in the SRG block         -> CCI Jaccard tiebreak
+    //   Tier 3  No SRG overlap                                   -> Fuse fallback with
+    //                                                              auto-detected vendor-
+    //                                                              prefix stripping and
+    //                                                              keys=['title','gtitle']
+    //
+    // 1:N splits (multiple new controls resolving to the same old) are
+    // preserved as primary + related links. Both land in the returned
+    // controlMappings so downstream file-writing copies the old Ruby
+    // body to every new control that shares the requirement.
+    //
+    // Existing static counters on GenerateDelta are reused to keep the
+    // summary output format stable; `dupMatch` is repurposed to count
+    // `related` links (it used to count rejected duplicates in the
+    // former 1:1 model).
     const oldControls: Control[] = oldProfile.controls;
     const newControls: Control[] = newProfile.controls;
     GenerateDelta.oldControlsLength = oldControls.length;
     GenerateDelta.newControlsLength = newControls.length;
 
-    const fuseOptions = {
-      // isCaseSensitive: false,
-      includeScore: true,
-      shouldSort: true,
-      includeMatches: true,
-      // findAllMatches: false,
-      // minMatchCharLength: 1,
-      // location: 0,
-      // A threshold of 0.0 requires a perfect match (of both letters and location),
-      //   threshold of 1.0 would match anything
-      threshold: 0.4,
-      // distance: 100,
-      // useExtendedSearch: false,
-
-      // text / character movements are inherent when text is changed
-      ignoreLocation: true,
-      // puts weight on length of field, skews results since often text is expanded in revisions
-      ignoreFieldNorm: true,
-      // fieldNormWeight: 1,
-      keys: ['title'],
-    };
     const controlMappings: Record<string, string> = {};
 
-    printCyan('Mapping Process ===========================================================================');
-    // Create fuse object for searching through matchList
-    const fuse = await new Fuse(oldControls, fuseOptions);
+    log.info('Mapping Process ===========================================================================');
+    log.info('Using requirement-first pipeline: SRG-ID blocking + CCI Jaccard tiebreak + vendor-prefix-normalized Fuse fallback\n');
 
-    // Map that holds processed controls and their scores
-    // Need to check if a control is process multiple-times and determine which
-    // control has the lower score
-    const controlIdToScoreMap = new Map();
-    for (const newControl of newControls) {
-      // Ensure the newControl.id is a string and has no leading or trailing slashes
-      const newControlId = basename(newControl.id);
+    const links = applyRequirementFirstPipeline(oldProfile, newProfile);
+    GenerateDelta.links = links;
 
-      // Check for existence of title, remove non-displayed characters
-      // TODO: Determine whether removing symbols other than non-displayed characters is helpful // skipcq: JS-0099
-      // words separated by newlines don't have spaces between them
-      if (newControl.title) {
-        // Regex: [\w\s]     -> match word characters and whitespace
-        //        [\r\t\f\v] -> carriage return, tab, form feed and vertical tab
-        const result = fuse.search(newControl.title.replaceAll(/[^\w\s]|[\r\t\f\v]/g, '').replaceAll('\n', ''));
-        if (isEmpty(result)) {
-          printYellowGreen('     New XCCDF Control:', ` ${newControlId}`);
-          printBgYellow('* No Mapping Provided *\n');
-          GenerateDelta.newXccdfControl++;
-          continue;
-        }
+    // Cheap lookup tables for per-link logging
+    const oldById = new Map(oldControls.map(c => [c.id, c]));
+    const newByBasename = new Map(
+      newControls.map(c => [basename(c.id), c]),
+    );
 
-        printYellowBgGreen('Processing New Control: ', `${newControlId}`);
-        printYellowBgGreen('     New Control Title: ', `${this.updateTitle(newControl.title)}`);
+    for (const link of links) {
+      const newId = basename(link.newId);
+      const oldCtl = link.oldId ? oldById.get(link.oldId) : undefined;
+      const newCtl = newByBasename.get(newId);
 
-        if (result[0]?.score && result[0].score < 0.3) { // skipcq: JS-W1044
-          if (controlIdToScoreMap.has(result[0].item.id)) {
-            const score = controlIdToScoreMap.get(result[0].item.id);
-
-            if (result[0].score < score) {
-              controlIdToScoreMap.set(result[0].item.id, result[0].score);
-            } else {
-              printBgMagentaRed('     Old Control Title:', ` ${this.updateTitle(result[0].item.title)}`);
-              printBgMagentaRed('       Duplicate Match:', ` ${result[0].item.id} --> ${newControlId}`);
-              printBgMagentaRed('        Matching Score:', ` ${result[0].score}\n`);
-              GenerateDelta.dupMatch++;
-              continue;
-            }
-          }
-
-          if (typeof newControlId === 'string'
-            && typeof result[0].item.id === 'string') {
-            // Check non displayed characters of title
-            printYellowGreen('     Old Control Title: ', `${this.updateTitle(result[0].item.title)}`);
-            // NOTE: We determined that 0.1 needs to be reviewed due to possible
-            // words exchange that could alter the entire meaning of the title.
-
-            if (result[0].score > 0.1) {
-              // TODO: modify output report or logger to show potential mismatches // skipcq: JS-0099
-              // alternatively: add a match decision feature for high-scoring results
-              printBgRed('** Potential Mismatch **');
-              GenerateDelta.posMisMatch++;
-            } else {
-              GenerateDelta.match++;
-            }
-
-            printYellowGreen('  Best Match Candidate: ', `${result[0].item.id} --> ${newControlId}`);
-            printYellowGreen('        Matching Score: ', `${result[0].score}\n`);
-
-            // Check if we have added an entry for the old control being processed
-            // The result[0].item.id is the old control id
-            for (const key of Object.keys(controlMappings)) {
-              if (controlMappings[key] === result[0].item.id) {
-                delete controlMappings[key];
-                // Lets now check if this entry was previously processed
-                if (controlIdToScoreMap.has(result[0].item.id)) {
-                  const score = controlIdToScoreMap.get(result[0].item.id);
-                  if (score > 0.1) {
-                    GenerateDelta.posMisMatch--;
-                  } else {
-                    GenerateDelta.match--;
-                  }
-                  GenerateDelta.noMatch++;
-                }
-                break;
-              }
-            }
-            controlMappings[newControlId] = result[0].item.id;
-            controlIdToScoreMap.set(result[0].item.id, result[0].score);
-          }
-        } else {
-          printBgRedRed('     Old Control Title:', ` ${this.updateTitle(result[0].item.title)}`);
-          printBgRedRed('    No Match Found for:', ` ${result[0].item.id} --> ${newControlId}`);
-          printBgRedRed('        Matching Score:', ` ${result[0].score} \n`);
-          GenerateDelta.noMatch++;
-        }
+      // `none` links and (defensively) any link missing oldId are no-op
+      // for body-copying purposes.
+      if (link.matchMethod === 'none' || link.oldId === null) {
+        log.info(`     New XCCDF Control:  ${newId}`);
+        log.error(
+          `    No Match Found for:  ${newId}${link.srg ? ` (SRG=${link.srg})` : ''}\n`,
+        );
+        GenerateDelta.noMatch++;
+        continue;
       }
+
+      // Every non-none link resolves to an old control and goes into the
+      // returned map. Primary and related both need the old Ruby body.
+      controlMappings[newId] = link.oldId;
+
+      log.info(`Processing New Control:  ${newId}`);
+      if (newCtl?.title) {
+        log.info(`     New Control Title:  ${this.updateTitle(newCtl.title)}`);
+      }
+      if (oldCtl?.title) {
+        log.info(`     Old Control Title:  ${this.updateTitle(oldCtl.title)}`);
+      }
+
+      GenerateDelta.logMatchMethod(log, link);
+      GenerateDelta.tickMatchCounter(link);
+
+      log.info(`  Best Match Candidate:  ${link.oldId} --> ${newId}\n`);
     }
 
-    printCyan('Mapping Results ===========================================================================');
-    printYellow('\tOld Control -> New Control');
+    log.info('Mapping Results ===========================================================================');
+    log.info('\tOld Control -> New Control');
     for (const [key, value] of Object.entries(controlMappings)) {
-      printGreen(`\t   ${value} -> ${key}`);
+      log.info(`\t   ${value} -> ${key}`);
     }
 
     const totalMappedControls = Object.keys(controlMappings).length;
-    printYellowGreen('Total Mapped Controls: ', `${totalMappedControls}\n`);
+    log.info(`Total Mapped Controls:  ${totalMappedControls}\n`);
 
-    printCyan('Control Counts ===========================');
-    printYellowGreen('Total Controls Available for Delta: ', `${GenerateDelta.oldControlsLength}`);
-    printYellowGreen('     Total Controls Found on XCCDF: ', `${GenerateDelta.newControlsLength}\n`);
+    log.info('Control Counts ===========================');
+    log.info(`Total Controls Available for Delta:  ${GenerateDelta.oldControlsLength}`);
+    log.info(`     Total Controls Found on XCCDF:  ${GenerateDelta.newControlsLength}\n`);
 
-    printCyan('Match Statistics =========================');
-    printYellowGreen('                    Match Controls: ', `${GenerateDelta.match}`);
-    printYellowGreen('        Possible Mismatch Controls: ', `${GenerateDelta.posMisMatch}`);
-    printYellowGreen('          Duplicate Match Controls: ', `${GenerateDelta.dupMatch}`);
-    printYellowGreen('                 No Match Controls: ', `${GenerateDelta.noMatch}`);
-    printYellowGreen('                New XCDDF Controls: ', `${GenerateDelta.newXccdfControl}\n`);
+    log.info('Match Statistics =========================');
+    log.info(`                    Match Controls:  ${GenerateDelta.match}`);
+    log.info(`        Possible Mismatch Controls:  ${GenerateDelta.posMisMatch}`);
+    log.info(`          Related Match Controls:  ${GenerateDelta.dupMatch}`);
+    log.info(`                 No Match Controls:  ${GenerateDelta.noMatch}`);
+    log.info(`                New XCCDF Controls:  ${GenerateDelta.newXccdfControl}\n`);
 
-    printCyan('Statistics Validation =============================================');
-    printYellowGreen('Match + Mismatch = Total Mapped Controls: ', `${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}`);
-    printYellowGreen('  Total Processed = Total XCCDF Controls: ', `${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`);
+    log.info('Statistics Validation =============================================');
+    log.info(`Match + Mismatch + Related = Total Mapped:  ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}`);
+    log.info(`  Total Processed = Total XCCDF Controls:  ${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`);
 
     return controlMappings;
   }
 
+  /**
+   * Emit the per-link match-method log line. Kept separate from
+   * tickMatchCounter so the output format can evolve independently of
+   * the stats bookkeeping.
+   */
+  private static logMatchMethod(log: Logger, link: LinkRecord): void {
+    const confidencePct = (link.confidence * 100).toFixed(0) + '%';
+    switch (link.matchMethod) {
+      case 'srg-deterministic': {
+        log.info(
+          `       Match method:  SRG deterministic (${link.srg}) [${link.relationship}]`,
+        );
+        break;
+      }
+      case 'srg-cci-tiebreak': {
+        log.info(
+          `       Match method:  SRG block + CCI tiebreak (Jaccard=${confidencePct}) [${link.relationship}]`,
+        );
+        break;
+      }
+      case 'fuse-fallback': {
+        log.info(
+          `       Match method:  Fuse title-fuzzy (no SRG overlap, confidence=${confidencePct}) [${link.relationship}]`,
+        );
+        break;
+      }
+      default: {
+        // 'none' or any future MatchMethod: emit nothing here; the
+        // caller is expected to handle no-match logging separately.
+        break;
+      }
+    }
+    if (link.potentialMismatch) {
+      log.warn('** Potential Mismatch **');
+    }
+  }
+
+  /**
+   * Advance the GenerateDelta static counters for a single link so the
+   * end-of-run stats match reality.
+   *
+   *   match        -> primary link, high confidence
+   *   posMisMatch  -> primary link, lower confidence (still accepted)
+   *   dupMatch     -> related link (shares old body with an earlier primary)
+   */
+  private static tickMatchCounter(link: LinkRecord): void {
+    if (link.relationship === 'related') {
+      GenerateDelta.dupMatch++;
+      return;
+    }
+    // `potentialMismatch` is the single source of truth for "accepted
+    // primary but below the tier's strong-confidence threshold" — see
+    // computePotentialMismatch + TIER{2,3}_MISMATCH_THRESHOLD in
+    // delta_matching.ts. Reading the flag here keeps stats bookkeeping
+    // aligned with the tier definitions automatically.
+    if (link.potentialMismatch) {
+      GenerateDelta.posMisMatch++;
+    } else {
+      GenerateDelta.match++;
+    }
+  }
+
   getMappedStatisticsValidation(totalMappedControls: number, statValidation: string): string {
+    // In the requirement-first pipeline `dupMatch` counts `related` links,
+    // which ARE included in controlMappings (they share a body with a
+    // primary). `newXccdfControl` is kept at 0 because the new pipeline
+    // doesn't have a distinct "no Fuse candidate" bucket — those fall
+    // into `noMatch`.
     const match = GenerateDelta.match;
     const misMatch = GenerateDelta.posMisMatch;
-    const statMach = ((match + misMatch) === totalMappedControls);
-    const dupMatch = GenerateDelta.dupMatch;
+    const related = GenerateDelta.dupMatch;
     const noMatch = GenerateDelta.noMatch;
-    const newXccdfControl = GenerateDelta.newXccdfControl;
-    const statTotalMatch = ((totalMappedControls + dupMatch + noMatch + newXccdfControl) === GenerateDelta.newControlsLength);
-
+    const statMappedMatches = (match + misMatch + related) === totalMappedControls;
+    const statProcessedTotal = (totalMappedControls + noMatch) === GenerateDelta.newControlsLength;
     return statValidation === 'totalMapped'
-      ? `(${match}+${misMatch}=${totalMappedControls}) ${statMach}`
-      : `(${match}+${misMatch}+${dupMatch}+${noMatch}+${newXccdfControl}=${GenerateDelta.newControlsLength}) ${statTotalMatch}`;
+      ? `(${match}+${misMatch}+${related}=${totalMappedControls}) ${statMappedMatches}`
+      : `(${totalMappedControls}+${noMatch}=${GenerateDelta.newControlsLength}) ${statProcessedTotal}`;
   }
 
   requiredFlagsProvided(flags: any): boolean { // skipcq: JS-0105
@@ -784,17 +819,17 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         if (rbFiles.length > 0) {
           missingFlags = false;
         } else {
-          strMsg += colors.dim(`  No Controls found in directory: ${flags.controlsDir}\n`);
+          strMsg += `  No Controls found in directory: ${flags.controlsDir}\n`;
           missingFlags = true;
         }
       } else {
-        strMsg += colors.dim(`  Profile Controls directory does not exist: ${flags.controlsDir}\n`);
+        strMsg += `  Profile Controls directory does not exist: ${flags.controlsDir}\n`;
         missingFlags = true;
       }
     }
 
     if (!flags.deltaOutputDir) {
-      strMsg += colors.dim('  Missing required flag deltaOutputDir\n');
+      strMsg += '  Missing required flag deltaOutputDir\n';
       missingFlags = true;
     }
 
@@ -934,22 +969,22 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     switch (logLevel) {
       case 'info': {
         GenerateDelta.logger.info(logMsg);
-        addToProcessLogData(logMsg);
+        log.info(logMsg);
         break;
       }
       case 'debug': {
         GenerateDelta.logger.debug(logMsg);
-        addToProcessLogData(logMsg);
+        log.info(logMsg);
         break;
       }
       case 'error': {
         GenerateDelta.logger.error(logMsg);
-        addToProcessLogData(logMsg);
+        log.error(logMsg);
         break;
       }
       default: {
         GenerateDelta.logger.warn(logMsg);
-        addToProcessLogData(logMsg);
+        log.warn(logMsg);
         break;
       }
     }
@@ -1013,19 +1048,19 @@ async function getFlags(): Promise<any> {
   // Variable used to store the prompts (question and answers)
   const interactiveValues: Record<string, any> = {};
 
-  printYellow('Provide the necessary information:');
-  printGreen('  Required flag - The XCCDF XML file or URL containing the new guidance - in the form of .xml file');
-  printGreen('  Required flag - Controls directory (path to the profile controls to apply the delta process)');
-  printGreen('  Required flag - The output folder for the updated profile (will contain the controls that delta was applied too)');
+  log.info('Provide the necessary information:');
+  log.info('  Required flag - The XCCDF XML file or URL containing the new guidance - in the form of .xml file');
+  log.info('  Required flag - Controls directory (path to the profile controls to apply the delta process)');
+  log.info('  Required flag - The output folder for the updated profile (will contain the controls that delta was applied too)');
 
-  printMagenta('  Optional flag - InSpec Profiles JSON summary file (JSON) - auto-generated if not provided');
-  printMagenta('  Optional flag - The OVAL XML file containing definitions used in the new guidance - in the form of .xml file');
-  printMagenta('  Optional flag - Output markdown report file - must have an extension of .md');
-  printMagenta('  Optional flag - Control ID Types: [\'rule\', \'group\', \'cis\', \'version\']');
-  printMagenta('  Optional flag - Run the approximate string matching process');
-  printMagenta('  Optional flag - The InSpec profile directory containing the controls being updated (controls Delta is processing)\n');
+  log.info('  Optional flag - InSpec Profiles JSON summary file (JSON) - auto-generated if not provided');
+  log.info('  Optional flag - The OVAL XML file containing definitions used in the new guidance - in the form of .xml file');
+  log.info('  Optional flag - Output markdown report file - must have an extension of .md');
+  log.info('  Optional flag - Control ID Types: [\'rule\', \'group\', \'cis\', \'version\']');
+  log.info('  Optional flag - Run the approximate string matching process');
+  log.info('  Optional flag - The InSpec profile directory containing the controls being updated (controls Delta is processing)\n');
 
-  addToProcessLogData('Process Flags ===========================================');
+  log.info('Process Flags ===========================================');
 
   // Check what XCCDF to use (File or URL)
   const xccdfType = await select({
@@ -1050,7 +1085,7 @@ async function getFlags(): Promise<any> {
       theme: fileSelectorTheme,
     });
 
-    addToProcessLogData('xccdfXmlFile=' + xccdfXmlFile);
+    log.info('xccdfXmlFile=' + xccdfXmlFile);
     interactiveValues.xccdfTye = 'file';
     interactiveValues.ovalXmlFile = xccdfXmlFile;
   } else {
@@ -1064,7 +1099,7 @@ async function getFlags(): Promise<any> {
       },
     });
 
-    addToProcessLogData('xccdfUrl=' + xccdfUrl);
+    log.info('xccdfUrl=' + xccdfUrl);
     interactiveValues.xccdfTye = 'url';
     interactiveValues.xccdfUrl = xccdfUrl;
   }
@@ -1091,10 +1126,10 @@ async function getFlags(): Promise<any> {
       theme: fileSelectorTheme,
     });
 
-    addToProcessLogData('inspecJsonFile=' + inspecJsonFile);
+    log.info('inspecJsonFile=' + inspecJsonFile);
     interactiveValues.inspecJsonFile = inspecJsonFile;
   } else {
-    addToProcessLogData('inspecJsonFile=auto-generated');
+    log.info('inspecJsonFile=auto-generated');
     interactiveValues.inspecJsonFile = '';
   }
 
@@ -1111,11 +1146,11 @@ async function getFlags(): Promise<any> {
       theme: fileSelectorTheme,
     });
 
-    addToProcessLogData('runMapControls=true');
+    log.info('runMapControls=true');
     interactiveValues.controlsDir = controlsDir;
     interactiveValues.runMapControls = useFuzzyLogic;
   } else {
-    addToProcessLogData('runMapControls=false');
+    log.info('runMapControls=false');
     interactiveValues.runMapControls = false;
   }
 
@@ -1130,7 +1165,7 @@ async function getFlags(): Promise<any> {
     theme: fileSelectorTheme,
   });
 
-  addToProcessLogData('deltaOutputDir=' + deltaOutputDir);
+  log.info('deltaOutputDir=' + deltaOutputDir);
   interactiveValues.deltaOutputDir = deltaOutputDir;
 
   // Optional - OVAL file Flag
@@ -1148,10 +1183,10 @@ async function getFlags(): Promise<any> {
       theme: fileSelectorTheme,
     });
 
-    addToProcessLogData('useOvalFile=true');
+    log.info('useOvalFile=true');
     interactiveValues.ovalXmlFile = ovalXmlFile;
   } else {
-    addToProcessLogData('useOvalFile=false');
+    log.info('useOvalFile=false');
   }
 
   // Optional - Generate markdown report from Inspect-objects process
@@ -1173,16 +1208,16 @@ async function getFlags(): Promise<any> {
       }),
     };
 
-    addToProcessLogData('generateReport=true');
+    log.info('generateReport=true');
 
     for (const [tagName, answerValue] of Object.entries(answers)) {
       if (answerValue !== null) {
-        addToProcessLogData(`${tagName}=${answerValue}`);
+        log.info(`${tagName}=${answerValue}`);
         interactiveValues[tagName] = answerValue;
       }
     }
   } else {
-    addToProcessLogData('generateReport=false');
+    log.info('generateReport=false');
   }
 
   // Optional - Select what group Id to process the controls and Log Level
@@ -1211,7 +1246,7 @@ async function getFlags(): Promise<any> {
 
   for (const [tagName, answerValue] of Object.entries(answers)) {
     if (answerValue !== null) {
-      addToProcessLogData(`${tagName}=${answerValue}`);
+      log.info(`${tagName}=${answerValue}`);
       interactiveValues[tagName] = answerValue;
     }
   }
@@ -1252,14 +1287,14 @@ function isXccdfFile(xccdfXmlFile: string): boolean {
         } else {
           const err = `  ERROR: Unable to load ${xccdfXmlFile} as a valid XCCDF`;
           GenerateDelta.logger.error(err);
-          addToProcessLogData(err);
+          log.info(err);
           isXccdf = false;
         }
       }
     } else {
       const err = 'No benchmark (XCCDF) file/packages (.xml or .zip) was provided.';
       GenerateDelta.logger.error(err);
-      addToProcessLogData(err);
+      log.info(err);
       isXccdf = false;
     }
   } catch (error: unknown) {
@@ -1268,16 +1303,16 @@ function isXccdfFile(xccdfXmlFile: string): boolean {
       if (errorCode === 'ENOENT') {
         const err = `  ERROR: File not found: ${xccdfXmlFile}. Run the --help command for more information on expected input files.`;
         GenerateDelta.logger.error(err);
-        addToProcessLogData(err);
+        log.info(err);
       } else {
         const err = `  ERROR: Unable to process the XCCDF XML file ${xccdfXmlFile} because: ${error.message}`;
         GenerateDelta.logger.error(err);
-        addToProcessLogData(err);
+        log.info(err);
       }
     } else {
       const err = `ERROR: An unexpected error occurred: ${getErrorMessage(error)}`;
       GenerateDelta.logger.error(err);
-      addToProcessLogData(err);
+      log.info(err);
     }
     isXccdf = false;
   }
@@ -1288,10 +1323,8 @@ function saveLogs(errorMsg: string) {
   const strArray = errorMsg.split('\n');
   for (const error of strArray) {
     GenerateDelta.logger.error(error);
-    addToProcessLogData(error.trim());
+    log.info(error.trim());
   }
-
-  saveProcessLogData();
 }
 
 function sleep(ms: number) {

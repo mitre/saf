@@ -1,0 +1,92 @@
+{
+  "controls": [
+    {
+      "id": "SV-273801",
+      "title": "Amazon Linux 2023 passwords must be at least 15 characters in length.",
+      "tags": {
+        "gtitle": "SRG-OS-PW-MIN",
+        "cci": ["CCI-000205"]
+      }
+    },
+    {
+      "id": "SV-273802",
+      "title": "Amazon Linux 2023 passwords must be at least 15 characters — enforce at password change.",
+      "tags": {
+        "gtitle": "SRG-OS-PW-MIN",
+        "cci": ["CCI-000205"]
+      }
+    },
+    {
+      "id": "SV-273803",
+      "title": "Amazon Linux 2023 passwords must require at least one uppercase character.",
+      "tags": {
+        "gtitle": "SRG-OS-PW-COMPLEX",
+        "cci": ["CCI-000194"]
+      }
+    },
+    {
+      "id": "SV-273804",
+      "title": "Amazon Linux 2023 audit system must log all sudo command executions.",
+      "tags": {
+        "gtitle": "SRG-OS-AUDIT-SUDO",
+        "cci": ["CCI-000169"]
+      }
+    },
+    {
+      "id": "SV-273805",
+      "title": "Amazon Linux 2023 firewall must deny all inbound connections by default.",
+      "tags": {
+        "gtitle": "SRG-OS-FW-INBOUND",
+        "cci": ["CCI-000366"]
+      }
+    },
+    {
+      "id": "SV-273806",
+      "title": "Amazon Linux 2023 must disable the USB mass storage driver.",
+      "tags": {
+        "gtitle": "SRG-OS-USB",
+        "cci": ["CCI-000213"]
+      }
+    },
+    {
+      "id": "SV-273807",
+      "title": "Amazon Linux 2023 must be a vendor-supported release.",
+      "tags": {
+        "gtitle": "SRG-OS-VER-AL2023",
+        "cci": ["CCI-000366"]
+      }
+    },
+    {
+      "id": "SV-273900",
+      "title": "Amazon Linux 2023 must use FIPS 140-3 approved cryptography for system services.",
+      "tags": {
+        "gtitle": "SRG-OS-CRYPTO",
+        "cci": ["CCI-000803"]
+      }
+    },
+    {
+      "id": "SV-273901",
+      "title": "Amazon Linux 2023 must disable SSH MAC algorithms not approved by FIPS 140-3.",
+      "tags": {
+        "gtitle": "SRG-OS-CRYPTO",
+        "cci": ["CCI-002450"]
+      }
+    },
+    {
+      "id": "SV-273902",
+      "title": "Amazon Linux 2023 must use post-quantum key encapsulation for TLS sessions.",
+      "tags": {
+        "gtitle": "SRG-OS-CRYPTO",
+        "cci": ["CCI-999999"]
+      }
+    },
+    {
+      "id": "SV-273999",
+      "title": "Amazon Linux 2023 must manage excess capacity, bandwidth, or other redundancy to limit the effects of denial-of-service attacks.",
+      "tags": {
+        "gtitle": "SRG-OS-DOS-AL2023-NOVEL",
+        "cci": ["CCI-888888"]
+      }
+    }
+  ]
+}

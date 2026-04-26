@@ -1,0 +1,76 @@
+{
+  "controls": [
+    {
+      "id": "SV-257780",
+      "title": "RHEL 9 passwords must be at least 15 characters in length.",
+      "tags": {
+        "gtitle": "SRG-OS-PW-MIN",
+        "cci": ["CCI-000205"]
+      }
+    },
+    {
+      "id": "SV-257781",
+      "title": "RHEL 9 passwords must require at least one uppercase character.",
+      "tags": {
+        "gtitle": "SRG-OS-PW-COMPLEX",
+        "cci": ["CCI-000194"]
+      }
+    },
+    {
+      "id": "SV-257850",
+      "title": "RHEL 9 audit system must log all sudo command executions.",
+      "tags": {
+        "gtitle": "SRG-OS-AUDIT-SUDO",
+        "cci": ["CCI-000169"]
+      }
+    },
+    {
+      "id": "SV-257860",
+      "title": "RHEL 9 firewall must deny all inbound connections by default.",
+      "tags": {
+        "gtitle": "SRG-OS-FW-INBOUND",
+        "cci": ["CCI-000366"]
+      }
+    },
+    {
+      "id": "SV-257870",
+      "title": "RHEL 9 must disable the USB mass storage driver.",
+      "tags": {
+        "gtitle": "SRG-OS-USB",
+        "cci": ["CCI-000213"]
+      }
+    },
+    {
+      "id": "SV-257880",
+      "title": "RHEL 9 must be a vendor-supported release.",
+      "tags": {
+        "gtitle": "SRG-OS-VER-RHEL",
+        "cci": ["CCI-000366"]
+      }
+    },
+    {
+      "id": "SV-257900",
+      "title": "RHEL 9 must use FIPS 140-3 approved cryptography for system services.",
+      "tags": {
+        "gtitle": "SRG-OS-CRYPTO",
+        "cci": ["CCI-000803", "CCI-001199"]
+      }
+    },
+    {
+      "id": "SV-257901",
+      "title": "RHEL 9 must disable SSH MAC algorithms not approved by FIPS 140-3.",
+      "tags": {
+        "gtitle": "SRG-OS-CRYPTO",
+        "cci": ["CCI-002450"]
+      }
+    },
+    {
+      "id": "SV-257902",
+      "title": "RHEL 9 must disable SSH key exchange algorithms not approved by FIPS 140-3.",
+      "tags": {
+        "gtitle": "SRG-OS-CRYPTO",
+        "cci": ["CCI-002460"]
+      }
+    }
+  ]
+}

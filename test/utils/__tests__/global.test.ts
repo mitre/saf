@@ -1,7 +1,8 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import type { ExecJSON, ContextualizedEvaluation } from 'inspecjs';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   basename,
   checkSuffix,
@@ -9,6 +10,7 @@ import {
   extractValueViaPathOrNumber,
   dataURLtoU8Array,
   getDescription, arrayNeededPaths,
+  resolveSafeChild,
 } from '../../../src/utils/global';
 
 const UTF8_ENCODING = 'utf8';
@@ -390,5 +392,59 @@ describe.sequential('checkInput', () => {
     const desiredFormat = 'txt';
 
     expect(() => checkInput(guessOptions, desiredType, desiredFormat)).toThrow();
+  });
+});
+
+describe('resolveSafeChild', () => {
+  let tmpBase = '';
+
+  beforeEach(() => {
+    tmpBase = fs.mkdtempSync(path.join(os.tmpdir(), 'saf-safe-child-'));
+  });
+
+  afterEach(() => {
+    if (tmpBase) {
+      fs.rmSync(tmpBase, { recursive: true, force: true });
+    }
+  });
+
+  it('resolves a simple child path under the base directory', () => {
+    const resolved = resolveSafeChild(tmpBase, 'delta.json');
+    expect(resolved).toBe(path.join(fs.realpathSync(tmpBase), 'delta.json'));
+  });
+
+  it('resolves a nested child when intermediate directories are normal', () => {
+    fs.mkdirSync(path.join(tmpBase, 'controls'));
+    const resolved = resolveSafeChild(tmpBase, 'controls', 'SV-1.rb');
+    expect(resolved).toBe(path.join(fs.realpathSync(tmpBase), 'controls', 'SV-1.rb'));
+  });
+
+  it('throws on `..` escape attempts', () => {
+    expect(() => resolveSafeChild(tmpBase, '..', 'escape.txt')).toThrow(
+      /outside output directory/,
+    );
+  });
+
+  it('throws when an intermediate directory is a symlink', () => {
+    const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'saf-outside-'));
+    const linkPath = path.join(tmpBase, 'controls');
+    // Defensive: beforeEach gives a fresh tmpBase, but some vitest test-file
+    // orderings appear to surface EEXIST on symlinkSync. Scrub first.
+    if (fs.existsSync(linkPath)) {
+      fs.rmSync(linkPath, { recursive: true, force: true });
+    }
+    try {
+      fs.symlinkSync(outside, linkPath);
+      expect(() => resolveSafeChild(tmpBase, 'controls', 'SV-1.rb')).toThrow(
+        /symlink/,
+      );
+    } finally {
+      fs.rmSync(outside, { recursive: true, force: true });
+    }
+  });
+
+  it('throws when baseDir does not exist', () => {
+    const nonexistent = path.join(tmpBase, 'does-not-exist');
+    expect(() => resolveSafeChild(nonexistent, 'x.txt')).toThrow();
   });
 });

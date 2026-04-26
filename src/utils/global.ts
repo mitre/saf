@@ -1,4 +1,6 @@
-import fs from 'fs';
+import { execFileSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 import { fingerprint, Assettype, INPUT_TYPES, Role, Techarea } from '@mitre/hdf-converters';
 import AdmZip from 'adm-zip';
 import appRootPath from 'app-root-path';
@@ -20,6 +22,45 @@ export function checkSuffix(input: string, suffix = '.json') {
 }
 
 /**
+ * Resolve the absolute path of the `cinc-auditor` executable, or throw with
+ * a clear error if it's not installed / not in PATH. Used by the
+ * `generate delta` + `generate update_controls4delta` flows so the
+ * downstream `execFileSync` call receives a fully-qualified path rather
+ * than a bare binary name (satisfies Sonar S4036 — don't trust $PATH
+ * resolution at the moment of spawn).
+ *
+ * Cross-platform: uses `where` on Windows and `which` on POSIX.
+ * Memoizes the result per-process so subsequent calls don't re-probe.
+ */
+let _cincAuditorPath: string | undefined;
+export function resolveCincAuditor(): string {
+  if (_cincAuditorPath !== undefined) {
+    return _cincAuditorPath;
+  }
+  const isWindows = process.platform === 'win32';
+  // `execFileSync` with a fixed lookup command + fixed arg ('cinc-auditor')
+  // — no user input reaches the subprocess. `which`/`where` is available
+  // on all supported platforms (POSIX which, Windows where).
+  try {
+    const result = execFileSync(
+      isWindows ? 'where' : 'which',
+      ['cinc-auditor'],
+      { encoding: 'utf8' },
+    ).toString().trim().split(/\r?\n/)[0];
+    if (!result) {
+      throw new Error('cinc-auditor not found on PATH');
+    }
+    _cincAuditorPath = result;
+    return result;
+  } catch (error: unknown) {
+    throw new Error(
+      'cinc-auditor executable not found. Install cinc-auditor (https://cinc.sh/start/auditor/) and ensure it is on PATH before running `saf generate delta` without a pre-generated -J profile summary.',
+      { cause: error },
+    );
+  }
+}
+
+/**
  * The `basename` function.
  *
  * This function returns the basename, i.e. the last value for a given path
@@ -32,6 +73,42 @@ export function checkSuffix(input: string, suffix = '.json') {
  *
  * @returns {string} - The filename extracted from the full path. If the path does not contain a filename, an empty string is returned.
  */
+/**
+ * Resolve a child path under `baseDir` after realpath-canonicalizing both,
+ * and assert the result stays inside `baseDir`. Rejects symlink traversal
+ * and `..` escapes. Throws if:
+ *   - `baseDir` does not exist,
+ *   - the resolved child escapes `baseDir`, or
+ *   - any path segment under `baseDir` (up to the file's parent) is a symlink.
+ *
+ * Use before `fs.writeFileSync` when the child path is influenced by user
+ * input (CLI flags, parsed XCCDF content, etc.). `fs.writeFileSync` itself
+ * follows symlinks, so containment alone is insufficient — callers should
+ * also ensure the file's parent directory is not a symlink (asserted here).
+ */
+export function resolveSafeChild(baseDir: string, ...parts: string[]): string {
+  const resolvedBase = fs.realpathSync(baseDir);
+  const target = path.resolve(resolvedBase, ...parts);
+  const rel = path.relative(resolvedBase, target);
+  if (rel.startsWith('..') || path.isAbsolute(rel)) {
+    throw new Error(
+      `Refusing to write outside output directory: ${target} is not inside ${resolvedBase}`,
+    );
+  }
+  // Walk from baseDir down to the file's parent; reject any symlink segment.
+  const parentDirParts = path.dirname(rel).split(path.sep).filter(Boolean);
+  let cursor = resolvedBase;
+  for (const segment of parentDirParts) {
+    cursor = path.join(cursor, segment);
+    if (fs.existsSync(cursor) && fs.lstatSync(cursor).isSymbolicLink()) {
+      throw new Error(
+        `Refusing to follow symlink under output directory: ${cursor}`,
+      );
+    }
+  }
+  return target;
+}
+
 export function basename(inputPath: string): string {
   // trim trailing whitespace and path separators
   // ('/'=linux or '\'=windows (note that this could be double backslash on occasion)) from the end of the string

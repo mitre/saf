@@ -1,3 +1,4 @@
+import fs from 'node:fs';
 import { contextualizeEvaluation, type ContextualizedControl, type ExecJSON } from 'inspecjs';
 import _ from 'lodash';
 import { createLogger, format, type transport, transports, type Logger } from 'winston';
@@ -44,6 +45,88 @@ const syslogColors = {
  * @param {string} [level='info'] - The log level. Default is 'info'.
  * @returns {Logger}              - A Winston logger.
  */
+
+/**
+ * createDeltaLogger creates a Winston logger purpose-built for user-facing
+ * CLI command output (as distinct from createWinstonLogger's diagnostic
+ * stream). It writes the literal message to both:
+ *
+ *   - stdout via a Console transport, colorized by log level using the
+ *     shared syslogColors scheme (info=cyan, warn=magenta, error=red).
+ *     No timestamp prefix — the output reads like the direct console.log
+ *     calls it replaces.
+ *   - the provided log file via a File transport, plain text (ANSI codes
+ *     are NOT written to the file; they're applied only in the console
+ *     transport's format chain).
+ *
+ * Replaces the legacy `colors` + `print*` wrapper + module-level
+ * `processLogData` buffer pattern in src/utils/oclif/cli_helper.ts.
+ */
+
+/**
+ * Wrap `createDeltaLogger` in a lazy Proxy so the File transport isn't
+ * opened until the first call-site reads a property (e.g. `log.info(...)`).
+ * oclif imports command modules to read their static metadata (flags,
+ * description) even for `saf --help`, so module-level
+ * `const log = createDeltaLogger(...)` used to touch the filesystem on
+ * every invocation regardless of whether the owning command was the one
+ * the user actually asked for.
+ */
+export function lazyDeltaLogger(
+  logFile: string,
+  options: { level?: string } = {},
+): Logger {
+  let instance: Logger | null = null;
+  return new Proxy({} as Logger, {
+    get(_target, prop, receiver) {
+      instance ??= createDeltaLogger(logFile, options);
+      const value = Reflect.get(instance, prop, receiver);
+      return typeof value === 'function' ? value.bind(instance) : value;
+    },
+  });
+}
+
+export function createDeltaLogger(
+  logFile: string,
+  options: { level?: string } = {},
+): Logger {
+  // Winston's File transport calls fs.createWriteStream which follows
+  // symlinks. A pre-existing `CliProcessOutput.log` planted as a symlink
+  // into a sensitive path would be appended to by every delta run. Refuse
+  // to open if the target already exists as a symlink.
+  if (fs.existsSync(logFile) && fs.lstatSync(logFile).isSymbolicLink()) {
+    throw new Error(
+      `Refusing to write to log file ${logFile}: path is a symlink`,
+    );
+  }
+
+  const colorizer = format.colorize({ colors: syslogColors });
+  const plainMessage = format.printf(info =>
+    typeof info.message === 'string'
+      ? info.message
+      : JSON.stringify(info.message),
+  );
+
+  return createLogger({
+    level: options.level ?? 'info',
+    transports: [
+      new transports.Console({
+        format: format.combine(
+          format(info => ({
+            ...info,
+            message: colorizer.colorize(info.level, info.message as string),
+          }))(),
+          plainMessage,
+        ),
+        handleExceptions: true,
+      }),
+      new transports.File({
+        filename: logFile,
+        format: plainMessage,
+      }),
+    ],
+  });
+}
 
 export function createWinstonLogger(module = 'SAF CLI', level = 'info'): Logger {
   const colorizer = format.colorize({ colors: syslogColors });
