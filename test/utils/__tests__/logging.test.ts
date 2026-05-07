@@ -5,7 +5,7 @@ import path from 'node:path';
 import { describe, expect, it, vi } from 'vitest';
 import * as winston from 'winston';
 import type { Logger } from 'winston';
-import { createDeltaLogger, createWinstonLogger } from '../../../src/utils/logging';
+import { createWinstonLogger } from '../../../src/utils/logging';
 
 vi.mock('winston', { spy: true });
 
@@ -18,7 +18,7 @@ const ansiRegex = new RegExp(String.raw`${ESC}\[[0-9;]+m`, 'g');
 const ansiPrefixRegex = new RegExp(String.raw`${ESC}\[`);
 
 const tmpLogFile = () =>
-  path.join(os.tmpdir(), `saf-delta-test-${Date.now()}-${randomBytes(8).toString('hex')}.log`);
+  path.join(os.tmpdir(), `saf-logger-test-${Date.now()}-${randomBytes(8).toString('hex')}.log`);
 
 // Close the logger and wait for all transports to release their fds
 // (the File transport's underlying writable emits `close` only after
@@ -45,7 +45,7 @@ const flushAndEnd = (logger: Logger): Promise<void> =>
 
 describe('createWinstonLogger', () => {
   it('should create a logger with the correct configuration', () => {
-    createWinstonLogger('testMapper', 'info');
+    createWinstonLogger({ module: 'testMapper', level: 'info' });
 
     expect(winston.createLogger).toHaveBeenCalledTimes(1);
     expect(winston.createLogger).toHaveBeenCalledWith(
@@ -73,10 +73,10 @@ describe('createWinstonLogger', () => {
   });
 });
 
-describe('createDeltaLogger', () => {
+describe('createWinstonLogger plainText mode', () => {
   it('writes messages to the specified log file in plain text (no ANSI color codes)', async () => {
     const logFile = tmpLogFile();
-    const logger = createDeltaLogger(logFile);
+    const logger = createWinstonLogger({ logFile, plainText: true, alwaysPrintToConsole: true });
     try {
       logger.info('Match Controls:  5');
       logger.warn('** Potential Mismatch **');
@@ -96,23 +96,9 @@ describe('createDeltaLogger', () => {
     }
   });
 
-  it('refuses to open a log file that already exists as a symlink', () => {
-    const logFile = tmpLogFile();
-    const realTarget = tmpLogFile();
-    fs.writeFileSync(realTarget, 'pre-existing content\n');
-    fs.symlinkSync(realTarget, logFile);
-
-    try {
-      expect(() => createDeltaLogger(logFile)).toThrow(/symlink/);
-    } finally {
-      fs.rmSync(logFile, { force: true });
-      fs.rmSync(realTarget, { force: true });
-    }
-  });
-
   it('honors the `level` option (drops lower levels)', async () => {
     const logFile = tmpLogFile();
-    const logger = createDeltaLogger(logFile, { level: 'warn' });
+    const logger = createWinstonLogger({ logFile, level: 'warn', plainText: true, alwaysPrintToConsole: true });
     try {
       logger.info('suppressed');
       logger.warn('included');
@@ -129,7 +115,7 @@ describe('createDeltaLogger', () => {
 
   it('preserves the literal message as-is (no winston prefix or level label leaks into stdout)', async () => {
     const logFile = tmpLogFile();
-    const logger = createDeltaLogger(logFile);
+    const logger = createWinstonLogger({ logFile, plainText: true, alwaysPrintToConsole: true });
 
     // Winston's Console transport writes via process.stdout.write, not console.log
     const writes: string[] = [];

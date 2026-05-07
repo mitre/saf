@@ -24,15 +24,9 @@ import {
   type DeltaDiff,
   type LinkRecord,
 } from '../../utils/delta_matching';
-import { createWinstonLogger, lazyDeltaLogger } from '../../utils/logging';
+import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveCincAuditor, resolveSafeChild } from '../../utils/global';
-
-// User-facing logger shared by `run()` and by the interactive-prompt /
-// validation helpers that live below the class. Writes colorized output
-// to stdout and plain text to CliProcessOutput.log. Lazily constructed —
-// see lazyDeltaLogger's JSDoc for why.
-const log = lazyDeltaLogger('CliProcessOutput.log');
 
 /**
  * This class extends the capabilities of the update_controls4delta providing the following capabilities:
@@ -123,6 +117,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   // alongside the text diff. Empty array when mapControls did not run.
   static links: LinkRecord[] = [];
 
+  private readonly logger: Logger = createWinstonLogger({
+    logFile: 'CliProcessOutput.log',
+    plainText: true,
+    alwaysPrintToConsole: true,
+  });
+
   async run() {
     const { flags } = await this.parse(GenerateDelta);
 
@@ -154,7 +154,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     GenerateDelta.links = [];
 
     // Set the log level to debug until we get the user selected level
-    GenerateDelta.logger = createWinstonLogger('generate:delta', 'debug');
+    GenerateDelta.logger = createWinstonLogger({ module: 'generate:delta', level: 'debug' });
 
     // Flag variables
     let inspecJsonFile: string;
@@ -181,11 +181,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     thisLogger.warn('║ saf generate delta is officially released - report any questions/bugs to https://github.com/mitre/saf/issues ║');
     thisLogger.warn('╚══════════════════════════════════════════════════════════════════════════════════════════════════════════════╝');
 
-    log.info('==================== Delta Process =====================');
-    log.info(`Date: ${new Date().toISOString()}`);
+    this.logger.info('==================== Delta Process =====================');
+    this.logger.info(`Date: ${new Date().toISOString()}`);
 
     if (flags.interactive) {
-      const interactiveFlags = await getFlags();
+      const interactiveFlags = await this.getFlags();
       // Required flags
       const dataFileContent = interactiveFlags.xccdfTye === 'file'
         ? await this.getXccdfContent('File', interactiveFlags.xccdfXmlFile)
@@ -224,15 +224,15 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       logLevel = flags.logLevel;
 
       // Save the flags to the log object
-      log.info('Process Flags ===========================================');
+      this.logger.info('Process Flags ===========================================');
       for (const [key, value] of Object.entries(flags)) {
-        log.info(`${key}=${value instanceof URL ? value.toString() : String(value)}`);
+        this.logger.info(`${key}=${value instanceof URL ? value.toString() : String(value)}`);
       }
     } else {
       return;
     }
 
-    log.info('\n');
+    this.logger.info('\n');
     GenerateDelta.logger.level = logLevel;
 
     // -------------------------------------------------------------------------
@@ -249,18 +249,18 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           existingProfile = processInSpecProfile(fs.readFileSync(inspecJsonFile, 'utf8'));
           this.logThis(`  Loaded ${inspecJsonFile} as Profile JSON/Execution JSON`, 'debug');
         } else {
-          saveLogs(`  ERROR: An InSpec Profile JSON file was not provided ${inspecJsonFile}`);
-          await sleep(2000).then(() => process.exit(1));
+          this.saveLogs(`  ERROR: An InSpec Profile JSON file was not provided ${inspecJsonFile}`);
+          await this.sleep(2000).then(() => process.exit(1));
         }
       } catch (error: any) {
         if (error.code === 'ENOENT') {
-          saveLogs(
+          this.saveLogs(
             `  ERROR: File (entity) not found: ${inspecJsonFile}.\n  Run the --help command for more information on expected input files.`);
-          await sleep(2000).then(() => process.exit(1));
+          await this.sleep(2000).then(() => process.exit(1));
         } else {
-          saveLogs(
+          this.saveLogs(
             `  ERROR: Unable to process Input execution/profile JSON ${inspecJsonFile}\n  ${error}`);
-          await sleep(2000).then(() => process.exit(1));
+          await this.sleep(2000).then(() => process.exit(1));
         }
       }
     } else {
@@ -300,25 +300,25 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             ovalDefinitions = processOVAL(inputFile);
             this.logThis(`  Loaded ${ovalXmlFile} as OVAL`, 'debug');
           } else {
-            saveLogs(`  ERROR: Unable to load OVAL file: ${ovalXmlFile}\n  Ensure it is an OVAL file`);
-            await sleep(2000).then(() => process.exit(1));
+            this.saveLogs(`  ERROR: Unable to load OVAL file: ${ovalXmlFile}\n  Ensure it is an OVAL file`);
+            await this.sleep(2000).then(() => process.exit(1));
           }
         } else {
-          saveLogs(
+          this.saveLogs(
             `  ERROR: An OVAL flag option was detected, but no file was provided\n  Ensure ${ovalXmlFile} is an OVAL file`);
-          await sleep(2000).then(() => process.exit(1));
+          await this.sleep(2000).then(() => process.exit(1));
         }
       } else {
         this.logThis('  An OVAL XML file was not provided', 'debug');
       }
     } catch (error: any) {
       if (error.code === 'ENOENT') {
-        saveLogs(
+        this.saveLogs(
           `  ERROR: File (entity) not found: ${ovalXmlFile}.\n  Run the --help command to more information on expected input files.`);
-        await sleep(2000).then(() => process.exit(1));
+        await this.sleep(2000).then(() => process.exit(1));
       } else {
-        saveLogs(`  ERROR: Unable to process the OVAL XML file: ${ovalXmlFile}\n  ${error}`);
-        await sleep(2000).then(() => process.exit(1));
+        this.saveLogs(`  ERROR: Unable to process the OVAL XML file: ${ovalXmlFile}\n  ${error}`);
+        await this.sleep(2000).then(() => process.exit(1));
       }
     }
 
@@ -329,7 +329,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     try {
       if (runMapControls && controlsDir) {
         this.logThis('  Mapping controls (using fuzzy logic - lower value = best match) from the old profile to the new profile', 'info');
-        log.info('Mapping controls (using fuzzy logic - lower value = best match) from the old profile to the new profile\n');
+        this.logger.info('Mapping controls (using fuzzy logic - lower value = best match) from the old profile to the new profile\n');
         // Process XCCDF of new profile to get controls
         processedXCCDF = processXCCDF(xccdfContent, false, idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions);
         // Create a dictionary mapping new control GIDs to their old control counterparts
@@ -348,7 +348,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // const controls + path.sep + basename(controlsDir)
         // logger.info('  Updating controls with new control number')
         this.logThis('  Updating controls with new control number', 'info');
-        log.info('Updating Controls ===========================================================================');
+        this.logger.info('Updating Controls ===========================================================================');
 
         // We need to update controls that a mapping were found executing the mapControls method.
         // This is needed because when we re-generate the new profile summary we need the controls
@@ -362,16 +362,16 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           const sourceControlFile = path.join(controlsDir, `${value}.rb`);
           const mappedControlFile = path.join(mappedDir, `${value}.rb`);
 
-          log.info(`${'Mapping (From --> To): '}  ${`${value} --> ${key}`}`);
+          this.logger.info(`${'Mapping (From --> To): '}  ${`${value} --> ${key}`}`);
 
           let lines;
           if (fs.existsSync(sourceControlFile)) {
             lines = fs.readFileSync(sourceControlFile, 'utf8').split('\n');
           } else {
-            log.error(`${'    File not found at:'}  ${` ${sourceControlFile}\n`}`);
-            log.error('╔═══════════════════════════════════════════════════════════════════════════════╗');
-            log.error('║ Make sure the appropriate Input execution/profile JSON file is being used (-J)║');
-            log.error('╚═══════════════════════════════════════════════════════════════════════════════╝');
+            this.logger.error(`${'    File not found at:'}  ${` ${sourceControlFile}\n`}`);
+            this.logger.error('╔═══════════════════════════════════════════════════════════════════════════════╗');
+            this.logger.error('║ Make sure the appropriate Input execution/profile JSON file is being used (-J)║');
+            this.logger.error('╚═══════════════════════════════════════════════════════════════════════════════╝');
             return;
           }
 
@@ -379,28 +379,28 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // and the controls were properly updated to the proper control number and name.
           if (value === key) {
             // The controls are up to date with the xccdf
-            log.info(`${'   Control is Current: '}  ${`${sourceShortControlFile}`}`);
+            this.logger.info(`${'   Control is Current: '}  ${`${sourceShortControlFile}`}`);
             // Saved processed control to the 'mapped_controls' directory
-            log.info(`${'    Processed control: '}  ${`${mappedShortControlFile}\n`}`);
+            this.logger.info(`${'    Processed control: '}  ${`${mappedShortControlFile}\n`}`);
             fs.writeFileSync(mappedControlFile, lines.join('\n'));
           } else {
-            log.info(`${'   Processing control: '}  ${`${sourceShortControlFile}`}`);
+            this.logger.info(`${'   Processing control: '}  ${`${sourceShortControlFile}`}`);
             // Find the line with the control name and replace it with the new control name
             // single or double quotes are used on this line, check for both
             // Template literals (`${value}`) must be used with dynamically created regular expression (RegExp() not / ... /)
             const controlLineIndex = lines.findIndex(line => new RegExp(`control ['"]${value}['"] do`).test(line));
             if (controlLineIndex === -1) {
-              log.error(`${'    Control not found:'}  ${` ${sourceControlFile}\n`}`);
+              this.logger.error(`${'    Control not found:'}  ${` ${sourceControlFile}\n`}`);
             } else {
               lines[controlLineIndex] = lines[controlLineIndex].replace(new RegExp(`control ['"]${value}['"] do`), `control '${key}' do`);
 
               // Saved processed control to the 'mapped_controls' directory
-              log.info(`${'    Processed control: '}  ${`${mappedShortControlFile}`}`);
+              this.logger.info(`${'    Processed control: '}  ${`${mappedShortControlFile}`}`);
               fs.writeFileSync(mappedControlFile, lines.join('\n'));
 
               // TODO: Maybe copy files from the source directory and rename for duplicates and to preserve source files // skipcq: JS-0099
-              log.info(`${'  Mapped control file: '}  ${`${sourceShortControlFile} to reference ID ${key}`}`);
-              log.info(`${'     New control name: '}  ${`${key}.rb\n`}`);
+              this.logger.info(`${'  Mapped control file: '}  ${`${sourceShortControlFile} to reference ID ${key}`}`);
+              this.logger.info(`${'     New control name: '}  ${`${key}.rb\n`}`);
             }
           }
         }
@@ -417,16 +417,16 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // Allow delta to take care of the rest
           existingProfile = processInSpecProfile(inspecJsonFileNew);
         } catch (error: unknown) {
-          saveLogs(`  ERROR: Unable to generate the profile json summary for the updated controls.  \n ${getErrorMessage(error)}`);
-          await sleep(2000).then(() => process.exit(1));
+          this.saveLogs(`  ERROR: Unable to generate the profile json summary for the updated controls.  \n ${getErrorMessage(error)}`);
+          await this.sleep(2000).then(() => process.exit(1));
         }
       }
     } catch (error: unknown) {
-      saveLogs(
+      this.saveLogs(
         '  ERROR: Could not process fuzzy search logic. Check the --help command for more '
         + 'information on the deltaOutputDir(-o) or controlsDir(-c) flags.\n'
         + `  ${getErrorMessage(error)}`);
-      await sleep(2000).then(() => process.exit(1));
+      await this.sleep(2000).then(() => process.exit(1));
     }
 
     // -------------------------------------------------------------------------
@@ -457,9 +457,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     } catch (error: any) {
       this.logThis(`  ERROR: Could not process delta output directory: ${deltaOutputDir}. Check the --help command for more information on the -o flag.`, 'error');
       this.logThis(`  ${error}`, 'error');
-      saveLogs(
+      this.saveLogs(
         `  ERROR: Unable to process delta output directory: ${deltaOutputDir}\n  Check the --help command for more information on the -o flag.\n  ${error}`);
-      await sleep(2000).then(() => process.exit(1));
+      await this.sleep(2000).then(() => process.exit(1));
     }
 
     // -------------------------------------------------------------------------
@@ -499,9 +499,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       if (idTypes.includes(idType)) {
         updatedResult = updateProfileUsingXCCDF(existingProfile, xccdfContent, idType as 'cis' | 'version' | 'rule' | 'group', thisLogger, ovalDefinitions);
       } else {
-        saveLogs(
+        this.saveLogs(
           `  ERROR: Invalid ID Type: ${idType}. Check the --help command for the available ID Type options.`);
-        await sleep(2000).then(() => process.exit(1));
+        await this.sleep(2000).then(() => process.exit(1));
       }
 
       this.logThis('  Computed the delta between the existing profile and updated benchmark.', 'debug');
@@ -586,24 +586,24 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         }
 
         // Print the process output report to current directory
-        log.info('Update Results ===========================================================================\n');
-        log.info(updatedResult.markdown);
-        await sleep(2000).then(() => log.info('\nDelta Process completed successfully\n'));
+        this.logger.info('Update Results ===========================================================================\n');
+        this.logger.info(updatedResult.markdown);
+        await this.sleep(2000).then(() => this.logger.info('\nDelta Process completed successfully\n'));
       } else {
-        log.error('\nDelta Process failed\n');
-        saveLogs(
+        this.logger.error('\nDelta Process failed\n');
+        this.saveLogs(
           `  ERROR: The updateProfileUsingXCCDF process failed to provide updated profiles, received: ${updatedResult}.`);
-        await sleep(2000).then(() => process.exit(1));
+        await this.sleep(2000).then(() => process.exit(1));
       }
     } else {
       if (!existingProfile) {
         this.logThis('  ERROR: Could not generate delta because the existingProfile variable was not satisfied.', 'error');
-        log.error('\nDelta Process failed\n');
+        this.logger.error('\nDelta Process failed\n');
       }
 
       if (!xccdfContent) {
         this.logThis('  ERROR: Could not generate delta because the xccdfContent variable was not satisfied.', 'error');
-        log.error('\nDelta Process failed\n');
+        this.logger.error('\nDelta Process failed\n');
       }
     }
   }
@@ -652,8 +652,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
     const controlMappings: Record<string, string> = {};
 
-    log.info('Mapping Process ===========================================================================');
-    log.info('Using requirement-first pipeline: SRG-ID blocking + CCI Jaccard tiebreak + vendor-prefix-normalized Fuse fallback\n');
+    this.logger.info('Mapping Process ===========================================================================');
+    this.logger.info('Using requirement-first pipeline: SRG-ID blocking + CCI Jaccard tiebreak + vendor-prefix-normalized Fuse fallback\n');
 
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     GenerateDelta.links = links;
@@ -672,8 +672,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       // `none` links and (defensively) any link missing oldId are no-op
       // for body-copying purposes.
       if (link.matchMethod === 'none' || link.oldId === null) {
-        log.info(`     New XCCDF Control:  ${newId}`);
-        log.error(
+        this.logger.info(`     New XCCDF Control:  ${newId}`);
+        this.logger.error(
           `    No Match Found for:  ${newId}${link.srg ? ` (SRG=${link.srg})` : ''}\n`,
         );
         GenerateDelta.noMatch++;
@@ -684,43 +684,43 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       // returned map. Primary and related both need the old Ruby body.
       controlMappings[newId] = link.oldId;
 
-      log.info(`Processing New Control:  ${newId}`);
+      this.logger.info(`Processing New Control:  ${newId}`);
       if (newCtl?.title) {
-        log.info(`     New Control Title:  ${this.updateTitle(newCtl.title)}`);
+        this.logger.info(`     New Control Title:  ${this.updateTitle(newCtl.title)}`);
       }
       if (oldCtl?.title) {
-        log.info(`     Old Control Title:  ${this.updateTitle(oldCtl.title)}`);
+        this.logger.info(`     Old Control Title:  ${this.updateTitle(oldCtl.title)}`);
       }
 
-      GenerateDelta.logMatchMethod(log, link);
+      GenerateDelta.logMatchMethod(this.logger, link);
       GenerateDelta.tickMatchCounter(link);
 
-      log.info(`  Best Match Candidate:  ${link.oldId} --> ${newId}\n`);
+      this.logger.info(`  Best Match Candidate:  ${link.oldId} --> ${newId}\n`);
     }
 
-    log.info('Mapping Results ===========================================================================');
-    log.info('\tOld Control -> New Control');
+    this.logger.info('Mapping Results ===========================================================================');
+    this.logger.info('\tOld Control -> New Control');
     for (const [key, value] of Object.entries(controlMappings)) {
-      log.info(`\t   ${value} -> ${key}`);
+      this.logger.info(`\t   ${value} -> ${key}`);
     }
 
     const totalMappedControls = Object.keys(controlMappings).length;
-    log.info(`Total Mapped Controls:  ${totalMappedControls}\n`);
+    this.logger.info(`Total Mapped Controls:  ${totalMappedControls}\n`);
 
-    log.info('Control Counts ===========================');
-    log.info(`Total Controls Available for Delta:  ${GenerateDelta.oldControlsLength}`);
-    log.info(`     Total Controls Found on XCCDF:  ${GenerateDelta.newControlsLength}\n`);
+    this.logger.info('Control Counts ===========================');
+    this.logger.info(`Total Controls Available for Delta:  ${GenerateDelta.oldControlsLength}`);
+    this.logger.info(`     Total Controls Found on XCCDF:  ${GenerateDelta.newControlsLength}\n`);
 
-    log.info('Match Statistics =========================');
-    log.info(`                    Match Controls:  ${GenerateDelta.match}`);
-    log.info(`        Possible Mismatch Controls:  ${GenerateDelta.posMisMatch}`);
-    log.info(`          Related Match Controls:  ${GenerateDelta.dupMatch}`);
-    log.info(`                 No Match Controls:  ${GenerateDelta.noMatch}`);
-    log.info(`                New XCCDF Controls:  ${GenerateDelta.newXccdfControl}\n`);
+    this.logger.info('Match Statistics =========================');
+    this.logger.info(`                    Match Controls:  ${GenerateDelta.match}`);
+    this.logger.info(`        Possible Mismatch Controls:  ${GenerateDelta.posMisMatch}`);
+    this.logger.info(`          Related Match Controls:  ${GenerateDelta.dupMatch}`);
+    this.logger.info(`                 No Match Controls:  ${GenerateDelta.noMatch}`);
+    this.logger.info(`                New XCCDF Controls:  ${GenerateDelta.newXccdfControl}\n`);
 
-    log.info('Statistics Validation =============================================');
-    log.info(`Match + Mismatch + Related = Total Mapped:  ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}`);
-    log.info(`  Total Processed = Total XCCDF Controls:  ${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`);
+    this.logger.info('Statistics Validation =============================================');
+    this.logger.info(`Match + Mismatch + Related = Total Mapped:  ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}`);
+    this.logger.info(`  Total Processed = Total XCCDF Controls:  ${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`);
 
     return controlMappings;
   }
@@ -859,7 +859,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     if (xccdfType === 'File') {
       xccdfFile = basename(xccdfInput);
       this.logThis(`Verifying that the XCCDF file is valid: ${xccdfFile}...`, 'info');
-      if (isXccdfFile(xccdfInput)) {
+      if (this.isXccdfFile(xccdfInput)) {
         // Did we get a .xml file or a zip package
         if (path.extname(xccdfInput) === '.xml') {
           xccdfContent = fs.readFileSync(xccdfInput, 'utf8');
@@ -875,21 +875,21 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               xccdfContent = fileBuffer.toString();
             }
           } catch (error) {
-            saveLogs(`Processing File failed.', ${error instanceof Error ? error : String(error)}`);
-            await sleep(2000).then(() => process.exit(1));
+            this.saveLogs(`Processing File failed.', ${error instanceof Error ? error : String(error)}`);
+            await this.sleep(2000).then(() => process.exit(1));
           }
         }
       } else {
-        saveLogs('Processing XCCDF JSON Summary file failed.');
-        await sleep(2000).then(() => process.exit(1));
+        this.saveLogs('Processing XCCDF JSON Summary file failed.');
+        await this.sleep(2000).then(() => process.exit(1));
       }
     } else {
       this.logThis(`Verifying that the URL contains a valid XCCDF: ${xccdfInput}...`, 'info');
       const tmpobj = tmp.dirSync({ unsafeCleanup: true });
 
       if (xccdfInput === undefined) {
-        saveLogs('URL flag is undefined or invalid.');
-        await sleep(2000).then(() => process.exit(1));
+        this.saveLogs('URL flag is undefined or invalid.');
+        await this.sleep(2000).then(() => process.exit(1));
       }
 
       const url = xccdfInput;
@@ -913,8 +913,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             xccdfContent = fileBuffer.toString();
           }
         } catch (error) {
-          saveLogs(`Processing URL failed.', ${error instanceof Error ? error : String(error)}`);
-          await sleep(2000).then(() => process.exit(1));
+          this.saveLogs(`Processing URL failed.', ${error instanceof Error ? error : String(error)}`);
+          await this.sleep(2000).then(() => process.exit(1));
         }
       })();
       tmp.setGracefulCleanup();
@@ -969,175 +969,193 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     switch (logLevel) {
       case 'info': {
         GenerateDelta.logger.info(logMsg);
-        log.info(logMsg);
+        this.logger.info(logMsg);
         break;
       }
       case 'debug': {
         GenerateDelta.logger.debug(logMsg);
-        log.info(logMsg);
+        this.logger.info(logMsg);
         break;
       }
       case 'error': {
         GenerateDelta.logger.error(logMsg);
-        log.error(logMsg);
+        this.logger.error(logMsg);
         break;
       }
       default: {
         GenerateDelta.logger.warn(logMsg);
-        log.warn(logMsg);
+        this.logger.warn(logMsg);
         break;
       }
     }
   }
-}
 
-/**
- * Asynchronously prompts the user for various inputs and selections to configure
- * the delta process for updating profile controls. This function dynamically imports
- * required modules, interacts with the user through a series of prompts, and collects
- * the necessary flags and options for the process.
- *
- * @async
- * @function
- * @returns {Promise<any>} A promise that resolves to an object containing the user's
- * selections and inputs, including required and optional flags for the delta process.
- *
- * The returned object includes:
- * - `xccdfTye`: The type of XCCDF source ('file' or 'url').
- * - `xccdfXmlFile` or `xccdfUrl`: The selected XCCDF file or URL.
- * - `inspecJsonFile`: The Profile Controls summary file or an indication that it is auto-generated.
- * - `controlsDir`: The directory containing the profile controls (if applicable).
- * - `runMapControls`: A boolean indicating whether fuzzy logic is used.
- * - `deltaOutputDir`: The directory for saving the updated profile controls.
- * - `ovalXmlFile`: The OVAL XML file (if included).
- * - `generateReport`: A boolean indicating whether a markdown report is generated.
- * - `reportDirectory` and `reportFileName`: The directory and filename for the markdown report (if applicable).
- * - `idType`: The selected Control ID Type for processing controls.
- * - `logLevel`: The selected log level for the process.
- *
- * @remarks
- * - The function uses `inquirer` for interactive prompts and dynamically imports
- *   `inquirer-file-selector` and `chalk` for enhanced user experience.
- * - It adjusts the `defaultMaxListeners` of the `EventEmitter` to accommodate
- *   the number of listeners required by the prompts.
- * - The function logs user selections to a process log for debugging or auditing purposes.
- *
- * @example
- * const flags = await getFlags();
- * console.log(flags);
- */
-async function getFlags(): Promise<any> {
-  // The default max listeners is set to 10. The inquire checkbox sets a
-  // listener for each entry it displays, we are providing 16 entries,
-  // does using 16 listeners. Need to increase the defaultMaxListeners.
-  EventEmitter.defaultMaxListeners = 20;
+  /**
+   * Asynchronously prompts the user for various inputs and selections to configure
+   * the delta process for updating profile controls. This function dynamically imports
+   * required modules, interacts with the user through a series of prompts, and collects
+   * the necessary flags and options for the process.
+   *
+   * @async
+   * @function
+   * @returns {Promise<any>} A promise that resolves to an object containing the user's
+   * selections and inputs, including required and optional flags for the delta process.
+   *
+   * The returned object includes:
+   * - `xccdfTye`: The type of XCCDF source ('file' or 'url').
+   * - `xccdfXmlFile` or `xccdfUrl`: The selected XCCDF file or URL.
+   * - `inspecJsonFile`: The Profile Controls summary file or an indication that it is auto-generated.
+   * - `controlsDir`: The directory containing the profile controls (if applicable).
+   * - `runMapControls`: A boolean indicating whether fuzzy logic is used.
+   * - `deltaOutputDir`: The directory for saving the updated profile controls.
+   * - `ovalXmlFile`: The OVAL XML file (if included).
+   * - `generateReport`: A boolean indicating whether a markdown report is generated.
+   * - `reportDirectory` and `reportFileName`: The directory and filename for the markdown report (if applicable).
+   * - `idType`: The selected Control ID Type for processing controls.
+   * - `logLevel`: The selected log level for the process.
+   *
+   * @remarks
+   * - The function uses `inquirer` for interactive prompts and dynamically imports
+   *   `inquirer-file-selector` and `chalk` for enhanced user experience.
+   * - It adjusts the `defaultMaxListeners` of the `EventEmitter` to accommodate
+   *   the number of listeners required by the prompts.
+   * - The function logs user selections to a process log for debugging or auditing purposes.
+   *
+   * @example
+   * const flags = await getFlags();
+   * console.log(flags);
+   */
+  private async getFlags(): Promise<any> {
+    // The default max listeners is set to 10. The inquire checkbox sets a
+    // listener for each entry it displays, we are providing 16 entries,
+    // does using 16 listeners. Need to increase the defaultMaxListeners.
+    EventEmitter.defaultMaxListeners = 20;
 
-  // Dynamically import inquirer-file-selector and chalk
-  // Once we move the SAF CLI from a CommonJS to an ES modules we can use the regular import
-  const { default: fileSelector } = await import('inquirer-file-selector');
-  const { default: chalk } = await import('chalk');
+    // Dynamically import inquirer-file-selector and chalk
+    // Once we move the SAF CLI from a CommonJS to an ES modules we can use the regular import
+    const { default: fileSelector } = await import('inquirer-file-selector');
+    const { default: chalk } = await import('chalk');
 
-  const fileSelectorTheme = {
-    style: {
-      file: (text: unknown) => chalk.green(text),
-      currentDir: (text: string) => chalk.blueBright(text),
-      help: (text: unknown) => chalk.yellow(text),
-    },
-  };
-
-  // Variable used to store the prompts (question and answers)
-  const interactiveValues: Record<string, any> = {};
-
-  log.info('Provide the necessary information:');
-  log.info('  Required flag - The XCCDF XML file or URL containing the new guidance - in the form of .xml file');
-  log.info('  Required flag - Controls directory (path to the profile controls to apply the delta process)');
-  log.info('  Required flag - The output folder for the updated profile (will contain the controls that delta was applied too)');
-
-  log.info('  Optional flag - InSpec Profiles JSON summary file (JSON) - auto-generated if not provided');
-  log.info('  Optional flag - The OVAL XML file containing definitions used in the new guidance - in the form of .xml file');
-  log.info('  Optional flag - Output markdown report file - must have an extension of .md');
-  log.info('  Optional flag - Control ID Types: [\'rule\', \'group\', \'cis\', \'version\']');
-  log.info('  Optional flag - Run the approximate string matching process');
-  log.info('  Optional flag - The InSpec profile directory containing the controls being updated (controls Delta is processing)\n');
-
-  log.info('Process Flags ===========================================');
-
-  // Check what XCCDF to use (File or URL)
-  const xccdfType = await select({
-    message: 'Select from where to retrieve the XCCDF',
-    choices: [
-      { name: 'File', value: 'file', description: 'File (.xml) containing the XCCDF benchmark' },
-      { name: 'URL', value: 'url', description: 'URL pointing to a package (.zip) containing the XCCDF benchmark' },
-    ],
-  });
-
-  // Required Flags
-  if (xccdfType === 'file') {
-    const xccdfXmlFile = await fileSelector({
-      message: 'Select the XCCDF benchmark file (.xml) containing the new guidance:',
-      pageSize: 15,
-      loop: true,
-      type: 'file',
-      allowCancel: true,
-      emptyText: 'Directory is empty',
-      showExcluded: false,
-      filter: file => file.isDirectory() || file.name.endsWith('.xml'),
-      theme: fileSelectorTheme,
-    });
-
-    log.info('xccdfXmlFile=' + xccdfXmlFile);
-    interactiveValues.xccdfTye = 'file';
-    interactiveValues.ovalXmlFile = xccdfXmlFile;
-  } else {
-    const xccdfUrl = await input({
-      message: 'Provide an URL pointing to the XCCDF benchmark (.zip) package:',
-      validate(input: string) {
-        if (/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*\.zip$/i.test(input)) { // skipcq: JS-0113
-          return true;
-        }
-        return 'Please enter a valid URL that ends with .zip';
+    const fileSelectorTheme = {
+      style: {
+        file: (text: unknown) => chalk.green(text),
+        currentDir: (text: string) => chalk.blueBright(text),
+        help: (text: unknown) => chalk.yellow(text),
       },
+    };
+
+    // Variable used to store the prompts (question and answers)
+    const interactiveValues: Record<string, any> = {};
+
+    this.logger.info('Provide the necessary information:');
+    this.logger.info('  Required flag - The XCCDF XML file or URL containing the new guidance - in the form of .xml file');
+    this.logger.info('  Required flag - Controls directory (path to the profile controls to apply the delta process)');
+    this.logger.info('  Required flag - The output folder for the updated profile (will contain the controls that delta was applied too)');
+
+    this.logger.info('  Optional flag - InSpec Profiles JSON summary file (JSON) - auto-generated if not provided');
+    this.logger.info('  Optional flag - The OVAL XML file containing definitions used in the new guidance - in the form of .xml file');
+    this.logger.info('  Optional flag - Output markdown report file - must have an extension of .md');
+    this.logger.info('  Optional flag - Control ID Types: [\'rule\', \'group\', \'cis\', \'version\']');
+    this.logger.info('  Optional flag - Run the approximate string matching process');
+    this.logger.info('  Optional flag - The InSpec profile directory containing the controls being updated (controls Delta is processing)\n');
+
+    this.logger.info('Process Flags ===========================================');
+
+    // Check what XCCDF to use (File or URL)
+    const xccdfType = await select({
+      message: 'Select from where to retrieve the XCCDF',
+      choices: [
+        { name: 'File', value: 'file', description: 'File (.xml) containing the XCCDF benchmark' },
+        { name: 'URL', value: 'url', description: 'URL pointing to a package (.zip) containing the XCCDF benchmark' },
+      ],
     });
 
-    log.info('xccdfUrl=' + xccdfUrl);
-    interactiveValues.xccdfTye = 'url';
-    interactiveValues.xccdfUrl = xccdfUrl;
-  }
+    // Required Flags
+    if (xccdfType === 'file') {
+      const xccdfXmlFile = await fileSelector({
+        message: 'Select the XCCDF benchmark file (.xml) containing the new guidance:',
+        pageSize: 15,
+        loop: true,
+        type: 'file',
+        allowCancel: true,
+        emptyText: 'Directory is empty',
+        showExcluded: false,
+        filter: file => file.isDirectory() || file.name.endsWith('.xml'),
+        theme: fileSelectorTheme,
+      });
 
-  // Check if Profile Controls summary is provided or auto-generate
-  const generateSummaryFile = await select({
-    message: 'Auto generate the Profile Controls summary?',
-    choices: [
-      { name: 'Yes', value: 'yes', description: 'Must provide the directory containing the profile controls' },
-      { name: 'No', value: 'no', description: 'Must provide the Profile Controls summary (.json) file' },
-    ],
-  });
+      this.logger.info('xccdfXmlFile=' + xccdfXmlFile);
+      interactiveValues.xccdfTye = 'file';
+      interactiveValues.ovalXmlFile = xccdfXmlFile;
+    } else {
+      const xccdfUrl = await input({
+        message: 'Provide an URL pointing to the XCCDF benchmark (.zip) package:',
+        validate(input: string) {
+          if (/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*\.zip$/i.test(input)) { // skipcq: JS-0113
+            return true;
+          }
+          return 'Please enter a valid URL that ends with .zip';
+        },
+      });
 
-  if (generateSummaryFile === 'no') {
-    const inspecJsonFile = await fileSelector({
-      message: 'Select the Profile Controls summary (.json) file:',
-      pageSize: 15,
-      loop: true,
-      type: 'file',
-      allowCancel: true,
-      emptyText: 'Directory is empty',
-      showExcluded: false,
-      filter: file => file.isDirectory() || file.name.endsWith('.json'),
-      theme: fileSelectorTheme,
+      this.logger.info('xccdfUrl=' + xccdfUrl);
+      interactiveValues.xccdfTye = 'url';
+      interactiveValues.xccdfUrl = xccdfUrl;
+    }
+
+    // Check if Profile Controls summary is provided or auto-generate
+    const generateSummaryFile = await select({
+      message: 'Auto generate the Profile Controls summary?',
+      choices: [
+        { name: 'Yes', value: 'yes', description: 'Must provide the directory containing the profile controls' },
+        { name: 'No', value: 'no', description: 'Must provide the Profile Controls summary (.json) file' },
+      ],
     });
 
-    log.info('inspecJsonFile=' + inspecJsonFile);
-    interactiveValues.inspecJsonFile = inspecJsonFile;
-  } else {
-    log.info('inspecJsonFile=auto-generated');
-    interactiveValues.inspecJsonFile = '';
-  }
+    if (generateSummaryFile === 'no') {
+      const inspecJsonFile = await fileSelector({
+        message: 'Select the Profile Controls summary (.json) file:',
+        pageSize: 15,
+        loop: true,
+        type: 'file',
+        allowCancel: true,
+        emptyText: 'Directory is empty',
+        showExcluded: false,
+        filter: file => file.isDirectory() || file.name.endsWith('.json'),
+        theme: fileSelectorTheme,
+      });
 
-  // If we are using fuzzy logic or profile controls summary was not provided we need the controls directory
-  const useFuzzyLogic = await confirm({ message: 'Run the approximate string matching process (fuzzy logic)?' });
-  if (useFuzzyLogic || generateSummaryFile === 'yes') {
-    const controlsDir = await fileSelector({
-      message: 'Select the Profile Controls directory (controls Delta is processing):',
+      this.logger.info('inspecJsonFile=' + inspecJsonFile);
+      interactiveValues.inspecJsonFile = inspecJsonFile;
+    } else {
+      this.logger.info('inspecJsonFile=auto-generated');
+      interactiveValues.inspecJsonFile = '';
+    }
+
+    // If we are using fuzzy logic or profile controls summary was not provided we need the controls directory
+    const useFuzzyLogic = await confirm({ message: 'Run the approximate string matching process (fuzzy logic)?' });
+    if (useFuzzyLogic || generateSummaryFile === 'yes') {
+      const controlsDir = await fileSelector({
+        message: 'Select the Profile Controls directory (controls Delta is processing):',
+        pageSize: 15,
+        loop: true,
+        type: 'directory',
+        allowCancel: true,
+        emptyText: 'Directory is empty',
+        theme: fileSelectorTheme,
+      });
+
+      this.logger.info('runMapControls=true');
+      interactiveValues.controlsDir = controlsDir;
+      interactiveValues.runMapControls = useFuzzyLogic;
+    } else {
+      this.logger.info('runMapControls=false');
+      interactiveValues.runMapControls = false;
+    }
+
+    // Get the directory where to save the delta controls
+    const deltaOutputDir = await fileSelector({
+      message: 'Select the output folder for the updated profile control(s)',
       pageSize: 15,
       loop: true,
       type: 'directory',
@@ -1146,189 +1164,171 @@ async function getFlags(): Promise<any> {
       theme: fileSelectorTheme,
     });
 
-    log.info('runMapControls=true');
-    interactiveValues.controlsDir = controlsDir;
-    interactiveValues.runMapControls = useFuzzyLogic;
-  } else {
-    log.info('runMapControls=false');
-    interactiveValues.runMapControls = false;
-  }
+    this.logger.info('deltaOutputDir=' + deltaOutputDir);
+    interactiveValues.deltaOutputDir = deltaOutputDir;
 
-  // Get the directory where to save the delta controls
-  const deltaOutputDir = await fileSelector({
-    message: 'Select the output folder for the updated profile control(s)',
-    pageSize: 15,
-    loop: true,
-    type: 'directory',
-    allowCancel: true,
-    emptyText: 'Directory is empty',
-    theme: fileSelectorTheme,
-  });
-
-  log.info('deltaOutputDir=' + deltaOutputDir);
-  interactiveValues.deltaOutputDir = deltaOutputDir;
-
-  // Optional - OVAL file Flag
-  const useOvalFile = await confirm({ message: 'Include an OVAL XML file?' });
-  if (useOvalFile) {
-    const ovalXmlFile = await fileSelector({
-      message: 'Select the OVAL XML file containing definitions used in the new guidance - in the form of .xml file:',
-      pageSize: 15,
-      loop: true,
-      type: 'file',
-      allowCancel: true,
-      emptyText: 'Directory is empty',
-      showExcluded: false,
-      filter: file => file.isDirectory() || file.name.endsWith('.xml'),
-      theme: fileSelectorTheme,
-    });
-
-    log.info('useOvalFile=true');
-    interactiveValues.ovalXmlFile = ovalXmlFile;
-  } else {
-    log.info('useOvalFile=false');
-  }
-
-  // Optional - Generate markdown report from Inspect-objects process
-  const generateReport = await confirm({ message: 'Generate the Inspect-Object process markdown report file?' });
-  if (generateReport) {
-    const answers = {
-      reportDirectory: await fileSelector({
-        message: 'Select the output directory for the markdown report file:',
+    // Optional - OVAL file Flag
+    const useOvalFile = await confirm({ message: 'Include an OVAL XML file?' });
+    if (useOvalFile) {
+      const ovalXmlFile = await fileSelector({
+        message: 'Select the OVAL XML file containing definitions used in the new guidance - in the form of .xml file:',
         pageSize: 15,
         loop: true,
-        type: 'directory',
+        type: 'file',
         allowCancel: true,
         emptyText: 'Directory is empty',
+        showExcluded: false,
+        filter: file => file.isDirectory() || file.name.endsWith('.xml'),
         theme: fileSelectorTheme,
-      }),
-      reportFileName: await input({
-        message: 'Specify the output report filename (must have an extension of .md):',
-        default: 'deltaProcessReport.md',
-      }),
-    };
+      });
 
-    log.info('generateReport=true');
-
-    for (const [tagName, answerValue] of Object.entries(answers)) {
-      if (answerValue !== null) {
-        log.info(`${tagName}=${answerValue}`);
-        interactiveValues[tagName] = answerValue;
-      }
+      this.logger.info('useOvalFile=true');
+      interactiveValues.ovalXmlFile = ovalXmlFile;
+    } else {
+      this.logger.info('useOvalFile=false');
     }
-  } else {
-    log.info('generateReport=false');
-  }
 
-  // Optional - Select what group Id to process the controls and Log Level
-  const answers = {
-    idType: await select({
-      message: 'Select the Control ID Type used to process the controls:',
-      default: 'rule',
-      choices: [
-        { name: 'rule', value: 'rule' },
-        { name: 'group', value: 'group' },
-        { name: 'cis', value: 'cis' },
-        { name: 'version', value: 'version' },
-      ],
-    }),
-    logLevel: await select({
-      message: 'Select the log level:',
-      default: 'info',
-      choices: [
-        { name: 'info', value: 'info' },
-        { name: 'warn', value: 'warn' },
-        { name: 'debug', value: 'debug' },
-        { name: 'verbose', value: 'verbose' },
-      ],
-    }),
-  };
+    // Optional - Generate markdown report from Inspect-objects process
+    const generateReport = await confirm({ message: 'Generate the Inspect-Object process markdown report file?' });
+    if (generateReport) {
+      const answers = {
+        reportDirectory: await fileSelector({
+          message: 'Select the output directory for the markdown report file:',
+          pageSize: 15,
+          loop: true,
+          type: 'directory',
+          allowCancel: true,
+          emptyText: 'Directory is empty',
+          theme: fileSelectorTheme,
+        }),
+        reportFileName: await input({
+          message: 'Specify the output report filename (must have an extension of .md):',
+          default: 'deltaProcessReport.md',
+        }),
+      };
 
-  for (const [tagName, answerValue] of Object.entries(answers)) {
-    if (answerValue !== null) {
-      log.info(`${tagName}=${answerValue}`);
-      interactiveValues[tagName] = answerValue;
-    }
-  }
+      this.logger.info('generateReport=true');
 
-  return interactiveValues;
-}
-
-/**
- * Determines whether the provided file is a valid XCCDF file or package.
- *
- * This function checks if the given file path points to a valid XCCDF file
- * or package by performing the following steps:
- * - Verifies if the file exists and is a regular file.
- * - Checks the file extension to determine if it is a `.zip` package or `.xml` file.
- * - Reads the content of `.xml` files to confirm the presence of the "xccdf" keyword
- *   in the first 10 lines.
- *
- * If the file is invalid or an error occurs during processing, appropriate error
- * messages are logged, and the function returns `false`.
- *
- * @param xccdfXmlFile - The file path to the XCCDF file or package to validate.
- * @returns `true` if the file is a valid XCCDF file or package, otherwise `false`.
- */
-function isXccdfFile(xccdfXmlFile: string): boolean {
-  let isXccdf = true;
-  try {
-    if (fs.lstatSync(xccdfXmlFile).isFile()) {
-      // logger.debug(`Processing the ${xccdfXmlFile} XCCDF file`)
-      if (path.extname(xccdfXmlFile) === '.zip') {
-        GenerateDelta.logger.debug('  Processing a XCCDF package (.zip)');
-        isXccdf = true;
-      } else {
-        GenerateDelta.logger.debug('  Processing a XCCDF file (.xml)');
-        const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8');
-        const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase();
-        if (inputFirstLine.includes('xccdf')) {
-          GenerateDelta.logger.debug('  Valid XCCDF file provided');
-        } else {
-          const err = `  ERROR: Unable to load ${xccdfXmlFile} as a valid XCCDF`;
-          GenerateDelta.logger.error(err);
-          log.info(err);
-          isXccdf = false;
+      for (const [tagName, answerValue] of Object.entries(answers)) {
+        if (answerValue !== null) {
+          this.logger.info(`${tagName}=${answerValue}`);
+          interactiveValues[tagName] = answerValue;
         }
       }
     } else {
-      const err = 'No benchmark (XCCDF) file/packages (.xml or .zip) was provided.';
-      GenerateDelta.logger.error(err);
-      log.info(err);
+      this.logger.info('generateReport=false');
+    }
+
+    // Optional - Select what group Id to process the controls and Log Level
+    const answers = {
+      idType: await select({
+        message: 'Select the Control ID Type used to process the controls:',
+        default: 'rule',
+        choices: [
+          { name: 'rule', value: 'rule' },
+          { name: 'group', value: 'group' },
+          { name: 'cis', value: 'cis' },
+          { name: 'version', value: 'version' },
+        ],
+      }),
+      logLevel: await select({
+        message: 'Select the log level:',
+        default: 'info',
+        choices: [
+          { name: 'info', value: 'info' },
+          { name: 'warn', value: 'warn' },
+          { name: 'debug', value: 'debug' },
+          { name: 'verbose', value: 'verbose' },
+        ],
+      }),
+    };
+
+    for (const [tagName, answerValue] of Object.entries(answers)) {
+      if (answerValue !== null) {
+        this.logger.info(`${tagName}=${answerValue}`);
+        interactiveValues[tagName] = answerValue;
+      }
+    }
+
+    return interactiveValues;
+  }
+
+  /**
+   * Determines whether the provided file is a valid XCCDF file or package.
+   *
+   * This function checks if the given file path points to a valid XCCDF file
+   * or package by performing the following steps:
+   * - Verifies if the file exists and is a regular file.
+   * - Checks the file extension to determine if it is a `.zip` package or `.xml` file.
+   * - Reads the content of `.xml` files to confirm the presence of the "xccdf" keyword
+   *   in the first 10 lines.
+   *
+   * If the file is invalid or an error occurs during processing, appropriate error
+   * messages are logged, and the function returns `false`.
+   *
+   * @param xccdfXmlFile - The file path to the XCCDF file or package to validate.
+   * @returns `true` if the file is a valid XCCDF file or package, otherwise `false`.
+   */
+  private isXccdfFile(xccdfXmlFile: string): boolean {
+    let isXccdf = true;
+    try {
+      if (fs.lstatSync(xccdfXmlFile).isFile()) {
+        // logger.debug(`Processing the ${xccdfXmlFile} XCCDF file`)
+        if (path.extname(xccdfXmlFile) === '.zip') {
+          GenerateDelta.logger.debug('  Processing a XCCDF package (.zip)');
+          isXccdf = true;
+        } else {
+          GenerateDelta.logger.debug('  Processing a XCCDF file (.xml)');
+          const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8');
+          const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase();
+          if (inputFirstLine.includes('xccdf')) {
+            GenerateDelta.logger.debug('  Valid XCCDF file provided');
+          } else {
+            const err = `  ERROR: Unable to load ${xccdfXmlFile} as a valid XCCDF`;
+            GenerateDelta.logger.error(err);
+            this.logger.info(err);
+            isXccdf = false;
+          }
+        }
+      } else {
+        const err = 'No benchmark (XCCDF) file/packages (.xml or .zip) was provided.';
+        GenerateDelta.logger.error(err);
+        this.logger.info(err);
+        isXccdf = false;
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        const errorCode = (error as { code?: string }).code; // Type-safe access to `code`
+        if (errorCode === 'ENOENT') {
+          const err = `  ERROR: File not found: ${xccdfXmlFile}. Run the --help command for more information on expected input files.`;
+          GenerateDelta.logger.error(err);
+          this.logger.info(err);
+        } else {
+          const err = `  ERROR: Unable to process the XCCDF XML file ${xccdfXmlFile} because: ${error.message}`;
+          GenerateDelta.logger.error(err);
+          this.logger.info(err);
+        }
+      } else {
+        const err = `ERROR: An unexpected error occurred: ${getErrorMessage(error)}`;
+        GenerateDelta.logger.error(err);
+        this.logger.info(err);
+      }
       isXccdf = false;
     }
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      const errorCode = (error as { code?: string }).code; // Type-safe access to `code`
-      if (errorCode === 'ENOENT') {
-        const err = `  ERROR: File not found: ${xccdfXmlFile}. Run the --help command for more information on expected input files.`;
-        GenerateDelta.logger.error(err);
-        log.info(err);
-      } else {
-        const err = `  ERROR: Unable to process the XCCDF XML file ${xccdfXmlFile} because: ${error.message}`;
-        GenerateDelta.logger.error(err);
-        log.info(err);
-      }
-    } else {
-      const err = `ERROR: An unexpected error occurred: ${getErrorMessage(error)}`;
-      GenerateDelta.logger.error(err);
-      log.info(err);
+    return isXccdf;
+  }
+
+  private saveLogs(errorMsg: string) {
+    const strArray = errorMsg.split('\n');
+    for (const error of strArray) {
+      GenerateDelta.logger.error(error);
+      this.logger.info(error.trim());
     }
-    isXccdf = false;
   }
-  return isXccdf;
-}
 
-function saveLogs(errorMsg: string) {
-  const strArray = errorMsg.split('\n');
-  for (const error of strArray) {
-    GenerateDelta.logger.error(error);
-    log.info(error.trim());
+  private sleep(ms: number) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
   }
-}
-
-function sleep(ms: number) {
-  return new Promise((resolve) => {
-    setTimeout(resolve, ms);
-  });
 }

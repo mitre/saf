@@ -12,7 +12,7 @@ import type { PrintableSummary, Data, DataOrArray, RowType, ColumnType, PrintAnd
 * It uses a Winston logger with the label 'view summary:'.
 * @property {ReturnType<typeof createWinstonLogger>} logger - The logger for command. It uses a Winston logger with the label 'view summary:'.
 */
-const logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View Summary:');
+const logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger({ module: 'View Summary:' });
 
 export const ROW_ORDER: RowType[] = ['total', 'critical', 'high', 'medium', 'low'];
 export const COLUMN_ORDER: ColumnType[] = ['passed', 'failed', 'skipped', 'no_impact', 'error'];
