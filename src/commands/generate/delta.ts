@@ -154,7 +154,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     GenerateDelta.links = [];
 
     // Set the log level to debug until we get the user selected level
-    GenerateDelta.logger = createWinstonLogger('generate:delta', 'debug');
+    GenerateDelta.logger = createWinstonLogger({ module: 'generate:delta', level: 'debug' });
 
     // Flag variables
     let inspecJsonFile: string;

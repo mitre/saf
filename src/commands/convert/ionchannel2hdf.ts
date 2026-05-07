@@ -75,7 +75,7 @@ export default class IonChannel2HDF extends BaseCommand<typeof IonChannel2HDF> {
 
   async run() {
     const { flags } = await this.parse(IonChannel2HDF);
-    const logger = createWinstonLogger('IonChannel2HDF', flags.logLevel);
+    const logger = createWinstonLogger({ module: 'IonChannel2HDF', level: flags.logLevel });
 
     if (!Array.isArray(flags.input) && !(flags.apiKey && flags.teamName)) {
       throw new Error(

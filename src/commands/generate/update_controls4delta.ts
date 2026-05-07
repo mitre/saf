@@ -12,7 +12,7 @@ import { Flags } from '@oclif/core';
 import tmp from 'tmp';
 import type { Logger } from 'winston';
 import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveCincAuditor } from '../../utils/global';
-import { createDeltaLogger, createWinstonLogger } from '../../utils/logging';
+import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
 /**
@@ -105,7 +105,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       this.error('\u001B[31mYou must specify either [-X, --xccdfXmlFile or -U --xccdfUrl]\u001B[0m');
     }
 
-    const logger = createWinstonLogger('generate:update_controls', flags.logLevel);
+    const logger = createWinstonLogger({ module: 'generate:update_controls', level: flags.logLevel });
 
     logger.warn('╔═══════════════════════════════════════════════╗');
     logger.warn('║ Profile controls are formatted using Rubocop  ║');
@@ -116,7 +116,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
 
     // User-facing CLI output + file log. Writes to CliProcessOutput.log
     // (same sink the legacy saveProcessLogData defaulted to).
-    const log = createDeltaLogger('CliProcessOutput.log');
+    const log = createWinstonLogger({ logFile: 'CliProcessOutput.log', plainText: true, alwaysPrintToConsole: true });
 
     log.info('==================== Update Controls for Delta Process =====================');
     log.info(`Date: ${new Date().toISOString()}`);

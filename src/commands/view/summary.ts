@@ -63,7 +63,7 @@ export default class Summary extends Command {
   /**
    * @property {ReturnType<typeof createWinstonLogger>} logger - Winston logger for this command.
    */
-  private logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View Summary');
+  private logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger({ module: 'View Summary' });
 
   /**
    * @property {string} description - Command description displayed in the help message.
@@ -136,7 +136,7 @@ export default class Summary extends Command {
       const { flags } = await this.parse(Summary);
       this.parsedFlags = flags as CommandFlags;
       const { format, 'print-pretty': printPretty, stdout, output, 'title-table': titleTable, logLevel } = flags;
-      this.logger = createWinstonLogger(VIEW_SUMMARY, (logLevel ?? process.env.LOG_LEVEL ?? 'info'));
+      this.logger = createWinstonLogger({ module: VIEW_SUMMARY, level: (logLevel ?? process.env.LOG_LEVEL ?? 'info') });
       this.logger.verbose('Parsed command line flags');
       const executionData = loadExecJSONs(this.parsedFlags.input);
       this.logger.verbose(`Loaded execution data from ${this.parsedFlags.input.length} file(s)`);

@@ -102,7 +102,7 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
 
   async run() {
     const { flags } = await this.parse(ASFF2HDF);
-    const logger = createWinstonLogger('asff2hdf', flags.logLevel);
+    const logger = createWinstonLogger({ module: 'asff2hdf', level: flags.logLevel });
     let securityHub;
 
     // Check if output folder already exists

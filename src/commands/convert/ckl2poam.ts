@@ -78,7 +78,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
 
   async run() {
     const { flags } = await this.parse(CKL2POAM);
-    const logger = createWinstonLogger('ckl2poam', flags.logLevel);
+    const logger = createWinstonLogger({ module: 'ckl2poam', level: flags.logLevel });
 
     const officeOrgsAndDeviceNames = Object.fromEntries(flags.input.map((fileName: string) => {
       let officeOrg = flags.officeOrg;

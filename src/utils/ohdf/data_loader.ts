@@ -7,7 +7,7 @@ import { createWinstonLogger } from '../logging';
  * It uses a Winston logger with the label 'view summary:'.
  * @property {ReturnType<typeof createWinstonLogger>} logger - The logger for this command. It uses a Winston logger with the label 'view summary:'.
  */
-const logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger('View Summary:');
+const logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger({ module: 'View Summary:' });
 
 export function loadExecJSONs(files: string[]): Record<string, ContextualizedEvaluation> {
   logger.verbose('In loadExecJSONs');

@@ -89,7 +89,7 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
 
   async run() {
     const { flags } = await this.parse(Splunk2HDF);
-    const logger = createWinstonLogger('splunk2hdf', flags.logLevel);
+    const logger = createWinstonLogger({ module: 'splunk2hdf', level: flags.logLevel });
 
     if (!(flags.username && flags.password) && !flags.token) {
       logger.error(
