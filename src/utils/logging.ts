@@ -91,25 +91,6 @@ const diagnosticFormat = (module: string) => format.combine(
  * touch the filesystem on every invocation regardless of whether the owning
  * command was the one the user actually asked for.
  */
-export function lazyDeltaLogger(
-  logFile: string,
-  options: Omit<WinstonLoggerOptions, 'logFile' | 'plainText' | 'alwaysPrintToConsole'> = {},
-): Logger {
-  let instance: Logger | null = null;
-  return new Proxy({} as Logger, {
-    get(_target, prop, receiver) {
-      instance ??= createWinstonLogger({
-        ...options,
-        logFile,
-        plainText: true,
-        alwaysPrintToConsole: true,
-      });
-      const value = Reflect.get(instance, prop, receiver);
-      return typeof value === 'function' ? value.bind(instance) : value;
-    },
-  });
-}
-
 export function createWinstonLogger(options: WinstonLoggerOptions = {}): Logger {
   const {
     module = 'SAF CLI',
