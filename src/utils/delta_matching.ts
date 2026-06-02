@@ -508,10 +508,24 @@ function resolveSrgBlock(
     { length: newControls.length },
     () => null,
   );
+  claimPrimaryPairings(pairs, oldCandidates, ctx, links, linkFromPair);
+  fillRelatedForLeftovers(newControls, pairs, srg, links, linkFromPair);
+  return links.filter((l): l is LinkRecord => l !== null);
+}
+
+/**
+ * Pass 1 of block resolution: walk pairs in descending composite order,
+ * claim each globally-best pair whose new and old are both unclaimed.
+ */
+function claimPrimaryPairings(
+  pairs: PairScore[],
+  oldCandidates: ControlLike[],
+  ctx: PipelineContext,
+  links: (LinkRecord | null)[],
+  linkFromPair: (p: PairScore, r: 'primary' | 'related') => LinkRecord,
+): void {
   const claimedNewIdx = new Set<number>();
   const claimedOldIdx = new Set<number>();
-
-  // Pass 1: globally-best unique pairings.
   for (const p of pairs) {
     if (claimedNewIdx.has(p.newIdx) || claimedOldIdx.has(p.oldIdx)) {
       continue;
@@ -529,28 +543,39 @@ function resolveSrgBlock(
     ctx.claimedOldIds.add(oldControl.id);
     links[p.newIdx] = linkFromPair(p, 'primary');
   }
+}
 
-  // Pass 2: leftover new controls become `related` to their highest-scoring
-  // old candidate (already claimed by another new in pass 1).
+/** Highest-composite pair whose newIdx matches `i`, or null if none exists. */
+function bestPairForNew(pairs: PairScore[], i: number): PairScore | null {
+  let best: PairScore | null = null;
+  for (const p of pairs) {
+    if (p.newIdx === i && (best === null || p.composite > best.composite)) {
+      best = p;
+    }
+  }
+  return best;
+}
+
+/**
+ * Pass 2 of block resolution: every new control still unassigned after
+ * Pass 1 becomes `related` to its highest-scoring (already-claimed) old.
+ */
+function fillRelatedForLeftovers(
+  newControls: ControlLike[],
+  pairs: PairScore[],
+  srg: string,
+  links: (LinkRecord | null)[],
+  linkFromPair: (p: PairScore, r: 'primary' | 'related') => LinkRecord,
+): void {
   for (const [i, newControl] of newControls.entries()) {
     if (links[i] !== null) {
       continue;
     }
-    let best: PairScore | null = null;
-    for (const p of pairs) {
-      if (p.newIdx !== i) {
-        continue;
-      }
-      if (best === null || p.composite > best.composite) {
-        best = p;
-      }
-    }
+    const best = bestPairForNew(pairs, i);
     // `best` is non-null whenever oldCandidates is non-empty; no-match
     // is a defensive fallback only.
     links[i] = best === null ? makeNoMatch(newControl, srg) : linkFromPair(best, 'related');
   }
-
-  return links.filter((l): l is LinkRecord => l !== null);
 }
 
 /**

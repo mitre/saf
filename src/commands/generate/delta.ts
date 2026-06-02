@@ -656,24 +656,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     GenerateDelta.links = links;
 
-    // Block-cardinality warning: emit one warning per SRG block where new
-    // and old counts disagree — at least one control in such a block has
-    // no true partner and the assignment is guessing.
-    const blocksWarned = new Set<string>();
-    for (const link of links) {
-      if (
-        link.srg
-        && link.blockNewCount !== undefined
-        && link.blockOldCount !== undefined
-        && link.blockNewCount !== link.blockOldCount
-        && !blocksWarned.has(link.srg)
-      ) {
-        blocksWarned.add(link.srg);
-        this.logger.warn(
-          `Block cardinality mismatch for SRG ${link.srg}: ${link.blockNewCount} new vs ${link.blockOldCount} old — at least one control in this block has no true partner.`,
-        );
-      }
-    }
+    GenerateDelta.emitBlockCardinalityWarnings(this.logger, links);
 
     // Cheap lookup tables for per-link logging
     const oldById = new Map(oldControls.map(c => [c.id, c]));
@@ -682,37 +665,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     );
 
     for (const link of links) {
-      const newId = basename(link.newId);
-      const oldCtl = link.oldId ? oldById.get(link.oldId) : undefined;
-      const newCtl = newByBasename.get(newId);
-
-      // `none` links and (defensively) any link missing oldId are no-op
-      // for body-copying purposes.
-      if (link.matchMethod === 'none' || link.oldId === null) {
-        this.logger.info(`     New XCCDF Control:  ${newId}`);
-        this.logger.error(
-          `    No Match Found for:  ${newId}${link.srg ? ` (SRG=${link.srg})` : ''}\n`,
-        );
-        GenerateDelta.noMatch++;
-        continue;
-      }
-
-      // Every non-none link resolves to an old control and goes into the
-      // returned map. Primary and related both need the old Ruby body.
-      controlMappings[newId] = link.oldId;
-
-      this.logger.info(`Processing New Control:  ${newId}`);
-      if (newCtl?.title) {
-        this.logger.info(`     New Control Title:  ${this.updateTitle(newCtl.title)}`);
-      }
-      if (oldCtl?.title) {
-        this.logger.info(`     Old Control Title:  ${this.updateTitle(oldCtl.title)}`);
-      }
-
-      GenerateDelta.logMatchMethod(this.logger, link);
-      GenerateDelta.tickMatchCounter(link);
-
-      this.logger.info(`  Best Match Candidate:  ${link.oldId} --> ${newId}\n`);
+      this.processLink(link, controlMappings, oldById, newByBasename);
     }
 
     this.logger.info('Mapping Results ===========================================================================');
@@ -740,6 +693,66 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     this.logger.info(`  Total Processed = Total XCCDF Controls:  ${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`);
 
     return controlMappings;
+  }
+
+  /**
+   * Emit one warning per SRG block whose new/old counts disagree. At
+   * least one control in such a block has no true partner and the
+   * assignment is guessing.
+   */
+  private static emitBlockCardinalityWarnings(log: Logger, links: LinkRecord[]): void {
+    const warned = new Set<string>();
+    for (const link of links) {
+      const { srg, blockNewCount, blockOldCount } = link;
+      if (
+        srg
+        && blockNewCount !== undefined
+        && blockOldCount !== undefined
+        && blockNewCount !== blockOldCount
+        && !warned.has(srg)
+      ) {
+        warned.add(srg);
+        log.warn(
+          `Block cardinality mismatch for SRG ${srg}: ${blockNewCount} new vs ${blockOldCount} old — at least one control in this block has no true partner.`,
+        );
+      }
+    }
+  }
+
+  /**
+   * Process a single LinkRecord: update controlMappings for any non-`none`
+   * link, log the per-link diagnostics, and advance the run counters.
+   */
+  private processLink(
+    link: LinkRecord,
+    controlMappings: Record<string, string>,
+    oldById: Map<string, Control>,
+    newByBasename: Map<string, Control>,
+  ): void {
+    const newId = basename(link.newId);
+    if (link.matchMethod === 'none' || link.oldId === null) {
+      this.logger.info(`     New XCCDF Control:  ${newId}`);
+      this.logger.error(
+        `    No Match Found for:  ${newId}${link.srg ? ` (SRG=${link.srg})` : ''}\n`,
+      );
+      GenerateDelta.noMatch++;
+      return;
+    }
+
+    controlMappings[newId] = link.oldId;
+    const oldCtl = oldById.get(link.oldId);
+    const newCtl = newByBasename.get(newId);
+
+    this.logger.info(`Processing New Control:  ${newId}`);
+    if (newCtl?.title) {
+      this.logger.info(`     New Control Title:  ${this.updateTitle(newCtl.title)}`);
+    }
+    if (oldCtl?.title) {
+      this.logger.info(`     Old Control Title:  ${this.updateTitle(oldCtl.title)}`);
+    }
+    GenerateDelta.logMatchMethod(this.logger, link);
+    GenerateDelta.tickMatchCounter(link);
+    this.logger.info(`  Best Match Candidate:  ${link.oldId} --> ${newId}\n`);
   }
 
   /**
