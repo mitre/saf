@@ -629,22 +629,20 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   // @param newProfile - The profile containing the new controls.
   mapControls(oldProfile: Profile, newProfile: Profile): object {
     // Requirement-first pipeline (see src/utils/delta_matching.ts):
-    //   Tier 1  Exact SRG-OS block with single old candidate     -> deterministic accept
-    //   Tier 2  Multiple old candidates in the SRG block         -> CCI Jaccard tiebreak
-    //   Tier 3  No SRG overlap                                   -> Fuse fallback with
-    //                                                              auto-detected vendor-
-    //                                                              prefix stripping and
-    //                                                              keys=['title','gtitle']
+    //   Tier 1  Single old candidate in the SRG block       -> deterministic
+    //   Tier 2  Multiple old candidates in the SRG block    -> bipartite
+    //                                                          assignment by
+    //                                                          semantic + CCI
+    //                                                          composite score
+    //   Tier 3  No SRG overlap                              -> Fuse fallback
+    //                                                          on vendor-prefix-
+    //                                                          stripped titles
     //
-    // 1:N splits (multiple new controls resolving to the same old) are
-    // preserved as primary + related links. Both land in the returned
-    // controlMappings so downstream file-writing copies the old Ruby
-    // body to every new control that shares the requirement.
+    // 1:N splits (multiple new controls resolving to one old) are preserved
+    // as primary + related links; both land in controlMappings so downstream
+    // file-writing copies the old Ruby body to every related new control.
     //
-    // Existing static counters on GenerateDelta are reused to keep the
-    // summary output format stable; `dupMatch` is repurposed to count
-    // `related` links (it used to count rejected duplicates in the
-    // former 1:1 model).
+    // `dupMatch` counts `related` links (kept for output-format stability).
     const oldControls: Control[] = oldProfile.controls;
     const newControls: Control[] = newProfile.controls;
     GenerateDelta.oldControlsLength = oldControls.length;
@@ -653,10 +651,29 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     const controlMappings: Record<string, string> = {};
 
     this.logger.info('Mapping Process ===========================================================================');
-    this.logger.info('Using requirement-first pipeline: SRG-ID blocking + CCI Jaccard tiebreak + vendor-prefix-normalized Fuse fallback\n');
+    this.logger.info('Using requirement-first pipeline: SRG-ID blocking + semantic (title+check) ranking with CCI secondary signal + vendor-prefix-normalized Fuse fallback\n');
 
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     GenerateDelta.links = links;
+
+    // Block-cardinality warning: emit one warning per SRG block where new
+    // and old counts disagree — at least one control in such a block has
+    // no true partner and the assignment is guessing.
+    const blocksWarned = new Set<string>();
+    for (const link of links) {
+      if (
+        link.srg
+        && link.blockNewCount !== undefined
+        && link.blockOldCount !== undefined
+        && link.blockNewCount !== link.blockOldCount
+        && !blocksWarned.has(link.srg)
+      ) {
+        blocksWarned.add(link.srg);
+        this.logger.warn(
+          `Block cardinality mismatch for SRG ${link.srg}: ${link.blockNewCount} new vs ${link.blockOldCount} old — at least one control in this block has no true partner.`,
+        );
+      }
+    }
 
     // Cheap lookup tables for per-link logging
     const oldById = new Map(oldControls.map(c => [c.id, c]));
@@ -732,16 +749,17 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
    */
   private static logMatchMethod(log: Logger, link: LinkRecord): void {
     const confidencePct = (link.confidence * 100).toFixed(0) + '%';
+    const triage = GenerateDelta.formatTriage(link);
     switch (link.matchMethod) {
       case 'srg-deterministic': {
         log.info(
-          `       Match method:  SRG deterministic (${link.srg}) [${link.relationship}]`,
+          `       Match method:  SRG deterministic (${link.srg}) [${link.relationship}]${triage}`,
         );
         break;
       }
-      case 'srg-cci-tiebreak': {
+      case 'srg-semantic-tiebreak': {
         log.info(
-          `       Match method:  SRG block + CCI tiebreak (Jaccard=${confidencePct}) [${link.relationship}]`,
+          `       Match method:  SRG block + semantic tiebreak (semantic=${confidencePct}) [${link.relationship}]${triage}`,
         );
         break;
       }
@@ -763,6 +781,24 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   }
 
   /**
+   * Format the per-link triage components (title/check/CCI) for the log
+   * line. Returns "" when none are populated (e.g. Tier 3 fallback).
+   */
+  private static formatTriage(link: LinkRecord): string {
+    const parts: string[] = [];
+    if (link.titleSimilarity !== undefined) {
+      parts.push(`title=${(link.titleSimilarity * 100).toFixed(0)}%`);
+    }
+    if (link.checkSimilarity !== undefined) {
+      parts.push(`check=${(link.checkSimilarity * 100).toFixed(0)}%`);
+    }
+    if (link.cciJaccardScore !== undefined) {
+      parts.push(`cci=${(link.cciJaccardScore * 100).toFixed(0)}%`);
+    }
+    return parts.length > 0 ? ` (${parts.join(', ')})` : '';
+  }
+
+  /**
    * Advance the GenerateDelta static counters for a single link so the
    * end-of-run stats match reality.
    *
@@ -776,10 +812,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       return;
     }
     // `potentialMismatch` is the single source of truth for "accepted
-    // primary but below the tier's strong-confidence threshold" — see
-    // computePotentialMismatch + TIER{2,3}_MISMATCH_THRESHOLD in
-    // delta_matching.ts. Reading the flag here keeps stats bookkeeping
-    // aligned with the tier definitions automatically.
+    // primary but below the tier's confidence threshold". Reading the
+    // flag here keeps the stats aligned with the tier definitions in
+    // delta_matching.ts.
     if (link.potentialMismatch) {
       GenerateDelta.posMisMatch++;
     } else {
