@@ -9,7 +9,7 @@ import {
   extractSrgId,
   normalizeTitle,
   TIER2_COMPOSITE_CCI_WEIGHT,
-  TIER2_COMPOSITE_TITLE_WEIGHT,
+  TIER2_COMPOSITE_SEMANTIC_WEIGHT,
   tokenJaccard,
   type LinkRecord,
 } from '../../../src/utils/delta_matching';
@@ -21,12 +21,14 @@ const mkControl = (
   gtitle?: string,
   ccis: string[] = [],
   title?: string,
+  check?: string,
 ) => ({
   id,
   title,
   tags: {
     ...(gtitle === undefined ? {} : { gtitle }),
     ...(ccis.length > 0 ? { cci: ccis } : {}),
+    ...(check === undefined ? {} : { check }),
   },
 });
 
@@ -35,6 +37,9 @@ const mkControl = (
 // `profile(a, b, c)` instead of `{ controls: [a, b, c] }`, which also
 // collapses the "arrange block" duplication that Sonar's CPD flags.
 const profile = (...controls: ReturnType<typeof mkControl>[]) => ({ controls });
+
+const linkAssignments = (ls: LinkRecord[]): Record<string, string | null> =>
+  Object.fromEntries(ls.map(l => [l.newId, l.oldId]));
 
 describe('autoDetectPrefix', () => {
   // Data-driven cases — one arrange-then-assert shape; each row exercises
@@ -288,7 +293,7 @@ describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
     expect(links[0]).toMatchObject({
       oldId: 'SV-OLD-B',
       newId: 'SV-NEW-1',
-      matchMethod: 'srg-cci-tiebreak',
+      matchMethod: 'srg-semantic-tiebreak',
       relationship: 'primary',
       srg: 'SRG-OS-000366-GPOS-00153',
     });
@@ -313,12 +318,12 @@ describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
     const byNewId = Object.fromEntries(links.map(l => [l.newId, l]));
     expect(byNewId['SV-NEW-alpha']).toMatchObject({
       oldId: 'SV-OLD-alpha',
-      matchMethod: 'srg-cci-tiebreak',
+      matchMethod: 'srg-semantic-tiebreak',
       relationship: 'primary',
     });
     expect(byNewId['SV-NEW-beta']).toMatchObject({
       oldId: 'SV-OLD-beta',
-      matchMethod: 'srg-cci-tiebreak',
+      matchMethod: 'srg-semantic-tiebreak',
       relationship: 'primary',
     });
   });
@@ -364,6 +369,120 @@ describe('applyRequirementFirstPipeline — Tier 1 (deterministic SRG)', () => {
     expect(links[0].matchMethod).toBe('none');
     expect(links[0].newId).toBe('SV-273999');
     expect(links[0].oldId).toBeNull();
+  });
+});
+
+describe('applyRequirementFirstPipeline — Tier 2 block resolution', () => {
+  it('resolves a multi-candidate SRG block correctly even when CCI Jaccard saturates to 1.0 across every candidate', () => {
+    // Every old candidate in this block carries identical CCIs, so CCI
+    // Jaccard is 1.0 across the block and provides no discriminating
+    // signal. Title + check similarity must carry the pairings.
+    const oldProfile = profile(
+      mkControl('SV-OLD-AUTH', 'SRG-OS-OFFLOAD', ['CCI-001851'], 'RHEL 9 must authenticate the remote audit logging server.'),
+      mkControl('SV-OLD-ENCRYPT', 'SRG-OS-OFFLOAD', ['CCI-001851'], 'RHEL 9 must encrypt the transfer of off-loaded audit records.'),
+      mkControl('SV-OLD-NAME', 'SRG-OS-OFFLOAD', ['CCI-001851'], 'RHEL 9 must label off-loaded audit logs via the name_format directive.'),
+    );
+    const newProfile = profile(
+      mkControl('SV-NEW-NAME', 'SRG-OS-OFFLOAD', ['CCI-001851'], 'Amazon Linux 2023 must label off-loaded audit logs via the name_format directive.'),
+      mkControl('SV-NEW-AUTH', 'SRG-OS-OFFLOAD', ['CCI-001851'], 'Amazon Linux 2023 must authenticate the remote audit logging server.'),
+      mkControl('SV-NEW-ENCRYPT', 'SRG-OS-OFFLOAD', ['CCI-001851'], 'Amazon Linux 2023 must encrypt the transfer of off-loaded audit records.'),
+    );
+    const byNew = Object.fromEntries(
+      applyRequirementFirstPipeline(oldProfile, newProfile).map(l => [l.newId, l]),
+    );
+    expect(byNew['SV-NEW-NAME']?.oldId).toBe('SV-OLD-NAME');
+    expect(byNew['SV-NEW-AUTH']?.oldId).toBe('SV-OLD-AUTH');
+    expect(byNew['SV-NEW-ENCRYPT']?.oldId).toBe('SV-OLD-ENCRYPT');
+    for (const id of ['SV-NEW-NAME', 'SV-NEW-AUTH', 'SV-NEW-ENCRYPT']) {
+      expect(byNew[id]?.matchMethod).toBe('srg-semantic-tiebreak');
+      expect(byNew[id]?.relationship).toBe('primary');
+      expect(byNew[id]?.potentialMismatch).toBe(false);
+    }
+  });
+
+  it('produces the same block assignment regardless of new-profile input order', () => {
+    const oldA = mkControl('SV-OLD-A', 'SRG-OS-X', ['CCI-1'], 'RHEL 9 must configure alpha service.');
+    const oldB = mkControl('SV-OLD-B', 'SRG-OS-X', ['CCI-1'], 'RHEL 9 must configure beta service.');
+    const newA = mkControl('SV-NEW-A', 'SRG-OS-X', ['CCI-1'], 'Amazon Linux 2023 must configure alpha service.');
+    const newB = mkControl('SV-NEW-B', 'SRG-OS-X', ['CCI-1'], 'Amazon Linux 2023 must configure beta service.');
+    const linksAB = applyRequirementFirstPipeline(
+      { controls: [oldA, oldB] },
+      { controls: [newA, newB] },
+    );
+    const linksBA = applyRequirementFirstPipeline(
+      { controls: [oldA, oldB] },
+      { controls: [newB, newA] },
+    );
+    expect(linkAssignments(linksAB)).toEqual(linkAssignments(linksBA));
+  });
+
+  it('surfaces title, check, CCI, and semantic component scores on the link for triage', () => {
+    const oldProfile = profile(
+      mkControl(
+        'SV-OLD-A',
+        'SRG-OS-Q',
+        ['CCI-1'],
+        'RHEL 9 must enforce setting X.',
+        'Verify by running: cat /etc/foo.conf and confirming setting X is enabled.',
+      ),
+      mkControl(
+        'SV-OLD-B',
+        'SRG-OS-Q',
+        ['CCI-2'],
+        'RHEL 9 must enforce setting Y.',
+        'Verify by running: cat /etc/bar.conf and confirming setting Y is enabled.',
+      ),
+    );
+    const newProfile = profile(
+      mkControl(
+        'SV-NEW',
+        'SRG-OS-Q',
+        ['CCI-1'],
+        'Amazon Linux 2023 must enforce setting X.',
+        'Verify by running: cat /etc/foo.conf and confirming setting X is enabled.',
+      ),
+    );
+    const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
+    expect(link.titleSimilarity).toBeGreaterThan(0.9);
+    expect(link.checkSimilarity).toBeGreaterThan(0.9);
+    expect(link.cciJaccardScore).toBe(1);
+    expect(link.semanticScore).toBeGreaterThan(0.9);
+    expect(link.blockNewCount).toBe(1);
+    expect(link.blockOldCount).toBe(2);
+  });
+
+  it('uses tags.check to break a tie when titles alone are near-synonymous (the dense-family scenario)', () => {
+    // Both old candidates have title "must configure auditd". The check
+    // text carries the distinguishing technical content. The new control
+    // matches old B's check verbatim; semantic must pick B.
+    const oldProfile = profile(
+      mkControl(
+        'SV-OLD-A',
+        'SRG-OS-R',
+        ['CCI-1'],
+        'RHEL 9 must configure auditd.',
+        'Verify auditd is configured to flush records to disk by inspecting freq= setting in auditd.conf.',
+      ),
+      mkControl(
+        'SV-OLD-B',
+        'SRG-OS-R',
+        ['CCI-1'],
+        'RHEL 9 must configure auditd.',
+        'Verify auditd is configured to label off-loaded logs by inspecting the name_format directive in audisp-remote.conf.',
+      ),
+    );
+    const newProfile = profile(
+      mkControl(
+        'SV-NEW',
+        'SRG-OS-R',
+        ['CCI-1'],
+        'Amazon Linux 2023 must configure auditd.',
+        'Verify auditd is configured to label off-loaded logs by inspecting the name_format directive in audisp-remote.conf.',
+      ),
+    );
+    const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
+    expect(link.oldId).toBe('SV-OLD-B');
+    expect(link.matchMethod).toBe('srg-semantic-tiebreak');
   });
 });
 
@@ -425,34 +544,67 @@ describe('applyRequirementFirstPipeline — potentialMismatch flag', () => {
     expect(link.potentialMismatch).toBe(false);
   });
 
-  it('is true for Tier 2 primary when CCI Jaccard is below 0.5 (weak block-internal evidence)', () => {
-    // Two old candidates in the SRG block force Tier 2. Winner has Jaccard
-    // 1/3 = 0.333 (below the 0.5 Tier-2 threshold) -> flagged.
+  it('is true for Tier 1 deterministic when the lone old candidate is semantically unrelated', () => {
+    // Two unrelated requirements can share an SRG + CCI by accident of
+    // DISA categorization. A 1:1 SRG match alone is not evidence the
+    // bodies should be linked; the semantic check must flag this.
     const oldProfile = profile(
-      mkControl('SV-OLD-A', 'SRG-OS-B', ['CCI-1', 'CCI-2', 'CCI-3'], 'RHEL 9 must alpha.'),
-      mkControl('SV-OLD-B', 'SRG-OS-B', ['CCI-9'], 'RHEL 9 must beta.'),
+      mkControl(
+        'SV-258168',
+        'SRG-OS-000051-GPOS-00024',
+        ['CCI-001851'],
+        'RHEL 9 must periodically flush audit records to disk to avoid in-memory record loss.',
+      ),
     );
     const newProfile = profile(
-      mkControl('SV-NEW', 'SRG-OS-B', ['CCI-1'], 'Amazon Linux 2023 must alpha.'),
+      mkControl(
+        'SV-274020',
+        'SRG-OS-000051-GPOS-00024',
+        ['CCI-001851'],
+        'Amazon Linux 2023 must have the rsyslog package installed.',
+      ),
     );
     const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
-    expect(link.matchMethod).toBe('srg-cci-tiebreak');
+    expect(link.matchMethod).toBe('srg-deterministic');
     expect(link.relationship).toBe('primary');
-    expect(link.confidence).toBeLessThan(0.5);
+    // Body is still carried forward (reviewers can keep or rewrite);
+    // the flag fires so they know to look.
+    expect(link.oldId).toBe('SV-258168');
     expect(link.potentialMismatch).toBe(true);
   });
 
-  it('is false for Tier 2 primary when CCI Jaccard is at least 0.5 (strong block-internal evidence)', () => {
+  it('is true for Tier 2 primary when winner semantic score is below the threshold', () => {
+    // Multi-candidate block with identical CCIs across candidates (so
+    // CCI Jaccard is informationless) and a new title that shares almost
+    // no tokens with any candidate.
     const oldProfile = profile(
-      mkControl('SV-OLD-A', 'SRG-OS-C', ['CCI-1', 'CCI-2'], 'RHEL 9 must alpha.'),
+      mkControl('SV-OLD-A', 'SRG-OS-B', ['CCI-1'], 'RHEL 9 must alpha alpha alpha.'),
+      mkControl('SV-OLD-B', 'SRG-OS-B', ['CCI-1'], 'RHEL 9 must beta beta beta.'),
+    );
+    const newProfile = profile(
+      mkControl('SV-NEW', 'SRG-OS-B', ['CCI-1'], 'Amazon Linux 2023 must implement quantum key distribution.'),
+    );
+    const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
+    expect(link.matchMethod).toBe('srg-semantic-tiebreak');
+    expect(link.relationship).toBe('primary');
+    expect(link.confidence).toBeLessThan(0.3);
+    expect(link.potentialMismatch).toBe(true);
+  });
+
+  it('is false for Tier 2 primary when semantic score is strong even with weak CCI overlap', () => {
+    // CCI Jaccard is only 1/3 but titles align perfectly after
+    // prefix stripping; the flag must not fire on the CCI signal alone.
+    const oldProfile = profile(
+      mkControl('SV-OLD-A', 'SRG-OS-C', ['CCI-1', 'CCI-2', 'CCI-3'], 'RHEL 9 must alpha.'),
       mkControl('SV-OLD-B', 'SRG-OS-C', ['CCI-9'], 'RHEL 9 must beta.'),
     );
     const newProfile = profile(
-      mkControl('SV-NEW', 'SRG-OS-C', ['CCI-1', 'CCI-2'], 'Amazon Linux 2023 must alpha.'),
+      mkControl('SV-NEW', 'SRG-OS-C', ['CCI-1'], 'Amazon Linux 2023 must alpha.'),
     );
     const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
-    expect(link.matchMethod).toBe('srg-cci-tiebreak');
+    expect(link.matchMethod).toBe('srg-semantic-tiebreak');
     expect(link.relationship).toBe('primary');
+    expect(link.oldId).toBe('SV-OLD-A');
     expect(link.confidence).toBeGreaterThanOrEqual(0.5);
     expect(link.potentialMismatch).toBe(false);
   });
@@ -507,13 +659,13 @@ describe('applyRequirementFirstPipeline — potentialMismatch flag', () => {
 describe('Tier-2 composite weight constants', () => {
   it('sum to 1.0 (fairness invariant)', () => {
     expect(
-      TIER2_COMPOSITE_CCI_WEIGHT + TIER2_COMPOSITE_TITLE_WEIGHT,
+      TIER2_COMPOSITE_SEMANTIC_WEIGHT + TIER2_COMPOSITE_CCI_WEIGHT,
     ).toBeCloseTo(1, 10);
   });
 
-  it('CCI weight dominates title weight', () => {
-    expect(TIER2_COMPOSITE_CCI_WEIGHT).toBeGreaterThan(
-      TIER2_COMPOSITE_TITLE_WEIGHT,
+  it('semantic weight dominates CCI weight (requirement text identifies the requirement; CCI categorizes it)', () => {
+    expect(TIER2_COMPOSITE_SEMANTIC_WEIGHT).toBeGreaterThan(
+      TIER2_COMPOSITE_CCI_WEIGHT,
     );
   });
 });

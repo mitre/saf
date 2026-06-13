@@ -56,7 +56,7 @@ describe('Cross-vendor integration: RHEL 9 -> Amazon Linux 2023 mini', () => {
       byMethod[l.matchMethod] = (byMethod[l.matchMethod] ?? 0) + 1;
     }
     expect(byMethod['srg-deterministic']).toBe(6);
-    expect(byMethod['srg-cci-tiebreak']).toBe(3);
+    expect(byMethod['srg-semantic-tiebreak']).toBe(3);
     expect(byMethod['fuse-fallback']).toBe(1);
     expect(byMethod.none).toBe(1);
   });
@@ -103,7 +103,7 @@ describe('Cross-vendor integration: RHEL 9 -> Amazon Linux 2023 mini', () => {
     // 0.5) and 0 with SV-257901/SV-257902 -> wins SV-257900.
     expect(byNew['SV-273900']).toMatchObject({
       oldId: 'SV-257900',
-      matchMethod: 'srg-cci-tiebreak',
+      matchMethod: 'srg-semantic-tiebreak',
       relationship: 'primary',
       potentialMismatch: false,
     });
@@ -111,7 +111,7 @@ describe('Cross-vendor integration: RHEL 9 -> Amazon Linux 2023 mini', () => {
     // (Jaccard 1.0) and 0 with the other two -> wins SV-257901.
     expect(byNew['SV-273901']).toMatchObject({
       oldId: 'SV-257901',
-      matchMethod: 'srg-cci-tiebreak',
+      matchMethod: 'srg-semantic-tiebreak',
       relationship: 'primary',
       potentialMismatch: false,
     });
@@ -125,7 +125,7 @@ describe('Cross-vendor integration: RHEL 9 -> Amazon Linux 2023 mini', () => {
     // because the CCI Jaccard is below 0.5.
     expect(byNew['SV-273902']).toMatchObject({
       oldId: 'SV-257902',
-      matchMethod: 'srg-cci-tiebreak',
+      matchMethod: 'srg-semantic-tiebreak',
       relationship: 'primary',
       potentialMismatch: true,
     });
