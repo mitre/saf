@@ -100,11 +100,25 @@ describe.sequential('Test generate delta command', () => {
     assert.isTrue(isFile);
   });
 
+  it('should require --inspecPath when using fuzzy logic to match and map controls', async () => {
+    const { stderr } = await runCommand<{ name: string }>([
+      'generate delta',
+      '-J', path.resolve('./test/sample_data/inspec/json/profile_and_controls/Windows_Server_2019_v1r3_mini-profile.json'),
+      '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2022_V2R1_mini-sample-xccdf.xml'),
+      '-o', `${tmpobj.name}`,
+      '-M',
+      '-c', path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls/'),
+    ]);
+    expect(stderr).to.include('-M');
+    expect(stderr).to.include('inspecPath');
+  });
+
   // should process delta using the fuzzy logic
   it('should generate the correct number of controls using fuzzy logic to match and map controls', async () => {
     const { stdout } = await runCommand<{ name: string }>([
       'generate delta',
       '-J', path.resolve('./test/sample_data/inspec/json/profile_and_controls/Windows_Server_2019_v1r3_mini-profile.json'),
+      '-I', 'cinc-auditor',
       '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2022_V2R1_mini-sample-xccdf.xml'),
       '-o', `${tmpobj.name}`,
       '-M',

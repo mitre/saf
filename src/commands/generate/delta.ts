@@ -26,7 +26,7 @@ import {
 } from '../../utils/delta_matching';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
-import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveCincAuditor, resolveSafeChild } from '../../utils/global';
+import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveSafeChild } from '../../utils/global';
 
 /**
  * This class extends the capabilities of the update_controls4delta providing the following capabilities:
@@ -44,7 +44,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   static readonly flags = {
     inspecJsonFile: Flags.string({
       char: 'J', required: false, exclusive: ['interactive'],
-      description: 'InSpec Profile Controls JSON summary file - can be generated using the "[cinc-auditor or inspec] json <profile path> | jq . > profile.json" command',
+      description: '\u001B[31m(required [-J or -I])\u001B[34m InSpec Profile Controls JSON summary file - can be generated using the "[cinc-auditor or inspec] json <profile path> | jq . > profile.json" command',
+    }),
+    inspecPath: Flags.string({
+      char: 'I', required: false, exclusive: ['interactive'],
+      description: '\u001B[31m(required [-J or -I], and also with -M)\u001B[34m Absolute or known relative path to the inspec or cinc-auditor executable',
     }),
     xccdfXmlFile: Flags.string({
       char: 'X', exclusive: ['interactive', 'xccdfUrl'],
@@ -95,11 +99,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     },
     {
       description: '\u001B[93mProviding a XCCDF (File), a Profile Controls Summary, with Fuzzy matching)\u001B[0m',
-      command: '<%= config.bin %> <%= command.id %> -X <xccdf_benchmarks.[xml, zip]>, -J <profile_summary.json> -c <current-controls-dir> -o <updated_controls_dir>, -M, [options]',
+      command: '<%= config.bin %> <%= command.id %> -X <xccdf_benchmarks.[xml, zip]>, -J <profile_summary.json> -I </path/to/inspec-or-cinc-auditor> -c <current-controls-dir> -o <updated_controls_dir>, -M, [options]',
     },
     {
       description: '\u001B[93mProviding a XCCDF (URL), a Profile Controls Summary, with Fuzzy matching)\u001B[0m',
-      command: '<%= config.bin %> <%= command.id %> -U <URL-to-benchmark.zip>, -J <profile_summary.json> -c <current-controls-dir> -o <updated_controls_dir>, -M, [options]',
+      command: '<%= config.bin %> <%= command.id %> -U <URL-to-benchmark.zip>, -J <profile_summary.json> -I </path/to/inspec-or-cinc-auditor> -c <current-controls-dir> -o <updated_controls_dir>, -M, [options]',
     },
   ];
 
@@ -131,6 +135,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       this.error('\u001B[31mIf not interactive you must specify either [-X, --xccdfXmlFile or -U --xccdfUrl]\u001B[0m');
     }
 
+    // If not interactive, one input source is required for the initial profile load.
+    // When -M is used, -I is also required later to regenerate the mapped profile summary.
+    if (!flags.interactive && !flags.inspecJsonFile && !flags.inspecPath) {
+      this.error('\u001B[31mIf not interactive you must specify either [-J, --inspecJsonFile or -I, --inspecPath]\u001B[0m');
+    }
+
     // If not interactive and -J not provided the -c must be provided
     if (!flags.interactive && !flags.inspecJsonFile && !flags.controlsDir) {
       this.error('\u001B[31mIf not interactive and -J not provided the Controls Directory (-c) must be provided\u001B[0m');
@@ -138,6 +148,10 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
     if (flags.runMapControls && !flags.controlsDir) {
       this.error('\u001B[31mIf not interactive and -M is provided the Controls Directory (-c) must be provided\u001B[0m');
+    }
+
+    if (!flags.interactive && flags.runMapControls && !flags.inspecPath) {
+      this.error('\u001B[31mIf not interactive and -M is provided the inspecPath (-I) must be provided\u001B[0m');
     }
 
     // Statics live for the process lifetime; explicitly reset them so that
@@ -158,6 +172,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
     // Flag variables
     let inspecJsonFile: string;
+    let inspecPath: string;
     let xccdfXmlFile: string;
     let xccdfContent: string;
     let deltaOutputDir: string;
@@ -196,6 +211,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
       // Optional flags
       inspecJsonFile = interactiveFlags.inspecJsonFile;
+      inspecPath = interactiveFlags.inspecPath;
       ovalXmlFile = interactiveFlags.ovalXmlFile;
       if (interactiveFlags.reportDirectory) {
         reportFile = path.join(interactiveFlags.reportDirectory, interactiveFlags.reportFileName);
@@ -216,6 +232,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
       // Optional flags
       inspecJsonFile = flags.inspecJsonFile!;
+      inspecPath = flags.inspecPath as string;
       ovalXmlFile = flags.ovalXmlFile!;
       reportFile = flags.reportFile!;
       idType = flags.idType;
@@ -271,7 +288,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       try {
         this.logThis(`  Generating the summary file on directory: ${shortControlsDir}`, 'info');
         // Generate the profile controls summary from the `controlsDir` without the trailing "controls" directory
-        const inspecJsonFile = execFileSync(resolveCincAuditor(), ['json', path.dirname(controlsDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
+        const inspecJsonFile = execFileSync(inspecPath, ['json', path.dirname(controlsDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
         this.logThis('  Generated InSpec Profiles from InSpec JSON summary', 'info');
         existingProfile = processInSpecProfile(inspecJsonFile);
       } catch (error: unknown) {
@@ -411,7 +428,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // Get the directory name without the trailing "controls" directory
           // Here we are using the newly updated (mapped) controls
           // const profileDir = path.dirname(controlsDir)
-          const inspecJsonFileNew = execFileSync(resolveCincAuditor(), ['json', path.dirname(mappedDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
+          const inspecJsonFileNew = execFileSync(inspecPath, ['json', path.dirname(mappedDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
 
           // Replace existing profile (inputted JSON of source profile to be mapped)
           // Allow delta to take care of the rest
@@ -1128,8 +1145,17 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       this.logger.info('inspecJsonFile=' + inspecJsonFile);
       interactiveValues.inspecJsonFile = inspecJsonFile;
     } else {
+      const inspecPath = await input({
+        message: 'Provide the absolute or known relative path to the inspec or cinc-auditor executable:',
+        validate(input: string) {
+          return input.trim().length > 0 || 'Please enter a path to the inspec or cinc-auditor executable';
+        },
+      });
+
       this.logger.info('inspecJsonFile=auto-generated');
+      this.logger.info('inspecPath=' + inspecPath);
       interactiveValues.inspecJsonFile = '';
+      interactiveValues.inspecPath = inspecPath;
     }
 
     // If we are using fuzzy logic or profile controls summary was not provided we need the controls directory

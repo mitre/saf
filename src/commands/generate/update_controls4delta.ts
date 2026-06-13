@@ -11,7 +11,7 @@ import {
 import { Flags } from '@oclif/core';
 import tmp from 'tmp';
 import type { Logger } from 'winston';
-import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveCincAuditor } from '../../utils/global';
+import { basename, downloadFile, extractFileFromZip, getErrorMessage } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -50,11 +50,11 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
   static readonly examples = [
     {
       description: '\u001B[93mProviding an XCCDF File\u001B[0m',
-      command: '<%= config.bin %> <%= command.id %> -X ./the_xccdf_guidance_file.xml [-J <profile_json_file.json>] [-c the_controls_directory --no-backupControls --no-formatControls -P <V or SV> -g -L debug]',
+      command: '<%= config.bin %> <%= command.id %> -X ./the_xccdf_guidance_file.xml [-J <profile_json_file.json> | -I </path/to/inspec-or-cinc-auditor>] [-c the_controls_directory --no-backupControls --no-formatControls -P <V or SV> -g -L debug]',
     },
     {
       description: '\u001B[93mProviding an URL point to an ZIP XCCDF (from DISA STIG downloads)\u001B[0m',
-      command: '<%= config.bin %> <%= command.id %> -U <URL to DISA STIGs downloads> [-J <profile_json_file.json>] [-c the_controls_directory --no-backupControls --no-formatControls -P <V or SV> -g -L debug]',
+      command: '<%= config.bin %> <%= command.id %> -U <URL to DISA STIGs downloads> [-J <profile_json_file.json> | -I </path/to/inspec-or-cinc-auditor>] [-c the_controls_directory --no-backupControls --no-formatControls -P <V or SV> -g -L debug]',
     },
   ];
 
@@ -70,8 +70,12 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       exclusive: ['xccdfXmlFile'],
     }),
     inspecJsonFile: Flags.string({
-      char: 'J', required: false,
-      description: 'InSpec Profiles JSON summary file - can be generated using the "cinc-auditor or inspec] json <profile path> > profile.json" command',
+      char: 'J', required: false, exactlyOne: ['inspecPath'],
+      description: '\u001B[31m(required [-J or -I])\u001B[34m InSpec Profiles JSON summary file - can be generated using the "[cinc-auditor or inspec] json <profile path> > profile.json" command',
+    }),
+    inspecPath: Flags.string({
+      char: 'I', required: false, exactlyOne: ['inspecJsonFile'],
+      description: '\u001B[31m(required [-J or -I])\u001B[34m Absolute or known relative path to the inspec or cinc-auditor executable',
     }),
     controlsDir: Flags.string({
       char: 'c', required: true,
@@ -103,6 +107,10 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
 
     if (!flags.xccdfXmlFile && !flags.xccdfUrl) {
       this.error('\u001B[31mYou must specify either [-X, --xccdfXmlFile or -U --xccdfUrl]\u001B[0m');
+    }
+
+    if (!flags.inspecJsonFile && !flags.inspecPath) {
+      this.error('\u001B[31mYou must specify either [-J, --inspecJsonFile or -I, --inspecPath]\u001B[0m');
     }
 
     const logger = createWinstonLogger({ module: 'generate:update_controls', level: flags.logLevel });
@@ -250,12 +258,13 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         throw new Error('Unknown error occurred while processing the input JSON.', { cause: error });
       }
     } else {
+      const inspecPath = flags.inspecPath as string;
       // Generate the profile json
       try {
         logger.info(`  Generating the summary file on directory: ${shortControlsDir}`);
         // Get the directory name without the trailing "controls" directory
         const profileDir = path.dirname(flags.controlsDir);
-        const inspecJsonFile = execFileSync(resolveCincAuditor(), ['json', profileDir], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
+        const inspecJsonFile = execFileSync(inspecPath, ['json', profileDir], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
 
         logger.info('Generating InSpec Profiles from InSpec JSON summary');
         inspecProfile = processInSpecProfile(inspecJsonFile);
