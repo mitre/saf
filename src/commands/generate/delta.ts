@@ -1145,6 +1145,13 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       this.logger.info('inspecJsonFile=' + inspecJsonFile);
       interactiveValues.inspecJsonFile = inspecJsonFile;
     } else {
+      this.logger.info('inspecJsonFile=auto-generated');
+      interactiveValues.inspecJsonFile = '';
+    }
+
+    // If we are using fuzzy logic or profile controls summary was not provided we need the controls directory
+    const useFuzzyLogic = await confirm({ message: 'Run the approximate string matching process (fuzzy logic)?' });
+    if (useFuzzyLogic || generateSummaryFile === 'yes') {
       const inspecPath = await input({
         message: 'Provide the absolute or known relative path to the inspec or cinc-auditor executable:',
         validate(input: string) {
@@ -1152,15 +1159,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         },
       });
 
-      this.logger.info('inspecJsonFile=auto-generated');
       this.logger.info('inspecPath=' + inspecPath);
-      interactiveValues.inspecJsonFile = '';
       interactiveValues.inspecPath = inspecPath;
-    }
 
-    // If we are using fuzzy logic or profile controls summary was not provided we need the controls directory
-    const useFuzzyLogic = await confirm({ message: 'Run the approximate string matching process (fuzzy logic)?' });
-    if (useFuzzyLogic || generateSummaryFile === 'yes') {
       const controlsDir = await fileSelector({
         message: 'Select the Profile Controls directory (controls Delta is processing):',
         pageSize: 15,
