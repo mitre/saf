@@ -232,7 +232,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
       // Optional flags
       inspecJsonFile = flags.inspecJsonFile!;
-      inspecPath = flags.inspecPath as string;
+      inspecPath = flags.inspecPath!;
       ovalXmlFile = flags.ovalXmlFile!;
       reportFile = flags.reportFile!;
       idType = flags.idType;
@@ -288,7 +288,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       try {
         this.logThis(`  Generating the summary file on directory: ${shortControlsDir}`, 'info');
         // Generate the profile controls summary from the `controlsDir` without the trailing "controls" directory
-        const inspecJsonFile = execFileSync(inspecPath, ['json', path.dirname(controlsDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
+        const inspecJsonFile = execFileSync(inspecPath, ['json', path.dirname(controlsDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024, shell: process.platform === 'win32' });
         this.logThis('  Generated InSpec Profiles from InSpec JSON summary', 'info');
         existingProfile = processInSpecProfile(inspecJsonFile);
       } catch (error: unknown) {
@@ -428,7 +428,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // Get the directory name without the trailing "controls" directory
           // Here we are using the newly updated (mapped) controls
           // const profileDir = path.dirname(controlsDir)
-          const inspecJsonFileNew = execFileSync(inspecPath, ['json', path.dirname(mappedDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
+          const inspecJsonFileNew = execFileSync(inspecPath, ['json', path.dirname(mappedDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024, shell: process.platform === 'win32' });
 
           // Replace existing profile (inputted JSON of source profile to be mapped)
           // Allow delta to take care of the rest
