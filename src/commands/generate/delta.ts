@@ -1103,7 +1103,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
       this.logger.info('xccdfXmlFile=' + xccdfXmlFile);
       interactiveValues.xccdfTye = 'file';
-      interactiveValues.ovalXmlFile = xccdfXmlFile;
+      interactiveValues.xccdfXmlFile = xccdfXmlFile;
     } else {
       const xccdfUrl = await input({
         message: 'Provide an URL pointing to the XCCDF benchmark (.zip) package:',
