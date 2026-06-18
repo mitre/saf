@@ -43,7 +43,7 @@ jobs:
           push: true
           platforms: "linux/amd64,linux/arm64"
           tags: mitre/saf:release-latest,mitre/saf:${{ steps.format-tag.outputs.replaced }},mitre/saf:v1
-      - name: Get Docker SHA since the Iron Bank release requires us to specify the exact resources we need them to pull into the environment
+      - name: Get the per-architecture Docker SHAs since the Iron Bank Dockerfiles require us to specify the exact per-architecture resources we need them to pull into the environment
         shell: bash
         id: get-docker-sha
         run: |
@@ -64,7 +64,14 @@ jobs:
           done
 
           if [ "$SUCCESS" = true ]; then
-            echo "DOCKER_SHA=$(docker inspect --format='{{index .RepoDigests 0}}' mitre/saf:${{ steps.format-tag.outputs.replaced }} | cut -d '@' -f 2)" >> $GITHUB_ENV
+            # The image is multi-arch, so the tag resolves to an OCI index (manifest list).
+            # Iron Bank maintains a per-architecture Dockerfile, so each one needs the digest of
+            # its specific child manifest (amd64 / arm64), not the index digest.
+            MANIFEST=$(docker buildx imagetools inspect mitre/saf:${{ steps.format-tag.outputs.replaced }} --raw)
+            AMD64_SHA=$(echo "$MANIFEST" | jq -r '.manifests[] | select(.platform.architecture=="amd64" and .platform.os=="linux") | .digest')
+            ARM64_SHA=$(echo "$MANIFEST" | jq -r '.manifests[] | select(.platform.architecture=="arm64" and .platform.os=="linux") | .digest')
+            echo "DOCKER_SHA=${AMD64_SHA}" >> $GITHUB_ENV
+            echo "DOCKER_SHA_ARM64=${ARM64_SHA}" >> $GITHUB_ENV
           else
             echo "Docker pull failed after $MAX_RETRIES attempts."
             exit 1
@@ -81,5 +88,6 @@ jobs:
           git_commit_author_name: "Automated SAF CLI Release"
           git_commit_author_email: "saf@mitre.org"
           update_commands: |
-            yq e -i '.args.SAF_VERSION=\"${{ steps.format-tag.outputs.replaced }}\" | .tags[0]=\"${{ steps.format-tag.outputs.replaced }}\" | .labels.\"org.opencontainers.image.version\"=\"${{ steps.format-tag.outputs.replaced }}\" | .resources[0].tag=\"mitre/saf:${{ steps.format-tag.outputs.replaced }}\" | .resources[0].url=\"docker://docker.io/mitre/saf@${{ env.DOCKER_SHA }}\"' hardening_manifest.yaml
+            yq e -i '.args.SAF_VERSION=\"${{ steps.format-tag.outputs.replaced }}\" | .tags[0]=\"${{ steps.format-tag.outputs.replaced }}\" | .labels.\"org.opencontainers.image.version\"=\"${{ steps.format-tag.outputs.replaced }}\" | .resources[0].tag=\"mitre/saf:${{ steps.format-tag.outputs.replaced }}\" | .resources[0].url=\"docker://docker.io/mitre/saf@${{ env.DOCKER_SHA }}\" | .resources[1].tag=\"mitre/saf:${{ steps.format-tag.outputs.replaced }}.arm64\" | .resources[1].url=\"docker://docker.io/mitre/saf@${{ env.DOCKER_SHA_ARM64 }}\"' hardening_manifest.yaml
             sed -i s/SAF_VERSION=\.\*/SAF_VERSION=${{ steps.format-tag.outputs.replaced }}/ Dockerfile
+            sed -i s/SAF_VERSION=\.\*/SAF_VERSION=${{ steps.format-tag.outputs.replaced }}-arm64/ Dockerfile.arm64
