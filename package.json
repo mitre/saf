@@ -27,7 +27,7 @@
     "@types/get-installed-path": "^4.0.1",
     "@types/lodash": "^4.14.197",
     "@types/mustache": "^4.2.2",
-    "@types/node": "^25",
+    "@types/node": "^26",
     "@types/prompt-sync": "^4.2.0",
     "@types/tmp": "^0.2.3",
     "accurate-search": "^1.2.15",
