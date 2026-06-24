@@ -21,19 +21,6 @@ export function checkSuffix(input: string, suffix = '.json') {
 }
 
 /**
- * The `basename` function.
- *
- * This function returns the basename, i.e. the last value for a given path
- * which is usually the filename and extension.
- *
- * Not using path.basename as it doesn't "just work" as one would expect handling
- * paths from other filesystem types: see https://nodejs.org/api/path.html#windows-vs-posix
- *
- * @param inputPath - The full path to convert. This should be a string representing a valid file path.
- *
- * @returns {string} - The filename extracted from the full path. If the path does not contain a filename, an empty string is returned.
- */
-/**
  * Resolve a child path under `baseDir` after realpath-canonicalizing both,
  * and assert the result stays inside `baseDir`. Rejects symlink traversal
  * and `..` escapes. Throws if:
@@ -69,19 +56,19 @@ export function resolveSafeChild(baseDir: string, ...parts: string[]): string {
   return target;
 }
 
+/**
+ * The `basename` function.
+ *
+ * This function returns the basename, i.e. the last value for a given path which is usually the filename and extension.
+ *
+ * Uses `path.win32.basename` because it handles both Windows and POSIX path separators consistently across host operating systems.
+ *
+ * @param inputPath - The full path to convert. This should be a string representing a valid file path.
+ *
+ * @returns {string} - The filename extracted from the full path. If the path does not contain a filename, an empty string is returned.
+ */
 export function basename(inputPath: string): string {
-  // trim trailing whitespace and path separators
-  // ('/'=linux or '\'=windows (note that this could be double backslash on occasion)) from the end of the string
-  const trimmedPath = inputPath.trimEnd().replace(/[\\/]+$/, '');
-
-  // grab everything after the last separator or the entire string if no separator found
-  const lastSeparatorIndex = Math.max(
-    trimmedPath.lastIndexOf('/'),
-    trimmedPath.lastIndexOf('\\'),
-  );
-
-  // return the substring after the index of the separator - if no separator was found then the index was -1 to which adding 1 makes 0, i.e. the beginning of the string
-  return trimmedPath.slice(lastSeparatorIndex + 1);
+  return path.win32.basename(inputPath.trimEnd());
 }
 
 /**
