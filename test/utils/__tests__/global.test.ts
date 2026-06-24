@@ -80,8 +80,23 @@ describe('basename', () => {
     expect(result).toBe('to');
   });
 
+  it('should return the last directory name if the path ends with multiple backslashes', () => {
+    const result = basename('\\path\\to\\\\\\');
+    expect(result).toBe('to');
+  });
+
+  it('should trim trailing whitespace before returning the filename', () => {
+    const result = basename('file.txt   ');
+    expect(result).toBe('file.txt');
+  });
+
   it('should return the empty string if the path is the empty string', () => {
     const result = basename('');
+    expect(result).toBe('');
+  });
+
+  it('should return the empty string if trimEnd leaves an empty string', () => {
+    const result = basename('   ');
     expect(result).toBe('');
   });
 
