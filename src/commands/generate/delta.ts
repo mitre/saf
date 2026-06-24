@@ -832,24 +832,28 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
    * Advance the GenerateDelta static counters for a single link so the
    * end-of-run stats match reality.
    *
-   *   match        -> primary link, high confidence
-   *   posMisMatch  -> primary link, lower confidence (still accepted)
-   *   dupMatch     -> related link (shares old body with an earlier primary)
+   *   match        -> primary link above the tier's semantic bar
+   *   posMisMatch  -> any flagged link (primary OR related) — accepted but
+   *                   below the semantic bar; the body grafted forward is
+   *                   weakly supported and wants review
+   *   dupMatch     -> unflagged related link (shares old body with a primary)
    */
   private static tickMatchCounter(link: LinkRecord): void {
+    // `potentialMismatch` is the single source of truth for "accepted but
+    // below the tier's semantic bar". It now fires for `related` grafts too
+    // (they carry a body forward just like primaries), so it is checked
+    // first: a flagged related graft counts as a possible mismatch, not a
+    // trusted duplicate. Each mapped link still ticks exactly one counter,
+    // so the match + mismatch + related = total invariant holds.
+    if (link.potentialMismatch) {
+      GenerateDelta.posMisMatch++;
+      return;
+    }
     if (link.relationship === 'related') {
       GenerateDelta.dupMatch++;
       return;
     }
-    // `potentialMismatch` is the single source of truth for "accepted
-    // primary but below the tier's confidence threshold". Reading the
-    // flag here keeps the stats aligned with the tier definitions in
-    // delta_matching.ts.
-    if (link.potentialMismatch) {
-      GenerateDelta.posMisMatch++;
-    } else {
-      GenerateDelta.match++;
-    }
+    GenerateDelta.match++;
   }
 
   getMappedStatisticsValidation(totalMappedControls: number, statValidation: string): string {

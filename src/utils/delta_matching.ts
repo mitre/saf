@@ -51,12 +51,18 @@ function tokenizeSet(s: string): Set<string> {
 /**
  * Minimal structural shape the matcher needs from an InSpec control.
  * Matches the subset of `@mitre/inspec-objects`' Control that we read.
- * `tags.check` is the STIG check text — the most discriminating semantic
- * content inside a dense SRG block where titles are near-synonymous.
+ *
+ * The STIG check text — the most discriminating semantic content inside a
+ * dense SRG block where titles are near-synonymous — lives in `descs.check`,
+ * NOT `tags.check`, on real processed controls: `processInSpecProfile` moves
+ * `tags.check` into `descs.check` (parsers/json), and `processXCCDF` writes
+ * `descs.check` directly (parsers/xccdf). `tags.check` is kept here only as a
+ * fallback for hand-built / pre-normalized inputs. See `safeCheck`.
  */
 export type ControlLike = {
   id: string;
   title?: string | null;
+  descs?: Record<string, string | undefined> | null;
   tags?: {
     gtitle?: string | null;
     cci?: string[] | null;
@@ -78,7 +84,10 @@ function safeTitle(title: string | null | undefined): string {
 }
 
 function safeCheck(control: ControlLike): string {
-  return control.tags?.check ?? '';
+  // Real processed controls carry check text in `descs.check` (see ControlLike
+  // docstring); `tags.check` is effectively always undefined after parsing.
+  // Prefer descs.check; fall back to tags.check for hand-built inputs.
+  return control.descs?.check ?? control.tags?.check ?? '';
 }
 
 /**
@@ -262,11 +271,21 @@ export const TIER1_MISMATCH_THRESHOLD = 0.3;
 export const TIER2_MISMATCH_THRESHOLD = 0.3;
 
 /**
- * Tier-3 (Fuse-fallback) primary links with confidence below this threshold
+ * Tier-3 (Fuse-fallback) links with Fuse title-confidence below this threshold
  * are flagged. Fuse already gates acceptance at `1 - FUSE_ACCEPT_THRESHOLD`
  * (= 0.55 confidence), so the flag fires across [0.55, 0.9): accepted but soft.
  */
 export const TIER3_MISMATCH_THRESHOLD = 0.9;
+
+/**
+ * Tier-3 (Fuse-fallback) links whose title+check semantic score is below this
+ * threshold are flagged, independent of the Fuse title-confidence gate above.
+ * Title-template collisions (one swapped noun: "sudo package installed" vs
+ * "auditing package installed") score high on title-only Fuse confidence but
+ * low here once the check text is taken into account. Shares the 0.3 value
+ * with Tier 1/2 for a single, explainable semantic bar across all tiers.
+ */
+export const TIER3_SEMANTIC_THRESHOLD = 0.3;
 
 /**
  * Tier-2 composite weights: `composite = SEMANTIC_WEIGHT * semanticScore
@@ -280,9 +299,20 @@ export const TIER2_COMPOSITE_CCI_WEIGHT = 0.3;
 
 /**
  * Compute the `potentialMismatch` flag from a link's semantic score.
- * Related and no-match links never flag (the flag is about soft primary
- * matches). Tier 1 and Tier 2 share a semantic-score threshold; Tier 3
- * uses its own confidence threshold against the (also-semantic) Fuse score.
+ *
+ * The flag fires for BOTH `primary` and `related` links: a `related` link
+ * still grafts the old control's body onto the new control downstream, so a
+ * weak-evidence `related` association ships a wrong body just as silently as
+ * a weak `primary` would (a legitimate 1:N split keeps a high semantic score
+ * and stays unflagged; a control force-assigned `related` to a poor match in
+ * a cardinality-mismatched block scores low and flags). Only explicit
+ * no-match links are exempt — there is no candidate body to be suspicious of.
+ *
+ * Tier 1 and Tier 2 gate on the title+check semantic score. Tier 3 (Fuse
+ * fallback) gates on EITHER a weak title+check semantic score OR a low Fuse
+ * title-confidence — the semantic term catches title-template collisions
+ * (near-identical titles whose check text diverges) that title-only Fuse
+ * confidence rates highly.
  */
 function computePotentialMismatch(
   matchMethod: MatchMethod,
@@ -290,7 +320,7 @@ function computePotentialMismatch(
   semantic: number,
   fuseConfidence: number,
 ): boolean {
-  if (relationship !== 'primary') {
+  if (relationship === 'no-match') {
     return false;
   }
   if (matchMethod === 'srg-deterministic') {
@@ -300,7 +330,8 @@ function computePotentialMismatch(
     return semantic < TIER2_MISMATCH_THRESHOLD;
   }
   if (matchMethod === 'fuse-fallback') {
-    return fuseConfidence < TIER3_MISMATCH_THRESHOLD;
+    return semantic < TIER3_SEMANTIC_THRESHOLD
+      || fuseConfidence < TIER3_MISMATCH_THRESHOLD;
   }
   return false;
 }
@@ -347,11 +378,16 @@ type PipelineContext = {
   newPrefix: string;
   fuse: FuseSearcher | null;
   claimedOldIds: Set<string>;
+  // Old controls keyed by id, so Tier 3 can compute the title+check semantic
+  // score against the Fuse-matched old control (the Fuse corpus only carries
+  // titles, not check text).
+  oldById: Map<string, ControlLike>;
 };
 
 /**
  * Build a LinkRecord with triage fields populated and `potentialMismatch`
- * derived from semantic score (Tier 1/2) or Fuse confidence (Tier 3).
+ * derived from the title+check semantic score (Tier 1/2, and Tier 3 once the
+ * matched old control is resolved) and/or Fuse title-confidence (Tier 3).
  */
 function makeLink(args: {
   newControl: ControlLike;
@@ -611,6 +647,17 @@ function tier3FuseFallback(
   if (relationship === 'primary') {
     ctx.claimedOldIds.add(oldId);
   }
+  // Compute the same title+check semantic signal Tier 1/2 use, against the
+  // matched old control, so the flag can catch title-template collisions the
+  // title-only Fuse score rates highly. Falls back to confidence-only gating
+  // when the old control can't be resolved (defensive; should not happen).
+  const oldControl = ctx.oldById.get(oldId);
+  const sem = oldControl
+    ? semanticScore(newControl, oldControl, ctx.newPrefix, ctx.oldPrefix)
+    : undefined;
+  const cci = oldControl
+    ? cciJaccard(extractCcis(newControl), extractCcis(oldControl))
+    : undefined;
   return makeLink({
     newControl,
     oldId,
@@ -618,6 +665,10 @@ function tier3FuseFallback(
     confidence,
     srg,
     relationship,
+    titleSimilarity: sem?.titleSim,
+    checkSimilarity: sem?.checkSim,
+    cciJaccardScore: cci,
+    semanticScore: sem?.combined,
   });
 }
 
@@ -668,7 +719,10 @@ export function applyRequirementFirstPipeline(
       : null;
 
   const claimedOldIds = new Set<string>();
-  const ctx: PipelineContext = { oldPrefix, newPrefix, fuse, claimedOldIds };
+  const oldById = new Map(oldProfile.controls.map(c => [c.id, c]));
+  const ctx: PipelineContext = {
+    oldPrefix, newPrefix, fuse, claimedOldIds, oldById,
+  };
 
   // Phase 1: resolve SRG blocks. Group new controls by SRG so the
   // bipartite assignment sees the full block at once.

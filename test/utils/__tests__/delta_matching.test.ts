@@ -38,6 +38,17 @@ const mkControl = (
 // collapses the "arrange block" duplication that Sonar's CPD flags.
 const profile = (...controls: ReturnType<typeof mkControl>[]) => ({ controls });
 
+// Builds a control whose check text lives in `descs.check` — the field real
+// processed controls use (processInSpecProfile/processXCCDF), as opposed to
+// mkControl's `tags.check`. Used to exercise the production read path.
+const mkControlWithDescsCheck = (
+  id: string,
+  gtitle: string,
+  cci: string,
+  title: string,
+  check: string,
+) => ({ id, title, descs: { check }, tags: { gtitle, cci: [cci] } });
+
 const linkAssignments = (ls: LinkRecord[]): Record<string, string | null> =>
   Object.fromEntries(ls.map(l => [l.newId, l.oldId]));
 
@@ -451,6 +462,31 @@ describe('applyRequirementFirstPipeline — Tier 2 block resolution', () => {
     expect(link.blockOldCount).toBe(2);
   });
 
+  it('reads check text from descs.check (the field real processed controls use) to break a tie', () => {
+    // Real controls from processInSpecProfile / processXCCDF carry check text
+    // in descs.check, not tags.check. Titles are identical; only the
+    // descs.check content distinguishes the candidates. semantic must pick B.
+    const oldProfile = profile(
+      mkControlWithDescsCheck(
+        'SV-OLD-A', 'SRG-OS-DESCS', 'CCI-1', 'RHEL 9 must configure auditd.',
+        'Verify auditd flushes records to disk by inspecting the freq= setting in auditd.conf.',
+      ),
+      mkControlWithDescsCheck(
+        'SV-OLD-B', 'SRG-OS-DESCS', 'CCI-1', 'RHEL 9 must configure auditd.',
+        'Verify auditd labels off-loaded logs via the name_format directive in audisp-remote.conf.',
+      ),
+    );
+    const newProfile = profile(
+      mkControlWithDescsCheck(
+        'SV-NEW', 'SRG-OS-DESCS', 'CCI-1', 'Amazon Linux 2023 must configure auditd.',
+        'Verify auditd labels off-loaded logs via the name_format directive in audisp-remote.conf.',
+      ),
+    );
+    const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
+    expect(link.oldId).toBe('SV-OLD-B');
+    expect(link.checkSimilarity).toBeGreaterThan(0.9);
+  });
+
   it('uses tags.check to break a tie when titles alone are near-synonymous (the dense-family scenario)', () => {
     // Both old candidates have title "must configure auditd". The check
     // text carries the distinguishing technical content. The new control
@@ -528,6 +564,38 @@ describe('applyRequirementFirstPipeline — Tier 3 (Fuse fallback)', () => {
     expect(links).toHaveLength(1);
     expect(links[0].matchMethod).toBe('none');
     expect(links[0].oldId).toBeNull();
+  });
+
+  it('populates the title+check semantic triage fields on a fuse-fallback link (no longer null)', () => {
+    // Tier 3 used to rank on title-only Fuse confidence and left
+    // semanticScore/checkSimilarity unset. They are now computed against the
+    // matched old control so reviewers and the flag can see the check-text
+    // evidence even on cross-SRG fuzzy matches.
+    const oldProfile = profile(
+      mkControl(
+        'SV-OLD',
+        'SRG-OS-111-GPOS-999',
+        ['CCI-X'],
+        'RHEL 9 must be a vendor-supported release.',
+        'Verify the operating system is a vendor-supported release by checking the release notes.',
+      ),
+    );
+    const newProfile = profile(
+      mkControl(
+        'SV-NEW',
+        'SRG-OS-222-GPOS-888',
+        ['CCI-X'],
+        'Amazon Linux 2023 must be a vendor-supported release.',
+        'Verify the operating system is a vendor-supported release by checking the release notes.',
+      ),
+    );
+    const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
+    expect(link.matchMethod).toBe('fuse-fallback');
+    expect(link.semanticScore).toBeGreaterThan(0.9);
+    expect(link.titleSimilarity).toBeGreaterThan(0.9);
+    expect(link.checkSimilarity).toBeGreaterThan(0.9);
+    expect(link.cciJaccardScore).toBe(1);
+    expect(link.potentialMismatch).toBe(false);
   });
 });
 
@@ -609,21 +677,42 @@ describe('applyRequirementFirstPipeline — potentialMismatch flag', () => {
     expect(link.potentialMismatch).toBe(false);
   });
 
-  it('is false for Tier 2 related links regardless of confidence (related never flags)', () => {
-    // N:1 split — two new controls compete for the single old SV-OLD with
-    // equal Jaccard. Earlier wins primary, later becomes related. The
-    // related link's confidence mirrors the primary's; flag must stay false.
+  it('is false for a related link whose body genuinely fits (legitimate 1:N split, strong semantic)', () => {
+    // N:1 split — two new controls compete for the single old SV-OLD. Both
+    // are semantically the same requirement as the old (a real split), so the
+    // related link's grafted body is appropriate and must NOT flag.
     const oldProfile = profile(
-      mkControl('SV-OLD', 'SRG-OS-D', ['CCI-1'], 'RHEL 9 must do Y.'),
+      mkControl('SV-OLD', 'SRG-OS-D', ['CCI-1'], 'RHEL 9 must configure the system audit policy'),
     );
     const newProfile = profile(
-      mkControl('SV-NEW-1', 'SRG-OS-D', ['CCI-1'], 'Amazon Linux 2023 must do Y (one).'),
-      mkControl('SV-NEW-2', 'SRG-OS-D', ['CCI-1'], 'Amazon Linux 2023 must do Y (two).'),
+      mkControl('SV-NEW-1', 'SRG-OS-D', ['CCI-1'], 'Amazon Linux 2023 must configure the system audit policy for local events'),
+      mkControl('SV-NEW-2', 'SRG-OS-D', ['CCI-1'], 'Amazon Linux 2023 must configure the system audit policy for remote events'),
     );
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     const related = links.find(l => l.relationship === 'related');
     expect(related).toBeDefined();
+    expect(related?.semanticScore).toBeGreaterThanOrEqual(0.3);
     expect(related?.potentialMismatch).toBe(false);
+  });
+
+  it('is true for a related link force-assigned to a poor match (cardinality-mismatched block)', () => {
+    // Single old candidate, two new controls. SV-NEW-MATCH claims it as
+    // primary; SV-NEW-ALIEN is forced `related` onto the same old because the
+    // block has more new than old. Its requirement is unrelated, so its
+    // grafted body is wrong — the flag must fire even though it is `related`.
+    const oldProfile = profile(
+      mkControl('SV-OLD', 'SRG-OS-D2', ['CCI-1'], 'RHEL 9 must enable the auditd service'),
+    );
+    const newProfile = profile(
+      mkControl('SV-NEW-MATCH', 'SRG-OS-D2', ['CCI-1'], 'Amazon Linux 2023 must enable the auditd service'),
+      mkControl('SV-NEW-ALIEN', 'SRG-OS-D2', ['CCI-1'], 'Amazon Linux 2023 must restrict the kernel message buffer to privileged users'),
+    );
+    const links = applyRequirementFirstPipeline(oldProfile, newProfile);
+    const alien = links.find(l => l.newId === 'SV-NEW-ALIEN');
+    expect(alien?.relationship).toBe('related');
+    expect(alien?.oldId).toBe('SV-OLD');
+    expect(alien?.semanticScore).toBeLessThan(0.3);
+    expect(alien?.potentialMismatch).toBe(true);
   });
 
   it('is false for no-match links (no candidate to be suspicious of)', () => {
