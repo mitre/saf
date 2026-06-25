@@ -53,6 +53,9 @@ export function resolveSafeChild(baseDir: string, ...parts: string[]): string {
       );
     }
   }
+  if (fs.existsSync(target) && fs.lstatSync(target).isSymbolicLink()) {
+    throw new Error(`Refusing to write to symlink: ${target}`);
+  }
   return target;
 }
 
