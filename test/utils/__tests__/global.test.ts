@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import type { ExecJSON, ContextualizedEvaluation } from 'inspecjs';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   basename,
   checkSuffix,
@@ -411,54 +411,53 @@ describe.sequential('checkInput', () => {
 });
 
 describe('resolveSafeChild', () => {
-  let tmpBase = '';
+  const tempDirs: string[] = [];
 
-  beforeEach(() => {
-    tmpBase = fs.mkdtempSync(path.join(os.tmpdir(), 'saf-safe-child-'));
+  async function makeTempDir(prefix: string): Promise<string> {
+    const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), prefix));
+    tempDirs.push(dir);
+    return dir;
+  }
+
+  afterAll(async () => {
+    await Promise.all(
+      tempDirs.map(dir => fs.promises.rm(dir, { recursive: true, force: true })),
+    );
   });
 
-  afterEach(() => {
-    if (tmpBase) {
-      fs.rmSync(tmpBase, { recursive: true, force: true });
-    }
-  });
-
-  it('resolves a simple child path under the base directory', () => {
+  it('resolves a simple child path under the base directory', async () => {
+    const tmpBase = await makeTempDir('saf-safe-child-');
     const resolved = resolveSafeChild(tmpBase, 'delta.json');
     expect(resolved).toBe(path.join(fs.realpathSync(tmpBase), 'delta.json'));
   });
 
-  it('resolves a nested child when intermediate directories are normal', () => {
+  it('resolves a nested child when intermediate directories are normal', async () => {
+    const tmpBase = await makeTempDir('saf-safe-child-');
     fs.mkdirSync(path.join(tmpBase, 'controls'));
     const resolved = resolveSafeChild(tmpBase, 'controls', 'SV-1.rb');
     expect(resolved).toBe(path.join(fs.realpathSync(tmpBase), 'controls', 'SV-1.rb'));
   });
 
-  it('throws on `..` escape attempts', () => {
+  it('throws on `..` escape attempts', async () => {
+    const tmpBase = await makeTempDir('saf-safe-child-');
     expect(() => resolveSafeChild(tmpBase, '..', 'escape.txt')).toThrow(
       /outside output directory/,
     );
   });
 
-  it('throws when an intermediate directory is a symlink', () => {
-    const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'saf-outside-'));
+  it('throws when an intermediate directory is a symlink', async () => {
+    const tmpBase = await makeTempDir('saf-safe-child-');
+    const outside = await makeTempDir('saf-outside-');
     const linkPath = path.join(tmpBase, 'controls');
-    // Defensive: beforeEach gives a fresh tmpBase, but some vitest test-file
-    // orderings appear to surface EEXIST on symlinkSync. Scrub first.
-    if (fs.existsSync(linkPath)) {
-      fs.rmSync(linkPath, { recursive: true, force: true });
-    }
-    try {
-      fs.symlinkSync(outside, linkPath);
-      expect(() => resolveSafeChild(tmpBase, 'controls', 'SV-1.rb')).toThrow(
-        /symlink/,
-      );
-    } finally {
-      fs.rmSync(outside, { recursive: true, force: true });
-    }
+    fs.symlinkSync(outside, linkPath);
+
+    expect(() => resolveSafeChild(tmpBase, 'controls', 'SV-1.rb')).toThrow(
+      /symlink/,
+    );
   });
 
-  it('throws when baseDir does not exist', () => {
+  it('throws when baseDir does not exist', async () => {
+    const tmpBase = await makeTempDir('saf-safe-child-');
     const nonexistent = path.join(tmpBase, 'does-not-exist');
     expect(() => resolveSafeChild(nonexistent, 'x.txt')).toThrow();
   });
