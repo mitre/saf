@@ -81,7 +81,7 @@ describe('Test generate update_controls4delta command', () => {
   itOnWindows('should reject Windows shell metacharacters before generating an inspec summary with --inspecPath', async () => {
     const tempWorkspace = tmp.dirSync({ unsafeCleanup: true });
     const sourceControlsDir = path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls');
-    const profileDir = path.join(tempWorkspace.name, 'profile & echo malicious input');
+    const profileDir = path.join(tempWorkspace.name, 'profile&ver');
     const tempControlsDir = path.join(profileDir, 'controls');
 
     fs.mkdirSync(profileDir);
