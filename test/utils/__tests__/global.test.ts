@@ -11,6 +11,7 @@ import {
   dataURLtoU8Array,
   getDescription, arrayNeededPaths,
   resolveSafeChild,
+  safeFilename,
 } from '../../../src/utils/global';
 
 const UTF8_ENCODING = 'utf8';
@@ -103,6 +104,29 @@ describe('basename', () => {
   it('should return the empty string if the path consists only of separators', () => {
     const result = basename(String.raw`//////\\\/\/`);
     expect(result).toBe('');
+  });
+});
+
+describe('safeFilename', () => {
+  it('should return the basename when the filename is safe', () => {
+    const result = safeFilename('/path/to/file.txt');
+    expect(result).toBe('file.txt');
+  });
+
+  it('should throw when the basename is empty', () => {
+    expect(() => safeFilename('   ')).toThrow(/Unsafe filename/);
+  });
+
+  it('should throw when the filename contains reserved characters', () => {
+    expect(() => safeFilename('bad:name.txt')).toThrow(/Unsafe filename/);
+  });
+
+  it('should throw when the filename contains control characters', () => {
+    expect(() => safeFilename('bad\u0000name.txt')).toThrow(/Unsafe filename/);
+  });
+
+  it('should throw when the filename is a Windows reserved name', () => {
+    expect(() => safeFilename('CON.txt')).toThrow(/Unsafe filename/);
   });
 });
 

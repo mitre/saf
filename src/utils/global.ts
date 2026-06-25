@@ -7,6 +7,7 @@ import axios from 'axios';
 import { getInstalledPathSync } from 'get-installed-path';
 import type { AnyProfile, ContextualizedEvaluation, ExecJSON } from 'inspecjs';
 import _ from 'lodash';
+import sanitize from 'sanitize-filename';
 
 export type SpreadsheetTypes = 'cis' | 'disa' | 'general';
 
@@ -72,6 +73,21 @@ export function resolveSafeChild(baseDir: string, ...parts: string[]): string {
  */
 export function basename(inputPath: string): string {
   return path.win32.basename(inputPath.trimEnd());
+}
+
+/**
+ * Returns a basename-only filename if it is already safe for common filesystems.
+ *
+ * Throws instead of mutating unsafe names so callers do not silently overwrite a
+ * surprising output filename.
+ */
+export function safeFilename(inputPath: string): string {
+  const filename = basename(inputPath);
+  if (filename === '' || sanitize(filename) !== filename) {
+    throw new Error(`Unsafe filename: ${inputPath}`);
+  }
+
+  return filename;
 }
 
 /**

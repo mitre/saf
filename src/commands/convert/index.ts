@@ -29,7 +29,7 @@ import {
   ZapMapper,
 } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
-import { basename, checkSuffix, resolveSafeChild } from '../../utils/global';
+import { basename, checkSuffix, resolveSafeChild, safeFilename } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 import ASFF2HDF from './asff2hdf';
 import Zap2HDF from './zap2hdf';
@@ -130,7 +130,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         fs.mkdirSync(flags.output);
         _.forOwn(results, (result, filename) => {
           fs.writeFileSync(
-            resolveSafeChild(flags.output, checkSuffix(basename(filename))),
+            resolveSafeChild(flags.output, safeFilename(checkSuffix(filename))),
             JSON.stringify(result, null, 2),
           );
         });
@@ -161,7 +161,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         fs.mkdirSync(flags.output);
         for (const [filename, result] of Object.entries(results)) {
           fs.writeFileSync(
-            resolveSafeChild(flags.output, checkSuffix(basename(filename))),
+            resolveSafeChild(flags.output, safeFilename(checkSuffix(filename))),
             JSON.stringify(result, null, 2),
           );
         }
@@ -242,10 +242,10 @@ export default class Convert extends BaseCommand<typeof Convert> {
         const pluralResults = Array.isArray(result) ? result : [];
         const singularResult = pluralResults.length === 0;
         const outputBase = path.dirname(flags.output);
-        const outputPrefix = basename(flags.output.replaceAll(/\.json/gi, ''));
+        const outputPrefix = safeFilename(flags.output.replaceAll(/\.json/gi, ''));
         for (const element of pluralResults) {
           fs.writeFileSync(
-            resolveSafeChild(outputBase, `${outputPrefix}-${basename(_.get(element, 'platform.target_id') || '')}.json`),
+            resolveSafeChild(outputBase, safeFilename(`${outputPrefix}-${basename(_.get(element, 'platform.target_id') || '')}.json`)),
             JSON.stringify(element, null, 2),
           );
         }
@@ -298,7 +298,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
           fs.writeFileSync(
             resolveSafeChild(
               flags.output,
-              basename(`${_.get(result, 'platform.target_id')}.json`),
+              safeFilename(`${_.get(result, 'platform.target_id')}.json`),
             ),
             JSON.stringify(result, null, 2),
           );
@@ -330,10 +330,10 @@ export default class Convert extends BaseCommand<typeof Convert> {
         const pluralResults = Array.isArray(result) ? result : [];
         const singularResult = pluralResults.length === 0;
         const outputBase = path.dirname(flags.output);
-        const outputPrefix = basename(flags.output.replaceAll(/\.json/gi, ''));
+        const outputPrefix = safeFilename(flags.output.replaceAll(/\.json/gi, ''));
         for (const element of pluralResults) {
           fs.writeFileSync(
-            resolveSafeChild(outputBase, `${outputPrefix}-${basename(_.get(element, 'platform.target_id') || '')}.json`),
+            resolveSafeChild(outputBase, safeFilename(`${outputPrefix}-${basename(_.get(element, 'platform.target_id') || '')}.json`)),
             JSON.stringify(element, null, 2),
           );
         }

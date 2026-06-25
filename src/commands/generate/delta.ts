@@ -26,7 +26,7 @@ import {
 } from '../../utils/delta_matching';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
-import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveSafeChild } from '../../utils/global';
+import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveSafeChild, safeFilename } from '../../utils/global';
 
 /**
  * This class extends the capabilities of the update_controls4delta providing the following capabilities:
@@ -373,7 +373,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // directory with the proper name and Id, than regenerate json profile summary.
 
         for (const [key, value] of Object.entries(controls)) {
-          const controlFilename = `${basename(value)}.rb`;
+          const controlFilename = safeFilename(`${basename(value)}.rb`);
           const sourceShortControlFile = path.join(shortProfileDir, controlFilename);
           const mappedShortControlFile = path.join(shortMappedDir, controlFilename);
 
@@ -552,17 +552,17 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             //       method from inspect-objects
             const newControl = updateControl(existingProfile.controls[index], control, thisLogger);
             this.logThis(`Writing updated control with code block for: ${control.id}.`, 'info');
-            // `basename(control.id)` strips path separators; `resolveSafeChild`
-            // rejects symlink traversal on the `controls/` subdirectory.
+            const controlFilename = safeFilename(`${basename(control.id)}.rb`);
             fs.writeFileSync(
-              resolveSafeChild(outputProfileFolderPath, 'controls', `${basename(control.id)}.rb`),
+              resolveSafeChild(outputProfileFolderPath, 'controls', controlFilename),
               newControl.toRuby(processLogLevel),
             );
           } else {
             // We didn't find a mapping for this control - Old style of updating controls
             this.logThis(`Writing new control without code block for: ${control.id}.`, 'info');
+            const controlFilename = safeFilename(`${basename(control.id)}.rb`);
             fs.writeFileSync(
-              resolveSafeChild(outputProfileFolderPath, 'controls', `${basename(control.id)}.rb`),
+              resolveSafeChild(outputProfileFolderPath, 'controls', controlFilename),
               control.toRuby(processLogLevel),
             );
           }

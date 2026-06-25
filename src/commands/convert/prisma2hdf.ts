@@ -2,7 +2,7 @@ import { Flags } from '@oclif/core';
 import fs from 'fs';
 import { PrismaMapper as Mapper } from '@mitre/hdf-converters';
 import _ from 'lodash';
-import { basename, resolveSafeChild } from '../../utils/global';
+import { resolveSafeChild, safeFilename } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class Prisma2HDF extends BaseCommand<typeof Prisma2HDF> {
@@ -41,7 +41,7 @@ export default class Prisma2HDF extends BaseCommand<typeof Prisma2HDF> {
 
     _.forOwn(results, (result) => {
       fs.writeFileSync(
-        resolveSafeChild(flags.output, basename(`${_.get(result, 'platform.target_id')}.json`)),
+        resolveSafeChild(flags.output, safeFilename(`${_.get(result, 'platform.target_id')}.json`)),
         JSON.stringify(result, null, 2),
       );
     });

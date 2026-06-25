@@ -10,7 +10,7 @@ import CISNistMappings from '../../resources/cis2nist.json';
 import files from '../../resources/files.json';
 import type { CSVControl } from '../../types/csv';
 import type { InSpecControl, InSpecMetaData } from '../../types/inspec';
-import { basename, extractValueViaPathOrNumber, resolveSafeChild } from '../../utils/global';
+import { basename, extractValueViaPathOrNumber, resolveSafeChild, safeFilename } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 import { impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact } from '../../utils/xccdf2inspec';
 
@@ -325,7 +325,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
 
     // Convert all extracted controls to Ruby/InSpec code
     for (const control of inspecControls) {
-      fs.writeFileSync(resolveSafeChild(flags.output, 'controls', basename(control.id) + '.rb'), inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader));
+      fs.writeFileSync(resolveSafeChild(flags.output, 'controls', safeFilename(`${basename(control.id)}.rb`)), inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader));
     }
   }
 }

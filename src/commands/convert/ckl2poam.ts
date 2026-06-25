@@ -22,7 +22,7 @@ import {
   extractSTIGUrl,
   replaceSpecialCharacters,
 } from '../../utils/ckl2poam';
-import { basename, dataURLtoU8Array, resolveSafeChild } from '../../utils/global';
+import { basename, dataURLtoU8Array, resolveSafeChild, safeFilename } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -317,7 +317,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
           currentRow += flags.rowsToSkip + 1;
         }
       }
-      return workBook.toFileAsync(resolveSafeChild(flags.output, `${basename(fileName)}-${moment(new Date()).format('YYYY-MM-DD-HHmm')}.xlsm`));
+      return workBook.toFileAsync(resolveSafeChild(flags.output, safeFilename(`${basename(fileName)}-${moment(new Date()).format('YYYY-MM-DD-HHmm')}.xlsm`)));
     }));
   }
 }

@@ -11,7 +11,7 @@ import {
 import { Flags } from '@oclif/core';
 import tmp from 'tmp';
 import type { Logger } from 'winston';
-import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveSafeChild } from '../../utils/global';
+import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveSafeChild, safeFilename } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -416,7 +416,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       const fileExt = path.extname(file);
       if (fileExt === ext) {
         logger.info(`Processing Control (file): ${file}`);
-        const currentFileFullPath = resolveSafeChild(controlsDir, basename(file));
+        const currentFileFullPath = resolveSafeChild(controlsDir, safeFilename(file));
         const currentControlNumber = basename(path.parse(file).name);
         const newXCCDFControlNumber = xccdfLegacyToControlMap.get(currentControlNumber); // old control Id to new control Id
         const xccdfNewControlNumber = xccdfControlsMap.get(currentControlNumber); // new control Id to new control Id
@@ -562,11 +562,11 @@ function getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: 
 function saveControl(filePath: string, newXCCDFControlNumber: string,
   currentControlNumber: string, updatedControl: string,
   backupControls: boolean, renamedControl: boolean) {
-  const newFileName = resolveSafeChild(path.dirname(filePath), basename(newXCCDFControlNumber) + '.rb');
+  const newFileName = resolveSafeChild(path.dirname(filePath), safeFilename(`${basename(newXCCDFControlNumber)}.rb`));
 
   // Move processed (old) control to oldControls folder
   if (backupControls) {
-    const destFilePath = resolveSafeChild(GenerateUpdateControls.backupDir, basename(currentControlNumber) + '.rb');
+    const destFilePath = resolveSafeChild(GenerateUpdateControls.backupDir, safeFilename(`${basename(currentControlNumber)}.rb`));
     if (renamedControl) {
       fs.renameSync(filePath, destFilePath);
     } else {

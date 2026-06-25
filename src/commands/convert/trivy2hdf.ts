@@ -1,7 +1,7 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
 import { ASFFResults as Mapper, INPUT_TYPES } from '@mitre/hdf-converters';
-import { basename, checkInput, checkSuffix, resolveSafeChild } from '../../utils/global';
+import { checkInput, checkSuffix, resolveSafeChild, safeFilename } from '../../utils/global';
 import _ from 'lodash';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -52,7 +52,7 @@ export default class Trivy2HDF extends BaseCommand<typeof Trivy2HDF> {
 
     _.forOwn(results, (result, filename) => {
       fs.writeFileSync(
-        resolveSafeChild(flags.output, checkSuffix(basename(filename))),
+        resolveSafeChild(flags.output, safeFilename(checkSuffix(filename))),
         JSON.stringify(result, null, 2),
       );
     });

@@ -9,7 +9,7 @@ import _ from 'lodash';
 import type { Logger } from 'winston';
 import type { ControlSetRows } from '../../types/csv';
 import { convertRow, csvExportFields } from '../../utils/csv';
-import { basename, resolveSafeChild } from '../../utils/global';
+import { basename, resolveSafeChild, safeFilename } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -86,7 +86,7 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     if (flags.interactive) {
       const interactiveFlags = await this.getFlags();
       inputFile = interactiveFlags.inputFile;
-      outputFile = resolveSafeChild(interactiveFlags.outputDirectory, basename(interactiveFlags.outputFileName));
+      outputFile = resolveSafeChild(interactiveFlags.outputDirectory, safeFilename(interactiveFlags.outputFileName));
       includeFields = interactiveFlags.fields.join(',');
       truncateFields = Boolean(interactiveFlags.truncateFields);
     } else if (this.requiredFlagsProvided(flags)) {

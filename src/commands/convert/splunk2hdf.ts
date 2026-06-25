@@ -3,7 +3,7 @@ import { SplunkMapper } from '@mitre/hdf-converters';
 import { table } from 'table';
 import _ from 'lodash';
 import fs from 'fs';
-import { basename, resolveSafeChild } from '../../utils/global';
+import { resolveSafeChild, safeFilename } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -123,7 +123,7 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
           fs.writeFileSync(
             resolveSafeChild(
               outputFolder,
-              basename(
+              safeFilename(
                 _.get(hdf, 'meta.filename', '').replace(/\.json$/, '')
                 + _.get(hdf, 'meta.guid')
                 + '.json',
@@ -139,7 +139,7 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
             fs.writeFileSync(
               resolveSafeChild(
                 outputFolder,
-                basename(
+                safeFilename(
                   _.get(hdf, 'meta.filename', '').replace(/\.json$/, '')
                   + _.get(hdf, 'meta.guid')
                   + '.json',

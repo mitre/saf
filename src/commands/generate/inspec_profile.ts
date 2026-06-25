@@ -6,7 +6,7 @@ import { XMLParser } from 'fast-xml-parser';
 import _ from 'lodash';
 import type { Logger } from 'winston';
 import type { InSpecMetaData, InspecReadme } from '../../types/inspec';
-import { basename, resolveSafeChild } from '../../utils/global';
+import { basename, resolveSafeChild, safeFilename } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -118,7 +118,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
       const benchmarkTitle = isSTIG ? _.get(xmlDoc, 'Benchmark.title') : _.get(xmlDoc, 'xccdf:Benchmark.xccdf:title.#text');
       outDir = (benchmarkTitle === undefined)
         ? flags.output
-        : basename(benchmarkTitle.replace('Security Technical Implementation Guide', 'stig-baseline').replaceAll(' ', '-').toLowerCase());
+        : safeFilename(benchmarkTitle.replace('Security Technical Implementation Guide', 'stig-baseline').replaceAll(' ', '-').toLowerCase());
     } else {
       outDir = flags.output;
     }
@@ -229,10 +229,10 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
       );
     } else {
       for (const control of profile.controls) {
-        const controlId = basename(control.id); // Ensure valid filename
-        logger.debug(`Writing control to: ${path.join(outDir, 'controls', controlId + '.rb')}`);
+        const controlFilename = safeFilename(`${basename(control.id)}.rb`);
+        logger.debug(`Writing control to: ${path.join(outDir, 'controls', controlFilename)}`);
         fs.writeFileSync(
-          resolveSafeChild(outDir, 'controls', controlId + '.rb'),
+          resolveSafeChild(outDir, 'controls', controlFilename),
           control.toRuby(),
         );
       }

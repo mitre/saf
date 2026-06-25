@@ -3,7 +3,7 @@ import { Flags } from '@oclif/core';
 import type { BooleanFlag, OptionFlag } from '@oclif/core/interfaces';
 import { colorize } from 'json-colorizer';
 import { outputError } from './output_error';
-import { basename, resolveSafeChild } from '../global';
+import { resolveSafeChild, safeFilename } from '../global';
 
 /**
  * Interface representing the command line arguments.
@@ -1755,7 +1755,7 @@ export function saveFile(dir: string, filename: string, data: any): void {
   }
 
   // Save to file
-  const outDir = resolveSafeChild(dir, basename(filename));
+  const outDir = resolveSafeChild(dir, safeFilename(filename));
   try {
     fs.writeFileSync(outDir, data);
   } catch (error) {
