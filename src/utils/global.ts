@@ -76,10 +76,10 @@ export function basename(inputPath: string): string {
 }
 
 /**
- * Returns a basename-only filename if it is already safe for common filesystems.
+ * Extracts the basename from `inputPath` and validates it is safe on common filesystems.
  *
- * Throws instead of mutating unsafe names so callers do not silently overwrite a
- * surprising output filename.
+ * Throws if the basename is empty or if `sanitize-filename` would modify it (reserved names, control chars, etc.).
+ * Path components in `inputPath` are ignored; callers should pass a filename when possible.
  */
 export function safeFilename(inputPath: string): string {
   const filename = basename(inputPath);
