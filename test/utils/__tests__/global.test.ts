@@ -456,6 +456,22 @@ describe('resolveSafeChild', () => {
     );
   });
 
+  it('throws when the target file is a symlink', async () => {
+    const tmpBase = await makeTempDir('saf-safe-child-');
+    const outside = await makeTempDir('saf-outside-');
+    const outsideFile = path.join(outside, 'target.rb');
+    const controlsDir = path.join(tmpBase, 'controls');
+    const linkPath = path.join(controlsDir, 'SV-1.rb');
+
+    fs.writeFileSync(outsideFile, 'outside');
+    fs.mkdirSync(controlsDir);
+    fs.symlinkSync(outsideFile, linkPath);
+
+    expect(() => resolveSafeChild(tmpBase, 'controls', 'SV-1.rb')).toThrow(
+      /symlink/,
+    );
+  });
+
   it('throws when baseDir does not exist', async () => {
     const tmpBase = await makeTempDir('saf-safe-child-');
     const nonexistent = path.join(tmpBase, 'does-not-exist');
