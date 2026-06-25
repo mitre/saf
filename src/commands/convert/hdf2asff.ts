@@ -1,6 +1,5 @@
 import fs from 'fs';
 import https from 'https';
-import path from 'path';
 import {
   type AwsSecurityFinding,
   SecurityHub,
@@ -10,7 +9,7 @@ import { FromHdfToAsffMapper as Mapper } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import _ from 'lodash';
-import { basename, checkSuffix } from '../../utils/global';
+import { basename, checkSuffix, resolveSafeChild } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
@@ -104,7 +103,7 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
       const outputFolder = flags.output.replace('.json', '') || 'asff-output';
       fs.mkdirSync(outputFolder);
       if (convertedSlices.length === 1) {
-        const outfilePath = path.join(
+        const outfilePath = resolveSafeChild(
           outputFolder,
           checkSuffix(basename(flags.output)),
         );
@@ -114,7 +113,7 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
         );
       } else {
         for (const [index, slice] of convertedSlices.entries()) {
-          const outfilePath = path.join(
+          const outfilePath = resolveSafeChild(
             outputFolder,
             `${checkSuffix(basename(flags.output || '')).replace('.json', '')}.p${index}.json`,
           );

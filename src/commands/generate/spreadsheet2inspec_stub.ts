@@ -10,7 +10,7 @@ import CISNistMappings from '../../resources/cis2nist.json';
 import files from '../../resources/files.json';
 import type { CSVControl } from '../../types/csv';
 import type { InSpecControl, InSpecMetaData } from '../../types/inspec';
-import { basename, extractValueViaPathOrNumber } from '../../utils/global';
+import { basename, extractValueViaPathOrNumber, resolveSafeChild } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 import { impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact } from '../../utils/xccdf2inspec';
 
@@ -180,7 +180,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
       version: metadata.version || '0.1.0',
     };
 
-    fs.writeFileSync(path.join(flags.output, 'inspec.yml'), YAML.stringify(profileInfo));
+    fs.writeFileSync(resolveSafeChild(flags.output, 'inspec.yml'), YAML.stringify(profileInfo));
 
     // Write README.md
     const readableMetadata: Record<string, string | number> = {};
@@ -190,7 +190,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
         readableMetadata[_.startCase(key)] = value;
       }
     }
-    fs.writeFileSync(path.join(flags.output, 'README.md'), `# ${profileInfo.name}\n${profileInfo.summary}\n---\n${YAML.stringify(readableMetadata)}`);
+    fs.writeFileSync(resolveSafeChild(flags.output, 'README.md'), `# ${profileInfo.name}\n${profileInfo.summary}\n---\n${YAML.stringify(readableMetadata)}`);
 
     try {
       const workBook = await XlsxPopulate.fromFileAsync(flags.input);
@@ -325,7 +325,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
 
     // Convert all extracted controls to Ruby/InSpec code
     for (const control of inspecControls) {
-      fs.writeFileSync(path.join(flags.output, 'controls', basename(control.id) + '.rb'), inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader));
+      fs.writeFileSync(resolveSafeChild(flags.output, 'controls', basename(control.id) + '.rb'), inspecControlToRubyCode(control, flags.lineLength, flags.encodingHeader));
     }
   }
 }

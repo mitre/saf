@@ -29,7 +29,7 @@ import {
   ZapMapper,
 } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
-import { basename, checkSuffix } from '../../utils/global';
+import { basename, checkSuffix, resolveSafeChild } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 import ASFF2HDF from './asff2hdf';
 import Zap2HDF from './zap2hdf';
@@ -75,7 +75,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         filename: basename(filePath),
       });
       switch (
-        Convert.detectedType // skipcq: JS-0047
+        Convert.detectedType
       ) {
         case 'asff': {
           return ASFF2HDF.flags;
@@ -130,7 +130,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         fs.mkdirSync(flags.output);
         _.forOwn(results, (result, filename) => {
           fs.writeFileSync(
-            path.join(flags.output, checkSuffix(basename(filename))),
+            resolveSafeChild(flags.output, checkSuffix(basename(filename))),
             JSON.stringify(result, null, 2),
           );
         });
@@ -161,7 +161,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         fs.mkdirSync(flags.output);
         for (const [filename, result] of Object.entries(results)) {
           fs.writeFileSync(
-            path.join(flags.output, checkSuffix(basename(filename))),
+            resolveSafeChild(flags.output, checkSuffix(basename(filename))),
             JSON.stringify(result, null, 2),
           );
         }
@@ -241,9 +241,11 @@ export default class Convert extends BaseCommand<typeof Convert> {
         const result = converter.toHdf();
         const pluralResults = Array.isArray(result) ? result : [];
         const singularResult = pluralResults.length === 0;
+        const outputBase = path.dirname(flags.output);
+        const outputPrefix = basename(flags.output.replaceAll(/\.json/gi, ''));
         for (const element of pluralResults) {
           fs.writeFileSync(
-            `${flags.output.replaceAll(/\.json/gi, '')}-${basename(_.get(element, 'platform.target_id') || '')}.json`,
+            resolveSafeChild(outputBase, `${outputPrefix}-${basename(_.get(element, 'platform.target_id') || '')}.json`),
             JSON.stringify(element, null, 2),
           );
         }
@@ -294,7 +296,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         fs.mkdirSync(flags.output);
         _.forOwn(results, (result) => {
           fs.writeFileSync(
-            path.join(
+            resolveSafeChild(
               flags.output,
               basename(`${_.get(result, 'platform.target_id')}.json`),
             ),
@@ -327,9 +329,11 @@ export default class Convert extends BaseCommand<typeof Convert> {
         const result = converter.toHdf();
         const pluralResults = Array.isArray(result) ? result : [];
         const singularResult = pluralResults.length === 0;
+        const outputBase = path.dirname(flags.output);
+        const outputPrefix = basename(flags.output.replaceAll(/\.json/gi, ''));
         for (const element of pluralResults) {
           fs.writeFileSync(
-            `${flags.output.replaceAll(/\.json/gi, '')}-${basename(_.get(element, 'platform.target_id') || '')}.json`,
+            resolveSafeChild(outputBase, `${outputPrefix}-${basename(_.get(element, 'platform.target_id') || '')}.json`),
             JSON.stringify(element, null, 2),
           );
         }

@@ -6,7 +6,7 @@ import { XMLParser } from 'fast-xml-parser';
 import _ from 'lodash';
 import type { Logger } from 'winston';
 import type { InSpecMetaData, InspecReadme } from '../../types/inspec';
-import { basename } from '../../utils/global';
+import { basename, resolveSafeChild } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -224,7 +224,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
         .join('\n\n');
       logger.debug(`Writing control to: ${path.join(outDir, 'controls', 'controls.rb')}`);
       fs.writeFileSync(
-        path.join(outDir, 'controls', 'controls.rb'),
+        resolveSafeChild(outDir, 'controls', 'controls.rb'),
         controls,
       );
     } else {
@@ -232,7 +232,7 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
         const controlId = basename(control.id); // Ensure valid filename
         logger.debug(`Writing control to: ${path.join(outDir, 'controls', controlId + '.rb')}`);
         fs.writeFileSync(
-          path.join(outDir, 'controls', controlId + '.rb'),
+          resolveSafeChild(outDir, 'controls', controlId + '.rb'),
           control.toRuby(),
         );
       }
@@ -618,7 +618,7 @@ ${contentObj.profileType === 'CIS'
     : '[DISA STIGs are published by DISA IASE](https://public.cyber.mil/stigs/)'
 }
 `;
-  fs.writeFile(path.join(outDir, 'README.md'), readmeContent, (err) => {
+  fs.writeFile(resolveSafeChild(outDir, 'README.md'), readmeContent, (err) => {
     if (err) {
       logger.error(`Error saving the README.md file to: ${outDir}. Cause: ${err}`);
     } else {
@@ -650,7 +650,7 @@ function generateYaml(profile: Profile, outDir: string, logger: Logger) {
 inputs:
 `;
 
-  fs.writeFile(path.join(outDir, 'inspec.yml'), inspecYmlContent, (err) => {
+  fs.writeFile(resolveSafeChild(outDir, 'inspec.yml'), inspecYmlContent, (err) => {
     if (err) {
       logger.error(`Error saving the inspec.yml file to: ${outDir}. Cause: ${err}`);
     } else {
@@ -675,7 +675,7 @@ are permitted provided that the following conditions are met:
   used to endorse or promote products derived from this software without specific prior
   written permission.
 `;
-  fs.writeFile(path.join(outDir, 'LICENSE.md'), licensesContent, (err) => {
+  fs.writeFile(resolveSafeChild(outDir, 'LICENSE.md'), licensesContent, (err) => {
     if (err) {
       logger.error(`Error saving the LICENSE file to: ${outDir}. Cause: ${err}`);
     } else {
@@ -699,7 +699,7 @@ express written permission of The MITRE Corporation.
 For further information, please contact The MITRE Corporation, Contracts Management
 Office, 7515 Colshire Drive, McLean, VA 22102-7539, (703) 983-6000.
 `;
-  fs.writeFile(path.join(outDir, 'NOTICE.md'), noticeContent, (err) => {
+  fs.writeFile(resolveSafeChild(outDir, 'NOTICE.md'), noticeContent, (err) => {
     if (err) {
       logger.error(`Error saving the NOTICE.md file to: ${outDir}. Cause: ${err}`);
     } else {
@@ -879,7 +879,7 @@ Style/StringChars: # new in 1.12
 Style/SwapValues: # new in 1.1
   Enabled: true
 `;
-  fs.writeFile(path.join(outDir, '.rubocop.yml'), robocopContent, (err) => {
+  fs.writeFile(resolveSafeChild(outDir, '.rubocop.yml'), robocopContent, (err) => {
     if (err) {
       logger.error(`Error saving the .rubocop.yml file to: ${outDir}. Cause: ${err}`);
     } else {
@@ -892,7 +892,7 @@ function generateGemRc(outDir: string, logger: Logger) {
   const gemRc
     = `gem: --no-document
 `;
-  fs.writeFile(path.join(outDir, '.gemrc'), gemRc, (err) => {
+  fs.writeFile(resolveSafeChild(outDir, '.gemrc'), gemRc, (err) => {
     if (err) {
       logger.error(`Error saving the .gemrc file to: ${outDir}. Cause: ${err}`);
     } else {
@@ -930,7 +930,7 @@ source 'https://rubygems.cinc.sh/' do
   gem 'inspec-core'
 end
 `;
-  fs.writeFile(path.join(outDir, 'Gemfile'), gemFileContent, (err) => {
+  fs.writeFile(resolveSafeChild(outDir, 'Gemfile'), gemFileContent, (err) => {
     if (err) {
       logger.error(`Error saving the Gemfile file to: ${outDir}. Cause: ${err}`);
     } else {
@@ -966,7 +966,7 @@ end
 desc 'pre-commit checks'
 task pre_commit_checks: [:lint, 'inspec:check']
 `;
-  fs.writeFile(path.join(outDir, 'Rakefile'), rakefileContent, (err) => {
+  fs.writeFile(resolveSafeChild(outDir, 'Rakefile'), rakefileContent, (err) => {
     if (err) {
       logger.error(`Error saving the Rakefile file to: ${outDir}. Cause: ${err}`);
     } else {
@@ -1053,7 +1053,7 @@ report.md
 check-results.txt
 kitchen.local.ec2.yml
 `;
-  fs.writeFile(path.join(outDir, '.gitignore'), gitignoreContent, (err) => {
+  fs.writeFile(resolveSafeChild(outDir, '.gitignore'), gitignoreContent, (err) => {
     if (err) {
       logger.error(`Error saving the .gitignore file to: ${outDir}. Cause: ${err}`);
     } else {

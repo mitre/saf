@@ -373,11 +373,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // directory with the proper name and Id, than regenerate json profile summary.
 
         for (const [key, value] of Object.entries(controls)) {
-          const sourceShortControlFile = path.join(shortProfileDir, `${value}.rb`);
-          const mappedShortControlFile = path.join(shortMappedDir, `${value}.rb`);
+          const controlFilename = `${basename(value)}.rb`;
+          const sourceShortControlFile = path.join(shortProfileDir, controlFilename);
+          const mappedShortControlFile = path.join(shortMappedDir, controlFilename);
 
-          const sourceControlFile = path.join(controlsDir, `${value}.rb`);
-          const mappedControlFile = path.join(mappedDir, `${value}.rb`);
+          const sourceControlFile = resolveSafeChild(controlsDir, controlFilename);
+          const mappedControlFile = resolveSafeChild(mappedDir, controlFilename);
 
           this.logger.info(`${'Mapping (From --> To): '}  ${`${value} --> ${key}`}`);
 
@@ -486,14 +487,14 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     if (reportFile) {
       if (fs.existsSync(reportFile) && fs.lstatSync(reportFile).isDirectory()) {
         // Not a file - directory provided
-        markDownFile = path.join(reportFile, 'delta.md');
+        markDownFile = resolveSafeChild(reportFile, 'delta.md');
       } else if (fs.existsSync(reportFile) && fs.lstatSync(reportFile).isFile()) {
         // File name provided and exists - will be overwritten
         markDownFile = reportFile;
       } else if (path.extname(reportFile) === '.md') {
         markDownFile = reportFile;
       } else {
-        markDownFile = path.join(outputProfileFolderPath, 'delta.md');
+        markDownFile = resolveSafeChild(outputProfileFolderPath, 'delta.md');
       }
     } else {
       this.logThis('  An output markdown reports was not requested', 'debug');
@@ -974,7 +975,10 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       fs.mkdirSync(mappedDir, { recursive: true });
 
       // Copy the profile inspec.yml to the mapped directory to generate the profile controls summary properly
-      copyFileSync(path.join(destFilePath, 'inspec.yml'), path.join(path.dirname(mappedDir), 'inspec.yml'));
+      copyFileSync(
+        resolveSafeChild(destFilePath, 'inspec.yml'),
+        resolveSafeChild(path.dirname(mappedDir), 'inspec.yml'),
+      );
 
       return mappedDir;
     } catch (error: unknown) {
