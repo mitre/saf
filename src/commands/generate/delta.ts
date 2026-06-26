@@ -1,4 +1,3 @@
-import { execFileSync } from 'child_process';
 import { EventEmitter } from 'events';
 import fs, { copyFileSync } from 'fs';
 import path from 'path';
@@ -26,7 +25,7 @@ import {
 } from '../../utils/delta_matching';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
-import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveSafeChild, safeFilename } from '../../utils/global';
+import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveSafeChild, safeExecFileSync, safeFilename } from '../../utils/global';
 
 /**
  * This class extends the capabilities of the update_controls4delta providing the following capabilities:
@@ -288,7 +287,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       try {
         this.logThis(`  Generating the summary file on directory: ${shortControlsDir}`, 'info');
         // Generate the profile controls summary from the `controlsDir` without the trailing "controls" directory
-        const inspecJsonFile = execFileSync(inspecPath, ['json', path.dirname(controlsDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024, shell: process.platform === 'win32' });
+        const inspecJsonFile = safeExecFileSync(inspecPath, ['json', path.dirname(controlsDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
         this.logThis('  Generated InSpec Profiles from InSpec JSON summary', 'info');
         existingProfile = processInSpecProfile(inspecJsonFile);
       } catch (error: unknown) {
@@ -429,7 +428,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // Get the directory name without the trailing "controls" directory
           // Here we are using the newly updated (mapped) controls
           // const profileDir = path.dirname(controlsDir)
-          const inspecJsonFileNew = execFileSync(inspecPath, ['json', path.dirname(mappedDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024, shell: process.platform === 'win32' });
+          const inspecJsonFileNew = safeExecFileSync(inspecPath, ['json', path.dirname(mappedDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
 
           // Replace existing profile (inputted JSON of source profile to be mapped)
           // Allow delta to take care of the rest

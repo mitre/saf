@@ -1,3 +1,4 @@
+import { execFileSync, type ExecFileSyncOptionsWithStringEncoding } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fingerprint, Assettype, INPUT_TYPES, Role, Techarea } from '@mitre/hdf-converters';
@@ -88,6 +89,32 @@ export function safeFilename(inputPath: string): string {
   }
 
   return filename;
+}
+
+/**
+ * The documentation for execFileSync says "If the shell option is enabled, do not pass unsanitized user input to this function. Any input containing shell metacharacters may be used to trigger arbitrary command execution."  Consequently, on Windows, we need to pre-process and throw a warning if we see any shell metacharacters.
+ * https://nodejs.org/api/child_process.html#child_processexecfilesyncfile-args-options
+ * @param command - the command to be invoked, likely `inspec` or `cinc-auditor`
+ * @param args - the arguments for the command
+ * @param options - options for the wrapped execFileSync command
+ * @returns The stdout from the command
+ */
+export function safeExecFileSync(command: string, args: string[], options: ExecFileSyncOptionsWithStringEncoding): string {
+  if (process.platform === 'win32') {
+    // Windows shell metacharacters: cmd.exe's documented quoted-special characters
+    // (except literal space), plus PowerShell argument-mode metacharacters.
+    // Sources:
+    // - https://learn.microsoft.com/en-us/windows-server/administration/windows-commands/cmd#remarks
+    // - https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_parsing?view=powershell-7.6#argument-mode
+    const unsafeCharacters = /[&|<>[\]{}^=;!'+,`~()@"#$%\t\r\n]/;
+    for (const value of [command, ...args]) {
+      if (unsafeCharacters.test(value)) {
+        throw new Error('Unsafe shell characters detected; refusing to run command through the Windows shell.');
+      }
+    }
+  }
+
+  return execFileSync(command, args, { ...options, shell: process.platform === 'win32' });
 }
 
 /**

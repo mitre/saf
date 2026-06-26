@@ -1,4 +1,3 @@
-import { execFileSync } from 'child_process';
 import fs from 'fs';
 import { readdir } from 'fs/promises';
 import path from 'path';
@@ -11,7 +10,7 @@ import {
 import { Flags } from '@oclif/core';
 import tmp from 'tmp';
 import type { Logger } from 'winston';
-import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveSafeChild, safeFilename } from '../../utils/global';
+import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveSafeChild, safeExecFileSync, safeFilename } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -264,7 +263,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         logger.info(`  Generating the summary file on directory: ${shortControlsDir}`);
         // Get the directory name without the trailing "controls" directory
         const profileDir = path.dirname(flags.controlsDir);
-        const inspecJsonFile = execFileSync(inspecPath, ['json', profileDir], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024, shell: process.platform === 'win32' });
+        const inspecJsonFile = safeExecFileSync(inspecPath, ['json', profileDir], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
 
         logger.info('Generating InSpec Profiles from InSpec JSON summary');
         inspecProfile = processInSpecProfile(inspecJsonFile);
