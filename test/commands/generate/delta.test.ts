@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import tmp from 'tmp';
 import { assert, describe, expect, it } from 'vitest';
+import GenerateDelta from '../../../src/commands/generate/delta';
 
 // Functional tests
 describe.sequential('Test generate delta command', () => {
@@ -132,5 +133,117 @@ describe.sequential('Test generate delta command', () => {
     expect(stdout).to.include('Best Match Candidate:  V-93205 --> SV-254240');
     expect(stdout).to.include('Best Match Candidate:  V-93207 --> SV-254241');
     expect(stdout).to.include('Best Match Candidate:  V-93461 --> SV-254242');
+  });
+});
+
+// GenerateDelta extends an oclif Command; instantiate it directly to unit
+// test mapControls without a full command run. The minimal config stub is
+// enough — mapControls only touches the instance logger and static counters.
+const makeDeltaCmd = () => new (GenerateDelta as unknown as new (argv: string[], config: unknown) => {
+  mapControls(o: unknown, n: unknown): Record<string, string>;
+})([], { runHook: () => Promise.resolve({}) });
+
+const resetDeltaStatics = () => {
+  GenerateDelta.match = 0;
+  GenerateDelta.posMisMatch = 0;
+  GenerateDelta.dupMatch = 0;
+  GenerateDelta.noMatch = 0;
+  GenerateDelta.links = [];
+};
+
+const deltaCtl = (id: string, gtitle: string, cci: string[], title: string) => ({
+  id, title, tags: { gtitle, cci }, code: `control '${id}' do\nend`,
+});
+
+// Unit tests for the 1:N split body-copy policy in mapControls. When several
+// new controls resolve to one old control, ONLY the primary (best match)
+// inherits the old Ruby body; `related` links are deliberately left out of
+// controlMappings so they are emitted as new controls without a body. This
+// also guarantees no two new controls share an old id in controlMappings, so
+// the mapped-control file write cannot collide.
+describe('Test generate delta mapControls 1:N body-copy policy', () => {
+  it('maps only the primary new control to the old id; the related sibling is excluded', () => {
+    resetDeltaStatics();
+    const oldProfile = { controls: [deltaCtl('SV-OLD', 'SRG-1', ['CCI-1'], 'RHEL 9 must configure the audit service.')] };
+    const newProfile = { controls: [
+      deltaCtl('SV-NEW-1', 'SRG-1', ['CCI-1'], 'SLES 15 must configure the audit service.'),
+      deltaCtl('SV-NEW-2', 'SRG-1', ['CCI-1'], 'SLES 15 must configure the audit service thresholds.'),
+    ] };
+
+    const mappings = makeDeltaCmd().mapControls(oldProfile as never, newProfile as never);
+
+    // Both new controls link to the one old; exactly one is primary.
+    const byNew = Object.fromEntries(GenerateDelta.links.map(l => [l.newId, l]));
+    expect(byNew['SV-NEW-1'].relationship).toBe('primary');
+    expect(byNew['SV-NEW-2'].relationship).toBe('related');
+    expect(byNew['SV-NEW-1'].oldId).toBe('SV-OLD');
+    expect(byNew['SV-NEW-2'].oldId).toBe('SV-OLD');
+
+    // ...but only the primary gets a controlMappings entry (and thus a body).
+    expect(mappings).toEqual({ 'SV-NEW-1': 'SV-OLD' });
+    expect(mappings).not.toHaveProperty('SV-NEW-2');
+
+    // Stats: 1 mapped primary, 1 related (no body), invariant holds.
+    expect(GenerateDelta.match).toBe(1);
+    expect(GenerateDelta.dupMatch).toBe(1);
+  });
+
+  it('never maps two new controls to the same old id (collision-free controlMappings)', () => {
+    resetDeltaStatics();
+    // One old control, three new controls in the same SRG block (a 3-way split).
+    const oldProfile = { controls: [deltaCtl('SV-OLD', 'SRG-2', ['CCI-9'], 'RHEL 9 must restrict access.')] };
+    const newProfile = { controls: [
+      deltaCtl('SV-A', 'SRG-2', ['CCI-9'], 'SLES 15 must restrict access.'),
+      deltaCtl('SV-B', 'SRG-2', ['CCI-9'], 'SLES 15 must restrict access to logs.'),
+      deltaCtl('SV-C', 'SRG-2', ['CCI-9'], 'SLES 15 must restrict access to keys.'),
+    ] };
+
+    const mappings = makeDeltaCmd().mapControls(oldProfile as never, newProfile as never);
+
+    // At most one new control maps to any given old id -> no file-write collision.
+    const oldIds = Object.values(mappings);
+    expect(new Set(oldIds).size).toBe(oldIds.length);
+    expect(oldIds.filter(o => o === 'SV-OLD')).toHaveLength(1);
+  });
+
+  it('lists every related (no-body) control in the report, highest confidence first, and never lists the primary', () => {
+    resetDeltaStatics();
+    // One old, three new in the same SRG -> 1 primary + 2 related. The report
+    // section must enumerate the two related controls (so reviewers can spot
+    // close matches) and must not list the primary (which got the body).
+    const oldProfile = { controls: [deltaCtl('SV-OLD', 'SRG-3', ['CCI-1'], 'RHEL 9 must enable auditing.')] };
+    const newProfile = { controls: [
+      deltaCtl('SV-NEW-1', 'SRG-3', ['CCI-1'], 'SLES 15 must enable auditing.'),
+      deltaCtl('SV-NEW-2', 'SRG-3', ['CCI-1'], 'SLES 15 must enable auditing for logins.'),
+      deltaCtl('SV-NEW-3', 'SRG-3', ['CCI-1'], 'SLES 15 must enable auditing for sudo.'),
+    ] };
+    makeDeltaCmd().mapControls(oldProfile as never, newProfile as never);
+
+    const report = (GenerateDelta as unknown as {
+      formatRelatedControlsReport(l: typeof GenerateDelta.links): string;
+    }).formatRelatedControlsReport(GenerateDelta.links);
+
+    const primary = GenerateDelta.links.find(l => l.relationship === 'primary')!;
+    const related = GenerateDelta.links.filter(l => l.relationship === 'related');
+    expect(related.length).toBe(2);
+    expect(report).toContain('Related Controls (no body copied)');
+    for (const r of related) {
+      expect(report).toContain(r.newId);
+    }
+    // The primary keeps the body and must not appear in the related list.
+    expect(report).not.toContain(`${primary.newId}  ~ best match`);
+    expect(report).toContain(`Total Related (no body copied): ${related.length}`);
+  });
+
+  it('produces an empty related-report section when there are no related links', () => {
+    resetDeltaStatics();
+    const oldProfile = { controls: [deltaCtl('SV-OLD', 'SRG-4', ['CCI-1'], 'RHEL 9 must set a banner.')] };
+    const newProfile = { controls: [deltaCtl('SV-NEW', 'SRG-4', ['CCI-1'], 'SLES 15 must set a banner.')] };
+    makeDeltaCmd().mapControls(oldProfile as never, newProfile as never);
+
+    const report = (GenerateDelta as unknown as {
+      formatRelatedControlsReport(l: typeof GenerateDelta.links): string;
+    }).formatRelatedControlsReport(GenerateDelta.links);
+    expect(report).toBe('');
   });
 });

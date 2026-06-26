@@ -593,8 +593,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               + `                 No Match Controls: ${GenerateDelta.noMatch}\n`
               + `                New XCCDF Controls: ${GenerateDelta.newXccdfControl}\n\n`
               + 'Statistics Validation ------------------------------------------\n'
-              + `Match + Mismatch + Related = Total Mapped Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}\n`
+              + `Match + Mismatch = Total Mapped Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}\n`
               + `  Total Processed = Total XCCDF Controls: ${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`
+              + GenerateDelta.formatRelatedControlsReport(GenerateDelta.links)
               + updatedResult.markdown;
             fs.writeFileSync(markDownFile, reportData);
           } else {
@@ -654,14 +655,15 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     //                                                              keys=['title','gtitle']
     //
     // 1:N splits (multiple new controls resolving to the same old) are
-    // preserved as primary + related links. Both land in the returned
-    // controlMappings so downstream file-writing copies the old Ruby
-    // body to every new control that shares the requirement.
+    // preserved as primary + related links, but only the PRIMARY is added to
+    // controlMappings and inherits the old Ruby body. Related links are kept
+    // in delta.json links[] for visibility and are emitted as new controls
+    // without a body (the author writes them) — copying one body onto several
+    // distinct new controls would duplicate / misattribute test code.
     //
     // Existing static counters on GenerateDelta are reused to keep the
-    // summary output format stable; `dupMatch` is repurposed to count
-    // `related` links (it used to count rejected duplicates in the
-    // former 1:1 model).
+    // summary output format stable; `dupMatch` counts `related` links (the
+    // not-given-a-body duplicates), as in the original 1:1 model.
     const oldControls: Control[] = oldProfile.controls;
     const newControls: Control[] = newProfile.controls;
     GenerateDelta.oldControlsLength = oldControls.length;
@@ -697,9 +699,22 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         continue;
       }
 
-      // Every non-none link resolves to an old control and goes into the
-      // returned map. Primary and related both need the old Ruby body.
-      controlMappings[newId] = link.oldId;
+      // Only the PRIMARY (best) match to an old control inherits its Ruby
+      // body. A `related` link is a weaker/secondary new control whose
+      // primary already claimed that old body; copying it here would
+      // duplicate the same test code across distinct controls (and, for
+      // spurious SRG/CCI co-bucketing, graft outright wrong code). Related
+      // controls are instead emitted as new controls WITHOUT a body for the
+      // author to fill — matching the original matcher's "best match wins the
+      // body, duplicates are skipped" behavior. They remain in
+      // delta.json links[] (and the dupMatch counter) for triage visibility.
+      //
+      // This also guarantees each old id appears at most once in
+      // controlMappings, so the mapped-control file write (keyed by old id)
+      // cannot collide between siblings of a 1:N split.
+      if (link.relationship === 'primary') {
+        controlMappings[newId] = link.oldId;
+      }
 
       this.logger.info(`Processing New Control:  ${newId}`);
       if (newCtl?.title) {
@@ -712,7 +727,14 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       GenerateDelta.logMatchMethod(this.logger, link);
       GenerateDelta.tickMatchCounter(link);
 
-      this.logger.info(`  Best Match Candidate:  ${link.oldId} --> ${newId}\n`);
+      // Distinguish primaries (which inherit the body) from related links
+      // (best match for an already-claimed old control; emitted WITHOUT a
+      // body) so the log doesn't read as if a related control was mapped.
+      if (link.relationship === 'related') {
+        this.logger.info(`  Related (no body copied):  ${newId} ~ best match ${link.oldId}\n`);
+      } else {
+        this.logger.info(`  Best Match Candidate:  ${link.oldId} --> ${newId}\n`);
+      }
     }
 
     this.logger.info('Mapping Results ===========================================================================');
@@ -736,10 +758,41 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     this.logger.info(`                New XCCDF Controls:  ${GenerateDelta.newXccdfControl}\n`);
 
     this.logger.info('Statistics Validation =============================================');
-    this.logger.info(`Match + Mismatch + Related = Total Mapped:  ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}`);
+    this.logger.info(`Match + Mismatch = Total Mapped:  ${this.getMappedStatisticsValidation(totalMappedControls, 'totalMapped')}`);
     this.logger.info(`  Total Processed = Total XCCDF Controls:  ${this.getMappedStatisticsValidation(totalMappedControls, 'totalProcessed')}\n\n`);
 
     return controlMappings;
+  }
+
+  /**
+   * Build a human-readable report section listing every `related` link — new
+   * controls that matched an old control but were not its primary (best)
+   * match, so no control body was copied forward. These are emitted as
+   * bodiless new controls; surfacing them (sorted by confidence, highest
+   * first) lets a reviewer spot close matches that may warrant manual body
+   * reuse or careful authoring. Returns '' when there are no related links.
+   */
+  private static formatRelatedControlsReport(links: LinkRecord[]): string {
+    const related = links
+      .filter(l => l.relationship === 'related')
+      .toSorted((a, b) => b.confidence - a.confidence);
+    if (related.length === 0) {
+      return '';
+    }
+    const rows = related
+      .map((l) => {
+        const conf = `${(l.confidence * 100).toFixed(0)}%`;
+        const flag = l.potentialMismatch ? '  ** potential mismatch **' : '';
+        return `  ${basename(l.newId)}  ~ best match ${l.oldId}  [${l.matchMethod}, confidence=${conf}]${flag}`;
+      })
+      .join('\n');
+    return '## Related Controls (no body copied)\n'
+      + 'These new controls matched an old control but were not its primary (best)\n'
+      + 'match, so no control body was copied forward — they are emitted as new\n'
+      + 'controls without a body. Review the higher-confidence matches: a close one\n'
+      + 'may warrant manually reusing the old body or careful authoring.\n\n'
+      + rows
+      + `\n\nTotal Related (no body copied): ${related.length}\n\n`;
   }
 
   /**
@@ -783,9 +836,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
    * Advance the GenerateDelta static counters for a single link so the
    * end-of-run stats match reality.
    *
-   *   match        -> primary link, high confidence
-   *   posMisMatch  -> primary link, lower confidence (still accepted)
-   *   dupMatch     -> related link (shares old body with an earlier primary)
+   *   match        -> primary link, high confidence (gets the old body)
+   *   posMisMatch  -> primary link, lower confidence (still accepted, gets body)
+   *   dupMatch     -> related link (secondary match; emitted without a body)
    */
   private static tickMatchCounter(link: LinkRecord): void {
     if (link.relationship === 'related') {
@@ -805,20 +858,21 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   }
 
   getMappedStatisticsValidation(totalMappedControls: number, statValidation: string): string {
-    // In the requirement-first pipeline `dupMatch` counts `related` links,
-    // which ARE included in controlMappings (they share a body with a
-    // primary). `newXccdfControl` is kept at 0 because the new pipeline
-    // doesn't have a distinct "no Fuse candidate" bucket — those fall
-    // into `noMatch`.
+    // Only PRIMARY links are added to controlMappings (they inherit the old
+    // body), so totalMapped == match + posMisMatch. `related` links
+    // (`dupMatch`) are NOT mapped — they are emitted as bodiless new controls
+    // — so the full new-profile accounting is mapped + related + noMatch.
+    // `newXccdfControl` is kept at 0 because the requirement-first pipeline
+    // has no distinct "no Fuse candidate" bucket — those fall into `noMatch`.
     const match = GenerateDelta.match;
     const misMatch = GenerateDelta.posMisMatch;
     const related = GenerateDelta.dupMatch;
     const noMatch = GenerateDelta.noMatch;
-    const statMappedMatches = (match + misMatch + related) === totalMappedControls;
-    const statProcessedTotal = (totalMappedControls + noMatch) === GenerateDelta.newControlsLength;
+    const statMappedMatches = (match + misMatch) === totalMappedControls;
+    const statProcessedTotal = (totalMappedControls + related + noMatch) === GenerateDelta.newControlsLength;
     return statValidation === 'totalMapped'
-      ? `(${match}+${misMatch}+${related}=${totalMappedControls}) ${statMappedMatches}`
-      : `(${totalMappedControls}+${noMatch}=${GenerateDelta.newControlsLength}) ${statProcessedTotal}`;
+      ? `(${match}+${misMatch}=${totalMappedControls}) ${statMappedMatches}`
+      : `(${totalMappedControls}+${related}+${noMatch}=${GenerateDelta.newControlsLength}) ${statProcessedTotal}`;
   }
 
   requiredFlagsProvided(flags: any): boolean { // skipcq: JS-0105
