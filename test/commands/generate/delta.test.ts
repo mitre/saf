@@ -227,11 +227,14 @@ describe('Test generate delta mapControls 1:N body-copy policy', () => {
     const related = GenerateDelta.links.filter(l => l.relationship === 'related');
     expect(related.length).toBe(2);
     expect(report).toContain('Related Controls (no body copied)');
+    // Grouped by the old control, which names the primary that kept the body.
+    expect(report).toContain(`old control ${primary.oldId}  (primary ${primary.newId} kept the body):`);
+    // Each related new control is listed under its old group, labeled `related ->`.
     for (const r of related) {
-      expect(report).toContain(r.newId);
+      expect(report).toContain(`related -> ${r.newId}`);
     }
-    // The primary keeps the body and must not appear in the related list.
-    expect(report).not.toContain(`${primary.newId}  ~ best match`);
+    // The primary kept the body, so it must not be listed as a related entry.
+    expect(report).not.toContain(`related -> ${primary.newId}`);
     expect(report).toContain(`Total Related (no body copied): ${related.length}`);
   });
 

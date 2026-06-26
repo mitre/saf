@@ -773,25 +773,60 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
    * reuse or careful authoring. Returns '' when there are no related links.
    */
   private static formatRelatedControlsReport(links: LinkRecord[]): string {
-    const related = links
-      .filter(l => l.relationship === 'related')
-      .toSorted((a, b) => b.confidence - a.confidence);
+    const related = links.filter(l => l.relationship === 'related');
     if (related.length === 0) {
       return '';
     }
-    const rows = related
-      .map((l) => {
-        const conf = `${(l.confidence * 100).toFixed(0)}%`;
-        const flag = l.potentialMismatch ? '  ** potential mismatch **' : '';
-        return `  ${basename(l.newId)}  ~ best match ${l.oldId}  [${l.matchMethod}, confidence=${conf}]${flag}`;
+    // Which new control inherited each old control's body (its primary), so
+    // each split's full shape is shown.
+    const primaryByOld = new Map<string, string>();
+    for (const l of links) {
+      if (l.relationship === 'primary' && l.oldId) {
+        primaryByOld.set(l.oldId, l.newId);
+      }
+    }
+    // Group related links by the old control they matched.
+    const groups = new Map<string, LinkRecord[]>();
+    for (const l of related) {
+      const key = l.oldId ?? '(no old match)';
+      const bucket = groups.get(key);
+      if (bucket) {
+        bucket.push(l);
+      } else {
+        groups.set(key, [l]);
+      }
+    }
+    // Order groups by their strongest related match (closest first), and the
+    // entries within each group likewise.
+    const blocks = [...groups.entries()]
+      .map(([oldId, items]) => ({
+        oldId,
+        items: items.toSorted((a, b) => b.confidence - a.confidence),
+        maxConf: Math.max(...items.map(l => l.confidence)),
+      }))
+      .toSorted((a, b) => b.maxConf - a.maxConf)
+      .map(({ oldId, items }) => {
+        const primary = primaryByOld.get(oldId);
+        const head = primary
+          ? `old control ${oldId}  (primary ${basename(primary)} kept the body):`
+          : `old control ${oldId}:`;
+        const rows = items
+          .map((l) => {
+            const conf = `${(l.confidence * 100).toFixed(0)}%`;
+            const flag = l.potentialMismatch ? '  ** potential mismatch **' : '';
+            return `    related -> ${basename(l.newId)}  [${l.matchMethod}, confidence=${conf}]${flag}`;
+          })
+          .join('\n');
+        return `${head}\n${rows}`;
       })
       .join('\n');
     return '## Related Controls (no body copied)\n'
       + 'These new controls matched an old control but were not its primary (best)\n'
       + 'match, so no control body was copied forward — they are emitted as new\n'
-      + 'controls without a body. Review the higher-confidence matches: a close one\n'
-      + 'may warrant manually reusing the old body or careful authoring.\n\n'
-      + rows
+      + 'controls without a body, grouped below by the old control they matched.\n'
+      + 'Review the higher-confidence matches: a close one may warrant manually\n'
+      + 'reusing the old body or careful authoring.\n\n'
+      + blocks
       + `\n\nTotal Related (no body copied): ${related.length}\n\n`;
   }
 
