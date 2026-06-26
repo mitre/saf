@@ -117,6 +117,16 @@ describe('Cross-vendor integration: RHEL 9 -> Amazon Linux 2023 mini', () => {
     });
   });
 
+  it('exercises the real descs.check signal in the SRG-OS-CRYPTO block (guards against the check field silently going dark again)', () => {
+    // The CRYPTO controls carry check text under descs.check (where real
+    // processInSpecProfile/processXCCDF output puts it). The matched links
+    // must therefore show nonzero checkSimilarity — if a future change reads
+    // check from the wrong field, this drops to 0 and fails, instead of the
+    // matcher silently degrading to title-only as it did before the fix.
+    expect(byNew['SV-273900'].checkSimilarity).toBeGreaterThan(0);
+    expect(byNew['SV-273901'].checkSimilarity).toBeGreaterThan(0);
+  });
+
   it('flags a primary Tier-2 match with CCI Jaccard=0 as potentialMismatch', () => {
     // SV-273902 has CCI-999999, which has zero overlap with any candidate
     // in the SRG-OS-CRYPTO block. After SV-273900 and SV-273901 claim

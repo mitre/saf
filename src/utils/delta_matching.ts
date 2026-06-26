@@ -10,11 +10,14 @@ import Fuse from 'fuse.js';
  * stable signal is the requirement text itself (title + check).
  *
  * Pipeline: SRG-ID is a blocking key (narrows the candidate pool); inside
- * each block we run globally-optimal greedy bipartite assignment scored on
- * `SEMANTIC_WEIGHT * semanticScore(title+check) + CCI_WEIGHT * cciJaccard`,
- * so winning pairs don't permute under reordering of the new profile.
- * Controls with no SRG overlap fall through to a Fuse fuzzy fallback on
- * vendor-prefix-stripped titles.
+ * each block we run greedy best-first bipartite assignment scored on
+ * `SEMANTIC_WEIGHT * semanticScore(title+check) + CCI_WEIGHT * cciJaccard` —
+ * the highest-composite pair with both endpoints free is claimed first. This
+ * is a 1/2-approximation, NOT a maximum-weight matching; the bias is
+ * deliberate (commit the single most-trustworthy link first, which suits
+ * copying a body forward). Winning pairs don't permute under reordering of
+ * the new profile (ties broken by control id). Controls with no SRG overlap
+ * fall through to a Fuse fuzzy fallback on vendor-prefix-stripped titles.
  */
 
 /**
@@ -219,7 +222,8 @@ export function semanticScore(
  *
  * Triage fields (optional, populated when relevant):
  *   - `titleSimilarity`   Vendor-prefix-stripped title Jaccard.
- *   - `checkSimilarity`   tags.check token Jaccard (0 when either side lacks check text).
+ *   - `checkSimilarity`   check-text token Jaccard from `descs.check` (falling back to
+ *                         `tags.check`); 0 when either side lacks check text. See `safeCheck`.
  *   - `cciJaccardScore`   CCI overlap, retained for visibility / downstream sorting.
  *   - `semanticScore`     Combined title + check (the requirement-identity signal).
  *   - `blockNewCount`     # of new controls sharing this SRG (Tier 1/2 only).
@@ -303,16 +307,28 @@ export const TIER2_COMPOSITE_CCI_WEIGHT = 0.3;
  * The flag fires for BOTH `primary` and `related` links: a `related` link
  * still grafts the old control's body onto the new control downstream, so a
  * weak-evidence `related` association ships a wrong body just as silently as
- * a weak `primary` would (a legitimate 1:N split keeps a high semantic score
- * and stays unflagged; a control force-assigned `related` to a poor match in
- * a cardinality-mismatched block scores low and flags). Only explicit
- * no-match links are exempt — there is no candidate body to be suspicious of.
+ * a weak `primary` would. Only explicit no-match links are exempt — there is
+ * no candidate body to be suspicious of.
+ *
+ * IMPORTANT — this is NOT a clean correctness classifier. On real cross-vendor
+ * data the matched-link semantic scores form a smooth, unimodal distribution
+ * with no separating valley: correct and wrong grafts interleave across the
+ * ~0.3–0.6 mid-band. The 0.3 threshold is an "obvious junk" floor (catches
+ * grafts with almost no shared requirement text), not a line that separates
+ * right from wrong. A wrong graft can sit above 0.3 unflagged (e.g. an
+ * "owned by root" vs "group-owned by root" dimension swap at ~0.44), and
+ * correct 1:N splits can fall just under and flag. Treat an UNFLAGGED
+ * mid-band link as "not obviously junk", not as "verified correct"; raising
+ * the threshold to catch the mid-band wrong grafts would flag a large share
+ * of correct ones (no single threshold separates the populations — that needs
+ * an orthogonal signal such as antonym/dimension-swap detection).
  *
  * Tier 1 and Tier 2 gate on the title+check semantic score. Tier 3 (Fuse
  * fallback) gates on EITHER a weak title+check semantic score OR a low Fuse
- * title-confidence — the semantic term catches title-template collisions
- * (near-identical titles whose check text diverges) that title-only Fuse
- * confidence rates highly.
+ * title-confidence. On real data the `fuseConfidence < 0.9` term dominates
+ * (it fires on nearly every fuse link, and alone catches wrong fuse primaries
+ * the semantic term misses); the semantic term is defensive insurance that
+ * rarely flips a flag on its own.
  */
 function computePotentialMismatch(
   matchMethod: MatchMethod,
@@ -481,23 +497,47 @@ function scoreBlockPairs(
       });
     }
   }
-  pairs.sort((a, b) => b.composite - a.composite);
+  pairs.sort((a, b) => {
+    if (b.composite !== a.composite) {
+      return b.composite - a.composite;
+    }
+    // Deterministic tiebreak by control identity so the assignment is
+    // invariant to new-profile input order even when composites tie exactly
+    // (Jaccard rationals can collide). Without this, a stable sort would
+    // resolve ties by input position, making the output order-dependent.
+    const an = newControls[a.newIdx].id;
+    const bn = newControls[b.newIdx].id;
+    if (an !== bn) {
+      return an < bn ? -1 : 1;
+    }
+    const ao = oldCandidates[a.oldIdx].id;
+    const bo = oldCandidates[b.oldIdx].id;
+    return ao < bo ? -1 : (ao > bo ? 1 : 0);
+  });
   return pairs;
 }
 
 /**
- * Resolve an SRG block to per-new-control link records using globally-
- * optimal greedy bipartite assignment on the composite score:
+ * Resolve an SRG block to per-new-control link records using greedy
+ * best-first bipartite assignment on the composite score:
  *
  *   1. Score every (new, old) pair in the block.
- *   2. Sort pairs by composite score, descending.
+ *   2. Sort pairs by composite score, descending (ties broken by control id).
  *   3. Walk the sorted list, claiming pairs whose new and old are both
  *      free (primary links).
  *   4. Any new control still unassigned (block has more new than old)
  *      becomes `related` to its single best-scoring (already-claimed) old.
  *
+ * This is a 1/2-approximation, not a maximum-weight matching: claiming the
+ * single highest pair first can leave a globally-higher-total pairing on the
+ * table. The tradeoff is intentional — committing the most-trustworthy
+ * individual link first is the right bias when the consequence is copying a
+ * body forward. No suboptimal divergence was observed in the validated
+ * RHEL9->SLES15 run.
+ *
  * Order-independent: the assignment depends only on the set of pairs and
- * their scores, not on the iteration order of the new profile.
+ * their scores (with id-based tiebreaks), not on the iteration order of the
+ * new profile.
  *
  * Single-candidate (Tier-1) blocks share the same scoring path so the
  * potentialMismatch flag derives consistently; the only difference is the
@@ -551,7 +591,7 @@ function resolveSrgBlock(
 
 /**
  * Pass 1 of block resolution: walk pairs in descending composite order,
- * claim each globally-best pair whose new and old are both unclaimed.
+ * claim each highest-composite pair whose new and old are both unclaimed.
  */
 function claimPrimaryPairings(
   pairs: PairScore[],
@@ -678,9 +718,9 @@ function tier3FuseFallback(
  *
  * Strategy:
  *   - Group new controls by their SRG-OS id.
- *   - For each SRG block whose old side also has candidates, run
- *     globally-optimal bipartite assignment scored on the composite
- *     `SEMANTIC_WEIGHT * (title+check Jaccard) + CCI_WEIGHT * CCI Jaccard`.
+ *   - For each SRG block whose old side also has candidates, run greedy
+ *     best-first bipartite assignment (a 1/2-approximation) scored on the
+ *     composite `SEMANTIC_WEIGHT * (title+check Jaccard) + CCI_WEIGHT * CCI Jaccard`.
  *     Single-candidate blocks resolve to `srg-deterministic`; multi-candidate
  *     to `srg-semantic-tiebreak`.
  *   - New controls without an SRG match (no `gtitle` or empty old block)

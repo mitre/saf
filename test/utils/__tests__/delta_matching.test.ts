@@ -427,6 +427,62 @@ describe('applyRequirementFirstPipeline — Tier 2 block resolution', () => {
     expect(linkAssignments(linksAB)).toEqual(linkAssignments(linksBA));
   });
 
+  it('is order-independent even when composite scores tie exactly (id tiebreak)', () => {
+    // Two new x two old, identical normalized titles, identical CCIs, no check
+    // text -> every (new,old) composite is exactly equal. A stable sort alone
+    // would resolve by input position, making the assignment order-dependent.
+    // The id tiebreak must produce the same assignment under any permutation.
+    const oldA = mkControl('SV-OLD-A', 'SRG-OS-TIE', ['CCI-1'], 'RHEL 9 must configure the service.');
+    const oldB = mkControl('SV-OLD-B', 'SRG-OS-TIE', ['CCI-1'], 'RHEL 9 must configure the service.');
+    const newA = mkControl('SV-NEW-A', 'SRG-OS-TIE', ['CCI-1'], 'Amazon Linux 2023 must configure the service.');
+    const newB = mkControl('SV-NEW-B', 'SRG-OS-TIE', ['CCI-1'], 'Amazon Linux 2023 must configure the service.');
+    const ab = linkAssignments(applyRequirementFirstPipeline(
+      { controls: [oldA, oldB] }, { controls: [newA, newB] },
+    ));
+    const ba = linkAssignments(applyRequirementFirstPipeline(
+      { controls: [oldA, oldB] }, { controls: [newB, newA] },
+    ));
+    const oldSwap = linkAssignments(applyRequirementFirstPipeline(
+      { controls: [oldB, oldA] }, { controls: [newA, newB] },
+    ));
+    expect(ba).toEqual(ab);
+    expect(oldSwap).toEqual(ab);
+    // Both news are assigned to distinct olds (a 2x2 perfect matching).
+    expect(new Set(Object.values(ab)).size).toBe(2);
+  });
+
+  it('resolves a reciprocal transposition using descs.check alone, in both input orders', () => {
+    // The real-data failure class: two controls in one SRG block with
+    // near-identical titles, distinguishable ONLY by check text. Title-only
+    // scoring permutes the bodies onto the wrong partners; the descs.check
+    // signal must pin each new control to its true old in EITHER input order.
+    const oldFreq = mkControlWithDescsCheck(
+      'SV-OLD-FREQ', 'SRG-OS-XPOSE', 'CCI-1', 'RHEL 9 must configure auditd.',
+      'Verify auditd flushes records to disk by inspecting the freq setting in auditd.conf.',
+    );
+    const oldName = mkControlWithDescsCheck(
+      'SV-OLD-NAME', 'SRG-OS-XPOSE', 'CCI-1', 'RHEL 9 must configure auditd.',
+      'Verify auditd labels off-loaded logs via the name_format directive in audisp-remote.conf.',
+    );
+    const newFreq = mkControlWithDescsCheck(
+      'SV-NEW-FREQ', 'SRG-OS-XPOSE', 'CCI-1', 'Amazon Linux 2023 must configure auditd.',
+      'Verify auditd flushes records to disk by inspecting the freq setting in auditd.conf.',
+    );
+    const newName = mkControlWithDescsCheck(
+      'SV-NEW-NAME', 'SRG-OS-XPOSE', 'CCI-1', 'Amazon Linux 2023 must configure auditd.',
+      'Verify auditd labels off-loaded logs via the name_format directive in audisp-remote.conf.',
+    );
+    for (const order of [[newFreq, newName], [newName, newFreq]]) {
+      const byNew = Object.fromEntries(
+        applyRequirementFirstPipeline(
+          { controls: [oldFreq, oldName] }, { controls: order },
+        ).map(l => [l.newId, l.oldId]),
+      );
+      expect(byNew['SV-NEW-FREQ']).toBe('SV-OLD-FREQ');
+      expect(byNew['SV-NEW-NAME']).toBe('SV-OLD-NAME');
+    }
+  });
+
   it('surfaces title, check, CCI, and semantic component scores on the link for triage', () => {
     const oldProfile = profile(
       mkControl(
@@ -742,6 +798,25 @@ describe('applyRequirementFirstPipeline — potentialMismatch flag', () => {
     expect(link.matchMethod).toBe('fuse-fallback');
     expect(link.confidence).toBeGreaterThanOrEqual(0.9);
     expect(link.potentialMismatch).toBe(false);
+  });
+
+  it('is true for a Tier 3 fuse-fallback link accepted at confidence in [0.55, 0.9) (the load-bearing conf gate)', () => {
+    // Tier 3 accepts at Fuse score < 0.45 (confidence > 0.55) but flags below
+    // 0.9 confidence. This is the branch that, on real data, catches wrong
+    // fuse primaries the semantic term misses — yet every other fuse test
+    // asserts `false`. Cross-SRG titles that share the leading requirement
+    // tokens but diverge in the tail match with mid-band confidence.
+    const oldProfile = profile(
+      mkControl('SV-OLD', 'SRG-OS-G-111', ['CCI-X'], 'RHEL 9 audit records must be generated for all account creation events.'),
+    );
+    const newProfile = profile(
+      mkControl('SV-NEW', 'SRG-OS-G-222', ['CCI-X'], 'Amazon Linux 2023 audit records must be generated for all privilege escalation events.'),
+    );
+    const [link] = applyRequirementFirstPipeline(oldProfile, newProfile);
+    expect(link.matchMethod).toBe('fuse-fallback');
+    expect(link.confidence).toBeGreaterThanOrEqual(0.55);
+    expect(link.confidence).toBeLessThan(0.9);
+    expect(link.potentialMismatch).toBe(true);
   });
 });
 

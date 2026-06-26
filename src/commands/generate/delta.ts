@@ -588,8 +588,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               + `Total Controls Available for Delta: ${GenerateDelta.oldControlsLength}\n`
               + `     Total Controls Found on XCCDF: ${GenerateDelta.newControlsLength}\n`
               + `                    Match Controls: ${GenerateDelta.match}\n`
-              + `        Possible Mismatch Controls: ${GenerateDelta.posMisMatch}\n`
-              + `            Related Match Controls: ${GenerateDelta.dupMatch}\n`
+              + `        Possible Mismatch Controls: ${GenerateDelta.posMisMatch} (incl. ${GenerateDelta.links.filter(l => l.relationship === 'related' && l.potentialMismatch).length} flagged related grafts)\n`
+              + `         Trusted Related Matches: ${GenerateDelta.dupMatch}\n`
               + `                 No Match Controls: ${GenerateDelta.noMatch}\n`
               + `                New XCCDF Controls: ${GenerateDelta.newXccdfControl}\n\n`
               + 'Statistics Validation ------------------------------------------\n'
@@ -698,10 +698,17 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     this.logger.info(`Total Controls Available for Delta:  ${GenerateDelta.oldControlsLength}`);
     this.logger.info(`     Total Controls Found on XCCDF:  ${GenerateDelta.newControlsLength}\n`);
 
+    // Flagged `related` grafts now count toward posMisMatch (they ship a body
+    // forward just like a flagged primary). Surface how many of the possible
+    // mismatches are related grafts so the triage signal isn't hidden, and
+    // relabel dupMatch as the *trusted* (unflagged) related count it now is.
+    const flaggedRelated = GenerateDelta.links.filter(
+      l => l.relationship === 'related' && l.potentialMismatch,
+    ).length;
     this.logger.info('Match Statistics =========================');
     this.logger.info(`                    Match Controls:  ${GenerateDelta.match}`);
-    this.logger.info(`        Possible Mismatch Controls:  ${GenerateDelta.posMisMatch}`);
-    this.logger.info(`          Related Match Controls:  ${GenerateDelta.dupMatch}`);
+    this.logger.info(`        Possible Mismatch Controls:  ${GenerateDelta.posMisMatch}  (incl. ${flaggedRelated} flagged related graft${flaggedRelated === 1 ? '' : 's'})`);
+    this.logger.info(`         Trusted Related Matches:  ${GenerateDelta.dupMatch}`);
     this.logger.info(`                 No Match Controls:  ${GenerateDelta.noMatch}`);
     this.logger.info(`                New XCCDF Controls:  ${GenerateDelta.newXccdfControl}\n`);
 
@@ -857,10 +864,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   }
 
   getMappedStatisticsValidation(totalMappedControls: number, statValidation: string): string {
-    // In the requirement-first pipeline `dupMatch` counts `related` links,
-    // which ARE included in controlMappings (they share a body with a
-    // primary). `newXccdfControl` is kept at 0 because the new pipeline
-    // doesn't have a distinct "no Fuse candidate" bucket — those fall
+    // In the requirement-first pipeline `dupMatch` counts UNFLAGGED `related`
+    // links (flagged related grafts move to `posMisMatch`); all related links
+    // are included in controlMappings (they share a body with a primary), so
+    // the match+mismatch+related total is unaffected by where flagged related
+    // links are counted. `newXccdfControl` is kept at 0 because the new
+    // pipeline doesn't have a distinct "no Fuse candidate" bucket — those fall
     // into `noMatch`.
     const match = GenerateDelta.match;
     const misMatch = GenerateDelta.posMisMatch;
