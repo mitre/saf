@@ -78,7 +78,7 @@ describe('Test generate update_controls4delta command', () => {
     expect(fs.existsSync(path.join(tempControlsDir, 'V-93461.rb'))).to.eql(false);
   });
 
-  itOnWindows('should reject Windows shell metacharacters before generating an inspec summary with --inspecPath', async () => {
+  itOnWindows('should report Windows shell metacharacters before generating an inspec summary with --inspecPath', async () => {
     const tempWorkspace = tmp.dirSync({ unsafeCleanup: true });
     const sourceControlsDir = path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls');
     const profileDir = path.join(tempWorkspace.name, 'profile&ver');
@@ -87,12 +87,14 @@ describe('Test generate update_controls4delta command', () => {
     fs.mkdirSync(profileDir);
     fs.cpSync(sourceControlsDir, tempControlsDir, { recursive: true });
 
-    await expect(runCommand<{ name: string }>([
+    const { stderr } = await runCommand<{ name: string }>([
       'generate update_controls4delta',
       '-I', 'cinc-auditor',
       '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2019_V3R2_xccdf.xml'),
       '-c', tempControlsDir,
       '--no-backupControls',
-    ])).rejects.toThrow(/Unsafe shell characters/);
+    ]);
+
+    expect(stderr).to.match(/Unsafe shell characters/);
   });
 });
