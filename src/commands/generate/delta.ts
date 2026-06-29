@@ -812,9 +812,10 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           : `old control ${oldId}:`;
         const rows = items
           .map((l) => {
+            // `related` links never carry potentialMismatch (it is a primary-
+            // only flag), so the per-row risk signal is the confidence itself.
             const conf = `${(l.confidence * 100).toFixed(0)}%`;
-            const flag = l.potentialMismatch ? '  ** potential mismatch **' : '';
-            return `    related -> ${basename(l.newId)}  [${l.matchMethod}, confidence=${conf}]${flag}`;
+            return `    related -> ${basename(l.newId)}  [${l.matchMethod}, confidence=${conf}]`;
           })
           .join('\n');
         return `${head}\n${rows}`;
