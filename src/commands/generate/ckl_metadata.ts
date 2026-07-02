@@ -13,7 +13,7 @@ import { Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { isEmpty } from 'lodash';
 import type { Logger } from 'winston';
-import { getJsonMetaDataExamples } from '../../utils/global';
+import { getJsonMetaDataExamples, resolveSafeChild, safeFilename } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -58,9 +58,9 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
     if (flags.interactive) {
       const interactiveFlags = await this.getFlags();
       if ((interactiveFlags as { outputDirectory?: string }).outputDirectory) {
-        metadataJsonFile = path.join(
+        metadataJsonFile = resolveSafeChild(
           (interactiveFlags as { outputDirectory: string }).outputDirectory,
-          (interactiveFlags as { outputFileName: string }).outputFileName,
+          safeFilename((interactiveFlags as { outputFileName: string }).outputFileName),
         );
       }
     } else {

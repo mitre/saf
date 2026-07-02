@@ -1,13 +1,13 @@
 import { INPUT_TYPES, IonChannelAPIMapper, IonChannelMapper } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
 import {
-  basename,
   checkInput,
   checkSuffix,
+  resolveSafeChild,
+  safeFilename,
 } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
 import fs from 'fs';
-import path from 'path';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class IonChannel2HDF extends BaseCommand<typeof IonChannel2HDF> {
@@ -107,7 +107,7 @@ export default class IonChannel2HDF extends BaseCommand<typeof IonChannel2HDF> {
         }
 
         fs.writeFileSync(
-          path.join(flags.output, basename(filename)),
+          resolveSafeChild(flags.output, safeFilename(filename)),
           JSON.stringify(json, null, 2),
         );
       }
@@ -134,7 +134,7 @@ export default class IonChannel2HDF extends BaseCommand<typeof IonChannel2HDF> {
         }
 
         fs.writeFileSync(
-          path.join(flags.output, basename(filename)),
+          resolveSafeChild(flags.output, safeFilename(filename)),
           JSON.stringify(json, null, 2),
         );
       }
@@ -152,10 +152,7 @@ export default class IonChannel2HDF extends BaseCommand<typeof IonChannel2HDF> {
 
         logger.debug(`Processing...${filename}`);
         fs.writeFileSync(
-          path.join(
-            flags.output,
-            checkSuffix(basename(filename)),
-          ),
+          resolveSafeChild(flags.output, safeFilename(checkSuffix(filename))),
           JSON.stringify(new IonChannelMapper(data).toHdf()),
         );
       }

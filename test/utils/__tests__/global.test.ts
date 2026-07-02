@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import type { ExecJSON, ContextualizedEvaluation } from 'inspecjs';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   basename,
   checkSuffix,
@@ -11,6 +11,7 @@ import {
   dataURLtoU8Array,
   getDescription, arrayNeededPaths,
   resolveSafeChild,
+  safeFilename,
 } from '../../../src/utils/global';
 
 const UTF8_ENCODING = 'utf8';
@@ -80,14 +81,52 @@ describe('basename', () => {
     expect(result).toBe('to');
   });
 
+  it('should return the last directory name if the path ends with multiple backslashes', () => {
+    const result = basename('\\path\\to\\\\\\');
+    expect(result).toBe('to');
+  });
+
+  it('should trim trailing whitespace before returning the filename', () => {
+    const result = basename('file.txt   ');
+    expect(result).toBe('file.txt');
+  });
+
   it('should return the empty string if the path is the empty string', () => {
     const result = basename('');
+    expect(result).toBe('');
+  });
+
+  it('should return the empty string if trimEnd leaves an empty string', () => {
+    const result = basename('   ');
     expect(result).toBe('');
   });
 
   it('should return the empty string if the path consists only of separators', () => {
     const result = basename(String.raw`//////\\\/\/`);
     expect(result).toBe('');
+  });
+});
+
+describe('safeFilename', () => {
+  it('should return the basename when the filename is safe', () => {
+    const result = safeFilename('/path/to/file.txt');
+    expect(result).toBe('file.txt');
+  });
+
+  it('should throw when the basename is empty', () => {
+    expect(() => safeFilename('   ')).toThrow(/Unsafe filename/);
+  });
+
+  it('should throw when the filename contains reserved characters', () => {
+    expect(() => safeFilename('bad:name.txt')).toThrow(/Unsafe filename/);
+  });
+
+  it('should throw when the filename contains control characters', () => {
+    expect(() => safeFilename('bad\u0000name.txt')).toThrow(/Unsafe filename/);
+  });
+
+  it('should throw when the filename is a Windows reserved name', () => {
+    expect(() => safeFilename('CON.txt')).toThrow(/Unsafe filename/);
   });
 });
 
@@ -396,54 +435,69 @@ describe.sequential('checkInput', () => {
 });
 
 describe('resolveSafeChild', () => {
-  let tmpBase = '';
+  const tempDirs: string[] = [];
 
-  beforeEach(() => {
-    tmpBase = fs.mkdtempSync(path.join(os.tmpdir(), 'saf-safe-child-'));
+  async function makeTempDir(prefix: string): Promise<string> {
+    const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), prefix));
+    tempDirs.push(dir);
+    return dir;
+  }
+
+  afterAll(async () => {
+    await Promise.all(
+      tempDirs.map(dir => fs.promises.rm(dir, { recursive: true, force: true })),
+    );
   });
 
-  afterEach(() => {
-    if (tmpBase) {
-      fs.rmSync(tmpBase, { recursive: true, force: true });
-    }
-  });
-
-  it('resolves a simple child path under the base directory', () => {
+  it('resolves a simple child path under the base directory', async () => {
+    const tmpBase = await makeTempDir('saf-safe-child-');
     const resolved = resolveSafeChild(tmpBase, 'delta.json');
     expect(resolved).toBe(path.join(fs.realpathSync(tmpBase), 'delta.json'));
   });
 
-  it('resolves a nested child when intermediate directories are normal', () => {
+  it('resolves a nested child when intermediate directories are normal', async () => {
+    const tmpBase = await makeTempDir('saf-safe-child-');
     fs.mkdirSync(path.join(tmpBase, 'controls'));
     const resolved = resolveSafeChild(tmpBase, 'controls', 'SV-1.rb');
     expect(resolved).toBe(path.join(fs.realpathSync(tmpBase), 'controls', 'SV-1.rb'));
   });
 
-  it('throws on `..` escape attempts', () => {
+  it('throws on `..` escape attempts', async () => {
+    const tmpBase = await makeTempDir('saf-safe-child-');
     expect(() => resolveSafeChild(tmpBase, '..', 'escape.txt')).toThrow(
       /outside output directory/,
     );
   });
 
-  it('throws when an intermediate directory is a symlink', () => {
-    const outside = fs.mkdtempSync(path.join(os.tmpdir(), 'saf-outside-'));
+  it('throws when an intermediate directory is a symlink', async () => {
+    const tmpBase = await makeTempDir('saf-safe-child-');
+    const outside = await makeTempDir('saf-outside-');
     const linkPath = path.join(tmpBase, 'controls');
-    // Defensive: beforeEach gives a fresh tmpBase, but some vitest test-file
-    // orderings appear to surface EEXIST on symlinkSync. Scrub first.
-    if (fs.existsSync(linkPath)) {
-      fs.rmSync(linkPath, { recursive: true, force: true });
-    }
-    try {
-      fs.symlinkSync(outside, linkPath);
-      expect(() => resolveSafeChild(tmpBase, 'controls', 'SV-1.rb')).toThrow(
-        /symlink/,
-      );
-    } finally {
-      fs.rmSync(outside, { recursive: true, force: true });
-    }
+    fs.symlinkSync(outside, linkPath);
+
+    expect(() => resolveSafeChild(tmpBase, 'controls', 'SV-1.rb')).toThrow(
+      /symlink/,
+    );
   });
 
-  it('throws when baseDir does not exist', () => {
+  it('throws when the target file is a symlink', async () => {
+    const tmpBase = await makeTempDir('saf-safe-child-');
+    const outside = await makeTempDir('saf-outside-');
+    const outsideFile = path.join(outside, 'target.rb');
+    const controlsDir = path.join(tmpBase, 'controls');
+    const linkPath = path.join(controlsDir, 'SV-1.rb');
+
+    fs.writeFileSync(outsideFile, 'outside');
+    fs.mkdirSync(controlsDir);
+    fs.symlinkSync(outsideFile, linkPath);
+
+    expect(() => resolveSafeChild(tmpBase, 'controls', 'SV-1.rb')).toThrow(
+      /symlink/,
+    );
+  });
+
+  it('throws when baseDir does not exist', async () => {
+    const tmpBase = await makeTempDir('saf-safe-child-');
     const nonexistent = path.join(tmpBase, 'does-not-exist');
     expect(() => resolveSafeChild(nonexistent, 'x.txt')).toThrow();
   });
