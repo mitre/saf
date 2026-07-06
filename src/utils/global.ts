@@ -1,7 +1,7 @@
-import { execFileSync, type ExecFileSyncOptionsWithStringEncoding } from 'node:child_process';
-import fs from 'node:fs';
-import path from 'node:path';
-import process from 'node:process';
+import { execFileSync, type ExecFileSyncOptionsWithStringEncoding } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import process from 'process';
 import { fingerprint, Assettype, INPUT_TYPES, Role, Techarea } from '@mitre/hdf-converters';
 import AdmZip from 'adm-zip';
 import appRootPath from 'app-root-path';

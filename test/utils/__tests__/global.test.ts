@@ -1,6 +1,6 @@
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import type { ExecJSON, ContextualizedEvaluation } from 'inspecjs';
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
@@ -138,13 +138,13 @@ describe.sequential('safeExecFileSync', () => {
     execFileSyncMock.mockReset();
     execFileSyncMock.mockReturnValue('stdout');
 
-    vi.doMock('node:child_process', async () => {
-      const actual = await vi.importActual('node:child_process');
+    vi.doMock('child_process', async () => {
+      const actual = await vi.importActual('child_process');
       return { ...actual, execFileSync: execFileSyncMock };
     });
 
-    vi.doMock('node:process', async () => {
-      const actual = await vi.importActual('node:process');
+    vi.doMock('process', async () => {
+      const actual = await vi.importActual('process');
       return {
         ...actual,
         default: Object.create(actual.default, {
@@ -157,8 +157,8 @@ describe.sequential('safeExecFileSync', () => {
   }
 
   afterEach(() => {
-    vi.doUnmock('node:child_process');
-    vi.doUnmock('node:process');
+    vi.doUnmock('child_process');
+    vi.doUnmock('process');
     vi.resetModules();
   });
 

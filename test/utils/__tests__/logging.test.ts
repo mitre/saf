@@ -1,7 +1,7 @@
-import { randomBytes } from 'node:crypto';
-import fs from 'node:fs';
-import os from 'node:os';
-import path from 'node:path';
+import { randomBytes } from 'crypto';
+import fs from 'fs';
+import os from 'os';
+import path from 'path';
 import { describe, expect, it, vi } from 'vitest';
 import * as winston from 'winston';
 import type { Logger } from 'winston';
