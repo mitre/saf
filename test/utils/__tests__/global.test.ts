@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import type { ExecJSON, ContextualizedEvaluation } from 'inspecjs';
-import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import {
   basename,
   checkSuffix,
@@ -127,6 +127,77 @@ describe('safeFilename', () => {
 
   it('should throw when the filename is a Windows reserved name', () => {
     expect(() => safeFilename('CON.txt')).toThrow(/Unsafe filename/);
+  });
+});
+
+describe.sequential('safeExecFileSync', () => {
+  const execFileSyncMock = vi.fn();
+
+  async function importGlobalWithPlatform(platform: NodeJS.Platform) {
+    vi.resetModules();
+    execFileSyncMock.mockReset();
+    execFileSyncMock.mockReturnValue('stdout');
+
+    vi.doMock('node:child_process', async () => {
+      const actual = await vi.importActual('node:child_process');
+      return { ...actual, execFileSync: execFileSyncMock };
+    });
+
+    vi.doMock('node:process', async () => {
+      const actual = await vi.importActual('node:process');
+      return {
+        ...actual,
+        default: Object.create(actual.default, {
+          platform: { value: platform, enumerable: true },
+        }),
+      };
+    });
+
+    return import('../../../src/utils/global');
+  }
+
+  afterEach(() => {
+    vi.doUnmock('node:child_process');
+    vi.doUnmock('node:process');
+    vi.resetModules();
+  });
+
+  it('calls execFileSync without a shell on non-Windows platforms', async () => {
+    const { safeExecFileSync } = await importGlobalWithPlatform('linux');
+
+    const result = safeExecFileSync('inspec', ['json', '/tmp/profile'], { encoding: 'utf8' });
+
+    expect(result).toBe('stdout');
+    expect(execFileSyncMock).toHaveBeenCalledWith('inspec', ['json', '/tmp/profile'], {
+      encoding: 'utf8',
+      shell: false,
+    });
+  });
+
+  it('uses the Windows shell when arguments do not contain cmd.exe metacharacters', async () => {
+    const { safeExecFileSync } = await importGlobalWithPlatform('win32');
+
+    const result = safeExecFileSync(String.raw`C:\Program Files\InSpec\inspec.bat`, [
+      'json',
+      String.raw`C:\tmp\profile\control $psOnly#chars`,
+    ], { encoding: 'utf8', maxBuffer: 1024 });
+
+    expect(result).toBe('stdout');
+    expect(execFileSyncMock).toHaveBeenCalledWith(String.raw`C:\Program Files\InSpec\inspec.bat`, [
+      'json',
+      String.raw`C:\tmp\profile\control $psOnly#chars`,
+    ], { encoding: 'utf8', maxBuffer: 1024, shell: true });
+  });
+
+  it('rejects cmd.exe metacharacters and BatBadBut argument parsing cases on Windows', async () => {
+    const { safeExecFileSync } = await importGlobalWithPlatform('win32');
+
+    for (const unsafeCharacter of ['&', '|', '<', '>', '[', ']', '{', '}', '^', '=', ';', '!', '\'', '+', ',', '`', '~', '(', ')', '@', '"', '%', '\t', '\r', '\n']) {
+      expect(() => safeExecFileSync('inspec', ['json', `profile${unsafeCharacter}name`], { encoding: 'utf8' }))
+        .toThrow(/Unsafe cmd\.exe shell characters/);
+    }
+
+    expect(execFileSyncMock).not.toHaveBeenCalled();
   });
 });
 

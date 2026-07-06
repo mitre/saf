@@ -95,6 +95,6 @@ describe('Test generate update_controls4delta command', () => {
       '--no-backupControls',
     ]);
 
-    expect(stderr).to.match(/Unsafe shell characters/);
+    expect(stderr).to.match(/Unsafe cmd\.exe shell characters/);
   });
 });
