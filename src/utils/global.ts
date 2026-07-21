@@ -1,5 +1,7 @@
-import fs from 'node:fs';
-import path from 'node:path';
+import { execFileSync, type ExecFileSyncOptionsWithStringEncoding } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import process from 'process';
 import { fingerprint, Assettype, INPUT_TYPES, Role, Techarea } from '@mitre/hdf-converters';
 import AdmZip from 'adm-zip';
 import appRootPath from 'app-root-path';
@@ -7,6 +9,7 @@ import axios from 'axios';
 import { getInstalledPathSync } from 'get-installed-path';
 import type { AnyProfile, ContextualizedEvaluation, ExecJSON } from 'inspecjs';
 import _ from 'lodash';
+import sanitize from 'sanitize-filename';
 
 export type SpreadsheetTypes = 'cis' | 'disa' | 'general';
 
@@ -20,19 +23,6 @@ export function checkSuffix(input: string, suffix = '.json') {
   return `${input}${suffix}`;
 }
 
-/**
- * The `basename` function.
- *
- * This function returns the basename, i.e. the last value for a given path
- * which is usually the filename and extension.
- *
- * Not using path.basename as it doesn't "just work" as one would expect handling
- * paths from other filesystem types: see https://nodejs.org/api/path.html#windows-vs-posix
- *
- * @param inputPath - The full path to convert. This should be a string representing a valid file path.
- *
- * @returns {string} - The filename extracted from the full path. If the path does not contain a filename, an empty string is returned.
- */
 /**
  * Resolve a child path under `baseDir` after realpath-canonicalizing both,
  * and assert the result stays inside `baseDir`. Rejects symlink traversal
@@ -66,22 +56,65 @@ export function resolveSafeChild(baseDir: string, ...parts: string[]): string {
       );
     }
   }
+  if (fs.existsSync(target) && fs.lstatSync(target).isSymbolicLink()) {
+    throw new Error(`Refusing to write to symlink: ${target}`);
+  }
   return target;
 }
 
+/**
+ * The `basename` function.
+ *
+ * This function returns the basename, i.e. the last value for a given path which is usually the filename and extension.
+ *
+ * Uses `path.win32.basename` because it handles both Windows and POSIX path separators consistently across host operating systems.
+ *
+ * @param inputPath - The full path to convert. This should be a string representing a valid file path.
+ *
+ * @returns {string} - The filename extracted from the full path. If the path does not contain a filename, an empty string is returned.
+ */
 export function basename(inputPath: string): string {
-  // trim trailing whitespace and path separators
-  // ('/'=linux or '\'=windows (note that this could be double backslash on occasion)) from the end of the string
-  const trimmedPath = inputPath.trimEnd().replace(/[\\/]+$/, '');
+  return path.win32.basename(inputPath.trimEnd());
+}
 
-  // grab everything after the last separator or the entire string if no separator found
-  const lastSeparatorIndex = Math.max(
-    trimmedPath.lastIndexOf('/'),
-    trimmedPath.lastIndexOf('\\'),
-  );
+/**
+ * Extracts the basename from `inputPath` and validates it is safe on common filesystems.
+ *
+ * Throws if the basename is empty or if `sanitize-filename` would modify it (reserved names, control chars, etc.).
+ * Path components in `inputPath` are ignored; callers should pass a filename when possible.
+ */
+export function safeFilename(inputPath: string): string {
+  const filename = basename(inputPath);
+  if (filename === '' || sanitize(filename) !== filename) {
+    throw new Error(`Unsafe filename: ${inputPath}`);
+  }
 
-  // return the substring after the index of the separator - if no separator was found then the index was -1 to which adding 1 makes 0, i.e. the beginning of the string
-  return trimmedPath.slice(lastSeparatorIndex + 1);
+  return filename;
+}
+
+/**
+ * The documentation for execFileSync says "If the shell option is enabled, do not pass unsanitized user input to this function. Any input containing shell metacharacters may be used to trigger arbitrary command execution."  Consequently, on Windows, we reject cmd.exe shell metacharacters.
+ * https://nodejs.org/api/child_process.html#child_processexecfilesyncfile-args-options
+ * https://flatt.tech/research/posts/batbadbut-you-cant-securely-execute-commands-on-windows/
+ * @param command - the command to be invoked, likely `inspec` or `cinc-auditor`
+ * @param args - the arguments for the command
+ * @param options - options for the wrapped execFileSync command
+ * @returns The stdout from the command
+ */
+export function safeExecFileSync(command: string, args: string[], options: ExecFileSyncOptionsWithStringEncoding): string {
+  if (process.platform === 'win32') {
+    // cmd.exe's documented special characters, excluding literal space so
+    // normal Windows paths keep working. `%`, `"`, and newlines cover the
+    // BatBadBut argument parsing cases.
+    const unsafeCharacters = /[&|<>[\]{}^=;!'+,`~()@"%\t\r\n]/;
+    for (const value of [command, ...args]) {
+      if (unsafeCharacters.test(value)) {
+        throw new Error('Unsafe cmd.exe shell characters detected; refusing to run command through the Windows shell.');
+      }
+    }
+  }
+
+  return execFileSync(command, args, { ...options, shell: process.platform === 'win32' });
 }
 
 /**

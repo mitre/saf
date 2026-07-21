@@ -1,11 +1,10 @@
 import fs from 'fs';
-import path from 'path';
 import { Flags } from '@oclif/core';
 import _ from 'lodash';
 import type { ExecJSON } from 'inspecjs';
 import { addAttestationToHDF, parseXLSXAttestations, type Attestation } from '@mitre/hdf-converters';
 import yaml from 'yaml';
-import { basename } from '../../utils/global';
+import { basename, resolveSafeChild, safeFilename } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class ApplyAttestation extends BaseCommand<typeof ApplyAttestation> {
@@ -74,7 +73,7 @@ export default class ApplyAttestation extends BaseCommand<typeof ApplyAttestatio
       if (Object.entries(executions).length <= 1) {
         fs.writeFileSync(flags.output, JSON.stringify(applied, null, 2));
       } else {
-        fs.writeFileSync(path.join(flags.output, originalFilename), JSON.stringify(applied, null, 2));
+        fs.writeFileSync(resolveSafeChild(flags.output, safeFilename(originalFilename)), JSON.stringify(applied, null, 2));
       }
     }
   }

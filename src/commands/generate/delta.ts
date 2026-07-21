@@ -1,4 +1,3 @@
-import { execFileSync } from 'child_process';
 import { EventEmitter } from 'events';
 import fs, { copyFileSync } from 'fs';
 import path from 'path';
@@ -26,7 +25,7 @@ import {
 } from '../../utils/delta_matching';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
-import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveSafeChild } from '../../utils/global';
+import { basename, downloadFile, extractFileFromZip, getErrorMessage, resolveSafeChild, safeExecFileSync, safeFilename } from '../../utils/global';
 
 /**
  * This class extends the capabilities of the update_controls4delta providing the following capabilities:
@@ -288,7 +287,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       try {
         this.logThis(`  Generating the summary file on directory: ${shortControlsDir}`, 'info');
         // Generate the profile controls summary from the `controlsDir` without the trailing "controls" directory
-        const inspecJsonFile = execFileSync(inspecPath, ['json', path.dirname(controlsDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024, shell: process.platform === 'win32' });
+        const inspecJsonFile = safeExecFileSync(inspecPath, ['json', path.dirname(controlsDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
         this.logThis('  Generated InSpec Profiles from InSpec JSON summary', 'info');
         existingProfile = processInSpecProfile(inspecJsonFile);
       } catch (error: unknown) {
@@ -373,11 +372,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // directory with the proper name and Id, than regenerate json profile summary.
 
         for (const [key, value] of Object.entries(controls)) {
-          const sourceShortControlFile = path.join(shortProfileDir, `${value}.rb`);
-          const mappedShortControlFile = path.join(shortMappedDir, `${value}.rb`);
+          const controlFilename = safeFilename(`${basename(value)}.rb`);
+          const sourceShortControlFile = path.join(shortProfileDir, controlFilename);
+          const mappedShortControlFile = path.join(shortMappedDir, controlFilename);
 
-          const sourceControlFile = path.join(controlsDir, `${value}.rb`);
-          const mappedControlFile = path.join(mappedDir, `${value}.rb`);
+          const sourceControlFile = resolveSafeChild(controlsDir, controlFilename);
+          const mappedControlFile = resolveSafeChild(mappedDir, controlFilename);
 
           this.logger.info(`${'Mapping (From --> To): '}  ${`${value} --> ${key}`}`);
 
@@ -428,7 +428,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // Get the directory name without the trailing "controls" directory
           // Here we are using the newly updated (mapped) controls
           // const profileDir = path.dirname(controlsDir)
-          const inspecJsonFileNew = execFileSync(inspecPath, ['json', path.dirname(mappedDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024, shell: process.platform === 'win32' });
+          const inspecJsonFileNew = safeExecFileSync(inspecPath, ['json', path.dirname(mappedDir)], { encoding: 'utf8', maxBuffer: 50 * 1024 * 1024 });
 
           // Replace existing profile (inputted JSON of source profile to be mapped)
           // Allow delta to take care of the rest
@@ -486,14 +486,14 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     if (reportFile) {
       if (fs.existsSync(reportFile) && fs.lstatSync(reportFile).isDirectory()) {
         // Not a file - directory provided
-        markDownFile = path.join(reportFile, 'delta.md');
+        markDownFile = resolveSafeChild(reportFile, 'delta.md');
       } else if (fs.existsSync(reportFile) && fs.lstatSync(reportFile).isFile()) {
         // File name provided and exists - will be overwritten
         markDownFile = reportFile;
       } else if (path.extname(reportFile) === '.md') {
         markDownFile = reportFile;
       } else {
-        markDownFile = path.join(outputProfileFolderPath, 'delta.md');
+        markDownFile = resolveSafeChild(outputProfileFolderPath, 'delta.md');
       }
     } else {
       this.logThis('  An output markdown reports was not requested', 'debug');
@@ -551,17 +551,17 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             //       method from inspect-objects
             const newControl = updateControl(existingProfile.controls[index], control, thisLogger);
             this.logThis(`Writing updated control with code block for: ${control.id}.`, 'info');
-            // `basename(control.id)` strips path separators; `resolveSafeChild`
-            // rejects symlink traversal on the `controls/` subdirectory.
+            const controlFilename = safeFilename(`${basename(control.id)}.rb`);
             fs.writeFileSync(
-              resolveSafeChild(outputProfileFolderPath, 'controls', `${basename(control.id)}.rb`),
+              resolveSafeChild(outputProfileFolderPath, 'controls', controlFilename),
               newControl.toRuby(processLogLevel),
             );
           } else {
             // We didn't find a mapping for this control - Old style of updating controls
             this.logThis(`Writing new control without code block for: ${control.id}.`, 'info');
+            const controlFilename = safeFilename(`${basename(control.id)}.rb`);
             fs.writeFileSync(
-              resolveSafeChild(outputProfileFolderPath, 'controls', `${basename(control.id)}.rb`),
+              resolveSafeChild(outputProfileFolderPath, 'controls', controlFilename),
               control.toRuby(processLogLevel),
             );
           }
@@ -974,7 +974,10 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       fs.mkdirSync(mappedDir, { recursive: true });
 
       // Copy the profile inspec.yml to the mapped directory to generate the profile controls summary properly
-      copyFileSync(path.join(destFilePath, 'inspec.yml'), path.join(path.dirname(mappedDir), 'inspec.yml'));
+      copyFileSync(
+        resolveSafeChild(destFilePath, 'inspec.yml'),
+        resolveSafeChild(path.dirname(mappedDir), 'inspec.yml'),
+      );
 
       return mappedDir;
     } catch (error: unknown) {
