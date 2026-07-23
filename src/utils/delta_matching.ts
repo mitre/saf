@@ -319,23 +319,22 @@ type TierContext = {
 type ScoredCandidate = { idx: number; composite: number; cci: number };
 
 /**
- * Claim `oldId` as primary if not already claimed; otherwise mark as related.
- * Mutates `claimedOldIds` in place.
+ * Mark `oldId` as claimed so subsequently-scored new controls prefer an
+ * unclaimed old (the tier-2 spreading heuristic). This only records that
+ * *some* new control mapped here; it does NOT decide which one is primary —
+ * that is `electPrimaries`' job. Mutates `claimedOldIds` in place.
  */
-function claimOrRelate(
-  oldId: string,
-  claimedOldIds: Set<string>,
-): 'primary' | 'related' {
-  if (claimedOldIds.has(oldId)) {
-    return 'related';
-  }
+function registerClaim(oldId: string, claimedOldIds: Set<string>): void {
   claimedOldIds.add(oldId);
-  return 'primary';
 }
 
 /**
- * Construct a successful LinkRecord (any tier). Derives
- * `potentialMismatch` consistently via `computePotentialMismatch`.
+ * Construct a successful LinkRecord (any tier) as a `related` *candidate*.
+ * A tier function cannot know whether its new control is the best match for
+ * the old until the whole profile is scored, so it never assigns `primary`
+ * here; `electPrimaries` elects one primary per old control afterward and
+ * (re)computes `potentialMismatch` from the final relationship. Built as
+ * `related` with `potentialMismatch=false` (the value for any non-primary).
  */
 function makeLink(args: {
   newControl: ControlLike;
@@ -343,20 +342,15 @@ function makeLink(args: {
   matchMethod: MatchMethod;
   confidence: number;
   srg: string | null;
-  relationship: 'primary' | 'related';
 }): LinkRecord {
   return {
     oldId: args.oldId,
     newId: args.newControl.id,
     matchMethod: args.matchMethod,
     confidence: args.confidence,
-    relationship: args.relationship,
+    relationship: 'related',
     srg: args.srg,
-    potentialMismatch: computePotentialMismatch(
-      args.matchMethod,
-      args.relationship,
-      args.confidence,
-    ),
+    potentialMismatch: false,
   };
 }
 
@@ -383,13 +377,13 @@ function tier1DeterministicMatch(
   srg: string,
   claimedOldIds: Set<string>,
 ): LinkRecord {
+  registerClaim(candidate.id, claimedOldIds);
   return makeLink({
     newControl,
     oldId: candidate.id,
     matchMethod: 'srg-deterministic',
     confidence: 1,
     srg,
-    relationship: claimOrRelate(candidate.id, claimedOldIds),
   });
 }
 
@@ -452,13 +446,13 @@ function tier2CciTiebreak(
     );
   }
   const winningCandidate = candidates[winner.idx];
+  registerClaim(winningCandidate.id, ctx.claimedOldIds);
   return makeLink({
     newControl,
     oldId: winningCandidate.id,
     matchMethod: 'srg-cci-tiebreak',
     confidence: Math.max(winner.cci, 0),
     srg,
-    relationship: claimOrRelate(winningCandidate.id, ctx.claimedOldIds),
   });
 }
 
@@ -491,14 +485,99 @@ function tier3FuseFallback(
   // Invert Fuse score (0=perfect, 1=no match) into a 0-1 confidence
   // where 1.0 is perfect.
   const confidence = 1 - best.score;
+  registerClaim(best.item.originalId, ctx.claimedOldIds);
   return makeLink({
     newControl,
     oldId: best.item.originalId,
     matchMethod: 'fuse-fallback',
     confidence,
     srg,
-    relationship: claimOrRelate(best.item.originalId, ctx.claimedOldIds),
   });
+}
+
+/**
+ * Trust ordering of match tiers, used to elect a primary when several new
+ * controls (possibly from different tiers) land on one old control. Higher =
+ * more trustworthy: an SRG-deterministic match beats an SRG+CCI tiebreak,
+ * which beats a cross-SRG Fuse title fallback. `none` never reaches election.
+ */
+function matchMethodRank(matchMethod: MatchMethod): number {
+  switch (matchMethod) {
+    case 'srg-deterministic': {
+      return 3;
+    }
+    case 'srg-cci-tiebreak': {
+      return 2;
+    }
+    case 'fuse-fallback': {
+      return 1;
+    }
+    default: {
+      return 0;
+    }
+  }
+}
+
+/**
+ * Elect the `primary` link for every old control. The tier functions build
+ * each match as a `related` candidate; this is the single, authoritative
+ * place that designates primaries — there is no provisional "primary" that
+ * later gets overwritten. For each old control, the highest-confidence
+ * candidate becomes `primary` (the link that inherits the old body
+ * downstream) and the rest stay `related`; an exact tie resolves to the
+ * first candidate in new-profile input order. `potentialMismatch` is
+ * recomputed from the final relationship (it is false for `related`, so a
+ * promoted primary must be re-evaluated). Mutates and returns `links`.
+ *
+ * SCOPE: `confidence` measures each candidate's fit to the old it was
+ * *assigned* to. Tier 2's prefer-unclaimed spreading (see `tier2CciTiebreak`)
+ * can route a new control off a stronger but already-claimed old, so this
+ * elects the best body recipient *among the controls that landed on a given
+ * old* — it does not guarantee that control was on its globally-strongest
+ * old. That requires globally-optimal assignment (score all new x old pairs
+ * together), which this greedy matcher does not do; it is addressed by the
+ * requirement-text matcher rework, not here.
+ */
+export function electPrimaries(links: LinkRecord[]): LinkRecord[] {
+  const byOld = new Map<string, LinkRecord[]>();
+  for (const link of links) {
+    if (link.oldId === null || link.relationship === 'no-match') {
+      continue;
+    }
+    const bucket = byOld.get(link.oldId);
+    if (bucket) {
+      bucket.push(link);
+    } else {
+      byOld.set(link.oldId, [link]);
+    }
+  }
+  for (const group of byOld.values()) {
+    // Elect tier-first, then by confidence WITHIN a tier. Confidence is not
+    // comparable across tiers (tier 1 = 1.0; tier 2 = CCI Jaccard; tier 3 =
+    // 1 - Fuse title score), so a cross-SRG tier-3 fuzzy match must not
+    // outrank a same-SRG tier-2 match on the same old just because its raw
+    // score is higher. A higher tier (more trustworthy match) always wins;
+    // strict `>` on confidence keeps the first candidate on within-tier ties
+    // (deterministic input order).
+    let best = group[0];
+    for (const link of group) {
+      const rank = matchMethodRank(link.matchMethod);
+      const bestRank = matchMethodRank(best.matchMethod);
+      if (rank > bestRank
+        || (rank === bestRank && link.confidence > best.confidence)) {
+        best = link;
+      }
+    }
+    for (const link of group) {
+      link.relationship = link === best ? 'primary' : 'related';
+      link.potentialMismatch = computePotentialMismatch(
+        link.matchMethod,
+        link.relationship,
+        link.confidence,
+      );
+    }
+  }
+  return links;
 }
 
 /**
@@ -544,10 +623,10 @@ export function applyRequirementFirstPipeline(
       })
       : null;
 
-  // Track which old control has already been claimed as `primary`. If a
-  // second new control best-matches the same old, it becomes `related`
-  // (1:N split — multiple new controls inherit one old body, but only the
-  // highest-scoring is primary).
+  // Tracks which old controls have been mapped to, so tier 2 prefers an
+  // unclaimed old when spreading distinct new controls across olds. This is
+  // only used for candidate *selection*; `electPrimaries` (after the loop)
+  // is what designates the primary of each old control by confidence.
   const claimedOldIds = new Set<string>();
   const ctx: TierContext = { oldPrefix, newPrefix, fuse, claimedOldIds };
 
@@ -573,7 +652,7 @@ export function applyRequirementFirstPipeline(
       );
     }
   }
-  return links;
+  return electPrimaries(links);
 }
 
 /**
