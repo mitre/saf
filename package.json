@@ -52,7 +52,7 @@
     "inquirer": "12.11.1",
     "inquirer-file-selector": "^0.6.1",
     "inspecjs": "2.13.0",
-    "js-yaml": "^4.1.0",
+    "js-yaml": "^5.2.2",
     "json-colorizer": "^3.0.1",
     "lodash": "^4.17.21",
     "markdown-diff": "^2.0.0",
