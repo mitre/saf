@@ -1,9 +1,10 @@
 import fs from 'fs';
+import path from 'path';
 import { INPUT_TYPES, SnykResults as Mapper } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
 import _ from 'lodash';
 import { BaseCommand } from '../../utils/oclif/base_command';
-import { basename, checkInput, checkSuffix } from '../../utils/global';
+import { basename, checkInput, checkSuffix, resolveSafeChild, safeFilename } from '../../utils/global';
 
 export default class Snyk2HDF extends BaseCommand<typeof Snyk2HDF> {
   static readonly usage
@@ -42,9 +43,11 @@ export default class Snyk2HDF extends BaseCommand<typeof Snyk2HDF> {
     const converter = new Mapper(data);
     const result = converter.toHdf();
     if (Array.isArray(result)) {
+      const outputBase = path.dirname(flags.output);
+      const outputPrefix = safeFilename(flags.output.replaceAll(/\.json/gi, ''));
       for (const element of result) {
         fs.writeFileSync(
-          `${flags.output.replaceAll(/\.json/gi, '')}-${basename(_.get(element, 'platform.target_id') || '')}.json`,
+          resolveSafeChild(outputBase, safeFilename(`${outputPrefix}-${basename(_.get(element, 'platform.target_id') || '')}.json`)),
           JSON.stringify(element, null, 2),
         );
       }

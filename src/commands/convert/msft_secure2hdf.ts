@@ -1,5 +1,6 @@
 import fs from 'fs';
 import https from 'https';
+import path from 'path';
 import { ClientSecretCredential } from '@azure/identity';
 import {
   Client,
@@ -15,7 +16,7 @@ import type {
 import { MsftSecureScoreResults as Mapper } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
 import type { ExecJSON } from 'inspecjs';
-import { basename } from '../../utils/global';
+import { basename, resolveSafeChild, safeFilename } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
 function processInputs(
@@ -33,6 +34,8 @@ function processInputs(
   );
 
   for (const hdfReport of converter.toHdf()) {
+    const outputBase = path.dirname(output);
+    const outputPrefix = safeFilename(output.replaceAll(/\.json/gi, ''));
     const auxData = (
       (hdfReport as ExecJSON.Execution & { passthrough: Record<string, unknown> })
         .passthrough?.auxiliary_data as Record<string, unknown>[]
@@ -40,7 +43,7 @@ function processInputs(
       ?.data as Record<string, unknown>;
     const reportId = auxData?.reportId as string;
     fs.writeFileSync(
-      `${output.replaceAll(/\.json/gi, '')}-${basename(reportId)}.json`,
+      resolveSafeChild(outputBase, safeFilename(`${outputPrefix}-${basename(reportId)}.json`)),
       JSON.stringify(hdfReport),
     );
   }

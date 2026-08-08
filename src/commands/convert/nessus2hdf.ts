@@ -1,8 +1,9 @@
 import { Flags } from '@oclif/core';
 import fs from 'fs';
+import path from 'path';
 import { INPUT_TYPES, NessusResults as Mapper } from '@mitre/hdf-converters';
 import _ from 'lodash';
-import { basename, checkInput, checkSuffix } from '../../utils/global';
+import { basename, checkInput, checkSuffix, resolveSafeChild, safeFilename } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class Nessus2HDF extends BaseCommand<typeof Nessus2HDF> {
@@ -48,9 +49,11 @@ export default class Nessus2HDF extends BaseCommand<typeof Nessus2HDF> {
     const converter = new Mapper(data, flags.includeRaw);
     const result = converter.toHdf();
     if (Array.isArray(result)) {
+      const outputBase = path.dirname(flags.output);
+      const outputPrefix = safeFilename(flags.output.replaceAll(/\.json/gi, ''));
       for (const element of result) {
         fs.writeFileSync(
-          `${flags.output.replaceAll(/\.json/gi, '')}-${basename(_.get(element, 'platform.target_id') || '')}.json`,
+          resolveSafeChild(outputBase, safeFilename(`${outputPrefix}-${basename(_.get(element, 'platform.target_id') || '')}.json`)),
           JSON.stringify(element, null, 2),
         );
       }

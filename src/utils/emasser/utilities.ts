@@ -1,9 +1,9 @@
 import fs from 'fs';
-import path from 'path';
 import { Flags } from '@oclif/core';
 import type { BooleanFlag, OptionFlag } from '@oclif/core/interfaces';
 import { colorize } from 'json-colorizer';
 import { outputError } from './output_error';
+import { resolveSafeChild, safeFilename } from '../global';
 
 /**
  * Interface representing the command line arguments.
@@ -1755,12 +1755,12 @@ export function saveFile(dir: string, filename: string, data: any): void {
   }
 
   // Save to file
-  const outDir = path.join(dir, filename);
+  const outputFile = resolveSafeChild(dir, safeFilename(filename));
   try {
-    fs.writeFileSync(outDir, data);
+    fs.writeFileSync(outputFile, data);
   } catch (error) {
     if (error) {
-      console.error(`Error saving file to: ${outDir}. Cause: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
+      console.error(`Error saving file to: ${outputFile}. Cause: ${error instanceof Error ? error.message : JSON.stringify(error)}`);
     }
   }
 }
