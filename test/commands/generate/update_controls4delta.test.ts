@@ -63,6 +63,7 @@ describe.sequential('Test generate update_controls4delta command', () => {
     ]);
 
     expect(error, stderr).toBeUndefined();
+    expect(stderr).toBe('');
 
     const fileCount = fs.readdirSync(tempControlsDir).length;
     expect(fileCount).to.eql(5);
