@@ -6,12 +6,19 @@ import { describe, expect, it } from 'vitest';
 
 const itOnWindows = process.platform === 'win32' ? it : it.skip;
 
+function createTempWorkspace() {
+  return tmp.dirSync({
+    unsafeCleanup: true,
+    ...(process.platform === 'win32' ? { tmpdir: process.cwd() } : {}),
+  });
+}
+
 // Functional tests
 describe.sequential('Test generate update_controls4delta command', () => {
   // This command updates controls in place, so tests must operate on a temp copy
   // of the fixture controls rather than the checked-in sample files
   it('should rename legacy controls to the new XCCDF control ids using --inspecJsonFile', async () => {
-    const tempWorkspace = tmp.dirSync({ unsafeCleanup: true });
+    const tempWorkspace = createTempWorkspace();
     const sourceControlsDir = path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls');
     const tempControlsDir = path.join(tempWorkspace.name, 'controls');
 
@@ -48,7 +55,7 @@ describe.sequential('Test generate update_controls4delta command', () => {
   });
 
   it('should rename legacy controls to the new XCCDF control ids using --inspecPath', async () => {
-    const tempWorkspace = tmp.dirSync({ unsafeCleanup: true });
+    const tempWorkspace = createTempWorkspace();
     const sourceControlsDir = path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls');
     const tempControlsDir = path.join(tempWorkspace.name, 'controls');
 
@@ -82,7 +89,7 @@ describe.sequential('Test generate update_controls4delta command', () => {
   });
 
   itOnWindows('should report Windows shell metacharacters before generating an inspec summary with --inspecPath', async () => {
-    const tempWorkspace = tmp.dirSync({ unsafeCleanup: true });
+    const tempWorkspace = createTempWorkspace();
     const sourceControlsDir = path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls');
     const profileDir = path.join(tempWorkspace.name, 'profile&ver');
     const tempControlsDir = path.join(profileDir, 'controls');
