@@ -54,13 +54,15 @@ describe.sequential('Test generate update_controls4delta command', () => {
 
     fs.cpSync(sourceControlsDir, tempControlsDir, { recursive: true });
 
-    await runCommand<{ name: string }>([
+    const { error, stderr } = await runCommand<{ name: string }>([
       'generate update_controls4delta',
       '-I', 'cinc-auditor',
       '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2019_V3R2_xccdf.xml'),
       '-c', tempControlsDir,
       '--no-backupControls',
     ]);
+
+    expect(error, stderr).toBeUndefined();
 
     const fileCount = fs.readdirSync(tempControlsDir).length;
     expect(fileCount).to.eql(5);
