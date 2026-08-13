@@ -7,7 +7,7 @@ import { describe, expect, it } from 'vitest';
 const itOnWindows = process.platform === 'win32' ? it : it.skip;
 
 // Functional tests
-describe('Test generate update_controls4delta command', () => {
+describe.sequential('Test generate update_controls4delta command', () => {
   // This command updates controls in place, so tests must operate on a temp copy
   // of the fixture controls rather than the checked-in sample files
   it('should rename legacy controls to the new XCCDF control ids using --inspecJsonFile', async () => {
