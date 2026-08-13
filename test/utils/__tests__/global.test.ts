@@ -61,9 +61,12 @@ describe('basename', () => {
     expect(result).toBe('file.txt');
   });
 
-  it('should return the last directory name if the path ends with a forward slash (non windows)', () => {
-    const result = basename('/path/to/');
-    expect(result).toBe('to');
+  it.each([
+    ['/path/to/', 'forward slash'],
+    ['\\path\\to\\', 'backslash'],
+    ['\\path\\to\\\\\\', 'multiple backslashes'],
+  ])('should return the last directory name if the path ends with a %s', (inputPath) => {
+    expect(basename(inputPath)).toBe('to');
   });
 
   it('should handle paths with no slashes', () => {
@@ -74,16 +77,6 @@ describe('basename', () => {
   it('should return the filename from a full path (windows)', () => {
     const result = basename('\\path\\to\\file.txt\\');
     expect(result).toBe('file.txt');
-  });
-
-  it('should return the last directory name if the path ends with a backslash\'s (windows)', () => {
-    const result = basename('\\path\\to\\');
-    expect(result).toBe('to');
-  });
-
-  it('should return the last directory name if the path ends with multiple backslashes', () => {
-    const result = basename('\\path\\to\\\\\\');
-    expect(result).toBe('to');
   });
 
   it('should trim trailing whitespace before returning the filename', () => {
