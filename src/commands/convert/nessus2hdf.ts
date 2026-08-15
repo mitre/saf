@@ -47,7 +47,7 @@ export default class Nessus2HDF extends BaseCommand<typeof Nessus2HDF> {
     );
 
     const converter = new Mapper(data, flags.includeRaw);
-    const result = converter.toHdf();
+    const result = await converter.toHdf();
     if (Array.isArray(result)) {
       const outputBase = path.dirname(flags.output);
       const outputPrefix = safeFilename(flags.output.replaceAll(/\.json/gi, ''));
