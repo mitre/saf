@@ -1566,6 +1566,8 @@ validate threshold            Validate the compliance and status counts of an HD
 
 ### Generate
 
+NOTE: Please be aware that the `delta` and `update_controls4delta` subcommands can invoke an InSpec or CINC Auditor executable supplied through the -I/--inspecPath flag.  Untrusted executable paths or arguments can create a command injection risk.  Furthermore, Windows requires this invocation to use a shell which can create a risk of shell injection.  The SAF CLI has been hardened so as to reduce these risks; however, as a workaround, run InSpec or CINC Auditor manually to generate the profile JSON, then provide it with the -J/--inspecJsonFile flag.
+
 #### Delta
 
 Update an existing InSpec profile with new or updated XCCDF guidance. With -M (runMapControls), uses a 3-tier SRG/CCI requirement-first matcher for cross-vendor deltas (e.g. RHEL 9 → Amazon Linux 2023) and persists per-control match decisions into delta.json's links[] field.

@@ -4,12 +4,21 @@ import path from 'path';
 import tmp from 'tmp';
 import { describe, expect, it } from 'vitest';
 
+const itOnWindows = process.platform === 'win32' ? it : it.skip;
+
+function createTempWorkspace() {
+  return tmp.dirSync({
+    unsafeCleanup: true,
+    ...(process.platform === 'win32' ? { tmpdir: process.cwd() } : {}),
+  });
+}
+
 // Functional tests
 describe('Test generate update_controls4delta command', () => {
   // This command updates controls in place, so tests must operate on a temp copy
   // of the fixture controls rather than the checked-in sample files
   it('should rename legacy controls to the new XCCDF control ids using --inspecJsonFile', async () => {
-    const tempWorkspace = tmp.dirSync({ unsafeCleanup: true });
+    const tempWorkspace = createTempWorkspace();
     const sourceControlsDir = path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls');
     const tempControlsDir = path.join(tempWorkspace.name, 'controls');
 
@@ -46,19 +55,22 @@ describe('Test generate update_controls4delta command', () => {
   });
 
   it('should rename legacy controls to the new XCCDF control ids using --inspecPath', async () => {
-    const tempWorkspace = tmp.dirSync({ unsafeCleanup: true });
+    const tempWorkspace = createTempWorkspace();
     const sourceControlsDir = path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls');
     const tempControlsDir = path.join(tempWorkspace.name, 'controls');
 
     fs.cpSync(sourceControlsDir, tempControlsDir, { recursive: true });
 
-    await runCommand<{ name: string }>([
+    const { error, stderr } = await runCommand<{ name: string }>([
       'generate update_controls4delta',
       '-I', 'cinc-auditor',
       '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2019_V3R2_xccdf.xml'),
       '-c', tempControlsDir,
       '--no-backupControls',
     ]);
+
+    expect(error, stderr).toBeUndefined();
+    expect(stderr).toBe('');
 
     const fileCount = fs.readdirSync(tempControlsDir).length;
     expect(fileCount).to.eql(5);
@@ -74,5 +86,25 @@ describe('Test generate update_controls4delta command', () => {
     expect(fs.existsSync(path.join(tempControlsDir, 'V-93207.rb'))).to.eql(false);
     expect(fs.existsSync(path.join(tempControlsDir, 'V-93473.rb'))).to.eql(false);
     expect(fs.existsSync(path.join(tempControlsDir, 'V-93461.rb'))).to.eql(false);
+  });
+
+  itOnWindows('should report Windows shell metacharacters before generating an inspec summary with --inspecPath', async () => {
+    const tempWorkspace = createTempWorkspace();
+    const sourceControlsDir = path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls');
+    const profileDir = path.join(tempWorkspace.name, 'profile&ver');
+    const tempControlsDir = path.join(profileDir, 'controls');
+
+    fs.mkdirSync(profileDir);
+    fs.cpSync(sourceControlsDir, tempControlsDir, { recursive: true });
+
+    const { stderr } = await runCommand<{ name: string }>([
+      'generate update_controls4delta',
+      '-I', 'cinc-auditor',
+      '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2019_V3R2_xccdf.xml'),
+      '-c', tempControlsDir,
+      '--no-backupControls',
+    ]);
+
+    expect(stderr).to.match(/Unsafe cmd\.exe shell characters/);
   });
 });

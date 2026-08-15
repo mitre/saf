@@ -1,7 +1,7 @@
 import fs from 'fs';
-import path from 'path';
 import { FileExportTypes, FromHDFToHTMLMapper as Mapper } from '@mitre/hdf-converters';
 import { Command, Flags } from '@oclif/core';
+import { basename } from '../../utils/global';
 
 export default class HDF2HTML extends Command {
   static readonly usage = 'convert hdf2html -i <hdf-scan-results-json>... -o <output-html> [-t <output-type>] [-h]';
@@ -22,7 +22,7 @@ export default class HDF2HTML extends Command {
   async run() {
     const { flags } = await this.parse(HDF2HTML);
 
-    const files = flags.input.map((file, i) => ({ data: fs.readFileSync(file, 'utf8'), fileName: path.basename(file), fileID: `${i}` }));
+    const files = flags.input.map((file, i) => ({ data: fs.readFileSync(file, 'utf8'), fileName: basename(file), fileID: `${i}` }));
 
     const converter = await new Mapper(files, FileExportTypes[flags.type as keyof typeof FileExportTypes]).toHTML();
     fs.writeFileSync(flags.output, converter);

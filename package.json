@@ -62,6 +62,7 @@
     "open": "^11.0.0",
     "prompt-sync": "^4.2.0",
     "run-script-os": "^1.1.6",
+    "sanitize-filename": "^1.6.4",
     "table": "^6.8.1",
     "tmp": "^0.2.1",
     "tsimportlib": "^0.0.5",

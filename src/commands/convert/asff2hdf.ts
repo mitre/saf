@@ -1,5 +1,4 @@
 import fs from 'fs';
-import path from 'path';
 import {
   type AwsSecurityFindingFilters,
   type DescribeStandardsControlsCommandOutput,
@@ -14,7 +13,7 @@ import { ASFFResults as Mapper, INPUT_TYPES } from '@mitre/hdf-converters';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import https from 'https';
 import _ from 'lodash';
-import { basename, checkInput, checkSuffix } from '../../utils/global';
+import { checkInput, checkSuffix, resolveSafeChild, safeFilename } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -289,7 +288,7 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
     fs.mkdirSync(flags.output);
     _.forOwn(results, (result, filename) => {
       fs.writeFileSync(
-        path.join(flags.output, checkSuffix(basename(filename))),
+        resolveSafeChild(flags.output, safeFilename(checkSuffix(filename))),
         JSON.stringify(result, null, 2),
       );
     });
