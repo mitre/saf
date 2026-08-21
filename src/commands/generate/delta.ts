@@ -588,8 +588,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               + `Total Controls Available for Delta: ${GenerateDelta.oldControlsLength}\n`
               + `     Total Controls Found on XCCDF: ${GenerateDelta.newControlsLength}\n`
               + `                    Match Controls: ${GenerateDelta.match}\n`
-              + `        Possible Mismatch Controls: ${GenerateDelta.posMisMatch}\n`
-              + `            Related Match Controls: ${GenerateDelta.dupMatch}\n`
+              + `        Possible Mismatch Controls: ${GenerateDelta.posMisMatch} (incl. ${GenerateDelta.links.filter(l => l.relationship === 'related' && l.potentialMismatch).length} flagged related grafts)\n`
+              + `         Trusted Related Matches: ${GenerateDelta.dupMatch}\n`
               + `                 No Match Controls: ${GenerateDelta.noMatch}\n`
               + `                New XCCDF Controls: ${GenerateDelta.newXccdfControl}\n\n`
               + 'Statistics Validation ------------------------------------------\n'
@@ -646,22 +646,20 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   // @param newProfile - The profile containing the new controls.
   mapControls(oldProfile: Profile, newProfile: Profile): object {
     // Requirement-first pipeline (see src/utils/delta_matching.ts):
-    //   Tier 1  Exact SRG-OS block with single old candidate     -> deterministic accept
-    //   Tier 2  Multiple old candidates in the SRG block         -> CCI Jaccard tiebreak
-    //   Tier 3  No SRG overlap                                   -> Fuse fallback with
-    //                                                              auto-detected vendor-
-    //                                                              prefix stripping and
-    //                                                              keys=['title','gtitle']
+    //   Tier 1  Single old candidate in the SRG block       -> deterministic
+    //   Tier 2  Multiple old candidates in the SRG block    -> bipartite
+    //                                                          assignment by
+    //                                                          semantic + CCI
+    //                                                          composite score
+    //   Tier 3  No SRG overlap                              -> Fuse fallback
+    //                                                          on vendor-prefix-
+    //                                                          stripped titles
     //
-    // 1:N splits (multiple new controls resolving to the same old) are
-    // preserved as primary + related links. Both land in the returned
-    // controlMappings so downstream file-writing copies the old Ruby
-    // body to every new control that shares the requirement.
+    // 1:N splits (multiple new controls resolving to one old) are preserved
+    // as primary + related links; both land in controlMappings so downstream
+    // file-writing copies the old Ruby body to every related new control.
     //
-    // Existing static counters on GenerateDelta are reused to keep the
-    // summary output format stable; `dupMatch` is repurposed to count
-    // `related` links (it used to count rejected duplicates in the
-    // former 1:1 model).
+    // `dupMatch` counts `related` links (kept for output-format stability).
     const oldControls: Control[] = oldProfile.controls;
     const newControls: Control[] = newProfile.controls;
     GenerateDelta.oldControlsLength = oldControls.length;
@@ -670,10 +668,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     const controlMappings: Record<string, string> = {};
 
     this.logger.info('Mapping Process ===========================================================================');
-    this.logger.info('Using requirement-first pipeline: SRG-ID blocking + CCI Jaccard tiebreak + vendor-prefix-normalized Fuse fallback\n');
+    this.logger.info('Using requirement-first pipeline: SRG-ID blocking + semantic (title+check) ranking with CCI secondary signal + vendor-prefix-normalized Fuse fallback\n');
 
     const links = applyRequirementFirstPipeline(oldProfile, newProfile);
     GenerateDelta.links = links;
+
+    GenerateDelta.emitBlockCardinalityWarnings(this.logger, links);
 
     // Cheap lookup tables for per-link logging
     const oldById = new Map(oldControls.map(c => [c.id, c]));
@@ -682,37 +682,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     );
 
     for (const link of links) {
-      const newId = basename(link.newId);
-      const oldCtl = link.oldId ? oldById.get(link.oldId) : undefined;
-      const newCtl = newByBasename.get(newId);
-
-      // `none` links and (defensively) any link missing oldId are no-op
-      // for body-copying purposes.
-      if (link.matchMethod === 'none' || link.oldId === null) {
-        this.logger.info(`     New XCCDF Control:  ${newId}`);
-        this.logger.error(
-          `    No Match Found for:  ${newId}${link.srg ? ` (SRG=${link.srg})` : ''}\n`,
-        );
-        GenerateDelta.noMatch++;
-        continue;
-      }
-
-      // Every non-none link resolves to an old control and goes into the
-      // returned map. Primary and related both need the old Ruby body.
-      controlMappings[newId] = link.oldId;
-
-      this.logger.info(`Processing New Control:  ${newId}`);
-      if (newCtl?.title) {
-        this.logger.info(`     New Control Title:  ${this.updateTitle(newCtl.title)}`);
-      }
-      if (oldCtl?.title) {
-        this.logger.info(`     Old Control Title:  ${this.updateTitle(oldCtl.title)}`);
-      }
-
-      GenerateDelta.logMatchMethod(this.logger, link);
-      GenerateDelta.tickMatchCounter(link);
-
-      this.logger.info(`  Best Match Candidate:  ${link.oldId} --> ${newId}\n`);
+      this.processLink(link, controlMappings, oldById, newByBasename);
     }
 
     this.logger.info('Mapping Results ===========================================================================');
@@ -728,10 +698,17 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     this.logger.info(`Total Controls Available for Delta:  ${GenerateDelta.oldControlsLength}`);
     this.logger.info(`     Total Controls Found on XCCDF:  ${GenerateDelta.newControlsLength}\n`);
 
+    // Flagged `related` grafts now count toward posMisMatch (they ship a body
+    // forward just like a flagged primary). Surface how many of the possible
+    // mismatches are related grafts so the triage signal isn't hidden, and
+    // relabel dupMatch as the *trusted* (unflagged) related count it now is.
+    const flaggedRelated = GenerateDelta.links.filter(
+      l => l.relationship === 'related' && l.potentialMismatch,
+    ).length;
     this.logger.info('Match Statistics =========================');
     this.logger.info(`                    Match Controls:  ${GenerateDelta.match}`);
-    this.logger.info(`        Possible Mismatch Controls:  ${GenerateDelta.posMisMatch}`);
-    this.logger.info(`          Related Match Controls:  ${GenerateDelta.dupMatch}`);
+    this.logger.info(`        Possible Mismatch Controls:  ${GenerateDelta.posMisMatch}  (incl. ${flaggedRelated} flagged related graft${flaggedRelated === 1 ? '' : 's'})`);
+    this.logger.info(`         Trusted Related Matches:  ${GenerateDelta.dupMatch}`);
     this.logger.info(`                 No Match Controls:  ${GenerateDelta.noMatch}`);
     this.logger.info(`                New XCCDF Controls:  ${GenerateDelta.newXccdfControl}\n`);
 
@@ -743,22 +720,83 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   }
 
   /**
+   * Emit one warning per SRG block whose new/old counts disagree. At
+   * least one control in such a block has no true partner and the
+   * assignment is guessing.
+   */
+  private static emitBlockCardinalityWarnings(log: Logger, links: LinkRecord[]): void {
+    const warned = new Set<string>();
+    for (const link of links) {
+      const { srg, blockNewCount, blockOldCount } = link;
+      if (
+        srg
+        && blockNewCount !== undefined
+        && blockOldCount !== undefined
+        && blockNewCount !== blockOldCount
+        && !warned.has(srg)
+      ) {
+        warned.add(srg);
+        log.warn(
+          `Block cardinality mismatch for SRG ${srg}: ${blockNewCount} new vs ${blockOldCount} old — at least one control in this block has no true partner.`,
+        );
+      }
+    }
+  }
+
+  /**
+   * Process a single LinkRecord: update controlMappings for any non-`none`
+   * link, log the per-link diagnostics, and advance the run counters.
+   */
+  private processLink(
+    link: LinkRecord,
+    controlMappings: Record<string, string>,
+    oldById: Map<string, Control>,
+    newByBasename: Map<string, Control>,
+  ): void {
+    const newId = basename(link.newId);
+    if (link.matchMethod === 'none' || link.oldId === null) {
+      this.logger.info(`     New XCCDF Control:  ${newId}`);
+      this.logger.error(
+        `    No Match Found for:  ${newId}${link.srg ? ` (SRG=${link.srg})` : ''}\n`,
+      );
+      GenerateDelta.noMatch++;
+      return;
+    }
+
+    controlMappings[newId] = link.oldId;
+    const oldCtl = oldById.get(link.oldId);
+    const newCtl = newByBasename.get(newId);
+
+    this.logger.info(`Processing New Control:  ${newId}`);
+    if (newCtl?.title) {
+      this.logger.info(`     New Control Title:  ${this.updateTitle(newCtl.title)}`);
+    }
+    if (oldCtl?.title) {
+      this.logger.info(`     Old Control Title:  ${this.updateTitle(oldCtl.title)}`);
+    }
+    GenerateDelta.logMatchMethod(this.logger, link);
+    GenerateDelta.tickMatchCounter(link);
+    this.logger.info(`  Best Match Candidate:  ${link.oldId} --> ${newId}\n`);
+  }
+
+  /**
    * Emit the per-link match-method log line. Kept separate from
    * tickMatchCounter so the output format can evolve independently of
    * the stats bookkeeping.
    */
   private static logMatchMethod(log: Logger, link: LinkRecord): void {
     const confidencePct = (link.confidence * 100).toFixed(0) + '%';
+    const triage = GenerateDelta.formatTriage(link);
     switch (link.matchMethod) {
       case 'srg-deterministic': {
         log.info(
-          `       Match method:  SRG deterministic (${link.srg}) [${link.relationship}]`,
+          `       Match method:  SRG deterministic (${link.srg}) [${link.relationship}]${triage}`,
         );
         break;
       }
-      case 'srg-cci-tiebreak': {
+      case 'srg-semantic-tiebreak': {
         log.info(
-          `       Match method:  SRG block + CCI tiebreak (Jaccard=${confidencePct}) [${link.relationship}]`,
+          `       Match method:  SRG block + semantic tiebreak (semantic=${confidencePct}) [${link.relationship}]${triage}`,
         );
         break;
       }
@@ -780,35 +818,58 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   }
 
   /**
+   * Format the per-link triage components (title/check/CCI) for the log
+   * line. Returns "" when none are populated (e.g. Tier 3 fallback).
+   */
+  private static formatTriage(link: LinkRecord): string {
+    const parts: string[] = [];
+    if (link.titleSimilarity !== undefined) {
+      parts.push(`title=${(link.titleSimilarity * 100).toFixed(0)}%`);
+    }
+    if (link.checkSimilarity !== undefined) {
+      parts.push(`check=${(link.checkSimilarity * 100).toFixed(0)}%`);
+    }
+    if (link.cciJaccardScore !== undefined) {
+      parts.push(`cci=${(link.cciJaccardScore * 100).toFixed(0)}%`);
+    }
+    return parts.length > 0 ? ` (${parts.join(', ')})` : '';
+  }
+
+  /**
    * Advance the GenerateDelta static counters for a single link so the
    * end-of-run stats match reality.
    *
-   *   match        -> primary link, high confidence
-   *   posMisMatch  -> primary link, lower confidence (still accepted)
-   *   dupMatch     -> related link (shares old body with an earlier primary)
+   *   match        -> primary link above the tier's semantic bar
+   *   posMisMatch  -> any flagged link (primary OR related) — accepted but
+   *                   below the semantic bar; the body grafted forward is
+   *                   weakly supported and wants review
+   *   dupMatch     -> unflagged related link (shares old body with a primary)
    */
   private static tickMatchCounter(link: LinkRecord): void {
+    // `potentialMismatch` is the single source of truth for "accepted but
+    // below the tier's semantic bar". It now fires for `related` grafts too
+    // (they carry a body forward just like primaries), so it is checked
+    // first: a flagged related graft counts as a possible mismatch, not a
+    // trusted duplicate. Each mapped link still ticks exactly one counter,
+    // so the match + mismatch + related = total invariant holds.
+    if (link.potentialMismatch) {
+      GenerateDelta.posMisMatch++;
+      return;
+    }
     if (link.relationship === 'related') {
       GenerateDelta.dupMatch++;
       return;
     }
-    // `potentialMismatch` is the single source of truth for "accepted
-    // primary but below the tier's strong-confidence threshold" — see
-    // computePotentialMismatch + TIER{2,3}_MISMATCH_THRESHOLD in
-    // delta_matching.ts. Reading the flag here keeps stats bookkeeping
-    // aligned with the tier definitions automatically.
-    if (link.potentialMismatch) {
-      GenerateDelta.posMisMatch++;
-    } else {
-      GenerateDelta.match++;
-    }
+    GenerateDelta.match++;
   }
 
   getMappedStatisticsValidation(totalMappedControls: number, statValidation: string): string {
-    // In the requirement-first pipeline `dupMatch` counts `related` links,
-    // which ARE included in controlMappings (they share a body with a
-    // primary). `newXccdfControl` is kept at 0 because the new pipeline
-    // doesn't have a distinct "no Fuse candidate" bucket — those fall
+    // In the requirement-first pipeline `dupMatch` counts UNFLAGGED `related`
+    // links (flagged related grafts move to `posMisMatch`); all related links
+    // are included in controlMappings (they share a body with a primary), so
+    // the match+mismatch+related total is unaffected by where flagged related
+    // links are counted. `newXccdfControl` is kept at 0 because the new
+    // pipeline doesn't have a distinct "no Fuse candidate" bucket — those fall
     // into `noMatch`.
     const match = GenerateDelta.match;
     const misMatch = GenerateDelta.posMisMatch;
