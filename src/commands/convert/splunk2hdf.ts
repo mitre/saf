@@ -103,7 +103,7 @@ export default class Splunk2HDF extends BaseCommand<typeof Splunk2HDF> {
       {
         host: flags.host,
         port: flags.port,
-        scheme: flags.scheme as 'http' | 'https', // Types as defined by flags
+        scheme: flags.scheme, // Types as defined by flags
         username: flags.username,
         password: flags.password,
         sessionKey: flags.token,

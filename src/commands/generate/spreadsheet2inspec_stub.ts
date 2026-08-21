@@ -60,7 +60,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
     if (flags.format === 'cis' && control.tags?.cis_controls && typeof control.tags.cis_controls === 'string') {
       // Match standard CIS benchmark XLSX spreadsheets
       // CIS controls are a string before they are parsed
-      let cisControlMatches: RegExpMatchArray | null = /CONTROL:v(\d) (\d+)\.?(\d*)/.exec((control.tags.cis_controls as unknown as string));
+      let cisControlMatches: RegExpMatchArray | null = /CONTROL:v(\d) (\d+)\.?(\d*)/.exec((control.tags.cis_controls));
       if (cisControlMatches) {
         control.tags.cis_controls = [];
         const mappedCISControlsByVersion: Record<string, string[]> = {};

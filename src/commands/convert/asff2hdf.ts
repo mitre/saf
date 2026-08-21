@@ -230,9 +230,9 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
         logger.debug(`Querying for NextToken: ${nextToken}`);
         // type system seems to think that this call / the result is from the callback variant of the function instead of the promise based one and throwing fits
         const getEnabledStandardsResult: GetEnabledStandardsCommandOutput
-          = (await client.getEnabledStandards({
+          = await client.getEnabledStandards({
             NextToken: nextToken,
-          })) as unknown as GetEnabledStandardsCommandOutput;
+          });
 
         logger.debug(
           `Received: ${getEnabledStandardsResult.StandardsSubscriptions?.length} standards`,
