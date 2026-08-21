@@ -115,7 +115,6 @@
     "theme": "./oclif-theme.json",
     "additionalHelpFlags": [
       "-h",
-      "-H",
       "--tell-me-more",
       "--explain"
     ],
