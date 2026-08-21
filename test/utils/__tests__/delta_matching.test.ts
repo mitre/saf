@@ -135,7 +135,7 @@ describe('extractSrgId', () => {
   });
 
   it('returns null when tags object is missing', () => {
-    expect(extractSrgId({ id: 'SV-273994' } as never)).toBeNull();
+    expect(extractSrgId({ id: 'SV-273994' })).toBeNull();
   });
 });
 

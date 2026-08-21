@@ -380,7 +380,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
       case 'zap': {
         converter = new ZapMapper(
           fs.readFileSync(flags.input, 'utf8'),
-          _.get(flags, 'name') as unknown as string,
+          _.get(flags, 'name'),
         );
         fs.writeFileSync(
           checkSuffix(flags.output),

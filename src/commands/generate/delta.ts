@@ -20,7 +20,6 @@ import type { Logger } from 'winston';
 import {
   applyRequirementFirstPipeline,
   buildDeltaJsonPayload,
-  type DeltaDiff,
   type LinkRecord,
 } from '../../utils/delta_matching';
 import { createWinstonLogger } from '../../utils/logging';
@@ -569,7 +568,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
         this.logThis(`  Writing delta file for ${existingProfile.title}`, 'info');
         const deltaJsonPayload = buildDeltaJsonPayload({
-          diff: updatedResult.diff as DeltaDiff,
+          diff: updatedResult.diff,
           links: GenerateDelta.links,
         });
         fs.writeFileSync(
