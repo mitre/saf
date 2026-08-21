@@ -59,6 +59,24 @@ describe.sequential('Test hdf2checklist', () => {
     expect(omitChecklistChangingFields(test)).to.eql(omitChecklistChangingFields(sample));
   });
 
+  it('hdf-converter accepts shorthand metadata flags', async () => {
+    await runCommand<{ name: string }>([
+      'convert hdf2ckl',
+      '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'),
+      '-o', `${tmpobj.name}/hdf2ckl_shorthand_test.ckl`,
+      '--profilename', 'Red Hat Enterprise Linux 7 STIG', '--version', '2',
+      '--releasenumber', '6', '--releasedate', '2024/06/08',
+      '--marking', 'CUI',
+      '-H', 'localhost',
+      '-I', '127.0.0.1',
+      '--role', 'Domain Controller', '--assettype', 'Computing',
+      '--techarea', 'Other Review',
+    ]);
+    const test = fs.readFileSync(${tmpobj.name}/hdf2ckl_shorthand_test.ckl, 'utf8').replaceAll(/\r/gi, '');
+    const sample = fs.readFileSync(path.resolve('./test/sample_data/checklist/red_hat_good_metadata.ckl'), 'utf8').replaceAll(/\r/gi, '');
+    expect(omitChecklistChangingFields(test)).to.eql(omitChecklistChangingFields(sample));
+  });
+
   it('hdf-converter output test - with severity overrides', async () => {
     await runCommand<{ name: string }>([
       'convert hdf2ckl',
