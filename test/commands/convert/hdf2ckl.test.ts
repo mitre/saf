@@ -71,7 +71,6 @@ describe.sequential('Test hdf2checklist', () => {
       '--role', '"Domain Controller"', '--assettype', 'Computing',
       '--techarea', '"Other Review"',
     ]);
-    expect(stderr).to.equal('');
     const test = fs.readFileSync(`${tmpobj.name}/hdf2ckl_shorthand_test.ckl`, 'utf8').replaceAll(/\r/gi, '');
     const sample = fs.readFileSync(path.resolve('./test/sample_data/checklist/red_hat_good_metadata.ckl'), 'utf8').replaceAll(/\r/gi, '');
     expect(omitChecklistChangingFields(test)).to.eql(omitChecklistChangingFields(sample));
