@@ -1,6 +1,6 @@
 import { runCommand } from '@oclif/test';
 import fs from 'fs';
-import yaml from 'js-yaml';
+import { load } from 'js-yaml';
 import path from 'path';
 import { describe, expect, it } from 'vitest';
 
@@ -29,8 +29,8 @@ describe.sequential('Summary command', () => {
   it('runs summary with YAML output and matches the YAML reference file', async () => {
     const { stdout } = await runCommand<{ name: string }>(['summary', '-i', hdfFilePath, '--format=yaml']);
     const expectedOutputYaml = fs.readFileSync(YAML_reference, UTF8_ENCODING);
-    const expectedOutput = yaml.load(expectedOutputYaml);
-    const actualOutput = yaml.load(stdout);
+    const expectedOutput = load(expectedOutputYaml);
+    const actualOutput = load(stdout);
     expect(actualOutput).to.deep.equal(expectedOutput);
   });
 

@@ -120,10 +120,10 @@ describe('createWinstonLogger plainText mode', () => {
     // Winston's Console transport writes via process.stdout.write, not console.log
     const writes: string[] = [];
     const origWrite = process.stdout.write.bind(process.stdout);
-    process.stdout.write = ((chunk: unknown, ...rest: unknown[]) => {
+    process.stdout.write = (chunk: unknown, ...rest: unknown[]) => {
       writes.push(typeof chunk === 'string' ? chunk : String(chunk));
       return origWrite(chunk as never, ...(rest as []));
-    }) as typeof process.stdout.write;
+    };
 
     try {
       logger.info('Total Mapped Controls:  42');
