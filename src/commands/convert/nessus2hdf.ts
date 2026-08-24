@@ -8,7 +8,7 @@ import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class Nessus2HDF extends BaseCommand<typeof Nessus2HDF> {
   static readonly usage
-    = '<%= command.id %> -i <nessus-xml> -o <hdf-scan-results-json> [-h] [-w] [-p <json>]';
+    = '<%= command.id %> -i <nessus-xml> -o <hdf-scan-results-json> [-p <json>] [-h] [-w]';
 
   static readonly description
     = 'Translate a Nessus XML results file into a Heimdall Data Format JSON file\n'

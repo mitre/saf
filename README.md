@@ -943,7 +943,7 @@ convert nessus2hdf            Translate a Nessus XML results file into a Heimdal
                               The current iteration maps all plugin families except for 'Policy Compliance'
                               A separate HDF JSON is generated for each host reported in the Nessus Report.
   USAGE
-    $ saf convert nessus2hdf -i <nessus-xml> -o <hdf-scan-results-json> [-h] [-w] [-p <json>]
+    $ saf convert nessus2hdf -i <nessus-xml> -o <hdf-scan-results-json> [-p <json>] [-h] [-w]
   
   FLAGS
     -i, --input=<nessus-xml>              (required) Input Nessus XML File
