@@ -597,31 +597,29 @@ AWS SecurityHub standard controls json|Get all the controls for a standard that 
 convert asff2hdf              Translate a AWS Security Finding Format JSON into a
                               Heimdall Data Format JSON file(s)
   USAGE
-    $ saf convert asff2hdf -o <hdf-output-folder> [-h] (-i <asff-json> [--securityhub <standard-json>]... | -a -r <region> [-I | -C <certificate>] [-t <target>]) [-L info|warn|debug|verbose]
+    $ saf convert asff2hdf -o <hdf-output-folder> [--interactive] [-L info|warn|debug|verbose] [-i <asff-json> | -a | -r <region> | -I | -C <certificate> | -t <target>...] [-H <additional-input-files>...]
 
   FLAGS
-    -C, --certificate=<certificate>       Trusted signing certificate file
-    -I, --insecure                        Disable SSL verification, this is insecure
-    -H, --securityHub=<standard-json>     Additional input files to provide context that an ASFF file needs
-                                          such as the CIS AWS Foundations or AWS Foundational Security Best
-                                          Practices documents (in ASFF compliant JSON form)    
-    -a, --aws                             Pull findings from AWS Security Hub
-    -i, --input=<asff-json>               (required if not using AWS) Input ASFF JSON file
-    -o, --output=<hdf-output-folder>      (required) Output HDF JSON folder
-    -r, --region=<region>                 Security Hub region to pull findings from
-    -t, --target=<target>...              Target ID(s) to pull from Security Hub (maximum 10), leave blank for non-HDF findings
+    -C, --certificate=<value>     Trusted signing certificate file
+    -H, --securityHub=<value>...  Additional input files to provide context that an ASFF file needs such as the CIS AWS Foundations or AWS Foundational Security Best Practices documents (in ASFF compliant JSON form)
+    -I, --insecure                Disable SSL verification, this is insecure.
+    -a, --aws                     Pull findings from AWS Security Hub
+    -i, --input=<value>           (required if not using AWS) Input ASFF JSON file
+    -o, --output=<value>          (required) Output HDF JSON folder
+    -r, --region=<value>          Security Hub region to pull findings from
+    -t, --target=<value>...       Target ID(s) to pull from Security Hub (maximum 10), leave blank for non-HDF findings
 
   GLOBAL FLAGS
-    -h, --help               Show CLI help
     -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
                              <options: info|warn|debug|verbose>
+    -h, --help               Show CLI help
         --interactive        Collect input tags interactively (not available on all CLI commands)
 
   EXAMPLES
     Using ASFF JSON file
       $ saf convert asff2hdf -i asff-findings.json -o output-folder-name
     Using ASFF JSON file with additional input files
-      $ saf convert asff2hdf -i asff-findings.json --securityhub <standard-1-json> ... --securityhub <standard-n-json> -o output-folder-name
+      $ saf convert asff2hdf -i asff-findings.json --securityHub <standard-1-json> ... --securityHub <standard-n-json> -o output-folder-name
     Using AWS to pull ASFF JSON findings
       $ saf convert asff2hdf --aws -o out -r us-west-2 --target rhel7
 ```
