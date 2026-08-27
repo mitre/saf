@@ -242,6 +242,14 @@ To update the SAF CLI on Windows, uninstall any existing version from your syste
 ## Usage
 ---
 
+### Expected File Encoding
+
+The SAF CLI expects most input files to be encoded as UTF-8 unless stated otherwise. UTF-16 and other encodings are not supported.
+
+Mac and Linux users can use the `file` commandline utility to easily determine the file encoding for a given file as so: `file input.json` which will return something similar to `input.json: JSON data` if it is correct.  If it is not UTF-8, it will mention the other encoding such as UTF-16.  Windows users unfortunately do not usually have a simple commandline utility that can test the file encoding pre-installed on their machines; however, they can go into most text editors such as VSCode and see what encoding is reported there - on VS Code, it is usually on the status bar (typically near the bottom of the window) and on the right side.
+
+There are a variety of ways to resave a file as UTF-8, but using VS Code as an example again, you can click on the encoding button in the status bar and a prompt will pop up asking if you'd like to re-open or save the file using a different encoding.  Click on 'Save with Encoding' and then choose UTF-8.  At this point, your file should be saved in the appropriate format.
+
 ### Attest
 
 Attest to 'Not Reviewed' controls: sometimes requirements can’t be tested automatically by security tools and hence require manual review, whereby someone interviews people and/or examines a system to confirm (i.e., attest as to) whether the control requirements have been satisfied.
