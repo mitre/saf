@@ -887,6 +887,9 @@ convert gosec2hdf             Translate a gosec (Golang Security Checker) result
 
 [top](#convert-other-formats-to-hdf)
 #### Hadolint to HDF
+
+**NOTE**: A Hadolint results JSON without any findings will not contain any information at all which means that it will not be possible to generate an HDF file from it.
+
 ```
 convert hadolint2hdf             Translate a Hadolint results JSON file into a Heimdall Data Format JSON file
 
