@@ -15,7 +15,7 @@
     "@mitre/hdf-converters": "2.14.0",
     "@mitre/heimdall-lite": "2.14.0",
     "@mitre/inspec-objects": "2.3.1",
-    "@oclif/core": "^4.2.10",
+    "@oclif/core": "^5.0.0",
     "@oclif/plugin-help": "^7.0.0",
     "@oclif/plugin-version": "^3.0.0",
     "@oclif/plugin-warn-if-update-available": "^4.0.0",
