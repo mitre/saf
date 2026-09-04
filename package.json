@@ -18,7 +18,7 @@
     "@oclif/core": "^4.2.10",
     "@oclif/plugin-help": "^7.0.0",
     "@oclif/plugin-version": "^3.0.0",
-    "@oclif/plugin-warn-if-update-available": "^3.0.15",
+    "@oclif/plugin-warn-if-update-available": "^4.0.0",
     "@smithy/node-http-handler": "^4.0.0",
     "@types/adm-zip": "^0.5.7",
     "@types/chai": "4.3.3",
