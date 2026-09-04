@@ -16,7 +16,7 @@
     "@mitre/heimdall-lite": "2.14.0",
     "@mitre/inspec-objects": "2.3.1",
     "@oclif/core": "^4.2.10",
-    "@oclif/plugin-help": "^6.0.9",
+    "@oclif/plugin-help": "^7.0.0",
     "@oclif/plugin-version": "^3.0.0",
     "@oclif/plugin-warn-if-update-available": "^3.0.15",
     "@smithy/node-http-handler": "^4.0.0",
