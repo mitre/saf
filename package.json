@@ -76,7 +76,7 @@
   "devDependencies": {
     "@e965/xlsx": "^0.20.0",
     "@eslint/js": "^10.0.1",
-    "@oclif/test": "^4.1.0",
+    "@oclif/test": "^5.0.0",
     "@stylistic/eslint-plugin": "^5.9.0",
     "@types/js-yaml": "^4.0.9",
     "@types/jsdom": "^30.0.0",
