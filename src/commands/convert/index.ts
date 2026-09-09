@@ -52,6 +52,8 @@ export default class Convert extends BaseCommand<typeof Convert> {
 
   static readonly examples = ['<%= config.bin %> <%= command.id %> -i input -o output'];
 
+  static detectedType: string;
+
   static readonly flags = {
     input: Flags.string({
       char: 'i',
@@ -65,8 +67,6 @@ export default class Convert extends BaseCommand<typeof Convert> {
     }),
     ...Convert.getFlagsForInputFile(getInputFilename()),
   };
-
-  static detectedType: string;
 
   static getFlagsForInputFile(filePath: string) {
     if (filePath) {
