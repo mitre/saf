@@ -232,7 +232,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         for (const result of converter.toHdf()) {
           const outputBase = path.dirname(flags.output);
           const outputPrefix = safeFilename(flags.output.replaceAll(/\.json/gi, ''));
-          const auxiliaryData = _.get(result, 'passthrough.auxiliary_data') as unknown as Array<{ name?: string; data?: { reportId?: string } }>;
+          const auxiliaryData = _.get(result, 'passthrough.auxiliary_data') as unknown as { name?: string; data?: { reportId?: string } }[];
           const reportId = auxiliaryData.find(data => data.name === 'Microsoft Secure Score')?.data?.reportId;
           fs.writeFileSync(
             resolveSafeChild(outputBase, safeFilename(`${outputPrefix}-${basename(reportId ?? '')}.json`)),
