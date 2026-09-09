@@ -5,6 +5,7 @@ export default defineConfig({
     disableConsoleIntercept: true,
     hookTimeout: 80_000,
     testTimeout: 80_000,
+    unstubEnvs: true,
     sequence: {
       concurrent: true,
     },
