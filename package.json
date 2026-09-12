@@ -90,7 +90,7 @@
     "oclif": "^5.0.0",
     "tsx": "^4.21.0",
     "typescript-eslint": "^8.56.1",
-    "vitest": "^4.0.1"
+    "vitest": "^5.0.0"
   },
   "engines": {
     "node": ">=22.0.0"
