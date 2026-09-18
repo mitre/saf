@@ -14,12 +14,12 @@ jobs:
   build-deploy:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7.0.1
         with:
           path: saf
 
       - name: setup node
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7.0.0
         with:
           node-version: "22"
           check-latest: true
@@ -63,20 +63,20 @@ jobs:
           done
 
       - name: Upload SAF-CLI Windows Build x64 Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: SAF-CLI Windows Build x64
           path: saf/dist/win32/saf-*-x64.exe
 
       - name: Upload SAF-CLI Windows Build x86 Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: SAF-CLI Windows Build x86
           path: saf/dist/win32/saf-*-x86.exe
 
       # underscore here since that's how the file is named
       - name: Upload SAF-CLI Debian x64 Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7.0.1
         with:
           name: SAF-CLI Debian Build x64
           path: saf/dist/deb/saf-*.deb
