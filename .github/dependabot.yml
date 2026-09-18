@@ -8,6 +8,8 @@ updates:
       interval: daily
       time: "20:00"
       timezone: America/New_York
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 99
     allow:
       # Allow both direct and indirect updates for all packages.
