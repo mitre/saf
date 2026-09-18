@@ -16,13 +16,13 @@ jobs:
   sbom:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Build image
         run: docker build --platform linux/amd64 --tag saf:sbom .
 
       - name: Inventory image
-        uses: anchore/sbom-action@v0.24.2
+        uses: anchore/sbom-action@3ad7283483fc7af8ff2b4ea19663c2d5ca935e26 # v0.24.2
         with:
           image: docker:saf:sbom
           format: syft-json
@@ -31,7 +31,7 @@ jobs:
           upload-artifact: false
 
       - name: Identify vulnerabilities
-        uses: anchore/scan-action@v7.4.2
+        uses: anchore/scan-action@27805bf3b4e84b4a5c980df22ed233c00390a439 # v7.4.2
         with:
           sbom: ${{ runner.temp }}/syft.json
           output-format: cyclonedx-json
@@ -39,7 +39,7 @@ jobs:
           fail-build: false
           cache-db: true
 
-      - uses: actions/upload-artifact@v7.0.1
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: sbom-linux-amd64
           path: ${{ runner.temp }}/image.cdx.json
