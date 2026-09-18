@@ -17,7 +17,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Run string replace to remove the v from the version number before using it in the docker tag
-        uses: frabert/replace-string-action@v2
+        uses: frabert/replace-string-action@fc6c5eb9238279ae230de582075b1a29f93cfa6b # v2.5.2
         id: format-tag
         with:
           pattern: 'v'
@@ -25,19 +25,19 @@ jobs:
           replace-with: ''
           flags: 'g'
       - name: Checkout the SAF Repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
       - name: Login to DockerHub
-        uses: docker/login-action@v3
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           username: ${{ vars.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PAT }}
       - name: Build and push the container image to DockerHub
         id: docker_build
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           push: true
@@ -77,7 +77,7 @@ jobs:
             exit 1
           fi
       - name: Upgrade Iron Bank
-        uses: mitre/ironbank_release_action@v1
+        uses: mitre/ironbank_release_action@1c14c27db1c37e894f8042ac2edcde08d445882d # v1
         with:
           name: SAF-CLI
           version: ${{ steps.format-tag.outputs.replaced }}

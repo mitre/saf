@@ -8,6 +8,8 @@ updates:
       interval: daily
       time: "20:00"
       timezone: America/New_York
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 99
     allow:
       # Allow both direct and indirect updates for all packages.
@@ -16,3 +18,12 @@ updates:
     # All Chai dependency major version 5 does not support common js modules
     - dependency-name: "chai"
     - dependency-name: "@types/chai"
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: daily
+      time: "20:00"
+      timezone: America/New_York
+    cooldown:
+      default-days: 7
