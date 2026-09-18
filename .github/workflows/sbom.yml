@@ -1,0 +1,46 @@
+name: SBOM
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+permissions:
+  contents: write
+
+jobs:
+  sbom:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v7.0.1
+
+      - name: Build image
+        run: docker build --platform linux/amd64 --tag saf:sbom .
+
+      - name: Inventory image
+        uses: anchore/sbom-action@v0.24.2
+        with:
+          image: docker:saf:sbom
+          format: syft-json
+          output-file: ${{ runner.temp }}/syft.json
+          dependency-snapshot: ${{ github.event_name == 'push' }}
+          upload-artifact: false
+
+      - name: Identify vulnerabilities
+        uses: anchore/scan-action@v7.4.2
+        with:
+          sbom: ${{ runner.temp }}/syft.json
+          output-format: cyclonedx-json
+          output-file: ${{ runner.temp }}/image.cdx.json
+          fail-build: false
+          cache-db: true
+
+      - uses: actions/upload-artifact@v7.0.1
+        with:
+          name: sbom-linux-amd64
+          path: ${{ runner.temp }}/image.cdx.json
+          if-no-files-found: error
