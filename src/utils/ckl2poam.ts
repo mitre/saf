@@ -5,7 +5,7 @@ import type { Vulnerability } from '../types/stig';
 const prompt = promptSync();
 
 export function extractSTIGUrl(findingDetails: string): string {
-  const matches = findingDetails.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w\-_]*)?\??(?:[-+=&;%@.\w_]*)#?(?:[.!/\\\w]*))?)/gs);
+  const matches = findingDetails.match(/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=+$,\w]+@)?[A-Za-z0-9.-]+|(?:www\.|[-;:&=+$,\w]+@)[A-Za-z0-9.-]+)((?:\/[+~%/.\w\-_]+)?\??(?:[-+=&;%@.\w_]+)?#?(?:[.!/\\\w]+)?)?)/gs);
   if (matches) {
     let match = '';
     for (const link of matches) {
