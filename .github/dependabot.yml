@@ -20,7 +20,13 @@ updates:
     - dependency-name: "@types/chai"
 
   - package-ecosystem: "github-actions"
-    directory: "/"
+    directories:
+      - "/"
+      - "/.github/actions/*"
+    groups:
+      actions-deps:
+        patterns:
+          - "*"
     schedule:
       interval: daily
       time: "20:00"
