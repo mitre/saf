@@ -22,13 +22,10 @@ jobs:
         with:
           path: saf
 
-      - name: setup node
-        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+      - name: Set up Node.js and install locked dependencies
+        uses: ./saf/.github/actions/setup-node
         with:
-          node-version: "22"
-          check-latest: true
-          cache: 'npm'
-          cache-dependency-path: ./saf/package-lock.json
+          working-directory: saf
 
       - name: Install Nullsoft Scriptable Install System and p7zip
         run: sudo apt install nsis p7zip-full
@@ -37,7 +34,6 @@ jobs:
         working-directory: ./saf
         run: |
           rm -rf test
-          npm ci --omit=dev
 
       - name: Pack Windows Installer
         working-directory: ./saf
