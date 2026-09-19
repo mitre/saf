@@ -24,7 +24,8 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: saf
 
@@ -33,7 +34,7 @@ jobs:
         with:
           working-directory: saf
 
-      - name: install build dependencies
+      - name: Install RPM packaging tools
         run: dnf install -y rpm-build perl-Digest-SHA # rpmbuild, shasum
 
       - name: setup saf cli
@@ -41,7 +42,7 @@ jobs:
         run: |
           rm -rf test
 
-      - name: set filename envvar
+      - name: Set RPM source tarball filename
         working-directory: ./saf
         run: |
           echo "filename=saf-v$(cat VERSION)-linux-x64" >> "$GITHUB_ENV"
@@ -57,11 +58,11 @@ jobs:
           tar -rf "$filename.tar" --transform 's|^\.\.|saf|' ../saf.spec
           gzip "$filename.tar"
 
-      - name: build rpm
+      - name: Build the RPM installer
         working-directory: ./saf
         run: rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)"
 
-      - name: upload binary as artifact
+      - name: Upload the RPM installer
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: SAF-CLI RPM Build noarch
