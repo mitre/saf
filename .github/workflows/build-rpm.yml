@@ -42,14 +42,14 @@ jobs:
         run: |
           echo "filename=saf-v$(cat VERSION)-linux-x64" >> "$GITHUB_ENV"
 
-      - name: pack into tarball # we are targetting x86-64 since oclif bundles a node binary, but the project is actually fully architecture independent so long as they have a node binary on it
+      - name: Compile and package the Linux x64 tarball with locked oclif
         working-directory: ./saf
         run: npx oclif pack tarballs -t linux-x64 --no-xz
 
-      - name: repack tarball but include the spec file
+      - name: Add the RPM spec to the Linux tarball
         working-directory: ./saf/dist
         run: |
-          gzip -dc "$(ls)" > "$filename.tar"
+          gzip -dc saf-*-linux-x64.tar.gz > "$filename.tar"
           tar -rf "$filename.tar" --transform 's|^\.\.|saf|' ../saf.spec
           gzip "$filename.tar"
 
