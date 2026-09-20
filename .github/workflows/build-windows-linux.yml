@@ -28,8 +28,9 @@ jobs:
         with:
           working-directory: saf
 
-      - name: Install Nullsoft Scriptable Install System and p7zip
-        run: sudo apt install nsis p7zip-full
+      - name: Install Nullsoft Scriptable Install System
+        # p7zip-full and apt-utils are also required; Ubuntu runners provide them by default
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y nsis
 
       - name: Pack Windows Installer
         working-directory: ./saf
