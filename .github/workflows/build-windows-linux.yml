@@ -32,13 +32,19 @@ jobs:
         # p7zip-full and apt-utils are also required; Ubuntu runners provide them by default
         run: sudo apt-get update && sudo apt-get install --no-install-recommends -y nsis
 
-      - name: Pack Windows Installer
+      - name: Compile and create one npm tarball for Windows and Debian
         working-directory: ./saf
-        run: npx oclif pack win
+        run: npm pack --pack-destination "$RUNNER_TEMP"
 
-      - name: Pack Debian Package
+      - name: Package Windows installers from the npm tarball
         working-directory: ./saf
-        run: sudo npx oclif pack deb
+        run: |
+          cp "$RUNNER_TEMP"/mitre-saf-*.tgz "$RUNNER_TEMP/saf-win.tgz"
+          npx oclif pack win --tarball "$RUNNER_TEMP/saf-win.tgz"
+
+      - name: Package Debian installers from the same npm tarball
+        working-directory: ./saf
+        run: npx oclif pack deb --tarball "$RUNNER_TEMP"/mitre-saf-*.tgz
 
       - name: Rename Windows Installers
         run: |
