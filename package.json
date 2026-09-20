@@ -98,7 +98,8 @@
   "files": [
     "/bin",
     "/lib",
-    "/docs"
+    "/docs",
+    "/oclif-theme.json"
   ],
   "homepage": "https://github.com/mitre/saf",
   "keywords": [
