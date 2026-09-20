@@ -31,11 +31,6 @@ jobs:
       - name: Install Nullsoft Scriptable Install System and p7zip
         run: sudo apt install nsis p7zip-full
 
-      - name: setup saf cli
-        working-directory: ./saf
-        run: |
-          rm -rf test
-
       - name: Pack Windows Installer
         working-directory: ./saf
         run: npx oclif pack win

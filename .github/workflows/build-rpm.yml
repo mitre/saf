@@ -37,11 +37,6 @@ jobs:
       - name: Install RPM packaging tools
         run: dnf install -y rpm-build perl-Digest-SHA # rpmbuild, shasum
 
-      - name: setup saf cli
-        working-directory: ./saf
-        run: |
-          rm -rf test
-
       - name: Set RPM source tarball filename
         working-directory: ./saf
         run: |

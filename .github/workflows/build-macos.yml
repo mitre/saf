@@ -23,10 +23,7 @@ jobs:
       - name: Set up Node.js and install locked dependencies
         uses: ./.github/actions/setup-node
 
-      - name: Remove testing resources
-        run: rm -rf test
-
-      - name: npm pack
+      - name: Compile and package macOS installers
         run: npx oclif pack macos
 
       - name: Rename Mac Installers
