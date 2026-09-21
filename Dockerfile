@@ -11,8 +11,6 @@ LABEL name="SAF" \
       docs="https://github.com/mitre/saf" \
       run="docker run -d --name ${NAME} ${IMAGE} <args>"
 
-RUN mkdir -p /share
-
 COPY . /build
 WORKDIR /build
 RUN rm -rf test
