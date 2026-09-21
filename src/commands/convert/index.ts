@@ -27,7 +27,7 @@ import {
   TwistlockResults,
   XCCDFResultsMapper,
   ZapMapper,
-  INPUT_TYPES
+  INPUT_TYPES,
 } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
 import { basename, checkSuffix, resolveSafeChild, safeFilename } from '../../utils/global';
@@ -53,8 +53,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
 
   static readonly examples = ['<%= config.bin %> <%= command.id %> -i input -o output'];
 
-static detectedType = INPUT_TYPES.NOT_FOUND;
-
+  static detectedType = INPUT_TYPES.NOT_FOUND;
 
   static readonly flags = {
     input: Flags.string({
@@ -70,7 +69,6 @@ static detectedType = INPUT_TYPES.NOT_FOUND;
     ...Convert.getFlagsForInputFile(getInputFilename()),
   };
 
-
   static getFlagsForInputFile(filePath: string) {
     if (filePath) {
       Convert.detectedType = fingerprint({
@@ -80,11 +78,11 @@ static detectedType = INPUT_TYPES.NOT_FOUND;
       switch (
         Convert.detectedType
       ) {
-        case 'asff': {
+        case INPUT_TYPES.ASFF: {
           return ASFF2HDF.flags;
         }
 
-        case 'zap': {
+        case INPUT_TYPES.ZAP: {
           return Zap2HDF.flags;
         }
 
