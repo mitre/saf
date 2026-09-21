@@ -1,0 +1,13 @@
+*
+!package.json
+!package-lock.json
+!tsconfig.json
+!src/
+!src/**
+!bin/
+!bin/**
+!docs/
+!docs/**
+!oclif-theme.json
+!README.md
+!LICENSE.md
