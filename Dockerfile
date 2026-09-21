@@ -23,6 +23,7 @@ RUN npm pack \
     && mv node_modules /app/node_modules
 
 FROM $BASE_CONTAINER AS app
+ENV NODE_ENV=production
 
 COPY --from=builder /app /usr/local/lib/node_modules/@mitre/saf
 RUN ln -s /usr/local/lib/node_modules/@mitre/saf/bin/run /usr/local/bin/saf
