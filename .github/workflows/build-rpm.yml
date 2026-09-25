@@ -64,3 +64,4 @@ jobs:
           name: SAF-CLI RPM Build noarch
           path: saf/noarch/saf-*.rpm
           if-no-files-found: error
+          compression-level: 0
