@@ -41,8 +41,9 @@ jobs:
 
       - name: Install cinc-auditor on Ubuntu or macOS
         if: ${{ matrix.platform == 'ubuntu' || matrix.platform == 'macos' }}
+        shell: bash
         run: |
-          curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
+          curl -fL https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
 
       - name: Run E2E tests on ${{ matrix.platform }}
         run: |
