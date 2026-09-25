@@ -63,3 +63,4 @@ jobs:
         with:
           name: SAF-CLI RPM Build noarch
           path: saf/noarch/saf-*.rpm
+          if-no-files-found: error

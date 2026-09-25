@@ -71,15 +71,18 @@ jobs:
         with:
           name: SAF-CLI Windows Build x64
           path: saf/dist/win32/saf-*-x64.exe
+          if-no-files-found: error
 
       - name: Upload SAF-CLI Windows Build x86 Artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: SAF-CLI Windows Build x86
           path: saf/dist/win32/saf-*-x86.exe
+          if-no-files-found: error
 
       - name: Upload SAF-CLI Debian x64 Artifact
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: SAF-CLI Debian Build x64
           path: saf/dist/deb/saf-*.deb
+          if-no-files-found: error

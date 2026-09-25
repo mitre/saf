@@ -42,3 +42,4 @@ jobs:
         with:
           name: SAF-CLI macOS Installer
           path: dist/macos/saf-*.pkg
+          if-no-files-found: error
