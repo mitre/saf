@@ -25,6 +25,7 @@ updates:
       - "/.github/actions/*"
     groups:
       actions-deps:
+        group-by: dependency-name
         patterns:
           - "*"
     schedule:
@@ -33,3 +34,4 @@ updates:
       timezone: America/New_York
     cooldown:
       default-days: 7
+    open-pull-requests-limit: 99
