@@ -3,11 +3,6 @@ name: Push SAF CLI to Docker Hub on every release
 on:
   release:
     types: [published]
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version'
-        required: true
 
 permissions:
   contents: read
@@ -15,17 +10,14 @@ permissions:
 jobs:
   docker:
     runs-on: ubuntu-24.04
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name }}
     steps:
-      - name: Run string replace to remove the v from the version number before using it in the docker tag
-        uses: frabert/replace-string-action@fc6c5eb9238279ae230de582075b1a29f93cfa6b # v2.5.2
-        id: format-tag
-        with:
-          pattern: 'v'
-          string: "${{ github.event.release.tag_name || github.event.inputs.version }}"
-          replace-with: ''
-          flags: 'g'
-      - name: Checkout the SAF Repository
+      - name: Check out the release tag
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: refs/tags/${{ env.RELEASE_TAG }}
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
       - name: Set up Docker Buildx
