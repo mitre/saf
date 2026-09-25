@@ -23,11 +23,13 @@ jobs:
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
 
       - name: Set up Node.js and install locked dependencies
-        uses: ./.github/actions/setup-node
+        uses: $/.github/actions/setup-node
 
-      - name: Install cinc-auditor on windows
+      - name: Install cinc-auditor on Windows
         if: ${{ matrix.platform == 'windows' }}
         shell: pwsh
         run: |
@@ -37,7 +39,7 @@ jobs:
           $env:Path = $env:Path + ';C:\cinc-project\cinc-auditor\bin' + ';C:\cinc-project\cinc-auditor\embedded\bin'
           cinc-auditor -v
 
-      - name: Install cinc-auditor on ubuntu or macos
+      - name: Install cinc-auditor on Ubuntu or macOS
         if: ${{ matrix.platform == 'ubuntu' || matrix.platform == 'macos' }}
         run: |
           curl -L https://omnitruck.cinc.sh/install.sh | sudo bash -s -- -P cinc-auditor
@@ -54,6 +56,6 @@ jobs:
           if stderr=$(./bin/run -v 2>&1 1>/dev/null); then
             [ -z "$stderr" ] || { printf 'Failed: received the following stderr:\n%s\n' "$stderr" >&2; exit 1; }
           else
-            printf 'Failed: received a non-zero exit code when doing `saf -v`\n%s\n' "$stderr" >&2
+            printf 'Failed: received a non-zero exit code when doing "saf -v"\n%s\n' "$stderr" >&2
             exit 1
           fi

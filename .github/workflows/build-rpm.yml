@@ -18,7 +18,7 @@ jobs:
   build-deploy:
     runs-on: ubuntu-24.04
     container:
-      image: registry.access.redhat.com/ubi9/nodejs-22:latest
+      image: registry.access.redhat.com/ubi9/nodejs-22:latest # zizmor: ignore[unpinned-images] -- blocked by https://github.com/dependabot/dependabot-core/issues/5819
       options: -u 0 # dnf needs root
     defaults:
       run:
@@ -28,9 +28,10 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: saf
+          persist-credentials: false
 
       - name: Set up Node.js and install locked dependencies
-        uses: ./saf/.github/actions/setup-node
+        uses: $/.github/actions/setup-node
         with:
           working-directory: saf
 
