@@ -1,6 +1,5 @@
 import fs from 'fs';
 import { Flags } from '@oclif/core';
-import { expect } from 'chai';
 import { convertFileContextual, type ContextualizedProfile } from 'inspecjs';
 import _ from 'lodash';
 import YAML from 'yaml';
@@ -178,30 +177,29 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
     for (const [, targetPaths] of Object.entries(statusSeverityPaths)) {
       for (const targetPath of targetPaths) {
         const expectedControlIds: string[] | undefined = _.get(thresholds, targetPath);
-        const actualControlIds: string[] | undefined = _.get(controlIdMap, targetPath);
+        const actualControlIds: string[] = _.get(controlIdMap, targetPath, []);
         if (expectedControlIds) {
+          const actualControlsDescription = actualControlIds.length > 0 ? `only contained [${actualControlIds.join(', ')}]` : 'contained no controls';
           for (const expectedControlId of expectedControlIds) {
             try {
-              expect(actualControlIds).to.contain(expectedControlId);
-            } catch {
-              try {
-                exitNonZeroIfTrue(true, `Expected ${targetPath} to contain ${expectedControlId} controls but it only contained [${actualControlIds?.join(', ')}]`); // Chai doesn't print the actual object diff anymore
-              } catch {
-                process.exitCode = 1;
-                return;
-              }
-            }
-          }
-
-          try {
-            expect(expectedControlIds.length).to.equal(actualControlIds?.length);
-          } catch {
-            try {
-              exitNonZeroIfTrue(true, `Expected ${targetPath} to contain ${expectedControlIds.length} controls but it contained ${actualControlIds?.length}`);
+              exitNonZeroIfTrue(
+                !actualControlIds.includes(expectedControlId),
+                `Expected ${targetPath} to contain control ${expectedControlId} but it ${actualControlsDescription}`,
+              );
             } catch {
               process.exitCode = 1;
               return;
             }
+          }
+
+          try {
+            exitNonZeroIfTrue(
+              expectedControlIds.length !== actualControlIds.length,
+              `Expected ${targetPath} to contain ${expectedControlIds.length} controls but it contained ${actualControlIds.length}`,
+            );
+          } catch {
+            process.exitCode = 1;
+            return;
           }
         }
       }

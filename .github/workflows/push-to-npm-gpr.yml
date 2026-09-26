@@ -2,48 +2,85 @@ name: Push SAF-CLI to NPM and GPR
 on:
   release:
     types: [published]
-  workflow_dispatch:
 
 permissions:
-  id-token: write # required for trusted publishing's use of OIDC
   contents: read
-  packages: write
 
 jobs:
-  build-deploy:
+  build:
     runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ env.RELEASE_TAG }}
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name }}
     steps:
-      - uses: actions/checkout@v5
-
-      - name: setup node
-        uses: actions/setup-node@v6
+      - name: Check out the release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          node-version: "22"
-          check-latest: true
-          registry-url: "https://registry.npmjs.org"
-          cache: 'npm'
+          ref: refs/tags/${{ env.RELEASE_TAG }}
+          persist-credentials: false
 
-      - name: Remove testing resources
-        run: rm -rf test
+      - name: Set up Node.js and install locked dependencies
+        uses: $/.github/actions/setup-node
 
-      - name: Install project dependencies
-        run: npx -y npm@latest ci
+      - name: Compile and pack the release
+        run: npm pack --pack-destination "$RUNNER_TEMP"
 
-      - name: Pack all items that are published as packages
-        run: npx -y npm@latest pack
-
-      - name: Publish SAF CLI to NPM
-        run: npx -y npm@latest publish --access public mitre-saf-*.tgz
-
-      # Setup .npmrc file to publish to GitHub Package Registry
-      - uses: actions/setup-node@v6
+      - name: Upload the release tarball
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
-          node-version: "22"
-          registry-url: 'https://npm.pkg.github.com'
-          cache: 'npm'
+          name: npm-package
+          path: ${{ runner.temp }}/mitre-saf-${{ env.RELEASE_TAG }}.tgz
+          if-no-files-found: error
+          compression-level: 0
 
-      # Publish SAF CLI to GitHub Package Registry
-      - name: Publish SAF CLI to GPR
-        run: npx -y npm@latest publish --access public mitre-saf-*.tgz
+  publish:
+    needs: build
+    runs-on: ubuntu-24.04
+    permissions:
+      id-token: write
+      packages: write
+    steps:
+      - name: Set up Node.js and npm registry authentication
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      - name: Upgrade npm for trusted publishing
+        run: npm install --global --ignore-scripts npm@11 # zizmor: ignore[adhoc-packages] -- Node 22 needs newer npm for OIDC.
+
+      - name: Download the release tarball
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: npm-package
+
+      - name: Publish the tarball to npm
+        run: npm publish --access public mitre-saf-*.tgz
+
+      - name: Configure GitHub Packages authentication
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          registry-url: https://npm.pkg.github.com
+          package-manager-cache: false
+
+      - name: Publish the same tarball to GitHub Packages
+        run: npm publish --access public mitre-saf-*.tgz
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  homebrew:
+    needs: [build, publish]
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Update Homebrew to the published npm version
+        uses: mislav/bump-homebrew-formula-action@f865c8b0dbebd6e263cc06782a0e974c61cf12d2 # v4.2
+        with:
+          formula-name: saf-cli
+          homebrew-tap: mitre/homebrew-saf
+          download-url: https://registry.npmjs.org/@mitre/saf/-/saf-${{ needs.build.outputs.version }}.tgz
+          tag-name: ${{ needs.build.outputs.version }}
+        env:
+          COMMITTER_TOKEN: ${{ secrets.HOMEBREW_PAT }}

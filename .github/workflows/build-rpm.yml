@@ -7,6 +7,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions:
   contents: read
 
@@ -14,55 +18,50 @@ jobs:
   build-deploy:
     runs-on: ubuntu-24.04
     container:
-      image: registry.access.redhat.com/ubi9/nodejs-22:latest
+      image: registry.access.redhat.com/ubi9/nodejs-22:latest # zizmor: ignore[unpinned-images] -- blocked by https://github.com/dependabot/dependabot-core/issues/5819
       options: -u 0 # dnf needs root
     defaults:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v5
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: saf
+          persist-credentials: false
 
-      - name: setup node
-        uses: actions/setup-node@v6
+      - name: Set up Node.js and install locked dependencies
+        uses: $/.github/actions/setup-node
         with:
-          node-version: "22"
-          check-latest: true
-          cache: 'npm'
-          cache-dependency-path: ./saf/package-lock.json
+          working-directory: saf
 
-      - name: install build dependencies
+      - name: Install RPM packaging tools
         run: dnf install -y rpm-build perl-Digest-SHA # rpmbuild, shasum
 
-      - name: setup saf cli
-        working-directory: ./saf
-        run: |
-          rm -rf test
-          npm ci --omit=dev
-
-      - name: set filename envvar
+      - name: Set RPM source tarball filename
         working-directory: ./saf
         run: |
           echo "filename=saf-v$(cat VERSION)-linux-x64" >> "$GITHUB_ENV"
 
-      - name: pack into tarball # we are targetting x86-64 since oclif bundles a node binary, but the project is actually fully architecture independent so long as they have a node binary on it
+      - name: Compile and package the Linux x64 tarball with locked oclif
         working-directory: ./saf
         run: npx oclif pack tarballs -t linux-x64 --no-xz
 
-      - name: repack tarball but include the spec file
+      - name: Add the RPM spec to the Linux tarball
         working-directory: ./saf/dist
         run: |
-          gzip -dc "$(ls)" > "$filename.tar"
+          gzip -dc saf-*-linux-x64.tar.gz > "$filename.tar"
           tar -rf "$filename.tar" --transform 's|^\.\.|saf|' ../saf.spec
           gzip "$filename.tar"
 
-      - name: build rpm
+      - name: Build the RPM installer
         working-directory: ./saf
         run: rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)"
 
-      - name: upload binary as artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload the RPM installer
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: SAF-CLI RPM Build noarch
           path: saf/noarch/saf-*.rpm
+          if-no-files-found: error
+          compression-level: 0
