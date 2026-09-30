@@ -1,4 +1,4 @@
-name: Push SAF-CLI to NPM and GPR
+name: Push SAF-CLI to NPM, GPR, and Homebrew tap
 on:
   release:
     types: [published]
