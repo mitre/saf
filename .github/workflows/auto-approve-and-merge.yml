@@ -23,29 +23,21 @@ jobs:
         uses: dependabot/fetch-metadata@25dd0e34f4fe68f24cc83900b1fe3fe149efef98 # v3.1.0
         id: metadata
 
-      - name: Allow npm patch/minor/major and GitHub Actions patch/minor; require manual review for Actions major/breaking updates
+      - name: Require manual review for major GitHub Actions updates; auto-approve all others
         id: policy
         env:
           ECOSYSTEM: ${{ steps.metadata.outputs.package-ecosystem }}
           UPDATE_TYPE: ${{ steps.metadata.outputs.update-type }}
         run: |
-          case "$ECOSYSTEM:$UPDATE_TYPE" in
-            npm_and_yarn:version-update:semver-patch|npm_and_yarn:version-update:semver-minor|\
-            npm_and_yarn:version-update:semver-major|github_actions:version-update:semver-patch|\
-            github_actions:version-update:semver-minor)
-              echo 'approve=true' >> "$GITHUB_OUTPUT"
-              ;;
-            github_actions:version-update:semver-major)
-              notice='Major GitHub Actions update: manual review and approval required. Auto-merge disabled.'
-              comments="$(gh api --paginate "repos/$GH_REPO/issues/$PR_NUMBER/comments" --jq '.[].body')"
-              if [[ "$comments" != *"$notice"* ]]; then
-                gh pr comment "$PR_NUMBER" --body "$notice"
-              fi
-              ;;
-            *)
-              echo '::notice::Unrecognized Dependabot metadata; manual review required.'
-              ;;
-          esac
+          if [[ "$ECOSYSTEM:$UPDATE_TYPE" == 'github_actions:version-update:semver-major' ]]; then
+            notice='Major GitHub Actions update: manual review and approval required. Auto-merge disabled.'
+            comments="$(gh api --paginate "repos/$GH_REPO/issues/$PR_NUMBER/comments" --jq '.[].body')"
+            if [[ "$comments" != *"$notice"* ]]; then
+              gh pr comment "$PR_NUMBER" --body "$notice"
+            fi
+          else
+            echo 'approve=true' >> "$GITHUB_OUTPUT"
+          fi
 
       - name: Approve eligible Dependabot PR
         uses: juliangruber/approve-pull-request-action@1cecaf0206ba34c4fddd072ded0b42e28ee68dd9 # v2.1.1

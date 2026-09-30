@@ -1,7 +1,6 @@
+# New ecosystems default to auto-merge; review auto-approve-and-merge.yml when adding one.
 version: 2
 updates:
-
-  # Maintain dependencies for npm
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
@@ -15,6 +14,7 @@ updates:
       # Allow both direct and indirect updates for all packages.
       - dependency-type: "all"
 
+  # GH Actions are set to automerge minor/patch but require manual review for major versions.
   - package-ecosystem: "github-actions"
     directories:
       - "/"
