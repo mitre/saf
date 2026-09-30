@@ -26,6 +26,7 @@ Write-Output "#-----------------------------------------------------------------
 Write-Output "# This PowerShell script automates the preliminary steps necessary to conduct  " | Yellow
 Write-Output "# a SAF CLI release. The script performs the following tasks:                  " | Yellow
 Write-Output "#    - Retrieve the latest main content                                        " | Yellow
+Write-Output "#    - Update the RPM build image version tag and digest                       " | Yellow
 Write-Output "#    - Bump the SAF CLI version number in the package.json file (version tag)  " | Yellow
 Write-Output "#    - Updates MITRE dependencies to latest versions                           " | Yellow
 Write-Output "#    - Remove the 'node_modules' if they exists                                " | Yellow
@@ -39,6 +40,7 @@ Write-Output "#    - Push and updated the repository three references (new versi
 Write-Output "# Prerequisites:                                                               " | Yellow
 Write-Output "#    - Before executing the preparatory script ensure that the you're on a     " | Red
 Write-Output "#      directory containing the most recent commit of the SAF CLI.             " | Red
+Write-Output "#    - Docker with the Buildx plugin                                           " | Red
 Write-Output "#    - Windows PowerShell 6. PowerShell version less than 6.0.0 will malformed " | Red
 Write-Output "#      the output, pretty print does not work properly.                        " | Red
 Write-Output "#      (see PowerShell Prettier formatting for ConvertTo-Json output PR #2736) " | Red
@@ -86,6 +88,40 @@ git pull origin main
 if ($LastExitCode -gt 0) {
   Write-Output "  Failed to Pull the main branch from github" | Red
   TerminateScript
+}
+Write-Output "Done" | Green
+Write-Host
+
+#------------------------------------------------------------------------------
+# Update the RPM build image version tag and digest
+Write-Output "Update the RPM build image version tag and digest..." | Yellow
+try {
+  $rpmWorkflow = ".github/workflows/build-rpm.yml"
+  $rpmContent = Get-Content -Path $rpmWorkflow -Raw -ErrorAction Stop
+  if ($rpmContent -notmatch '(?m)^\s*image:\s*(\S+)') {
+    throw "RPM build image reference not found"
+  }
+  $rpmCurrentImage = $Matches[1]
+  $rpmRepository = ($rpmCurrentImage -split '[:@]')[0]
+  $rpmMetadata = docker buildx imagetools inspect "${rpmRepository}:latest" --format '[{{json .Manifest}},{{json .Image}}]'
+  if ($LASTEXITCODE -ne 0) { throw "Failed to retrieve the latest RPM build image" }
+  $rpmMetadata = ($rpmMetadata -join "`n") | ConvertFrom-Json -ErrorAction Stop
+  $rpmDigest = $rpmMetadata[0].digest
+  $rpmLabels = $rpmMetadata[1].'linux/amd64'.config.Labels
+  $rpmTag = "$($rpmLabels.version)-$($rpmLabels.release)"
+  if ($rpmDigest -cnotmatch '^sha256:[0-9a-f]{64}$' -or $rpmTag -cnotmatch '^[a-zA-Z0-9_.]+-[a-zA-Z0-9_.-]+$') {
+    throw "Missing or invalid RPM build image metadata"
+  }
+  $rpmTagDigest = docker buildx imagetools inspect "${rpmRepository}:$rpmTag" --format '{{.Manifest.Digest}}'
+  if ($LASTEXITCODE -ne 0 -or $rpmTagDigest -ne $rpmDigest) {
+    throw "RPM build image version tag does not resolve to the expected digest"
+  }
+  $rpmNewImage = "${rpmRepository}:$rpmTag@$rpmDigest"
+  Set-Content -Path $rpmWorkflow -Value ($rpmContent.Replace($rpmCurrentImage, $rpmNewImage)) -NoNewline -ErrorAction Stop
+  Write-Output "  RPM build image: $rpmNewImage" | Cyan
+} catch {
+  Write-Output "  Failed to update the RPM build image: $_" | Red
+  exit 1
 }
 Write-Output "Done" | Green
 Write-Host
