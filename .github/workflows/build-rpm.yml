@@ -18,7 +18,7 @@ jobs:
   build-deploy:
     runs-on: ubuntu-24.04
     container:
-      image: registry.access.redhat.com/ubi9/nodejs-22:latest # zizmor: ignore[unpinned-images] -- blocked by https://github.com/dependabot/dependabot-core/issues/5819
+      image: registry.access.redhat.com/ubi9/nodejs-22:1-1790730922@sha256:99cef5d0a64011463c411db508b1570f9edc37219dd38eabbf90bb8c0e45ccc3
       options: -u 0 # dnf needs root
     defaults:
       run:
