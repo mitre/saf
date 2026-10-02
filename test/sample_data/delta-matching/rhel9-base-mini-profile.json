@@ -51,6 +51,9 @@
     {
       "id": "SV-257900",
       "title": "RHEL 9 must use FIPS 140-3 approved cryptography for system services.",
+      "descs": {
+        "check": "Run fips-mode-setup --check and verify FIPS 140-3 approved cryptography is enabled for system services."
+      },
       "tags": {
         "gtitle": "SRG-OS-CRYPTO",
         "cci": ["CCI-000803", "CCI-001199"]
@@ -59,6 +62,9 @@
     {
       "id": "SV-257901",
       "title": "RHEL 9 must disable SSH MAC algorithms not approved by FIPS 140-3.",
+      "descs": {
+        "check": "Inspect /etc/ssh/sshd_config and verify SSH MAC algorithms not approved by FIPS 140-3 are disabled."
+      },
       "tags": {
         "gtitle": "SRG-OS-CRYPTO",
         "cci": ["CCI-002450"]
@@ -67,6 +73,9 @@
     {
       "id": "SV-257902",
       "title": "RHEL 9 must disable SSH key exchange algorithms not approved by FIPS 140-3.",
+      "descs": {
+        "check": "Inspect /etc/ssh/sshd_config and verify SSH key exchange algorithms not approved by FIPS 140-3 are disabled."
+      },
       "tags": {
         "gtitle": "SRG-OS-CRYPTO",
         "cci": ["CCI-002460"]
