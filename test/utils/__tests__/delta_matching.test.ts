@@ -7,12 +7,91 @@ import {
   cciJaccard,
   extractCcis,
   extractSrgId,
+  electPrimaries,
   normalizeTitle,
   TIER2_COMPOSITE_CCI_WEIGHT,
   TIER2_COMPOSITE_TITLE_WEIGHT,
   tokenJaccard,
   type LinkRecord,
 } from '../../../src/utils/delta_matching';
+
+// Minimal LinkRecord builder for electPrimaries tests.
+const mkLink = (
+  newId: string,
+  oldId: string | null,
+  relationship: LinkRecord['relationship'],
+  confidence: number,
+  matchMethod: LinkRecord['matchMethod'] = relationship === 'no-match' ? 'none' : 'srg-cci-tiebreak',
+): LinkRecord => ({
+  oldId,
+  newId,
+  matchMethod,
+  confidence,
+  relationship,
+  potentialMismatch: false,
+});
+
+describe('electPrimaries', () => {
+  it('elects the highest-confidence candidate of an old control as primary', () => {
+    // All candidates land on SV-OLD; the best fit (0.91) must take the body.
+    const links = [
+      mkLink('SV-A', 'SV-OLD', 'related', 0.14),
+      mkLink('SV-B', 'SV-OLD', 'related', 0.89),
+      mkLink('SV-C', 'SV-OLD', 'related', 0.91),
+    ];
+    electPrimaries(links);
+    const byNew = Object.fromEntries(links.map(l => [l.newId, l.relationship]));
+    expect(byNew['SV-C']).toBe('primary');
+    expect(byNew['SV-A']).toBe('related');
+    expect(byNew['SV-B']).toBe('related');
+    // Exactly one primary per old control.
+    expect(links.filter(l => l.relationship === 'primary')).toHaveLength(1);
+  });
+
+  it('resolves an exact confidence tie to the first candidate in input order', () => {
+    const links = [
+      mkLink('SV-A', 'SV-OLD', 'related', 1),
+      mkLink('SV-B', 'SV-OLD', 'related', 1),
+    ];
+    electPrimaries(links);
+    expect(links.find(l => l.newId === 'SV-A')?.relationship).toBe('primary');
+    expect(links.find(l => l.newId === 'SV-B')?.relationship).toBe('related');
+  });
+
+  it('elects the sole candidate of a 1:1 mapping and leaves no-match untouched', () => {
+    const links = [
+      mkLink('SV-A', 'SV-OLD-1', 'related', 0.6),
+      mkLink('SV-B', null, 'no-match', 0),
+    ];
+    electPrimaries(links);
+    expect(links[0].relationship).toBe('primary');
+    expect(links[1].relationship).toBe('no-match');
+  });
+
+  it('elects tier-first: a same-SRG tier-2 match beats a higher-confidence cross-SRG fuse match on the same old', () => {
+    // Confidence is not comparable across tiers (tier 2 = CCI Jaccard, tier 3
+    // = 1 - Fuse score). A cross-SRG fuzzy match at 0.80 must NOT outrank a
+    // same-SRG CCI match at 0.50 for the same old control.
+    const links = [
+      mkLink('SV-FUSE', 'SV-OLD', 'related', 0.8, 'fuse-fallback'),
+      mkLink('SV-CCI', 'SV-OLD', 'related', 0.5, 'srg-cci-tiebreak'),
+    ];
+    electPrimaries(links);
+    expect(links.find(l => l.newId === 'SV-CCI')?.relationship).toBe('primary');
+    expect(links.find(l => l.newId === 'SV-FUSE')?.relationship).toBe('related');
+  });
+
+  it('recomputes potentialMismatch from the elected relationship', () => {
+    // A low-confidence candidate (0.1) carries potentialMismatch=false while
+    // `related`; once elected primary it must be re-evaluated to true
+    // (srg-cci-tiebreak, confidence < TIER2_MISMATCH_THRESHOLD=0.5).
+    const links = [mkLink('SV-A', 'SV-OLD', 'related', 0.1)];
+    expect(links[0].potentialMismatch).toBe(false);
+    electPrimaries(links);
+    expect(links[0].relationship).toBe('primary');
+    expect(links[0].potentialMismatch).toBe(true);
+  });
+});
 
 // Minimal Control-shaped test fixtures. The real inspec-objects Control has
 // many more fields; these tests exercise only the fields our matcher reads.
