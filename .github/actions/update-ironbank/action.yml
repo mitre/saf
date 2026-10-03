@@ -1,0 +1,77 @@
+name: Update Iron Bank
+description: Update Iron Bank from the published image manifests.
+inputs:
+  version:
+    description: Release tag or commit SHA.
+    required: true
+  image-digest:
+    description: Multi-architecture digest from the Docker publish step.
+    required: true
+  project-id:
+    description: Iron Bank project ID.
+    required: true
+  project-name:
+    description: Iron Bank repository name.
+    required: true
+  username:
+    description: Iron Bank username.
+    required: true
+  token:
+    description: Iron Bank token.
+    required: true
+runs:
+  using: composite
+  steps:
+    - name: Get the amd64 and arm64 digests for the published multi-architecture image
+      id: digests
+      shell: bash
+      env:
+        IMAGE_DIGEST: ${{ inputs.image-digest }}
+      run: |
+        MAX_RETRIES=5
+        RETRY_DELAY=0.5 # in seconds
+
+        for ((attempt = 1; attempt <= MAX_RETRIES; attempt++)); do
+          if manifest=$(docker buildx imagetools inspect "mitre/saf@$IMAGE_DIGEST" --raw); then
+            break
+          fi
+          if (( attempt == MAX_RETRIES )); then
+            echo "::error::Manifest lookup failed after $MAX_RETRIES attempts."
+            exit 1
+          fi
+          echo "Manifest lookup failed (attempt $attempt/$MAX_RETRIES); retrying in $RETRY_DELAY seconds..."
+          sleep "$RETRY_DELAY"
+        done
+
+        for arch in amd64 arm64; do
+          digest=$(jq -er --arg arch "$arch" '
+            .manifests[] | select(.platform.os == "linux" and .platform.architecture == $arch) | .digest
+          ' <<< "$manifest")
+          echo "$arch=$digest" >> "$GITHUB_OUTPUT"
+        done
+
+    - name: Open an Iron Bank issue and merge request for the published image
+      uses: mitre/ironbank_release_action@1c14c27db1c37e894f8042ac2edcde08d445882d # v1
+      env:
+        SAF_VERSION: ${{ inputs.version }}
+        DOCKER_SHA: ${{ steps.digests.outputs.amd64 }}
+        DOCKER_SHA_ARM64: ${{ steps.digests.outputs.arm64 }}
+      with:
+        name: SAF-CLI
+        version: ${{ inputs.version }}
+        ironbank_pat: ${{ inputs.token }}
+        ironbank_username: ${{ inputs.username }}
+        ironbank_project_id: ${{ inputs.project-id }}
+        ironbank_project_clone_url: repo1.dso.mil/dsop/mitre/security-automation-framework/${{ inputs.project-name }}.git
+        git_commit_author_name: Automated SAF CLI Release
+        git_commit_author_email: saf@mitre.org
+        update_commands: |
+          yq e -i '
+            (.args.SAF_VERSION, .tags[0], .labels.\"org.opencontainers.image.version\") = strenv(SAF_VERSION) |
+            .resources[0].tag = \"mitre/saf:\" + strenv(SAF_VERSION) |
+            .resources[0].url = \"docker://docker.io/mitre/saf@\" + strenv(DOCKER_SHA) |
+            .resources[1].tag = \"mitre/saf:\" + strenv(SAF_VERSION) + \".arm64\" |
+            .resources[1].url = \"docker://docker.io/mitre/saf@\" + strenv(DOCKER_SHA_ARM64)
+          ' hardening_manifest.yaml
+          sed -i \"s/SAF_VERSION=.*/SAF_VERSION=$SAF_VERSION/\" Dockerfile
+          sed -i \"s/SAF_VERSION=.*/SAF_VERSION=$SAF_VERSION-arm64/\" Dockerfile.arm64

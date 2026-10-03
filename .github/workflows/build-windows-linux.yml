@@ -7,6 +7,10 @@ on:
     branches: [ main ]
   workflow_dispatch:
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions:
   contents: read
 
@@ -14,34 +18,34 @@ jobs:
   build-deploy:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v5
+      - name: Check out source
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: saf
+          persist-credentials: false
 
-      - name: setup node
-        uses: actions/setup-node@v6
+      - name: Set up Node.js and install locked dependencies
+        uses: $/.github/actions/setup-node
         with:
-          node-version: "22"
-          check-latest: true
-          cache: 'npm'
-          cache-dependency-path: ./saf/package-lock.json
+          working-directory: saf
 
-      - name: Install Nullsoft Scriptable Install System and p7zip
-        run: sudo apt install nsis p7zip-full
+      - name: Install Nullsoft Scriptable Install System
+        # p7zip-full and apt-utils are also required; Ubuntu runners provide them by default
+        run: sudo apt-get update && sudo apt-get install --no-install-recommends -y nsis
 
-      - name: setup saf cli
+      - name: Compile and create one npm tarball for Windows and Debian
+        working-directory: ./saf
+        run: npm pack --pack-destination "$RUNNER_TEMP"
+
+      - name: Package Windows installers from the npm tarball
         working-directory: ./saf
         run: |
-          rm -rf test
-          npm ci --omit=dev
+          cp "$RUNNER_TEMP"/mitre-saf-*.tgz "$RUNNER_TEMP/saf-win.tgz"
+          npx oclif pack win --tarball "$RUNNER_TEMP/saf-win.tgz"
 
-      - name: Pack Windows Installer
+      - name: Package Debian installers from the same npm tarball
         working-directory: ./saf
-        run: npx oclif pack win
-
-      - name: Pack Debian Package
-        working-directory: ./saf
-        run: sudo npx oclif pack deb
+        run: npx oclif pack deb --tarball "$RUNNER_TEMP"/mitre-saf-*.tgz
 
       - name: Rename Windows Installers
         run: |
@@ -59,24 +63,29 @@ jobs:
             prefix=${file%.*-*.deb}
             prefix_ver=${prefix#saf_}
             suffix=${file#*_*_}
-            sudo mv "$file" "saf-$prefix_ver-$suffix"
+            mv "$file" "saf-$prefix_ver-$suffix"
           done
 
       - name: Upload SAF-CLI Windows Build x64 Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: SAF-CLI Windows Build x64
           path: saf/dist/win32/saf-*-x64.exe
+          if-no-files-found: error
+          compression-level: 0
 
       - name: Upload SAF-CLI Windows Build x86 Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: SAF-CLI Windows Build x86
           path: saf/dist/win32/saf-*-x86.exe
+          if-no-files-found: error
+          compression-level: 0
 
-      # underscore here since that's how the file is named
       - name: Upload SAF-CLI Debian x64 Artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: SAF-CLI Debian Build x64
           path: saf/dist/deb/saf-*.deb
+          if-no-files-found: error
+          compression-level: 0
