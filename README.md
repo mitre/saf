@@ -62,6 +62,7 @@ For detailed information about development, testing , and contributing to the SA
       * [Dependency-Track to HDF](#dependency-track-to-hdf)
       * [Fortify to HDF](#fortify-to-hdf)
       * [gosec to HDF](#gosec-to-hdf)
+      * [Hadolint to HDF](#hadolint-to-hdf)
       * [Ion Channel 2 HDF](#ion-channel-2-hdf)
       * [JFrog Xray to HDF](#jfrog-xray-to-hdf)
       * [Tenable Nessus to HDF](#tenable-nessus-to-hdf)
@@ -882,6 +883,35 @@ convert gosec2hdf             Translate a gosec (Golang Security Checker) result
 
   EXAMPLES
     $ saf convert gosec2hdf -i gosec_results.json -o output-hdf-name.json
+```
+
+[top](#convert-other-formats-to-hdf)
+#### Hadolint to HDF
+
+**NOTE**: A Hadolint results JSON without any findings will not contain any information at all which means that it will not be possible to generate an HDF file from it.
+
+**NOTE**: Make sure to use the JSON formatter for Hadolint.  The invocation will look like `hadolint -f json Dockerfile`.
+
+```
+convert hadolint2hdf             Translate a Hadolint results JSON file into a Heimdall Data Format JSON file
+
+  USAGE
+    $ saf convert hadolint2hdf -i <hadolint-json> -o <hdf-scan-results-json> [-h] [-w] [-d]
+
+  FLAGS
+    -d, --includeRuleDescriptions  Include Hadolint and ShellCheck rule descriptions in HDF JSON file
+    -i, --input=<value>            (required) Input Hadolint Results JSON File
+    -o, --output=<value>           (required) Output HDF JSON File
+    -w, --includeRaw               Include raw input file in HDF JSON file
+
+  GLOBAL FLAGS
+    -L, --logLevel=<option>  [default: info] Specify level for logging (if implemented by the CLI command)
+                             <options: info|warn|debug|verbose>
+    -h, --help               Show CLI help
+        --interactive        Collect input tags interactively (not available on all CLI commands)
+
+  EXAMPLES
+    $ saf convert hadolint2hdf -i hadolint-results.json -o output-hdf-name.json
 ```
 
 [top](#convert-other-formats-to-hdf)
