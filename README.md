@@ -147,6 +147,14 @@ To update the SAF CLI with `npm`:
 ```bash
 npm update -g @mitre/saf
 ```
+
+#### Use via `npx`
+
+Alteratively you could on-the-fly install and use the SAF CLI via NPM's `npx` utility:
+
+```bash
+npx @mitre/saf <arguments>
+```
 [top](#installation)
 
 ---
