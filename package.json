@@ -42,7 +42,7 @@
     "colors": "^1.4.0",
     "csv-parse": "^7.0.0",
     "csv-stringify": "^6.5.2",
-    "dotenv": "^17.0.1",
+    "dotenv": "^18.0.1",
     "express": "^5.1.0",
     "fast-xml-parser": "^5.0.7",
     "form-data": "^4.0.0",
@@ -89,7 +89,7 @@
     "jsdom": "^30.0.0",
     "marked": "~18.0.0",
     "mock-fs": "^5.2.0",
-    "oclif": "^5.0.0",
+    "oclif": "^6.0.0",
     "tsx": "^4.21.0",
     "typescript-eslint": "^8.56.1",
     "vitest": "^4.0.1"
