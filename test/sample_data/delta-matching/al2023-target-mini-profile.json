@@ -59,6 +59,9 @@
     {
       "id": "SV-273900",
       "title": "Amazon Linux 2023 must use FIPS 140-3 approved cryptography for system services.",
+      "descs": {
+        "check": "Run fips-mode-setup --check and verify FIPS 140-3 approved cryptography is enabled for system services."
+      },
       "tags": {
         "gtitle": "SRG-OS-CRYPTO",
         "cci": ["CCI-000803"]
@@ -67,6 +70,9 @@
     {
       "id": "SV-273901",
       "title": "Amazon Linux 2023 must disable SSH MAC algorithms not approved by FIPS 140-3.",
+      "descs": {
+        "check": "Inspect /etc/ssh/sshd_config and verify SSH MAC algorithms not approved by FIPS 140-3 are disabled."
+      },
       "tags": {
         "gtitle": "SRG-OS-CRYPTO",
         "cci": ["CCI-002450"]
@@ -75,6 +81,9 @@
     {
       "id": "SV-273902",
       "title": "Amazon Linux 2023 must use post-quantum key encapsulation for TLS sessions.",
+      "descs": {
+        "check": "Verify post-quantum key encapsulation ML-KEM is enabled for all TLS sessions."
+      },
       "tags": {
         "gtitle": "SRG-OS-CRYPTO",
         "cci": ["CCI-999999"]
