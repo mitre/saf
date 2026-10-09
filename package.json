@@ -87,7 +87,7 @@
     "eslint-plugin-n": "^18.0.1",
     "eslint-plugin-unicorn": "^64.0.0",
     "jsdom": "^30.0.0",
-    "marked": "~18.0.0",
+    "marked": "~18.1.0",
     "mock-fs": "^5.2.0",
     "oclif": "^6.0.0",
     "tsx": "^4.21.0",
