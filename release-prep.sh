@@ -32,6 +32,7 @@ PrintColor "Yellow" "#----------------------------------------------------------
 PrintColor "Yellow" "# This PowerShell script automates the preliminary steps necessary to conduct  "
 PrintColor "Yellow" "# a SAF CLI release. The script performs the following tasks:                  "
 PrintColor "Yellow" "#    - Retrieve the latest main content                                        "
+PrintColor "Yellow" "#    - Update the RPM build image version tag and digest                       "
 PrintColor "Yellow" "#    - Bump the SAF CLI version number in the package.json file (version tag)  "
 PrintColor "Yellow" "#    - Update MITRE dependencies to latest versions                            "
 PrintColor "Yellow" "#    - Remove the 'node_modules' if they exists                                "
@@ -45,6 +46,7 @@ PrintColor "Yellow" "#    - Push and updated the repository three references (ne
 PrintColor "Yellow" "# Prerequisites:                                                               "
 PrintColor "Yellow" "#    - Before executing the preparatory script ensure that the you're on a     "
 PrintColor "Yellow" "#      directory containing the most recent commit of the SAF CLI.             "
+PrintColor "Yellow" "#    - Docker with the Buildx plugin                                           "
 PrintColor "Yellow" "#------------------------------------------------------------------------------"
 
 #------------------------------------------------------------------------------
@@ -71,6 +73,37 @@ if [ $? -ne 0 ]; then
   PrintColor "Red" "  Failed to Pull the main branch from github"
   TerminateScript
 fi
+PrintColor "Green" "Done"
+echo
+
+#------------------------------------------------------------------------------
+# Update the RPM build image version tag and digest
+PrintColor "Yellow" "Update the RPM build image version tag and digest..."
+rpm_workflow=".github/workflows/build-rpm.yml"
+rpm_current_image=$(awk '$1 == "image:" {print $2}' "$rpm_workflow") || exit 1
+if [ -z "$rpm_current_image" ]; then
+  PrintColor "Red" "  RPM build image reference not found"
+  exit 1
+fi
+rpm_repository=${rpm_current_image%%[:@]*}
+if ! rpm_metadata=$(docker buildx imagetools inspect "$rpm_repository:latest" --format '[{{json .Manifest}},{{json .Image}}]'); then
+  PrintColor "Red" "  Failed to retrieve the latest RPM build image"
+  exit 1
+fi
+rpm_digest=$(jq -er '.[0].digest' <<< "$rpm_metadata") || exit 1
+rpm_tag=$(jq -er '.[1]["linux/amd64"].config.Labels | .version + "-" + .release' <<< "$rpm_metadata") || exit 1
+if [[ ! "$rpm_digest" =~ ^sha256:[0-9a-f]{64}$ || ! "$rpm_tag" =~ ^[[:alnum:]_.]+-[[:alnum:]_.-]+$ ]]; then
+  PrintColor "Red" "  Missing or invalid RPM build image metadata"
+  exit 1
+fi
+if ! rpm_tag_digest=$(docker buildx imagetools inspect "$rpm_repository:$rpm_tag" --format '{{.Manifest.Digest}}') || [[ "$rpm_tag_digest" != "$rpm_digest" ]]; then
+  PrintColor "Red" "  RPM build image version tag does not resolve to the expected digest"
+  exit 1
+fi
+rpm_new_image="$rpm_repository:$rpm_tag@$rpm_digest"
+updated_workflow=$(awk -v image="$rpm_new_image" '$1 == "image:" {sub($2, image)} {print}' "$rpm_workflow") || exit 1
+printf '%s\n' "$updated_workflow" > "$rpm_workflow" || exit 1
+PrintColor "Cyan" "  RPM build image: $rpm_new_image"
 PrintColor "Green" "Done"
 echo
 

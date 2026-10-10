@@ -3,11 +3,6 @@ name: Push SAF CLI to Docker Hub on every release
 on:
   release:
     types: [published]
-  workflow_dispatch:
-    inputs:
-      version:
-        description: 'Version'
-        required: true
 
 permissions:
   contents: read
@@ -15,79 +10,42 @@ permissions:
 jobs:
   docker:
     runs-on: ubuntu-24.04
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name }}
     steps:
-      - name: Run string replace to remove the v from the version number before using it in the docker tag
-        uses: frabert/replace-string-action@v2
-        id: format-tag
+      - name: Check out the release tag
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          pattern: 'v'
-          string: "${{ github.event.release.tag_name || github.event.inputs.version }}"
-          replace-with: ''
-          flags: 'g'
-      - name: Checkout the SAF Repository
-        uses: actions/checkout@v5
+          ref: refs/tags/${{ env.RELEASE_TAG }}
+          persist-credentials: false
+
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
         with:
           username: ${{ vars.DOCKER_USER }}
           password: ${{ secrets.DOCKER_PAT }}
-      - name: Build and push the container image to DockerHub
+
+      - name: Build and push amd64 and arm64 images to Docker Hub
         id: docker_build
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: .
           push: true
           platforms: "linux/amd64,linux/arm64"
-          tags: mitre/saf:release-latest,mitre/saf:${{ steps.format-tag.outputs.replaced }},mitre/saf:v1
-      - name: Get the per-architecture Docker SHAs since the Iron Bank Dockerfiles require us to specify the exact per-architecture resources we need them to pull into the environment
-        shell: bash
-        id: get-docker-sha
-        run: |
-          MAX_RETRIES=5
-          RETRY_DELAY=0.5 # in seconds
-          RETRY_COUNT=0
-          SUCCESS=false
+          tags: mitre/saf:release-latest,mitre/saf:${{ env.RELEASE_TAG }},mitre/saf:v1
 
-          while [ "$RETRY_COUNT" -lt "$MAX_RETRIES" ]; do
-            if docker pull mitre/saf:${{ steps.format-tag.outputs.replaced }}; then
-              SUCCESS=true
-              break
-            else
-              RETRY_COUNT="$((RETRY_COUNT + 1))"
-              echo "Retry $RETRY_COUNT/$MAX_RETRIES: Docker pull failed.  Retrying in $RETRY_DELAY seconds..."
-              sleep "$RETRY_DELAY"
-            fi
-          done
-
-          if [ "$SUCCESS" = true ]; then
-            # The image is multi-arch, so the tag resolves to an OCI index (manifest list).
-            # Iron Bank maintains a per-architecture Dockerfile, so each one needs the digest of
-            # its specific child manifest (amd64 / arm64), not the index digest.
-            MANIFEST=$(docker buildx imagetools inspect mitre/saf:${{ steps.format-tag.outputs.replaced }} --raw)
-            AMD64_SHA=$(echo "$MANIFEST" | jq -r '.manifests[] | select(.platform.architecture=="amd64" and .platform.os=="linux") | .digest')
-            ARM64_SHA=$(echo "$MANIFEST" | jq -r '.manifests[] | select(.platform.architecture=="arm64" and .platform.os=="linux") | .digest')
-            echo "DOCKER_SHA=${AMD64_SHA}" >> $GITHUB_ENV
-            echo "DOCKER_SHA_ARM64=${ARM64_SHA}" >> $GITHUB_ENV
-          else
-            echo "Docker pull failed after $MAX_RETRIES attempts."
-            exit 1
-          fi
-      - name: Upgrade Iron Bank
-        uses: mitre/ironbank_release_action@v1
+      - name: Update Iron Bank from the published image
+        uses: $/.github/actions/update-ironbank
         with:
-          name: SAF-CLI
-          version: ${{ steps.format-tag.outputs.replaced }}
-          ironbank_pat: ${{ secrets.SAF_IRONBANK_REPO1_PAT }}
-          ironbank_username: ${{ secrets.SAF_IRONBANK_REPO1_USERNAME }}
-          ironbank_project_id: 17072
-          ironbank_project_clone_url: repo1.dso.mil/dsop/mitre/security-automation-framework/saf.git
-          git_commit_author_name: "Automated SAF CLI Release"
-          git_commit_author_email: "saf@mitre.org"
-          update_commands: |
-            yq e -i '.args.SAF_VERSION=\"${{ steps.format-tag.outputs.replaced }}\" | .tags[0]=\"${{ steps.format-tag.outputs.replaced }}\" | .labels.\"org.opencontainers.image.version\"=\"${{ steps.format-tag.outputs.replaced }}\" | .resources[0].tag=\"mitre/saf:${{ steps.format-tag.outputs.replaced }}\" | .resources[0].url=\"docker://docker.io/mitre/saf@${{ env.DOCKER_SHA }}\" | .resources[1].tag=\"mitre/saf:${{ steps.format-tag.outputs.replaced }}.arm64\" | .resources[1].url=\"docker://docker.io/mitre/saf@${{ env.DOCKER_SHA_ARM64 }}\"' hardening_manifest.yaml
-            sed -i s/SAF_VERSION=\.\*/SAF_VERSION=${{ steps.format-tag.outputs.replaced }}/ Dockerfile
-            sed -i s/SAF_VERSION=\.\*/SAF_VERSION=${{ steps.format-tag.outputs.replaced }}-arm64/ Dockerfile.arm64
+          version: ${{ env.RELEASE_TAG }}
+          image-digest: ${{ steps.docker_build.outputs.digest }}
+          project-id: 17072
+          project-name: saf
+          username: ${{ secrets.SAF_IRONBANK_REPO1_USERNAME }}
+          token: ${{ secrets.SAF_IRONBANK_REPO1_PAT }}
