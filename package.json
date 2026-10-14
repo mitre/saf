@@ -22,7 +22,7 @@
     "@oclif/plugin-version": "^3.0.0",
     "@oclif/plugin-warn-if-update-available": "^4.0.0",
     "@smithy/node-http-handler": "^4.0.0",
-    "@types/adm-zip": "^0.5.7",
+    "@types/adm-zip": "^0.6.0",
     "@types/chai": "4.3.3",
     "@types/express": "^5.0.0",
     "@types/fs-extra": "^11.0.1",
