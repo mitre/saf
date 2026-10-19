@@ -40,7 +40,7 @@ jobs:
           fi
 
       - name: Approve eligible Dependabot PR
-        uses: juliangruber/approve-pull-request-action@1cecaf0206ba34c4fddd072ded0b42e28ee68dd9 # v2.1.1
+        uses: juliangruber/approve-pull-request-action@22f010b57f3836d0201a691b397aa993554849a4 # v2.1.2
         if: steps.policy.outputs.approve == 'true'
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
