@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 permissions:
   contents: read
 
@@ -14,17 +18,29 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
-     - uses: actions/checkout@v5
-
-     - name: Setup Node.js
-       uses: actions/setup-node@v6
+     - name: Check out source
+       id: checkout
+       uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
        with:
-        node-version: "22"
-        check-latest: true
-        cache: 'npm'
+         persist-credentials: false
 
-     - name: Install project dependencies
-       run: npm ci
+     - name: Check workflow security with zizmor
+       uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482 # v0.6.4
+       with:
+         inputs: .github
+         advanced-security: false
+         annotations: true
+
+     - name: Check workflow syntax and expressions with actionlint
+       # Use this fork for better ergonomics and updates while upstream maintenance is inactive.
+       if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
+       uses: kjanat/actionlint@722799fa4b8cc6734debb97bae24aca9e0dbaf59 # v1.17
+
+     - name: Set up Node.js and install locked dependencies
+       id: setup
+       if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
+       uses: $/.github/actions/setup-node
 
      - name: Run lint
+       if: ${{ !cancelled() && steps.setup.outcome == 'success' }}
        run: npm run lint:ci

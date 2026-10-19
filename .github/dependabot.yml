@@ -1,18 +1,33 @@
+# New ecosystems default to auto-merge; review auto-approve-and-merge.yml when adding one.
 version: 2
 updates:
-
-  # Maintain dependencies for npm
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: daily
       time: "20:00"
       timezone: America/New_York
+    cooldown:
+      default-days: 7
     open-pull-requests-limit: 99
     allow:
       # Allow both direct and indirect updates for all packages.
       - dependency-type: "all"
-    ignore:
-    # All Chai dependency major version 5 does not support common js modules
-    - dependency-name: "chai"
-    - dependency-name: "@types/chai"
+
+  # GH Actions are set to automerge minor/patch but require manual review for major versions.
+  - package-ecosystem: "github-actions"
+    directories:
+      - "/"
+      - "/.github/actions/*"
+    groups:
+      actions-deps:
+        group-by: dependency-name
+        patterns:
+          - "*"
+    schedule:
+      interval: daily
+      time: "20:00"
+      timezone: America/New_York
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 99

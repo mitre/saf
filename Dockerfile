@@ -11,18 +11,22 @@ LABEL name="SAF" \
       docs="https://github.com/mitre/saf" \
       run="docker run -d --name ${NAME} ${IMAGE} <args>"
 
-RUN mkdir -p /share
-
-COPY . /build
 WORKDIR /build
-RUN rm -rf test
-RUN npm ci --omit=dev --fetch-timeout=600000
-RUN mv "$(npm pack | tail -1)" saf.tgz
+COPY package.json package-lock.json ./
+RUN --mount=type=cache,target=/root/.npm npm ci --ignore-scripts --no-audit --no-fund --fetch-timeout=600000
+
+COPY . .
+RUN npm pack \
+    && npm prune --omit=dev --ignore-scripts --no-audit --no-fund \
+    && mkdir /app \
+    && tar -xzf mitre-saf-*.tgz -C /app --strip-components=1 \
+    && mv node_modules /app/node_modules
 
 FROM $BASE_CONTAINER AS app
+ENV NODE_ENV=production
 
-COPY --from=builder /build/saf.tgz /build/
-RUN npm install -g /build/saf.tgz && npm cache clean --force;
+COPY --from=builder /app /usr/local/lib/node_modules/@mitre/saf
+RUN ln -s /usr/local/lib/node_modules/@mitre/saf/bin/run /usr/local/bin/saf
 
 # Useful for CI pipelines
 RUN apk add --no-cache bash jq curl ca-certificates yq
