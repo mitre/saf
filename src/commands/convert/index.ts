@@ -4,7 +4,7 @@ import path from 'path';
 import {
   AnchoreGrypeMapper,
   ASFFResults,
-  BurpSuiteMapper,
+  BurpSuiteResults,
   CheckovMapper,
   ChecklistResults,
   ConveyorResults,
@@ -12,11 +12,11 @@ import {
   DBProtectMapper,
   DependencyTrackMapper,
   fingerprint,
-  FortifyMapper,
+  FortifyResults,
   JfrogXrayMapper,
-  MsftSecureScoreMapper,
+  MsftSecureScoreResults,
   NessusResults,
-  NetsparkerMapper,
+  NetsparkerResults,
   NeuVectorMapper,
   NiktoMapper,
   PrismaMapper,
@@ -25,8 +25,8 @@ import {
   SnykResults,
   TrufflehogResults,
   TwistlockResults,
-  XCCDFResultsMapper,
-  ZapMapper,
+  XCCDFResultsResults,
+  ZapResults,
 } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
 import { basename, checkSuffix, resolveSafeChild, safeFilename } from '../../utils/global';
@@ -52,6 +52,8 @@ export default class Convert extends BaseCommand<typeof Convert> {
 
   static readonly examples = ['<%= config.bin %> <%= command.id %> -i input -o output'];
 
+  static detectedType: string;
+
   static readonly flags = {
     input: Flags.string({
       char: 'i',
@@ -65,8 +67,6 @@ export default class Convert extends BaseCommand<typeof Convert> {
     }),
     ...Convert.getFlagsForInputFile(getInputFilename()),
   };
-
-  static detectedType: string;
 
   static getFlagsForInputFile(filePath: string) {
     if (filePath) {
@@ -138,10 +138,10 @@ export default class Convert extends BaseCommand<typeof Convert> {
       }
 
       case 'burp': {
-        converter = new BurpSuiteMapper(fs.readFileSync(flags.input, 'utf8'));
+        converter = new BurpSuiteResults(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
-          JSON.stringify(converter.toHdf(), null, 2),
+          JSON.stringify(await converter.toHdf(), null, 2),
         );
         break;
       }
@@ -208,10 +208,10 @@ export default class Convert extends BaseCommand<typeof Convert> {
       }
 
       case 'fortify': {
-        converter = new FortifyMapper(fs.readFileSync(flags.input, 'utf8'));
+        converter = new FortifyResults(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
-          JSON.stringify(converter.toHdf(), null, 2),
+          JSON.stringify(await converter.toHdf(), null, 2),
         );
         break;
       }
@@ -226,19 +226,25 @@ export default class Convert extends BaseCommand<typeof Convert> {
       }
 
       case 'msft_secure_score': {
-        converter = new MsftSecureScoreMapper(
+        converter = new MsftSecureScoreResults(
           fs.readFileSync(flags.input, 'utf8'),
         );
-        fs.writeFileSync(
-          checkSuffix(flags.output),
-          JSON.stringify(converter.toHdf(), null, 2),
-        );
+        for (const result of converter.toHdf()) {
+          const outputBase = path.dirname(flags.output);
+          const outputPrefix = safeFilename(flags.output.replaceAll(/\.json/gi, ''));
+          const auxiliaryData = _.get(result, 'passthrough.auxiliary_data') as unknown as { name?: string; data?: { reportId?: string } }[];
+          const reportId = auxiliaryData.find(data => data.name === 'Microsoft Secure Score')?.data?.reportId;
+          fs.writeFileSync(
+            resolveSafeChild(outputBase, safeFilename(`${outputPrefix}-${basename(reportId ?? '')}.json`)),
+            JSON.stringify(result, null, 2),
+          );
+        }
         break;
       }
 
       case 'nessus': {
         converter = new NessusResults(fs.readFileSync(flags.input, 'utf8'));
-        const result = converter.toHdf();
+        const result = await converter.toHdf();
         const pluralResults = Array.isArray(result) ? result : [];
         const singularResult = pluralResults.length === 0;
         const outputBase = path.dirname(flags.output);
@@ -270,10 +276,10 @@ export default class Convert extends BaseCommand<typeof Convert> {
       }
 
       case 'netsparker': {
-        converter = new NetsparkerMapper(fs.readFileSync(flags.input, 'utf8'));
+        converter = new NetsparkerResults(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
-          JSON.stringify(converter.toHdf(), null, 2),
+          JSON.stringify(await converter.toHdf(), null, 2),
         );
         break;
       }
@@ -367,24 +373,24 @@ export default class Convert extends BaseCommand<typeof Convert> {
       }
 
       case 'xccdf': {
-        converter = new XCCDFResultsMapper(
+        converter = new XCCDFResultsResults(
           fs.readFileSync(flags.input, 'utf8'),
         );
         fs.writeFileSync(
           checkSuffix(flags.output),
-          JSON.stringify(converter.toHdf(), null, 2),
+          JSON.stringify(await converter.toHdf(), null, 2),
         );
         break;
       }
 
       case 'zap': {
-        converter = new ZapMapper(
+        converter = new ZapResults(
           fs.readFileSync(flags.input, 'utf8'),
           _.get(flags, 'name'),
         );
         fs.writeFileSync(
           checkSuffix(flags.output),
-          JSON.stringify(converter.toHdf(), null, 2),
+          JSON.stringify(await converter.toHdf(), null, 2),
         );
         break;
       }
