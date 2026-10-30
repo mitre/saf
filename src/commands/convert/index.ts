@@ -27,6 +27,7 @@ import {
   TwistlockResults,
   XCCDFResultsMapper,
   ZapMapper,
+  INPUT_TYPES,
 } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
 import { basename, checkSuffix, resolveSafeChild, safeFilename } from '../../utils/global';
@@ -52,6 +53,8 @@ export default class Convert extends BaseCommand<typeof Convert> {
 
   static readonly examples = ['<%= config.bin %> <%= command.id %> -i input -o output'];
 
+  static detectedType = INPUT_TYPES.NOT_FOUND;
+
   static readonly flags = {
     input: Flags.string({
       char: 'i',
@@ -66,8 +69,6 @@ export default class Convert extends BaseCommand<typeof Convert> {
     ...Convert.getFlagsForInputFile(getInputFilename()),
   };
 
-  static detectedType: string;
-
   static getFlagsForInputFile(filePath: string) {
     if (filePath) {
       Convert.detectedType = fingerprint({
@@ -77,11 +78,11 @@ export default class Convert extends BaseCommand<typeof Convert> {
       switch (
         Convert.detectedType
       ) {
-        case 'asff': {
+        case INPUT_TYPES.ASFF: {
           return ASFF2HDF.flags;
         }
 
-        case 'zap': {
+        case INPUT_TYPES.ZAP: {
           return Zap2HDF.flags;
         }
 
@@ -105,7 +106,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
     const { flags } = await this.parse(Convert);
     let converter;
     switch (Convert.detectedType) {
-      case 'anchoregrype': {
+      case INPUT_TYPES.GRYPE: {
         converter = new AnchoreGrypeMapper(
           fs.readFileSync(flags.input, 'utf8'),
         );
@@ -116,7 +117,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'asff': {
+      case INPUT_TYPES.ASFF: {
         const securityhub = _.get(flags, 'securityhub') as unknown as string[];
         const files = securityhub?.map(file => fs.readFileSync(file, 'utf8'));
 
@@ -137,7 +138,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'burp': {
+      case INPUT_TYPES.BURP: {
         converter = new BurpSuiteMapper(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
@@ -146,7 +147,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'checkov': {
+      case INPUT_TYPES.CHECKOV: {
         converter = new CheckovMapper(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
@@ -155,7 +156,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'conveyor': {
+      case INPUT_TYPES.CONVEYOR: {
         converter = new ConveyorResults(fs.readFileSync(flags.input, 'utf8'));
         const results = converter.toHdf();
         fs.mkdirSync(flags.output);
@@ -169,7 +170,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'checklist': {
+      case INPUT_TYPES.CHECKLIST: {
         converter = new ChecklistResults(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
@@ -178,7 +179,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'dbProtect': {
+      case INPUT_TYPES.DB_PROTECT: {
         converter = new DBProtectMapper(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
@@ -187,7 +188,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'dependencyTrack': {
+      case INPUT_TYPES.DEPENDENCY_TRACK: {
         converter = new DependencyTrackMapper(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
@@ -196,7 +197,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'cyclonedx_sbom': {
+      case INPUT_TYPES.CYCLONEDX_SBOM: {
         converter = new CycloneDXSBOMResults(
           fs.readFileSync(flags.input, 'utf8'),
         );
@@ -207,7 +208,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'fortify': {
+      case INPUT_TYPES.FORTIFY: {
         converter = new FortifyMapper(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
@@ -216,7 +217,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'jfrog': {
+      case INPUT_TYPES.JFROG: {
         converter = new JfrogXrayMapper(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
@@ -225,7 +226,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'msft_secure_score': {
+      case INPUT_TYPES.MSFT_SEC_SCORE: {
         converter = new MsftSecureScoreMapper(
           fs.readFileSync(flags.input, 'utf8'),
         );
@@ -236,7 +237,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'nessus': {
+      case INPUT_TYPES.NESSUS: {
         converter = new NessusResults(fs.readFileSync(flags.input, 'utf8'));
         const result = converter.toHdf();
         const pluralResults = Array.isArray(result) ? result : [];
@@ -260,7 +261,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'neuvector': {
+      case INPUT_TYPES.NEUVECTOR: {
         converter = new NeuVectorMapper(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
@@ -269,7 +270,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'netsparker': {
+      case INPUT_TYPES.NETSPARKER: {
         converter = new NetsparkerMapper(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
@@ -278,7 +279,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'nikto': {
+      case INPUT_TYPES.NIKTO: {
         converter = new NiktoMapper(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
@@ -287,7 +288,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'prisma': {
+      case INPUT_TYPES.PRISMA: {
         converter = new PrismaMapper(
           fs.readFileSync(flags.input, { encoding: 'utf8' }),
         );
@@ -306,7 +307,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'sarif': {
+      case INPUT_TYPES.SARIF: {
         converter = new SarifMapper(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
@@ -315,7 +316,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'scoutsuite': {
+      case INPUT_TYPES.SCOUTSUITE: {
         converter = new ScoutsuiteMapper(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
@@ -324,7 +325,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'snyk': {
+      case INPUT_TYPES.SNYK: {
         converter = new SnykResults(fs.readFileSync(flags.input, 'utf8'));
         const result = converter.toHdf();
         const pluralResults = Array.isArray(result) ? result : [];
@@ -348,7 +349,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'trufflehog': {
+      case INPUT_TYPES.TRUFFLEHOG: {
         converter = new TrufflehogResults(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
@@ -357,7 +358,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'twistlock': {
+      case INPUT_TYPES.TWISTLOCK: {
         converter = new TwistlockResults(fs.readFileSync(flags.input, 'utf8'));
         fs.writeFileSync(
           checkSuffix(flags.output),
@@ -366,7 +367,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'xccdf': {
+      case INPUT_TYPES.XCCDF: {
         converter = new XCCDFResultsMapper(
           fs.readFileSync(flags.input, 'utf8'),
         );
@@ -377,7 +378,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         break;
       }
 
-      case 'zap': {
+      case INPUT_TYPES.ZAP: {
         converter = new ZapMapper(
           fs.readFileSync(flags.input, 'utf8'),
           _.get(flags, 'name'),
