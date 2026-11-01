@@ -38,8 +38,8 @@ PrintColor "Yellow" "#    - Update MITRE dependencies to latest versions        
 PrintColor "Yellow" "#    - Remove the 'node_modules' if they exists                                "
 PrintColor "Yellow" "#    - Install all supporting modules                                          "
 PrintColor "Yellow" "#    - Build and run all tests                                                 "
-PrintColor "Yellow" "#    - Add unstaged files to the staging area (package.json) or any other file "
-PrintColor "Yellow" "#      with the modified flag (M) set                                          "
+PrintColor "Yellow" "#    - Stage only the release files (VERSION, package.json,                    "
+PrintColor "Yellow" "#      package-lock.json, RPM workflow); report anything else                  "
 PrintColor "Yellow" "#    - Commit previously staged files with 'signoff' tag (new version number)  "
 PrintColor "Yellow" "#    - Tag the commit with new release version                                 "
 PrintColor "Yellow" "#    - Push and updated the repository three references (new version number)   "
@@ -204,17 +204,38 @@ PrintColor "Green" "Done"
 echo
 
 #------------------------------------------------------------------------------
-# Add unstaged files to the staging area - Files with modified flag (M) set
-PrintColor "Yellow" "Add unstaged files to the staging area..."
-git status --porcelain | while  read -r line
-do
-    first_word=$(echo $line | cut -d ' ' -f 1)
-    if [ "$first_word" = "M" ]; then
-      second_word=$(echo $line | cut -d ' ' -f 2)
-      PrintColor "Cyan" "  Adding $second_word to git commit"
-      git add $second_word
-    fi
+# Stage only the files this script is expected to have modified. Staging every
+# file carrying a modified flag previously swept unrelated work into the release
+# commit: the 1.4.20 release (5b4375ca) committed a truncated release-prep.sh,
+# reverted the next day in f8a94d9b.
+PrintColor "Yellow" "Add release files to the staging area..."
+release_files=("VERSION" "package.json" "package-lock.json" "$rpm_workflow")
+staged_any=0
+for file in "${release_files[@]}"; do
+  if ! git diff --quiet HEAD -- "$file"; then
+    PrintColor "Cyan" "  Adding $file to git commit"
+    git add -- "$file" || exit 1
+    staged_any=1
+  fi
 done
+if [ "$staged_any" -eq 0 ]; then
+  PrintColor "Red" "  None of the release files changed - nothing to commit"
+  TerminateScript
+fi
+
+# Surface anything else that differs from HEAD; it is deliberately left unstaged.
+others=""
+while IFS= read -r path; do
+  skip=0
+  for file in "${release_files[@]}"; do
+    if [ "$path" = "$file" ]; then skip=1; break; fi
+  done
+  if [ "$skip" -eq 0 ]; then others="${others}  ${path}"$'\n'; fi
+done < <(git diff --name-only HEAD)
+if [ -n "$others" ]; then
+  PrintColor "Yellow" "  Modified but NOT staged - handle these separately:"
+  printf '%s' "$others"
+fi
 PrintColor "Green" "Done"
 echo
 
