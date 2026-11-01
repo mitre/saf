@@ -223,15 +223,15 @@ PrintColor "Yellow" "Commit, tag, and push release to GitHub..."
 
 # Commit the previously staged files
 PrintColor "Cyan" "  Committing previously staged files with 'signoff' tag"
-git commit --signoff -m "${version}"
+git commit --signoff -m "${next_version}"
 
 # Tag the new release with the provided version number
-PrintColor "Cyan" "  Tagging the new release with version $version"
-git tag -a -m "Release for version ${version}" $version
+PrintColor "Cyan" "  Tagging the new release with version $next_version"
+git tag -a -m "Release for version ${next_version}" "${next_version}"
 
 # Push the tagged commit to the main branch of the repository
-PrintColor "Cyan" "  Pushing atomic to the main branch with version $version"
-git push --atomic origin main $version
+PrintColor "Cyan" "  Pushing atomic to the main branch with version $next_version"
+git push --atomic origin main "${next_version}"
 
 PrintColor "Green" "Done"
 echo
