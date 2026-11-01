@@ -193,9 +193,10 @@ PrintColor "Cyan" "  Building the SAF CLI package"
 npm pack
 
 PrintColor "Cyan" "  Running the SAF CLI tests"
-npm run test
-# $? holds exit status of last command run, npm run test returns non-zero exit status if all tests don't pass
-if [ $? -ne 0 ]; then
+# Use the non-interactive runner: 'npm run test' maps to bare 'vitest', which
+# stays in watch mode and never exits, blocking the release at this step. The
+# exit status is checked directly so a genuine test failure stops the release.
+if ! npm run test:ci; then
   PrintColor "Red" "  Failed the SAF CLI test(s)"
   TerminateScript
 fi
