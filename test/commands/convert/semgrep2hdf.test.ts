@@ -1,66 +1,66 @@
 import { runCommand } from '@oclif/test';
-import fs from 'fs';
+import fs from 'node:fs';
 import path from 'path';
 import tmp from 'tmp';
 import { describe, expect, it } from 'vitest';
 import { omitHDFChangingFields } from '../utils';
 
-describe('Test semgrep', () => {
-  const tmpobj = tmp.dirSync({ unsafeCleanup: true });
+async function compareSemgrep(
+    input: string,
+    baseline = input,
+    includeRaw = false,
+) {
+    const tmpobj = tmp.dirSync({ unsafeCleanup: true });
+    const output = path.join(tmpobj.name, 'semgrep-hdf.json');
+    const samples = path.resolve('./test/sample_data/semgrep');
 
-  it('hdf-converter output test', async () => {
-    await runCommand<{ name: string }>([
-      'convert semgrep2hdf',
-      '-i', path.resolve('./test/sample_data/semgrep/sample_input_report/semgrep_findings.json'),
-      '-o', `${tmpobj.name}/semgreptest.json`,
-    ]);
-    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/semgreptest.json`, 'utf8'));
-    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/semgrep/semgrep_findings-hdf.json'), 'utf8'));
-    expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample));
-  });
+    try {
+        await runCommand<{ name: string }>([
+            'convert semgrep2hdf',
+            '-i', path.join(samples, 'sample_input_report', `${input}.json`),
+            '-o', output,
+            ...(includeRaw ? ['-w'] : []),
+        ]);
+
+        const actual = JSON.parse(fs.readFileSync(output, 'utf8'));
+        const expected = JSON.parse(fs.readFileSync(
+            path.join(samples, `${baseline}-hdf.json`),
+            'utf8',
+        ));
+
+        expect(omitHDFChangingFields(actual)).to.eql(
+            omitHDFChangingFields(expected),
+        );
+    }
+    finally {
+        tmpobj.removeCallback();
+    }
+}
+
+describe('Test semgrep', () => {
+    it('hdf-converter output test', async () => {
+        await compareSemgrep('semgrep_findings');
+    });
 });
 
 describe('Test semgrep using withraw flag', () => {
-  const tmpobj = tmp.dirSync({ unsafeCleanup: true });
-
-  it('hdf-converter with raw output test', async () => {
-    await runCommand<{ name: string }>([
-      'convert semgrep2hdf',
-      '-i', path.resolve('./test/sample_data/semgrep/sample_input_report/semgrep_findings.json'),
-      '-o', `${tmpobj.name}/semgreptest.json`, '-w',
-    ]);
-    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/semgreptest.json`, 'utf8'));
-    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/semgrep/semgrep_findings-withraw-hdf.json'), 'utf8'));
-    expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample));
-  });
+    it('hdf-converter with raw output test', async () => {
+        await compareSemgrep(
+            'semgrep_findings',
+            'semgrep_findings-withraw',
+            true,
+        );
+    });
 });
 
 describe('Test semgrep with no findings', () => {
-  const tmpobj = tmp.dirSync({ unsafeCleanup: true });
-
-  it('hdf-converter empty scan output test', async () => {
-    await runCommand<{ name: string }>([
-      'convert semgrep2hdf',
-      '-i', path.resolve('./test/sample_data/semgrep/sample_input_report/semgrep_empty.json'),
-      '-o', `${tmpobj.name}/semgreptest.json`,
-    ]);
-    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/semgreptest.json`, 'utf8'));
-    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/semgrep/semgrep_empty-hdf.json'), 'utf8'));
-    expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample));
-  });
+    it('hdf-converter empty scan output test', async () => {
+        await compareSemgrep('semgrep_empty');
+    });
 });
 
 describe('Test semgrep with scan errors', () => {
-  const tmpobj = tmp.dirSync({ unsafeCleanup: true });
-
-  it('hdf-converter scan errors output test', async () => {
-    await runCommand<{ name: string }>([
-      'convert semgrep2hdf',
-      '-i', path.resolve('./test/sample_data/semgrep/sample_input_report/semgrep_errors.json'),
-      '-o', `${tmpobj.name}/semgreptest.json`,
-    ]);
-    const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/semgreptest.json`, 'utf8'));
-    const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/semgrep/semgrep_errors-hdf.json'), 'utf8'));
-    expect(omitHDFChangingFields(test)).to.eql(omitHDFChangingFields(sample));
-  });
+    it('hdf-converter scan errors output test', async () => {
+        await compareSemgrep('semgrep_errors');
+    });
 });
