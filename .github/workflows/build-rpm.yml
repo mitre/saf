@@ -18,7 +18,7 @@ jobs:
   build-deploy:
     runs-on: ubuntu-24.04
     container:
-      image: registry.access.redhat.com/ubi9/nodejs-22:1-1790730922@sha256:99cef5d0a64011463c411db508b1570f9edc37219dd38eabbf90bb8c0e45ccc3
+      image: registry.access.redhat.com/ubi9/nodejs-24:1-1793353068@sha256:741311a284546343652721e5e7bd70f9f07d8fe4f5769d40bfb03aab0ad80391
       options: -u 0 # dnf needs root
     defaults:
       run:
@@ -59,7 +59,7 @@ jobs:
         run: rpmbuild -ta "dist/$filename.tar.gz" -D "_rpmdir $(pwd)" -D "version $(cat VERSION)"
 
       - name: Upload the RPM installer
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: SAF-CLI RPM Build noarch
           path: saf/noarch/saf-*.rpm
