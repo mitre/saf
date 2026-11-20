@@ -86,7 +86,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         }
 
         // catch all other cases:
-        // 'anchoregrype', 'burp', 'checkov', 'conveyor' 'checklist', 'dbProtect', 'dependencyTrack', 'fortify',
+        // 'grype', 'burp', 'checkov', 'conveyor' 'checklist', 'dbProtect', 'dependencyTrack', 'fortify',
         // 'jfrog', 'msft_secure_score', 'nessus', 'netsparker', 'neuvector' 'nikto',
         // 'prisma', 'sarif', 'cyclonedx_sbom', 'scoutsuite', 'snyk', 'trufflehog',
         // 'twistlock', 'xccdf'
@@ -105,7 +105,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
     const { flags } = await this.parse(Convert);
     let converter;
     switch (Convert.detectedType) {
-      case 'anchoregrype': {
+      case 'grype': {
         converter = new AnchoreGrypeMapper(
           fs.readFileSync(flags.input, 'utf8'),
         );
