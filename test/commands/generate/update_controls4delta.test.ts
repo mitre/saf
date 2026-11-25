@@ -57,7 +57,7 @@ describe('Test generate update_controls4delta command', () => {
   it('should rename legacy controls to the new XCCDF control ids using --inspecPath', async () => {
     const tempWorkspace = createTempWorkspace();
     const sourceControlsDir = path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls');
-    const tempControlsDir = path.join(tempWorkspace.name, 'controls');
+    const tempControlsDir = path.join(tempWorkspace.name, 'profile with spaces', 'controls');
 
     fs.cpSync(sourceControlsDir, tempControlsDir, { recursive: true });
 
@@ -65,7 +65,7 @@ describe('Test generate update_controls4delta command', () => {
       'generate update_controls4delta',
       '-I', 'cinc-auditor',
       '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2019_V3R2_xccdf.xml'),
-      '-c', tempControlsDir,
+      '-c', `"${tempControlsDir}"`,
       '--no-backupControls',
     ]);
 

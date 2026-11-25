@@ -102,19 +102,29 @@ export function safeFilename(inputPath: string): string {
  * @returns The stdout from the command
  */
 export function safeExecFileSync(command: string, args: string[], options: ExecFileSyncOptionsWithStringEncoding): string {
-  if (process.platform === 'win32') {
-    // cmd.exe's documented special characters, excluding literal space so
-    // normal Windows paths keep working. `%`, `"`, and newlines cover the
-    // BatBadBut argument parsing cases.
-    const unsafeCharacters = /[&|<>[\]{}^=;!'+,`~()@"%\t\r\n]/;
-    for (const value of [command, ...args]) {
-      if (unsafeCharacters.test(value)) {
-        throw new Error('Unsafe cmd.exe shell characters detected; refusing to run command through the Windows shell.');
-      }
-    }
+  // Let execFileSync reject an empty executable name before constructing a shell command.
+  if (command === '' || process.platform !== 'win32') {
+    return execFileSync(command, args, { ...options, shell: false });
   }
 
-  return execFileSync(command, args, { ...options, shell: process.platform === 'win32' });
+  // cmd.exe's documented special characters, excluding literal space so
+  // normal Windows paths keep working. `%`, `"`, and newlines cover the
+  // BatBadBut argument parsing cases.
+  const unsafeCharacters = /[&|<>[\]{}^=;!'+,`~()@"%\t\r\n]/;
+  const commandLine = [command, ...args].map((value) => {
+    if (unsafeCharacters.test(value)) {
+      throw new Error('Unsafe cmd.exe shell characters detected; refusing to run command through the Windows shell.');
+    }
+
+    if (value !== '' && !/\s/.test(value)) {
+      return value;
+    }
+    // Double trailing backslashes so a Windows executable reads the closing quote as a delimiter.
+    return `"${value.replace(/\\+$/, '$&$&')}"`;
+  }).join(' ');
+
+  const shell = path.win32.join(process.env.SystemRoot ?? String.raw`C:\Windows`, 'System32', 'cmd.exe');
+  return execFileSync(commandLine, { ...options, shell });
 }
 
 /**

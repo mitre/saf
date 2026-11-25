@@ -142,6 +142,7 @@ describe.sequential('safeExecFileSync', () => {
         ...actual,
         default: Object.create(actual.default, {
           platform: { value: platform, enumerable: true },
+          env: { value: { ...actual.default.env, SystemRoot: String.raw`D:\Windows` }, enumerable: true },
         }),
       };
     });
@@ -172,14 +173,15 @@ describe.sequential('safeExecFileSync', () => {
 
     const result = safeExecFileSync(String.raw`C:\Program Files\InSpec\inspec.bat`, [
       'json',
-      String.raw`C:\tmp\profile\control $psOnly#chars`,
+      'C:\\tmp\\profile\\control $psOnly#chars\\',
+      '',
     ], { encoding: 'utf8', maxBuffer: 1024 });
 
     expect(result).toBe('stdout');
-    expect(execFileSyncMock).toHaveBeenCalledWith(String.raw`C:\Program Files\InSpec\inspec.bat`, [
-      'json',
-      String.raw`C:\tmp\profile\control $psOnly#chars`,
-    ], { encoding: 'utf8', maxBuffer: 1024, shell: true });
+    expect(execFileSyncMock).toHaveBeenCalledWith(
+      String.raw`"C:\Program Files\InSpec\inspec.bat" json "C:\tmp\profile\control $psOnly#chars\\" ""`,
+      { encoding: 'utf8', maxBuffer: 1024, shell: String.raw`D:\Windows\System32\cmd.exe` },
+    );
   });
 
   it('rejects cmd.exe metacharacters and BatBadBut argument parsing cases on Windows', async () => {
