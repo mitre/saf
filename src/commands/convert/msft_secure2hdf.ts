@@ -146,6 +146,8 @@ export default class MsftSecure2HDF extends BaseCommand<typeof MsftSecure2HDF> {
 
   async run() {
     const { flags } = await this.parse(MsftSecure2HDF);
+    const { tenantId, appId, appSecret } = flags;
+    const hasGraphCredentials = tenantId !== undefined && appId !== undefined && appSecret !== undefined;
     let scoreDoc: SecureScore;
     let profilesDoc: { value: SecureScoreControlProfile[] };
 
@@ -164,15 +166,8 @@ export default class MsftSecure2HDF extends BaseCommand<typeof MsftSecure2HDF> {
       const scoreDoc = combined.secureScore;
       const profilesDoc = combined.profiles;
       processInputs(scoreDoc, profilesDoc, flags.output, flags.includeRaw);
-    } else if (
-      flags.tenantId !== undefined
-      && flags.appId !== undefined
-      && flags.appSecret !== undefined
-    ) {
+    } else if (hasGraphCredentials) {
       // attempt to use the Graph API to pull files
-      const tenantId = flags.tenantId;
-      const appId = flags.appId;
-      const appSecret = flags.appSecret;
       const creds = new ClientSecretCredential(tenantId, appId, appSecret);
       const graphClientOpts: ClientOptions = {
         authProvider: new TokenCredentialAuthenticationProvider(creds, {
