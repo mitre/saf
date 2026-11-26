@@ -170,11 +170,11 @@ export function buildSrgIndex(
  *                 but know all the related new controls.
  *   - `no-match`  Paired with matchMethod=`none`.
  */
-export type MatchMethod
-  = | 'srg-deterministic'
-    | 'srg-cci-tiebreak'
-    | 'fuse-fallback'
-    | 'none';
+export type MatchMethod =
+  | 'srg-deterministic'
+  | 'srg-cci-tiebreak'
+  | 'fuse-fallback'
+  | 'none';
 
 export type LinkRecord = {
   oldId: string | null;
