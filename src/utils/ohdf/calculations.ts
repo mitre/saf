@@ -11,26 +11,6 @@ import { calculateCompliance, extractStatusCounts, flattenProfileSummary, rename
 const logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger({ module: 'View Summary:' });
 
 /**
-Calculates the summaries for the provided execution JSONs.
-@param execJSONs - An object mapping file paths to their corresponding execution JSONs.
-@returns An object containing the calculated summaries.
-*/
-export function calculateSummariesForExecJSONs(execJSONs: Record<string, ContextualizedEvaluation>): Record<string, Record<string, Record<string, number>>[]> {
-  logger.verbose('In calculateSummariesForExecJSONs');
-  const summaries: Record<string, Record<string, Record<string, number>>[]> = {};
-  for (const parsedExecJSON of Object.values(execJSONs)) {
-    const summary: Record<string, Record<string, number>> = {};
-    const parsedProfile = parsedExecJSON.contains[0];
-    const profileName = parsedProfile.data.name;
-    calculateSeverityCounts(summary, parsedProfile);
-    calculateTotalCounts(summary);
-    summaries[profileName] = (_.get(summaries, profileName) || []);
-    summaries[profileName].push(summary);
-  }
-  return summaries;
-}
-
-/**
 Calculates the compliance scores for the provided execution JSONs.
 @param execJSONs - An object mapping file paths to their corresponding execution JSONs.
 @returns An object containing the calculated compliance scores.
@@ -103,4 +83,24 @@ export function calculateTotalCounts(summary: Record<string, Record<string, numb
     const total = Object.values(counts).reduce((a, b) => a + b, 0);
     _.set(summary, `${type}.total`, total);
   }
+}
+
+/**
+Calculates the summaries for the provided execution JSONs.
+@param execJSONs - An object mapping file paths to their corresponding execution JSONs.
+@returns An object containing the calculated summaries.
+*/
+export function calculateSummariesForExecJSONs(execJSONs: Record<string, ContextualizedEvaluation>): Record<string, Record<string, Record<string, number>>[]> {
+  logger.verbose('In calculateSummariesForExecJSONs');
+  const summaries: Record<string, Record<string, Record<string, number>>[]> = {};
+  for (const parsedExecJSON of Object.values(execJSONs)) {
+    const summary: Record<string, Record<string, number>> = {};
+    const parsedProfile = parsedExecJSON.contains[0];
+    const profileName = parsedProfile.data.name;
+    calculateSeverityCounts(summary, parsedProfile);
+    calculateTotalCounts(summary);
+    summaries[profileName] = (_.get(summaries, profileName) || []);
+    summaries[profileName].push(summary);
+  }
+  return summaries;
 }

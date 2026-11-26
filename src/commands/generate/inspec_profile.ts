@@ -72,257 +72,89 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
     }),
   };
 
-  async run() {
-    const { flags } = await this.parse(InspecProfile);
-
-    const logger = createWinstonLogger({ module: 'generate:inspect_profile', level: flags.logLevel });
-
-    // Process the XCCDF XML file containing the profile guidance
-    let xccdf: any = {};
-    try {
-      if (fs.lstatSync(flags.xccdfXmlFile).isFile()) {
-        const xccdfXmlFile = flags.xccdfXmlFile;
-        xccdf = fs.readFileSync(xccdfXmlFile, 'utf8');
-        const inputFirstLine = xccdf.split('\n').slice(0, 10).join('').toLowerCase();
-        if (!inputFirstLine.includes('xccdf')) {
-          logger.error(`ERROR: The file ${xccdfXmlFile} is not a valid XCCDF file`);
-          throw new Error('File provided is not a valid or well-formed XCCDF file');
-        }
-
-        logger.debug(`Loaded ${xccdfXmlFile} as XCCDF`);
-      } else {
-        throw new Error('No benchmark (XCCDF) file was provided.');
-      }
-    } catch (error: any) {
-      if (error.code === 'ENOENT') {
-        logger.error(`ERROR: File not found: "${flags.xccdfXmlFile}". Run the --help command to more information on expected input file.`);
-        process.exit(1);
-      }
-      logger.error(`ERROR: Unable to process the XCCDF XML file "${flags.xccdfXmlFile}" because: ${error}`);
-      process.exit(1);
-    }
-
-    // Generate the output folder based on the XCCDF Benchmark.title
-    // if the default name is provided (profile) by the output -o flag
-    const options = {
-      ignoreAttributes: false,
-      attributeNamePrefix: '@_',
-      processEntities: { maxTotalExpansions: 100_000 },
+  private static getDISAReadmeContent(_xmlDoc: any): InspecReadme {
+    const readmeObj: InspecReadme = {
+      profileName: '',
+      profileTitle: '',
+      profileVersion: '',
+      benchmarkVersion: '',
+      benchmarkDate: '',
+      profileShortName: '',
+      profileType: 'STIG',
+      profileGuidance: 'STIG Guidance',
+      profileGuidanceAgency: 'Defense Information Systems Agency (DISA)',
+      profileDeveloperPartner: ' in partnership between the DISA Services Directorate (SD) and the DISA Risk Management Executive (RME) office',
+      profileCompliance: '[Department of Defense (DoD) STIG](https://public.cyber.mil/stigs/)',
+      profileDevelopers: 'DISA RME and DISA SD Office, along with their vendor partners, create and maintain a set of Security Technical Implementation Guides',
+      inspecTitle: '',
     };
-    const xmlDoc = new XMLParser(options).parse(xccdf);
-    let outDir: string;
-    const isSTIG = (_.get(xmlDoc, 'xccdf:Benchmark.xccdf:title.#text') === undefined);
-    logger.info(`Processing Benchmark Type: ${(isSTIG) ? 'STIG' : 'CIS'}`);
-    if (flags.output === 'profile') {
-      const benchmarkTitle = isSTIG ? _.get(xmlDoc, 'Benchmark.title') : _.get(xmlDoc, 'xccdf:Benchmark.xccdf:title.#text');
-      outDir = (benchmarkTitle === undefined)
-        ? flags.output
-        : safeFilename(benchmarkTitle.replace('Security Technical Implementation Guide', 'stig-baseline').replaceAll(' ', '-').toLowerCase());
-    } else {
-      outDir = flags.output;
-    }
 
-    // Check if the output folder already exists
-    logger.info('Processing output directory...');
-    if (fs.existsSync(outDir)) {
-      // Folder should not exist already
-      logger.error(`ERROR: Profile output folder ${outDir} already exists, please specify a new folder`);
-      process.exit(1);
-    }
-    logger.debug('Creating output folder with controls and libraries directories');
-    fs.mkdirSync(outDir);
-    fs.mkdirSync(path.join(outDir, 'controls'));
-    fs.mkdirSync(path.join(outDir, 'libraries'));
+    const benchmarkTitle = _.get(_xmlDoc, 'Benchmark.title');
+    const stigVersion = _.get(_xmlDoc, 'Benchmark.version');
+    const plainTextObj = _xmlDoc.Benchmark['plain-text'];
 
-    // This will get overridden if a metadata file is passed
-    logger.info('Processing metadata file...');
-    let metadata: InSpecMetaData = {};
-    // Read metadata file if passed
-    if (flags.metadata) {
-      if (fs.existsSync(flags.metadata)) {
-        logger.debug(`Reading metadata file: ${flags.metadata}.`);
-        metadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf8'));
-      } else {
-        logger.error(`ERROR: File not found: "${flags.metadata}". Run the --help command to more information on expected input file.`);
-        process.exit(1);
-      }
-    }
+    // releaseInfoObj is in the form of:
+    // {"#text":"Release: 1 Benchmark Date: 24 Jul 2024","@_id":"release-info"}
+    const releaseInfoObj = Array.isArray(plainTextObj)
+      ? _.find(plainTextObj, { '@_id': 'release-info' })
+      : plainTextObj;
 
-    // Read OVAL definitions file if passed
-    logger.info('Processing Oval file...');
-    let ovalDefinitions;
-    if (flags.ovalDefinitions) {
-      if (fs.existsSync(flags.ovalDefinitions)) {
-        logger.debug(`Reading oval definitions file: ${flags.ovalDefinitions}.`);
-        ovalDefinitions = processOVAL(fs.readFileSync(flags.ovalDefinitions, 'utf8'));
-      } else {
-        logger.error(`ERROR: File not found: "${flags.ovalDefinitions}". Run the --help command to more information on expected input file.`);
-        process.exit(1);
-      }
-    }
+    // stigRelDate is in the form of: ["Release"," 1 Benchmark Date"," 24 Jul 2024"]
+    const stigRelDate = releaseInfoObj['#text'].split(':');
+    const stigRelease = stigRelDate[1].trim().split(' ')[0];
+    const stigDisplayVersion = `Version ${stigVersion} Release ${stigRelease} (V${stigVersion}R${stigRelease})`;
+    const stigDate = stigRelDate[2];
 
-    // Process the XCCDF file
-    logger.info('Processing XCCDF file...');
-    let profile: Profile;
-    logger.debug(`Processing XCCDF Benchmark file using ${flags.idType} id.`);
-    const idTypes = ['rule', 'group', 'cis', 'version'];
-    if (idTypes.includes(flags.idType)) {
-      profile = processXCCDF(xccdf, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions);
-    } else {
-      logger.error(`Invalid ID Type: ${flags.idType}. Check the --help command for the available ID Type options.`);
-      process.exit(1);
-    }
+    readmeObj.profileName = benchmarkTitle.replace(
+      'Security Technical Implementation Guide',
+      'stig-baseline',
+    )
+      .replaceAll(' ', '-').toLowerCase();
+    readmeObj.profileShortName = benchmarkTitle.replace('Security Technical Implementation Guide', '').trim();
+    readmeObj.profileTitle = benchmarkTitle;
+    readmeObj.profileVersion = `${stigVersion}.${stigRelease}.0`;
+    readmeObj.inspecTitle = `${benchmarkTitle} :: Version ${stigVersion}, Release ${stigRelease} Benchmark Date: ${stigDate}`;
+    readmeObj.benchmarkDate = stigDate;
+    readmeObj.benchmarkVersion = stigDisplayVersion;
 
-    // Set profile default values (values used to generate the inspect.yml file)
-    logger.info('Generating markdown and yaml files...');
-    const readmeObj = (isSTIG)
-      ? getDISAReadmeContent(xmlDoc)
-      : getCISReadmeContent(xmlDoc);
-
-    // Set default values for the inspec.yml file
-    profile.name = readmeObj.profileName;
-    profile.title = readmeObj.profileTitle; // readmeObj.inspecTitle (includes ver/release info)
-    profile.maintainer = 'MITRE SAF Team';
-    profile.copyright = 'MITRE';
-    profile.copyright_email = 'saf@groups.mitre.org';
-    profile.license = 'Apache-2.0';
-    profile.summary = `InSpec profile aligned to ${readmeObj.profileGuidance} for ${readmeObj.profileTitle}`;
-    profile.description = null;
-    profile.depends = [];
-    profile.supports = [];
-    profile.version = readmeObj.profileVersion;
-    profile.inspec_version = '~>6.0';
-
-    // Add metadata if provided
-    if (flags.metadata) {
-      profile.maintainer = metadata.maintainer;
-      profile.copyright = metadata.copyright;
-      profile.copyright_email = metadata.copyright_email;
-      profile.license = metadata.license;
-      profile.version = metadata.version || readmeObj.profileVersion;
-    }
-
-    // Generate files
-    generateYaml(profile, outDir, logger);
-    generateReadme(readmeObj, outDir, logger);
-    generateLicense(outDir, logger);
-    generateNotice(outDir, logger);
-    generateRubocopYml(outDir, logger);
-    generateGemRc(outDir, logger);
-    generateGemFile(outDir, logger);
-    generateRakeFile(outDir, logger);
-    generateGitIgnoreFile(outDir, logger);
-    logger.debug(`Saved generated files to output directory: ${outDir}`);
-
-    // Write all controls
-    logger.info('Generating profile controls...');
-    if (flags.singleFile) {
-      const controls = profile.controls
-        .map(control => control.toRuby())
-        .join('\n\n');
-      logger.debug(`Writing control to: ${path.join(outDir, 'controls', 'controls.rb')}`);
-      fs.writeFileSync(
-        resolveSafeChild(outDir, 'controls', 'controls.rb'),
-        controls,
-      );
-    } else {
-      for (const control of profile.controls) {
-        const controlFilename = safeFilename(`${basename(control.id)}.rb`);
-        logger.debug(`Writing control to: ${path.join(outDir, 'controls', controlFilename)}`);
-        fs.writeFileSync(
-          resolveSafeChild(outDir, 'controls', controlFilename),
-          control.toRuby(),
-        );
-      }
-    }
-
-    logger.info('Generation of skeleton profile completed - All done now');
+    return readmeObj;
   }
-}
 
-function getDISAReadmeContent(_xmlDoc: any): InspecReadme {
-  const readmeObj: InspecReadme = {
-    profileName: '',
-    profileTitle: '',
-    profileVersion: '',
-    benchmarkVersion: '',
-    benchmarkDate: '',
-    profileShortName: '',
-    profileType: 'STIG',
-    profileGuidance: 'STIG Guidance',
-    profileGuidanceAgency: 'Defense Information Systems Agency (DISA)',
-    profileDeveloperPartner: ' in partnership between the DISA Services Directorate (SD) and the DISA Risk Management Executive (RME) office',
-    profileCompliance: '[Department of Defense (DoD) STIG](https://public.cyber.mil/stigs/)',
-    profileDevelopers: 'DISA RME and DISA SD Office, along with their vendor partners, create and maintain a set of Security Technical Implementation Guides',
-    inspecTitle: '',
-  };
+  private static getCISReadmeContent(_xmlDoc: any): InspecReadme {
+    const readmeObj: InspecReadme = {
+      profileName: '',
+      profileTitle: '',
+      profileVersion: '',
+      benchmarkVersion: '',
+      benchmarkDate: '',
+      profileShortName: '',
+      profileType: 'CIS',
+      profileGuidance: 'CIS Guidance',
+      profileGuidanceAgency: 'Center for Internet Security (CIS)',
+      profileDeveloperPartner: '',
+      profileCompliance: '[Center for Internet Security (CIS) Benchmark](https://www.cisecurity.org/cis-benchmarks)',
+      profileDevelopers: 'Center for Internet Security, Inc. (CIS®) create and maintain a set of Critical Security Controls (CIS Controls)',
+      inspecTitle: '',
+    };
 
-  const benchmarkTitle = _.get(_xmlDoc, 'Benchmark.title');
-  const stigVersion = _.get(_xmlDoc, 'Benchmark.version');
-  const plainTextObj = _xmlDoc.Benchmark['plain-text'];
+    const benchmarkTitle = _.get(_xmlDoc, 'xccdf:Benchmark.xccdf:title.#text');
+    const cisVersion = _.get(_xmlDoc, 'xccdf:Benchmark.xccdf:version');
+    const cisDate = _.get(_xmlDoc, 'xccdf:Benchmark.xccdf:status.@_date');
 
-  // releaseInfoObj is in the form of:
-  // {"#text":"Release: 1 Benchmark Date: 24 Jul 2024","@_id":"release-info"}
-  const releaseInfoObj = Array.isArray(plainTextObj)
-    ? _.find(plainTextObj, { '@_id': 'release-info' })
-    : plainTextObj;
+    readmeObj.profileName = benchmarkTitle.replaceAll(' ', '-').toLowerCase();
+    readmeObj.profileShortName = benchmarkTitle.replace('Benchmark', '').trim();
+    readmeObj.profileTitle = benchmarkTitle;
+    readmeObj.profileVersion = cisVersion;
+    readmeObj.inspecTitle = `${benchmarkTitle} :: Version ${cisVersion} Benchmark Date: ${cisDate}`;
+    readmeObj.benchmarkDate = cisDate;
+    readmeObj.benchmarkVersion = cisVersion;
 
-  // stigRelDate is in the form of: ["Release"," 1 Benchmark Date"," 24 Jul 2024"]
-  const stigRelDate = releaseInfoObj['#text'].split(':');
-  const stigRelease = stigRelDate[1].trim().split(' ')[0];
-  const stigDisplayVersion = `Version ${stigVersion} Release ${stigRelease} (V${stigVersion}R${stigRelease})`;
-  const stigDate = stigRelDate[2];
+    return readmeObj;
+  }
 
-  readmeObj.profileName = benchmarkTitle.replace(
-    'Security Technical Implementation Guide',
-    'stig-baseline',
-  )
-    .replaceAll(' ', '-').toLowerCase();
-  readmeObj.profileShortName = benchmarkTitle.replace('Security Technical Implementation Guide', '').trim();
-  readmeObj.profileTitle = benchmarkTitle;
-  readmeObj.profileVersion = `${stigVersion}.${stigRelease}.0`;
-  readmeObj.inspecTitle = `${benchmarkTitle} :: Version ${stigVersion}, Release ${stigRelease} Benchmark Date: ${stigDate}`;
-  readmeObj.benchmarkDate = stigDate;
-  readmeObj.benchmarkVersion = stigDisplayVersion;
-
-  return readmeObj;
-}
-
-function getCISReadmeContent(_xmlDoc: any): InspecReadme {
-  const readmeObj: InspecReadme = {
-    profileName: '',
-    profileTitle: '',
-    profileVersion: '',
-    benchmarkVersion: '',
-    benchmarkDate: '',
-    profileShortName: '',
-    profileType: 'CIS',
-    profileGuidance: 'CIS Guidance',
-    profileGuidanceAgency: 'Center for Internet Security (CIS)',
-    profileDeveloperPartner: '',
-    profileCompliance: '[Center for Internet Security (CIS) Benchmark](https://www.cisecurity.org/cis-benchmarks)',
-    profileDevelopers: 'Center for Internet Security, Inc. (CIS®) create and maintain a set of Critical Security Controls (CIS Controls)',
-    inspecTitle: '',
-  };
-
-  const benchmarkTitle = _.get(_xmlDoc, 'xccdf:Benchmark.xccdf:title.#text');
-  const cisVersion = _.get(_xmlDoc, 'xccdf:Benchmark.xccdf:version');
-  const cisDate = _.get(_xmlDoc, 'xccdf:Benchmark.xccdf:status.@_date');
-
-  readmeObj.profileName = benchmarkTitle.replaceAll(' ', '-').toLowerCase();
-  readmeObj.profileShortName = benchmarkTitle.replace('Benchmark', '').trim();
-  readmeObj.profileTitle = benchmarkTitle;
-  readmeObj.profileVersion = cisVersion;
-  readmeObj.inspecTitle = `${benchmarkTitle} :: Version ${cisVersion} Benchmark Date: ${cisDate}`;
-  readmeObj.benchmarkDate = cisDate;
-  readmeObj.benchmarkVersion = cisVersion;
-
-  return readmeObj;
-}
-
-function generateReadme(contentObj: InspecReadme, outDir: string, logger: Logger) {
-  const readmeContent
-    = `# ${contentObj.profileTitle}
+  private static generateReadme(contentObj: InspecReadme, outDir: string, logger: Logger) {
+    const readmeContent
+      = `# ${contentObj.profileTitle}
 This InSpec Profile was created to facilitate testing and auditing of \`${contentObj.profileShortName}\`
 infrastructure and applications when validating compliancy with ${contentObj.profileCompliance}
 requirements.
@@ -618,18 +450,18 @@ ${contentObj.profileType === 'CIS'
     : '[DISA STIGs are published by DISA IASE](https://public.cyber.mil/stigs/)'
 }
 `;
-  fs.writeFile(resolveSafeChild(outDir, 'README.md'), readmeContent, (err) => {
-    if (err) {
-      logger.error(`Error saving the README.md file to: ${outDir}. Cause: ${err}`);
-    } else {
-      logger.debug('README.md generated successfully!');
-    }
-  });
-}
+    fs.writeFile(resolveSafeChild(outDir, 'README.md'), readmeContent, (err) => {
+      if (err) {
+        logger.error(`Error saving the README.md file to: ${outDir}. Cause: ${err}`);
+      } else {
+        logger.debug('README.md generated successfully!');
+      }
+    });
+  }
 
-function generateYaml(profile: Profile, outDir: string, logger: Logger) {
-  const inspecYmlContent = profile.createInspecYaml()
-    + `
+  private static generateYaml(profile: Profile, outDir: string, logger: Logger) {
+    const inspecYmlContent = profile.createInspecYaml()
+      + `
 
 ### INPUTS ###
 # Inputs are variables that can be referenced by any control in the profile,
@@ -650,18 +482,18 @@ function generateYaml(profile: Profile, outDir: string, logger: Logger) {
 inputs:
 `;
 
-  fs.writeFile(resolveSafeChild(outDir, 'inspec.yml'), inspecYmlContent, (err) => {
-    if (err) {
-      logger.error(`Error saving the inspec.yml file to: ${outDir}. Cause: ${err}`);
-    } else {
-      logger.debug('inspec.yml generated successfully!');
-    }
-  });
-}
+    fs.writeFile(resolveSafeChild(outDir, 'inspec.yml'), inspecYmlContent, (err) => {
+      if (err) {
+        logger.error(`Error saving the inspec.yml file to: ${outDir}. Cause: ${err}`);
+      } else {
+        logger.debug('inspec.yml generated successfully!');
+      }
+    });
+  }
 
-function generateLicense(outDir: string, logger: Logger) {
-  const licensesContent
-    = `Licensed under the apache-2.0 license, except as noted below.
+  private static generateLicense(outDir: string, logger: Logger) {
+    const licensesContent
+      = `Licensed under the apache-2.0 license, except as noted below.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -675,18 +507,18 @@ are permitted provided that the following conditions are met:
   used to endorse or promote products derived from this software without specific prior
   written permission.
 `;
-  fs.writeFile(resolveSafeChild(outDir, 'LICENSE.md'), licensesContent, (err) => {
-    if (err) {
-      logger.error(`Error saving the LICENSE file to: ${outDir}. Cause: ${err}`);
-    } else {
-      logger.debug('LICENSE generated successfully!');
-    }
-  });
-}
+    fs.writeFile(resolveSafeChild(outDir, 'LICENSE.md'), licensesContent, (err) => {
+      if (err) {
+        logger.error(`Error saving the LICENSE file to: ${outDir}. Cause: ${err}`);
+      } else {
+        logger.debug('LICENSE generated successfully!');
+      }
+    });
+  }
 
-function generateNotice(outDir: string, logger: Logger) {
-  const noticeContent
-    = `MITRE grants permission to reproduce, distribute, modify, and otherwise use this
+  private static generateNotice(outDir: string, logger: Logger) {
+    const noticeContent
+      = `MITRE grants permission to reproduce, distribute, modify, and otherwise use this
 software to the extent permitted by the licensed terms provided in the LICENSE.md
 file included with this project.
 
@@ -699,18 +531,18 @@ express written permission of The MITRE Corporation.
 For further information, please contact The MITRE Corporation, Contracts Management
 Office, 7515 Colshire Drive, McLean, VA 22102-7539, (703) 983-6000.
 `;
-  fs.writeFile(resolveSafeChild(outDir, 'NOTICE.md'), noticeContent, (err) => {
-    if (err) {
-      logger.error(`Error saving the NOTICE.md file to: ${outDir}. Cause: ${err}`);
-    } else {
-      logger.debug('NOTICE.md generated successfully!');
-    }
-  });
-}
+    fs.writeFile(resolveSafeChild(outDir, 'NOTICE.md'), noticeContent, (err) => {
+      if (err) {
+        logger.error(`Error saving the NOTICE.md file to: ${outDir}. Cause: ${err}`);
+      } else {
+        logger.debug('NOTICE.md generated successfully!');
+      }
+    });
+  }
 
-function generateRubocopYml(outDir: string, logger: Logger) {
-  const robocopContent
-    = `AllCops:
+  private static generateRubocopYml(outDir: string, logger: Logger) {
+    const robocopContent
+      = `AllCops:
   NewCops: enable
   Exclude:
   - "libraries/**/*"
@@ -879,31 +711,31 @@ Style/StringChars: # new in 1.12
 Style/SwapValues: # new in 1.1
   Enabled: true
 `;
-  fs.writeFile(resolveSafeChild(outDir, '.rubocop.yml'), robocopContent, (err) => {
-    if (err) {
-      logger.error(`Error saving the .rubocop.yml file to: ${outDir}. Cause: ${err}`);
-    } else {
-      logger.debug('.rubocop.yml generated successfully!');
-    }
-  });
-}
+    fs.writeFile(resolveSafeChild(outDir, '.rubocop.yml'), robocopContent, (err) => {
+      if (err) {
+        logger.error(`Error saving the .rubocop.yml file to: ${outDir}. Cause: ${err}`);
+      } else {
+        logger.debug('.rubocop.yml generated successfully!');
+      }
+    });
+  }
 
-function generateGemRc(outDir: string, logger: Logger) {
-  const gemRc
-    = `gem: --no-document
+  private static generateGemRc(outDir: string, logger: Logger) {
+    const gemRc
+      = `gem: --no-document
 `;
-  fs.writeFile(resolveSafeChild(outDir, '.gemrc'), gemRc, (err) => {
-    if (err) {
-      logger.error(`Error saving the .gemrc file to: ${outDir}. Cause: ${err}`);
-    } else {
-      logger.debug('.gemrc generated successfully!');
-    }
-  });
-}
+    fs.writeFile(resolveSafeChild(outDir, '.gemrc'), gemRc, (err) => {
+      if (err) {
+        logger.error(`Error saving the .gemrc file to: ${outDir}. Cause: ${err}`);
+      } else {
+        logger.debug('.gemrc generated successfully!');
+      }
+    });
+  }
 
-function generateGemFile(outDir: string, logger: Logger) {
-  const gemFileContent
-    = `# frozen_string_literal: true
+  private static generateGemFile(outDir: string, logger: Logger) {
+    const gemFileContent
+      = `# frozen_string_literal: true
 
 source 'https://rubygems.org'
 gem 'highline'
@@ -930,18 +762,18 @@ source 'https://rubygems.cinc.sh/' do
   gem 'inspec-core'
 end
 `;
-  fs.writeFile(resolveSafeChild(outDir, 'Gemfile'), gemFileContent, (err) => {
-    if (err) {
-      logger.error(`Error saving the Gemfile file to: ${outDir}. Cause: ${err}`);
-    } else {
-      logger.debug('Gemfile generated successfully!');
-    }
-  });
-}
+    fs.writeFile(resolveSafeChild(outDir, 'Gemfile'), gemFileContent, (err) => {
+      if (err) {
+        logger.error(`Error saving the Gemfile file to: ${outDir}. Cause: ${err}`);
+      } else {
+        logger.debug('Gemfile generated successfully!');
+      }
+    });
+  }
 
-function generateRakeFile(outDir: string, logger: Logger) {
-  const rakefileContent
-    = `# frozen_string_literal: true
+  private static generateRakeFile(outDir: string, logger: Logger) {
+    const rakefileContent
+      = `# frozen_string_literal: true
 
 # !/usr/bin/env rake
 
@@ -966,18 +798,18 @@ end
 desc 'pre-commit checks'
 task pre_commit_checks: [:lint, 'inspec:check']
 `;
-  fs.writeFile(resolveSafeChild(outDir, 'Rakefile'), rakefileContent, (err) => {
-    if (err) {
-      logger.error(`Error saving the Rakefile file to: ${outDir}. Cause: ${err}`);
-    } else {
-      logger.debug('Rakefile generated successfully!');
-    }
-  });
-}
+    fs.writeFile(resolveSafeChild(outDir, 'Rakefile'), rakefileContent, (err) => {
+      if (err) {
+        logger.error(`Error saving the Rakefile file to: ${outDir}. Cause: ${err}`);
+      } else {
+        logger.debug('Rakefile generated successfully!');
+      }
+    });
+  }
 
-function generateGitIgnoreFile(outDir: string, logger: Logger) {
-  const gitignoreContent
-    = `.DS_Store
+  private static generateGitIgnoreFile(outDir: string, logger: Logger) {
+    const gitignoreContent
+      = `.DS_Store
 *.gem
 *.rbc
 /.config
@@ -1053,11 +885,179 @@ report.md
 check-results.txt
 kitchen.local.ec2.yml
 `;
-  fs.writeFile(resolveSafeChild(outDir, '.gitignore'), gitignoreContent, (err) => {
-    if (err) {
-      logger.error(`Error saving the .gitignore file to: ${outDir}. Cause: ${err}`);
-    } else {
-      logger.debug('.gitignore generated successfully!');
+    fs.writeFile(resolveSafeChild(outDir, '.gitignore'), gitignoreContent, (err) => {
+      if (err) {
+        logger.error(`Error saving the .gitignore file to: ${outDir}. Cause: ${err}`);
+      } else {
+        logger.debug('.gitignore generated successfully!');
+      }
+    });
+  }
+
+  async run() {
+    const { flags } = await this.parse(InspecProfile);
+
+    const logger = createWinstonLogger({ module: 'generate:inspect_profile', level: flags.logLevel });
+
+    // Process the XCCDF XML file containing the profile guidance
+    let xccdf: any = {};
+    try {
+      if (fs.lstatSync(flags.xccdfXmlFile).isFile()) {
+        const xccdfXmlFile = flags.xccdfXmlFile;
+        xccdf = fs.readFileSync(xccdfXmlFile, 'utf8');
+        const inputFirstLine = xccdf.split('\n').slice(0, 10).join('').toLowerCase();
+        if (!inputFirstLine.includes('xccdf')) {
+          logger.error(`ERROR: The file ${xccdfXmlFile} is not a valid XCCDF file`);
+          throw new Error('File provided is not a valid or well-formed XCCDF file');
+        }
+
+        logger.debug(`Loaded ${xccdfXmlFile} as XCCDF`);
+      } else {
+        throw new Error('No benchmark (XCCDF) file was provided.');
+      }
+    } catch (error: any) {
+      if (error.code === 'ENOENT') {
+        logger.error(`ERROR: File not found: "${flags.xccdfXmlFile}". Run the --help command to more information on expected input file.`);
+        process.exit(1);
+      }
+      logger.error(`ERROR: Unable to process the XCCDF XML file "${flags.xccdfXmlFile}" because: ${error}`);
+      process.exit(1);
     }
-  });
+
+    // Generate the output folder based on the XCCDF Benchmark.title
+    // if the default name is provided (profile) by the output -o flag
+    const options = {
+      ignoreAttributes: false,
+      attributeNamePrefix: '@_',
+      processEntities: { maxTotalExpansions: 100_000 },
+    };
+    const xmlDoc = new XMLParser(options).parse(xccdf);
+    let outDir: string;
+    const isSTIG = (_.get(xmlDoc, 'xccdf:Benchmark.xccdf:title.#text') === undefined);
+    logger.info(`Processing Benchmark Type: ${(isSTIG) ? 'STIG' : 'CIS'}`);
+    if (flags.output === 'profile') {
+      const benchmarkTitle = isSTIG ? _.get(xmlDoc, 'Benchmark.title') : _.get(xmlDoc, 'xccdf:Benchmark.xccdf:title.#text');
+      outDir = (benchmarkTitle === undefined)
+        ? flags.output
+        : safeFilename(benchmarkTitle.replace('Security Technical Implementation Guide', 'stig-baseline').replaceAll(' ', '-').toLowerCase());
+    } else {
+      outDir = flags.output;
+    }
+
+    // Check if the output folder already exists
+    logger.info('Processing output directory...');
+    if (fs.existsSync(outDir)) {
+      // Folder should not exist already
+      logger.error(`ERROR: Profile output folder ${outDir} already exists, please specify a new folder`);
+      process.exit(1);
+    }
+    logger.debug('Creating output folder with controls and libraries directories');
+    fs.mkdirSync(outDir);
+    fs.mkdirSync(path.join(outDir, 'controls'));
+    fs.mkdirSync(path.join(outDir, 'libraries'));
+
+    // This will get overridden if a metadata file is passed
+    logger.info('Processing metadata file...');
+    let metadata: InSpecMetaData = {};
+    // Read metadata file if passed
+    if (flags.metadata) {
+      if (fs.existsSync(flags.metadata)) {
+        logger.debug(`Reading metadata file: ${flags.metadata}.`);
+        metadata = JSON.parse(fs.readFileSync(flags.metadata, 'utf8'));
+      } else {
+        logger.error(`ERROR: File not found: "${flags.metadata}". Run the --help command to more information on expected input file.`);
+        process.exit(1);
+      }
+    }
+
+    // Read OVAL definitions file if passed
+    logger.info('Processing Oval file...');
+    let ovalDefinitions;
+    if (flags.ovalDefinitions) {
+      if (fs.existsSync(flags.ovalDefinitions)) {
+        logger.debug(`Reading oval definitions file: ${flags.ovalDefinitions}.`);
+        ovalDefinitions = processOVAL(fs.readFileSync(flags.ovalDefinitions, 'utf8'));
+      } else {
+        logger.error(`ERROR: File not found: "${flags.ovalDefinitions}". Run the --help command to more information on expected input file.`);
+        process.exit(1);
+      }
+    }
+
+    // Process the XCCDF file
+    logger.info('Processing XCCDF file...');
+    let profile: Profile;
+    logger.debug(`Processing XCCDF Benchmark file using ${flags.idType} id.`);
+    const idTypes = ['rule', 'group', 'cis', 'version'];
+    if (idTypes.includes(flags.idType)) {
+      profile = processXCCDF(xccdf, false, flags.idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions);
+    } else {
+      logger.error(`Invalid ID Type: ${flags.idType}. Check the --help command for the available ID Type options.`);
+      process.exit(1);
+    }
+
+    // Set profile default values (values used to generate the inspect.yml file)
+    logger.info('Generating markdown and yaml files...');
+    const readmeObj = (isSTIG)
+      ? InspecProfile.getDISAReadmeContent(xmlDoc)
+      : InspecProfile.getCISReadmeContent(xmlDoc);
+
+    // Set default values for the inspec.yml file
+    profile.name = readmeObj.profileName;
+    profile.title = readmeObj.profileTitle; // readmeObj.inspecTitle (includes ver/release info)
+    profile.maintainer = 'MITRE SAF Team';
+    profile.copyright = 'MITRE';
+    profile.copyright_email = 'saf@groups.mitre.org';
+    profile.license = 'Apache-2.0';
+    profile.summary = `InSpec profile aligned to ${readmeObj.profileGuidance} for ${readmeObj.profileTitle}`;
+    profile.description = null;
+    profile.depends = [];
+    profile.supports = [];
+    profile.version = readmeObj.profileVersion;
+    profile.inspec_version = '~>6.0';
+
+    // Add metadata if provided
+    if (flags.metadata) {
+      profile.maintainer = metadata.maintainer;
+      profile.copyright = metadata.copyright;
+      profile.copyright_email = metadata.copyright_email;
+      profile.license = metadata.license;
+      profile.version = metadata.version || readmeObj.profileVersion;
+    }
+
+    // Generate files
+    InspecProfile.generateYaml(profile, outDir, logger);
+    InspecProfile.generateReadme(readmeObj, outDir, logger);
+    InspecProfile.generateLicense(outDir, logger);
+    InspecProfile.generateNotice(outDir, logger);
+    InspecProfile.generateRubocopYml(outDir, logger);
+    InspecProfile.generateGemRc(outDir, logger);
+    InspecProfile.generateGemFile(outDir, logger);
+    InspecProfile.generateRakeFile(outDir, logger);
+    InspecProfile.generateGitIgnoreFile(outDir, logger);
+    logger.debug(`Saved generated files to output directory: ${outDir}`);
+
+    // Write all controls
+    logger.info('Generating profile controls...');
+    if (flags.singleFile) {
+      const controls = profile.controls
+        .map(control => control.toRuby())
+        .join('\n\n');
+      logger.debug(`Writing control to: ${path.join(outDir, 'controls', 'controls.rb')}`);
+      fs.writeFileSync(
+        resolveSafeChild(outDir, 'controls', 'controls.rb'),
+        controls,
+      );
+    } else {
+      for (const control of profile.controls) {
+        const controlFilename = safeFilename(`${basename(control.id)}.rb`);
+        logger.debug(`Writing control to: ${path.join(outDir, 'controls', controlFilename)}`);
+        fs.writeFileSync(
+          resolveSafeChild(outDir, 'controls', controlFilename),
+          control.toRuby(),
+        );
+      }
+    }
+
+    logger.info('Generation of skeleton profile completed - All done now');
+  }
 }

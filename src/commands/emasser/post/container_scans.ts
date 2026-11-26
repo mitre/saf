@@ -332,6 +332,20 @@ export default class EmasserContainerScans extends Command {
       process.exit(1);
     }
 
+    /**
+    * Processes a single container resource object and adds it to the request body array.
+    */
+    function processContainerResource(dataObject: ContainerResource): void {
+      try {
+        const bodyObj: ContainerResource = addRequiredFieldsToRequestBody(dataObject);
+        addOptionalFields(bodyObj, dataObject);
+        requestBodyArray.push(bodyObj);
+      } catch {
+        console.error('\u{1B}[91m» Error processing container resource.\u{1B}[0m');
+        process.exit(1);
+      }
+    }
+
     try {
       const fileContent = await readFile(flags.dataFile, 'utf8');
       const data: unknown = JSON.parse(fileContent);
@@ -359,20 +373,6 @@ export default class EmasserContainerScans extends Command {
         console.error('\u{1B}[91m» Unknown error occurred while reading the file.\u{1B}[0m');
       }
       process.exit(1);
-    }
-
-    /**
-    * Processes a single container resource object and adds it to the request body array.
-    */
-    function processContainerResource(dataObject: ContainerResource): void {
-      try {
-        const bodyObj: ContainerResource = addRequiredFieldsToRequestBody(dataObject);
-        addOptionalFields(bodyObj, dataObject);
-        requestBodyArray.push(bodyObj);
-      } catch {
-        console.error('\u{1B}[91m» Error processing container resource.\u{1B}[0m');
-        process.exit(1);
-      }
     }
 
     // Call the API endpoint

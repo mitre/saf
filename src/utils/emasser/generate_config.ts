@@ -86,6 +86,75 @@ function generateNewdotEnv() {
 }
 
 /**
+Checks if the given value is numeric.
+
+This function tests whether the provided value is a number or a string that represents a number.
+It supports both integer and floating-point numbers, including negative values.
+
+@param value - The value to be checked. It can be a string or a number.
+@returns `true` if the value is numeric, otherwise `false`.
+*/
+function isNumeric(value: unknown): boolean {
+  return typeof value === 'number' || (!Number.isNaN(Number(value)) && typeof value === 'string');
+}
+
+/**
+Updates key-value pairs in a file based on the provided updates object.
+
+@param filePath - The path to the file to be updated.
+@param updates  - An object containing key-value pairs to update in the file.
+                  The keys represent the keys in the file, and the values
+                  represent the new values to be set. If the value is a
+                  string, it will be wrapped in single quotes.
+
+@throws Will throw an error if there is an issue reading or writing the file.
+
+*/
+function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: Record<string, string | number | boolean>): void {
+  try {
+    // Read the file content
+    const fileContent = fse.readFileSync(filePath, 'utf8');
+
+    // Split the content into lines
+    const lines = fileContent.split('\n');
+
+    // Iterate over each line to find and update key-value pairs
+    const updatedLines = lines.map((line) => {
+      // Trim the line to remove any leading/trailing whitespace
+      const trimmedLine = line.trim();
+
+      // Check if the line contains a key-value pair (e.g., key=value)
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const [key, _value_] = trimmedLine.split('=');
+
+      // If the key exists in the updates object, update the value
+      if (Object.hasOwn(updates, key)) {
+        // wrap string values with single-quotes
+        return isNumeric(updates[key])
+          ? `${key}=${updates[key]}`
+          : ((typeof updates[key] === 'string')
+            ? `${key}='${updates[key]}'`
+            : `${key}=${updates[key]}`);
+      }
+
+      // Return the original line if no update is needed
+      return line;
+    });
+
+    // Join the updated lines back into a single string
+    const updatedContent = updatedLines.join('\n');
+
+    // Write the updated content back to the file
+    fse.writeFileSync(filePath, updatedContent, 'utf8');
+
+    console.log('File updated successfully.');
+  } catch (error) {
+    console.error('Error reading or writing file:', error);
+    process.exit(1);
+  }
+}
+
+/**
 Asynchronously processes user prompts to generate and update an eMASS configuration file.
 
 This function performs the following steps:
@@ -319,75 +388,6 @@ async function processPrompt() {
   console.log('\n', colors.yellow('To modify any of the entries, simple run the configure command again.'));
   console.log('\n', colors.cyan.bold('To verify connection to the eMASS services use the command: '), colors.green.underline('saf emasser get test_connection'));
   console.log('\n', colors.cyan.bold('For additional help on available eMASS CLI API commands use: '), colors.green.underline('saf emasser -h or -help'));
-}
-
-/**
-Updates key-value pairs in a file based on the provided updates object.
-
-@param filePath - The path to the file to be updated.
-@param updates  - An object containing key-value pairs to update in the file.
-                  The keys represent the keys in the file, and the values
-                  represent the new values to be set. If the value is a
-                  string, it will be wrapped in single quotes.
-
-@throws Will throw an error if there is an issue reading or writing the file.
-
-*/
-function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: Record<string, string | number | boolean>): void {
-  try {
-    // Read the file content
-    const fileContent = fse.readFileSync(filePath, 'utf8');
-
-    // Split the content into lines
-    const lines = fileContent.split('\n');
-
-    // Iterate over each line to find and update key-value pairs
-    const updatedLines = lines.map((line) => {
-      // Trim the line to remove any leading/trailing whitespace
-      const trimmedLine = line.trim();
-
-      // Check if the line contains a key-value pair (e.g., key=value)
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [key, _value_] = trimmedLine.split('=');
-
-      // If the key exists in the updates object, update the value
-      if (Object.hasOwn(updates, key)) {
-        // wrap string values with single-quotes
-        return isNumeric(updates[key])
-          ? `${key}=${updates[key]}`
-          : ((typeof updates[key] === 'string')
-            ? `${key}='${updates[key]}'`
-            : `${key}=${updates[key]}`);
-      }
-
-      // Return the original line if no update is needed
-      return line;
-    });
-
-    // Join the updated lines back into a single string
-    const updatedContent = updatedLines.join('\n');
-
-    // Write the updated content back to the file
-    fse.writeFileSync(filePath, updatedContent, 'utf8');
-
-    console.log('File updated successfully.');
-  } catch (error) {
-    console.error('Error reading or writing file:', error);
-    process.exit(1);
-  }
-}
-
-/**
-Checks if the given value is numeric.
-
-This function tests whether the provided value is a number or a string that represents a number.
-It supports both integer and floating-point numbers, including negative values.
-
-@param value - The value to be checked. It can be a string or a number.
-@returns `true` if the value is numeric, otherwise `false`.
-*/
-function isNumeric(value: unknown): boolean {
-  return typeof value === 'number' || (!Number.isNaN(Number(value)) && typeof value === 'string');
 }
 
 /**

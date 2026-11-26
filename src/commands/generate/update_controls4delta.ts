@@ -118,6 +118,73 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
   // Class common variables
   static backupDir = '';
 
+  private static isXccdfFile(xccdfXmlFile: string, logger: Logger): boolean {
+    let isXccdf = true;
+    try {
+      if (fs.lstatSync(xccdfXmlFile).isFile()) {
+        // logger.debug(`Processing the ${xccdfXmlFile} XCCDF file`)
+        const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8');
+        const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase();
+        if (inputFirstLine.includes('xccdf')) {
+          logger.debug('  Valid XCCDF file provided');
+        } else {
+          logger.error(`ERROR: Unable to load ${xccdfXmlFile} as XCCDF`);
+          isXccdf = false;
+        }
+      } else {
+        logger.error('No benchmark (XCCDF) file was provided.');
+        isXccdf = false;
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        const errorCode = (error as { code?: string }).code; // Type-safe access to `code`
+        if (errorCode === 'ENOENT') {
+          logger.error(
+            `ERROR: No entity found for: ${xccdfXmlFile}. Run the --help command for more information on expected input files.`,
+          );
+        }
+        logger.error(
+          `ERROR: Unable to process the XCCDF XML file ${xccdfXmlFile} because: ${error.message}`,
+        );
+      } else {
+        logger.error(`ERROR: An unexpected error occurred: ${getErrorMessage(error)}`);
+      }
+      isXccdf = false;
+    }
+    return isXccdf;
+  }
+
+  private static getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: string, newControlNumber: string) {
+    // Read the control content
+    const controlData = fs.readFileSync(path, { encoding: 'utf8', flag: 'r' });
+    if (newControlNumber !== undefined) {
+      controlData.replace(currentControlNumber, () => newControlNumber);
+    }
+
+    return controlData;
+  }
+
+  private static saveControl(filePath: string, newXCCDFControlNumber: string, currentControlNumber: string, updatedControl: string, shouldBackUpControls: boolean, shouldRenameControl: boolean) {
+    const newFileName = resolveSafeChild(path.dirname(filePath), safeFilename(`${basename(newXCCDFControlNumber)}.rb`));
+
+    // Move processed (old) control to oldControls folder
+    if (shouldBackUpControls) {
+      const destFilePath = resolveSafeChild(this.backupDir, safeFilename(`${basename(currentControlNumber)}.rb`));
+      if (shouldRenameControl) {
+        fs.renameSync(filePath, destFilePath);
+      } else {
+        fs.copyFileSync(filePath, destFilePath);
+      }
+
+    // Delete processed (old) file
+    } else if (shouldRenameControl) {
+      fs.unlinkSync(filePath);
+    }
+
+    // Save new file
+    fs.writeFileSync(newFileName, updatedControl);
+  }
+
   async run(): Promise<any> {
     const { flags } = await this.parse(GenerateUpdateControls);
 
@@ -156,7 +223,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     if (flags.xccdfXmlFile) {
       xccdfXmlFile = basename(flags.xccdfXmlFile);
       logger.info(`Verifying that the XCCDF file is valid: ${xccdfXmlFile}...`);
-      if (isXccdfFile(flags.xccdfXmlFile, logger)) {
+      if (GenerateUpdateControls.isXccdfFile(flags.xccdfXmlFile, logger)) {
         xccdfContent = fs.readFileSync(flags.xccdfXmlFile, 'utf8');
       } else {
         return;
@@ -454,7 +521,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
           logger.debug('  \u{1B}[32mUpdating Control metadata with XCCDF content\u{1B}[0m');
           updatedControl = baselineYControls.get(currentControlNumber);
           // Save file
-          saveControl(currentFileFullPath, currentControlNumber, currentControlNumber, updatedControl, flags.backupControls, false);
+          GenerateUpdateControls.saveControl(currentFileFullPath, currentControlNumber, currentControlNumber, updatedControl, flags.backupControls, false);
         }
 
       // FILE = LEGACY NUMBER (old control Id)
@@ -469,10 +536,10 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
           logger.debug('  \u{1B}[31mKeeping Control metadata content - Updating Control name\u{1B}[0m');
           notInProfileJSON++;
           skipMetadataUpdate.push(`(${currentControlNumber} wasn't updated with metadata from: ${newXCCDFControlNumber})`);
-          updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, newXCCDFControlNumber);
+          updatedControl = GenerateUpdateControls.getUpdatedControl(currentFileFullPath, currentControlNumber, newXCCDFControlNumber);
         }
 
-        saveControl(currentFileFullPath, newXCCDFControlNumber, currentControlNumber, updatedControl, flags.backupControls, true);
+        GenerateUpdateControls.saveControl(currentFileFullPath, newXCCDFControlNumber, currentControlNumber, updatedControl, flags.backupControls, true);
         processed++;
         controlsProcessedMap.set(newXCCDFControlNumber, 'processed');
 
@@ -532,71 +599,4 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     // Signal that you're done logging - emits a finish event
     logger.end();
   }
-}
-
-function isXccdfFile(xccdfXmlFile: string, logger: Logger): boolean {
-  let isXccdf = true;
-  try {
-    if (fs.lstatSync(xccdfXmlFile).isFile()) {
-      // logger.debug(`Processing the ${xccdfXmlFile} XCCDF file`)
-      const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8');
-      const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase();
-      if (inputFirstLine.includes('xccdf')) {
-        logger.debug('  Valid XCCDF file provided');
-      } else {
-        logger.error(`ERROR: Unable to load ${xccdfXmlFile} as XCCDF`);
-        isXccdf = false;
-      }
-    } else {
-      logger.error('No benchmark (XCCDF) file was provided.');
-      isXccdf = false;
-    }
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      const errorCode = (error as { code?: string }).code; // Type-safe access to `code`
-      if (errorCode === 'ENOENT') {
-        logger.error(
-          `ERROR: No entity found for: ${xccdfXmlFile}. Run the --help command for more information on expected input files.`,
-        );
-      }
-      logger.error(
-        `ERROR: Unable to process the XCCDF XML file ${xccdfXmlFile} because: ${error.message}`,
-      );
-    } else {
-      logger.error(`ERROR: An unexpected error occurred: ${getErrorMessage(error)}`);
-    }
-    isXccdf = false;
-  }
-  return isXccdf;
-}
-
-function getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: string, newControlNumber: string) {
-  // Read the control content
-  const controlData = fs.readFileSync(path, { encoding: 'utf8', flag: 'r' });
-  if (newControlNumber !== undefined) {
-    controlData.replace(currentControlNumber, () => newControlNumber);
-  }
-
-  return controlData;
-}
-
-function saveControl(filePath: string, newXCCDFControlNumber: string, currentControlNumber: string, updatedControl: string, shouldBackUpControls: boolean, shouldRenameControl: boolean) {
-  const newFileName = resolveSafeChild(path.dirname(filePath), safeFilename(`${basename(newXCCDFControlNumber)}.rb`));
-
-  // Move processed (old) control to oldControls folder
-  if (shouldBackUpControls) {
-    const destFilePath = resolveSafeChild(GenerateUpdateControls.backupDir, safeFilename(`${basename(currentControlNumber)}.rb`));
-    if (shouldRenameControl) {
-      fs.renameSync(filePath, destFilePath);
-    } else {
-      fs.copyFileSync(filePath, destFilePath);
-    }
-
-  // Delete processed (old) file
-  } else if (shouldRenameControl) {
-    fs.unlinkSync(filePath);
-  }
-
-  // Save new file
-  fs.writeFileSync(newFileName, updatedControl);
 }

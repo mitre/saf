@@ -397,6 +397,65 @@ function tier1DeterministicMatch(
 }
 
 /**
+Strip a detected vendor/product prefix from a rule title. No-op when
+prefix is empty or not present at the start.
+*/
+export function normalizeTitle(title: string, prefix: string): string {
+  if (!prefix) {
+    return title;
+  }
+  if (title === prefix) {
+    return '';
+  }
+  if (title.startsWith(prefix + ' ')) {
+    return title.slice(prefix.length + 1);
+  }
+  return title;
+}
+
+/**
+Discover the dominant leading-token prefix of a corpus of rule titles.
+
+Tries long prefixes first; at each length, returns the prefix if it
+dominates more than `threshold` (default 0.5, strict majority) of the
+corpus. Falls back to progressively shorter prefixes when no long prefix
+dominates. Returns '' when no prefix at any length reaches the threshold
+(feature-focused corpora like Google Chrome STIG).
+*/
+export function autoDetectPrefix(titles: string[], threshold = 0.5): string {
+  if (titles.length === 0) {
+    return '';
+  }
+  const leading = titles.map(t => tokensBeforeModal(t));
+  const maxLen = Math.max(...leading.map(l => l.length));
+  for (let n = maxLen; n > 0; n--) {
+    const counts = new Map<string, number>();
+    for (const l of leading) {
+      if (l.length < n) {
+        continue;
+      }
+
+      const key = l.slice(0, n).join(' ');
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+    let bestKey = '';
+    let bestCount = 0;
+    for (const [key, count] of counts) {
+      if (count <= bestCount) {
+        continue;
+      }
+
+      bestKey = key;
+      bestCount = count;
+    }
+    if (bestCount / titles.length > threshold) {
+      return bestKey;
+    }
+  }
+  return '';
+}
+
+/**
 Tier 2: multiple candidates in this SRG block. Rank by a composite
 score of CCI Jaccard (primary signal) + normalized-title Jaccard
 (tiebreak — catches the N:N-in-one-SRG cross-vendor case where every
@@ -577,63 +636,4 @@ export function applyRequirementFirstPipeline(
     }
   }
   return links;
-}
-
-/**
-Strip a detected vendor/product prefix from a rule title. No-op when
-prefix is empty or not present at the start.
-*/
-export function normalizeTitle(title: string, prefix: string): string {
-  if (!prefix) {
-    return title;
-  }
-  if (title === prefix) {
-    return '';
-  }
-  if (title.startsWith(prefix + ' ')) {
-    return title.slice(prefix.length + 1);
-  }
-  return title;
-}
-
-/**
-Discover the dominant leading-token prefix of a corpus of rule titles.
-
-Tries long prefixes first; at each length, returns the prefix if it
-dominates more than `threshold` (default 0.5, strict majority) of the
-corpus. Falls back to progressively shorter prefixes when no long prefix
-dominates. Returns '' when no prefix at any length reaches the threshold
-(feature-focused corpora like Google Chrome STIG).
-*/
-export function autoDetectPrefix(titles: string[], threshold = 0.5): string {
-  if (titles.length === 0) {
-    return '';
-  }
-  const leading = titles.map(t => tokensBeforeModal(t));
-  const maxLen = Math.max(...leading.map(l => l.length));
-  for (let n = maxLen; n > 0; n--) {
-    const counts = new Map<string, number>();
-    for (const l of leading) {
-      if (l.length < n) {
-        continue;
-      }
-
-      const key = l.slice(0, n).join(' ');
-      counts.set(key, (counts.get(key) ?? 0) + 1);
-    }
-    let bestKey = '';
-    let bestCount = 0;
-    for (const [key, count] of counts) {
-      if (count <= bestCount) {
-        continue;
-      }
-
-      bestKey = key;
-      bestCount = count;
-    }
-    if (bestCount / titles.length > threshold) {
-      return bestKey;
-    }
-  }
-  return '';
 }

@@ -27,58 +27,24 @@ export const COLUMN_EMOJI: Record<ColumnType, string> = {
 };
 
 /**
-Prints the provided printable summaries to the console and optionally writes them to an output file.
+Extracts the result sets for the provided execution JSONs and profile name.
 
 The function works as follows:
-- It initializes an empty string to hold the output.
-- It checks the `format` property of the `args` object to determine how to format the output.
-- If the `format` is 'json', it converts the printable summaries to a JSON string.
-- If the `format` is 'markdown', it converts the printable summaries to Markdown tables and joins them with two newlines between each table.
-- If the `format` is not provided or is not 'json' or 'markdown', it converts the printable summaries to a YAML string.
-- If the `stdout` property of the `args` object is true, it prints the output to the console.
-- If the `output` property of the `args` object is provided, it writes the output to the specified file.
+- It filters the execution JSONs to include only those where the name of the first profile matches the provided profile name.
+- It maps over the filtered execution JSONs, converting the full path of each JSON file to a filename using the `basename` function.
+- It returns an array of filenames.
 
-@param args - An object containing the following properties:
-  - `printableSummaries`: The printable summaries to print and write to the output file.
-  - `titleTable`: Boolean to either enable or disable adding titles to the produced markdown tables.
-  - `format`: The format to use for the output. This should be 'json', 'yaml', or 'markdown'.
-  - `printPretty`: Boolean to either enable or disable pretty printing of the output.
-  - `stdout`: Boolean to either enable or disable printing the output to the console.
-  - `output`: The path of the file to write the output to. If this is not provided, the output is not written to a file.
-@returns void - This method does not return anything.
+@param execJSONs - The execution JSONs to extract the result sets from. This should be an object where the keys are file paths and the values are ContextualizedEvaluation objects.
+@param profileName - The name of the profile to extract the result sets for.
+@returns An array of filenames representing the result sets.
 */
-export function printAndWriteOutput(args: PrintAndWriteOutputArgs): void {
-  logger.verbose('In printAndWriteOutput');
-  let outputStr;
-  switch (args.format) {
-    case 'json': {
-      outputStr = args.printPretty ? JSON.stringify(args.printableSummaries, null, 2) : JSON.stringify(args.printableSummaries);
-      break;
-    }
-
-    case 'markdown': {
-      const markdownTables = convertToMarkdown(args.printableSummaries, args.titleTable ?? true);
-      outputStr = markdownTables.join('\n\n'); // Join the tables with two newlines between each table
-      break;
-    }
-
-    default: { // Default to 'yaml'
-      outputStr = YAML.stringify(args.printableSummaries);
-    }
-  }
-
-  if (args.stdout) {
-    console.log(outputStr);
-  }
-
-  if (args.output) {
-    try {
-      fs.writeFileSync(args.output, outputStr);
-      logger.info(`Output written to ${args.output}`);
-    } catch (error) {
-      logger.error(`Failed to write output to ${args.output}: ${(error as Error).message}`);
-    }
-  }
+export function extractResultSets(execJSONs: Record<string, ContextualizedEvaluation>, profileName: string): string[] {
+  logger.verbose('In extractResultSets');
+  return Object.entries(execJSONs).filter(([, execJSON]) => {
+    return execJSON.data.profiles[0].name === profileName;
+  }).map(([filePath]) => {
+    return basename(filePath);
+  });
 }
 
 /**
@@ -108,27 +74,6 @@ export function createPrintableSummary(
     compliance: _.mean(complianceScores[profileName]),
     ...profileMetrics,
   };
-}
-
-/**
-Extracts the result sets for the provided execution JSONs and profile name.
-
-The function works as follows:
-- It filters the execution JSONs to include only those where the name of the first profile matches the provided profile name.
-- It maps over the filtered execution JSONs, converting the full path of each JSON file to a filename using the `basename` function.
-- It returns an array of filenames.
-
-@param execJSONs - The execution JSONs to extract the result sets from. This should be an object where the keys are file paths and the values are ContextualizedEvaluation objects.
-@param profileName - The name of the profile to extract the result sets for.
-@returns An array of filenames representing the result sets.
-*/
-export function extractResultSets(execJSONs: Record<string, ContextualizedEvaluation>, profileName: string): string[] {
-  logger.verbose('In extractResultSets');
-  return Object.entries(execJSONs).filter(([, execJSON]) => {
-    return execJSON.data.profiles[0].name === profileName;
-  }).map(([filePath]) => {
-    return basename(filePath);
-  });
 }
 
 /**
@@ -172,21 +117,6 @@ The function works as follows:
 */
 export function generateMarkdownTableRow(row: string, item: PrintableSummary): string[] {
   return COLUMN_ORDER.map(column => generateValue(item, column, row));
-}
-
-/**
-Converts the provided data to a Markdown table.
-
-The table has a row for each value in `ROW_ORDER` and a column for each value in `COLUMN_ORDER`.
-The values in the table are extracted from the data object.
-
-@param data - The data object or array of data objects containing the values for the table.
-@param shouldIncludeTableTitles - Boolean to either enable or disable adding titles to the produced markdown tables.
-@returns An array of strings, each representing a Markdown table.
-*/
-export function convertToMarkdown(data: DataOrArray, shouldIncludeTableTitles: boolean): string[] {
-  logger.verbose('In convertTomarkdown');
-  return Array.isArray(data) ? data.map(item => generateMarkdownTable(item, shouldIncludeTableTitles)) : [generateMarkdownTable(data, shouldIncludeTableTitles)];
 }
 
 /**
@@ -260,4 +190,74 @@ export function generateMarkdownTable(item: Data | PrintableSummary, shouldInclu
     alignment: myAlignment,
     alignColumns: true,
   });
+}
+
+/**
+Converts the provided data to a Markdown table.
+
+The table has a row for each value in `ROW_ORDER` and a column for each value in `COLUMN_ORDER`.
+The values in the table are extracted from the data object.
+
+@param data - The data object or array of data objects containing the values for the table.
+@param shouldIncludeTableTitles - Boolean to either enable or disable adding titles to the produced markdown tables.
+@returns An array of strings, each representing a Markdown table.
+*/
+export function convertToMarkdown(data: DataOrArray, shouldIncludeTableTitles: boolean): string[] {
+  logger.verbose('In convertTomarkdown');
+  return Array.isArray(data) ? data.map(item => generateMarkdownTable(item, shouldIncludeTableTitles)) : [generateMarkdownTable(data, shouldIncludeTableTitles)];
+}
+
+/**
+Prints the provided printable summaries to the console and optionally writes them to an output file.
+
+The function works as follows:
+- It initializes an empty string to hold the output.
+- It checks the `format` property of the `args` object to determine how to format the output.
+- If the `format` is 'json', it converts the printable summaries to a JSON string.
+- If the `format` is 'markdown', it converts the printable summaries to Markdown tables and joins them with two newlines between each table.
+- If the `format` is not provided or is not 'json' or 'markdown', it converts the printable summaries to a YAML string.
+- If the `stdout` property of the `args` object is true, it prints the output to the console.
+- If the `output` property of the `args` object is provided, it writes the output to the specified file.
+
+@param args - An object containing the following properties:
+  - `printableSummaries`: The printable summaries to print and write to the output file.
+  - `titleTable`: Boolean to either enable or disable adding titles to the produced markdown tables.
+  - `format`: The format to use for the output. This should be 'json', 'yaml', or 'markdown'.
+  - `printPretty`: Boolean to either enable or disable pretty printing of the output.
+  - `stdout`: Boolean to either enable or disable printing the output to the console.
+  - `output`: The path of the file to write the output to. If this is not provided, the output is not written to a file.
+@returns void - This method does not return anything.
+*/
+export function printAndWriteOutput(args: PrintAndWriteOutputArgs): void {
+  logger.verbose('In printAndWriteOutput');
+  let outputStr;
+  switch (args.format) {
+    case 'json': {
+      outputStr = args.printPretty ? JSON.stringify(args.printableSummaries, null, 2) : JSON.stringify(args.printableSummaries);
+      break;
+    }
+
+    case 'markdown': {
+      const markdownTables = convertToMarkdown(args.printableSummaries, args.titleTable ?? true);
+      outputStr = markdownTables.join('\n\n'); // Join the tables with two newlines between each table
+      break;
+    }
+
+    default: { // Default to 'yaml'
+      outputStr = YAML.stringify(args.printableSummaries);
+    }
+  }
+
+  if (args.stdout) {
+    console.log(outputStr);
+  }
+
+  if (args.output) {
+    try {
+      fs.writeFileSync(args.output, outputStr);
+      logger.info(`Output written to ${args.output}`);
+    } catch (error) {
+      logger.error(`Failed to write output to ${args.output}: ${(error as Error).message}`);
+    }
+  }
 }
