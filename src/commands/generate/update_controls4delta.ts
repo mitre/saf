@@ -167,14 +167,12 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       logger.info(`Verifying that the URL contains a valid XCCDF: ${flags.xccdfUrl instanceof URL ? flags.xccdfUrl.toString() : String(flags.xccdfUrl)}...`);
       const tmpobj = tmp.dirSync({ unsafeCleanup: true });
       let fileBuffer: Buffer | null = null;
-      let url;
 
       if (flags.xccdfUrl === undefined) {
         logger.error('URL flag is undefined or invalid');
         return;
-      } else {
-        url = flags.xccdfUrl?.toString();
       }
+      const url = flags.xccdfUrl?.toString();
       await (async () => {
         const zipFile = url.split('/').pop(); // Extracts the last segment
 
@@ -230,10 +228,9 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         if (error instanceof Error) {
           logger.error(`ERROR: Checking if controls directory is empty, received: ${error.message}`);
           throw new Error(`Error checking controls directory, error: ${error.message}`, { cause: error });
-        } else {
-          logger.error('ERROR: An unknown error occurred while checking the controls directory.');
-          throw new Error('Error checking controls directory. Unknown error encountered.', { cause: error });
         }
+        logger.error('ERROR: An unknown error occurred while checking the controls directory.');
+        throw new Error('Error checking controls directory. Unknown error encountered.', { cause: error });
       }
     } else {
       logger.error(`Profile Controls directory (folder) not specified or does not exist: ${flags.controlsDir}`);

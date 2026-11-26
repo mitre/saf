@@ -207,15 +207,14 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
           printRedMsg('    slcmMethod,slcmReporting, slcmTracking, slcmComments');
           printHelpMsg(HELP_MSG);
           process.exit(1);
-        } else {
-          bodyObject.responsibleEntities = dataObj.responsibleEntities;
-          bodyObject.slcmCriticality = dataObj.slcmCriticality;
-          bodyObject.slcmFrequency = dataObj.slcmFrequency;
-          bodyObject.slcmMethod = dataObj.slcmMethod;
-          bodyObject.slcmReporting = dataObj.slcmReporting;
-          bodyObject.slcmTracking = dataObj.slcmTracking;
-          bodyObject.slcmComments = dataObj.slcmComments;
         }
+        bodyObject.responsibleEntities = dataObj.responsibleEntities;
+        bodyObject.slcmCriticality = dataObj.slcmCriticality;
+        bodyObject.slcmFrequency = dataObj.slcmFrequency;
+        bodyObject.slcmMethod = dataObj.slcmMethod;
+        bodyObject.slcmReporting = dataObj.slcmReporting;
+        bodyObject.slcmTracking = dataObj.slcmTracking;
+        bodyObject.slcmComments = dataObj.slcmComments;
 
         break;
       }
@@ -246,16 +245,15 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
           printRedMsg('    slcmFrequency, slcmMethod, slcmReporting, slcmTracking, slcmComments');
           printHelpMsg(HELP_MSG);
           process.exit(1);
-        } else {
-          bodyObject.commonControlProvider = dataObj.commonControlProvider;
-          bodyObject.responsibleEntities = dataObj.responsibleEntities;
-          bodyObject.slcmCriticality = dataObj.slcmCriticality;
-          bodyObject.slcmFrequency = dataObj.slcmFrequency;
-          bodyObject.slcmMethod = dataObj.slcmMethod;
-          bodyObject.slcmReporting = dataObj.slcmReporting;
-          bodyObject.slcmTracking = dataObj.slcmTracking;
-          bodyObject.slcmComments = dataObj.slcmComments;
         }
+        bodyObject.commonControlProvider = dataObj.commonControlProvider;
+        bodyObject.responsibleEntities = dataObj.responsibleEntities;
+        bodyObject.slcmCriticality = dataObj.slcmCriticality;
+        bodyObject.slcmFrequency = dataObj.slcmFrequency;
+        bodyObject.slcmMethod = dataObj.slcmMethod;
+        bodyObject.slcmReporting = dataObj.slcmReporting;
+        bodyObject.slcmTracking = dataObj.slcmTracking;
+        bodyObject.slcmComments = dataObj.slcmComments;
 
         break;
       }

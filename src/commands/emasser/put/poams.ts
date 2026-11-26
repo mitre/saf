@@ -371,14 +371,14 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void {
         printHelpMsg(HELP_MSG);
         process.exit(1);
       // Risk Accepted POA&M Item cannot be saved with a Scheduled Completion Date or Milestones.
-      } else if (Object.hasOwn(dataObj, 'scheduledCompletionDate') || Object.hasOwn(dataObj, 'milestones')) {
+      }
+      if (Object.hasOwn(dataObj, 'scheduledCompletionDate') || Object.hasOwn(dataObj, 'milestones')) {
         printRedMsg('When status is "Risk Accepted" POA&Ms CAN NOT be saved with the following parameters/fields:');
         printRedMsg('    scheduledCompletionDate, or milestone');
         printHelpMsg(HELP_MSG);
         process.exit(1);
-      } else {
-        bodyObject.comments = dataObj.comments;
       }
+      bodyObject.comments = dataObj.comments;
 
       break;
     }
@@ -393,20 +393,20 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void {
         printHelpMsg(HELP_MSG);
         process.exit(1);
       // If we have a milestone, ensure the required fields are provided.
-      } else if (!(_.some(dataObj.milestones, 'description')) || !(_.some(dataObj.milestones, 'scheduledCompletionDate'))) {
+      }
+      if (!(_.some(dataObj.milestones, 'description')) || !(_.some(dataObj.milestones, 'scheduledCompletionDate'))) {
         printRedMsg('Milestone object requires the following fields:');
         printRedMsg('    "milestones": [{"description": "The milestone description", "scheduledCompletionDate": Unix date format }], ');
         process.exit(1);
-      } else {
-        // Add the POA&M schedule completion date if provided (backend may return an error)
-        if (Object.hasOwn(dataObj, 'scheduledCompletionDate')) {
-          bodyObject.scheduledCompletionDate = dataObj.scheduledCompletionDate;
-        }
-
-        // Add the milestone object
-        // isActive is used to prevent uploading duplicate/undesired milestones via the POA&M PUT call and must be set to false, otherwise a new milestone is created
-        bodyObject.milestones = dataObj.milestones?.map(milestone => ({ description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: Object.hasOwn(milestone, 'isActive') ? milestone.isActive : false })) || [];
       }
+      // Add the POA&M schedule completion date if provided (backend may return an error)
+      if (Object.hasOwn(dataObj, 'scheduledCompletionDate')) {
+        bodyObject.scheduledCompletionDate = dataObj.scheduledCompletionDate;
+      }
+
+      // Add the milestone object
+      // isActive is used to prevent uploading duplicate/undesired milestones via the POA&M PUT call and must be set to false, otherwise a new milestone is created
+      bodyObject.milestones = dataObj.milestones?.map(milestone => ({ description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: Object.hasOwn(milestone, 'isActive') ? milestone.isActive : false })) || [];
 
       break;
     }
@@ -420,19 +420,18 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void {
         printRedMsg('    comments, completionDate, and milestones');
         printHelpMsg(HELP_MSG);
         process.exit(1);
-      } else {
-        // Add the POA&M schedule and completion date, comments
-        bodyObject.comments = dataObj.comments;
-        bodyObject.completionDate = dataObj.completionDate;
-        // Add the POA&M schedule completion date if provided (backend may return an error)
-        if (Object.hasOwn(dataObj, 'scheduledCompletionDate')) {
-          bodyObject.scheduledCompletionDate = dataObj.scheduledCompletionDate;
-        }
-
-        // Add the milestone object
-        // isActive is used to prevent uploading duplicate/undesired milestones via the POA&M PUT call and must be set to false, otherwise a new milestone is created
-        bodyObject.milestones = dataObj.milestones?.map(milestone => ({ description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: Object.hasOwn(milestone, 'isActive') ? milestone.isActive : false })) || [];
       }
+      // Add the POA&M schedule and completion date, comments
+      bodyObject.comments = dataObj.comments;
+      bodyObject.completionDate = dataObj.completionDate;
+      // Add the POA&M schedule completion date if provided (backend may return an error)
+      if (Object.hasOwn(dataObj, 'scheduledCompletionDate')) {
+        bodyObject.scheduledCompletionDate = dataObj.scheduledCompletionDate;
+      }
+
+      // Add the milestone object
+      // isActive is used to prevent uploading duplicate/undesired milestones via the POA&M PUT call and must be set to false, otherwise a new milestone is created
+      bodyObject.milestones = dataObj.milestones?.map(milestone => ({ description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: Object.hasOwn(milestone, 'isActive') ? milestone.isActive : false })) || [];
 
       break;
     }

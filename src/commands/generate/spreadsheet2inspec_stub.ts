@@ -137,11 +137,10 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
     if (fs.existsSync(flags.output)) {
       // Folder should not exist already
       throw new Error('Profile output folder already exists, please specify a new folder');
-    } else {
-      fs.mkdirSync(flags.output);
-      fs.mkdirSync(path.join(flags.output, 'controls'));
-      fs.mkdirSync(path.join(flags.output, 'libraries'));
     }
+    fs.mkdirSync(flags.output);
+    fs.mkdirSync(path.join(flags.output, 'controls'));
+    fs.mkdirSync(path.join(flags.output, 'libraries'));
 
     let metadata: InSpecMetaData = {};
     let mappings: Record<string, string | string[] | number>;

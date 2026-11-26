@@ -84,7 +84,8 @@ export default class CreateAttestations extends BaseCommand<typeof CreateAttesta
         const input = prompt("Enter a control ID, search for a control, or enter 'q' to exit: ");
         if (input.trim().toLowerCase() === 'q') {
           break;
-        } else if (input in controls) {
+        }
+        if (input in controls) {
           attestations.push(this.promptForAttestation(controls[input].id));
         } else {
           const ids = search.search(input).slice(0, MAX_SEARCH_RESULTS);
@@ -99,9 +100,8 @@ export default class CreateAttestations extends BaseCommand<typeof CreateAttesta
         const input = prompt("Enter a control ID or enter 'q' to exit: ");
         if (input.trim().toLowerCase() === 'q') {
           break;
-        } else {
-          attestations.push(this.promptForAttestation(input));
         }
+        attestations.push(this.promptForAttestation(input));
       }
     }
 

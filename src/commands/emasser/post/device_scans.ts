@@ -65,9 +65,11 @@ export default class EmasserPostDeviceScans extends Command {
     try {
       if (!fs.existsSync(flags.filename)) {
         throw new CLIError(`The file ${flags.filename} does not exist. Please provide a valid file path.`);
-      } else if (flags.scanType === 'disaStigViewerCklCklb' && !flags.filename.includes('.ckl')) {
+      }
+      if (flags.scanType === 'disaStigViewerCklCklb' && !flags.filename.includes('.ckl')) {
         throw new CLIError(`If the scan type is "disaStigViewerCklCklb" a .ckl or .cklb file is expected not a ${path.extname(flags.filename)} file`);
-      } else if ((flags.scanType === 'acasAsrArf' || flags.scanType === 'policyAuditor') && !flags.filename.includes('.zip')) {
+      }
+      if ((flags.scanType === 'acasAsrArf' || flags.scanType === 'policyAuditor') && !flags.filename.includes('.zip')) {
         throw new CLIError(`If the scan type is "acasAsrArf" or "policyAuditor" a .zip file is expected not a ${path.extname(flags.filename)} file`);
       }
     } catch (error) {

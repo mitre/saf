@@ -97,10 +97,9 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
       if (error.code === 'ENOENT') {
         logger.error(`ERROR: File not found: "${flags.xccdfXmlFile}". Run the --help command to more information on expected input file.`);
         process.exit(1);
-      } else {
-        logger.error(`ERROR: Unable to process the XCCDF XML file "${flags.xccdfXmlFile}" because: ${error}`);
-        process.exit(1);
       }
+      logger.error(`ERROR: Unable to process the XCCDF XML file "${flags.xccdfXmlFile}" because: ${error}`);
+      process.exit(1);
     }
 
     // Generate the output folder based on the XCCDF Benchmark.title
@@ -129,12 +128,11 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
       // Folder should not exist already
       logger.error(`ERROR: Profile output folder ${outDir} already exists, please specify a new folder`);
       process.exit(1);
-    } else {
-      logger.debug('Creating output folder with controls and libraries directories');
-      fs.mkdirSync(outDir);
-      fs.mkdirSync(path.join(outDir, 'controls'));
-      fs.mkdirSync(path.join(outDir, 'libraries'));
     }
+    logger.debug('Creating output folder with controls and libraries directories');
+    fs.mkdirSync(outDir);
+    fs.mkdirSync(path.join(outDir, 'controls'));
+    fs.mkdirSync(path.join(outDir, 'libraries'));
 
     // This will get overridden if a metadata file is passed
     logger.info('Processing metadata file...');

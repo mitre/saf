@@ -59,25 +59,24 @@ export function impactNumberToSeverityString(impact: number): string {
   // Impact must be 0.0 - 1.0
   if (impact < 0 || impact > 1) {
     throw new Error('Impact cannot be less than 0.0 or greater than 1.0');
-  } else {
-    if (impact >= 0.9) {
-      return 'critical';
-    }
-
-    if (impact >= 0.7) {
-      return 'high';
-    }
-
-    if (impact >= 0.4) {
-      return 'medium';
-    }
-
-    if (impact >= 0.1) {
-      return 'low';
-    }
-
-    return 'none';
   }
+  if (impact >= 0.9) {
+    return 'critical';
+  }
+
+  if (impact >= 0.7) {
+    return 'high';
+  }
+
+  if (impact >= 0.4) {
+    return 'medium';
+  }
+
+  if (impact >= 0.1) {
+    return 'low';
+  }
+
+  return 'none';
 }
 
 export function inspecControlToRubyCode(control: InSpecControl, lineLength?: number, showUtfEncoding?: boolean): string {
