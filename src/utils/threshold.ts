@@ -127,7 +127,7 @@ export function exitNonZeroIfTrue(isConditionMet: boolean, reason?: string) {
   }
 
   // eslint-disable-next-line no-constant-binary-expression
-  console.error(`Error: ${reason}` || 'Error: Compliance levels were not met'); // skipcq: JS-W1043
+  console.error(`Error: ${reason}` || 'Error: Compliance levels were not met');
   throw new Error(reason || 'Compliance levels were not met');
 }
 

@@ -130,7 +130,7 @@ async function processPrompt() {
       default: envConfig.EMASSER_API_KEY,
       required: true,
       validate: (input: string) => {
-        if (/([a-zA-Z0-9-]{30,})/g.test(input)) { // skipcq: JS-0113
+        if (/([a-zA-Z0-9-]{30,})/g.test(input)) {
           return true;
         }
 
@@ -143,7 +143,7 @@ async function processPrompt() {
       required: true,
       validate: (input: string) => {
         // eslint-disable-next-line no-useless-escape
-        if (/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/g.test(input)) { // skipcq: JS-0113, JS-0097
+        if (/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/g.test(input)) {
           return true;
         }
 
@@ -239,7 +239,7 @@ async function processPrompt() {
       message: PROMPT_MESSAGE[7],
       default: envConfig.EMASSER_PORT,
       validate(input: string) {
-        if (/(^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$)/g.test(input)) { // skipcq: JS-0113
+        if (/(^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$)/g.test(input)) {
           return true;
         }
 
@@ -348,7 +348,7 @@ function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: Record
 
       // Check if the line contains a key-value pair (e.g., key=value)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const [key, _value_] = trimmedLine.split('='); // skipcq: JS-0356
+      const [key, _value_] = trimmedLine.split('=');
 
       // If the key exists in the updates object, update the value
       if (Object.hasOwn(updates, key)) {

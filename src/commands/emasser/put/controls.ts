@@ -175,7 +175,7 @@ function addOptionalFields(bodyObject: Controls, dataObj: Controls): void {
   }
 }
 
-function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { // skipcq: JS-0044
+function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void {
   // ----------------------------------------------------------------------------------------
   // Conditional fields that are required based on the "implementationStatus" value
   // "Planned" or       estimatedCompletionDate, responsibleEntities, slcmCriticality,
@@ -320,7 +320,7 @@ export default class EmasserPutControls extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the PUT Controls command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {

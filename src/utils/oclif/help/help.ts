@@ -79,11 +79,11 @@ export default class MyHelpClass extends Help {
       args[0] = args[0].replace(key, () => value);
     }
 
-    stdout.write(format.apply(this, args) + '\n'); // skipcq: JS-0357
+    stdout.write(format.apply(this, args) + '\n');
   }
 
   protected log(...args: string[]): void {
-    stdout.write(format.apply(this, args) + '\n'); // skipcq: JS-0357
+    stdout.write(format.apply(this, args) + '\n');
   }
 }
 

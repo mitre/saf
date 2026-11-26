@@ -54,7 +54,7 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
     }),
   };
 
-  async run() { // skipcq: JS-R1005
+  async run() {
     const { flags } = await this.parse(Threshold);
     let thresholds: ThresholdValues;
     // inline does not seem to support the controls array option

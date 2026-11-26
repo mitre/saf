@@ -145,7 +145,7 @@ export default class IonChannel2HDF extends BaseCommand<typeof IonChannel2HDF> {
         // Check for correct input type
         const data = fs.readFileSync(filename, 'utf8');
         checkInput(
-          { data: data, filename: filename }, // skipcq: JS-0240
+          { data: data, filename: filename },
           INPUT_TYPES.IONCHANNEL,
           'IonChannel JSON',
         );

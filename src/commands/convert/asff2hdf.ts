@@ -126,7 +126,7 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
           );
         } else {
           checkInput(
-            { data: data, filename: flags.input }, // skipcq: JS-0240
+            { data: data, filename: flags.input },
             INPUT_TYPES.ASFF,
             'AWS Security Finding Format JSON',
           );

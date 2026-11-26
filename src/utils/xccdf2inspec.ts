@@ -36,19 +36,19 @@ export function severityStringToImpact(string: string): number {
     return 0;
   }
 
-  if (/low|cat(egory)?\s*(iii|3)/i.test(string)) { // skipcq: JS-0113
+  if (/low|cat(egory)?\s*(iii|3)/i.test(string)) {
     return 0.3;
   }
 
-  if (/med(ium)?|cat(egory)?\s*(ii|2)/i.test(string)) { // skipcq: JS-0113
+  if (/med(ium)?|cat(egory)?\s*(ii|2)/i.test(string)) {
     return 0.5;
   }
 
-  if (/high|cat(egory)?\s*(i|1)/i.test(string)) { // skipcq: JS-0113
+  if (/high|cat(egory)?\s*(i|1)/i.test(string)) {
     return 0.7;
   }
 
-  if (/crit(ical)?|severe/i.test(string)) { // skipcq: JS-0113
+  if (/crit(ical)?|severe/i.test(string)) {
     return 1;
   }
 

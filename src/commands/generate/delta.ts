@@ -310,7 +310,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       const xccdfUrl = await input({
         message: 'Provide an URL pointing to the XCCDF benchmark (.zip) package:',
         validate(input: string) {
-          if (/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*\.zip$/i.test(input)) { // skipcq: JS-0113
+          if (/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*\.zip$/i.test(input)) {
             return true;
           }
           return 'Please enter a valid URL that ends with .zip';
@@ -842,7 +842,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
               this.logger.info(`    Processed control:   ${mappedShortControlFile}`);
               fs.writeFileSync(mappedControlFile, lines.join('\n'));
 
-              // TODO: Maybe copy files from the source directory and rename for duplicates and to preserve source files // skipcq: JS-0099
+              // TODO: Maybe copy files from the source directory and rename for duplicates and to preserve source files
               this.logger.info(`  Mapped control file:   ${sourceShortControlFile} to reference ID ${key}`);
               this.logger.info(`     New control name:   ${key}.rb\n`);
             }
@@ -1011,10 +1011,10 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // logger.debug('  Writing report markdown file')
           this.logThis('  Writing report markdown file', 'debug');
           if (shouldMapControls) {
-            const totalMappedControls = Object.keys(mappedControls).length; // skipcq: JS-0339
+            const totalMappedControls = Object.keys(mappedControls).length;
             const reportData = '## Map Controls\n'
-              + JSON.stringify(mappedControls, null, 2) // skipcq:  JS-0339
-              + `\nTotal Mapped Controls: ${Object.keys(mappedControls).length}\n\n` // skipcq:  JS-0339
+              + JSON.stringify(mappedControls, null, 2)
+              + `\nTotal Mapped Controls: ${Object.keys(mappedControls).length}\n\n`
               + `Total Controls Available for Delta: ${GenerateDelta.oldControlsLength}\n`
               + `     Total Controls Found on XCCDF: ${GenerateDelta.newControlsLength}\n`
               + `                    Match Controls: ${GenerateDelta.match}\n`
@@ -1190,7 +1190,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       : `(${totalMappedControls}+${noMatch}=${GenerateDelta.newControlsLength}) ${isProcessedCountValid}`;
   }
 
-  requiredFlagsProvided(flags: any): boolean { // skipcq: JS-0105
+  requiredFlagsProvided(flags: any): boolean {
     let hasMissingFlags = false;
     let strMsg = 'Warning: The following errors occurred:\n';
 
@@ -1308,7 +1308,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     return { xccdfFile, xccdfContent };
   }
 
-  updateTitle(str: string): string { // skipcq: JS-0105
+  updateTitle(str: string): string {
     return str.replaceAll(/[\n\r\t\f\v]/g, '');
   }
 
@@ -1327,7 +1327,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   @returns The path to the newly created mapped directory.
   @throws An error if any file system operation fails, with the error message extracted using `getErrorMessage`.
   */
-  createMappedDirectory(controlsDir: string): string { // skipcq: JS-0105
+  createMappedDirectory(controlsDir: string): string {
     try {
       const destFilePath = path.dirname(controlsDir);
       const mappedDir = path.join(destFilePath, 'mapped_controls', 'controls');
@@ -1349,7 +1349,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     }
   }
 
-  logThis(logMsg: string, logLevel: string) { // skipcq: JS-0105
+  logThis(logMsg: string, logLevel: string) {
     switch (logLevel) {
       case 'info': {
         GenerateDelta.logger.info(logMsg);

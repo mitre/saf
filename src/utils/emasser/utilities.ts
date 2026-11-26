@@ -119,14 +119,13 @@ const flags = getFlagsForEndpoint(['get', 'system']);
 
 The returned `FlagOptions` object will vary based on the endpoint and request type.
 */
-// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
-export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS-0044
+export function getFlagsForEndpoint(argv: string[]): FlagOptions {
   const args: CliArgs = getArgs(argv);
   let flagObj: FlagOptions = {};
 
-  switch (args.requestType) { // skipcq: JS-0047
+  switch (args.requestType) {
     case 'get': {
-      switch (args.endpoint) { // skipcq: JS-0047
+      switch (args.endpoint) {
         case 'system': {
           flagObj = {
             systemId: Flags.integer({ char: 's', description: 'The system identification number', required: true }),
@@ -314,7 +313,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
     }
 
     case 'post': {
-      switch (args.endpoint) { // skipcq: JS-0047
+      switch (args.endpoint) {
         case 'test_results': {
           flagObj = {
             systemId: Flags.integer({ char: 's', description: 'The system identification number', required: true }),
@@ -385,7 +384,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
     }
 
     case 'put': {
-      switch (args.endpoint) { // skipcq: JS-0047
+      switch (args.endpoint) {
         case 'milestones': {
           flagObj = {
             systemId: Flags.integer({ char: 's', description: 'The system identification number', required: true }),
@@ -414,7 +413,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
     }
 
     case 'delete': {
-      switch (args.endpoint) { // skipcq: JS-0047
+      switch (args.endpoint) {
         case 'artifacts': {
           flagObj = {
             systemId: Flags.integer({ char: 's', description: 'The system identification number', required: true }),
@@ -487,13 +486,12 @@ Retrieves a description for a given endpoint based on the provided arguments.
 @param endpoint - The endpoint for which the description is to be retrieved.
 @returns A string description for the specified endpoint and arguments.
 */
-// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
-export function getDescriptionForEndpoint(argv: string[], endpoint: string): string { // skipcq: JS-0044
+export function getDescriptionForEndpoint(argv: string[], endpoint: string): string {
   const args: CliArgs = getArgs(argv, endpoint);
   let description = '';
 
   if (args.requestType === 'get') {
-    switch (args.endpoint) { // skipcq: JS-0047
+    switch (args.endpoint) {
       case 'roles': {
         switch (args.argument) {
           case 'all': {
@@ -907,8 +905,7 @@ Generates example command strings for a given endpoint and arguments.
 @param endpoint - The optional endpoint to generate examples for.
 @returns An array of example command strings.
 */
-// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
-export function getExamplesForEndpoint(argv: string[], endpoint?: string): string[] { // skipcq: JS-0044
+export function getExamplesForEndpoint(argv: string[], endpoint?: string): string[] {
   const args: CliArgs = getArgs(argv, endpoint);
   // <%= config.bin %> resolves to the executable name
   // <%= command.id %> resolves to the command name
@@ -916,7 +913,7 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
   const exampleArray: string[] = [];
 
   if (args.requestType === 'get') {
-    switch (args.endpoint) { // skipcq: JS-0047
+    switch (args.endpoint) {
       case 'roles': {
         switch (args.argument) {
           case 'all': {
@@ -1356,7 +1353,6 @@ The following endpoints are supported:
 - 'container_scans-required': Returns JSON example for container scans required fields.
 - 'container_scans-optional': Returns JSON example for container scans optional fields.
 */
-// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
 export function getJsonExamples(endpoint?: string): string[] {
   if (endpoint === 'controls-required') {
     const data = '{ '

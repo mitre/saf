@@ -216,7 +216,6 @@ Adds optional fields from the data object to the body object if they exist.
 @param bodyObject - The target object to which optional fields will be added.
 @param dataObj - The source object containing optional fields.
 */
-// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
 function addOptionalFields(bodyObject: Poams, dataObj: Poams): void {
   if (Object.hasOwn(dataObj, 'externalUid')) {
     bodyObject.externalUid = dataObj.externalUid;

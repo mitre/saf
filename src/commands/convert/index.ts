@@ -99,9 +99,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
     return {};
   }
 
-  // skipcq: JS-R1005
   async run() {
-    // skipcq: JS-0044
     const { flags } = await this.parse(Convert);
     let converter;
     switch (Convert.detectedType) {

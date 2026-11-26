@@ -31,7 +31,7 @@ export default class Prowler2HDF extends BaseCommand<typeof Prowler2HDF> {
     const { flags } = await this.parse(Prowler2HDF);
     const data = fs.readFileSync(flags.input, 'utf8');
     checkInput(
-      { data: data, filename: flags.input }, // skipcq: JS-0240
+      { data: data, filename: flags.input },
       INPUT_TYPES.ASFF,
       'Prowler-derived AWS Security Finding Format results',
     );
