@@ -276,7 +276,9 @@ function getDISAReadmeContent(_xmlDoc: any): InspecReadme {
   const stigDate = stigRelDate[2];
 
   readmeObj.profileName = benchmarkTitle.replace(
-    'Security Technical Implementation Guide', 'stig-baseline')
+    'Security Technical Implementation Guide',
+    'stig-baseline',
+  )
     .replaceAll(' ', '-').toLowerCase();
   readmeObj.profileShortName = benchmarkTitle.replace('Security Technical Implementation Guide', '').trim();
   readmeObj.profileTitle = benchmarkTitle;

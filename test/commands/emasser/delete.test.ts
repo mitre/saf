@@ -1,13 +1,19 @@
 import {
-  ArtifactsApi, POAMApi,
-  MilestonesApi, CloudResourceResultsApi,
-  ContainerScanResultsApi, HardwareBaselineApi,
+  ArtifactsApi,
+  POAMApi,
+  MilestonesApi,
+  CloudResourceResultsApi,
+  ContainerScanResultsApi,
+  HardwareBaselineApi,
   SoftwareBaselineApi,
 } from '@mitre/emass_client';
 import type {
-  ArtifactsResponseDel, PoamResponsePostPutDelete,
-  MilestonesPutPostDelete, ContainersResourcesPostDelete,
-  CloudResourcesPostDelete, HwBaselineResponseDelete,
+  ArtifactsResponseDel,
+  PoamResponsePostPutDelete,
+  MilestonesPutPostDelete,
+  ContainersResourcesPostDelete,
+  CloudResourcesPostDelete,
+  HwBaselineResponseDelete,
   SwBaselineResponseDelete,
 } from '@mitre/emass_client/dist/api';
 import { describe, expect, it } from 'vitest';

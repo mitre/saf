@@ -25,21 +25,11 @@ import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg } from 
  */
 function getAllJsonExamples(action: string): string {
   if (action === 'add') {
-    return JSON.stringify(
-      _.merge({},
-        getJsonExamples('scan_findings-application'),
-        getJsonExamples('scan_findings-applicationFindings'),
-      ),
-    );
+    return JSON.stringify(_.merge({}, getJsonExamples('scan_findings-application'), getJsonExamples('scan_findings-applicationFindings')));
   }
 
   if (action === 'clear') {
-    return JSON.stringify(
-      _.merge({},
-        getJsonExamples('scan_findings-application'),
-        getJsonExamples('scan_findings-clearFindings'),
-      ),
-    );
+    return JSON.stringify(_.merge({}, getJsonExamples('scan_findings-application'), getJsonExamples('scan_findings-clearFindings')));
   }
 
   return '';

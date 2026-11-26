@@ -21,14 +21,17 @@ import Fuse from 'fuse.js';
  * the semantic content we want to preserve for fuzzy comparison.
  */
 const COMPLIANCE_MODALS = new Set([
-  'must', 'will', 'shall', 'should', 'may', 'needs',
+  'must',
+  'will',
+  'shall',
+  'should',
+  'may',
+  'needs',
 ]);
 
 function tokensBeforeModal(title: string): string[] {
   const tokens = title.split(/\s+/);
-  const modalIdx = tokens.findIndex(t =>
-    COMPLIANCE_MODALS.has(t.toLowerCase()),
-  );
+  const modalIdx = tokens.findIndex(t => COMPLIANCE_MODALS.has(t.toLowerCase()));
   return modalIdx === -1 ? tokens : tokens.slice(0, modalIdx);
 }
 

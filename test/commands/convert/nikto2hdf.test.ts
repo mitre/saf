@@ -11,8 +11,10 @@ describe('Test nikto', () => {
   it('hdf-converter output test', async () => {
     await runCommand<{ name: string }>([
       'convert nikto2hdf',
-      '-i', path.resolve('./test/sample_data/nikto/sample_input_report/zero.webappsecurity.json'),
-      '-o', `${tmpobj.name}/niktotest.json`,
+      '-i',
+      path.resolve('./test/sample_data/nikto/sample_input_report/zero.webappsecurity.json'),
+      '-o',
+      `${tmpobj.name}/niktotest.json`,
     ]);
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/niktotest.json`, 'utf8'));
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/nikto/nikto-hdf.json'), 'utf8'));
@@ -26,8 +28,11 @@ describe('Test nikto using withraw flag', () => {
   it('hdf-converter with raw output test', async () => {
     await runCommand<{ name: string }>([
       'convert nikto2hdf',
-      '-i', path.resolve('./test/sample_data/nikto/sample_input_report/zero.webappsecurity.json'),
-      '-o', `${tmpobj.name}/niktotest.json`, '-w',
+      '-i',
+      path.resolve('./test/sample_data/nikto/sample_input_report/zero.webappsecurity.json'),
+      '-o',
+      `${tmpobj.name}/niktotest.json`,
+      '-w',
     ]);
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/niktotest.json`, 'utf8'));
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/nikto/nikto-hdf-withraw.json'), 'utf8'));

@@ -40,7 +40,8 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
 
   static readonly flags = {
     output: Flags.string({
-      char: 'o', exclusive: ['interactive'],
+      char: 'o',
+      exclusive: ['interactive'],
       description: '\u001B[31m(required -o or --interactive)\u001B[34mThe Output metadata JSON File to be generate',
     }),
   };

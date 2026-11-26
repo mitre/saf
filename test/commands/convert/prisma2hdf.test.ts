@@ -11,8 +11,10 @@ describe('Test prisma', () => {
   it('hdf-converter output test', async () => {
     await runCommand<{ name: string }>([
       'convert prisma2hdf',
-      '-i', path.resolve('./test/sample_data/prisma/sample_input_report/prismacloud_sample.csv'),
-      '-o', `${tmpobj.name}/prismatest`,
+      '-i',
+      path.resolve('./test/sample_data/prisma/sample_input_report/prismacloud_sample.csv'),
+      '-o',
+      `${tmpobj.name}/prismatest`,
     ]);
     const test1 = JSON.parse(fs.readFileSync(`${tmpobj.name}/prismatest/localhost.json`, 'utf8'));
     const test2 = JSON.parse(fs.readFileSync(`${tmpobj.name}/prismatest/my-fake-host-1.somewhere.cloud.json`, 'utf8'));

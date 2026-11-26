@@ -71,12 +71,7 @@ type ComplianceResults = {
  * @returns {string} A JSON string that merges the required and optional cloud resources examples.
  */
 function getAllJsonExamples(): string {
-  return JSON.stringify(
-    _.merge({},
-      getJsonExamples('cloud_resources-required'),
-      getJsonExamples('cloud_resources-optional'),
-    ),
-  );
+  return JSON.stringify(_.merge({}, getJsonExamples('cloud_resources-required'), getJsonExamples('cloud_resources-optional')));
 }
 
 /**

@@ -28,9 +28,12 @@ describe.sequential('Test generate update_controls4delta command', () => {
 
     await runCommand<{ name: string }>([
       'generate update_controls4delta',
-      '-J', path.resolve('./test/sample_data/inspec/json/profile_and_controls/Windows_Server_2019_v1r3_mini-profile.json'),
-      '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2019_V3R2_xccdf.xml'),
-      '-c', tempControlsDir,
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/profile_and_controls/Windows_Server_2019_v1r3_mini-profile.json'),
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2019_V3R2_xccdf.xml'),
+      '-c',
+      tempControlsDir,
       '--no-backupControls',
     ]);
 
@@ -63,9 +66,12 @@ describe.sequential('Test generate update_controls4delta command', () => {
 
     const { error, stderr } = await runCommand<{ name: string }>([
       'generate update_controls4delta',
-      '-I', 'cinc-auditor',
-      '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2019_V3R2_xccdf.xml'),
-      '-c', `"${tempControlsDir}"`,
+      '-I',
+      'cinc-auditor',
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2019_V3R2_xccdf.xml'),
+      '-c',
+      `"${tempControlsDir}"`,
       '--no-backupControls',
     ]);
 
@@ -99,9 +105,12 @@ describe.sequential('Test generate update_controls4delta command', () => {
 
     const { stderr } = await runCommand<{ name: string }>([
       'generate update_controls4delta',
-      '-I', 'cinc-auditor',
-      '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2019_V3R2_xccdf.xml'),
-      '-c', tempControlsDir,
+      '-I',
+      'cinc-auditor',
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2019_V3R2_xccdf.xml'),
+      '-c',
+      tempControlsDir,
       '--no-backupControls',
     ]);
 

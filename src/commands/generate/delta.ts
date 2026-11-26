@@ -41,45 +41,67 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
   static readonly flags = {
     inspecJsonFile: Flags.string({
-      char: 'J', required: false, exclusive: ['interactive'],
+      char: 'J',
+      required: false,
+      exclusive: ['interactive'],
       description: '\u001B[31m(required [-J or -I])\u001B[34m InSpec Profile Controls JSON summary file - can be generated using the "[cinc-auditor or inspec] json <profile path> | jq . > profile.json" command',
     }),
     inspecPath: Flags.string({
-      char: 'I', required: false, exclusive: ['interactive'],
+      char: 'I',
+      required: false,
+      exclusive: ['interactive'],
       description: '\u001B[31m(required [-J or -I], and also with -M)\u001B[34m Absolute or known relative path to the inspec or cinc-auditor executable',
     }),
     xccdfXmlFile: Flags.string({
-      char: 'X', exclusive: ['interactive', 'xccdfUrl'],
+      char: 'X',
+      exclusive: ['interactive', 'xccdfUrl'],
       description: '\u001B[31m(required [-X or -U] or --interactive)\u001B[34m The XCCDF File containing the new guidance (.xml or .zip)',
     }),
     xccdfUrl: Flags.url({
-      char: 'U', exclusive: ['interactive', 'xccdfXmlFile'],
+      char: 'U',
+      exclusive: ['interactive', 'xccdfXmlFile'],
       description: '\u001B[31m(required [-X or -U] or --interactive)\u001B[34m The URL for the XCCDF package containing the new guidance (.zip, e.g., DISA STIG downloads)',
     }),
     deltaOutputDir: Flags.string({
-      char: 'o', required: false, exclusive: ['interactive'],
-      description: '\u001B[31m(required if not --interactive)\u001B[34m The output folder for the updated profile (this will contain the new controls modified by delta) - if it is not empty, it will be overwritten.' }),
+      char: 'o',
+      required: false,
+      exclusive: ['interactive'],
+      description: '\u001B[31m(required if not --interactive)\u001B[34m The output folder for the updated profile (this will contain the new controls modified by delta) - if it is not empty, it will be overwritten.',
+    }),
     ovalXmlFile: Flags.string({
-      char: 'O', required: false, exclusive: ['interactive'],
-      description: 'The OVAL XML file containing definitions used in the new guidance - in the form of .xml file' }),
+      char: 'O',
+      required: false,
+      exclusive: ['interactive'],
+      description: 'The OVAL XML file containing definitions used in the new guidance - in the form of .xml file',
+    }),
     reportFile: Flags.string({
-      char: 'r', required: false, exclusive: ['interactive'],
-      description: 'Output markdown report file - must have an extension of .md' }),
+      char: 'r',
+      required: false,
+      exclusive: ['interactive'],
+      description: 'Output markdown report file - must have an extension of .md',
+    }),
     idType: Flags.string({
-      char: 'T', required: false, exclusive: ['interactive'],
-      default: 'rule', options: ['rule', 'group', 'cis', 'version'],
+      char: 'T',
+      required: false,
+      exclusive: ['interactive'],
+      default: 'rule',
+      options: ['rule', 'group', 'cis', 'version'],
       description: "Control ID Types: 'rule' - Vulnerability IDs (ex. 'SV-XXXXX'), 'group' - Group IDs (ex. 'V-XXXXX'), 'cis' - CIS Rule IDs (ex. C-1.1.1.1), 'version' - Version IDs (ex. RHEL-07-010020 - also known as STIG IDs)",
     }),
     // New flag -M for whether to try mapping controls to new profile
     runMapControls: Flags.boolean({
-      char: 'M', required: false,
+      char: 'M',
+      required: false,
       exclusive: ['interactive'],
       dependsOn: ['controlsDir'],
       description: 'Run the approximate string matching process',
     }),
     controlsDir: Flags.string({
-      char: 'c', required: false, exclusive: ['interactive'],
-      description: '\u001B[31m(required with -M or -J not provided)\u001B[34m The InSpec profile directory containing the controls to update (controls Delta is processing)' }),
+      char: 'c',
+      required: false,
+      exclusive: ['interactive'],
+      description: '\u001B[31m(required with -M or -J not provided)\u001B[34m The InSpec profile directory containing the controls to update (controls Delta is processing)',
+    }),
   };
 
   static readonly examples = [
@@ -270,11 +292,13 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       } catch (error: any) {
         if (error.code === 'ENOENT') {
           this.saveLogs(
-            `  ERROR: File (entity) not found: ${inspecJsonFile}.\n  Run the --help command for more information on expected input files.`);
+            `  ERROR: File (entity) not found: ${inspecJsonFile}.\n  Run the --help command for more information on expected input files.`,
+          );
           await this.sleep(2000).then(() => process.exit(1));
         } else {
           this.saveLogs(
-            `  ERROR: Unable to process Input execution/profile JSON ${inspecJsonFile}\n  ${error}`);
+            `  ERROR: Unable to process Input execution/profile JSON ${inspecJsonFile}\n  ${error}`,
+          );
           await this.sleep(2000).then(() => process.exit(1));
         }
       }
@@ -320,7 +344,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           }
         } else {
           this.saveLogs(
-            `  ERROR: An OVAL flag option was detected, but no file was provided\n  Ensure ${ovalXmlFile} is an OVAL file`);
+            `  ERROR: An OVAL flag option was detected, but no file was provided\n  Ensure ${ovalXmlFile} is an OVAL file`,
+          );
           await this.sleep(2000).then(() => process.exit(1));
         }
       } else {
@@ -329,7 +354,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     } catch (error: any) {
       if (error.code === 'ENOENT') {
         this.saveLogs(
-          `  ERROR: File (entity) not found: ${ovalXmlFile}.\n  Run the --help command to more information on expected input files.`);
+          `  ERROR: File (entity) not found: ${ovalXmlFile}.\n  Run the --help command to more information on expected input files.`,
+        );
         await this.sleep(2000).then(() => process.exit(1));
       } else {
         this.saveLogs(`  ERROR: Unable to process the OVAL XML file: ${ovalXmlFile}\n  ${error}`);
@@ -441,7 +467,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       this.saveLogs(
         '  ERROR: Could not process fuzzy search logic. Check the --help command for more '
         + 'information on the deltaOutputDir(-o) or controlsDir(-c) flags.\n'
-        + `  ${getErrorMessage(error)}`);
+        + `  ${getErrorMessage(error)}`,
+      );
       await this.sleep(2000).then(() => process.exit(1));
     }
 
@@ -474,7 +501,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       this.logThis(`  ERROR: Could not process delta output directory: ${deltaOutputDir}. Check the --help command for more information on the -o flag.`, 'error');
       this.logThis(`  ${error}`, 'error');
       this.saveLogs(
-        `  ERROR: Unable to process delta output directory: ${deltaOutputDir}\n  Check the --help command for more information on the -o flag.\n  ${error}`);
+        `  ERROR: Unable to process delta output directory: ${deltaOutputDir}\n  Check the --help command for more information on the -o flag.\n  ${error}`,
+      );
       await this.sleep(2000).then(() => process.exit(1));
     }
 
@@ -516,7 +544,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         updatedResult = updateProfileUsingXCCDF(existingProfile, xccdfContent, idType as 'cis' | 'version' | 'rule' | 'group', thisLogger, ovalDefinitions);
       } else {
         this.saveLogs(
-          `  ERROR: Invalid ID Type: ${idType}. Check the --help command for the available ID Type options.`);
+          `  ERROR: Invalid ID Type: ${idType}. Check the --help command for the available ID Type options.`,
+        );
         await this.sleep(2000).then(() => process.exit(1));
       }
 
@@ -608,7 +637,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       } else {
         this.logger.error('\nDelta Process failed\n');
         this.saveLogs(
-          `  ERROR: The updateProfileUsingXCCDF process failed to provide updated profiles, received: ${updatedResult}.`);
+          `  ERROR: The updateProfileUsingXCCDF process failed to provide updated profiles, received: ${updatedResult}.`,
+        );
         await this.sleep(2000).then(() => process.exit(1));
       }
     } else {
