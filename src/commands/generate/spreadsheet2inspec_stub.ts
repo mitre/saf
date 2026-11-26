@@ -279,7 +279,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
       });
 
       for (const [index, record] of records.entries()) {
-        let skipControlDueToError = false;
+        let shouldSkipControlDueToError = false;
         let newControl: Partial<InSpecControl> = {
           refs: [],
           tags: {
@@ -294,13 +294,13 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
               _.set(newControl, mapping[0], `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${value}`);
             } else {
               console.error(`Control at index ${index} has no mapped control ID... skipping`);
-              skipControlDueToError = true;
+              shouldSkipControlDueToError = true;
             }
           } else {
             _.set(newControl, mapping[0].toLowerCase().replace('desc.', 'descs.'), extractValueViaPathOrNumber(mapping[0], mapping[1], record));
           }
         }
-        if (skipControlDueToError) {
+        if (shouldSkipControlDueToError) {
           continue;
         }
 

@@ -119,6 +119,7 @@ describe('createWinstonLogger plainText mode', () => {
 
     // Winston's Console transport writes via process.stdout.write, not console.log
     const writes: string[] = [];
+    // eslint-disable-next-line unicorn/consistent-boolean-name -- This writes to stdout and returns a backpressure signal.
     const origWrite = process.stdout.write.bind(process.stdout);
     process.stdout.write = (chunk: unknown, ...rest: unknown[]) => {
       writes.push(typeof chunk === 'string' ? chunk : String(chunk));

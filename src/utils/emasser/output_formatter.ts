@@ -65,27 +65,27 @@ function convertEpochToDateTime(dataObject: object): object {
 Formats the given data object based on the configuration settings.
 
 @param data - The data object to be formatted.
-@param doConversion - A boolean flag indicating whether to perform data conversion. Defaults to true.
+@param shouldConvert - A boolean flag indicating whether to perform data conversion. Defaults to true.
 @returns The formatted data as a JSON string.
 
 The function performs the following operations based on the configuration:
 - If debugging is enabled, it logs the entire data object.
 - If the data object contains headers, it extracts the data property.
-- If doConversion is true, it processes the data object to remove null values and convert epoch times to human-readable dates.
-- If hideNulls is true, it removes null values from the data object.
-- If showEpoch is true, it converts epoch times to human-readable dates.
+- If shouldConvert is true, it processes the data object to remove null values and convert epoch times to human-readable dates.
+- If shouldHideNulls is true, it removes null values from the data object.
+- If shouldFormatDates is true, it converts epoch times to human-readable dates.
 
 The function handles different structures of the data object, including arrays and nested objects.
 It merges the processed data into a new object and returns it as a formatted JSON string.
 */
-export function outputFormat(data: object, doConversion = true): string {
+export function outputFormat(data: object, shouldConvert = true): string {
   const conf = new ApiConfig();
-  const hideNulls = !conf.displayNulls;
-  const showEpoch = conf.displayDateTime;
-  const debugging = conf.debugging;
+  const shouldHideNulls = !conf.displayNulls;
+  const shouldFormatDates = conf.displayDateTime;
+  const isDebugging = conf.debugging;
   let formatDataObj: object = data;
 
-  if (debugging) {
+  if (isDebugging) {
     // When debugging is on, output the entire content returned from
     // the server. Output text in yellow and revert back to default
     console.log('\u{1B}[93m', 'Debugging is on', '\u{1B}[0m');
@@ -105,10 +105,10 @@ export function outputFormat(data: object, doConversion = true): string {
       formatDataObj = _.get(data, 'data') || {};
     }
 
-    if (doConversion) {
+    if (shouldConvert) {
       const paginationObj = { pagination: _.get(formatDataObj, 'pagination') };
 
-      if (hideNulls) {
+      if (shouldHideNulls) {
         const newData: Record<string, any> = {};
 
         for (const key1 of (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[])) {
@@ -182,7 +182,7 @@ export function outputFormat(data: object, doConversion = true): string {
         }
       }
 
-      if (showEpoch) {
+      if (shouldFormatDates) {
         const newData: Record<string, any> = {};
         const dataObj: Record<string, any> = {};
         for (const key1 of (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[])) {

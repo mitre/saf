@@ -33,6 +33,7 @@ type TestableGenerateDelta = {
   logger: LoggerStub;
 };
 
+// eslint-disable-next-line unicorn/consistent-boolean-name -- Name the mock after the confirmation prompt.
 const confirmMock = vi.mocked(confirm);
 const fileSelectorMock = vi.mocked(fileSelector);
 const inputMock = vi.mocked(input);

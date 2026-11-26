@@ -172,7 +172,7 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
       const client = new SecurityHub(clientOptions);
       // Pagination
       let nextToken;
-      let first = true;
+      let isFirstPage = true;
       let filters: AwsSecurityFindingFilters = {};
 
       // Filter by target name
@@ -190,8 +190,8 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
         MaxResults: API_MAX_RESULTS,
       };
       // Get findings
-      while (first || nextToken !== undefined) {
-        first = false;
+      while (isFirstPage || nextToken !== undefined) {
+        isFirstPage = false;
         logger.debug(`Querying for NextToken: ${nextToken}`);
         _.set(queryParams, 'NextToken', nextToken);
 
@@ -207,14 +207,14 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
       }
 
       nextToken = undefined;
-      first = true;
+      isFirstPage = true;
 
       logger.info('Starting collection of enabled security standards');
       const enabledStandards: StandardsSubscription[] = [];
 
       // Get active security standards subscriptions (enabled standards)
-      while (first || nextToken !== undefined) {
-        first = false;
+      while (isFirstPage || nextToken !== undefined) {
+        isFirstPage = false;
         logger.debug(`Querying for NextToken: ${nextToken}`);
         // type system seems to think that this call / the result is from the callback variant of the function instead of the promise based one and throwing fits
         const enabledStandardsResult: GetEnabledStandardsCommandOutput
@@ -239,11 +239,11 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
       // Describe the controls to give context to the mapper
       for (const standard of enabledStandards) {
         nextToken = undefined;
-        first = true;
+        isFirstPage = true;
         const standardsControls: StandardsControl[] = [];
 
-        while (first || nextToken !== undefined) {
-          first = false;
+        while (isFirstPage || nextToken !== undefined) {
+          isFirstPage = false;
           logger.debug(`Querying for NextToken: ${nextToken}`);
           const standardsControlsResult: DescribeStandardsControlsCommandOutput
             = await client.describeStandardsControls({

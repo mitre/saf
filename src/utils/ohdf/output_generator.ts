@@ -181,12 +181,12 @@ The table has a row for each value in `ROW_ORDER` and a column for each value in
 The values in the table are extracted from the data object.
 
 @param data - The data object or array of data objects containing the values for the table.
-@param titleTables - Boolean to either enable or disable adding titles to the produced markdown tables.
+@param shouldIncludeTableTitles - Boolean to either enable or disable adding titles to the produced markdown tables.
 @returns An array of strings, each representing a Markdown table.
 */
-export function convertToMarkdown(data: DataOrArray, titleTables: boolean): string[] {
+export function convertToMarkdown(data: DataOrArray, shouldIncludeTableTitles: boolean): string[] {
   logger.verbose('In convertTomarkdown');
-  return Array.isArray(data) ? data.map(item => generateMarkdownTable(item, titleTables)) : [generateMarkdownTable(data, titleTables)];
+  return Array.isArray(data) ? data.map(item => generateMarkdownTable(item, shouldIncludeTableTitles)) : [generateMarkdownTable(data, shouldIncludeTableTitles)];
 }
 
 /**
@@ -233,14 +233,14 @@ The function works as follows:
 - It starts by converting the compliance score to a string and creating the header row of the table.
 - It then generates the body of the table by mapping over the `ROW_ORDER` array and generating a row for each item using the `generateMarkdownTableRow` function.
 - It creates a `Table` object from the header row and the body of the table.
-- It then determines the title of the table based on the `titleTables` parameter and the `profileName` property of the item.
+- It then determines the title of the table based on the `shouldIncludeTableTitles` parameter and the `profileName` property of the item.
 - Finally, it returns the title and the Markdown table as a string.
 
 @param item - The data to generate the table from. This can be either a `Data` object or a `PrintableSummary` object.
-@param titleTables - A boolean indicating whether to include the profile name as a Markdown header before the table.
+@param shouldIncludeTableTitles - A boolean indicating whether to include the profile name as a Markdown header before the table.
 @returns A string representing the Markdown table.
 */
-export function generateMarkdownTable(item: Data | PrintableSummary, titleTables: boolean): string {
+export function generateMarkdownTable(item: Data | PrintableSummary, shouldIncludeTableTitles: boolean): string {
   const score = item.compliance.toString();
   const headerRow = ['Compliance: ' + score + '<br>:test_tube:', ...COLUMN_ORDER.map(column => `${prettyPrintColumnTitle(column)}<br>${COLUMN_EMOJI[column]}`)];
   const table: string[][]
@@ -252,9 +252,9 @@ export function generateMarkdownTable(item: Data | PrintableSummary, titleTables
   };
   const myAlignment: Align[] = [Align.Left, Align.Center, Align.Center, Align.Center, Align.Center, Align.Center];
 
-  // Include the profileName as a Markdown header before the table if titleTables is true
+  // Include the profileName as a Markdown header before the table if shouldIncludeTableTitles is true
   const profile_name = typeof item.profileName === 'string' ? item.profileName : 'Evalueated Profile';
-  const title = titleTables ? `# ${profile_name}\n\n` : '';
+  const title = shouldIncludeTableTitles ? `# ${profile_name}\n\n` : '';
   return title + getMarkdownTable({
     table: myTable,
     alignment: myAlignment,

@@ -232,7 +232,7 @@ Compute the `potentialMismatch` flag for a link from its (matchMethod,
 relationship, confidence) tuple. Related and no-match links never flag
 (the flag is about soft primary matches). Tier 1 is always trusted.
 */
-function computePotentialMismatch(
+function isPotentialMismatch(
   matchMethod: MatchMethod,
   relationship: 'primary' | 'related' | 'no-match',
   confidence: number,
@@ -338,7 +338,7 @@ function claimOrRelate(
 
 /**
 Construct a successful LinkRecord (any tier). Derives
-`potentialMismatch` consistently via `computePotentialMismatch`.
+`potentialMismatch` consistently via `isPotentialMismatch`.
 */
 function makeLink(args: {
   newControl: ControlLike;
@@ -355,7 +355,7 @@ function makeLink(args: {
     confidence: args.confidence,
     relationship: args.relationship,
     srg: args.srg,
-    potentialMismatch: computePotentialMismatch(
+    potentialMismatch: isPotentialMismatch(
       args.matchMethod,
       args.relationship,
       args.confidence,

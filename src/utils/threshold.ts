@@ -109,14 +109,14 @@ logs an error message to the console and throws an error with the provided reaso
 
 It is the responsibility of the caller to catch the error and exit accordingly.
 
-@param condition - The condition to evaluate. If true, the process will exit with an error.
+@param isConditionMet - The condition to evaluate. If true, the process will exit with an error.
 @param reason - Optional. The reason for the error. If not provided, a default message will be used.
 @throws Will throw an error with the provided reason or a default message if the condition is true.
 
 @returns - does not return, it simply trows an error if condition is satisfied (true)
 */
-export function exitNonZeroIfTrue(condition: boolean, reason?: string) {
-  if (condition) {
+export function exitNonZeroIfTrue(isConditionMet: boolean, reason?: string) {
+  if (isConditionMet) {
     // eslint-disable-next-line no-constant-binary-expression
     console.error(`Error: ${reason}` || 'Error: Compliance levels were not met'); // skipcq: JS-W1043
     throw new Error(reason || 'Compliance levels were not met');
@@ -212,13 +212,13 @@ export function getDescriptionContentsOrUndefined(
   return undefined;
 }
 
-function cklControlStatus(control: ContextualizedControl, for_summary?: boolean): 'Not_Applicable' | 'Profile_Error' | 'Open' | 'NotAFinding' | 'Not_Reviewed' {
+function cklControlStatus(control: ContextualizedControl, isForSummary?: boolean): 'Not_Applicable' | 'Profile_Error' | 'Open' | 'NotAFinding' | 'Not_Reviewed' {
   const statuses = control.hdf.segments?.map(segment => segment.status);
   if (control.data.impact === 0) {
     return 'Not_Applicable';
   }
 
-  if (statuses?.includes('error') || (statuses?.length === 0 && for_summary)) {
+  if (statuses?.includes('error') || (statuses?.length === 0 && isForSummary)) {
     return 'Profile_Error';
   }
 

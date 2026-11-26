@@ -414,7 +414,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     const ext = '.rb';
     let skipped = 0;
     let processed = 0;
-    let isCorrectControl = 0;
+    let correctControlCount = 0;
     let notInProfileJSON = 0;
     const controlsDir = flags.controlsDir;
     const files = await readdir(controlsDir);
@@ -422,7 +422,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     // Iterate trough all files processing ony control files, have a .rb extension
     const skippedControls: string[] = [];
     const skipMetadataUpdate: string[] = [];
-    const isCorrectControlMap = new Map();
+    const correctControlMap = new Map();
     const controlsProcessedMap = new Map();
 
     for (const file of files) {
@@ -441,8 +441,8 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
           logger.debug(`  Baseline X Control is current: ${currentControlNumber} `);
 
           // Update statistics (value does not matter)
-          isCorrectControl++;
-          isCorrectControlMap.set(currentControlNumber, currentControlNumber);
+          correctControlCount++;
+          correctControlMap.set(currentControlNumber, currentControlNumber);
 
           // Process the control
           if (baselineYControls.has(currentControlNumber)) {
@@ -486,7 +486,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     let newControls = 0;
     const newControlsFound: unknown[] = [];
     for (const newControl of xccdfControlsMap.values()) {
-      if (!controlsProcessedMap.has(newControl) && !isCorrectControlMap.has(newControl)) {
+      if (!controlsProcessedMap.has(newControl) && !correctControlMap.has(newControl)) {
         newControls++;
         newControlsFound.push(newControl);
       }
@@ -509,7 +509,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       log.info(`\n     Total skipped files (no mapping to new control Id): ${skipped.toString().padStart(4)}`);
       log.info(`Total processed files (found mapping to new control Id):  ${processed.toString().padStart(3)}`);
 
-      log.info(`\n    Total controls with correct identification:  ${isCorrectControl.toString().padStart(3)}`);
+      log.info(`\n    Total controls with correct identification:  ${correctControlCount.toString().padStart(3)}`);
       log.info(`Total new controls found in the XCCDF guidance:  ${newControls.toString().padStart(3)}`);
 
       log.info(`\nSkipped control(s) (not included in XCCDF guidance):  ${skippedControls.toString()}`);
@@ -572,20 +572,20 @@ function getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: 
   return controlData;
 }
 
-function saveControl(filePath: string, newXCCDFControlNumber: string, currentControlNumber: string, updatedControl: string, backupControls: boolean, renamedControl: boolean) {
+function saveControl(filePath: string, newXCCDFControlNumber: string, currentControlNumber: string, updatedControl: string, shouldBackUpControls: boolean, shouldRenameControl: boolean) {
   const newFileName = resolveSafeChild(path.dirname(filePath), safeFilename(`${basename(newXCCDFControlNumber)}.rb`));
 
   // Move processed (old) control to oldControls folder
-  if (backupControls) {
+  if (shouldBackUpControls) {
     const destFilePath = resolveSafeChild(GenerateUpdateControls.backupDir, safeFilename(`${basename(currentControlNumber)}.rb`));
-    if (renamedControl) {
+    if (shouldRenameControl) {
       fs.renameSync(filePath, destFilePath);
     } else {
       fs.copyFileSync(filePath, destFilePath);
     }
 
   // Delete processed (old) file
-  } else if (renamedControl) {
+  } else if (shouldRenameControl) {
     fs.unlinkSync(filePath);
   }
 

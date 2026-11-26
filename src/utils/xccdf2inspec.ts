@@ -79,8 +79,8 @@ export function impactNumberToSeverityString(impact: number): string {
   return 'none';
 }
 
-export function inspecControlToRubyCode(control: InSpecControl, lineLength?: number, showUtfEncoding?: boolean): string {
-  let result = showUtfEncoding ? '# encoding: UTF-8\n\n' : '';
+export function inspecControlToRubyCode(control: InSpecControl, lineLength?: number, shouldShowUtfEncoding?: boolean): string {
+  let result = shouldShowUtfEncoding ? '# encoding: UTF-8\n\n' : '';
 
   result += `control "${control.id}" do\n`;
   if (control.title) {

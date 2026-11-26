@@ -240,7 +240,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         converter = new NessusResults(fs.readFileSync(flags.input, 'utf8'));
         const result = converter.toHdf();
         const pluralResults = Array.isArray(result) ? result : [];
-        const singularResult = pluralResults.length === 0;
+        const isSingularResult = pluralResults.length === 0;
         const outputBase = path.dirname(flags.output);
         const outputPrefix = safeFilename(flags.output.replaceAll(/\.json/gi, ''));
         for (const element of pluralResults) {
@@ -250,7 +250,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
           );
         }
 
-        if (singularResult) {
+        if (isSingularResult) {
           fs.writeFileSync(
             `${checkSuffix(flags.output)}`,
             JSON.stringify(result, null, 2),
@@ -328,7 +328,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         converter = new SnykResults(fs.readFileSync(flags.input, 'utf8'));
         const result = converter.toHdf();
         const pluralResults = Array.isArray(result) ? result : [];
-        const singularResult = pluralResults.length === 0;
+        const isSingularResult = pluralResults.length === 0;
         const outputBase = path.dirname(flags.output);
         const outputPrefix = safeFilename(flags.output.replaceAll(/\.json/gi, ''));
         for (const element of pluralResults) {
@@ -338,7 +338,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
           );
         }
 
-        if (singularResult) {
+        if (isSingularResult) {
           fs.writeFileSync(
             `${checkSuffix(flags.output)}`,
             JSON.stringify(result, null, 2),

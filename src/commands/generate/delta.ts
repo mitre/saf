@@ -199,7 +199,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     let ovalXmlFile: string;
     let reportFile = '';
     let idType: string;
-    let runMapControls: boolean;
+    let shouldMapControls: boolean;
     let controlsDir: string;
     let logLevel: string;
 
@@ -238,7 +238,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       }
 
       idType = interactiveFlags.idType;
-      runMapControls = interactiveFlags.runMapControls;
+      shouldMapControls = interactiveFlags.runMapControls;
       controlsDir = interactiveFlags.controlsDir;
       logLevel = interactiveFlags.logLevel;
     } else if (this.requiredFlagsProvided(flags)) {
@@ -256,7 +256,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       ovalXmlFile = flags.ovalXmlFile!;
       reportFile = flags.reportFile!;
       idType = flags.idType;
-      runMapControls = flags.runMapControls;
+      shouldMapControls = flags.runMapControls;
       controlsDir = flags.controlsDir!;
       logLevel = flags.logLevel;
 
@@ -368,7 +368,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     // logger.info('Checking if control mapping is required...')
     this.logThis('Checking if control mapping is required...', 'info');
     try {
-      if (runMapControls && controlsDir) {
+      if (shouldMapControls && controlsDir) {
         this.logThis('  Mapping controls (using fuzzy logic - lower value = best match) from the old profile to the new profile', 'info');
         this.logger.info('Mapping controls (using fuzzy logic - lower value = best match) from the old profile to the new profile\n');
         // Process XCCDF of new profile to get controls
@@ -569,7 +569,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           }
 
           // Call the .toRuby verbose if the log level is debug or verbose
-          const processLogLevel = Boolean(logLevel === 'debug' || logLevel === 'verbose');
+          const isVerboseLogging = Boolean(logLevel === 'debug' || logLevel === 'verbose');
           if (index >= 0) {
             // We found a mapping for this control (aka index >=0)
             // The new control (control) has the new metadata but doesn't have
@@ -583,7 +583,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             const controlFilename = safeFilename(`${basename(control.id)}.rb`);
             fs.writeFileSync(
               resolveSafeChild(outputProfileFolderPath, 'controls', controlFilename),
-              newControl.toRuby(processLogLevel),
+              newControl.toRuby(isVerboseLogging),
             );
           } else {
             // We didn't find a mapping for this control - Old style of updating controls
@@ -591,7 +591,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             const controlFilename = safeFilename(`${basename(control.id)}.rb`);
             fs.writeFileSync(
               resolveSafeChild(outputProfileFolderPath, 'controls', controlFilename),
-              control.toRuby(processLogLevel),
+              control.toRuby(isVerboseLogging),
             );
           }
         }
@@ -609,7 +609,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         if (reportFile) {
           // logger.debug('  Writing report markdown file')
           this.logThis('  Writing report markdown file', 'debug');
-          if (runMapControls) {
+          if (shouldMapControls) {
             const totalMappedControls = Object.keys(mappedControls).length; // skipcq: JS-0339
             const reportData = '## Map Controls\n'
               + JSON.stringify(mappedControls, null, 2) // skipcq:  JS-0339
@@ -824,7 +824,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     }
     // `potentialMismatch` is the single source of truth for "accepted
     // primary but below the tier's strong-confidence threshold" — see
-    // computePotentialMismatch + TIER{2,3}_MISMATCH_THRESHOLD in
+    // isPotentialMismatch + TIER{2,3}_MISMATCH_THRESHOLD in
     // delta_matching.ts. Reading the flag here keeps stats bookkeeping
     // aligned with the tier definitions automatically.
     if (link.potentialMismatch) {
@@ -844,15 +844,15 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     const misMatch = GenerateDelta.posMisMatch;
     const related = GenerateDelta.dupMatch;
     const noMatch = GenerateDelta.noMatch;
-    const statMappedMatches = (match + misMatch + related) === totalMappedControls;
-    const statProcessedTotal = (totalMappedControls + noMatch) === GenerateDelta.newControlsLength;
+    const isMappedCountValid = (match + misMatch + related) === totalMappedControls;
+    const isProcessedCountValid = (totalMappedControls + noMatch) === GenerateDelta.newControlsLength;
     return statValidation === 'totalMapped'
-      ? `(${match}+${misMatch}+${related}=${totalMappedControls}) ${statMappedMatches}`
-      : `(${totalMappedControls}+${noMatch}=${GenerateDelta.newControlsLength}) ${statProcessedTotal}`;
+      ? `(${match}+${misMatch}+${related}=${totalMappedControls}) ${isMappedCountValid}`
+      : `(${totalMappedControls}+${noMatch}=${GenerateDelta.newControlsLength}) ${isProcessedCountValid}`;
   }
 
   requiredFlagsProvided(flags: any): boolean { // skipcq: JS-0105
-    let missingFlags = false;
+    let hasMissingFlags = false;
     let strMsg = 'Warning: The following errors occurred:\n';
 
     // If we don't have a Controls Profiles summary file or are conducting
@@ -864,28 +864,28 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // Filter the files to check if any of them have the .rb extension
         const rbFiles = files.filter(file => path.extname(file) === '.rb');
         if (rbFiles.length > 0) {
-          missingFlags = false;
+          hasMissingFlags = false;
         } else {
           strMsg += `  No Controls found in directory: ${flags.controlsDir}\n`;
-          missingFlags = true;
+          hasMissingFlags = true;
         }
       } else {
         strMsg += `  Profile Controls directory does not exist: ${flags.controlsDir}\n`;
-        missingFlags = true;
+        hasMissingFlags = true;
       }
     }
 
     if (!flags.deltaOutputDir) {
       strMsg += '  Missing required flag deltaOutputDir\n';
-      missingFlags = true;
+      hasMissingFlags = true;
     }
 
-    if (missingFlags) {
+    if (hasMissingFlags) {
       strMsg += 'See more help with -h or --help';
       this.warn(strMsg);
     }
 
-    return !missingFlags;
+    return !hasMissingFlags;
   }
 
   /**
@@ -1183,8 +1183,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     }
 
     // If we are using fuzzy logic or profile controls summary was not provided we need the controls directory
-    const useFuzzyLogic = await confirm({ message: 'Run the approximate string matching process (fuzzy logic)?' });
-    if (useFuzzyLogic || generateSummaryFile === 'yes') {
+    const shouldUseFuzzyLogic = await confirm({ message: 'Run the approximate string matching process (fuzzy logic)?' });
+    if (shouldUseFuzzyLogic || generateSummaryFile === 'yes') {
       const inspecPath = await input({
         message: 'Provide the absolute or known relative path to the inspec or cinc-auditor executable:',
         validate(input: string) {
@@ -1207,7 +1207,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
       this.logger.info('runMapControls=true');
       interactiveValues.controlsDir = controlsDir;
-      interactiveValues.runMapControls = useFuzzyLogic;
+      interactiveValues.runMapControls = shouldUseFuzzyLogic;
     } else {
       this.logger.info('runMapControls=false');
       interactiveValues.runMapControls = false;
@@ -1228,8 +1228,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     interactiveValues.deltaOutputDir = deltaOutputDir;
 
     // Optional - OVAL file Flag
-    const useOvalFile = await confirm({ message: 'Include an OVAL XML file?' });
-    if (useOvalFile) {
+    const shouldIncludeOvalFile = await confirm({ message: 'Include an OVAL XML file?' });
+    if (shouldIncludeOvalFile) {
       const ovalXmlFile = await fileSelector({
         message: 'Select the OVAL XML file containing definitions used in the new guidance - in the form of .xml file:',
         pageSize: 15,
@@ -1249,8 +1249,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     }
 
     // Optional - Generate markdown report from Inspect-objects process
-    const generateReport = await confirm({ message: 'Generate the Inspect-Object process markdown report file?' });
-    if (generateReport) {
+    const shouldGenerateReport = await confirm({ message: 'Generate the Inspect-Object process markdown report file?' });
+    if (shouldGenerateReport) {
       const answers = {
         reportDirectory: await fileSelector({
           message: 'Select the output directory for the markdown report file:',

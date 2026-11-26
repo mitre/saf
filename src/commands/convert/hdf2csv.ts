@@ -84,19 +84,19 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     let inputFile;
     let outputFile;
     let includeFields;
-    let truncateFields = false;
+    let shouldTruncateFields = false;
 
     if (flags.interactive) {
       const interactiveFlags = await this.getFlags();
       inputFile = interactiveFlags.inputFile;
       outputFile = resolveSafeChild(interactiveFlags.outputDirectory, safeFilename(interactiveFlags.outputFileName));
       includeFields = interactiveFlags.fields.join(',');
-      truncateFields = Boolean(interactiveFlags.truncateFields);
+      shouldTruncateFields = Boolean(interactiveFlags.truncateFields);
     } else if (this.requiredFlagsProvided(flags)) {
       inputFile = flags.input!;
       outputFile = flags.output!;
       includeFields = flags.fields;
-      truncateFields = flags.noTruncate;
+      shouldTruncateFields = flags.noTruncate;
 
       // Save the flags to the log object
       this.logger.info('Process Flags ============================================');
@@ -116,7 +116,7 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
         const cleanedRow: Record<string, string> = {};
         for (const [key, value] of Object.entries(row)) {
           if (value !== undefined) {
-            if (value.length > 32_767 && truncateFields) {
+            if (value.length > 32_767 && shouldTruncateFields) {
               if ('ID' in row) {
                 console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
               } else {
@@ -143,25 +143,25 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   }
 
   requiredFlagsProvided(flags: { input: any; output: any }): boolean {
-    let missingFlags = false;
+    let hasMissingFlags = false;
     let strMsg = 'Warning: The following errors occurred:\n';
 
     if (!flags.input) {
       strMsg += '  Missing required flag input (HDF file)\n';
-      missingFlags = true;
+      hasMissingFlags = true;
     }
 
     if (!flags.output) {
       strMsg += '  Missing required flag output (CSV file)\n';
-      missingFlags = true;
+      hasMissingFlags = true;
     }
 
-    if (missingFlags) {
+    if (hasMissingFlags) {
       strMsg += 'See more help with -h or --help';
       this.warn(strMsg);
     }
 
-    return !missingFlags;
+    return !hasMissingFlags;
   }
 
   /**

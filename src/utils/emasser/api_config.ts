@@ -2,9 +2,9 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import { printHelpMsg, printRedMsg } from './utilities';
 
-function printHelpMessage(showLocation: boolean) {
+function printHelpMessage(shouldShowLocation: boolean) {
   printHelpMsg('Use the eMASSer CLI command "saf emasser configure" to generate or update an eMASS configuration file.');
-  if (showLocation) {
+  if (shouldShowLocation) {
     printHelpMsg('If a configuration file exists, it should be placed in the directory where the emasser command is executed.');
   }
 }
