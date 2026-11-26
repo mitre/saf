@@ -35,7 +35,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
   // Extract URLs for references
   matchReferences(control: Partial<InSpecControl>): Partial<InSpecControl> {
     if (control.ref) {
-      const urlMatches = control.ref.replaceAll('\r', '').replaceAll('\n', '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g);
+      const urlMatches = control.ref.replaceAll(/[\r\n]/g, '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g);
       if (urlMatches) {
         control.refs = urlMatches;
       }
