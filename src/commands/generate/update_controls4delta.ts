@@ -566,7 +566,7 @@ function getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: 
   // Read the control content
   const controlData = fs.readFileSync(path, { encoding: 'utf8', flag: 'r' });
   if (newControlNumber !== undefined) {
-    controlData.replace(currentControlNumber, newControlNumber);
+    controlData.replace(currentControlNumber, () => newControlNumber);
   }
 
   return controlData;

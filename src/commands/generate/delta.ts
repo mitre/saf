@@ -434,7 +434,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             if (controlLineIndex === -1) {
               this.logger.error(`${'    Control not found:'}  ${` ${sourceControlFile}\n`}`);
             } else {
-              lines[controlLineIndex] = lines[controlLineIndex].replace(new RegExp(`control ['"]${value}['"] do`), `control '${key}' do`);
+              lines[controlLineIndex] = lines[controlLineIndex].replace(new RegExp(`control ['"]${value}['"] do`), () => `control '${key}' do`);
 
               // Saved processed control to the 'mapped_controls' directory
               this.logger.info(`${'    Processed control: '}  ${`${mappedShortControlFile}`}`);

@@ -74,7 +74,7 @@ export default class MyHelpClass extends Help {
     // Iterate over the argNamesMap using object destructuring
     // Replace the uppercase values with its natural format value
     for (const [key, value] of argNamesMap) {
-      args[0] = args[0].replace(key, value);
+      args[0] = args[0].replace(key, () => value);
     }
 
     stdout.write(format.apply(this, args) + '\n'); // skipcq: JS-0357

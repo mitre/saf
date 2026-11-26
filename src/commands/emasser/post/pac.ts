@@ -43,7 +43,7 @@ export default class EmasserPostPac extends Command {
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \u{1B}[93m${CMD_HELP}\u{1B}[0m`));
+      this.warn(err.message.replace('with --help', () => `with: \u{1B}[93m${CMD_HELP}\u{1B}[0m`));
     } else {
       this.warn(err);
     }
