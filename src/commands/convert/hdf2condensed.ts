@@ -66,7 +66,7 @@ export default class HDF2Condensed extends BaseCommand<typeof HDF2Condensed> {
     // Total Counts
     for (const [type, counts] of Object.entries(thresholds)) {
       let total = 0;
-      for (const [, count] of Object.entries(counts)) {
+      for (const count of Object.values(counts)) {
         total += count;
       }
 

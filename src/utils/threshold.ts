@@ -374,9 +374,9 @@ is turned into
 */
 export function flattenProfileSummary(threshold: Record<string, Record<string, number>>): Record<string, number> {
   const ret: Record<string, number> = {};
-  for (const status of Object.keys(threshold)) {
-    for (const severity of Object.keys(threshold[status])) {
-      ret[`${status}.${severity}`] = threshold[status][severity];
+  for (const [status, severities] of Object.entries(threshold)) {
+    for (const [severity, count] of Object.entries(severities)) {
+      ret[`${status}.${severity}`] = count;
     }
   }
   return ret;
@@ -398,16 +398,16 @@ is turned into
 */
 export function unflattenThreshold(threshold: Record<string, number>): ThresholdValues {
   const ret: Record<string, Record<string, number | Record<string, number>>> = {};
-  for (const key of Object.keys(threshold)) {
+  for (const [key, value] of Object.entries(threshold)) {
     const [left, middle, right] = key.split('.');
     if (!ret[left]) {
       ret[left] = {};
     }
     if (right) {
       ret[left][middle] = {};
-      ret[left][middle][right] = threshold[key];
+      ret[left][middle][right] = value;
     } else {
-      ret[left][middle] = threshold[key];
+      ret[left][middle] = value;
     }
   }
   return ret;

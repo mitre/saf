@@ -181,7 +181,7 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
 
     // Expect Control IDs to match placed severities
     const controlIdMap = getControlIdMap(parsedExecJSON.contains[0] as ContextualizedProfile);
-    for (const [, targetPaths] of Object.entries(statusSeverityPaths)) {
+    for (const targetPaths of Object.values(statusSeverityPaths)) {
       for (const targetPath of targetPaths) {
         const expectedControlIds: string[] | undefined = _.get(thresholds, targetPath);
         if (!expectedControlIds) {
