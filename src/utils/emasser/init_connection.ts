@@ -57,28 +57,21 @@ export class InitConnections {
     // requestCert <boolean> true to specify whether a server should request a certificate from a connecting client. Only applies when isServer is true.
     // rejectUnauthorized <boolean> If not false a server automatically reject clients with invalid certificates. Only applies when isServer is true.
 
-    this.axiosRequestConfig = conf.caCert === undefined
-      ? {
-        httpsAgent: new https.Agent({
-          keepAlive: true,
-          requestCert: conf.reqCert,
-          rejectUnauthorized: conf.sslVerify,
-          key: conf.keyCert ? fs.readFileSync(conf.keyCert) : undefined,
-          cert: conf.clientCert ? fs.readFileSync(conf.clientCert) : undefined,
-          passphrase: conf.apiPassPhrase,
-          port: conf.port,
-        }),
-      }
-      : {
-        httpsAgent: new https.Agent({
-          keepAlive: true,
-          requestCert: conf.reqCert,
-          rejectUnauthorized: conf.sslVerify,
-          ca: fs.readFileSync(conf.caCert),
-          passphrase: conf.apiPassPhrase,
-          port: conf.port,
-        }),
-      };
+    this.axiosRequestConfig = {
+      httpsAgent: new https.Agent({
+        keepAlive: true,
+        requestCert: conf.reqCert,
+        rejectUnauthorized: conf.sslVerify,
+        ...(conf.caCert === undefined
+          ? {
+            key: conf.keyCert ? fs.readFileSync(conf.keyCert) : undefined,
+            cert: conf.clientCert ? fs.readFileSync(conf.clientCert) : undefined,
+          }
+          : { ca: fs.readFileSync(conf.caCert) }),
+        passphrase: conf.apiPassPhrase,
+        port: conf.port,
+      }),
+    };
 
     this.axiosInstances = globalAxios.create(this.axiosRequestConfig);
     this.axiosInstances.defaults.headers.common = {

@@ -75,11 +75,11 @@ The generated content is then written to a file named `.env` in the current dire
 function generateNewdotEnv() {
   let data = '';
   for (const element of PROMPT_NAMES_REQUIRED) {
-    data += element.startsWith('#') ? element + '\n' : element + "=''\n";
+    data += element + (element.startsWith('#') ? '' : "=''") + '\n';
   }
 
   for (const [index, element] of PROMPT_NAMES_OPTIONAL.entries()) {
-    data += element.startsWith('#') ? element + '\n' : element + '=' + OPTIONAL_DEFAULT_VALUES[index - 2] + '\n';
+    data += element + (element.startsWith('#') ? '' : '=' + OPTIONAL_DEFAULT_VALUES[index - 2]) + '\n';
   }
 
   fse.writeFileSync('.env', data);

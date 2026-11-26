@@ -81,29 +81,21 @@ export default class AWSConfig2HDF extends BaseCommand<typeof AWSConfig2HDF> {
   async run() {
     const { flags } = await this.parse(AWSConfig2HDF);
 
-    const converter
-      = flags.accessKeyId && flags.secretAccessKey
-        ? new Mapper(
-          {
-            credentials: {
-              accessKeyId: flags.accessKeyId || '',
-              secretAccessKey: flags.secretAccessKey || '',
-              sessionToken: flags.sessionToken,
-            },
-            region: flags.region,
-          },
-          !flags.insecure,
-          flags.certificate
-            ? fs.readFileSync(flags.certificate, 'utf8')
-            : undefined,
-        )
-        : new Mapper(
-          { region: flags.region },
-          !flags.insecure,
-          flags.certificate
-            ? fs.readFileSync(flags.certificate, 'utf8')
-            : undefined,
-        );
+    const mapperConfig = flags.accessKeyId && flags.secretAccessKey
+      ? {
+        credentials: {
+          accessKeyId: flags.accessKeyId || '',
+          secretAccessKey: flags.secretAccessKey || '',
+          sessionToken: flags.sessionToken,
+        },
+        region: flags.region,
+      }
+      : { region: flags.region };
+    const converter = new Mapper(
+      mapperConfig,
+      !flags.insecure,
+      flags.certificate ? fs.readFileSync(flags.certificate, 'utf8') : undefined,
+    );
 
     fs.writeFileSync(
       checkSuffix(flags.output),
