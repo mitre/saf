@@ -10,7 +10,7 @@ import YAML from 'yaml';
 import CISNistMappings from '../../resources/cis2nist.json';
 import files from '../../resources/files.json';
 import type { CSVControl } from '../../types/csv';
-import type { InSpecControl, InSpecMetaData } from '../../types/inspec';
+import type { InSpecControl, InSpecMetadata } from '../../types/inspec';
 import { basename, extractValueViaPathOrNumber, resolveSafeChild, safeFilename } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 import { impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact } from '../../utils/xccdf2inspec';
@@ -149,7 +149,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
     fs.mkdirSync(path.join(flags.output, 'controls'));
     fs.mkdirSync(path.join(flags.output, 'libraries'));
 
-    let metadata: InSpecMetaData = {};
+    let metadata: InSpecMetadata = {};
     let mappings: Record<string, string | string[] | number>;
 
     // Read metadata file if passed

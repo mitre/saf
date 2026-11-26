@@ -5,7 +5,7 @@ import { Flags } from '@oclif/core';
 import { XMLParser } from 'fast-xml-parser';
 import _ from 'lodash';
 import type { Logger } from 'winston';
-import type { InSpecMetaData, InspecReadme } from '../../types/inspec';
+import type { InSpecMetadata, InspecReadme } from '../../types/inspec';
 import { basename, resolveSafeChild, safeFilename } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
@@ -958,7 +958,7 @@ kitchen.local.ec2.yml
 
     // This will get overridden if a metadata file is passed
     logger.info('Processing metadata file...');
-    let metadata: InSpecMetaData = {};
+    let metadata: InSpecMetadata = {};
     // Read metadata file if passed
     if (flags.metadata) {
       if (fs.existsSync(flags.metadata)) {

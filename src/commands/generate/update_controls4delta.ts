@@ -389,7 +389,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     //  xccdfControlsMap -> maps new control Ids, used to identify new controls
     //    (key and value are the new control Id)
     //
-    //  xccdfNewControlsMetaDataMap -> Contains baseline Y metadata indexed by old control Id
+    //  xccdfNewControlsMetadataMap -> Contains baseline Y metadata indexed by old control Id
     //    (key = legacy Id (V or SV number) and value = new control metadata)
     //
     // The xccdfLegacyControlsMap and xccdfControlsMap are used so we can invoke the .has(key)
@@ -398,7 +398,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     const xccdfLegacyToControlMap = new Map();
     const xccdfLegacyControlsMap = new Map();
     const xccdfControlsMap = new Map();
-    const xccdfNewControlsMetaDataMap = new Map();
+    const xccdfNewControlsMetadataMap = new Map();
     for (const control of xccdfProfile.controls) {
       let controlId;
       const newControlId = basename(control.id); // Ensure there aren't any leading or trailing slashes
@@ -426,14 +426,14 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       xccdfLegacyToControlMap.set(controlId, newControlId);
       xccdfLegacyControlsMap.set(controlId, controlId);
       xccdfControlsMap.set(newControlId, newControlId);
-      xccdfNewControlsMetaDataMap.set(controlId, control);
+      xccdfNewControlsMetadataMap.set(controlId, control);
     }
 
     // -------------------------------------------------------------------------
     // Generate a map data type containing the XCCDF metadata (all content minus the code)
     // and add the code from the old control (in InSpec json object)
     //
-    //  The xccdfNewControlsMetaDataMap contains the metadata generated from
+    //  The xccdfNewControlsMetadataMap contains the metadata generated from
     //  the XCCDF file (baseline Y)
     //  The InSpec JSON file contains the controls and associated code block generated
     //  from the existing controls (baseline X)
@@ -456,11 +456,11 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       // metadata (aka tags) from the source onto the new control. Need to add
       // a new function that simply retrieves the describe block (code) from
       // the source and adds to the destination (update) control)
-      if (!xccdfNewControlsMetaDataMap.has(control.id)) {
+      if (!xccdfNewControlsMetadataMap.has(control.id)) {
         continue;
       }
 
-      const newControl = xccdfNewControlsMetaDataMap.get(control.id);
+      const newControl = xccdfNewControlsMetadataMap.get(control.id);
       const existingDescribeBlock = getExistingDescribeFromControl(control);
       newControl.describe = existingDescribeBlock;
 

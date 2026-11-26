@@ -13,7 +13,7 @@ import { Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { isEmpty } from 'lodash';
 import type { Logger } from 'winston';
-import { getJsonMetaDataExamples, resolveSafeChild, safeFilename } from '../../utils/global';
+import { getJsonMetadataExamples, resolveSafeChild, safeFilename } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
@@ -27,9 +27,9 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
     'The metadata file contains checklist supplemental data.',
     'The metadata file is composed of "profile(s)" and "asset" data.',
     '\u{1B}[1mExample of "One Profile" metadata:\u{1B}[0m',
-    colorize(JSON.stringify(getJsonMetaDataExamples('ckl-one-metadata'), null, 2)),
+    colorize(JSON.stringify(getJsonMetadataExamples('ckl-one-metadata'), null, 2)),
     '\u{1B}[1mExample of "Multiple Profiles" metadata:\u{1B}[0m',
-    colorize(JSON.stringify(getJsonMetaDataExamples('ckl-multiple-metadata'), null, 2)),
+    colorize(JSON.stringify(getJsonMetadataExamples('ckl-multiple-metadata'), null, 2)),
   ];
 
   static readonly flags = {

@@ -473,7 +473,7 @@ Retrieves example JSON metadata based on the specified endpoint.
 
 @throws {SyntaxError} If the constructed JSON data is malformed and cannot be parsed.
 */
-export function getJsonMetaDataExamples(endpoint?: string): string[] {
+export function getJsonMetadataExamples(endpoint?: string): string[] {
   const profile = '{ '
     + '"name:": "The benchmark name (must match with profile name listed in HDF)",'
     + '"title:": "The benchmark title",'
