@@ -102,13 +102,13 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
   async run() {
     const { flags } = await this.parse(ASFF2HDF);
     const logger = createWinstonLogger({ module: 'asff2hdf', level: flags.logLevel });
-    let securityHub;
 
     // Check if output folder already exists
     if (fs.existsSync(flags.output)) {
       throw new Error(`Output folder ${flags.output} already exists`);
     }
 
+    let securityHub;
     const findings: string[] = [];
     // If we've been passed an input file
     if (flags.input) {

@@ -114,10 +114,7 @@ export default class EmasserPutArtifacts extends Command {
 
   async run(): Promise<void> {
     const { flags } = await this.parse(EmasserPutArtifacts);
-    const apiCxn = new ApiConnection();
-    const artifactApi = new ArtifactsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
-
-    const requestBodyArray: Artifacts[] = [];
+    const { configuration, basePath, axiosInstances } = new ApiConnection();
 
     // Check if a Artifacts json file was provided
     if (!fs.existsSync(flags.dataFile)) {
@@ -125,6 +122,8 @@ export default class EmasserPutArtifacts extends Command {
       process.exit(1);
     }
 
+    const artifactApi = new ArtifactsApi(configuration, basePath, axiosInstances);
+    const requestBodyArray: Artifacts[] = [];
     try {
       // Read and parse the JSON file
       const fileContent = await readFile(flags.dataFile, 'utf8');

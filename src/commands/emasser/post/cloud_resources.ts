@@ -262,10 +262,7 @@ export default class EmasserPostCloudResources extends Command {
 
   async run(): Promise<void> {
     const { flags } = await this.parse(EmasserPostCloudResources);
-    const apiCxn = new ApiConnection();
-    const addCloudResource = new CloudResourceResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
-
-    const requestBodyArray: CloudResource[] = [];
+    const { configuration, basePath, axiosInstances } = new ApiConnection();
 
     // Check if a Cloud Resource json file was provided
     if (!fs.existsSync(flags.dataFile)) {
@@ -273,6 +270,8 @@ export default class EmasserPostCloudResources extends Command {
       process.exit(1);
     }
 
+    const addCloudResource = new CloudResourceResultsApi(configuration, basePath, axiosInstances);
+    const requestBodyArray: CloudResource[] = [];
     try {
       const fileContent = await readFile(flags.dataFile, 'utf8');
       const data: unknown = JSON.parse(fileContent);

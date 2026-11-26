@@ -536,10 +536,7 @@ export default class EmasserPutPoams extends Command {
 
   async run(): Promise<void> {
     const { flags } = await this.parse(EmasserPutPoams);
-    const apiCxn = new ApiConnection();
-    const updatePoam = new POAMApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
-
-    const requestBodyArray: Poams[] = [];
+    const { configuration, basePath, axiosInstances } = new ApiConnection();
 
     // Check if a POA&Ms json file was provided
     if (!fs.existsSync(flags.dataFile)) {
@@ -547,6 +544,8 @@ export default class EmasserPutPoams extends Command {
       process.exit(1);
     }
 
+    const updatePoam = new POAMApi(configuration, basePath, axiosInstances);
+    const requestBodyArray: Poams[] = [];
     try {
       // Read and parse the JSON file
       const fileContent = await readFile(flags.dataFile, 'utf8');

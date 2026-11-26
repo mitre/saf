@@ -135,7 +135,6 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     logger.warn('║ Profile controls are formatted using Rubocop  ║');
     logger.warn('╚═══════════════════════════════════════════════╝');
 
-    let inspecProfile: Profile;
     GenerateUpdateControls.backupDir = path.join(path.dirname(flags.controlsDir), 'oldControls');
 
     // User-facing CLI output + file log. Writes to CliProcessOutput.log
@@ -165,13 +164,13 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     // XCCDF is an URL
     } else {
       logger.info(`Verifying that the URL contains a valid XCCDF: ${flags.xccdfUrl instanceof URL ? flags.xccdfUrl.toString() : String(flags.xccdfUrl)}...`);
-      const tmpobj = tmp.dirSync({ unsafeCleanup: true });
-      let fileBuffer: Buffer | null = null;
 
       if (flags.xccdfUrl === undefined) {
         logger.error('URL flag is undefined or invalid');
         return;
       }
+      const tmpobj = tmp.dirSync({ unsafeCleanup: true });
+      let fileBuffer: Buffer | null = null;
       const url = flags.xccdfUrl?.toString();
       await (async () => {
         const zipFile = url.split('/').pop(); // Extracts the last segment
@@ -244,6 +243,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     // -------------------------------------------------------------------------
     // Check if we have an InSpec json file, generate if not provided
     // Process the InSpec json content, convert entries into a Profile object
+    let inspecProfile: Profile;
     logger.info('Processing the Input execution/profile JSON summary...');
     if (flags.inspecJsonFile) {
       logger.info(`  Using execution/profile summary file: ${basename(flags.inspecJsonFile)}`);

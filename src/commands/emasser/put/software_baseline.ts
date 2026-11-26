@@ -369,10 +369,7 @@ export default class EmasserSoftwareBaseline extends Command {
 
   async run(): Promise<void> {
     const { flags } = await this.parse(EmasserSoftwareBaseline);
-    const apiCxn = new ApiConnection();
-    const swBaseline = new SoftwareBaselineApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
-
-    const requestBodyArray: Software[] = [];
+    const { configuration, basePath, axiosInstances } = new ApiConnection();
 
     // Check if a Software json file was provided
     if (!fs.existsSync(flags.dataFile)) {
@@ -380,6 +377,8 @@ export default class EmasserSoftwareBaseline extends Command {
       process.exit(1);
     }
 
+    const swBaseline = new SoftwareBaselineApi(configuration, basePath, axiosInstances);
+    const requestBodyArray: Software[] = [];
     try {
       // Read and parse the JSON file
       const fileContent = await readFile(flags.dataFile, 'utf8');

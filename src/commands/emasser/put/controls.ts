@@ -321,10 +321,7 @@ export default class EmasserPutControls extends Command {
 
   async run(): Promise<void> {
     const { flags } = await this.parse(EmasserPutControls);
-    const apiCxn = new ApiConnection();
-    const updateControl = new ControlsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
-
-    const requestBodyArray: Controls[] = [];
+    const { configuration, basePath, axiosInstances } = new ApiConnection();
 
     // Check if a Security Control information json file was provided
     if (!fs.existsSync(flags.dataFile)) {
@@ -332,6 +329,8 @@ export default class EmasserPutControls extends Command {
       process.exit(1);
     }
 
+    const updateControl = new ControlsApi(configuration, basePath, axiosInstances);
+    const requestBodyArray: Controls[] = [];
     try {
       // Read and parse the JSON file
       const fileContent = await readFile(flags.dataFile, 'utf8');

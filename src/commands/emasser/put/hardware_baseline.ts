@@ -244,10 +244,7 @@ export default class EmasserHardwareBaseline extends Command {
 
   async run(): Promise<void> {
     const { flags } = await this.parse(EmasserHardwareBaseline);
-    const apiCxn = new ApiConnection();
-    const hwBaseline = new HardwareBaselineApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
-
-    const requestBodyArray: Hardware[] = [];
+    const { configuration, basePath, axiosInstances } = new ApiConnection();
 
     // Check if a Hardware json file was provided
     if (!fs.existsSync(flags.dataFile)) {
@@ -255,6 +252,8 @@ export default class EmasserHardwareBaseline extends Command {
       process.exit(1);
     }
 
+    const hwBaseline = new HardwareBaselineApi(configuration, basePath, axiosInstances);
+    const requestBodyArray: Hardware[] = [];
     try {
       // Read and parse the JSON file
       const fileContent = await readFile(flags.dataFile, 'utf8');

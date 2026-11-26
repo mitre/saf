@@ -30,7 +30,6 @@ export default class Heimdall extends Command {
     const open = openDynamicImport.default;
 
     const { flags } = await this.parse(Heimdall);
-    let parsedJSONs: Record<string, unknown>[] = [];
 
     // Is the defined port valid?
     if (Number.isNaN(flags.port) || flags.port < 1 || flags.port >= 65_536) {
@@ -38,6 +37,7 @@ export default class Heimdall extends Command {
       return;
     }
 
+    let parsedJSONs: Record<string, unknown>[] = [];
     // If we were passed a file, does it exist? Can it convert to JSON correctly?
     if (flags.files && flags.files.length > 0) {
       if (!flags.files.every((file: string) => fs.statSync(file).isFile())) {
