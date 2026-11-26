@@ -239,11 +239,7 @@ function isHardware(obj: unknown): obj is Hardware {
 
   const hardwareObj = obj as Partial<Hardware>;
   // Check that required fields, if present, have the correct type
-  if (hardwareObj.assetName !== undefined && typeof hardwareObj.assetName !== 'string') {
-    return false;
-  }
-
-  return true;
+  return hardwareObj.assetName === undefined || typeof hardwareObj.assetName === 'string';
 }
 
 const CMD_HELP = 'saf emasser post hardware_baseline -h or --help';
