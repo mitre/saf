@@ -69,7 +69,11 @@ export function extractStatusCounts(profile: ContextualizedProfile, severity?: s
     Waived: 0,
   };
 
-  for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
+  for (const c of profile.contains) {
+    if (c.extendedBy.length > 0) {
+      continue;
+    }
+
     const control = c.root;
     const status: ControlStatus = control.hdf.status;
     const controlSeverity: Severity = control.hdf.severity;
@@ -186,7 +190,11 @@ export function reverseStatusName(statusName: string): 'passed' | 'failed' | 'sk
 export function getControlIdMap(profile: ContextualizedProfile, thresholds?: ThresholdValues) {
   thresholds ??= {};
 
-  for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
+  for (const c of profile.contains) {
+    if (c.extendedBy.length > 0) {
+      continue;
+    }
+
     const control = c.root;
     const severity = c.root.hdf.severity;
     const path = `${reverseStatusName(control.hdf.status)}.${severity}.controls`;
@@ -270,7 +278,11 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
     skipped: {},
     error: {},
   };
-  for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
+  for (const c of profile.contains) {
+    if (c.extendedBy.length > 0) {
+      continue;
+    }
+
     const control = c.root;
     const status: ControlStatus = control.hdf.status;
     const extracted: Record<string, string | string[] | undefined> & { message: string[] } = {

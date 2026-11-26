@@ -64,7 +64,8 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
       if (cisControlMatches) {
         control.tags.cis_controls = [];
         const mappedCISControlsByVersion: Record<string, string[]> = {};
-        for (const [revision, cisControl] of cisControlMatches.map(cisControl => cisControl.split(' '))) {
+        for (const cisControlMatch of cisControlMatches) {
+          const [revision, cisControl] = cisControlMatch.split(' ');
           const controlRevision = revision.split('CONTROL:v')[1];
           const existingControls = _.get(mappedCISControlsByVersion, controlRevision) || [];
           existingControls.push(cisControl);
@@ -84,7 +85,8 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
         if (cisControlMatches && control.tags) {
           control.tags.cis_controls = [];
           const mappedCISControlsByVersion: Record<string, string[]> = {};
-          for (const [revision, cisControl] of cisControlMatches.map(cisControl => cisControl.replace(/\r?\n/, '').split(' '))) {
+          for (const cisControlMatch of cisControlMatches) {
+            const [revision, cisControl] = cisControlMatch.replace(/\r?\n/, '').split(' ');
             if (revision === 'v7' && cisControl in CISNistMappings) {
               control.tags?.nist?.push(_.get(CISNistMappings, cisControl));
             }
