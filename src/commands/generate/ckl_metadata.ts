@@ -158,7 +158,7 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
     this.logger.info('Please fill in the following fields to the best of your ability, if you do not have a value, please leave the field empty.');
 
     // Collect the "profiles" metadata information
-    let addProfile = true;
+    let shouldAddProfile = true;
     const profiles: {
       name: string | undefined;
       title: string | undefined;
@@ -167,7 +167,7 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
       releasedate: string | undefined;
       showCalendar: boolean;
     }[] = [];
-    while (addProfile) {
+    while (shouldAddProfile) {
       const profile = {
         name: await input({
           message: 'What is the benchmark name? (Must match the profile name listed in HDF):',
@@ -196,7 +196,7 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
         showCalendar: await confirm({ message: 'Show the calendar?', default: true }),
       };
       profiles.push(profile);
-      addProfile = await confirm({ message: 'Do you want to add another profile?', default: false });
+      shouldAddProfile = await confirm({ message: 'Do you want to add another profile?', default: false });
     }
 
     interactiveValues.profiles = profiles;

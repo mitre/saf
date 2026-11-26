@@ -195,15 +195,15 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
         logger.debug(`Querying for NextToken: ${nextToken}`);
         _.set(queryParams, 'NextToken', nextToken);
 
-        const getFindingsResult = await client.getFindings(queryParams);
+        const findingsResult = await client.getFindings(queryParams);
         logger.debug(
-          `Received: ${getFindingsResult.Findings?.length} findings`,
+          `Received: ${findingsResult.Findings?.length} findings`,
         );
-        if (getFindingsResult.Findings) {
-          findings.push(...getFindingsResult.Findings.map(finding => JSON.stringify(finding)));
+        if (findingsResult.Findings) {
+          findings.push(...findingsResult.Findings.map(finding => JSON.stringify(finding)));
         }
 
-        nextToken = getFindingsResult.NextToken;
+        nextToken = findingsResult.NextToken;
       }
 
       nextToken = undefined;
@@ -217,21 +217,21 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
         first = false;
         logger.debug(`Querying for NextToken: ${nextToken}`);
         // type system seems to think that this call / the result is from the callback variant of the function instead of the promise based one and throwing fits
-        const getEnabledStandardsResult: GetEnabledStandardsCommandOutput
+        const enabledStandardsResult: GetEnabledStandardsCommandOutput
           = await client.getEnabledStandards({
             NextToken: nextToken,
           });
 
         logger.debug(
-          `Received: ${getEnabledStandardsResult.StandardsSubscriptions?.length} standards`,
+          `Received: ${enabledStandardsResult.StandardsSubscriptions?.length} standards`,
         );
-        if (getEnabledStandardsResult.StandardsSubscriptions) {
+        if (enabledStandardsResult.StandardsSubscriptions) {
           enabledStandards.push(
-            ...getEnabledStandardsResult.StandardsSubscriptions,
+            ...enabledStandardsResult.StandardsSubscriptions,
           );
         }
 
-        nextToken = getEnabledStandardsResult.NextToken;
+        nextToken = enabledStandardsResult.NextToken;
       }
 
       securityHub = [];
@@ -245,20 +245,20 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
         while (first || nextToken !== undefined) {
           first = false;
           logger.debug(`Querying for NextToken: ${nextToken}`);
-          const getEnabledStandardsResult: DescribeStandardsControlsCommandOutput
+          const standardsControlsResult: DescribeStandardsControlsCommandOutput
             = await client.describeStandardsControls({
               StandardsSubscriptionArn: standard.StandardsSubscriptionArn,
               NextToken: nextToken || '',
             });
           logger.info(
-            `Received: ${getEnabledStandardsResult.Controls?.length} Controls`,
+            `Received: ${standardsControlsResult.Controls?.length} Controls`,
           );
 
-          if (getEnabledStandardsResult.Controls) {
-            standardsControls.push(...getEnabledStandardsResult.Controls);
+          if (standardsControlsResult.Controls) {
+            standardsControls.push(...standardsControlsResult.Controls);
           }
 
-          nextToken = getEnabledStandardsResult.NextToken;
+          nextToken = standardsControlsResult.NextToken;
         }
 
         securityHub.push(JSON.stringify({ Controls: standardsControls }));

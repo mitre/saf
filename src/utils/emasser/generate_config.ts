@@ -223,8 +223,8 @@ async function processPrompt() {
   }
 
   // Use the unique user identifier?
-  const addUserUid = await confirm({ message: 'Add a unique user identifier (user-id)?' });
-  if (addUserUid) {
+  const shouldAddUserUid = await confirm({ message: 'Add a unique user identifier (user-id)?' });
+  if (shouldAddUserUid) {
     const EMASSER_USER_UID = await input({
       message: PROMPT_MESSAGE[6],
       default: envConfig.EMASSER_USER_UID,
