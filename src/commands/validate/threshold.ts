@@ -184,30 +184,32 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
     for (const [, targetPaths] of Object.entries(statusSeverityPaths)) {
       for (const targetPath of targetPaths) {
         const expectedControlIds: string[] | undefined = _.get(thresholds, targetPath);
-        const actualControlIds: string[] = _.get(controlIdMap, targetPath, []);
-        if (expectedControlIds) {
-          const actualControlsDescription = actualControlIds.length > 0 ? `only contained [${actualControlIds.join(', ')}]` : 'contained no controls';
-          for (const expectedControlId of expectedControlIds) {
-            try {
-              exitNonZeroIfTrue(
-                !actualControlIds.includes(expectedControlId),
-                `Expected ${targetPath} to contain control ${expectedControlId} but it ${actualControlsDescription}`,
-              );
-            } catch {
-              process.exitCode = 1;
-              return;
-            }
-          }
+        if (!expectedControlIds) {
+          continue;
+        }
 
+        const actualControlIds: string[] = _.get(controlIdMap, targetPath, []);
+        const actualControlsDescription = actualControlIds.length > 0 ? `only contained [${actualControlIds.join(', ')}]` : 'contained no controls';
+        for (const expectedControlId of expectedControlIds) {
           try {
             exitNonZeroIfTrue(
-              expectedControlIds.length !== actualControlIds.length,
-              `Expected ${targetPath} to contain ${expectedControlIds.length} controls but it contained ${actualControlIds.length}`,
+              !actualControlIds.includes(expectedControlId),
+              `Expected ${targetPath} to contain control ${expectedControlId} but it ${actualControlsDescription}`,
             );
           } catch {
             process.exitCode = 1;
             return;
           }
+        }
+
+        try {
+          exitNonZeroIfTrue(
+            expectedControlIds.length !== actualControlIds.length,
+            `Expected ${targetPath} to contain ${expectedControlIds.length} controls but it contained ${actualControlIds.length}`,
+          );
+        } catch {
+          process.exitCode = 1;
+          return;
         }
       }
     }

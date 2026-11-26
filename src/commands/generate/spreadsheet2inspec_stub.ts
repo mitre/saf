@@ -197,64 +197,66 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
 
       for (const sheet of workBook.sheets()) {
         const usedRange = sheet.usedRange();
-        if (usedRange) {
-          // Get data from the spreadsheet into a 2D array
-          const extractedData: (string | number)[][] = usedRange.value();
-          // Map the data into an object array
-          const headers = extractedData[0].map(String);
-          const mappedRecords = extractedData.slice(1).map((row) => {
-            const mappedRecord: Record<string, string> = {};
-            for (const [index, cellValue] of row.entries()) {
-              if (_.isString(cellValue)) {
-                mappedRecord[headers[index]] = cellValue;
-              } else if (_.isNumber(cellValue)) {
-                mappedRecord[headers[index]] = cellValue.toString();
-              }
-            }
-            return mappedRecord;
-          });
-          // Convert the mapped objects into controls
-          for (const [index, record] of mappedRecords.entries()) {
-            // Get the control ID
-            let controlId = extractValueViaPathOrNumber('mappings.id', mappings.id, record);
-            if (controlId) {
-              // Prevent controls that get parsed from 1.10 to 1.1 from being over-written, this assumes the controls are in order
-              while (completedIds.includes(controlId)) {
-                controlId += '0';
-              }
+        if (!usedRange) {
+          continue;
+        }
 
-              completedIds.push(controlId);
-              let newControl: Partial<InSpecControl> = {
-                refs: [],
-                tags: {
-                  nist: [],
-                  severity: impactNumberToSeverityString(extractValueViaPathOrNumber('mappings.impact', mappings.impact, record)),
-                },
-              };
-              for (const mapping of Object.entries(mappings)) {
-                if (mapping[0] === 'id' && flags.controlNamePrefix) {
-                  _.set(
-                    newControl,
-                    mapping[0].toLowerCase().replace('desc.', 'descs.'),
-                    `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${extractValueViaPathOrNumber(mapping[0], mapping[1], record)}`,
-                  );
-                } else {
-                  _.set(
-                    newControl,
-                    mapping[0].toLowerCase().replace('desc.', 'descs.'),
-                    extractValueViaPathOrNumber(mapping[0], mapping[1], record),
-                  );
-                }
-              }
-              newControl = this.matchReferences(newControl);
-              newControl = this.matchCISControls(newControl, flags);
-              newControl = this.matchImpactFromSeverityIfImpactNotSet(newControl);
-              newControl = this.extractCCIsFromText(newControl);
-              inspecControls.push(newControl as unknown as InSpecControl);
-            } else {
-              // Possibly a section divider, possibly a bad mapping. Let the user know to verify
-              console.error(`Control at index "${index}" has no ID... skipping`);
+        // Get data from the spreadsheet into a 2D array
+        const extractedData: (string | number)[][] = usedRange.value();
+        // Map the data into an object array
+        const headers = extractedData[0].map(String);
+        const mappedRecords = extractedData.slice(1).map((row) => {
+          const mappedRecord: Record<string, string> = {};
+          for (const [index, cellValue] of row.entries()) {
+            if (_.isString(cellValue)) {
+              mappedRecord[headers[index]] = cellValue;
+            } else if (_.isNumber(cellValue)) {
+              mappedRecord[headers[index]] = cellValue.toString();
             }
+          }
+          return mappedRecord;
+        });
+        // Convert the mapped objects into controls
+        for (const [index, record] of mappedRecords.entries()) {
+          // Get the control ID
+          let controlId = extractValueViaPathOrNumber('mappings.id', mappings.id, record);
+          if (controlId) {
+            // Prevent controls that get parsed from 1.10 to 1.1 from being over-written, this assumes the controls are in order
+            while (completedIds.includes(controlId)) {
+              controlId += '0';
+            }
+
+            completedIds.push(controlId);
+            let newControl: Partial<InSpecControl> = {
+              refs: [],
+              tags: {
+                nist: [],
+                severity: impactNumberToSeverityString(extractValueViaPathOrNumber('mappings.impact', mappings.impact, record)),
+              },
+            };
+            for (const mapping of Object.entries(mappings)) {
+              if (mapping[0] === 'id' && flags.controlNamePrefix) {
+                _.set(
+                  newControl,
+                  mapping[0].toLowerCase().replace('desc.', 'descs.'),
+                  `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${extractValueViaPathOrNumber(mapping[0], mapping[1], record)}`,
+                );
+              } else {
+                _.set(
+                  newControl,
+                  mapping[0].toLowerCase().replace('desc.', 'descs.'),
+                  extractValueViaPathOrNumber(mapping[0], mapping[1], record),
+                );
+              }
+            }
+            newControl = this.matchReferences(newControl);
+            newControl = this.matchCISControls(newControl, flags);
+            newControl = this.matchImpactFromSeverityIfImpactNotSet(newControl);
+            newControl = this.extractCCIsFromText(newControl);
+            inspecControls.push(newControl as unknown as InSpecControl);
+          } else {
+            // Possibly a section divider, possibly a bad mapping. Let the user know to verify
+            console.error(`Control at index "${index}" has no ID... skipping`);
           }
         }
       }

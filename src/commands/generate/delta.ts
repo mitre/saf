@@ -1270,10 +1270,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       this.logger.info('generateReport=true');
 
       for (const [tagName, answerValue] of Object.entries(answers)) {
-        if (answerValue !== null) {
-          this.logger.info(`${tagName}=${answerValue}`);
-          interactiveValues[tagName] = answerValue;
+        if (answerValue === null) {
+          continue;
         }
+
+        this.logger.info(`${tagName}=${answerValue}`);
+        interactiveValues[tagName] = answerValue;
       }
     } else {
       this.logger.info('generateReport=false');
@@ -1304,10 +1306,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     };
 
     for (const [tagName, answerValue] of Object.entries(answers)) {
-      if (answerValue !== null) {
-        this.logger.info(`${tagName}=${answerValue}`);
-        interactiveValues[tagName] = answerValue;
+      if (answerValue === null) {
+        continue;
       }
+
+      this.logger.info(`${tagName}=${answerValue}`);
+      interactiveValues[tagName] = answerValue;
     }
 
     return interactiveValues;

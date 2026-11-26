@@ -614,18 +614,22 @@ export function autoDetectPrefix(titles: string[], threshold = 0.5): string {
   for (let n = maxLen; n > 0; n--) {
     const counts = new Map<string, number>();
     for (const l of leading) {
-      if (l.length >= n) {
-        const key = l.slice(0, n).join(' ');
-        counts.set(key, (counts.get(key) ?? 0) + 1);
+      if (l.length < n) {
+        continue;
       }
+
+      const key = l.slice(0, n).join(' ');
+      counts.set(key, (counts.get(key) ?? 0) + 1);
     }
     let bestKey = '';
     let bestCount = 0;
     for (const [key, count] of counts) {
-      if (count > bestCount) {
-        bestKey = key;
-        bestCount = count;
+      if (count <= bestCount) {
+        continue;
       }
+
+      bestKey = key;
+      bestCount = count;
     }
     if (bestCount / titles.length > threshold) {
       return bestKey;

@@ -389,18 +389,20 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       // metadata (aka tags) from the source onto the new control. Need to add
       // a new function that simply retrieves the describe block (code) from
       // the source and adds to the destination (update) control)
-      if (xccdfNewControlsMetaDataMap.has(control.id)) {
-        const newControl = xccdfNewControlsMetaDataMap.get(control.id);
-        const existingDescribeBlock = getExistingDescribeFromControl(control);
-        newControl.describe = existingDescribeBlock;
+      if (!xccdfNewControlsMetaDataMap.has(control.id)) {
+        continue;
+      }
 
-        if (flags.formatControls) {
-          logger.debug('  Formatted the same way `generate delta` will write controls.');
-          baselineYControls.set(control.id, newControl.toRuby(false));
-        } else {
-          logger.debug('  Did not formatted the same way `generate delta` will write controls.');
-          baselineYControls.set(control.id, newControl.toString());
-        }
+      const newControl = xccdfNewControlsMetaDataMap.get(control.id);
+      const existingDescribeBlock = getExistingDescribeFromControl(control);
+      newControl.describe = existingDescribeBlock;
+
+      if (flags.formatControls) {
+        logger.debug('  Formatted the same way `generate delta` will write controls.');
+        baselineYControls.set(control.id, newControl.toRuby(false));
+      } else {
+        logger.debug('  Did not formatted the same way `generate delta` will write controls.');
+        baselineYControls.set(control.id, newControl.toString());
       }
     }
 
@@ -427,69 +429,73 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
 
     for (const file of files) {
       const fileExt = path.extname(file);
-      if (fileExt === ext) {
-        logger.info(`Processing Control (file): ${file}`);
-        const currentFileFullPath = resolveSafeChild(controlsDir, safeFilename(file));
-        const currentControlNumber = basename(path.parse(file).name);
-        const newXCCDFControlNumber = xccdfLegacyToControlMap.get(currentControlNumber); // old control Id to new control Id
-        const xccdfNewControlNumber = xccdfControlsMap.get(currentControlNumber); // new control Id to new control Id
-        const xccdfLegacyControlNumber = xccdfLegacyControlsMap.get(currentControlNumber); // old control Id to old control Id
-        let updatedControl;
+      if (fileExt !== ext) {
+        continue;
+      }
 
-        // FILE = XCCDF (new control Id)
-        if (currentControlNumber === xccdfNewControlNumber) {
-          logger.debug(`  Baseline X Control is current: ${currentControlNumber} `);
+      logger.info(`Processing Control (file): ${file}`);
+      const currentFileFullPath = resolveSafeChild(controlsDir, safeFilename(file));
+      const currentControlNumber = basename(path.parse(file).name);
+      const newXCCDFControlNumber = xccdfLegacyToControlMap.get(currentControlNumber); // old control Id to new control Id
+      const xccdfNewControlNumber = xccdfControlsMap.get(currentControlNumber); // new control Id to new control Id
+      const xccdfLegacyControlNumber = xccdfLegacyControlsMap.get(currentControlNumber); // old control Id to old control Id
+      let updatedControl;
 
-          // Update statistics (value does not matter)
-          correctControlCount++;
-          correctControlMap.set(currentControlNumber, currentControlNumber);
+      // FILE = XCCDF (new control Id)
+      if (currentControlNumber === xccdfNewControlNumber) {
+        logger.debug(`  Baseline X Control is current: ${currentControlNumber} `);
 
-          // Process the control
-          if (baselineYControls.has(currentControlNumber)) {
-            logger.debug('  \u{1B}[32mUpdating Control metadata with XCCDF content\u{1B}[0m');
-            updatedControl = baselineYControls.get(currentControlNumber);
-            // Save file
-            saveControl(currentFileFullPath, currentControlNumber, currentControlNumber, updatedControl, flags.backupControls, false);
-          }
+        // Update statistics (value does not matter)
+        correctControlCount++;
+        correctControlMap.set(currentControlNumber, currentControlNumber);
 
-        // FILE = LEGACY NUMBER (old control Id)
-        } else if (currentControlNumber === xccdfLegacyControlNumber) {
-          logger.debug(`  Baseline X Control Id is not the same as baseline Y, changing From: ${currentControlNumber} To: ${newXCCDFControlNumber}`);
-
-          // Change the V or SV Id to the SV Id based on format flag
-          if (baselineYControls.has(currentControlNumber)) {
-            logger.debug('  \u{1B}[32mUpdating Control metadata with XCCDF content\u{1B}[0m');
-            updatedControl = baselineYControls.get(currentControlNumber);
-          } else {
-            logger.debug('  \u{1B}[31mKeeping Control metadata content - Updating Control name\u{1B}[0m');
-            notInProfileJSON++;
-            skipMetadataUpdate.push(`(${currentControlNumber} wasn't updated with metadata from: ${newXCCDFControlNumber})`);
-            updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, newXCCDFControlNumber);
-          }
-
-          saveControl(currentFileFullPath, newXCCDFControlNumber, currentControlNumber, updatedControl, flags.backupControls, true);
-          processed++;
-          controlsProcessedMap.set(newXCCDFControlNumber, 'processed');
-
-        // FILE ≠ XCCDF
-        } else if (xccdfNewControlNumber === undefined) {
-          logger.warn(`  Control skipped updating (not in the XCCDF guidance): ${currentControlNumber}`);
-          skipped++;
-          skippedControls.push(currentControlNumber);
-        // FILE ≠ XCCDF ≠ LEGACY NUMBER
-        } else {
-          logger.error('  No logic found processing Control (not current, or in the XCCDF guidance, or a legacy Control)');
+        // Process the control
+        if (baselineYControls.has(currentControlNumber)) {
+          logger.debug('  \u{1B}[32mUpdating Control metadata with XCCDF content\u{1B}[0m');
+          updatedControl = baselineYControls.get(currentControlNumber);
+          // Save file
+          saveControl(currentFileFullPath, currentControlNumber, currentControlNumber, updatedControl, flags.backupControls, false);
         }
+
+      // FILE = LEGACY NUMBER (old control Id)
+      } else if (currentControlNumber === xccdfLegacyControlNumber) {
+        logger.debug(`  Baseline X Control Id is not the same as baseline Y, changing From: ${currentControlNumber} To: ${newXCCDFControlNumber}`);
+
+        // Change the V or SV Id to the SV Id based on format flag
+        if (baselineYControls.has(currentControlNumber)) {
+          logger.debug('  \u{1B}[32mUpdating Control metadata with XCCDF content\u{1B}[0m');
+          updatedControl = baselineYControls.get(currentControlNumber);
+        } else {
+          logger.debug('  \u{1B}[31mKeeping Control metadata content - Updating Control name\u{1B}[0m');
+          notInProfileJSON++;
+          skipMetadataUpdate.push(`(${currentControlNumber} wasn't updated with metadata from: ${newXCCDFControlNumber})`);
+          updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, newXCCDFControlNumber);
+        }
+
+        saveControl(currentFileFullPath, newXCCDFControlNumber, currentControlNumber, updatedControl, flags.backupControls, true);
+        processed++;
+        controlsProcessedMap.set(newXCCDFControlNumber, 'processed');
+
+      // FILE ≠ XCCDF
+      } else if (xccdfNewControlNumber === undefined) {
+        logger.warn(`  Control skipped updating (not in the XCCDF guidance): ${currentControlNumber}`);
+        skipped++;
+        skippedControls.push(currentControlNumber);
+      // FILE ≠ XCCDF ≠ LEGACY NUMBER
+      } else {
+        logger.error('  No logic found processing Control (not current, or in the XCCDF guidance, or a legacy Control)');
       }
     }
 
     let newControls = 0;
     const newControlsFound: unknown[] = [];
     for (const newControl of xccdfControlsMap.values()) {
-      if (!controlsProcessedMap.has(newControl) && !correctControlMap.has(newControl)) {
-        newControls++;
-        newControlsFound.push(newControl);
+      if (controlsProcessedMap.has(newControl) || correctControlMap.has(newControl)) {
+        continue;
       }
+
+      newControls++;
+      newControlsFound.push(newControl);
     }
 
     // listen for the logger finish event to know when logging has completely finished

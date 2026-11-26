@@ -204,118 +204,117 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
       ).format('M/DD/YYYY');
       // For each vulnerability
       for (const vulnerability of vulnerabilities) {
+        if (vulnerability.STATUS === 'NotAFinding' || vulnerability.STATUS === 'Not_Reviewed') {
+          continue;
+        }
+
+        // Control Vulnerability Description
+        if (vulnerability.STATUS === 'Not_Applicable') {
+          sheet.cell(`C${currentRow}`).value('Not Applicable');
+        } else {
+          sheet
+            .cell(`C${currentRow}`)
+            .value(
+              replaceSpecialCharacters(createCVD(vulnerability)),
+            );
+        }
+
+        // Security Control Number
+        sheet
+          .cell(`D${currentRow}`)
+          .value(cci2nist(vulnerability.CCI_REF || ''));
+        // Office/org
+        sheet.cell(`E${currentRow}`).value(officeOrg);
+        // Security Checks
+        sheet
+          .cell(`F${currentRow}`)
+          .value(vulnerability.Rule_ID?.split(',')[0]);
+        // Resources Required
+        sheet.cell(`G${currentRow}`).value('NA');
+        // Scheduled Completion Date
+        // Default is one year from today
+        sheet.cell(`H${currentRow}`).value(aYearFromNow);
+        // Source Identifying Vulnerability
+        sheet.cell(`K${currentRow}`).value(infos.title || '');
+        // Status
+        sheet
+          .cell(`L${currentRow}`)
+          .value(cleanStatus(vulnerability.STATUS || ''));
+        // Comments
         if (
-          vulnerability.STATUS !== 'NotAFinding'
-          && vulnerability.STATUS !== 'Not_Reviewed'
+          vulnerability.STATUS === 'Open'
+          || vulnerability.STATUS === 'Not_Applicable'
         ) {
-          // Control Vulnerability Description
-          if (vulnerability.STATUS === 'Not_Applicable') {
-            sheet.cell(`C${currentRow}`).value('Not Applicable');
+          if (deviceName.startsWith('Nessus')) {
+            sheet
+              .cell(`M${currentRow}`)
+              .value(
+                combineComments(
+                  vulnerability,
+                  extractSTIGUrl(vulnerability.FINDING_DETAILS || ''),
+                ),
+              );
           } else {
             sheet
-              .cell(`C${currentRow}`)
-              .value(
-                replaceSpecialCharacters(createCVD(vulnerability)),
-              );
+              .cell(`M${currentRow}`)
+              .value(combineComments(vulnerability, deviceName));
           }
-
-          // Security Control Number
-          sheet
-            .cell(`D${currentRow}`)
-            .value(cci2nist(vulnerability.CCI_REF || ''));
-          // Office/org
-          sheet.cell(`E${currentRow}`).value(officeOrg);
-          // Security Checks
-          sheet
-            .cell(`F${currentRow}`)
-            .value(vulnerability.Rule_ID?.split(',')[0]);
-          // Resources Required
-          sheet.cell(`G${currentRow}`).value('NA');
-          // Scheduled Completion Date
-          // Default is one year from today
-          sheet.cell(`H${currentRow}`).value(aYearFromNow);
-          // Source Identifying Vulnerability
-          sheet.cell(`K${currentRow}`).value(infos.title || '');
-          // Status
-          sheet
-            .cell(`L${currentRow}`)
-            .value(cleanStatus(vulnerability.STATUS || ''));
-          // Comments
-          if (
-            vulnerability.STATUS === 'Open'
-            || vulnerability.STATUS === 'Not_Applicable'
-          ) {
-            if (deviceName.startsWith('Nessus')) {
-              sheet
-                .cell(`M${currentRow}`)
-                .value(
-                  combineComments(
-                    vulnerability,
-                    extractSTIGUrl(vulnerability.FINDING_DETAILS || ''),
-                  ),
-                );
-            } else {
-              sheet
-                .cell(`M${currentRow}`)
-                .value(combineComments(vulnerability, deviceName));
-            }
-          }
-
-          // Raw Severity
-          sheet
-            .cell(`N${currentRow}`)
-            .value(convertToRawSeverity(vulnerability.Severity || ''));
-          // Severity
-          sheet
-            .cell(`P${currentRow}`)
-            .value(
-              cklSeverityToPOAMSeverity(vulnerability.Severity || ''),
-            );
-          // Relevance of Threat
-          sheet
-            .cell(`Q${currentRow}`)
-            .value(
-              cklSeverityToRelevanceOfThreat(),
-            );
-          // Likelihood
-          sheet
-            .cell(`R${currentRow}`)
-            .value(
-              cklSeverityToLikelihood(vulnerability.Severity || ''),
-            );
-          // Impact
-          sheet
-            .cell(`S${currentRow}`)
-            .value(cklSeverityToImpact(vulnerability.Severity || ''));
-          // Residual Risk Level
-          sheet
-            .cell(`U${currentRow}`)
-            .value(
-              cklSeverityToResidualRiskLevel(
-                vulnerability.Severity || '',
-              ),
-            );
-          // Impact Description
-          sheet
-            .cell(`T${currentRow}`)
-            .value(
-              replaceSpecialCharacters(vulnerability.Vuln_Discuss || ''),
-            );
-          // Recommendations
-          sheet
-            .cell(`V${currentRow}`)
-            .value(
-              replaceSpecialCharacters(
-                vulnerability.Fix_Text
-                || extractSolution(
-                  vulnerability.FINDING_DETAILS || '',
-                )
-                || '',
-              ),
-            );
-          // Go to the next row
-          currentRow += flags.rowsToSkip + 1;
         }
+
+        // Raw Severity
+        sheet
+          .cell(`N${currentRow}`)
+          .value(convertToRawSeverity(vulnerability.Severity || ''));
+        // Severity
+        sheet
+          .cell(`P${currentRow}`)
+          .value(
+            cklSeverityToPOAMSeverity(vulnerability.Severity || ''),
+          );
+        // Relevance of Threat
+        sheet
+          .cell(`Q${currentRow}`)
+          .value(
+            cklSeverityToRelevanceOfThreat(),
+          );
+        // Likelihood
+        sheet
+          .cell(`R${currentRow}`)
+          .value(
+            cklSeverityToLikelihood(vulnerability.Severity || ''),
+          );
+        // Impact
+        sheet
+          .cell(`S${currentRow}`)
+          .value(cklSeverityToImpact(vulnerability.Severity || ''));
+        // Residual Risk Level
+        sheet
+          .cell(`U${currentRow}`)
+          .value(
+            cklSeverityToResidualRiskLevel(
+              vulnerability.Severity || '',
+            ),
+          );
+        // Impact Description
+        sheet
+          .cell(`T${currentRow}`)
+          .value(
+            replaceSpecialCharacters(vulnerability.Vuln_Discuss || ''),
+          );
+        // Recommendations
+        sheet
+          .cell(`V${currentRow}`)
+          .value(
+            replaceSpecialCharacters(
+              vulnerability.Fix_Text
+              || extractSolution(
+                vulnerability.FINDING_DETAILS || '',
+              )
+              || '',
+            ),
+          );
+        // Go to the next row
+        currentRow += flags.rowsToSkip + 1;
       }
       return workBook.toFileAsync(resolveSafeChild(flags.output, safeFilename(`${basename(fileName)}-${moment(new Date()).format('YYYY-MM-DD-HHmm')}.xlsm`)));
     }));

@@ -74,20 +74,22 @@ export function extractStatusCounts(profile: ContextualizedProfile, severity?: s
     const status: ControlStatus = control.hdf.status;
     const controlSeverity: Severity = control.hdf.severity;
 
-    if (!severity || (controlSeverity === severity)) {
-      ++hash[status];
-      if (status === 'Passed') {
-        hash.PassedTests += (control.hdf.segments || []).length;
-      } else if (status === 'Failed') {
-        hash.PassingTestsFailedControl += (control.hdf.segments || []).filter(
-          s => s.status === 'passed',
-        ).length;
-        hash.FailedTests += (control.hdf.segments || []).filter(
-          s => s.status === 'failed',
-        ).length;
-      } else if (status === 'Not Applicable' && control.hdf.waived) {
-        hash.Waived += control.hdf.segments?.length || 0;
-      }
+    if (severity && controlSeverity !== severity) {
+      continue;
+    }
+
+    ++hash[status];
+    if (status === 'Passed') {
+      hash.PassedTests += (control.hdf.segments || []).length;
+    } else if (status === 'Failed') {
+      hash.PassingTestsFailedControl += (control.hdf.segments || []).filter(
+        s => s.status === 'passed',
+      ).length;
+      hash.FailedTests += (control.hdf.segments || []).filter(
+        s => s.status === 'failed',
+      ).length;
+    } else if (status === 'Not Applicable' && control.hdf.waived) {
+      hash.Waived += control.hdf.segments?.length || 0;
     }
   }
 
