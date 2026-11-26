@@ -14,12 +14,6 @@ import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
-  private readonly logger: Logger = createWinstonLogger({
-    logFile: 'CliProcessOutput.log',
-    plainText: true,
-    alwaysPrintToConsole: true,
-  });
-
   static readonly usage
     = '<%= command.id %> [-i <hdf-json>|--interactive] [-o <csv-file>|--interactive] '
       + ' [-f <header-fields>|--interactive] [-t|--interactive] [-L info|warn|debug|verbose]';
@@ -75,96 +69,11 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     }),
   };
 
-  async run() {
-    const { flags } = await this.parse(HDF2CSV);
-
-    this.logger.info('================== HDF2CSV CLI Process ===================');
-    this.logger.info(`Date: ${new Date().toISOString()}\n`);
-
-    let inputFile;
-    let outputFile;
-    let includeFields;
-    let shouldTruncateFields = false;
-
-    if (flags.interactive) {
-      const interactiveFlags = await this.getFlags();
-      inputFile = interactiveFlags.inputFile;
-      outputFile = resolveSafeChild(interactiveFlags.outputDirectory, safeFilename(interactiveFlags.outputFileName));
-      includeFields = interactiveFlags.fields.join(',');
-      shouldTruncateFields = Boolean(interactiveFlags.truncateFields);
-    } else if (this.requiredFlagsProvided(flags)) {
-      inputFile = flags.input!;
-      outputFile = flags.output!;
-      includeFields = flags.fields;
-      shouldTruncateFields = flags.noTruncate;
-
-      // Save the flags to the log object
-      this.logger.info('Process Flags ============================================');
-      for (const [key, value] of Object.entries(flags)) {
-        this.logger.info(`${key}=${String(value)}`);
-      }
-    } else {
-      return;
-    }
-
-    if (!this.validFileFlags(inputFile, outputFile)) {
-      return;
-    }
-
-    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(inputFile, 'utf8')));
-
-    // Convert all controls from a file to ControlSetRows
-    let rows: ControlSetRows = this.convertRows(contextualizedEvaluation, basename(inputFile), includeFields.split(','));
-    rows = rows.map((row, index) => {
-      const cleanedRow: Record<string, string> = {};
-      for (const [key, value] of Object.entries(row)) {
-        if (value !== undefined) {
-          if (value.length > 32_767 && shouldTruncateFields) {
-            if ('ID' in row) {
-              console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
-            } else {
-              console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
-            }
-
-            cleanedRow[key] = _.truncate(value, { length: 32_757, omission: 'TRUNCATED' });
-          } else {
-            cleanedRow[key] = value;
-          }
-        }
-      }
-      return cleanedRow;
-    });
-
-    try {
-      await this.saveCSV(outputFile, rows);
-      this.logger.info('\nTranslation completed successfully\n');
-    } catch (error: any) {
-      const error_ = error.code === 'EISDIR' ? new Error('The CSV output file name was not provided.') : error;
-      this.logger.error(`\nTranslation failed: ${error_}\n`);
-    }
-  }
-
-  requiredFlagsProvided(flags: { input: any; output: any }): boolean {
-    let hasMissingFlags = false;
-    let strMsg = 'Warning: The following errors occurred:\n';
-
-    if (!flags.input) {
-      strMsg += '  Missing required flag input (HDF file)\n';
-      hasMissingFlags = true;
-    }
-
-    if (!flags.output) {
-      strMsg += '  Missing required flag output (CSV file)\n';
-      hasMissingFlags = true;
-    }
-
-    if (hasMissingFlags) {
-      strMsg += 'See more help with -h or --help';
-      this.warn(strMsg);
-    }
-
-    return !hasMissingFlags;
-  }
+  private readonly logger: Logger = createWinstonLogger({
+    logFile: 'CliProcessOutput.log',
+    plainText: true,
+    alwaysPrintToConsole: true,
+  });
 
   /**
   Converts the rows of a given evaluation into a ControlSetRows format.
@@ -359,5 +268,96 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     }
 
     return true;
+  }
+
+  async run() {
+    const { flags } = await this.parse(HDF2CSV);
+
+    this.logger.info('================== HDF2CSV CLI Process ===================');
+    this.logger.info(`Date: ${new Date().toISOString()}\n`);
+
+    let inputFile;
+    let outputFile;
+    let includeFields;
+    let shouldTruncateFields = false;
+
+    if (flags.interactive) {
+      const interactiveFlags = await this.getFlags();
+      inputFile = interactiveFlags.inputFile;
+      outputFile = resolveSafeChild(interactiveFlags.outputDirectory, safeFilename(interactiveFlags.outputFileName));
+      includeFields = interactiveFlags.fields.join(',');
+      shouldTruncateFields = Boolean(interactiveFlags.truncateFields);
+    } else if (this.requiredFlagsProvided(flags)) {
+      inputFile = flags.input!;
+      outputFile = flags.output!;
+      includeFields = flags.fields;
+      shouldTruncateFields = flags.noTruncate;
+
+      // Save the flags to the log object
+      this.logger.info('Process Flags ============================================');
+      for (const [key, value] of Object.entries(flags)) {
+        this.logger.info(`${key}=${String(value)}`);
+      }
+    } else {
+      return;
+    }
+
+    if (!this.validFileFlags(inputFile, outputFile)) {
+      return;
+    }
+
+    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(inputFile, 'utf8')));
+
+    // Convert all controls from a file to ControlSetRows
+    let rows: ControlSetRows = this.convertRows(contextualizedEvaluation, basename(inputFile), includeFields.split(','));
+    rows = rows.map((row, index) => {
+      const cleanedRow: Record<string, string> = {};
+      for (const [key, value] of Object.entries(row)) {
+        if (value !== undefined) {
+          if (value.length > 32_767 && shouldTruncateFields) {
+            if ('ID' in row) {
+              console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
+            } else {
+              console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
+            }
+
+            cleanedRow[key] = _.truncate(value, { length: 32_757, omission: 'TRUNCATED' });
+          } else {
+            cleanedRow[key] = value;
+          }
+        }
+      }
+      return cleanedRow;
+    });
+
+    try {
+      await this.saveCSV(outputFile, rows);
+      this.logger.info('\nTranslation completed successfully\n');
+    } catch (error: any) {
+      const error_ = error.code === 'EISDIR' ? new Error('The CSV output file name was not provided.') : error;
+      this.logger.error(`\nTranslation failed: ${error_}\n`);
+    }
+  }
+
+  requiredFlagsProvided(flags: { input: any; output: any }): boolean {
+    let hasMissingFlags = false;
+    let strMsg = 'Warning: The following errors occurred:\n';
+
+    if (!flags.input) {
+      strMsg += '  Missing required flag input (HDF file)\n';
+      hasMissingFlags = true;
+    }
+
+    if (!flags.output) {
+      strMsg += '  Missing required flag output (CSV file)\n';
+      hasMissingFlags = true;
+    }
+
+    if (hasMissingFlags) {
+      strMsg += 'See more help with -h or --help';
+      this.warn(strMsg);
+    }
+
+    return !hasMissingFlags;
   }
 }

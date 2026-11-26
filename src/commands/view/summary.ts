@@ -61,11 +61,6 @@ export default class Summary extends Command {
   static readonly aliases = ['summary'];
 
   /**
-  @property {ReturnType<typeof createWinstonLogger>} logger - Winston logger for this command.
-  */
-  private logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger({ module: 'View Summary' });
-
-  /**
   @property {string} description - Command description displayed in the help message.
   */
   static readonly description = 'Generate a comprehensive summary of compliance data, including totals and counts, from your HDF files.\n'
@@ -109,6 +104,11 @@ export default class Summary extends Command {
     '\u{1B}[93mUseful for scripts or data-processing (RAW yaml/json/etc.)\n'
     + '\u{1B}[93m  $\u{1B}[34m saf summary -i input.hdf --no-pretty-print',
   ];
+
+  /**
+  @property {ReturnType<typeof createWinstonLogger>} logger - Winston logger for this command.
+  */
+  private logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger({ module: 'View Summary' });
 
   /**
   @private

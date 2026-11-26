@@ -18,12 +18,6 @@ import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLMetadata> {
-  private readonly logger: Logger = createWinstonLogger({
-    logFile: 'CliProcessOutput.log',
-    plainText: true,
-    alwaysPrintToConsole: true,
-  });
-
   static readonly usage = '<%= command.id %> [-h] [-L info|warn|debug|verbose] [-o <value> | --interactive]';
 
   static readonly description = 'Generate a checklist metadata template for use by the "saf convert hdf2ckl" CLI command';
@@ -46,38 +40,11 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
     }),
   };
 
-  async run() {
-    const { flags } = await this.parse(GenerateCKLMetadata);
-
-    // If not interactive must provide -o 0r --output
-    if (!flags.interactive && !flags.output) {
-      this.error('\u{1B}[31mIf not interactive you must specify the metadata output json file [-o]\u{1B}[0m');
-    }
-    // Flag variables
-    let metadataJsonFile = '';
-
-    if (flags.interactive) {
-      const interactiveFlags = await this.getFlags();
-      if ((interactiveFlags as { outputDirectory?: string }).outputDirectory) {
-        metadataJsonFile = resolveSafeChild(
-          (interactiveFlags as { outputDirectory: string }).outputDirectory,
-          safeFilename((interactiveFlags as { outputFileName: string }).outputFileName),
-        );
-      }
-    } else {
-      metadataJsonFile = flags.output || 'metadata.json';
-    }
-
-    const cklMetadata = await this.getCklMetaData();
-
-    const validationResults = validateChecklistMetadata(cklMetadata as ChecklistMetadata);
-    if (validationResults.ok) {
-      fs.writeFileSync(metadataJsonFile, JSON.stringify(cklMetadata, null, 2));
-      console.log(`Checklist metadata file written at: ${path.resolve(metadataJsonFile)}`);
-    } else {
-      console.error(`Unable to generate checklist metadata:\n${validationResults.error.message}`);
-    }
-  }
+  private readonly logger: Logger = createWinstonLogger({
+    logFile: 'CliProcessOutput.log',
+    plainText: true,
+    alwaysPrintToConsole: true,
+  });
 
   /**
   Asynchronously prompts the user to select an output directory and specify a
@@ -308,5 +275,38 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
     }
 
     return interactiveValues;
+  }
+
+  async run() {
+    const { flags } = await this.parse(GenerateCKLMetadata);
+
+    // If not interactive must provide -o 0r --output
+    if (!flags.interactive && !flags.output) {
+      this.error('\u{1B}[31mIf not interactive you must specify the metadata output json file [-o]\u{1B}[0m');
+    }
+    // Flag variables
+    let metadataJsonFile = '';
+
+    if (flags.interactive) {
+      const interactiveFlags = await this.getFlags();
+      if ((interactiveFlags as { outputDirectory?: string }).outputDirectory) {
+        metadataJsonFile = resolveSafeChild(
+          (interactiveFlags as { outputDirectory: string }).outputDirectory,
+          safeFilename((interactiveFlags as { outputFileName: string }).outputFileName),
+        );
+      }
+    } else {
+      metadataJsonFile = flags.output || 'metadata.json';
+    }
+
+    const cklMetadata = await this.getCklMetaData();
+
+    const validationResults = validateChecklistMetadata(cklMetadata as ChecklistMetadata);
+    if (validationResults.ok) {
+      fs.writeFileSync(metadataJsonFile, JSON.stringify(cklMetadata, null, 2));
+      console.log(`Checklist metadata file written at: ${path.resolve(metadataJsonFile)}`);
+    } else {
+      console.error(`Unable to generate checklist metadata:\n${validationResults.error.message}`);
+    }
   }
 }

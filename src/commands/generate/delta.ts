@@ -141,11 +141,429 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   // alongside the text diff. Empty array when mapControls did not run.
   static links: LinkRecord[] = [];
 
+  /**
+  Emit the per-link match-method log line. Kept separate from
+  tickMatchCounter so the output format can evolve independently of
+  the stats bookkeeping.
+  */
+  private static logMatchMethod(log: Logger, link: LinkRecord): void {
+    const confidencePct = (link.confidence * 100).toFixed(0) + '%';
+    switch (link.matchMethod) {
+      case 'srg-deterministic': {
+        log.info(
+          `       Match method:  SRG deterministic (${link.srg}) [${link.relationship}]`,
+        );
+        break;
+      }
+      case 'srg-cci-tiebreak': {
+        log.info(
+          `       Match method:  SRG block + CCI tiebreak (Jaccard=${confidencePct}) [${link.relationship}]`,
+        );
+        break;
+      }
+      case 'fuse-fallback': {
+        log.info(
+          `       Match method:  Fuse title-fuzzy (no SRG overlap, confidence=${confidencePct}) [${link.relationship}]`,
+        );
+        break;
+      }
+      default: {
+        // 'none' or any future MatchMethod: emit nothing here; the
+        // caller is expected to handle no-match logging separately.
+        break;
+      }
+    }
+    if (link.potentialMismatch) {
+      log.warn('** Potential Mismatch **');
+    }
+  }
+
+  /**
+  Advance the GenerateDelta static counters for a single link so the
+  end-of-run stats match reality.
+
+    match        -> primary link, high confidence
+    posMisMatch  -> primary link, lower confidence (still accepted)
+    dupMatch     -> related link (shares old body with an earlier primary)
+  */
+  private static tickMatchCounter(link: LinkRecord): void {
+    if (link.relationship === 'related') {
+      GenerateDelta.dupMatch++;
+      return;
+    }
+    // `potentialMismatch` is the single source of truth for "accepted
+    // primary but below the tier's strong-confidence threshold" — see
+    // isPotentialMismatch + TIER{2,3}_MISMATCH_THRESHOLD in
+    // delta_matching.ts. Reading the flag here keeps stats bookkeeping
+    // aligned with the tier definitions automatically.
+    if (link.potentialMismatch) {
+      GenerateDelta.posMisMatch++;
+    } else {
+      GenerateDelta.match++;
+    }
+  }
+
   private readonly logger: Logger = createWinstonLogger({
     logFile: 'CliProcessOutput.log',
     plainText: true,
     alwaysPrintToConsole: true,
   });
+
+  /**
+  Asynchronously prompts the user for various inputs and selections to configure
+  the delta process for updating profile controls. This function dynamically imports
+  required modules, interacts with the user through a series of prompts, and collects
+  the necessary flags and options for the process.
+
+  @async
+  @function
+  @returns {Promise<any>} A promise that resolves to an object containing the user's
+  selections and inputs, including required and optional flags for the delta process.
+
+  The returned object includes:
+  - `xccdfTye`: The type of XCCDF source ('file' or 'url').
+  - `xccdfXmlFile` or `xccdfUrl`: The selected XCCDF file or URL.
+  - `inspecJsonFile`: The Profile Controls summary file or an indication that it is auto-generated.
+  - `controlsDir`: The directory containing the profile controls (if applicable).
+  - `runMapControls`: A boolean indicating whether fuzzy logic is used.
+  - `deltaOutputDir`: The directory for saving the updated profile controls.
+  - `ovalXmlFile`: The OVAL XML file (if included).
+  - `generateReport`: A boolean indicating whether a markdown report is generated.
+  - `reportDirectory` and `reportFileName`: The directory and filename for the markdown report (if applicable).
+  - `idType`: The selected Control ID Type for processing controls.
+  - `logLevel`: The selected log level for the process.
+
+  @remarks
+  - The function uses `inquirer` for interactive prompts and dynamically imports
+    `inquirer-file-selector` and `chalk` for enhanced user experience.
+  - It adjusts the `defaultMaxListeners` of the `EventEmitter` to accommodate
+    the number of listeners required by the prompts.
+  - The function logs user selections to a process log for debugging or auditing purposes.
+
+  @example
+  const flags = await getFlags();
+  console.log(flags);
+  */
+  private async getFlags(): Promise<any> {
+    // The default max listeners is set to 10. The inquire checkbox sets a
+    // listener for each entry it displays, we are providing 16 entries,
+    // does using 16 listeners. Need to increase the defaultMaxListeners.
+    EventEmitter.defaultMaxListeners = 20;
+
+    // Dynamically import inquirer-file-selector and chalk
+    // Once we move the SAF CLI from a CommonJS to an ES modules we can use the regular import
+    const { default: fileSelector } = await import('inquirer-file-selector');
+    const { default: chalk } = await import('chalk');
+
+    const fileSelectorTheme = {
+      style: {
+        file: (text: unknown) => chalk.green(text),
+        currentDir: (text: string) => chalk.blueBright(text),
+        help: (text: unknown) => chalk.yellow(text),
+      },
+    };
+
+    // Variable used to store the prompts (question and answers)
+    const interactiveValues: Record<string, any> = {};
+
+    this.logger.info('Provide the necessary information:');
+    this.logger.info('  Required flag - The XCCDF XML file or URL containing the new guidance - in the form of .xml file');
+    this.logger.info('  Required flag - Controls directory (path to the profile controls to apply the delta process)');
+    this.logger.info('  Required flag - The output folder for the updated profile (will contain the controls that delta was applied too)');
+
+    this.logger.info('  Optional flag - InSpec Profiles JSON summary file (JSON) - auto-generated if not provided');
+    this.logger.info('  Optional flag - The OVAL XML file containing definitions used in the new guidance - in the form of .xml file');
+    this.logger.info('  Optional flag - Output markdown report file - must have an extension of .md');
+    this.logger.info('  Optional flag - Control ID Types: [\'rule\', \'group\', \'cis\', \'version\']');
+    this.logger.info('  Optional flag - Run the approximate string matching process');
+    this.logger.info('  Optional flag - The InSpec profile directory containing the controls being updated (controls Delta is processing)\n');
+
+    this.logger.info('Process Flags ===========================================');
+
+    // Check what XCCDF to use (File or URL)
+    const xccdfType = await select({
+      message: 'Select from where to retrieve the XCCDF',
+      choices: [
+        { name: 'File', value: 'file', description: 'File (.xml) containing the XCCDF benchmark' },
+        { name: 'URL', value: 'url', description: 'URL pointing to a package (.zip) containing the XCCDF benchmark' },
+      ],
+    });
+
+    // Required Flags
+    if (xccdfType === 'file') {
+      const xccdfXmlFile = await fileSelector({
+        message: 'Select the XCCDF benchmark file (.xml) containing the new guidance:',
+        pageSize: 15,
+        loop: true,
+        type: 'file',
+        allowCancel: true,
+        emptyText: 'Directory is empty',
+        showExcluded: false,
+        filter: file => file.isDirectory() || file.name.endsWith('.xml'),
+        theme: fileSelectorTheme,
+      });
+
+      this.logger.info('xccdfXmlFile=' + xccdfXmlFile);
+      interactiveValues.xccdfTye = 'file';
+      interactiveValues.xccdfXmlFile = xccdfXmlFile;
+    } else {
+      const xccdfUrl = await input({
+        message: 'Provide an URL pointing to the XCCDF benchmark (.zip) package:',
+        validate(input: string) {
+          if (/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*\.zip$/i.test(input)) { // skipcq: JS-0113
+            return true;
+          }
+          return 'Please enter a valid URL that ends with .zip';
+        },
+      });
+
+      this.logger.info('xccdfUrl=' + xccdfUrl);
+      interactiveValues.xccdfTye = 'url';
+      interactiveValues.xccdfUrl = xccdfUrl;
+    }
+
+    // Check if Profile Controls summary is provided or auto-generate
+    const generateSummaryFile = await select({
+      message: 'Auto generate the Profile Controls summary?',
+      choices: [
+        { name: 'Yes', value: 'yes', description: 'Must provide the directory containing the profile controls' },
+        { name: 'No', value: 'no', description: 'Must provide the Profile Controls summary (.json) file' },
+      ],
+    });
+
+    if (generateSummaryFile === 'no') {
+      const inspecJsonFile = await fileSelector({
+        message: 'Select the Profile Controls summary (.json) file:',
+        pageSize: 15,
+        loop: true,
+        type: 'file',
+        allowCancel: true,
+        emptyText: 'Directory is empty',
+        showExcluded: false,
+        filter: file => file.isDirectory() || file.name.endsWith('.json'),
+        theme: fileSelectorTheme,
+      });
+
+      this.logger.info('inspecJsonFile=' + inspecJsonFile);
+      interactiveValues.inspecJsonFile = inspecJsonFile;
+    } else {
+      this.logger.info('inspecJsonFile=auto-generated');
+      interactiveValues.inspecJsonFile = '';
+    }
+
+    // If we are using fuzzy logic or profile controls summary was not provided we need the controls directory
+    const shouldUseFuzzyLogic = await confirm({ message: 'Run the approximate string matching process (fuzzy logic)?' });
+    if (shouldUseFuzzyLogic || generateSummaryFile === 'yes') {
+      const inspecPath = await input({
+        message: 'Provide the absolute or known relative path to the inspec or cinc-auditor executable:',
+        validate(input: string) {
+          return input.trim().length > 0 || 'Please enter a path to the inspec or cinc-auditor executable';
+        },
+      });
+
+      this.logger.info('inspecPath=' + inspecPath);
+      interactiveValues.inspecPath = inspecPath;
+
+      const controlsDir = await fileSelector({
+        message: 'Select the Profile Controls directory (controls Delta is processing):',
+        pageSize: 15,
+        loop: true,
+        type: 'directory',
+        allowCancel: true,
+        emptyText: 'Directory is empty',
+        theme: fileSelectorTheme,
+      });
+
+      this.logger.info('runMapControls=true');
+      interactiveValues.controlsDir = controlsDir;
+      interactiveValues.runMapControls = shouldUseFuzzyLogic;
+    } else {
+      this.logger.info('runMapControls=false');
+      interactiveValues.runMapControls = false;
+    }
+
+    // Get the directory where to save the delta controls
+    const deltaOutputDir = await fileSelector({
+      message: 'Select the output folder for the updated profile control(s)',
+      pageSize: 15,
+      loop: true,
+      type: 'directory',
+      allowCancel: true,
+      emptyText: 'Directory is empty',
+      theme: fileSelectorTheme,
+    });
+
+    this.logger.info('deltaOutputDir=' + deltaOutputDir);
+    interactiveValues.deltaOutputDir = deltaOutputDir;
+
+    // Optional - OVAL file Flag
+    const shouldIncludeOvalFile = await confirm({ message: 'Include an OVAL XML file?' });
+    if (shouldIncludeOvalFile) {
+      const ovalXmlFile = await fileSelector({
+        message: 'Select the OVAL XML file containing definitions used in the new guidance - in the form of .xml file:',
+        pageSize: 15,
+        loop: true,
+        type: 'file',
+        allowCancel: true,
+        emptyText: 'Directory is empty',
+        showExcluded: false,
+        filter: file => file.isDirectory() || file.name.endsWith('.xml'),
+        theme: fileSelectorTheme,
+      });
+
+      this.logger.info('useOvalFile=true');
+      interactiveValues.ovalXmlFile = ovalXmlFile;
+    } else {
+      this.logger.info('useOvalFile=false');
+    }
+
+    // Optional - Generate markdown report from Inspect-objects process
+    const shouldGenerateReport = await confirm({ message: 'Generate the Inspect-Object process markdown report file?' });
+    if (shouldGenerateReport) {
+      const answers = {
+        reportDirectory: await fileSelector({
+          message: 'Select the output directory for the markdown report file:',
+          pageSize: 15,
+          loop: true,
+          type: 'directory',
+          allowCancel: true,
+          emptyText: 'Directory is empty',
+          theme: fileSelectorTheme,
+        }),
+        reportFileName: await input({
+          message: 'Specify the output report filename (must have an extension of .md):',
+          default: 'deltaProcessReport.md',
+        }),
+      };
+
+      this.logger.info('generateReport=true');
+
+      for (const [tagName, answerValue] of Object.entries(answers)) {
+        if (answerValue === null) {
+          continue;
+        }
+
+        this.logger.info(`${tagName}=${answerValue}`);
+        interactiveValues[tagName] = answerValue;
+      }
+    } else {
+      this.logger.info('generateReport=false');
+    }
+
+    // Optional - Select what group Id to process the controls and Log Level
+    const answers = {
+      idType: await select({
+        message: 'Select the Control ID Type used to process the controls:',
+        default: 'rule',
+        choices: [
+          { name: 'rule', value: 'rule' },
+          { name: 'group', value: 'group' },
+          { name: 'cis', value: 'cis' },
+          { name: 'version', value: 'version' },
+        ],
+      }),
+      logLevel: await select({
+        message: 'Select the log level:',
+        default: 'info',
+        choices: [
+          { name: 'info', value: 'info' },
+          { name: 'warn', value: 'warn' },
+          { name: 'debug', value: 'debug' },
+          { name: 'verbose', value: 'verbose' },
+        ],
+      }),
+    };
+
+    for (const [tagName, answerValue] of Object.entries(answers)) {
+      if (answerValue === null) {
+        continue;
+      }
+
+      this.logger.info(`${tagName}=${answerValue}`);
+      interactiveValues[tagName] = answerValue;
+    }
+
+    return interactiveValues;
+  }
+
+  /**
+  Determines whether the provided file is a valid XCCDF file or package.
+
+  This function checks if the given file path points to a valid XCCDF file
+  or package by performing the following steps:
+  - Verifies if the file exists and is a regular file.
+  - Checks the file extension to determine if it is a `.zip` package or `.xml` file.
+  - Reads the content of `.xml` files to confirm the presence of the "xccdf" keyword
+    in the first 10 lines.
+
+  If the file is invalid or an error occurs during processing, appropriate error
+  messages are logged, and the function returns `false`.
+
+  @param xccdfXmlFile - The file path to the XCCDF file or package to validate.
+  @returns `true` if the file is a valid XCCDF file or package, otherwise `false`.
+  */
+  private isXccdfFile(xccdfXmlFile: string): boolean {
+    let isXccdf = true;
+    try {
+      if (fs.lstatSync(xccdfXmlFile).isFile()) {
+        // logger.debug(`Processing the ${xccdfXmlFile} XCCDF file`)
+        if (path.extname(xccdfXmlFile) === '.zip') {
+          GenerateDelta.logger.debug('  Processing a XCCDF package (.zip)');
+          isXccdf = true;
+        } else {
+          GenerateDelta.logger.debug('  Processing a XCCDF file (.xml)');
+          const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8');
+          const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase();
+          if (inputFirstLine.includes('xccdf')) {
+            GenerateDelta.logger.debug('  Valid XCCDF file provided');
+          } else {
+            const err = `  ERROR: Unable to load ${xccdfXmlFile} as a valid XCCDF`;
+            GenerateDelta.logger.error(err);
+            this.logger.info(err);
+            isXccdf = false;
+          }
+        }
+      } else {
+        const err = 'No benchmark (XCCDF) file/packages (.xml or .zip) was provided.';
+        GenerateDelta.logger.error(err);
+        this.logger.info(err);
+        isXccdf = false;
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        const errorCode = (error as { code?: string }).code; // Type-safe access to `code`
+        if (errorCode === 'ENOENT') {
+          const err = `  ERROR: File not found: ${xccdfXmlFile}. Run the --help command for more information on expected input files.`;
+          GenerateDelta.logger.error(err);
+          this.logger.info(err);
+        } else {
+          const err = `  ERROR: Unable to process the XCCDF XML file ${xccdfXmlFile} because: ${error.message}`;
+          GenerateDelta.logger.error(err);
+          this.logger.info(err);
+        }
+      } else {
+        const err = `ERROR: An unexpected error occurred: ${getErrorMessage(error)}`;
+        GenerateDelta.logger.error(err);
+        this.logger.info(err);
+      }
+      isXccdf = false;
+    }
+    return isXccdf;
+  }
+
+  private saveLogs(errorMsg: string) {
+    const strArray = errorMsg.split('\n');
+    for (const error of strArray) {
+      GenerateDelta.logger.error(error);
+      this.logger.info(error.trim());
+    }
+  }
+
+  private sleep(ms: number) {
+    return new Promise((resolve) => {
+      setTimeout(resolve, ms);
+    });
+  }
 
   async run() {
     const { flags } = await this.parse(GenerateDelta);
@@ -772,68 +1190,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     return controlMappings;
   }
 
-  /**
-  Emit the per-link match-method log line. Kept separate from
-  tickMatchCounter so the output format can evolve independently of
-  the stats bookkeeping.
-  */
-  private static logMatchMethod(log: Logger, link: LinkRecord): void {
-    const confidencePct = (link.confidence * 100).toFixed(0) + '%';
-    switch (link.matchMethod) {
-      case 'srg-deterministic': {
-        log.info(
-          `       Match method:  SRG deterministic (${link.srg}) [${link.relationship}]`,
-        );
-        break;
-      }
-      case 'srg-cci-tiebreak': {
-        log.info(
-          `       Match method:  SRG block + CCI tiebreak (Jaccard=${confidencePct}) [${link.relationship}]`,
-        );
-        break;
-      }
-      case 'fuse-fallback': {
-        log.info(
-          `       Match method:  Fuse title-fuzzy (no SRG overlap, confidence=${confidencePct}) [${link.relationship}]`,
-        );
-        break;
-      }
-      default: {
-        // 'none' or any future MatchMethod: emit nothing here; the
-        // caller is expected to handle no-match logging separately.
-        break;
-      }
-    }
-    if (link.potentialMismatch) {
-      log.warn('** Potential Mismatch **');
-    }
-  }
-
-  /**
-  Advance the GenerateDelta static counters for a single link so the
-  end-of-run stats match reality.
-
-    match        -> primary link, high confidence
-    posMisMatch  -> primary link, lower confidence (still accepted)
-    dupMatch     -> related link (shares old body with an earlier primary)
-  */
-  private static tickMatchCounter(link: LinkRecord): void {
-    if (link.relationship === 'related') {
-      GenerateDelta.dupMatch++;
-      return;
-    }
-    // `potentialMismatch` is the single source of truth for "accepted
-    // primary but below the tier's strong-confidence threshold" — see
-    // isPotentialMismatch + TIER{2,3}_MISMATCH_THRESHOLD in
-    // delta_matching.ts. Reading the flag here keeps stats bookkeeping
-    // aligned with the tier definitions automatically.
-    if (link.potentialMismatch) {
-      GenerateDelta.posMisMatch++;
-    } else {
-      GenerateDelta.match++;
-    }
-  }
-
   getMappedStatisticsValidation(totalMappedControls: number, statValidation: string): string {
     // In the requirement-first pipeline `dupMatch` counts `related` links,
     // which ARE included in controlMappings (they share a body with a
@@ -1038,361 +1394,5 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         break;
       }
     }
-  }
-
-  /**
-  Asynchronously prompts the user for various inputs and selections to configure
-  the delta process for updating profile controls. This function dynamically imports
-  required modules, interacts with the user through a series of prompts, and collects
-  the necessary flags and options for the process.
-
-  @async
-  @function
-  @returns {Promise<any>} A promise that resolves to an object containing the user's
-  selections and inputs, including required and optional flags for the delta process.
-
-  The returned object includes:
-  - `xccdfTye`: The type of XCCDF source ('file' or 'url').
-  - `xccdfXmlFile` or `xccdfUrl`: The selected XCCDF file or URL.
-  - `inspecJsonFile`: The Profile Controls summary file or an indication that it is auto-generated.
-  - `controlsDir`: The directory containing the profile controls (if applicable).
-  - `runMapControls`: A boolean indicating whether fuzzy logic is used.
-  - `deltaOutputDir`: The directory for saving the updated profile controls.
-  - `ovalXmlFile`: The OVAL XML file (if included).
-  - `generateReport`: A boolean indicating whether a markdown report is generated.
-  - `reportDirectory` and `reportFileName`: The directory and filename for the markdown report (if applicable).
-  - `idType`: The selected Control ID Type for processing controls.
-  - `logLevel`: The selected log level for the process.
-
-  @remarks
-  - The function uses `inquirer` for interactive prompts and dynamically imports
-    `inquirer-file-selector` and `chalk` for enhanced user experience.
-  - It adjusts the `defaultMaxListeners` of the `EventEmitter` to accommodate
-    the number of listeners required by the prompts.
-  - The function logs user selections to a process log for debugging or auditing purposes.
-
-  @example
-  const flags = await getFlags();
-  console.log(flags);
-  */
-  private async getFlags(): Promise<any> {
-    // The default max listeners is set to 10. The inquire checkbox sets a
-    // listener for each entry it displays, we are providing 16 entries,
-    // does using 16 listeners. Need to increase the defaultMaxListeners.
-    EventEmitter.defaultMaxListeners = 20;
-
-    // Dynamically import inquirer-file-selector and chalk
-    // Once we move the SAF CLI from a CommonJS to an ES modules we can use the regular import
-    const { default: fileSelector } = await import('inquirer-file-selector');
-    const { default: chalk } = await import('chalk');
-
-    const fileSelectorTheme = {
-      style: {
-        file: (text: unknown) => chalk.green(text),
-        currentDir: (text: string) => chalk.blueBright(text),
-        help: (text: unknown) => chalk.yellow(text),
-      },
-    };
-
-    // Variable used to store the prompts (question and answers)
-    const interactiveValues: Record<string, any> = {};
-
-    this.logger.info('Provide the necessary information:');
-    this.logger.info('  Required flag - The XCCDF XML file or URL containing the new guidance - in the form of .xml file');
-    this.logger.info('  Required flag - Controls directory (path to the profile controls to apply the delta process)');
-    this.logger.info('  Required flag - The output folder for the updated profile (will contain the controls that delta was applied too)');
-
-    this.logger.info('  Optional flag - InSpec Profiles JSON summary file (JSON) - auto-generated if not provided');
-    this.logger.info('  Optional flag - The OVAL XML file containing definitions used in the new guidance - in the form of .xml file');
-    this.logger.info('  Optional flag - Output markdown report file - must have an extension of .md');
-    this.logger.info('  Optional flag - Control ID Types: [\'rule\', \'group\', \'cis\', \'version\']');
-    this.logger.info('  Optional flag - Run the approximate string matching process');
-    this.logger.info('  Optional flag - The InSpec profile directory containing the controls being updated (controls Delta is processing)\n');
-
-    this.logger.info('Process Flags ===========================================');
-
-    // Check what XCCDF to use (File or URL)
-    const xccdfType = await select({
-      message: 'Select from where to retrieve the XCCDF',
-      choices: [
-        { name: 'File', value: 'file', description: 'File (.xml) containing the XCCDF benchmark' },
-        { name: 'URL', value: 'url', description: 'URL pointing to a package (.zip) containing the XCCDF benchmark' },
-      ],
-    });
-
-    // Required Flags
-    if (xccdfType === 'file') {
-      const xccdfXmlFile = await fileSelector({
-        message: 'Select the XCCDF benchmark file (.xml) containing the new guidance:',
-        pageSize: 15,
-        loop: true,
-        type: 'file',
-        allowCancel: true,
-        emptyText: 'Directory is empty',
-        showExcluded: false,
-        filter: file => file.isDirectory() || file.name.endsWith('.xml'),
-        theme: fileSelectorTheme,
-      });
-
-      this.logger.info('xccdfXmlFile=' + xccdfXmlFile);
-      interactiveValues.xccdfTye = 'file';
-      interactiveValues.xccdfXmlFile = xccdfXmlFile;
-    } else {
-      const xccdfUrl = await input({
-        message: 'Provide an URL pointing to the XCCDF benchmark (.zip) package:',
-        validate(input: string) {
-          if (/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*\.zip$/i.test(input)) { // skipcq: JS-0113
-            return true;
-          }
-          return 'Please enter a valid URL that ends with .zip';
-        },
-      });
-
-      this.logger.info('xccdfUrl=' + xccdfUrl);
-      interactiveValues.xccdfTye = 'url';
-      interactiveValues.xccdfUrl = xccdfUrl;
-    }
-
-    // Check if Profile Controls summary is provided or auto-generate
-    const generateSummaryFile = await select({
-      message: 'Auto generate the Profile Controls summary?',
-      choices: [
-        { name: 'Yes', value: 'yes', description: 'Must provide the directory containing the profile controls' },
-        { name: 'No', value: 'no', description: 'Must provide the Profile Controls summary (.json) file' },
-      ],
-    });
-
-    if (generateSummaryFile === 'no') {
-      const inspecJsonFile = await fileSelector({
-        message: 'Select the Profile Controls summary (.json) file:',
-        pageSize: 15,
-        loop: true,
-        type: 'file',
-        allowCancel: true,
-        emptyText: 'Directory is empty',
-        showExcluded: false,
-        filter: file => file.isDirectory() || file.name.endsWith('.json'),
-        theme: fileSelectorTheme,
-      });
-
-      this.logger.info('inspecJsonFile=' + inspecJsonFile);
-      interactiveValues.inspecJsonFile = inspecJsonFile;
-    } else {
-      this.logger.info('inspecJsonFile=auto-generated');
-      interactiveValues.inspecJsonFile = '';
-    }
-
-    // If we are using fuzzy logic or profile controls summary was not provided we need the controls directory
-    const shouldUseFuzzyLogic = await confirm({ message: 'Run the approximate string matching process (fuzzy logic)?' });
-    if (shouldUseFuzzyLogic || generateSummaryFile === 'yes') {
-      const inspecPath = await input({
-        message: 'Provide the absolute or known relative path to the inspec or cinc-auditor executable:',
-        validate(input: string) {
-          return input.trim().length > 0 || 'Please enter a path to the inspec or cinc-auditor executable';
-        },
-      });
-
-      this.logger.info('inspecPath=' + inspecPath);
-      interactiveValues.inspecPath = inspecPath;
-
-      const controlsDir = await fileSelector({
-        message: 'Select the Profile Controls directory (controls Delta is processing):',
-        pageSize: 15,
-        loop: true,
-        type: 'directory',
-        allowCancel: true,
-        emptyText: 'Directory is empty',
-        theme: fileSelectorTheme,
-      });
-
-      this.logger.info('runMapControls=true');
-      interactiveValues.controlsDir = controlsDir;
-      interactiveValues.runMapControls = shouldUseFuzzyLogic;
-    } else {
-      this.logger.info('runMapControls=false');
-      interactiveValues.runMapControls = false;
-    }
-
-    // Get the directory where to save the delta controls
-    const deltaOutputDir = await fileSelector({
-      message: 'Select the output folder for the updated profile control(s)',
-      pageSize: 15,
-      loop: true,
-      type: 'directory',
-      allowCancel: true,
-      emptyText: 'Directory is empty',
-      theme: fileSelectorTheme,
-    });
-
-    this.logger.info('deltaOutputDir=' + deltaOutputDir);
-    interactiveValues.deltaOutputDir = deltaOutputDir;
-
-    // Optional - OVAL file Flag
-    const shouldIncludeOvalFile = await confirm({ message: 'Include an OVAL XML file?' });
-    if (shouldIncludeOvalFile) {
-      const ovalXmlFile = await fileSelector({
-        message: 'Select the OVAL XML file containing definitions used in the new guidance - in the form of .xml file:',
-        pageSize: 15,
-        loop: true,
-        type: 'file',
-        allowCancel: true,
-        emptyText: 'Directory is empty',
-        showExcluded: false,
-        filter: file => file.isDirectory() || file.name.endsWith('.xml'),
-        theme: fileSelectorTheme,
-      });
-
-      this.logger.info('useOvalFile=true');
-      interactiveValues.ovalXmlFile = ovalXmlFile;
-    } else {
-      this.logger.info('useOvalFile=false');
-    }
-
-    // Optional - Generate markdown report from Inspect-objects process
-    const shouldGenerateReport = await confirm({ message: 'Generate the Inspect-Object process markdown report file?' });
-    if (shouldGenerateReport) {
-      const answers = {
-        reportDirectory: await fileSelector({
-          message: 'Select the output directory for the markdown report file:',
-          pageSize: 15,
-          loop: true,
-          type: 'directory',
-          allowCancel: true,
-          emptyText: 'Directory is empty',
-          theme: fileSelectorTheme,
-        }),
-        reportFileName: await input({
-          message: 'Specify the output report filename (must have an extension of .md):',
-          default: 'deltaProcessReport.md',
-        }),
-      };
-
-      this.logger.info('generateReport=true');
-
-      for (const [tagName, answerValue] of Object.entries(answers)) {
-        if (answerValue === null) {
-          continue;
-        }
-
-        this.logger.info(`${tagName}=${answerValue}`);
-        interactiveValues[tagName] = answerValue;
-      }
-    } else {
-      this.logger.info('generateReport=false');
-    }
-
-    // Optional - Select what group Id to process the controls and Log Level
-    const answers = {
-      idType: await select({
-        message: 'Select the Control ID Type used to process the controls:',
-        default: 'rule',
-        choices: [
-          { name: 'rule', value: 'rule' },
-          { name: 'group', value: 'group' },
-          { name: 'cis', value: 'cis' },
-          { name: 'version', value: 'version' },
-        ],
-      }),
-      logLevel: await select({
-        message: 'Select the log level:',
-        default: 'info',
-        choices: [
-          { name: 'info', value: 'info' },
-          { name: 'warn', value: 'warn' },
-          { name: 'debug', value: 'debug' },
-          { name: 'verbose', value: 'verbose' },
-        ],
-      }),
-    };
-
-    for (const [tagName, answerValue] of Object.entries(answers)) {
-      if (answerValue === null) {
-        continue;
-      }
-
-      this.logger.info(`${tagName}=${answerValue}`);
-      interactiveValues[tagName] = answerValue;
-    }
-
-    return interactiveValues;
-  }
-
-  /**
-  Determines whether the provided file is a valid XCCDF file or package.
-
-  This function checks if the given file path points to a valid XCCDF file
-  or package by performing the following steps:
-  - Verifies if the file exists and is a regular file.
-  - Checks the file extension to determine if it is a `.zip` package or `.xml` file.
-  - Reads the content of `.xml` files to confirm the presence of the "xccdf" keyword
-    in the first 10 lines.
-
-  If the file is invalid or an error occurs during processing, appropriate error
-  messages are logged, and the function returns `false`.
-
-  @param xccdfXmlFile - The file path to the XCCDF file or package to validate.
-  @returns `true` if the file is a valid XCCDF file or package, otherwise `false`.
-  */
-  private isXccdfFile(xccdfXmlFile: string): boolean {
-    let isXccdf = true;
-    try {
-      if (fs.lstatSync(xccdfXmlFile).isFile()) {
-        // logger.debug(`Processing the ${xccdfXmlFile} XCCDF file`)
-        if (path.extname(xccdfXmlFile) === '.zip') {
-          GenerateDelta.logger.debug('  Processing a XCCDF package (.zip)');
-          isXccdf = true;
-        } else {
-          GenerateDelta.logger.debug('  Processing a XCCDF file (.xml)');
-          const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8');
-          const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase();
-          if (inputFirstLine.includes('xccdf')) {
-            GenerateDelta.logger.debug('  Valid XCCDF file provided');
-          } else {
-            const err = `  ERROR: Unable to load ${xccdfXmlFile} as a valid XCCDF`;
-            GenerateDelta.logger.error(err);
-            this.logger.info(err);
-            isXccdf = false;
-          }
-        }
-      } else {
-        const err = 'No benchmark (XCCDF) file/packages (.xml or .zip) was provided.';
-        GenerateDelta.logger.error(err);
-        this.logger.info(err);
-        isXccdf = false;
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        const errorCode = (error as { code?: string }).code; // Type-safe access to `code`
-        if (errorCode === 'ENOENT') {
-          const err = `  ERROR: File not found: ${xccdfXmlFile}. Run the --help command for more information on expected input files.`;
-          GenerateDelta.logger.error(err);
-          this.logger.info(err);
-        } else {
-          const err = `  ERROR: Unable to process the XCCDF XML file ${xccdfXmlFile} because: ${error.message}`;
-          GenerateDelta.logger.error(err);
-          this.logger.info(err);
-        }
-      } else {
-        const err = `ERROR: An unexpected error occurred: ${getErrorMessage(error)}`;
-        GenerateDelta.logger.error(err);
-        this.logger.info(err);
-      }
-      isXccdf = false;
-    }
-    return isXccdf;
-  }
-
-  private saveLogs(errorMsg: string) {
-    const strArray = errorMsg.split('\n');
-    for (const error of strArray) {
-      GenerateDelta.logger.error(error);
-      this.logger.info(error.trim());
-    }
-  }
-
-  private sleep(ms: number) {
-    return new Promise((resolve) => {
-      setTimeout(resolve, ms);
-    });
   }
 }
