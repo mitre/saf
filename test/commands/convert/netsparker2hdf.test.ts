@@ -11,8 +11,10 @@ describe('Test Netsparker', () => {
   it('hdf-converter output test', async () => {
     await runCommand<{ name: string }>([
       'convert netsparker2hdf',
-      '-i', path.resolve('./test/sample_data/netsparker/sample_input_report/sample-netsparker-invicti.xml'),
-      '-o', `${tmpobj.name}/netsparkertest.json`,
+      '-i',
+      path.resolve('./test/sample_data/netsparker/sample_input_report/sample-netsparker-invicti.xml'),
+      '-o',
+      `${tmpobj.name}/netsparkertest.json`,
     ]);
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/netsparkertest.json`, 'utf8'));
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/netsparker/netsparker-hdf.json'), 'utf8'));
@@ -26,8 +28,11 @@ describe('Test Netsparker using withraw flag', () => {
   it('hdf-converter with raw output test', async () => {
     await runCommand<{ name: string }>([
       'convert netsparker2hdf',
-      '-i', path.resolve('./test/sample_data/netsparker/sample_input_report/sample-netsparker-invicti.xml'),
-      '-o', `${tmpobj.name}/netsparkertest.json`, '-w',
+      '-i',
+      path.resolve('./test/sample_data/netsparker/sample_input_report/sample-netsparker-invicti.xml'),
+      '-o',
+      `${tmpobj.name}/netsparkertest.json`,
+      '-w',
     ]);
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/netsparkertest.json`, 'utf8'));
     const sample = JSON.parse(fs.readFileSync(path.resolve('./test/sample_data/netsparker/netsparker-hdf-withraw.json'), 'utf8'));

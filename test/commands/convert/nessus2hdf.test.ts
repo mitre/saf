@@ -10,8 +10,10 @@ describe.sequential('Test Nessus', () => {
     const tmpobj = tmp.dirSync({ unsafeCleanup: true });
     await runCommand<{ name: string }>([
       'convert nessus2hdf',
-      '-i', path.resolve('./test/sample_data/nessus/sample_input_report/sample.nessus'),
-      '-o', `${tmpobj.name}/nessustest.json`,
+      '-i',
+      path.resolve('./test/sample_data/nessus/sample_input_report/sample.nessus'),
+      '-o',
+      `${tmpobj.name}/nessustest.json`,
     ]);
 
     const test1 = JSON.parse(fs.readFileSync(`${tmpobj.name}/nessustest-10.0.0.1.json`, 'utf8'));
@@ -31,9 +33,12 @@ describe.sequential('Test Nessus', () => {
     const tmpobj = tmp.dirSync({ unsafeCleanup: true });
     await runCommand<{ name: string }>([
       'convert nessus2hdf',
-      '-i', path.resolve('./test/sample_data/nessus/sample_input_report/sample.nessus'),
-      '-o', `${tmpobj.name}/nessustest.json`,
-      '-p', '{"processEntities":{"maxTotalExpansions":5000}}',
+      '-i',
+      path.resolve('./test/sample_data/nessus/sample_input_report/sample.nessus'),
+      '-o',
+      `${tmpobj.name}/nessustest.json`,
+      '-p',
+      '{"processEntities":{"maxTotalExpansions":5000}}',
     ]);
 
     const test1 = JSON.parse(fs.readFileSync(`${tmpobj.name}/nessustest-10.0.0.1.json`, 'utf8'));
@@ -53,9 +58,12 @@ describe.sequential('Test Nessus', () => {
     const tmpobj = tmp.dirSync({ unsafeCleanup: true });
     const { stdout, stderr } = await runCommand<{ name: string }>([
       'convert nessus2hdf',
-      '-i', path.resolve('./test/sample_data/nessus/sample_input_report/sample.nessus'),
-      '-o', `${tmpobj.name}/nessustest.json`,
-      '-p', '{"processEntities":{"maxTotalExpansions":50}}',
+      '-i',
+      path.resolve('./test/sample_data/nessus/sample_input_report/sample.nessus'),
+      '-o',
+      `${tmpobj.name}/nessustest.json`,
+      '-p',
+      '{"processEntities":{"maxTotalExpansions":50}}',
     ]);
 
     expect(stdout).to.equal('');

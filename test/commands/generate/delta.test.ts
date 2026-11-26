@@ -12,10 +12,14 @@ describe.sequential('Test generate delta command', () => {
   it('should generate the controls for delta request with "rule" id type', async () => {
     await runCommand<{ name: string }>([
       'generate delta',
-      '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
-      '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
-      '-o', `${tmpobj.name}`,
-      '-T', 'rule',
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
+      '-o',
+      `${tmpobj.name}`,
+      '-T',
+      'rule',
     ]);
     const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length;
     expect(fileCount).to.eql(4);
@@ -25,10 +29,14 @@ describe.sequential('Test generate delta command', () => {
   it('should generate the controls for delta request with "group" id type', async () => {
     await runCommand<{ name: string }>([
       'generate delta',
-      '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
-      '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
-      '-o', `${tmpobj.name}`,
-      '-T', 'group',
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
+      '-o',
+      `${tmpobj.name}`,
+      '-T',
+      'group',
     ]);
     const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length;
     expect(fileCount).to.eql(4);
@@ -38,10 +46,14 @@ describe.sequential('Test generate delta command', () => {
   it('should generate the controls for delta request with "cis" id type', async () => {
     await runCommand<{ name: string }>([
       'generate delta',
-      '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
-      '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
-      '-o', `${tmpobj.name}`,
-      '-T', 'cis',
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
+      '-o',
+      `${tmpobj.name}`,
+      '-T',
+      'cis',
     ]);
     const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length;
     expect(fileCount).to.eql(4);
@@ -51,10 +63,14 @@ describe.sequential('Test generate delta command', () => {
   it('should generate the controls for delta request with "version" id type', async () => {
     await runCommand<{ name: string }>([
       'generate delta',
-      '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
-      '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
-      '-o', `${tmpobj.name}/controls`,
-      '-T', 'version',
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
+      '-o',
+      `${tmpobj.name}/controls`,
+      '-T',
+      'version',
     ]);
     const fileCount = fs.readdirSync(`${tmpobj.name}/controls/`).length;
     expect(fileCount).to.eql(4);
@@ -65,9 +81,12 @@ describe.sequential('Test generate delta command', () => {
   it('should generate the output folder, place new controls on the output folder for review', async () => {
     await runCommand<{ name: string }>([
       'generate delta',
-      '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
-      '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
-      '-o', `${tmpobj.name}/RHEL_7`,
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
+      '-o',
+      `${tmpobj.name}/RHEL_7`,
     ]);
     const fileCount = fs.readdirSync(`${tmpobj.name}/RHEL_7/controls/`).length;
     expect(fileCount).to.eql(4);
@@ -77,10 +96,14 @@ describe.sequential('Test generate delta command', () => {
   it('should generate a report with given file name and place it on the specified directory', async () => {
     await runCommand<{ name: string }>([
       'generate delta',
-      '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
-      '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
-      '-o', `${tmpobj.name}/RHEL_7`,
-      '-r', `${tmpobj.name}/RHEL_7/my-report.md`,
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
+      '-o',
+      `${tmpobj.name}/RHEL_7`,
+      '-r',
+      `${tmpobj.name}/RHEL_7/my-report.md`,
     ]);
     const isReportFile = fs.lstatSync((`${tmpobj.name}/RHEL_7/my-report.md`)).isFile();
     assert.isTrue(isReportFile);
@@ -91,10 +114,14 @@ describe.sequential('Test generate delta command', () => {
   it('should generate a report name delta.md and place it in the default directory', async () => {
     await runCommand<{ name: string }>([
       'generate delta',
-      '-J', path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
-      '-X', path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
-      '-o', `${tmpobj.name}`,
-      '-r', `${tmpobj.name}`,
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/rhel-7-v3r7-mini-sample-profile.json'),
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
+      '-o',
+      `${tmpobj.name}`,
+      '-r',
+      `${tmpobj.name}`,
     ]);
     const isFile = fs.lstatSync((`${tmpobj.name}/delta.md`)).isFile();
     assert.isTrue(isFile);
@@ -103,11 +130,15 @@ describe.sequential('Test generate delta command', () => {
   it('should require --inspecPath when using fuzzy logic to match and map controls', async () => {
     const { stderr } = await runCommand<{ name: string }>([
       'generate delta',
-      '-J', path.resolve('./test/sample_data/inspec/json/profile_and_controls/Windows_Server_2019_v1r3_mini-profile.json'),
-      '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2022_V2R1_mini-sample-xccdf.xml'),
-      '-o', `${tmpobj.name}`,
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/profile_and_controls/Windows_Server_2019_v1r3_mini-profile.json'),
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2022_V2R1_mini-sample-xccdf.xml'),
+      '-o',
+      `${tmpobj.name}`,
       '-M',
-      '-c', path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls/'),
+      '-c',
+      path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls/'),
     ]);
     expect(stderr).to.include('-M');
     expect(stderr).to.include('inspecPath');
@@ -117,12 +148,17 @@ describe.sequential('Test generate delta command', () => {
   it('should generate the correct number of controls using fuzzy logic to match and map controls', async () => {
     const { stdout } = await runCommand<{ name: string }>([
       'generate delta',
-      '-J', path.resolve('./test/sample_data/inspec/json/profile_and_controls/Windows_Server_2019_v1r3_mini-profile.json'),
-      '-I', 'cinc-auditor',
-      '-X', path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2022_V2R1_mini-sample-xccdf.xml'),
-      '-o', `${tmpobj.name}`,
+      '-J',
+      path.resolve('./test/sample_data/inspec/json/profile_and_controls/Windows_Server_2019_v1r3_mini-profile.json'),
+      '-I',
+      'cinc-auditor',
+      '-X',
+      path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2022_V2R1_mini-sample-xccdf.xml'),
+      '-o',
+      `${tmpobj.name}`,
       '-M',
-      '-c', path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls/'),
+      '-c',
+      path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls/'),
     ]);
     expect(stdout).to.include('Total Controls Available for Delta:  5');
     expect(stdout).to.include('Total Controls Found on XCCDF:  5');

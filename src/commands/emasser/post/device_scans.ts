@@ -35,8 +35,7 @@ export default class EmasserPostDeviceScans extends Command {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the POST Device Scan Results command' }),
     systemId: Flags.integer({ char: 's', description: 'The system identification number', required: true }),
     filename: Flags.string({ char: 'f', description: 'The device scan result file to be uploaded.', required: true }),
-    scanType: Flags.string({ char: 'S', description: 'The type of scan being uploaded', required: true,
-      options: ['acasAsrArf', 'acasNessus', 'disaStigViewerCklCklb', 'disaStigViewerCmrs', 'policyAuditor', 'scapComplianceChecker'] }),
+    scanType: Flags.string({ char: 'S', description: 'The type of scan being uploaded', required: true, options: ['acasAsrArf', 'acasNessus', 'disaStigViewerCklCklb', 'disaStigViewerCmrs', 'policyAuditor', 'scapComplianceChecker'] }),
     isBaseline: Flags.boolean({ char: 'B', description: 'Indicates if the scan is a baseline scan', default: false, allowNo: true }),
   };
 

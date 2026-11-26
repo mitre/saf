@@ -69,31 +69,48 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       exclusive: ['xccdfXmlFile'],
     }),
     inspecJsonFile: Flags.string({
-      char: 'J', required: false, exactlyOne: ['inspecPath'],
+      char: 'J',
+      required: false,
+      exactlyOne: ['inspecPath'],
       description: '\u001B[31m(required [-J or -I])\u001B[34m InSpec Profiles JSON summary file - can be generated using the "[cinc-auditor or inspec] json <profile path> > profile.json" command',
     }),
     inspecPath: Flags.string({
-      char: 'I', required: false, exactlyOne: ['inspecJsonFile'],
+      char: 'I',
+      required: false,
+      exactlyOne: ['inspecJsonFile'],
       description: '\u001B[31m(required [-J or -I])\u001B[34m Absolute or known relative path to the inspec or cinc-auditor executable',
     }),
     controlsDir: Flags.string({
-      char: 'c', required: true,
+      char: 'c',
+      required: true,
       description: 'The InSpec profile controls directory containing the profiles to be updated',
     }),
     controlPrefix: Flags.string({
-      char: 'P', required: false, default: 'V', options: ['V', 'SV'],
+      char: 'P',
+      required: false,
+      default: 'V',
+      options: ['V', 'SV'],
       description: 'Old control number prefix V or SV, default V',
     }),
     useXccdfGroupId: Flags.boolean({
-      char: 'g', required: false, default: false, allowNo: true,
+      char: 'g',
+      required: false,
+      default: false,
+      allowNo: true,
       description: 'Use the XCCDF `Group Id` to rename the controls. Uses prefix V or SV based on controlPrefix option\n[default: false]',
     }),
     formatControls: Flags.boolean({
-      char: 'f', required: false, default: true, allowNo: true,
+      char: 'f',
+      required: false,
+      default: true,
+      allowNo: true,
       description: 'Format control contents in the same way `generate delta` will write controls\n[default: true]',
     }),
     backupControls: Flags.boolean({
-      char: 'b', required: false, default: true, allowNo: true,
+      char: 'b',
+      required: false,
+      default: true,
+      allowNo: true,
       description: 'Preserve modified controls in a backup directory (oldControls) inside the controls directory\n[default: true]',
     }),
   };
@@ -558,9 +575,7 @@ function getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: 
   return controlData;
 }
 
-function saveControl(filePath: string, newXCCDFControlNumber: string,
-  currentControlNumber: string, updatedControl: string,
-  backupControls: boolean, renamedControl: boolean) {
+function saveControl(filePath: string, newXCCDFControlNumber: string, currentControlNumber: string, updatedControl: string, backupControls: boolean, renamedControl: boolean) {
   const newFileName = resolveSafeChild(path.dirname(filePath), safeFilename(`${basename(newXCCDFControlNumber)}.rb`));
 
   // Move processed (old) control to oldControls folder

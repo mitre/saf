@@ -137,8 +137,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
 
         case 'systems': {
           flagObj = {
-            registrationType: Flags.string({ char: 'r', description: 'Filter on registration type',
-              options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false }),
+            registrationType: Flags.string({ char: 'r', description: 'Filter on registration type', options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false }),
             ditprId: Flags.string({ char: 't', description: 'DoD Information Technology (IT) Portfolio Repository (DITPR) string Id', required: false }),
             coamsId: Flags.string({ char: 'c', description: 'Cyber Operational Attributes Management System (COAMS) string Id', required: false }),
             policy: Flags.string({ char: 'p', description: 'Filter on policy', options: ['diacap', 'rmf', 'reporting'], required: false }),
@@ -270,8 +269,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'workflow_definitions': {
           flagObj = {
             includeInactive: Flags.boolean({ char: 'I', description: 'Boolean - Include inactive workflows', allowNo: true, required: false }),
-            registrationType: Flags.string({ char: 'r', description: 'The registration type - must be a valid type',
-              options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false }),
+            registrationType: Flags.string({ char: 'r', description: 'The registration type - must be a valid type', options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false }),
           };
           break;
         }
@@ -324,8 +322,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             testedBy: Flags.string({ char: 'b', description: 'The person that conducted the test (Last Name, First)', required: true }),
             testDate: Flags.string({ char: 't', description: 'The date test was conducted, Unix time format', required: true }),
             description: Flags.string({ char: 'd', description: 'The description of test result. 4000 Characters', required: true }),
-            complianceStatus: Flags.string({ char: 'S', description: 'The compliance status of the test result',
-              options: ['Compliant', 'Non-Compliant', 'Not Applicable'], required: true }),
+            complianceStatus: Flags.string({ char: 'S', description: 'The compliance status of the test result', options: ['Compliant', 'Non-Compliant', 'Not Applicable'], required: true }),
           };
           break;
         }
@@ -363,8 +360,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'pac': {
           flagObj = {
             systemId: Flags.integer({ char: 's', description: 'The system identification number', required: true }),
-            workflow: Flags.string({ char: 'w', description: 'The appropriate workflow',
-              options: ['Assess and Authorize', 'Assess Only', 'Security Plan Approval'], required: true }),
+            workflow: Flags.string({ char: 'w', description: 'The appropriate workflow', options: ['Assess and Authorize', 'Assess Only', 'Security Plan Approval'], required: true }),
             name: Flags.string({ char: 'n', description: 'The control package name', required: true }),
             comments: Flags.string({ char: 'c', description: 'The control approval chain comments', required: true }),
           };

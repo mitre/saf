@@ -14,9 +14,7 @@ export default class HDF2HTML extends Command {
     help: Flags.help({ char: 'h' }),
     input: Flags.string({ char: 'i', required: true, multiple: true, description: 'Input HDF JSON file' }),
     output: Flags.string({ char: 'o', required: true, description: 'Output HTML file' }),
-    type: Flags.string({ char: 't', default: FileExportTypes.Administrator,
-      description: 'The report type to generate\nReport types differ with the information they include\nExecutive: Profile Info + Statuses + Compliance Level\nManager: Executive + Test Results and Details\nAdministrator: Manager + Test Code',
-      options: ['Executive', 'Manager', 'Administrator'] }),
+    type: Flags.string({ char: 't', default: FileExportTypes.Administrator, description: 'The report type to generate\nReport types differ with the information they include\nExecutive: Profile Info + Statuses + Compliance Level\nManager: Executive + Test Results and Details\nAdministrator: Manager + Test Code', options: ['Executive', 'Manager', 'Administrator'] }),
   };
 
   async run() {

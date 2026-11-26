@@ -101,12 +101,7 @@ export declare type StatusEnum = typeof StatusEnum[keyof typeof StatusEnum];
  *                   optional container scan examples.
  */
 function getAllJsonExamples(): string {
-  return JSON.stringify(
-    _.merge({},
-      getJsonExamples('container_scans-required'),
-      getJsonExamples('container_scans-optional'),
-    ),
-  );
+  return JSON.stringify(_.merge({}, getJsonExamples('container_scans-required'), getJsonExamples('container_scans-optional')));
 }
 
 /**

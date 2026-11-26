@@ -36,13 +36,20 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
 
   static readonly flags = {
     input: Flags.string({
-      char: 'i', required: true, description: 'The HDF JSON File to be validated by the threshold values' }),
+      char: 'i',
+      required: true,
+      description: 'The HDF JSON File to be validated by the threshold values',
+    }),
     templateInline: Flags.string({
-      char: 'I', required: false, exclusive: ['templateFile'],
+      char: 'I',
+      required: false,
+      exclusive: ['templateFile'],
       description: 'An inline (on the command line) flattened JSON containing the validation thresholds (Intended for backwards compatibility with InSpec Tools)',
     }),
     templateFile: Flags.string({
-      char: 'T', required: false, exclusive: ['templateInline'],
+      char: 'T',
+      required: false,
+      exclusive: ['templateInline'],
       description: 'A threshold YAML file containing expected threshold values. Generate it using the "saf generate threshold" command',
     }),
   };
