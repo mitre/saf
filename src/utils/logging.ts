@@ -3,15 +3,15 @@ import _ from 'lodash';
 import { createLogger, format, type transport, transports, type Logger } from 'winston';
 
 /**
- * Summary type represents a summary of an HDF execution.
- * @property {string[]} profileNames     - An array of profile names.
- * @property {number} controlCount       - The total number of controls.
- * @property {number} passedCount        - The number of controls that passed.
- * @property {number} failedCount        - The number of controls that failed.
- * @property {number} notApplicableCount - The number of controls that are not applicable.
- * @property {number} notReviewedCount   - The number of controls that were not reviewed.
- * @property {number} errorCount         - The number of controls that resulted in an error.
- */
+Summary type represents a summary of an HDF execution.
+@property {string[]} profileNames     - An array of profile names.
+@property {number} controlCount       - The total number of controls.
+@property {number} passedCount        - The number of controls that passed.
+@property {number} failedCount        - The number of controls that failed.
+@property {number} notApplicableCount - The number of controls that are not applicable.
+@property {number} notReviewedCount   - The number of controls that were not reviewed.
+@property {number} errorCount         - The number of controls that resulted in an error.
+*/
 
 export type Summary = {
   profileNames: string[];
@@ -80,13 +80,13 @@ const diagnosticFormat = (module: string) => format.combine(
 );
 
 /**
- * Wrap a plain-text CLI logger in a lazy Proxy so the File transport isn't
- * opened until the first call-site reads a property (e.g. `log.info(...)`).
- * oclif imports command modules to read their static metadata (flags,
- * description) even for `saf --help`, so module-level loggers would otherwise
- * touch the filesystem on every invocation regardless of whether the owning
- * command was the one the user actually asked for.
- */
+Wrap a plain-text CLI logger in a lazy Proxy so the File transport isn't
+opened until the first call-site reads a property (e.g. `log.info(...)`).
+oclif imports command modules to read their static metadata (flags,
+description) even for `saf --help`, so module-level loggers would otherwise
+touch the filesystem on every invocation regardless of whether the owning
+command was the one the user actually asked for.
+*/
 export function createWinstonLogger(options: WinstonLoggerOptions = {}): Logger {
   const {
     module = 'SAF CLI',
@@ -117,11 +117,11 @@ export function createWinstonLogger(options: WinstonLoggerOptions = {}): Logger 
 }
 
 /**
- * The function `getHDFSummary` takes an execution object and returns a summary string containing
- * information about the profiles, passed/failed/not applicable/not reviewed counts.
- * @param {ExecJSON.Execution} hdf - The `hdf` parameter is of type `ExecJSON.Execution` which represents the execution of a set of controls against a target.
- * @returns {string} A string that represents a summary of the execution.
- */
+The function `getHDFSummary` takes an execution object and returns a summary string containing
+information about the profiles, passed/failed/not applicable/not reviewed counts.
+@param {ExecJSON.Execution} hdf - The `hdf` parameter is of type `ExecJSON.Execution` which represents the execution of a set of controls against a target.
+@returns {string} A string that represents a summary of the execution.
+*/
 
 export function getHDFSummary(hdf: ExecJSON.Execution): string {
   let summary = 'Execution<';

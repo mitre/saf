@@ -45,23 +45,23 @@ export default class EmasserPostDeviceScans extends Command {
     const addDeviceScans = new DeviceScanResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
     /**
-     * Upload device scans (delivery method can be a file or a zip file)
-     * Specific file extensions are expected depending upon the scanType parameter.
-     *
-     * Scan Type                    File Type
-     * ───────────────────────────  ─────────────
-     * disaStigViewerCklCklb        .ckl or .cklb
-     * acasAsrArf or policyAuditor  .zip
-     *
-     * Single files are expected for all other scan types as this endpoint
-     * requires files to be uploaded consecutively as opposed to in bulk.
-     *
-     * Current scan types that are supported:
-     *   ACAS: acasAsrArf or acasNessus
-     *   DISA STIG Viewer: disaStigViewerCklCklb or disaStigViewerCmrs
-     *   Policy Auditor: policyAuditor
-     *   SCAP Compliance Checker: scapComplianceChecker
-     */
+    Upload device scans (delivery method can be a file or a zip file)
+    Specific file extensions are expected depending upon the scanType parameter.
+
+    Scan Type                    File Type
+    ───────────────────────────  ─────────────
+    disaStigViewerCklCklb        .ckl or .cklb
+    acasAsrArf or policyAuditor  .zip
+
+    Single files are expected for all other scan types as this endpoint
+    requires files to be uploaded consecutively as opposed to in bulk.
+
+    Current scan types that are supported:
+      ACAS: acasAsrArf or acasNessus
+      DISA STIG Viewer: disaStigViewerCklCklb or disaStigViewerCmrs
+      Policy Auditor: policyAuditor
+      SCAP Compliance Checker: scapComplianceChecker
+    */
     try {
       if (!fs.existsSync(flags.filename)) {
         throw new CLIError(`The file ${flags.filename} does not exist. Please provide a valid file path.`);

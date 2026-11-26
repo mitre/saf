@@ -86,8 +86,8 @@ export default class MyHelpClass extends Help {
 }
 
 /**
- * A wrapper around process.stdout and process.stderr that allows us to mock out the streams for testing.
- */
+A wrapper around process.stdout and process.stderr that allows us to mock out the streams for testing.
+*/
 class Stream {
   public channel: 'stdout' | 'stderr';
 

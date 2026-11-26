@@ -14,15 +14,15 @@ import { outputFormat } from '../../../utils/emasser/output_formatter';
 import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
 
 /**
- * Generates a JSON string based on the provided action.
- *
- * @param action - The action to determine which JSON examples to merge.
- *                 Valid values are 'add' and 'clear'.
- *                 - 'add': Merges 'scan_findings-application' and 'scan_findings-applicationFindings'.
- *                 - 'clear': Merges 'scan_findings-application' and 'scan_findings-clearFindings'.
- * @returns A JSON string representing the merged examples for the specified action.
- *          Returns an empty string if the action is not recognized.
- */
+Generates a JSON string based on the provided action.
+
+@param action - The action to determine which JSON examples to merge.
+                Valid values are 'add' and 'clear'.
+                - 'add': Merges 'scan_findings-application' and 'scan_findings-applicationFindings'.
+                - 'clear': Merges 'scan_findings-application' and 'scan_findings-clearFindings'.
+@returns A JSON string representing the merged examples for the specified action.
+         Returns an empty string if the action is not recognized.
+*/
 function getAllJsonExamples(action: string): string {
   if (action === 'add') {
     return JSON.stringify(_.merge({}, getJsonExamples('scan_findings-application'), getJsonExamples('scan_findings-applicationFindings')));
@@ -36,12 +36,12 @@ function getAllJsonExamples(action: string): string {
 }
 
 /**
- * Asserts that a parameter exists and is not undefined.
- *
- * @param {string} object - The name of the parameter or field being checked.
- * @param {string | boolean | number | undefined | null} value - The value of the parameter or field to check.
- * @throws {Error} Throws an error if the value is undefined.
- */
+Asserts that a parameter exists and is not undefined.
+
+@param {string} object - The name of the parameter or field being checked.
+@param {string | boolean | number | undefined | null} value - The value of the parameter or field to check.
+@throws {Error} Throws an error if the value is undefined.
+*/
 function assertParamExists(object: string, value: string | boolean | number | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`);
@@ -50,12 +50,12 @@ function assertParamExists(object: string, value: string | boolean | number | un
 }
 
 /**
- * Adds application details to the request body for a static code scan.
- *
- * @param {StaticCodeRequest} dataObj - The input data object containing application details.
- * @returns {StaticCodeRequest} The request body with the application details added.
- * @throws Will throw an error if required application details are missing.
- */
+Adds application details to the request body for a static code scan.
+
+@param {StaticCodeRequest} dataObj - The input data object containing application details.
+@returns {StaticCodeRequest} The request body with the application details added.
+@throws Will throw an error if required application details are missing.
+*/
 function addApplicationToRequestBody(dataObj: StaticCodeRequest): StaticCodeRequest {
   const bodyObj: ApplicationRequestBody = { applicationName: '', version: '' };
   const requestBody: StaticCodeRequest = {};
@@ -78,20 +78,20 @@ function addApplicationToRequestBody(dataObj: StaticCodeRequest): StaticCodeRequ
 }
 
 /**
- * Adds application findings fields from the data object to the body object.
- *
- * @param bodyObject - The object to which the application findings will be added.
- * @param dataObj - The object containing the application findings data.
- *
- * @throws Will throw an error if required fields are missing in the application findings.
- *
- * The function processes each finding in the `dataObj.applicationFindings` array.
- * If a finding has the `clearFindings` property, it adds it directly to the `findingsArray`.
- * Otherwise, it validates the presence of required fields (`codeCheckName`, `count`,
- * `cweId`, `scanDate`) and optionally includes the `rawSeverity` field if present.
- *
- * The processed findings are then added to the `bodyObject.applicationFindings` array.
- */
+Adds application findings fields from the data object to the body object.
+
+@param bodyObject - The object to which the application findings will be added.
+@param dataObj - The object containing the application findings data.
+
+@throws Will throw an error if required fields are missing in the application findings.
+
+The function processes each finding in the `dataObj.applicationFindings` array.
+If a finding has the `clearFindings` property, it adds it directly to the `findingsArray`.
+Otherwise, it validates the presence of required fields (`codeCheckName`, `count`,
+`cweId`, `scanDate`) and optionally includes the `rawSeverity` field if present.
+
+The processed findings are then added to the `bodyObject.applicationFindings` array.
+*/
 function addApplicationFindingsFields(bodyObject: StaticCodeRequest, dataObj: StaticCodeRequest): void {
   const findingsArray: StaticCodeApplicationPost[] = [];
 

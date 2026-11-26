@@ -9,22 +9,22 @@ import { outputFormat } from '../../../utils/emasser/output_formatter';
 import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
 
 /**
- * Represents a cloud resource with compliance results.
- *
- * @interface CloudResource
- *
- * @property {string} provider - The cloud service provider (e.g., AWS, Azure, GCP).
- * @property {string} resourceId - The unique identifier of the resource.
- * @property {string} resourceName - The name of the resource.
- * @property {string} resourceType - The type of the resource (e.g., VM, Storage, Database).
- * @property {ComplianceResults[]} complianceResults - An array of compliance results associated with the resource.
- *
- * @property {string} [cspAccountId] - (Optional) The cloud service provider account ID.
- * @property {string} [cspRegion] - (Optional) The region where the resource is located.
- * @property {string} [initiatedBy] - (Optional) The entity or user who initiated the resource.
- * @property {boolean} [isBaseline] - (Optional) Indicates if the resource is a baseline.
- * @property {Tags|any} [tags] - (Optional) Tags associated with the resource.
- */
+Represents a cloud resource with compliance results.
+
+@interface CloudResource
+
+@property {string} provider - The cloud service provider (e.g., AWS, Azure, GCP).
+@property {string} resourceId - The unique identifier of the resource.
+@property {string} resourceName - The name of the resource.
+@property {string} resourceType - The type of the resource (e.g., VM, Storage, Database).
+@property {ComplianceResults[]} complianceResults - An array of compliance results associated with the resource.
+
+@property {string} [cspAccountId] - (Optional) The cloud service provider account ID.
+@property {string} [cspRegion] - (Optional) The region where the resource is located.
+@property {string} [initiatedBy] - (Optional) The entity or user who initiated the resource.
+@property {boolean} [isBaseline] - (Optional) Indicates if the resource is a baseline.
+@property {Tags|any} [tags] - (Optional) Tags associated with the resource.
+*/
 type CloudResource = {
   // Required
   provider: string;
@@ -41,12 +41,12 @@ type CloudResource = {
 };
 
 /**
- * Represents a collection of tags where each tag is a key-value pair.
- *
- * @interface Tags
- * @property {string} [key] - The key of the tag.
- * @property {string} value - The value associated with the tag key.
- */
+Represents a collection of tags where each tag is a key-value pair.
+
+@interface Tags
+@property {string} [key] - The key of the tag.
+@property {string} value - The value associated with the tag key.
+*/
 type Tags = Record<string, string>;
 
 type ComplianceResults = {
@@ -65,22 +65,22 @@ type ComplianceResults = {
 };
 
 /**
- * Combines JSON examples for 'cloud_resources-required' and 'cloud_resources-optional'
- * into a single JSON string.
- *
- * @returns {string} A JSON string that merges the required and optional cloud resources examples.
- */
+Combines JSON examples for 'cloud_resources-required' and 'cloud_resources-optional'
+into a single JSON string.
+
+@returns {string} A JSON string that merges the required and optional cloud resources examples.
+*/
 function getAllJsonExamples(): string {
   return JSON.stringify(_.merge({}, getJsonExamples('cloud_resources-required'), getJsonExamples('cloud_resources-optional')));
 }
 
 /**
- * Asserts that a required parameter exists and is not undefined.
- *
- * @param object - The name of the parameter or field being checked.
- * @param value - The value of the parameter or field to check. Can be a string, boolean, undefined, or null.
- * @throws {Error} Throws an error if the value is undefined.
- */
+Asserts that a required parameter exists and is not undefined.
+
+@param object - The name of the parameter or field being checked.
+@param value - The value of the parameter or field to check. Can be a string, boolean, undefined, or null.
+@throws {Error} Throws an error if the value is undefined.
+*/
 function assertParamExists(object: string, value: string | boolean | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`);
@@ -89,15 +89,15 @@ function assertParamExists(object: string, value: string | boolean | undefined |
 }
 
 /**
- * Adds required fields to the request body for a CloudResource object.
- *
- * This function ensures that all required fields are present in the provided
- * CloudResource object. If any required field is missing, an error is thrown.
- *
- * @param dataObj - The CloudResource object containing the data to be validated and added to the request body.
- * @returns A new CloudResource object with all required fields populated.
- * @throws Will throw an error if any required field is missing in the provided dataObj.
- */
+Adds required fields to the request body for a CloudResource object.
+
+This function ensures that all required fields are present in the provided
+CloudResource object. If any required field is missing, an error is thrown.
+
+@param dataObj - The CloudResource object containing the data to be validated and added to the request body.
+@returns A new CloudResource object with all required fields populated.
+@throws Will throw an error if any required field is missing in the provided dataObj.
+*/
 function addRequiredFieldsToRequestBody(dataObj: CloudResource): CloudResource {
   const bodyObj: CloudResource = {
     provider: '',
@@ -140,28 +140,28 @@ function addRequiredFieldsToRequestBody(dataObj: CloudResource): CloudResource {
 }
 
 /**
- * Adds optional fields from the `dataObj` to the `bodyObject` if they exist.
- *
- * @param bodyObject - The target object to which optional fields will be added.
- * @param dataObj - The source object containing optional fields.
- *
- * @remarks
- * This function checks for the presence of optional fields in the `dataObj` and
- * adds them to the `bodyObject` if they exist.
- * It handles the following optional fields:
- * - `cspAccountId`
- * - `cspRegion`
- * - `initiatedBy`
- * - `isBaseline`
- * - `tags`
- * - `complianceResults`
- *
- * For the `tags` field, it creates a new `Tags` object and copies the key-value
- * pairs from `dataObj.tags`.
- *
- * For the `complianceResults` field, it creates a new array of `ComplianceResults`
- * objects and copies the properties from `dataObj.complianceResults`.
- */
+Adds optional fields from the `dataObj` to the `bodyObject` if they exist.
+
+@param bodyObject - The target object to which optional fields will be added.
+@param dataObj - The source object containing optional fields.
+
+@remarks
+This function checks for the presence of optional fields in the `dataObj` and
+adds them to the `bodyObject` if they exist.
+It handles the following optional fields:
+- `cspAccountId`
+- `cspRegion`
+- `initiatedBy`
+- `isBaseline`
+- `tags`
+- `complianceResults`
+
+For the `tags` field, it creates a new `Tags` object and copies the key-value
+pairs from `dataObj.tags`.
+
+For the `complianceResults` field, it creates a new array of `ComplianceResults`
+objects and copies the properties from `dataObj.complianceResults`.
+*/
 function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): void {
   // Add object optional entries
   if (Object.hasOwn(dataObj, 'cspAccountId')) {
@@ -225,11 +225,11 @@ function addOptionalFields(bodyObject: CloudResource, dataObj: CloudResource): v
 }
 
 /**
- * Checks if the given object is a valid CloudResource.
- *
- * @param obj - The object to check.
- * @returns True if the object is a CloudResource, false otherwise.
- */
+Checks if the given object is a valid CloudResource.
+
+@param obj - The object to check.
+@returns True if the object is a CloudResource, false otherwise.
+*/
 function isValidCloudResource(obj: unknown): obj is CloudResource {
   if (typeof obj !== 'object' || obj === null) {
     return false;

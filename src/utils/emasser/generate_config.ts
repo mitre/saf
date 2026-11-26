@@ -56,22 +56,22 @@ const OPTIONAL_DEFAULT_VALUES = [
 ];
 
 /**
- * Generates a new `.env` file with required and optional environment variables.
- *
- * This function constructs the content for a new `.env` file by iterating over
- * the `PROMPT_NAMES_REQUIRED` and `PROMPT_NAMES_OPTIONAL` arrays. Required variables
- * are added with empty values, while optional variables are added with their respective
- * default values from the `OPTIONAL_DEFAULT_VALUES` array.
- *
- * The generated content is then written to a file named `.env` in the current directory.
- *
- * @remarks
- * - Lines starting with `#` are treated as comments and are added as-is.
- * - The `OPTIONAL_DEFAULT_VALUES` array is expected to have a length that matches the
- *   `PROMPT_NAMES_OPTIONAL` array, with the first two elements being placeholders.
- *
- * @throws Will throw an error if the file cannot be written.
- */
+Generates a new `.env` file with required and optional environment variables.
+
+This function constructs the content for a new `.env` file by iterating over
+the `PROMPT_NAMES_REQUIRED` and `PROMPT_NAMES_OPTIONAL` arrays. Required variables
+are added with empty values, while optional variables are added with their respective
+default values from the `OPTIONAL_DEFAULT_VALUES` array.
+
+The generated content is then written to a file named `.env` in the current directory.
+
+@remarks
+- Lines starting with `#` are treated as comments and are added as-is.
+- The `OPTIONAL_DEFAULT_VALUES` array is expected to have a length that matches the
+  `PROMPT_NAMES_OPTIONAL` array, with the first two elements being placeholders.
+
+@throws Will throw an error if the file cannot be written.
+*/
 function generateNewdotEnv() {
   let data = '';
   for (const element of PROMPT_NAMES_REQUIRED) {
@@ -86,24 +86,24 @@ function generateNewdotEnv() {
 }
 
 /**
- * Asynchronously processes user prompts to generate and update an eMASS configuration file.
- *
- * This function performs the following steps:
- * 1. Parses the `.env` file to retrieve existing environment variables.
- * 2. Dynamically imports `inquirer-file-selector` and `chalk` modules.
- * 3. Initializes a theme for the file selector prompts.
- * 4. Prompts the user for required eMASS configuration variables such as API key, host URL, and key file password.
- * 5. Prompts the user to select the type of certificate to use (Key/Client Certificate or Single CA Certificate).
- * 6. Based on the selected certificate type, prompts the user to select the appropriate certificate files.
- * 7. Optionally prompts the user to add a unique user identifier.
- * 8. Prompts the user for optional eMASS configuration variables such as port, request certificate, reject unauthorized, debugging, CLI display null, epoch to datetime, and download directory.
- * 9. Updates the `.env` file with the collected configuration variables.
- * 10. Outputs the content of the updated `.env` file to the console.
- *
- * @async
- * @function processPrompt
- * @returns {Promise<void>} A promise that resolves when the prompts have been processed and the `.env` file has been updated.
- */
+Asynchronously processes user prompts to generate and update an eMASS configuration file.
+
+This function performs the following steps:
+1. Parses the `.env` file to retrieve existing environment variables.
+2. Dynamically imports `inquirer-file-selector` and `chalk` modules.
+3. Initializes a theme for the file selector prompts.
+4. Prompts the user for required eMASS configuration variables such as API key, host URL, and key file password.
+5. Prompts the user to select the type of certificate to use (Key/Client Certificate or Single CA Certificate).
+6. Based on the selected certificate type, prompts the user to select the appropriate certificate files.
+7. Optionally prompts the user to add a unique user identifier.
+8. Prompts the user for optional eMASS configuration variables such as port, request certificate, reject unauthorized, debugging, CLI display null, epoch to datetime, and download directory.
+9. Updates the `.env` file with the collected configuration variables.
+10. Outputs the content of the updated `.env` file to the console.
+
+@async
+@function processPrompt
+@returns {Promise<void>} A promise that resolves when the prompts have been processed and the `.env` file has been updated.
+*/
 async function processPrompt() {
   const envConfig = dotenv.parse(fse.readFileSync('.env'));
 
@@ -322,17 +322,17 @@ async function processPrompt() {
 }
 
 /**
- * Updates key-value pairs in a file based on the provided updates object.
- *
- * @param filePath - The path to the file to be updated.
- * @param updates  - An object containing key-value pairs to update in the file.
- *                   The keys represent the keys in the file, and the values
- *                   represent the new values to be set. If the value is a
- *                   string, it will be wrapped in single quotes.
- *
- * @throws Will throw an error if there is an issue reading or writing the file.
- *
- */
+Updates key-value pairs in a file based on the provided updates object.
+
+@param filePath - The path to the file to be updated.
+@param updates  - An object containing key-value pairs to update in the file.
+                  The keys represent the keys in the file, and the values
+                  represent the new values to be set. If the value is a
+                  string, it will be wrapped in single quotes.
+
+@throws Will throw an error if there is an issue reading or writing the file.
+
+*/
 function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: Record<string, string | number | boolean>): void {
   try {
     // Read the file content
@@ -378,26 +378,26 @@ function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: Record
 }
 
 /**
- * Checks if the given value is numeric.
- *
- * This function tests whether the provided value is a number or a string that represents a number.
- * It supports both integer and floating-point numbers, including negative values.
- *
- * @param value - The value to be checked. It can be a string or a number.
- * @returns `true` if the value is numeric, otherwise `false`.
- */
+Checks if the given value is numeric.
+
+This function tests whether the provided value is a number or a string that represents a number.
+It supports both integer and floating-point numbers, including negative values.
+
+@param value - The value to be checked. It can be a string or a number.
+@returns `true` if the value is numeric, otherwise `false`.
+*/
 function isNumeric(value: unknown): boolean {
   return typeof value === 'number' || (!Number.isNaN(Number(value)) && typeof value === 'string');
 }
 
 /**
- * Generates or updates a configuration file based on the presence of an existing `.env` file.
- *
- * If a `.env` file already exists, prompts the user to update the existing values or accept the current ones.
- * If no `.env` file is found, creates a new configuration file and prompts the user to provide the environment variable values.
- *
- * @returns {Promise<void>} A promise that resolves when the configuration process is complete.
- */
+Generates or updates a configuration file based on the presence of an existing `.env` file.
+
+If a `.env` file already exists, prompts the user to update the existing values or accept the current ones.
+If no `.env` file is found, creates a new configuration file and prompts the user to provide the environment variable values.
+
+@returns {Promise<void>} A promise that resolves when the configuration process is complete.
+*/
 export async function generateConfig() {
   if (fse.existsSync('.env')) {
     console.log(colors.yellow('A configuration file already exists, updating - Press Enter to accept the current value(s), otherwise provide new value'));

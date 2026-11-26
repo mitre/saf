@@ -9,19 +9,19 @@ import { outputFormat } from '../../../utils/emasser/output_formatter';
 import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
 
 /**
- * Represents a container resource with associated metadata and benchmarks.
- *
- * @interface ContainerResource
- *
- * @property {string} containerId - The unique identifier of the container. (Required)
- * @property {string} containerName - The name of the container. (Required)
- * @property {number} time - The timestamp associated with the container resource. (Required)
- * @property {Benchmarks[]} benchmarks - An array of benchmark results for the container. (Required)
- * @property {string} [podName] - The name of the pod in which the container is running. (Optional)
- * @property {string} [podIp] - The IP address of the pod in which the container is running. (Optional)
- * @property {string} [namespace] - The namespace in which the container is running. (Optional)
- * @property {Tags|any} [tags] - Additional tags or metadata associated with the container. (Optional)
- */
+Represents a container resource with associated metadata and benchmarks.
+
+@interface ContainerResource
+
+@property {string} containerId - The unique identifier of the container. (Required)
+@property {string} containerName - The name of the container. (Required)
+@property {number} time - The timestamp associated with the container resource. (Required)
+@property {Benchmarks[]} benchmarks - An array of benchmark results for the container. (Required)
+@property {string} [podName] - The name of the pod in which the container is running. (Optional)
+@property {string} [podIp] - The IP address of the pod in which the container is running. (Optional)
+@property {string} [namespace] - The namespace in which the container is running. (Optional)
+@property {Tags|any} [tags] - Additional tags or metadata associated with the container. (Optional)
+*/
 type ContainerResource = {
   // Required
   containerId: string;
@@ -36,14 +36,14 @@ type ContainerResource = {
 };
 
 /**
- * Represents a collection of tags where each tag is a key-value pair.
- * The key is a string representing the tag name, and the value is a string representing the tag value.
- */
+Represents a collection of tags where each tag is a key-value pair.
+The key is a string representing the tag name, and the value is a string representing the tag value.
+*/
 type Tags = Record<string, string>;
 
 /**
- * Represents the benchmarks for a container scan.
- */
+Represents the benchmarks for a container scan.
+*/
 type Benchmarks = {
   // Required
   benchmark: string;
@@ -55,8 +55,8 @@ type Benchmarks = {
 };
 
 /**
- * Represents the results of a container scan.
- */
+Represents the results of a container scan.
+*/
 type Results = {
   // Required
   ruleId: string;
@@ -67,17 +67,17 @@ type Results = {
 };
 
 /**
- * Enum representing the status of a container scan.
- *
- * @readonly
- * @enum {string}
- * @property {string} Pass - The scan passed.
- * @property {string} Fail - The scan failed.
- * @property {string} Other - The scan has a status other than pass or fail.
- * @property {string} NotReviewed - The scan has not been reviewed.
- * @property {string} NotChecked - The scan has not been checked.
- * @property {string} NotApplicable - The scan is not applicable.
- */
+Enum representing the status of a container scan.
+
+@readonly
+@enum {string}
+@property {string} Pass - The scan passed.
+@property {string} Fail - The scan failed.
+@property {string} Other - The scan has a status other than pass or fail.
+@property {string} NotReviewed - The scan has not been reviewed.
+@property {string} NotChecked - The scan has not been checked.
+@property {string} NotApplicable - The scan is not applicable.
+*/
 export declare const StatusEnum: {
   readonly Pass: 'Pass';
   readonly Fail: 'Fail';
@@ -87,31 +87,31 @@ export declare const StatusEnum: {
   readonly NotApplicable: 'Not Applicable';
 };
 /**
- * Represents the possible status values for the StatusEnum type.
- * This type is derived from the keys of the StatusEnum object.
- */
+Represents the possible status values for the StatusEnum type.
+This type is derived from the keys of the StatusEnum object.
+*/
 
 export declare type StatusEnum = typeof StatusEnum[keyof typeof StatusEnum];
 
 /**
- * Combines JSON examples from 'container_scans-required' and
- * 'container_scans-optional' into a single JSON string.
- *
- * @returns {string} A JSON string that merges the required and
- *                   optional container scan examples.
- */
+Combines JSON examples from 'container_scans-required' and
+'container_scans-optional' into a single JSON string.
+
+@returns {string} A JSON string that merges the required and
+                  optional container scan examples.
+*/
 function getAllJsonExamples(): string {
   return JSON.stringify(_.merge({}, getJsonExamples('container_scans-required'), getJsonExamples('container_scans-optional')));
 }
 
 /**
- * Asserts that a parameter exists by checking if the value is not undefined.
- * If the value is undefined, it prints an error message and throws an error.
- *
- * @param object - The name of the parameter or field being checked.
- * @param value - The value of the parameter or field which can be of type string, boolean, number, undefined, or null.
- * @throws {Error} Throws an error if the value is undefined.
- */
+Asserts that a parameter exists by checking if the value is not undefined.
+If the value is undefined, it prints an error message and throws an error.
+
+@param object - The name of the parameter or field being checked.
+@param value - The value of the parameter or field which can be of type string, boolean, number, undefined, or null.
+@throws {Error} Throws an error if the value is undefined.
+*/
 function assertParamExists(object: string, value: string | boolean | number | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`);
@@ -120,16 +120,16 @@ function assertParamExists(object: string, value: string | boolean | number | un
 }
 
 /**
- * Adds required fields to the request body for a container resource.
- *
- * This function ensures that the required fields are present in the input data object
- * and constructs a new container resource object with the required fields populated.
- * If any required field is missing, an error is thrown and the required fields are logged.
- *
- * @param {ContainerResource} dataObj - The input container resource object.
- * @returns {ContainerResource} - The new container resource object with required fields populated.
- * @throws Will throw an error if any required field is missing in the input data object.
- */
+Adds required fields to the request body for a container resource.
+
+This function ensures that the required fields are present in the input data object
+and constructs a new container resource object with the required fields populated.
+If any required field is missing, an error is thrown and the required fields are logged.
+
+@param {ContainerResource} dataObj - The input container resource object.
+@returns {ContainerResource} - The new container resource object with required fields populated.
+@throws Will throw an error if any required field is missing in the input data object.
+*/
 function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerResource {
   const bodyObj: ContainerResource = {
     containerId: '',
@@ -184,27 +184,27 @@ function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerRe
 }
 
 /**
- * Adds optional fields from the `dataObj` to the `bodyObject`.
- *
- * @param bodyObject - The target object to which optional fields will be added.
- * @param dataObj - The source object containing optional fields.
- *
- * The function performs the following operations:
- * - Adds `namespace`, `podIp`, and `podName` fields if they exist in `dataObj`.
- * - Adds `tags` object if it exists in `dataObj`.
- * - Adds `benchmarks` array if it exists in `dataObj`, including optional fields within each benchmark and its results.
- *
- * The `benchmarks` array in `dataObj` is expected to contain objects with the following structure:
- * - `benchmark` (required)
- * - `isBaseline` (optional)
- * - `version` (optional)
- * - `release` (optional)
- * - `results` (required array) containing objects with the following structure:
- *   - `ruleId` (required)
- *   - `status` (required)
- *   - `lastSeen` (required)
- *   - `message` (optional)
- */
+Adds optional fields from the `dataObj` to the `bodyObject`.
+
+@param bodyObject - The target object to which optional fields will be added.
+@param dataObj - The source object containing optional fields.
+
+The function performs the following operations:
+- Adds `namespace`, `podIp`, and `podName` fields if they exist in `dataObj`.
+- Adds `tags` object if it exists in `dataObj`.
+- Adds `benchmarks` array if it exists in `dataObj`, including optional fields within each benchmark and its results.
+
+The `benchmarks` array in `dataObj` is expected to contain objects with the following structure:
+- `benchmark` (required)
+- `isBaseline` (optional)
+- `version` (optional)
+- `release` (optional)
+- `results` (required array) containing objects with the following structure:
+  - `ruleId` (required)
+  - `status` (required)
+  - `lastSeen` (required)
+  - `message` (optional)
+*/
 function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerResource): void {
   // Add object optional entries
   if (Object.hasOwn(dataObj, 'namespace')) {
@@ -269,19 +269,19 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
 }
 
 /**
- * Checks if the given object is a valid ContainerResource.
- *
- * A valid ContainerResource is an object that:
- * - Is of type 'object' and not null.
- * - Contains the properties 'containerId', 'containerName', 'time', and 'benchmarks'.
- * - The 'containerId' property is a string.
- * - The 'containerName' property is a string.
- * - The 'time' property is a number.
- * - The 'benchmarks' property is an array.
- *
- * @param obj - The object to check.
- * @returns True if the object is a valid ContainerResource, false otherwise.
- */
+Checks if the given object is a valid ContainerResource.
+
+A valid ContainerResource is an object that:
+- Is of type 'object' and not null.
+- Contains the properties 'containerId', 'containerName', 'time', and 'benchmarks'.
+- The 'containerId' property is a string.
+- The 'containerName' property is a string.
+- The 'time' property is a number.
+- The 'benchmarks' property is an array.
+
+@param obj - The object to check.
+@returns True if the object is a valid ContainerResource, false otherwise.
+*/
 function isValidContainerResource(obj: unknown): obj is ContainerResource {
   return typeof obj === 'object'
     && obj !== null

@@ -80,15 +80,15 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
   }
 
   /**
-   * Asynchronously prompts the user to select an output directory and specify a
-   * metadata file name, validates input ends with a `.json` extension.
-   *
-   * @returns {Promise<unknown>} A promise that resolves to an object containing
-   * the user's input values.
-   * The object includes:
-   * - `outputDirectory`: The selected output directory for the metadata file.
-   * - `outputFileName`: The specified metadata file name with a `.json` extension.
-   */
+  Asynchronously prompts the user to select an output directory and specify a
+  metadata file name, validates input ends with a `.json` extension.
+
+  @returns {Promise<unknown>} A promise that resolves to an object containing
+  the user's input values.
+  The object includes:
+  - `outputDirectory`: The selected output directory for the metadata file.
+  - `outputFileName`: The specified metadata file name with a `.json` extension.
+  */
   private async getFlags(): Promise<unknown> {
     // Dynamically import inquirer-file-selector and chalk
     // Once we move the SAF CLI from a CommonJS to an ES modules we can use the regular import
@@ -140,15 +140,15 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
   }
 
   /**
-   * Collects metadata information necessary for generating a checklist
-   * used by the "saf convert hdf2ckl" command.
-   *
-   * This function prompts the user to provide various fields of information
-   * interactively. If a value is not available, the user can leave the field empty.
-   *
-   * @returns {Promise<unknown>} A promise that resolves to an object containing
-   * the collected metadata values.
-   */
+  Collects metadata information necessary for generating a checklist
+  used by the "saf convert hdf2ckl" command.
+
+  This function prompts the user to provide various fields of information
+  interactively. If a value is not available, the user can leave the field empty.
+
+  @returns {Promise<unknown>} A promise that resolves to an object containing
+  the collected metadata values.
+  */
   private async getCklMetaData(): Promise<unknown> {
     // Variable used to store the prompts (question and answers)
     const interactiveValues: Record<string, unknown> = {};

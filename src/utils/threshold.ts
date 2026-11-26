@@ -104,17 +104,17 @@ export function calculateCompliance(statusHash: StatusHash): number {
 }
 
 /**
- * This function does not exit the process, it rather evaluates if an error occurred
- * logs an error message to the console and throws an error with the provided reason.
- *
- * It is the responsibility of the caller to catch the error and exit accordingly.
- *
- * @param condition - The condition to evaluate. If true, the process will exit with an error.
- * @param reason - Optional. The reason for the error. If not provided, a default message will be used.
- * @throws Will throw an error with the provided reason or a default message if the condition is true.
- *
- * @returns - does not return, it simply trows an error if condition is satisfied (true)
- */
+This function does not exit the process, it rather evaluates if an error occurred
+logs an error message to the console and throws an error with the provided reason.
+
+It is the responsibility of the caller to catch the error and exit accordingly.
+
+@param condition - The condition to evaluate. If true, the process will exit with an error.
+@param reason - Optional. The reason for the error. If not provided, a default message will be used.
+@throws Will throw an error with the provided reason or a default message if the condition is true.
+
+@returns - does not return, it simply trows an error if condition is satisfied (true)
+*/
 export function exitNonZeroIfTrue(condition: boolean, reason?: string) {
   if (condition) {
     // eslint-disable-next-line no-constant-binary-expression
@@ -330,44 +330,44 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
 }
 
 /**
- * Flattens a profile summary.
- * {
- *   passed: { critical: 0, high: 11, medium: 208, low: 8, total: 227 },
- *   failed: { critical: 0, high: 6, medium: 87, low: 19, total: 112 },
- *   skipped: { critical: 0, high: 1, medium: 1, low: 1, total: 3 },
- *   error: { critical: 0, high: 0, medium: 0, low: 0, total: 0 },
- *   no_impact: { critical: 0, high: 3, medium: 30, low: 0, none: 0, total: 33 }
- * }
- * is turned into
- * {
- *   'passed.critical': 0,
- *   'passed.high': 11,
- *   'passed.medium': 208,
- *   'passed.low': 8,
- *   'passed.total': 227,
- *   'failed.critical': 0,
- *   'failed.high': 6,
- *   'failed.medium': 87,
- *   'failed.low': 19,
- *   'failed.total': 112,
- *   'skipped.critical': 0,
- *   'skipped.high': 1,
- *   'skipped.medium': 1,
- *   'skipped.low': 1,
- *   'skipped.total': 3,
- *   'error.critical': 0,
- *   'error.high': 0,
- *   'error.medium': 0,
- *   'error.low': 0,
- *   'error.total': 0,
- *   'no_impact.critical': 0,
- *   'no_impact.high': 3,
- *   'no_impact.medium': 30,
- *   'no_impact.low': 0,
- *   'no_impact.none': 0,
- *   'no_impact.total': 33
- * }
- */
+Flattens a profile summary.
+{
+  passed: { critical: 0, high: 11, medium: 208, low: 8, total: 227 },
+  failed: { critical: 0, high: 6, medium: 87, low: 19, total: 112 },
+  skipped: { critical: 0, high: 1, medium: 1, low: 1, total: 3 },
+  error: { critical: 0, high: 0, medium: 0, low: 0, total: 0 },
+  no_impact: { critical: 0, high: 3, medium: 30, low: 0, none: 0, total: 33 }
+}
+is turned into
+{
+  'passed.critical': 0,
+  'passed.high': 11,
+  'passed.medium': 208,
+  'passed.low': 8,
+  'passed.total': 227,
+  'failed.critical': 0,
+  'failed.high': 6,
+  'failed.medium': 87,
+  'failed.low': 19,
+  'failed.total': 112,
+  'skipped.critical': 0,
+  'skipped.high': 1,
+  'skipped.medium': 1,
+  'skipped.low': 1,
+  'skipped.total': 3,
+  'error.critical': 0,
+  'error.high': 0,
+  'error.medium': 0,
+  'error.low': 0,
+  'error.total': 0,
+  'no_impact.critical': 0,
+  'no_impact.high': 3,
+  'no_impact.medium': 30,
+  'no_impact.low': 0,
+  'no_impact.none': 0,
+  'no_impact.total': 33
+}
+*/
 export function flattenProfileSummary(threshold: Record<string, Record<string, number>>): Record<string, number> {
   const ret: Record<string, number> = {};
   for (const status of Object.keys(threshold)) {
@@ -379,19 +379,19 @@ export function flattenProfileSummary(threshold: Record<string, Record<string, n
 }
 
 /**
- * Unflattens an inline threshold.
- * {
- *   'compliance.min': 66,
- *   'passed.critical.min': 0,
- *   'failed.medium.min': 0
- * }
- * is turned into
- * {
- *   compliance: { min: 66 },
- *   passed: { critical: { min: 0 } },
- *   failed: { medium: { min: 0 } }
- * }
- */
+Unflattens an inline threshold.
+{
+  'compliance.min': 66,
+  'passed.critical.min': 0,
+  'failed.medium.min': 0
+}
+is turned into
+{
+  compliance: { min: 66 },
+  passed: { critical: { min: 0 } },
+  failed: { medium: { min: 0 } }
+}
+*/
 export function unflattenThreshold(threshold: Record<string, number>): ThresholdValues {
   const ret: Record<string, Record<string, number | Record<string, number>>> = {};
   for (const key of Object.keys(threshold)) {

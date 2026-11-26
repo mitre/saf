@@ -1,25 +1,25 @@
 import Fuse from 'fuse.js';
 
 /**
- * Helpers for requirement-first delta matching.
- *
- * Cross-vendor STIG deltas (RHEL9 -> AL2023, Ubuntu -> Oracle Linux, etc.)
- * suffer under a pure fuzzy matcher on control titles alone: the vendor
- * prefix drift ("RHEL 9" vs "Amazon Linux 2023") dominates the score and
- * pushes identical requirements out of the accept band.
- *
- * These helpers treat the upstream DISA SRG ID as the canonical requirement
- * identity, CCIs as the block-internal tiebreaker when one SRG is split
- * into N vendor-specific rules, and auto-detected / normalized titles as a
- * last-resort tiebreaker for the long tail.
- */
+Helpers for requirement-first delta matching.
+
+Cross-vendor STIG deltas (RHEL9 -> AL2023, Ubuntu -> Oracle Linux, etc.)
+suffer under a pure fuzzy matcher on control titles alone: the vendor
+prefix drift ("RHEL 9" vs "Amazon Linux 2023") dominates the score and
+pushes identical requirements out of the accept band.
+
+These helpers treat the upstream DISA SRG ID as the canonical requirement
+identity, CCIs as the block-internal tiebreaker when one SRG is split
+into N vendor-specific rules, and auto-detected / normalized titles as a
+last-resort tiebreaker for the long tail.
+*/
 
 /**
- * Modal verbs mark the start of a STIG rule's compliance statement
- * ("... must ...", "... will ...", "... shall ..."). Anything before the
- * first modal is "preamble" the vendor adds uniformly; anything after is
- * the semantic content we want to preserve for fuzzy comparison.
- */
+Modal verbs mark the start of a STIG rule's compliance statement
+("... must ...", "... will ...", "... shall ..."). Anything before the
+first modal is "preamble" the vendor adds uniformly; anything after is
+the semantic content we want to preserve for fuzzy comparison.
+*/
 const COMPLIANCE_MODALS = new Set([
   'must',
   'will',
@@ -36,9 +36,9 @@ function tokensBeforeModal(title: string): string[] {
 }
 
 /**
- * Tokenize a string into a lowercase Set. Whitespace-split, empty tokens
- * dropped. Module-scoped so it's not re-created per tokenJaccard call.
- */
+Tokenize a string into a lowercase Set. Whitespace-split, empty tokens
+dropped. Module-scoped so it's not re-created per tokenJaccard call.
+*/
 function tokenizeSet(s: string): Set<string> {
   return new Set(
     s
@@ -49,9 +49,9 @@ function tokenizeSet(s: string): Set<string> {
 }
 
 /**
- * Minimal structural shape the matcher needs from an InSpec control.
- * Matches the subset of `@mitre/inspec-objects`' Control that we read.
- */
+Minimal structural shape the matcher needs from an InSpec control.
+Matches the subset of `@mitre/inspec-objects`' Control that we read.
+*/
 export type ControlLike = {
   id: string;
   title?: string | null;
@@ -62,11 +62,11 @@ export type ControlLike = {
 };
 
 /**
- * Return the upstream DISA SRG ID for a control (from `tags.gtitle`),
- * or null when the field is missing. SRG IDs are identical across vendor
- * flavors of the same requirement, which makes them the canonical
- * blocking key for cross-vendor STIG delta matching.
- */
+Return the upstream DISA SRG ID for a control (from `tags.gtitle`),
+or null when the field is missing. SRG IDs are identical across vendor
+flavors of the same requirement, which makes them the canonical
+blocking key for cross-vendor STIG delta matching.
+*/
 export function extractSrgId(control: ControlLike): string | null {
   return control.tags?.gtitle ?? null;
 }
@@ -76,22 +76,22 @@ function safeTitle(title: string | null | undefined): string {
 }
 
 /**
- * Return the control's CCI set (from `tags.cci`), deduped. Empty Set when
- * missing. Used as block-internal tiebreaker when multiple new-profile
- * controls share an SRG with the same old-profile control (1:N splits).
- */
+Return the control's CCI set (from `tags.cci`), deduped. Empty Set when
+missing. Used as block-internal tiebreaker when multiple new-profile
+controls share an SRG with the same old-profile control (1:N splits).
+*/
 export function extractCcis(control: ControlLike): Set<string> {
   return new Set(control.tags?.cci);
 }
 
 /**
- * Token-level Jaccard similarity between two strings. Lowercased,
- * whitespace-split, empty tokens dropped. 0.0 when either side is empty.
- *
- * Used as a block-internal tiebreaker in Tier 2 when multiple old
- * candidates share the new control's SRG *and* its CCI set — distinct
- * control titles (modulo normalized vendor prefix) still discriminate.
- */
+Token-level Jaccard similarity between two strings. Lowercased,
+whitespace-split, empty tokens dropped. 0.0 when either side is empty.
+
+Used as a block-internal tiebreaker in Tier 2 when multiple old
+candidates share the new control's SRG *and* its CCI set — distinct
+control titles (modulo normalized vendor prefix) still discriminate.
+*/
 export function tokenJaccard(a: string, b: string): number {
   const ta = tokenizeSet(a);
   const tb = tokenizeSet(b);
@@ -109,10 +109,10 @@ export function tokenJaccard(a: string, b: string): number {
 }
 
 /**
- * Jaccard similarity between two CCI sets. Returns 0.0 when both sides
- * are empty (no signal to differentiate) — callers must treat that as
- * "tied" not "match".
- */
+Jaccard similarity between two CCI sets. Returns 0.0 when both sides
+are empty (no signal to differentiate) — callers must treat that as
+"tied" not "match".
+*/
 export function cciJaccard(a: Set<string>, b: Set<string>): number {
   if (a.size === 0 && b.size === 0) {
     return 0;
@@ -128,12 +128,12 @@ export function cciJaccard(a: Set<string>, b: Set<string>): number {
 }
 
 /**
- * Build a Map from SRG-OS ID to the list of controls tagged with that SRG.
- * Used as a blocking index: each new-profile control looks up its
- * candidate pool by SRG-ID in O(1) instead of scanning all old controls.
- * Controls without a gtitle are skipped (they will fall through to the
- * fuzzy-title fallback path).
- */
+Build a Map from SRG-OS ID to the list of controls tagged with that SRG.
+Used as a blocking index: each new-profile control looks up its
+candidate pool by SRG-ID in O(1) instead of scanning all old controls.
+Controls without a gtitle are skipped (they will fall through to the
+fuzzy-title fallback path).
+*/
 export function buildSrgIndex(
   controls: ControlLike[],
 ): Map<string, ControlLike[]> {
@@ -154,22 +154,22 @@ export function buildSrgIndex(
 }
 
 /**
- * Structured link record produced by applyRequirementFirstPipeline for
- * every control in the new profile.
- *
- * `matchMethod` tracks which tier accepted the link:
- *   - `srg-deterministic`  Tier 1: single SRG candidate, accepted.
- *   - `srg-cci-tiebreak`   Tier 2: multiple SRG candidates, best CCI Jaccard won.
- *   - `fuse-fallback`      Tier 3: no SRG match, Fuse title similarity carried it.
- *   - `none`               No link found.
- *
- * `relationship`:
- *   - `primary`   This new control is the best (or only) link to its old control.
- *   - `related`   Another new control has a better CCI Jaccard for the same old
- *                 control; kept here so downstream can copy the RHEL body once
- *                 but know all the related new controls.
- *   - `no-match`  Paired with matchMethod=`none`.
- */
+Structured link record produced by applyRequirementFirstPipeline for
+every control in the new profile.
+
+`matchMethod` tracks which tier accepted the link:
+  - `srg-deterministic`  Tier 1: single SRG candidate, accepted.
+  - `srg-cci-tiebreak`   Tier 2: multiple SRG candidates, best CCI Jaccard won.
+  - `fuse-fallback`      Tier 3: no SRG match, Fuse title similarity carried it.
+  - `none`               No link found.
+
+`relationship`:
+  - `primary`   This new control is the best (or only) link to its old control.
+  - `related`   Another new control has a better CCI Jaccard for the same old
+                control; kept here so downstream can copy the RHEL body once
+                but know all the related new controls.
+  - `no-match`  Paired with matchMethod=`none`.
+*/
 export type MatchMethod =
   | 'srg-deterministic'
   | 'srg-cci-tiebreak'
@@ -191,47 +191,47 @@ export type ProfileLike = {
 };
 
 /**
- * Tier-3 acceptance threshold. Fuse.js Levenshtein-style score where 0.0
- * is a perfect match and 1.0 is no match at all. The original saf
- * implementation accepted scores < 0.3, which rejected ~65% of genuinely
- * equivalent cross-vendor rules due to vendor-prefix drift. With the
- * prefix stripped by normalizeTitle beforehand, a threshold of 0.45
- * generously admits token-level typos / re-ordering without accepting
- * unrelated content.
- */
+Tier-3 acceptance threshold. Fuse.js Levenshtein-style score where 0.0
+is a perfect match and 1.0 is no match at all. The original saf
+implementation accepted scores < 0.3, which rejected ~65% of genuinely
+equivalent cross-vendor rules due to vendor-prefix drift. With the
+prefix stripped by normalizeTitle beforehand, a threshold of 0.45
+generously admits token-level typos / re-ordering without accepting
+unrelated content.
+*/
 const FUSE_ACCEPT_THRESHOLD = 0.45;
 
 /**
- * Primary Tier-2 links with a CCI Jaccard below this threshold are flagged
- * as `potentialMismatch`. The algorithm still accepts them (they are the
- * best candidate in their SRG block), but reviewers should confirm the
- * carried-forward control body still fits the new requirement.
- */
+Primary Tier-2 links with a CCI Jaccard below this threshold are flagged
+as `potentialMismatch`. The algorithm still accepts them (they are the
+best candidate in their SRG block), but reviewers should confirm the
+carried-forward control body still fits the new requirement.
+*/
 export const TIER2_MISMATCH_THRESHOLD = 0.5;
 
 /**
- * Primary Tier-3 (Fuse-fallback) links with a confidence below this
- * threshold are flagged as `potentialMismatch`. Fuse already gates
- * acceptance at `1 - FUSE_ACCEPT_THRESHOLD` (= 0.55 confidence), so the
- * flag fires across the [0.55, 0.9) band: accepted but soft.
- */
+Primary Tier-3 (Fuse-fallback) links with a confidence below this
+threshold are flagged as `potentialMismatch`. Fuse already gates
+acceptance at `1 - FUSE_ACCEPT_THRESHOLD` (= 0.55 confidence), so the
+flag fires across the [0.55, 0.9) band: accepted but soft.
+*/
 export const TIER3_MISMATCH_THRESHOLD = 0.9;
 
 /**
- * Tier-2 ranker composite weights: `composite = CCI_WEIGHT * cciJaccard
- * + TITLE_WEIGHT * tokenJaccard(normalizedTitle)`. CCI dominates because
- * it's the block-internal discriminator; title is a tiebreak for the
- * N:N-in-one-SRG cross-vendor case where every candidate has identical
- * CCIs. The two MUST sum to 1.0 — asserted in tests.
- */
+Tier-2 ranker composite weights: `composite = CCI_WEIGHT * cciJaccard
++ TITLE_WEIGHT * tokenJaccard(normalizedTitle)`. CCI dominates because
+it's the block-internal discriminator; title is a tiebreak for the
+N:N-in-one-SRG cross-vendor case where every candidate has identical
+CCIs. The two MUST sum to 1.0 — asserted in tests.
+*/
 export const TIER2_COMPOSITE_CCI_WEIGHT = 0.7;
 export const TIER2_COMPOSITE_TITLE_WEIGHT = 0.3;
 
 /**
- * Compute the `potentialMismatch` flag for a link from its (matchMethod,
- * relationship, confidence) tuple. Related and no-match links never flag
- * (the flag is about soft primary matches). Tier 1 is always trusted.
- */
+Compute the `potentialMismatch` flag for a link from its (matchMethod,
+relationship, confidence) tuple. Related and no-match links never flag
+(the flag is about soft primary matches). Tier 1 is always trusted.
+*/
 function computePotentialMismatch(
   matchMethod: MatchMethod,
   relationship: 'primary' | 'related' | 'no-match',
@@ -250,12 +250,12 @@ function computePotentialMismatch(
 }
 
 /**
- * Shape of the text-diff portion of `delta.json`, produced by
- * `@mitre/inspec-objects::updateProfileUsingXCCDF`. Carried as an opaque
- * key bag because inspec-objects doesn't export a named type, but we
- * lock in the keys downstream consumers rely on so a breaking change
- * there is noisy here.
- */
+Shape of the text-diff portion of `delta.json`, produced by
+`@mitre/inspec-objects::updateProfileUsingXCCDF`. Carried as an opaque
+key bag because inspec-objects doesn't export a named type, but we
+lock in the keys downstream consumers rely on so a breaking change
+there is noisy here.
+*/
 export type DeltaDiff = {
   ignoreFormattingDiff?: Record<string, unknown>;
   rawDiff?: Record<string, unknown>;
@@ -263,35 +263,35 @@ export type DeltaDiff = {
 } & Record<string, unknown>;
 
 /**
- * The complete `delta.json` payload. Consumers (adaptation queue
- * tooling, the future profile-derivation skill, etc.) should treat this
- * as the authoritative schema reference.
- *
- * Top-level keys:
- *   - `ignoreFormattingDiff` (inherited) — whitespace-insensitive diff
- *     of the rewritten controls/*.rb vs their originals.
- *   - `rawDiff` (inherited) — byte-level diff, same scope.
- *   - `markdown` (inherited, optional) — human-facing diff report.
- *   - `links` (added by this command) — one LinkRecord per new-profile
- *     control, describing which old control's body was carried forward:
- *       * `oldId`             old control id, or `null` for no-match
- *       * `newId`             new control id (always present)
- *       * `matchMethod`       'srg-deterministic' | 'srg-cci-tiebreak' |
- *                             'fuse-fallback' | 'none'
- *       * `confidence`        0-1 tier-specific confidence
- *       * `relationship`      'primary' | 'related' | 'no-match'
- *       * `srg`               SRG-OS id from the new control, or null
- *       * `potentialMismatch` soft-match flag for reviewer triage
- *     See LinkRecord for per-field semantics.
- */
+The complete `delta.json` payload. Consumers (adaptation queue
+tooling, the future profile-derivation skill, etc.) should treat this
+as the authoritative schema reference.
+
+Top-level keys:
+  - `ignoreFormattingDiff` (inherited) — whitespace-insensitive diff
+    of the rewritten controls/*.rb vs their originals.
+  - `rawDiff` (inherited) — byte-level diff, same scope.
+  - `markdown` (inherited, optional) — human-facing diff report.
+  - `links` (added by this command) — one LinkRecord per new-profile
+    control, describing which old control's body was carried forward:
+      * `oldId`             old control id, or `null` for no-match
+      * `newId`             new control id (always present)
+      * `matchMethod`       'srg-deterministic' | 'srg-cci-tiebreak' |
+                            'fuse-fallback' | 'none'
+      * `confidence`        0-1 tier-specific confidence
+      * `relationship`      'primary' | 'related' | 'no-match'
+      * `srg`               SRG-OS id from the new control, or null
+      * `potentialMismatch` soft-match flag for reviewer triage
+    See LinkRecord for per-field semantics.
+*/
 export type DeltaJsonPayload = DeltaDiff & { links: LinkRecord[] };
 
 /**
- * Assemble the object written to `delta.json`. `links` is applied last
- * so it wins over any stale key in the diff object (defensive —
- * `updatedResult.diff` should not carry a `links` key, but this keeps
- * the contract explicit).
- */
+Assemble the object written to `delta.json`. `links` is applied last
+so it wins over any stale key in the diff object (defensive —
+`updatedResult.diff` should not carry a `links` key, but this keeps
+the contract explicit).
+*/
 export function buildDeltaJsonPayload({
   diff,
   links,
@@ -322,9 +322,9 @@ type TierContext = {
 type ScoredCandidate = { idx: number; composite: number; cci: number };
 
 /**
- * Claim `oldId` as primary if not already claimed; otherwise mark as related.
- * Mutates `claimedOldIds` in place.
- */
+Claim `oldId` as primary if not already claimed; otherwise mark as related.
+Mutates `claimedOldIds` in place.
+*/
 function claimOrRelate(
   oldId: string,
   claimedOldIds: Set<string>,
@@ -337,9 +337,9 @@ function claimOrRelate(
 }
 
 /**
- * Construct a successful LinkRecord (any tier). Derives
- * `potentialMismatch` consistently via `computePotentialMismatch`.
- */
+Construct a successful LinkRecord (any tier). Derives
+`potentialMismatch` consistently via `computePotentialMismatch`.
+*/
 function makeLink(args: {
   newControl: ControlLike;
   oldId: string;
@@ -377,9 +377,9 @@ function makeNoMatch(newControl: ControlLike, srg: string | null): LinkRecord {
 }
 
 /**
- * Tier 1: exactly one candidate in the SRG block. Deterministic link,
- * confidence always 1.0.
- */
+Tier 1: exactly one candidate in the SRG block. Deterministic link,
+confidence always 1.0.
+*/
 function tier1DeterministicMatch(
   newControl: ControlLike,
   candidate: ControlLike,
@@ -397,19 +397,19 @@ function tier1DeterministicMatch(
 }
 
 /**
- * Tier 2: multiple candidates in this SRG block. Rank by a composite
- * score of CCI Jaccard (primary signal) + normalized-title Jaccard
- * (tiebreak — catches the N:N-in-one-SRG cross-vendor case where every
- * candidate has identical CCIs). Prefer unclaimed candidates so distinct
- * new controls don't all pile onto the same old; only fall back to a
- * claimed candidate (emits `related`) when every old in the block is
- * already taken.
- *
- * The reported `confidence` is the winner's CCI Jaccard alone (not the
- * composite), so downstream thresholds on `confidence` stay semantically
- * "how well do the block-internal CCI sets overlap" — see beads memory
- * `tier-2-composite-scoring`.
- */
+Tier 2: multiple candidates in this SRG block. Rank by a composite
+score of CCI Jaccard (primary signal) + normalized-title Jaccard
+(tiebreak — catches the N:N-in-one-SRG cross-vendor case where every
+candidate has identical CCIs). Prefer unclaimed candidates so distinct
+new controls don't all pile onto the same old; only fall back to a
+claimed candidate (emits `related`) when every old in the block is
+already taken.
+
+The reported `confidence` is the winner's CCI Jaccard alone (not the
+composite), so downstream thresholds on `confidence` stay semantically
+"how well do the block-internal CCI sets overlap" — see beads memory
+`tier-2-composite-scoring`.
+*/
 function tier2CciTiebreak(
   newControl: ControlLike,
   candidates: ControlLike[],
@@ -466,11 +466,11 @@ function tier2CciTiebreak(
 }
 
 /**
- * Tier 3: no SRG candidates. Normalize the new control's title with its
- * corpus prefix, search Fuse over old titles. Returns null when Fuse is
- * unavailable (empty old profile), no query is extractable, or the best
- * hit doesn't clear FUSE_ACCEPT_THRESHOLD — callers emit `makeNoMatch`.
- */
+Tier 3: no SRG candidates. Normalize the new control's title with its
+corpus prefix, search Fuse over old titles. Returns null when Fuse is
+unavailable (empty old profile), no query is extractable, or the best
+hit doesn't clear FUSE_ACCEPT_THRESHOLD — callers emit `makeNoMatch`.
+*/
 function tier3FuseFallback(
   newControl: ControlLike,
   srg: string | null,
@@ -505,12 +505,12 @@ function tier3FuseFallback(
 }
 
 /**
- * Requirement-first cross-vendor matcher. For every control in the new
- * profile, try (in order): Tier 1 deterministic SRG match, Tier 2
- * composite CCI+title tiebreak, Tier 3 Fuse title fallback. Returns a
- * LinkRecord per new control, including explicit no-match records so
- * downstream consumers can iterate uniformly.
- */
+Requirement-first cross-vendor matcher. For every control in the new
+profile, try (in order): Tier 1 deterministic SRG match, Tier 2
+composite CCI+title tiebreak, Tier 3 Fuse title fallback. Returns a
+LinkRecord per new control, including explicit no-match records so
+downstream consumers can iterate uniformly.
+*/
 export function applyRequirementFirstPipeline(
   oldProfile: ProfileLike,
   newProfile: ProfileLike,
@@ -580,9 +580,9 @@ export function applyRequirementFirstPipeline(
 }
 
 /**
- * Strip a detected vendor/product prefix from a rule title. No-op when
- * prefix is empty or not present at the start.
- */
+Strip a detected vendor/product prefix from a rule title. No-op when
+prefix is empty or not present at the start.
+*/
 export function normalizeTitle(title: string, prefix: string): string {
   if (!prefix) {
     return title;
@@ -597,14 +597,14 @@ export function normalizeTitle(title: string, prefix: string): string {
 }
 
 /**
- * Discover the dominant leading-token prefix of a corpus of rule titles.
- *
- * Tries long prefixes first; at each length, returns the prefix if it
- * dominates more than `threshold` (default 0.5, strict majority) of the
- * corpus. Falls back to progressively shorter prefixes when no long prefix
- * dominates. Returns '' when no prefix at any length reaches the threshold
- * (feature-focused corpora like Google Chrome STIG).
- */
+Discover the dominant leading-token prefix of a corpus of rule titles.
+
+Tries long prefixes first; at each length, returns the prefix if it
+dominates more than `threshold` (default 0.5, strict majority) of the
+corpus. Falls back to progressively shorter prefixes when no long prefix
+dominates. Returns '' when no prefix at any length reaches the threshold
+(feature-focused corpora like Google Chrome STIG).
+*/
 export function autoDetectPrefix(titles: string[], threshold = 0.5): string {
   if (titles.length === 0) {
     return '';

@@ -10,32 +10,32 @@ function printHelpMessage(showLocation: boolean) {
 }
 
 /**
- * The `ApiConfig` class is responsible for loading and managing the configuration
- * settings required for connecting to the eMASS API. It reads environment variables
- * from a `.env` file and provides methods to retrieve required and optional configuration
- * values.
- *
- * @class ApiConfig
- * @property {string} url - The URL of the eMASS API host.
- * @property {number | any} port - The port number for the eMASS API.
- * @property {string | undefined} caCert - The path to the CA certificate file.
- * @property {string | undefined} keyCert - The path to the key certificate file.
- * @property {string | undefined} clientCert - The path to the client certificate file.
- * @property {string} apiPassPhrase - The passphrase for the API key file.
- * @property {string} apiKey - The API key for authenticating requests.
- * @property {string} userUid - The user UID required for actionable requests.
- * @property {boolean} sslVerify - Whether to verify SSL certificates.
- * @property {boolean} reqCert - Whether to request a certificate.
- * @property {string} debugging - Debugging mode flag.
- * @property {string} displayNulls - Flag to display null values.
- * @property {string} displayDateTime - Flag to display date and time.
- * @property {string} downloadDir - The directory for downloads.
- *
- * @constructor
- * Initializes a new instance of the `ApiConfig` class. Loads environment variables
- * from a `.env` file and sets the configuration properties. If required environment
- * variables are missing, it prints an error message and exits the process.
- */
+The `ApiConfig` class is responsible for loading and managing the configuration
+settings required for connecting to the eMASS API. It reads environment variables
+from a `.env` file and provides methods to retrieve required and optional configuration
+values.
+
+@class ApiConfig
+@property {string} url - The URL of the eMASS API host.
+@property {number | any} port - The port number for the eMASS API.
+@property {string | undefined} caCert - The path to the CA certificate file.
+@property {string | undefined} keyCert - The path to the key certificate file.
+@property {string | undefined} clientCert - The path to the client certificate file.
+@property {string} apiPassPhrase - The passphrase for the API key file.
+@property {string} apiKey - The API key for authenticating requests.
+@property {string} userUid - The user UID required for actionable requests.
+@property {boolean} sslVerify - Whether to verify SSL certificates.
+@property {boolean} reqCert - Whether to request a certificate.
+@property {string} debugging - Debugging mode flag.
+@property {string} displayNulls - Flag to display null values.
+@property {string} displayDateTime - Flag to display date and time.
+@property {string} downloadDir - The directory for downloads.
+
+@constructor
+Initializes a new instance of the `ApiConfig` class. Loads environment variables
+from a `.env` file and sets the configuration properties. If required environment
+variables are missing, it prints an error message and exits the process.
+*/
 export class ApiConfig {
   private readonly envConfig: Record<string, string | undefined>;
 
@@ -113,14 +113,14 @@ export class ApiConfig {
   }
 
   /**
-   * Retrieves the value of the specified environment variable key from the configuration.
-   * If the key is not found or the value is not a string, an error is thrown.
-   *
-   * @param key - The environment variable key to retrieve.
-   * @returns The value of the specified environment variable key.
-   * @throws {Error} If the environment variable is not found or its value is not a string.
-   * The error will have a name property set to 'EVNF'.
-   */
+  Retrieves the value of the specified environment variable key from the configuration.
+  If the key is not found or the value is not a string, an error is thrown.
+
+  @param key - The environment variable key to retrieve.
+  @returns The value of the specified environment variable key.
+  @throws {Error} If the environment variable is not found or its value is not a string.
+  The error will have a name property set to 'EVNF'.
+  */
   getRequiredEnv(key: string): string {
     if (this.envConfig && Object.hasOwn(this.envConfig, key)) {
       const value = this.envConfig[key];
@@ -137,21 +137,21 @@ export class ApiConfig {
   }
 
   /**
-   * Retrieves an environment variable value from the `envConfig` object.
-   * If the key exists in `envConfig`, it attempts to parse the value to a
-   * boolean or number if applicable. If the parsed value matches the type of
-   * the provided default value and is not zero or an empty string, it returns
-   * the parsed value. Otherwise, it returns the default value.
-   *
-   * NOTE: The library dotenv, by default returns all environment variables as
-   *       strings. We evaluate if the casting of the variables is either a
-   *       string, number, of boolean to properly process the provided value.
-   *
-   * @template T - The type of the default value.
-   * @param {string} key - The key of the environment variable to retrieve.
-   * @param {T} defaultValue - The default value to return if the environment variable is not found or is invalid.
-   * @returns {T} - The environment variable value if valid, otherwise the default value.
-   */
+  Retrieves an environment variable value from the `envConfig` object.
+  If the key exists in `envConfig`, it attempts to parse the value to a
+  boolean or number if applicable. If the parsed value matches the type of
+  the provided default value and is not zero or an empty string, it returns
+  the parsed value. Otherwise, it returns the default value.
+
+  NOTE: The library dotenv, by default returns all environment variables as
+        strings. We evaluate if the casting of the variables is either a
+        string, number, of boolean to properly process the provided value.
+
+  @template T - The type of the default value.
+  @param {string} key - The key of the environment variable to retrieve.
+  @param {T} defaultValue - The default value to return if the environment variable is not found or is invalid.
+  @returns {T} - The environment variable value if valid, otherwise the default value.
+  */
   getOptionalEnv<T>(key: string, defaultValue: T): T {
     if (this.envConfig && Object.hasOwn(this.envConfig, key)) {
       const envValue = this.envConfig[key];

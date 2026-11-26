@@ -165,32 +165,32 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   }
 
   /**
-   * Converts the rows of a given evaluation into a ControlSetRows format.
-   *
-   * @param evaluation - The contextualized evaluation containing profiles and controls.
-   * @param filename - The name of the file to be used in the conversion.
-   * @param fieldsToAdd - An array of additional fields to include in the conversion.
-   * @returns An array of ControlSetRows representing the converted controls.
-   */
+  Converts the rows of a given evaluation into a ControlSetRows format.
+
+  @param evaluation - The contextualized evaluation containing profiles and controls.
+  @param filename - The name of the file to be used in the conversion.
+  @param fieldsToAdd - An array of additional fields to include in the conversion.
+  @returns An array of ControlSetRows representing the converted controls.
+  */
   private convertRows(evaluation: ContextualizedEvaluation, filename: string, fieldsToAdd: string[]): ControlSetRows {
     const controls = evaluation.contains.flatMap(profile => profile.contains) || [];
     return controls.map(ctrl => convertRow(filename, ctrl, fieldsToAdd));
   }
 
   /**
-   * Asynchronously saves data to a CSV file.
-   *
-   * @param filename - The path or file descriptor where the CSV file will be saved.
-   * @param data - The data to be converted to CSV format.
-   *
-   * @remarks
-   * The function converts the provided data to CSV format using specified options,
-   * including column headers, consistent column order, and a customizable delimiter.
-   * It then writes the CSV data to the specified file.
-   *
-   * @returns A promise that resolves when the CSV file has been written or rejects with an error.
-   * @throws Will print an error message if there is an issue writing the CSV file or processing the data.
-   */
+  Asynchronously saves data to a CSV file.
+
+  @param filename - The path or file descriptor where the CSV file will be saved.
+  @param data - The data to be converted to CSV format.
+
+  @remarks
+  The function converts the provided data to CSV format using specified options,
+  including column headers, consistent column order, and a customizable delimiter.
+  It then writes the CSV data to the specified file.
+
+  @returns A promise that resolves when the CSV file has been written or rejects with an error.
+  @throws Will print an error message if there is an issue writing the CSV file or processing the data.
+  */
   private async saveCSV(filename: fs.PathLike | fs.promises.FileHandle, data: stringify.Input) {
     // CSV options
     const options = {
@@ -212,12 +212,12 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   }
 
   /**
-   * Converts the given data to a CSV string using the specified options.
-   *
-   * @param data - The input data to be converted to CSV format.
-   * @param options - Optional configuration options for the CSV stringification process.
-   * @returns A promise that resolves to the CSV string output or rejects with an error.
-   */
+  Converts the given data to a CSV string using the specified options.
+
+  @param data - The input data to be converted to CSV format.
+  @param options - Optional configuration options for the CSV stringification process.
+  @returns A promise that resolves to the CSV string output or rejects with an error.
+  */
   private convertToCSV(data: stringify.Input, options: stringify.Options | undefined): Promise<string> {
     return new Promise((resolve, reject) => {
       stringify.stringify(data, options, (err, output: string | PromiseLike<string>) => {
@@ -231,20 +231,20 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   }
 
   /**
-   * Prompts the user to provide necessary information for converting an HDF file to a CSV file.
-   *
-   * This function dynamically imports `inquirer-file-selector` and `chalk` to facilitate user input.
-   * It sets the `defaultMaxListeners` to 20 to accommodate the number of listeners required by the inquire checkbox.
-   *
-   * The user is prompted to provide:
-   * - The HDF file to convert to a CSV formatted file.
-   * - The output directory where the CSV file will be written.
-   * - The output file name for the CSV (default is `hdf2csv.csv`).
-   * - The fields to include in the output CSV (at least one field is required).
-   * - An optional flag to truncate fields that exceed the Excel cell limit of 32,767 characters.
-   *
-   * @returns {Promise<any>} A promise that resolves to an object containing the user's input.
-   */
+  Prompts the user to provide necessary information for converting an HDF file to a CSV file.
+
+  This function dynamically imports `inquirer-file-selector` and `chalk` to facilitate user input.
+  It sets the `defaultMaxListeners` to 20 to accommodate the number of listeners required by the inquire checkbox.
+
+  The user is prompted to provide:
+  - The HDF file to convert to a CSV formatted file.
+  - The output directory where the CSV file will be written.
+  - The output file name for the CSV (default is `hdf2csv.csv`).
+  - The fields to include in the output CSV (at least one field is required).
+  - An optional flag to truncate fields that exceed the Excel cell limit of 32,767 characters.
+
+  @returns {Promise<any>} A promise that resolves to an object containing the user's input.
+  */
   private async getFlags(): Promise<any> {
     // The default max listeners is set to 10. The inquire checkbox sets a
     // listener for each entry it displays, we are providing 16 entries,
@@ -335,13 +335,13 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   }
 
   /**
-   * Validates the input and output file paths for the HDF to CSV conversion.
-   *
-   * @param input - The path to the input HDF json file.
-   * @param output - The path to the output CSV file.
-   * @returns A boolean indicating whether the file paths are valid.
-   * @throws Will throw an error if the input file is not valid or if the output directory is invalid.
-   */
+  Validates the input and output file paths for the HDF to CSV conversion.
+
+  @param input - The path to the input HDF json file.
+  @param output - The path to the output CSV file.
+  @returns A boolean indicating whether the file paths are valid.
+  @throws Will throw an error if the input file is not valid or if the output directory is invalid.
+  */
   private validFileFlags(input: string, output: string): boolean {
     // Do we have a file. Note that this check only ensures that a file was
     // provided, not necessary an HDF json file

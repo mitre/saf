@@ -6,36 +6,36 @@ import FormData from 'form-data';
 import type { ApiConfig } from './api_config';
 
 /**
- * Initializes and configures Axios instances for making HTTP requests.
- *
- * @class InitConnections
- *
- * @property {AxiosRequestConfig} axiosRequestConfig - The Axios request configuration.
- * @property {Configuration} configuration - The configuration for the API.
- * @property {AxiosInstance} axiosInstances - The Axios instance used for making HTTP requests.
- *
- * @constructor
- * @param {ApiConfig} conf - The API configuration object.
- *
- * @example
- * const apiConfig: ApiConfig = {
- *   url: 'https://api.example.com',
- *   reqCert: true,
- *   sslVerify: true,
- *   keyCert: '/path/to/keyCert',
- *   clientCert: '/path/to/clientCert',
- *   apiPassPhrase: 'yourPassPhrase',
- *   port: 443,
- *   apiKey: 'yourApiKey',
- *   userUid: 'yourUserUid',
- *   caCert: '/path/to/caCert'
- * };
- * const initConnections = new InitConnections(apiConfig);
- *
- * @remarks
- * This class handles the creation of an Axios instance with custom HTTPS agent settings.
- * It supports client certificate authentication and allows configuring SSL verification.
- */
+Initializes and configures Axios instances for making HTTP requests.
+
+@class InitConnections
+
+@property {AxiosRequestConfig} axiosRequestConfig - The Axios request configuration.
+@property {Configuration} configuration - The configuration for the API.
+@property {AxiosInstance} axiosInstances - The Axios instance used for making HTTP requests.
+
+@constructor
+@param {ApiConfig} conf - The API configuration object.
+
+@example
+const apiConfig: ApiConfig = {
+  url: 'https://api.example.com',
+  reqCert: true,
+  sslVerify: true,
+  keyCert: '/path/to/keyCert',
+  clientCert: '/path/to/clientCert',
+  apiPassPhrase: 'yourPassPhrase',
+  port: 443,
+  apiKey: 'yourApiKey',
+  userUid: 'yourUserUid',
+  caCert: '/path/to/caCert'
+};
+const initConnections = new InitConnections(apiConfig);
+
+@remarks
+This class handles the creation of an Axios instance with custom HTTPS agent settings.
+It supports client certificate authentication and allows configuring SSL verification.
+*/
 export class InitConnections {
   private readonly axiosRequestConfig: AxiosRequestConfig;
   public configuration: Configuration;

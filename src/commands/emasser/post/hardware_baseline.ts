@@ -13,30 +13,30 @@ import {
 } from '../../../utils/emasser/utilities';
 
 /**
- * Represents a hardware asset with various attributes.
- *
- * @interface Hardware
- *
- * @property {string} [assetName] - The name of the asset. This is a required field.
- *
- * @property {string} [publicFacingFqdn] - The fully qualified domain name if the asset is public-facing.
- * @property {string} [publicFacingIpAddress] - The IP address if the asset is public-facing.
- * @property {string} [publicFacingUrls] - The URLs if the asset is public-facing.
- *
- * @property {string} [componentType] - The type of component.
- * @property {string} [nickname] - A nickname for the asset.
- * @property {string} [assetIpAddress] - The IP address of the asset.
- * @property {boolean} [publicFacing] - Indicates if the asset is public-facing.
- * @property {boolean} [virtualAsset] - Indicates if the asset is virtual.
- * @property {string} [manufacturer] - The manufacturer of the asset.
- * @property {string} [modelNumber] - The model number of the asset.
- * @property {string} [serialNumber] - The serial number of the asset.
- * @property {string} [OsIosFwVersion] - The OS/IOS/Firmware version of the asset.
- * @property {string} [memorySizeType] - The memory size and type of the asset.
- * @property {string} [location] - The location of the asset.
- * @property {string} [approvalStatus] - The approval status of the asset.
- * @property {boolean} [criticalAsset] - Indicates if the asset is critical.
- */
+Represents a hardware asset with various attributes.
+
+@interface Hardware
+
+@property {string} [assetName] - The name of the asset. This is a required field.
+
+@property {string} [publicFacingFqdn] - The fully qualified domain name if the asset is public-facing.
+@property {string} [publicFacingIpAddress] - The IP address if the asset is public-facing.
+@property {string} [publicFacingUrls] - The URLs if the asset is public-facing.
+
+@property {string} [componentType] - The type of component.
+@property {string} [nickname] - A nickname for the asset.
+@property {string} [assetIpAddress] - The IP address of the asset.
+@property {boolean} [publicFacing] - Indicates if the asset is public-facing.
+@property {boolean} [virtualAsset] - Indicates if the asset is virtual.
+@property {string} [manufacturer] - The manufacturer of the asset.
+@property {string} [modelNumber] - The model number of the asset.
+@property {string} [serialNumber] - The serial number of the asset.
+@property {string} [OsIosFwVersion] - The OS/IOS/Firmware version of the asset.
+@property {string} [memorySizeType] - The memory size and type of the asset.
+@property {string} [location] - The location of the asset.
+@property {string} [approvalStatus] - The approval status of the asset.
+@property {boolean} [criticalAsset] - Indicates if the asset is critical.
+*/
 type Hardware = {
   // Required field
   assetName?: string;
@@ -61,15 +61,15 @@ type Hardware = {
 };
 
 /**
- * Retrieves all JSON examples by merging the results of multiple example sets.
- *
- * This function combines the JSON examples from three different categories:
- * - Required hardware post examples
- * - Conditional hardware post/put examples
- * - Optional hardware post/put examples
- *
- * @returns {Record<string, unknown>} An object containing all merged JSON examples.
- */
+Retrieves all JSON examples by merging the results of multiple example sets.
+
+This function combines the JSON examples from three different categories:
+- Required hardware post examples
+- Conditional hardware post/put examples
+- Optional hardware post/put examples
+
+@returns {Record<string, unknown>} An object containing all merged JSON examples.
+*/
 function getAllJsonExamples(): Record<string, unknown> {
   return {
     ...getJsonExamples('hardware-post-required'),
@@ -79,12 +79,12 @@ function getAllJsonExamples(): Record<string, unknown> {
 }
 
 /**
- * Asserts that a required parameter exists and is not undefined.
- *
- * @param object - The name of the parameter or field being checked.
- * @param value - The value of the parameter or field to check.
- * @throws Will throw an error if the value is undefined.
- */
+Asserts that a required parameter exists and is not undefined.
+
+@param object - The name of the parameter or field being checked.
+@param value - The value of the parameter or field to check.
+@throws Will throw an error if the value is undefined.
+*/
 function assertParamExists(object: string, value: string | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`);
@@ -93,16 +93,16 @@ function assertParamExists(object: string, value: string | undefined | null): vo
 }
 
 /**
- * Adds required fields to the request body for a hardware object.
- *
- * This function ensures that the required fields are present in the request body.
- * If the required field `assetName` is missing, an error is thrown and an example
- * JSON structure is logged to the console.
- *
- * @param dataObj - The hardware object containing the data to be validated and added to the request body.
- * @returns The hardware object with the required fields added.
- * @throws Will throw an error if the required field `assetName` is missing.
- */
+Adds required fields to the request body for a hardware object.
+
+This function ensures that the required fields are present in the request body.
+If the required field `assetName` is missing, an error is thrown and an example
+JSON structure is logged to the console.
+
+@param dataObj - The hardware object containing the data to be validated and added to the request body.
+@returns The hardware object with the required fields added.
+@throws Will throw an error if the required field `assetName` is missing.
+*/
 function addRequiredFieldsToRequestBody(dataObj: Hardware): Hardware {
   const bodyObj: Hardware = {};
 
@@ -121,11 +121,11 @@ function addRequiredFieldsToRequestBody(dataObj: Hardware): Hardware {
 }
 
 /**
- * Adds conditional fields from the `dataObj` to the `bodyObject` if they exist.
- *
- * @param bodyObject - The target object to which fields will be added.
- * @param dataObj - The source object from which fields will be copied if they exist.
- */
+Adds conditional fields from the `dataObj` to the `bodyObject` if they exist.
+
+@param bodyObject - The target object to which fields will be added.
+@param dataObj - The source object from which fields will be copied if they exist.
+*/
 function addConditionalFields(bodyObject: Hardware, dataObj: Hardware): void {
   if (Object.hasOwn(dataObj, 'publicFacingFqdn')) {
     bodyObject.publicFacingFqdn = dataObj.publicFacingFqdn;
@@ -141,11 +141,11 @@ function addConditionalFields(bodyObject: Hardware, dataObj: Hardware): void {
 }
 
 /**
- * Adds optional fields from the `dataObj` to the `bodyObject` if they exist.
- *
- * @param bodyObject - The target object to which optional fields will be added.
- * @param dataObj - The source object from which optional fields will be copied.
- */
+Adds optional fields from the `dataObj` to the `bodyObject` if they exist.
+
+@param bodyObject - The target object to which optional fields will be added.
+@param dataObj - The source object from which optional fields will be copied.
+*/
 function addOptionalFields(bodyObject: Hardware, dataObj: Hardware): void {
   if (Object.hasOwn(dataObj, 'componentType')) {
     bodyObject.componentType = dataObj.componentType;
@@ -201,15 +201,15 @@ function addOptionalFields(bodyObject: Hardware, dataObj: Hardware): void {
 }
 
 /**
- * Generates a body object for a hardware baseline.
- *
- * This function takes a `Hardware` object as input and creates a new `Hardware` object
- * with required, conditional, and optional fields populated based on the input object.
- * If any error occurs during the process, the function will terminate the process with an exit code of 1.
- *
- * @param dataObject - The input `Hardware` object containing the data to populate the body object.
- * @returns The generated `Hardware` body object.
- */
+Generates a body object for a hardware baseline.
+
+This function takes a `Hardware` object as input and creates a new `Hardware` object
+with required, conditional, and optional fields populated based on the input object.
+If any error occurs during the process, the function will terminate the process with an exit code of 1.
+
+@param dataObject - The input `Hardware` object containing the data to populate the body object.
+@returns The generated `Hardware` body object.
+*/
 function generateBodyObj(dataObject: Hardware): Hardware {
   let bodyObj: Hardware = {};
 
@@ -225,11 +225,11 @@ function generateBodyObj(dataObject: Hardware): Hardware {
 }
 
 /**
- * Type guard function to check if an object is of type `Hardware`.
- *
- * @param obj - The object to check.
- * @returns `true` if the object is of type `Hardware`, otherwise `false`.
- */
+Type guard function to check if an object is of type `Hardware`.
+
+@param obj - The object to check.
+@returns `true` if the object is of type `Hardware`, otherwise `false`.
+*/
 function isHardware(obj: unknown): obj is Hardware {
   if (typeof obj !== 'object' || obj === null) {
     return false;

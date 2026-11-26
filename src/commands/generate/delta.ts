@@ -772,10 +772,10 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   }
 
   /**
-   * Emit the per-link match-method log line. Kept separate from
-   * tickMatchCounter so the output format can evolve independently of
-   * the stats bookkeeping.
-   */
+  Emit the per-link match-method log line. Kept separate from
+  tickMatchCounter so the output format can evolve independently of
+  the stats bookkeeping.
+  */
   private static logMatchMethod(log: Logger, link: LinkRecord): void {
     const confidencePct = (link.confidence * 100).toFixed(0) + '%';
     switch (link.matchMethod) {
@@ -809,13 +809,13 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   }
 
   /**
-   * Advance the GenerateDelta static counters for a single link so the
-   * end-of-run stats match reality.
-   *
-   *   match        -> primary link, high confidence
-   *   posMisMatch  -> primary link, lower confidence (still accepted)
-   *   dupMatch     -> related link (shares old body with an earlier primary)
-   */
+  Advance the GenerateDelta static counters for a single link so the
+  end-of-run stats match reality.
+
+    match        -> primary link, high confidence
+    posMisMatch  -> primary link, lower confidence (still accepted)
+    dupMatch     -> related link (shares old body with an earlier primary)
+  */
   private static tickMatchCounter(link: LinkRecord): void {
     if (link.relationship === 'related') {
       GenerateDelta.dupMatch++;
@@ -888,16 +888,16 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   }
 
   /**
-   * Retrieves the content of an XCCDF file or extracts it from a URL or zip package.
-   *
-   * @param xccdfType - The type of the XCCDF input, either 'File' or 'URL'.
-   * @param xccdfInput - The path to the XCCDF file or the URL containing the XCCDF content.
-   * @returns A promise that resolves to an object containing:
-   *          - `xccdfFile`: The name of the XCCDF file.
-   *          - `xccdfContent`: The content of the XCCDF file as a string.
-   *
-   * @throws Will terminate the process if the input file or URL is invalid or processing fails.
-   */
+  Retrieves the content of an XCCDF file or extracts it from a URL or zip package.
+
+  @param xccdfType - The type of the XCCDF input, either 'File' or 'URL'.
+  @param xccdfInput - The path to the XCCDF file or the URL containing the XCCDF content.
+  @returns A promise that resolves to an object containing:
+           - `xccdfFile`: The name of the XCCDF file.
+           - `xccdfContent`: The content of the XCCDF file as a string.
+
+  @throws Will terminate the process if the input file or URL is invalid or processing fails.
+  */
   async getXccdfContent(xccdfType: string, xccdfInput: string): Promise<{ xccdfFile: string; xccdfContent: string }> {
     let xccdfFile = '';
     let xccdfContent = '';
@@ -978,20 +978,20 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   }
 
   /**
-   * Creates the mapped directory for controls within the specified directory path.
-   *
-   * This method performs the following steps:
-   * 1. Determines the destination file path based on the provided `controlsDir`.
-   * 2. Constructs the path for the mapped directory (`mapped_controls/controls`).
-   * 3. Deletes the mapped directory if it already exists.
-   * 4. Creates the mapped directory recursively.
-   * 5. Copies the `inspec.yml` file from the destination directory to the parent
-   *    of the mapped directory to ensure proper generation of the profile controls summary.
-   *
-   * @param controlsDir - The path to the directory containing the controls.
-   * @returns The path to the newly created mapped directory.
-   * @throws An error if any file system operation fails, with the error message extracted using `getErrorMessage`.
-   */
+  Creates the mapped directory for controls within the specified directory path.
+
+  This method performs the following steps:
+  1. Determines the destination file path based on the provided `controlsDir`.
+  2. Constructs the path for the mapped directory (`mapped_controls/controls`).
+  3. Deletes the mapped directory if it already exists.
+  4. Creates the mapped directory recursively.
+  5. Copies the `inspec.yml` file from the destination directory to the parent
+     of the mapped directory to ensure proper generation of the profile controls summary.
+
+  @param controlsDir - The path to the directory containing the controls.
+  @returns The path to the newly created mapped directory.
+  @throws An error if any file system operation fails, with the error message extracted using `getErrorMessage`.
+  */
   createMappedDirectory(controlsDir: string): string { // skipcq: JS-0105
     try {
       const destFilePath = path.dirname(controlsDir);
@@ -1040,40 +1040,40 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   }
 
   /**
-   * Asynchronously prompts the user for various inputs and selections to configure
-   * the delta process for updating profile controls. This function dynamically imports
-   * required modules, interacts with the user through a series of prompts, and collects
-   * the necessary flags and options for the process.
-   *
-   * @async
-   * @function
-   * @returns {Promise<any>} A promise that resolves to an object containing the user's
-   * selections and inputs, including required and optional flags for the delta process.
-   *
-   * The returned object includes:
-   * - `xccdfTye`: The type of XCCDF source ('file' or 'url').
-   * - `xccdfXmlFile` or `xccdfUrl`: The selected XCCDF file or URL.
-   * - `inspecJsonFile`: The Profile Controls summary file or an indication that it is auto-generated.
-   * - `controlsDir`: The directory containing the profile controls (if applicable).
-   * - `runMapControls`: A boolean indicating whether fuzzy logic is used.
-   * - `deltaOutputDir`: The directory for saving the updated profile controls.
-   * - `ovalXmlFile`: The OVAL XML file (if included).
-   * - `generateReport`: A boolean indicating whether a markdown report is generated.
-   * - `reportDirectory` and `reportFileName`: The directory and filename for the markdown report (if applicable).
-   * - `idType`: The selected Control ID Type for processing controls.
-   * - `logLevel`: The selected log level for the process.
-   *
-   * @remarks
-   * - The function uses `inquirer` for interactive prompts and dynamically imports
-   *   `inquirer-file-selector` and `chalk` for enhanced user experience.
-   * - It adjusts the `defaultMaxListeners` of the `EventEmitter` to accommodate
-   *   the number of listeners required by the prompts.
-   * - The function logs user selections to a process log for debugging or auditing purposes.
-   *
-   * @example
-   * const flags = await getFlags();
-   * console.log(flags);
-   */
+  Asynchronously prompts the user for various inputs and selections to configure
+  the delta process for updating profile controls. This function dynamically imports
+  required modules, interacts with the user through a series of prompts, and collects
+  the necessary flags and options for the process.
+
+  @async
+  @function
+  @returns {Promise<any>} A promise that resolves to an object containing the user's
+  selections and inputs, including required and optional flags for the delta process.
+
+  The returned object includes:
+  - `xccdfTye`: The type of XCCDF source ('file' or 'url').
+  - `xccdfXmlFile` or `xccdfUrl`: The selected XCCDF file or URL.
+  - `inspecJsonFile`: The Profile Controls summary file or an indication that it is auto-generated.
+  - `controlsDir`: The directory containing the profile controls (if applicable).
+  - `runMapControls`: A boolean indicating whether fuzzy logic is used.
+  - `deltaOutputDir`: The directory for saving the updated profile controls.
+  - `ovalXmlFile`: The OVAL XML file (if included).
+  - `generateReport`: A boolean indicating whether a markdown report is generated.
+  - `reportDirectory` and `reportFileName`: The directory and filename for the markdown report (if applicable).
+  - `idType`: The selected Control ID Type for processing controls.
+  - `logLevel`: The selected log level for the process.
+
+  @remarks
+  - The function uses `inquirer` for interactive prompts and dynamically imports
+    `inquirer-file-selector` and `chalk` for enhanced user experience.
+  - It adjusts the `defaultMaxListeners` of the `EventEmitter` to accommodate
+    the number of listeners required by the prompts.
+  - The function logs user selections to a process log for debugging or auditing purposes.
+
+  @example
+  const flags = await getFlags();
+  console.log(flags);
+  */
   private async getFlags(): Promise<any> {
     // The default max listeners is set to 10. The inquire checkbox sets a
     // listener for each entry it displays, we are providing 16 entries,
@@ -1313,21 +1313,21 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   }
 
   /**
-   * Determines whether the provided file is a valid XCCDF file or package.
-   *
-   * This function checks if the given file path points to a valid XCCDF file
-   * or package by performing the following steps:
-   * - Verifies if the file exists and is a regular file.
-   * - Checks the file extension to determine if it is a `.zip` package or `.xml` file.
-   * - Reads the content of `.xml` files to confirm the presence of the "xccdf" keyword
-   *   in the first 10 lines.
-   *
-   * If the file is invalid or an error occurs during processing, appropriate error
-   * messages are logged, and the function returns `false`.
-   *
-   * @param xccdfXmlFile - The file path to the XCCDF file or package to validate.
-   * @returns `true` if the file is a valid XCCDF file or package, otherwise `false`.
-   */
+  Determines whether the provided file is a valid XCCDF file or package.
+
+  This function checks if the given file path points to a valid XCCDF file
+  or package by performing the following steps:
+  - Verifies if the file exists and is a regular file.
+  - Checks the file extension to determine if it is a `.zip` package or `.xml` file.
+  - Reads the content of `.xml` files to confirm the presence of the "xccdf" keyword
+    in the first 10 lines.
+
+  If the file is invalid or an error occurs during processing, appropriate error
+  messages are logged, and the function returns `false`.
+
+  @param xccdfXmlFile - The file path to the XCCDF file or package to validate.
+  @returns `true` if the file is a valid XCCDF file or package, otherwise `false`.
+  */
   private isXccdfFile(xccdfXmlFile: string): boolean {
     let isXccdf = true;
     try {

@@ -11,10 +11,10 @@ import { calculateCompliance, extractStatusCounts, flattenProfileSummary, rename
 const logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger({ module: 'View Summary:' });
 
 /**
- * Calculates the summaries for the provided execution JSONs.
- * @param execJSONs - An object mapping file paths to their corresponding execution JSONs.
- * @returns An object containing the calculated summaries.
- */
+Calculates the summaries for the provided execution JSONs.
+@param execJSONs - An object mapping file paths to their corresponding execution JSONs.
+@returns An object containing the calculated summaries.
+*/
 export function calculateSummariesForExecJSONs(execJSONs: Record<string, ContextualizedEvaluation>): Record<string, Record<string, Record<string, number>>[]> {
   logger.verbose('In calculateSummariesForExecJSONs');
   const summaries: Record<string, Record<string, Record<string, number>>[]> = {};
@@ -31,10 +31,10 @@ export function calculateSummariesForExecJSONs(execJSONs: Record<string, Context
 }
 
 /**
- * Calculates the compliance scores for the provided execution JSONs.
- * @param execJSONs - An object mapping file paths to their corresponding execution JSONs.
- * @returns An object containing the calculated compliance scores.
- */
+Calculates the compliance scores for the provided execution JSONs.
+@param execJSONs - An object mapping file paths to their corresponding execution JSONs.
+@returns An object containing the calculated compliance scores.
+*/
 export function calculateComplianceScoresForExecJSONs(execJSONs: Record<string, ContextualizedEvaluation>): Record<string, number[]> {
   logger.verbose('In calculateComplianceScoresForExecJSONs');
   const complianceScores: Record<string, number[]> = {};
@@ -51,10 +51,10 @@ export function calculateComplianceScoresForExecJSONs(execJSONs: Record<string, 
 }
 
 /**
- * Calculates the totals for the provided summaries.
- * @param summaries - The summaries to calculate the totals for.
- * @returns An object containing the calculated totals.
- */
+Calculates the totals for the provided summaries.
+@param summaries - The summaries to calculate the totals for.
+@returns An object containing the calculated totals.
+*/
 export function calculateTotalCountsForSummaries(summaries: Record<string, Record<string, Record<string, number>>[]>): Record<string, Record<string, number>> {
   logger.verbose('In calculateTotalCountsForSummaries');
   const totals: Record<string, Record<string, number>> = {};
@@ -75,11 +75,11 @@ export function calculateTotalCountsForSummaries(summaries: Record<string, Recor
 }
 
 /**
- * Calculates the severity counts for the provided summary and profile.
- * @param summary - The summary to calculate the severity counts for.
- * @param parsedProfile - The profile to use for the calculation.
- * @returns void - This method does not return anything, it modifies the 'summary' object passed as a parameter.
- */
+Calculates the severity counts for the provided summary and profile.
+@param summary - The summary to calculate the severity counts for.
+@param parsedProfile - The profile to use for the calculation.
+@returns void - This method does not return anything, it modifies the 'summary' object passed as a parameter.
+*/
 export function calculateSeverityCounts(summary: Record<string, Record<string, number>>, parsedProfile: ContextualizedProfile) {
   logger.verbose('In calculateComplianceScoresForExecJSONs');
   for (const [severity, severityTargets] of Object.entries(severityTargetsObject)) {
@@ -93,10 +93,10 @@ export function calculateSeverityCounts(summary: Record<string, Record<string, n
 }
 
 /**
- * Calculates the total counts for the provided summary.
- * @param summary - The summary to calculate the total counts for.
- * @returns void - This method does not return anything, it modifies the 'summary' object passed as a parameter.
- */
+Calculates the total counts for the provided summary.
+@param summary - The summary to calculate the total counts for.
+@returns void - This method does not return anything, it modifies the 'summary' object passed as a parameter.
+*/
 export function calculateTotalCounts(summary: Record<string, Record<string, number>>) {
   logger.verbose('In calculateTotalCounts');
   for (const [type, counts] of Object.entries(summary)) {

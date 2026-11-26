@@ -13,51 +13,51 @@ import {
 } from '../../../utils/emasser/utilities';
 
 /**
- * Represents a software entity with various attributes.
- *
- * @interface Software
- * Required properties
- * @property {string} [softwareId] - The unique identifier for the software.
- * @property {string} [softwareVendor] - The vendor of the software.
- * @property {string} [softwareName] - The name of the software.
- * @property {string} [version] - The version of the software.
- * Conditional property
- * @property {number} [approvalDate] - The date when the software was approved.
- * Optional properties
- * @property {string} [softwareType] - The type of the software.
- * @property {string} [parentSystem] - The parent system of the software.x
- * @property {string} [subsystem] - The subsystem of the software.x
- * @property {string} [network] - The network associated with the software.x
- * @property {string} [hostingEnvironment] - The hosting environment of the software.x
- * @property {string} [softwareDependencies] - The dependencies of the software.x
- * @property {string} [cryptographicHash] - The cryptographic hash of the software.x
- * @property {string} [inServiceData] - The in-service data of the software.x
- * @property {string} [itBudgetUii] - The IT budget UII of the software.x
- * @property {string} [fiscalYear] - The fiscal year associated with the software.x
- * @property {string} [popEndDate] - The end date of the period of performance.x
- * @property {string} [licenseOrContract] - The license or contract information of the software.x
- * @property {string} [licenseTerm] - The term of the license.x
- * @property {number} [costPerLicense] - The cost per license of the software.x
- * @property {number} [totalLicenses] - The total number of licenses.x
- * @property {number} [totalLicenseCost] - The total cost of all licenses.x
- * @property {number} [licensesUsed] - The number of licenses used.x
- * @property {string} [licensePoc] - The point of contact for the license.x
- * @property {number} [licenseRenewalDate] - The date when the license needs to be renewed.x
- * @property {number} [licenseExpirationDate] - The expiration date of the license.x
- * @property {string} [approvalStatus] - The approval status of the software.x
- * @property {number} [releaseDate] - The release date of the software.x
- * @property {number} [maintenanceDate] - The maintenance date of the software.x
- * @property {number} [retirementDate] - The retirement date of the software.x
- * @property {number} [endOfLifeSupportDate] - The end-of-life support date of the software.x
- * @property {number} [extendedEndOfLifeSupportDate] - The extended end-of-life support date of the software.x
- * @property {boolean} [criticalAsset] - Indicates if the software is a critical asset.x
- * @property {string} [location] - The location of the software.x
- * @property {string} [purpose] - The purpose of the software.x
- * Optional VA only properties
- * @property {boolean} [unsupportedOperatingSystem] - Indicates if the software runs on an unsupported operating system. (VA Only)
- * @property {boolean} [unapprovedSoftwareFromTrm] - Indicates if the software is unapproved from TRM. (VA Only)
- * @property {boolean} [approvedWaiver] - Indicates if there is an approved waiver for the software. (VA Only)
- */
+Represents a software entity with various attributes.
+
+@interface Software
+Required properties
+@property {string} [softwareId] - The unique identifier for the software.
+@property {string} [softwareVendor] - The vendor of the software.
+@property {string} [softwareName] - The name of the software.
+@property {string} [version] - The version of the software.
+Conditional property
+@property {number} [approvalDate] - The date when the software was approved.
+Optional properties
+@property {string} [softwareType] - The type of the software.
+@property {string} [parentSystem] - The parent system of the software.x
+@property {string} [subsystem] - The subsystem of the software.x
+@property {string} [network] - The network associated with the software.x
+@property {string} [hostingEnvironment] - The hosting environment of the software.x
+@property {string} [softwareDependencies] - The dependencies of the software.x
+@property {string} [cryptographicHash] - The cryptographic hash of the software.x
+@property {string} [inServiceData] - The in-service data of the software.x
+@property {string} [itBudgetUii] - The IT budget UII of the software.x
+@property {string} [fiscalYear] - The fiscal year associated with the software.x
+@property {string} [popEndDate] - The end date of the period of performance.x
+@property {string} [licenseOrContract] - The license or contract information of the software.x
+@property {string} [licenseTerm] - The term of the license.x
+@property {number} [costPerLicense] - The cost per license of the software.x
+@property {number} [totalLicenses] - The total number of licenses.x
+@property {number} [totalLicenseCost] - The total cost of all licenses.x
+@property {number} [licensesUsed] - The number of licenses used.x
+@property {string} [licensePoc] - The point of contact for the license.x
+@property {number} [licenseRenewalDate] - The date when the license needs to be renewed.x
+@property {number} [licenseExpirationDate] - The expiration date of the license.x
+@property {string} [approvalStatus] - The approval status of the software.x
+@property {number} [releaseDate] - The release date of the software.x
+@property {number} [maintenanceDate] - The maintenance date of the software.x
+@property {number} [retirementDate] - The retirement date of the software.x
+@property {number} [endOfLifeSupportDate] - The end-of-life support date of the software.x
+@property {number} [extendedEndOfLifeSupportDate] - The extended end-of-life support date of the software.x
+@property {boolean} [criticalAsset] - Indicates if the software is a critical asset.x
+@property {string} [location] - The location of the software.x
+@property {string} [purpose] - The purpose of the software.x
+Optional VA only properties
+@property {boolean} [unsupportedOperatingSystem] - Indicates if the software runs on an unsupported operating system. (VA Only)
+@property {boolean} [unapprovedSoftwareFromTrm] - Indicates if the software is unapproved from TRM. (VA Only)
+@property {boolean} [approvedWaiver] - Indicates if there is an approved waiver for the software. (VA Only)
+*/
 type Software = {
   // Required field
   softwareId?: string;
@@ -103,15 +103,15 @@ type Software = {
 };
 
 /**
- * Retrieves a combined set of JSON examples from multiple sources.
- *
- * This function aggregates JSON examples from three different categories:
- * - `software-put-required`
- * - `software-post-put-conditional`
- * - `software-post-put-optional`
- *
- * @returns {Record<string, unknown>} An object containing the combined JSON examples.
- */
+Retrieves a combined set of JSON examples from multiple sources.
+
+This function aggregates JSON examples from three different categories:
+- `software-put-required`
+- `software-post-put-conditional`
+- `software-post-put-optional`
+
+@returns {Record<string, unknown>} An object containing the combined JSON examples.
+*/
 function getAllJsonExamples(): Record<string, unknown> {
   return {
     ...getJsonExamples('software-put-required'),
@@ -121,12 +121,12 @@ function getAllJsonExamples(): Record<string, unknown> {
 }
 
 /**
- * Asserts that a required parameter exists and is not undefined.
- *
- * @param object - The name of the parameter or field being checked.
- * @param value - The value of the parameter or field to check.
- * @throws Will throw an error if the value is undefined.
- */
+Asserts that a required parameter exists and is not undefined.
+
+@param object - The name of the parameter or field being checked.
+@param value - The value of the parameter or field to check.
+@throws Will throw an error if the value is undefined.
+*/
 function assertParamExists(object: string, value: string | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`);
@@ -135,16 +135,16 @@ function assertParamExists(object: string, value: string | undefined | null): vo
 }
 
 /**
- * Adds required fields to the request body for a software object.
- *
- * This function ensures that the required fields `softwareId`, `softwareVendor`,
- * `softwareName`, and `version` are present in the input `dataObj`. If any of these
- * fields are missing, an error is thrown and an example JSON structure is logged.
- *
- * @param dataObj - The software object containing the data to be validated and added to the request body.
- * @returns A new software object containing only the required fields.
- * @throws Will throw an error if any of the required fields are missing in `dataObj`.
- */
+Adds required fields to the request body for a software object.
+
+This function ensures that the required fields `softwareId`, `softwareVendor`,
+`softwareName`, and `version` are present in the input `dataObj`. If any of these
+fields are missing, an error is thrown and an example JSON structure is logged.
+
+@param dataObj - The software object containing the data to be validated and added to the request body.
+@returns A new software object containing only the required fields.
+@throws Will throw an error if any of the required fields are missing in `dataObj`.
+*/
 function addRequiredFieldsToRequestBody(dataObj: Software): Software {
   const bodyObj: Software = {};
 
@@ -169,11 +169,11 @@ function addRequiredFieldsToRequestBody(dataObj: Software): Software {
 }
 
 /**
- * Adds conditional fields from the data object to the body object.
- *
- * @param bodyObject - The target object to which fields may be added.
- * @param dataObj - The source object from which fields are conditionally copied.
- */
+Adds conditional fields from the data object to the body object.
+
+@param bodyObject - The target object to which fields may be added.
+@param dataObj - The source object from which fields are conditionally copied.
+*/
 function addConditionalFields(bodyObject: Software, dataObj: Software): void {
   if (Object.hasOwn(dataObj, 'publicFacingFqdn')) {
     bodyObject.approvalDate = dataObj.approvalDate;
@@ -181,11 +181,11 @@ function addConditionalFields(bodyObject: Software, dataObj: Software): void {
 }
 
 /**
- * Adds optional fields from the `dataObj` to the `bodyObject` if they exist.
- *
- * @param bodyObject - The target object to which optional fields will be added.
- * @param dataObj - The source object containing optional fields.
- */
+Adds optional fields from the `dataObj` to the `bodyObject` if they exist.
+
+@param bodyObject - The target object to which optional fields will be added.
+@param dataObj - The source object containing optional fields.
+*/
 function addOptionalFields(bodyObject: Software, dataObj: Software): void {
   if (Object.hasOwn(dataObj, 'softwareType')) {
     bodyObject.softwareType = dataObj.softwareType;
@@ -318,15 +318,15 @@ function addOptionalFields(bodyObject: Software, dataObj: Software): void {
 }
 
 /**
- * Generates a body object for a software baseline request.
- *
- * This function takes a `Software` object as input and constructs a new `Software`
- * object by adding required, conditional, and optional fields to it. If an error
- * occurs during this process, the function will terminate the process with an exit code of 1.
- *
- * @param dataObject - The input `Software` object containing the initial data.
- * @returns The constructed `Software` object with the necessary fields added.
- */
+Generates a body object for a software baseline request.
+
+This function takes a `Software` object as input and constructs a new `Software`
+object by adding required, conditional, and optional fields to it. If an error
+occurs during this process, the function will terminate the process with an exit code of 1.
+
+@param dataObject - The input `Software` object containing the initial data.
+@returns The constructed `Software` object with the necessary fields added.
+*/
 function generateBodyObj(dataObject: Software): Software {
   let bodyObj: Software = {};
 

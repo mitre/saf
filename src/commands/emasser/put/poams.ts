@@ -10,54 +10,54 @@ import { outputFormat } from '../../../utils/emasser/output_formatter';
 import { displayError, getFlagsForEndpoint, getJsonExamples, printHelpMsg, printRedMsg } from '../../../utils/emasser/utilities';
 
 /**
- * Interface representing a Plan of Action and Milestones (POAMs) object.
- *
- * @property {number} [poamId] - The unique identifier for the POAM.
- * @property {string} [displayPoamId] - The display identifier for the POAM.
- * @property {string} [status] - The current status of the POAM.
- * @property {string} [vulnerabilityDescription] - Description of the vulnerability addressed by the POAM.
- * @property {string} [sourceIdentifyingVulnerability] - Source identifying the vulnerability.
- * @property {string} [pocOrganization] - Point of contact organization.
- * @property {string} [resources] - Resources associated with the POAM.
- *
- * @property {Array<MilestonesRequiredPut>} [milestones] - List of milestones associated with the POAM.
- * @property {string} [pocFirstName] - Point of contact first name.
- * @property {string} [pocLastName] - Point of contact last name.
- * @property {string} [pocEmail] - Point of contact email address.
- * @property {string} [pocPhoneNumber] - Point of contact phone number.
- * @property {string} [scheduledCompletionDate] - Scheduled completion date of the POAM.
- * @property {string} [completionDate] - Actual completion date of the POAM.
- * @property {string} [comments] - Additional comments regarding the POAM.
- * @property {string} [severity] - Severity of the risk analysis, conditionally required in certain eMASS instances.
- *
- * @property {string} [externalUid] - External unique identifier.
- * @property {string} [controlAcronym] - Acronym for the control.
- * @property {string} [assessmentProcedure] - Assessment procedure details.
- * @property {string} [securityChecks] - Security checks performed.
- * @property {string} [rawSeverity] - Raw severity of the vulnerability.
- * @property {string} [impactDescription] - Description of the impact.
- * @property {string} [recommendations] - Recommendations for mitigation.
- * @property {string} [resultingResidualRiskLevelAfterProposedMitigations] - Residual risk level after proposed mitigations.
- * @property {string} [predisposingConditions] - Predisposing conditions affecting the POAM.
- * @property {string} [threatDescription] - Description of the threat.
- * @property {string} [devicesAffected] - Devices affected by the vulnerability.
- * @property {string} [mitigations] - Mitigations applied, conditionally required in certain eMASS instances.
- * @property {string} [relevanceOfThreat] - Relevance of the threat.
- * @property {string} [likelihood] - Likelihood of the threat occurring.
- * @property {string} [impact] - Impact of the threat.
- * @property {string} [residualRiskLevel] - Residual risk level after mitigations.
- * @property {boolean} [identifiedInCFOAuditOrOtherReview] - Indicates if identified in CFO audit or other review, conditionally required for VA.
- * @property {number} [personnelResourcesFundedBaseHours] - Funded base hours for personnel resources.
- * @property {string} [personnelResourcesCostCode] - Cost code for personnel resources.
- * @property {number} [personnelResourcesUnfundedBaseHours] - Unfunded base hours for personnel resources.
- * @property {string} [personnelResourcesNonfundingObstacle] - Non-funding obstacle for personnel resources.
- * @property {string} [personnelResourcesNonfundingObstacleOtherReason] - Other reason for non-funding obstacle for personnel resources.
- * @property {number} [nonPersonnelResourcesFundedAmount] - Funded amount for non-personnel resources.
- * @property {string} [nonPersonnelResourcesCostCode] - Cost code for non-personnel resources.
- * @property {number} [nonPersonnelResourcesUnfundedAmount] - Unfunded amount for non-personnel resources.
- * @property {string} [nonPersonnelResourcesNonfundingObstacle] - Non-funding obstacle for non-personnel resources.
- * @property {string} [nonPersonnelResourcesNonfundingObstacleOtherReason] - Other reason for non-funding obstacle for non-personnel resources.
- */
+Interface representing a Plan of Action and Milestones (POAMs) object.
+
+@property {number} [poamId] - The unique identifier for the POAM.
+@property {string} [displayPoamId] - The display identifier for the POAM.
+@property {string} [status] - The current status of the POAM.
+@property {string} [vulnerabilityDescription] - Description of the vulnerability addressed by the POAM.
+@property {string} [sourceIdentifyingVulnerability] - Source identifying the vulnerability.
+@property {string} [pocOrganization] - Point of contact organization.
+@property {string} [resources] - Resources associated with the POAM.
+
+@property {Array<MilestonesRequiredPut>} [milestones] - List of milestones associated with the POAM.
+@property {string} [pocFirstName] - Point of contact first name.
+@property {string} [pocLastName] - Point of contact last name.
+@property {string} [pocEmail] - Point of contact email address.
+@property {string} [pocPhoneNumber] - Point of contact phone number.
+@property {string} [scheduledCompletionDate] - Scheduled completion date of the POAM.
+@property {string} [completionDate] - Actual completion date of the POAM.
+@property {string} [comments] - Additional comments regarding the POAM.
+@property {string} [severity] - Severity of the risk analysis, conditionally required in certain eMASS instances.
+
+@property {string} [externalUid] - External unique identifier.
+@property {string} [controlAcronym] - Acronym for the control.
+@property {string} [assessmentProcedure] - Assessment procedure details.
+@property {string} [securityChecks] - Security checks performed.
+@property {string} [rawSeverity] - Raw severity of the vulnerability.
+@property {string} [impactDescription] - Description of the impact.
+@property {string} [recommendations] - Recommendations for mitigation.
+@property {string} [resultingResidualRiskLevelAfterProposedMitigations] - Residual risk level after proposed mitigations.
+@property {string} [predisposingConditions] - Predisposing conditions affecting the POAM.
+@property {string} [threatDescription] - Description of the threat.
+@property {string} [devicesAffected] - Devices affected by the vulnerability.
+@property {string} [mitigations] - Mitigations applied, conditionally required in certain eMASS instances.
+@property {string} [relevanceOfThreat] - Relevance of the threat.
+@property {string} [likelihood] - Likelihood of the threat occurring.
+@property {string} [impact] - Impact of the threat.
+@property {string} [residualRiskLevel] - Residual risk level after mitigations.
+@property {boolean} [identifiedInCFOAuditOrOtherReview] - Indicates if identified in CFO audit or other review, conditionally required for VA.
+@property {number} [personnelResourcesFundedBaseHours] - Funded base hours for personnel resources.
+@property {string} [personnelResourcesCostCode] - Cost code for personnel resources.
+@property {number} [personnelResourcesUnfundedBaseHours] - Unfunded base hours for personnel resources.
+@property {string} [personnelResourcesNonfundingObstacle] - Non-funding obstacle for personnel resources.
+@property {string} [personnelResourcesNonfundingObstacleOtherReason] - Other reason for non-funding obstacle for personnel resources.
+@property {number} [nonPersonnelResourcesFundedAmount] - Funded amount for non-personnel resources.
+@property {string} [nonPersonnelResourcesCostCode] - Cost code for non-personnel resources.
+@property {number} [nonPersonnelResourcesUnfundedAmount] - Unfunded amount for non-personnel resources.
+@property {string} [nonPersonnelResourcesNonfundingObstacle] - Non-funding obstacle for non-personnel resources.
+@property {string} [nonPersonnelResourcesNonfundingObstacleOtherReason] - Other reason for non-funding obstacle for non-personnel resources.
+*/
 type Poams = {
   // Required Fields - Declared as undefined but validated later
   poamId?: number;
@@ -124,12 +124,12 @@ function getAllJsonExamples(): Record<string, unknown> {
 }
 
 /**
- * Asserts that a required parameter exists and is not undefined.
- *
- * @param object - The name of the parameter or field being checked.
- * @param value - The value of the parameter or field to check. Can be a string, number, undefined, or null.
- * @throws {Error} Throws an error if the value is undefined.
- */
+Asserts that a required parameter exists and is not undefined.
+
+@param object - The name of the parameter or field being checked.
+@param value - The value of the parameter or field to check. Can be a string, number, undefined, or null.
+@throws {Error} Throws an error if the value is undefined.
+*/
 function assertParamExists(object: string, value: string | number | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`);
@@ -138,16 +138,16 @@ function assertParamExists(object: string, value: string | number | undefined | 
 }
 
 /**
- * Adds required fields to the request body for a POAMs (Plan of Action and Milestones) object.
- *
- * This function ensures that all required fields are present in the input `dataObj` and then
- * constructs a new `Poams` object with these fields. If any required field is missing, an error
- * is thrown, and an example of the required JSON structure is logged.
- *
- * @param {Poams} dataObj - The input POAMs object containing the data to be validated and added to the request body.
- * @returns {Poams} - A new POAMs object containing the required fields from the input `dataObj`.
- * @throws Will throw an error if any required field is missing in the input `dataObj`.
- */
+Adds required fields to the request body for a POAMs (Plan of Action and Milestones) object.
+
+This function ensures that all required fields are present in the input `dataObj` and then
+constructs a new `Poams` object with these fields. If any required field is missing, an error
+is thrown, and an example of the required JSON structure is logged.
+
+@param {Poams} dataObj - The input POAMs object containing the data to be validated and added to the request body.
+@returns {Poams} - A new POAMs object containing the required fields from the input `dataObj`.
+@throws Will throw an error if any required field is missing in the input `dataObj`.
+*/
 function addRequiredFieldsToRequestBody(dataObj: Poams): Poams {
   const bodyObj: Poams = {};
   try {
@@ -176,16 +176,16 @@ function addRequiredFieldsToRequestBody(dataObj: Poams): Poams {
 }
 
 /**
- * Adds conditional fields from the data object to the body object if they exist.
- *
- * @param bodyObject - The target object to which fields will be added.
- * @param dataObj - The source object from which fields will be copied.
- *
- * @remarks
- * This function checks if the specified properties ('pocFirstName', 'pocLastName',
- * 'pocEmail', 'pocPhoneNumber', 'severity') exist in the data object. If they do,
- * it copies their values to the corresponding properties in the body object.
- */
+Adds conditional fields from the data object to the body object if they exist.
+
+@param bodyObject - The target object to which fields will be added.
+@param dataObj - The source object from which fields will be copied.
+
+@remarks
+This function checks if the specified properties ('pocFirstName', 'pocLastName',
+'pocEmail', 'pocPhoneNumber', 'severity') exist in the data object. If they do,
+it copies their values to the corresponding properties in the body object.
+*/
 function addConditionalFields(bodyObject: Poams, dataObj: Poams): void {
   if (Object.hasOwn(dataObj, 'pocFirstName')) {
     bodyObject.pocFirstName = dataObj.pocFirstName;
@@ -209,11 +209,11 @@ function addConditionalFields(bodyObject: Poams, dataObj: Poams): void {
 }
 
 /**
- * Adds optional fields from the data object to the body object if they exist.
- *
- * @param bodyObject - The target object to which optional fields will be added.
- * @param dataObj - The source object containing optional fields.
- */
+Adds optional fields from the data object to the body object if they exist.
+
+@param bodyObject - The target object to which optional fields will be added.
+@param dataObj - The source object containing optional fields.
+*/
 // skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
 function addOptionalFields(bodyObject: Poams, dataObj: Poams): void {
   if (Object.hasOwn(dataObj, 'externalUid')) {
@@ -326,40 +326,40 @@ function addOptionalFields(bodyObject: Poams, dataObj: Poams): void {
 }
 
 /**
- * Processes business logic for POA&M items based on their status and validates required fields.
- *
- * @param bodyObject - The object to populate with validated data.
- * @param dataObj - The object containing input data to validate and process.
- *
- * The function performs the following checks based on the `status` field in `dataObj`:
- *
- * - "Risk Accepted":
- *   - Requires `comments`.
- *   - Cannot have `scheduledCompletionDate` or `milestones`.
- *
- * - "Ongoing":
- *   - Requires at least one `milestones` object.
- *   - Each `milestone` must have `description` and `scheduledCompletionDate`.
- *   - Optionally includes `scheduledCompletionDate`.
- *
- * - "Completed":
- *   - Requires `comments`, `completionDate`, and at least one `milestones` object.
- *   - Optionally includes `scheduledCompletionDate`.
- *
- * - "Not Applicable":
- *   - Cannot be created.
- *
- * - "Archived":
- *   - Cannot be updated.
- *
- * Additionally, if any POC (Point of Contact) fields are provided, all POC fields are required:
- * - `pocFirstName`
- * - `pocLastName`
- * - `pocEmail`
- * - `pocPhoneNumber`
- *
- * The function uses `printRedMsg` to display error messages and `printHelpMsg` to display help messages.
- * It exits the process with a status code of 1 if any validation fails.
+Processes business logic for POA&M items based on their status and validates required fields.
+
+@param bodyObject - The object to populate with validated data.
+@param dataObj - The object containing input data to validate and process.
+
+The function performs the following checks based on the `status` field in `dataObj`:
+
+- "Risk Accepted":
+  - Requires `comments`.
+  - Cannot have `scheduledCompletionDate` or `milestones`.
+
+- "Ongoing":
+  - Requires at least one `milestones` object.
+  - Each `milestone` must have `description` and `scheduledCompletionDate`.
+  - Optionally includes `scheduledCompletionDate`.
+
+- "Completed":
+  - Requires `comments`, `completionDate`, and at least one `milestones` object.
+  - Optionally includes `scheduledCompletionDate`.
+
+- "Not Applicable":
+  - Cannot be created.
+
+- "Archived":
+  - Cannot be updated.
+
+Additionally, if any POC (Point of Contact) fields are provided, all POC fields are required:
+- `pocFirstName`
+- `pocLastName`
+- `pocEmail`
+- `pocPhoneNumber`
+
+The function uses `printRedMsg` to display error messages and `printHelpMsg` to display help messages.
+It exits the process with a status code of 1 if any validation fails.
 */
 function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void {
   const HELP_MSG = 'Invoke saf emasser post poams [-h, --help] for additional help';
@@ -482,19 +482,19 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void {
 }
 
 /**
- * Generates a new Poams object by processing the given dataObject.
- *
- * This function performs the following steps:
- * 1. Adds required fields to the request body.
- * 2. Processes business logic on the body object.
- * 3. Adds conditional fields based on the dataObject.
- * 4. Adds optional fields to the body object.
- *
- * If any error occurs during these steps, the process exits with code 1.
- *
- * @param dataObject - The input Poams object to be processed.
- * @returns The newly generated Poams object with the required, conditional, and optional fields.
- */
+Generates a new Poams object by processing the given dataObject.
+
+This function performs the following steps:
+1. Adds required fields to the request body.
+2. Processes business logic on the body object.
+3. Adds conditional fields based on the dataObject.
+4. Adds optional fields to the body object.
+
+If any error occurs during these steps, the process exits with code 1.
+
+@param dataObject - The input Poams object to be processed.
+@returns The newly generated Poams object with the required, conditional, and optional fields.
+*/
 function generateBodyObj(dataObject: Poams): Poams {
   let bodyObj: Poams = {};
   try {

@@ -24,18 +24,18 @@ export function checkSuffix(input: string, suffix = '.json') {
 }
 
 /**
- * Resolve a child path under `baseDir` after realpath-canonicalizing both,
- * and assert the result stays inside `baseDir`. Rejects symlink traversal
- * and `..` escapes. Throws if:
- *   - `baseDir` does not exist,
- *   - the resolved child escapes `baseDir`, or
- *   - any path segment under `baseDir` (up to the file's parent) is a symlink.
- *
- * Use before `fs.writeFileSync` when the child path is influenced by user
- * input (CLI flags, parsed XCCDF content, etc.). `fs.writeFileSync` itself
- * follows symlinks, so containment alone is insufficient — callers should
- * also ensure the file's parent directory is not a symlink (asserted here).
- */
+Resolve a child path under `baseDir` after realpath-canonicalizing both,
+and assert the result stays inside `baseDir`. Rejects symlink traversal
+and `..` escapes. Throws if:
+  - `baseDir` does not exist,
+  - the resolved child escapes `baseDir`, or
+  - any path segment under `baseDir` (up to the file's parent) is a symlink.
+
+Use before `fs.writeFileSync` when the child path is influenced by user
+input (CLI flags, parsed XCCDF content, etc.). `fs.writeFileSync` itself
+follows symlinks, so containment alone is insufficient — callers should
+also ensure the file's parent directory is not a symlink (asserted here).
+*/
 export function resolveSafeChild(baseDir: string, ...parts: string[]): string {
   const resolvedBase = fs.realpathSync(baseDir);
   const target = path.resolve(resolvedBase, ...parts);
@@ -63,26 +63,26 @@ export function resolveSafeChild(baseDir: string, ...parts: string[]): string {
 }
 
 /**
- * The `basename` function.
- *
- * This function returns the basename, i.e. the last value for a given path which is usually the filename and extension.
- *
- * Uses `path.win32.basename` because it handles both Windows and POSIX path separators consistently across host operating systems.
- *
- * @param inputPath - The full path to convert. This should be a string representing a valid file path.
- *
- * @returns {string} - The filename extracted from the full path. If the path does not contain a filename, an empty string is returned.
- */
+The `basename` function.
+
+This function returns the basename, i.e. the last value for a given path which is usually the filename and extension.
+
+Uses `path.win32.basename` because it handles both Windows and POSIX path separators consistently across host operating systems.
+
+@param inputPath - The full path to convert. This should be a string representing a valid file path.
+
+@returns {string} - The filename extracted from the full path. If the path does not contain a filename, an empty string is returned.
+*/
 export function basename(inputPath: string): string {
   return path.win32.basename(inputPath.trimEnd());
 }
 
 /**
- * Extracts the basename from `inputPath` and validates it is safe on common filesystems.
- *
- * Throws if the basename is empty or if `sanitize-filename` would modify it (reserved names, control chars, etc.).
- * Path components in `inputPath` are ignored; callers should pass a filename when possible.
- */
+Extracts the basename from `inputPath` and validates it is safe on common filesystems.
+
+Throws if the basename is empty or if `sanitize-filename` would modify it (reserved names, control chars, etc.).
+Path components in `inputPath` are ignored; callers should pass a filename when possible.
+*/
 export function safeFilename(inputPath: string): string {
   const filename = basename(inputPath);
   if (filename === '' || sanitize(filename) !== filename) {
@@ -93,14 +93,14 @@ export function safeFilename(inputPath: string): string {
 }
 
 /**
- * The documentation for execFileSync says "If the shell option is enabled, do not pass unsanitized user input to this function. Any input containing shell metacharacters may be used to trigger arbitrary command execution."  Consequently, on Windows, we reject cmd.exe shell metacharacters.
- * https://nodejs.org/api/child_process.html#child_processexecfilesyncfile-args-options
- * https://flatt.tech/research/posts/batbadbut-you-cant-securely-execute-commands-on-windows/
- * @param command - the command to be invoked, likely `inspec` or `cinc-auditor`
- * @param args - the arguments for the command
- * @param options - options for the wrapped execFileSync command
- * @returns The stdout from the command
- */
+The documentation for execFileSync says "If the shell option is enabled, do not pass unsanitized user input to this function. Any input containing shell metacharacters may be used to trigger arbitrary command execution."  Consequently, on Windows, we reject cmd.exe shell metacharacters.
+https://nodejs.org/api/child_process.html#child_processexecfilesyncfile-args-options
+https://flatt.tech/research/posts/batbadbut-you-cant-securely-execute-commands-on-windows/
+@param command - the command to be invoked, likely `inspec` or `cinc-auditor`
+@param args - the arguments for the command
+@param options - options for the wrapped execFileSync command
+@returns The stdout from the command
+*/
 export function safeExecFileSync(command: string, args: string[], options: ExecFileSyncOptionsWithStringEncoding): string {
   // Let execFileSync reject an empty executable name before constructing a shell command.
   if (command === '' || process.platform !== 'win32') {
@@ -128,19 +128,19 @@ export function safeExecFileSync(command: string, args: string[], options: ExecF
 }
 
 /**
- * The `dataURLtoU8Array` function.
- *
- * This function converts a data URL into a Uint8Array.
- *
- * - First, it splits the data URL into an array using a comma as the separator.
- * - Then, it decodes the second part of the array (the base64 string) into a binary string.
- * - It creates a new Uint8Array with the same length as the binary string.
- * - Finally, it fills the Uint8Array with the char codes from the binary string.
- *
- * @param dataURL - The data URL to convert. This should be a base64-encoded data URL.
- *
- * @returns {Uint8Array} - The Uint8Array representation of the data URL.
- */
+The `dataURLtoU8Array` function.
+
+This function converts a data URL into a Uint8Array.
+
+- First, it splits the data URL into an array using a comma as the separator.
+- Then, it decodes the second part of the array (the base64 string) into a binary string.
+- It creates a new Uint8Array with the same length as the binary string.
+- Finally, it fills the Uint8Array with the char codes from the binary string.
+
+@param dataURL - The data URL to convert. This should be a base64-encoded data URL.
+
+@returns {Uint8Array} - The Uint8Array representation of the data URL.
+*/
 export function dataURLtoU8Array(dataURL: string): Uint8Array {
   const arr = dataURL.split(',');
   // functionality can be simplified by using this function once node25+ is used as the base image - https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array/fromBase64
@@ -156,17 +156,17 @@ export function dataURLtoU8Array(dataURL: string): Uint8Array {
 }
 
 /**
- * The `getInstalledPath` function.
- *
- * This function retrieves the installed path of a specified package.
- * If the package is not installed, it returns the application root path.
- *
- * - First, it attempts to get the installed path of the specified package using `getInstalledPathSync`.
- * - If this fails (throws an error), it defaults to the application root path.
- *
- * @param {string} moduleName - The name of the module to get the installed path for.
- * @returns {string} - The installed path of the specified package, or the application root path if the package is not installed.
- */
+The `getInstalledPath` function.
+
+This function retrieves the installed path of a specified package.
+If the package is not installed, it returns the application root path.
+
+- First, it attempts to get the installed path of the specified package using `getInstalledPathSync`.
+- If this fails (throws an error), it defaults to the application root path.
+
+@param {string} moduleName - The name of the module to get the installed path for.
+@returns {string} - The installed path of the specified package, or the application root path if the package is not installed.
+*/
 export function getInstalledPath(moduleName: string): string {
   let installedPath;
   try {
@@ -181,18 +181,18 @@ export function getInstalledPath(moduleName: string): string {
 export const arrayedPaths = ['tags.cci', 'tags.nist'];
 
 /**
- * The `arrayNeededPaths` function.
- *
- * This function checks if a path needs to be arrayed based on its type.
- * It uses the 'arrayedPaths' array for this check.
- *
- * @param typeOfPath - The type of path to check.
- *                     This is converted to lowercase and checked against the 'arrayedPaths' array.
- * @param values - The values to possibly wrap in an array.
- *
- * @returns {any | any[]} - If `typeOfPath` is in 'arrayedPaths', `values` is returned as an array.
- *                          Otherwise, `values` is returned as is.
- */
+The `arrayNeededPaths` function.
+
+This function checks if a path needs to be arrayed based on its type.
+It uses the 'arrayedPaths' array for this check.
+
+@param typeOfPath - The type of path to check.
+                    This is converted to lowercase and checked against the 'arrayedPaths' array.
+@param values - The values to possibly wrap in an array.
+
+@returns {any | any[]} - If `typeOfPath` is in 'arrayedPaths', `values` is returned as an array.
+                         Otherwise, `values` is returned as is.
+*/
 export function arrayNeededPaths(typeOfPath: string, values: string | string[]): string | string[] {
   const isArray = Array.isArray(values);
   let result;
@@ -206,25 +206,25 @@ export function arrayNeededPaths(typeOfPath: string, values: string | string[]):
 }
 
 /**
- * The `extractValueViaPathOrNumber` function extracts a value from a data object.
- * It uses a path or number (`pathOrNumber`) to perform the extraction.
- *
- * - If `pathOrNumber` is a string, it's treated as a path. The function uses it to extract a value from `data`.
- *   The extracted value is then processed by `arrayNeededPaths`.
- *
- * - If `pathOrNumber` is an array, the function finds the first item that corresponds to a property in `data`.
- *   If no such item is found, it defaults to 'Field Not Defined'. The value of the found or default property is then processed by `arrayNeededPaths`.
- *
- * - If `pathOrNumber` is a number, the function simply returns it.
- *
- * @param typeOfPathOrNumber - The type of `pathOrNumber`. Passed to `arrayNeededPaths`.
- * @param pathOrNumber - The path or number to extract the value. Treated differently based on its type:
- *                       string (path), array (list of potential paths), or number (returned as is).
- * @param data - The data object to extract the value from.
- *
- * @returns {any} The extracted value. If `pathOrNumber` is a string or array, it's processed by `arrayNeededPaths`.
- *                If `pathOrNumber` is a number, it's returned as is.
- */
+The `extractValueViaPathOrNumber` function extracts a value from a data object.
+It uses a path or number (`pathOrNumber`) to perform the extraction.
+
+- If `pathOrNumber` is a string, it's treated as a path. The function uses it to extract a value from `data`.
+  The extracted value is then processed by `arrayNeededPaths`.
+
+- If `pathOrNumber` is an array, the function finds the first item that corresponds to a property in `data`.
+  If no such item is found, it defaults to 'Field Not Defined'. The value of the found or default property is then processed by `arrayNeededPaths`.
+
+- If `pathOrNumber` is a number, the function simply returns it.
+
+@param typeOfPathOrNumber - The type of `pathOrNumber`. Passed to `arrayNeededPaths`.
+@param pathOrNumber - The path or number to extract the value. Treated differently based on its type:
+                      string (path), array (list of potential paths), or number (returned as is).
+@param data - The data object to extract the value from.
+
+@returns {any} The extracted value. If `pathOrNumber` is a string or array, it's processed by `arrayNeededPaths`.
+               If `pathOrNumber` is a number, it's returned as is.
+*/
 
 export function extractValueViaPathOrNumber(typeOfPathOrNumber: string, pathOrNumber: string | string[] | number, data: Record<string, any>): any {
   // Maps paths from mapping file to target value
@@ -248,26 +248,26 @@ type ExtendedContextualizedEvaluation = {
 } & ContextualizedEvaluation;
 
 /**
- * The `getProfileInfo` function retrieves and formats profile information from a given evaluation.
- *
- * - First, it checks if the evaluation data and profile data are available. If not, it returns an empty string.
- * - Then, it extracts the first profile from the evaluation data.
- * - It creates a string containing the file name and various profile information:
- *   version, SHA256 hash, maintainer, copyright, copyright email, and control count.
- * - If a piece of information is not available (i.e., the property value is falsy), it is not included in the string.
- * - The string is then returned, with each piece of information on a new line.
- *
- * @param evaluation - The evaluation to extract profile information from.
- *                     This should be a `ContextualizedEvaluation` object.
- *                     If this is `null` or `undefined`, the function returns an empty string.
- * @param fileName - The name of the file the evaluation is from.
- *                   This is included in the returned string.
- *
- * @returns {string} A string containing the profile information.
- *                   Each piece of information is on a new line.
- *                   If a piece of information is not available, it is not included in the string.
- *                   If the evaluation data or profile data is not available, it returns an empty string.
- */
+The `getProfileInfo` function retrieves and formats profile information from a given evaluation.
+
+- First, it checks if the evaluation data and profile data are available. If not, it returns an empty string.
+- Then, it extracts the first profile from the evaluation data.
+- It creates a string containing the file name and various profile information:
+  version, SHA256 hash, maintainer, copyright, copyright email, and control count.
+- If a piece of information is not available (i.e., the property value is falsy), it is not included in the string.
+- The string is then returned, with each piece of information on a new line.
+
+@param evaluation - The evaluation to extract profile information from.
+                    This should be a `ContextualizedEvaluation` object.
+                    If this is `null` or `undefined`, the function returns an empty string.
+@param fileName - The name of the file the evaluation is from.
+                  This is included in the returned string.
+
+@returns {string} A string containing the profile information.
+                  Each piece of information is on a new line.
+                  If a piece of information is not available, it is not included in the string.
+                  If the evaluation data or profile data is not available, it returns an empty string.
+*/
 // export function getProfileInfo(evaluation: ContextualizedEvaluation, fileName: string): string {
 export function getProfileInfo(evaluation: ExtendedContextualizedEvaluation, fileName: string): string {
   let result = '';
@@ -307,26 +307,26 @@ export function getProfileInfo(evaluation: ExtendedContextualizedEvaluation, fil
 }
 
 /**
- * The `getDescription` function retrieves a specific description from either an array of descriptions or a key/string pair.
- *
- * - If `descriptions` is an array, it searches for a description object where the `label` property matches the provided `key` (case-insensitive).
- *   If a match is found, it returns the `data` property of the description object.
- *   If no match is found, it returns 'description not found'.
- *
- * - If `descriptions` is a key/string pair, it returns the value associated with the provided `key`.
- *   If the `key` does not exist in the `descriptions`, it returns 'unknown key'.
- *
- * @param descriptions - Either an array of description objects or a key/string pair.
- *                       If it's an array, each object should have a `label` (string) and a `data` (string).
- *                       If it's a key/string pair, it's an object where the keys are strings and the values are also strings.
- * @param key - The key to retrieve the description.
- *              If `descriptions` is an array, it should match the `label` of one of the objects.
- *              If `descriptions` is a key/string pair, it should be one of the keys.
- *
- * @returns {string} The description associated with the provided `key`,
- *                   'description not found' if no matching description was found in the array,
- *                   or 'unknown key' if the `key` does not exist in the `descriptions` object.
- */
+The `getDescription` function retrieves a specific description from either an array of descriptions or a key/string pair.
+
+- If `descriptions` is an array, it searches for a description object where the `label` property matches the provided `key` (case-insensitive).
+  If a match is found, it returns the `data` property of the description object.
+  If no match is found, it returns 'description not found'.
+
+- If `descriptions` is a key/string pair, it returns the value associated with the provided `key`.
+  If the `key` does not exist in the `descriptions`, it returns 'unknown key'.
+
+@param descriptions - Either an array of description objects or a key/string pair.
+                      If it's an array, each object should have a `label` (string) and a `data` (string).
+                      If it's a key/string pair, it's an object where the keys are strings and the values are also strings.
+@param key - The key to retrieve the description.
+             If `descriptions` is an array, it should match the `label` of one of the objects.
+             If `descriptions` is a key/string pair, it should be one of the keys.
+
+@returns {string} The description associated with the provided `key`,
+                  'description not found' if no matching description was found in the array,
+                  or 'unknown key' if the `key` does not exist in the `descriptions` object.
+*/
 export function getDescription(
   descriptions:
     | Record<string, string>
@@ -342,27 +342,27 @@ export function getDescription(
 }
 
 /**
- * The `checkInput` function validates the type of an input file.
- *
- * - It uses the `fingerprint` function to detect the file type.
- * - If the detected type doesn't match the desired type, it throws an error.
- *
- * @param guessOptions - An object with the file data and filename.
- *                       The `data` property is the file content as a string.
- *                       The `filename` property is the file name.
- * @param desiredType - A string for the desired file type.
- *                      This is compared with the detected file type.
- * @param desiredFormat - A string for the desired file format.
- *                        This is included in the error message if the detected type doesn't match the desired type.
- *
- * @throws {Error} If the detected file type doesn't match the desired type,
- *                 an error is thrown. The error message includes the detected type,
- *                 the desired format, and a prompt for the user to ensure the input
- *                 is a valid file of the desired format.
- *
- * @returns {void} This function doesn't return a value. Its purpose is to validate
- *                 the file type and throw an error if the validation fails.
- */
+The `checkInput` function validates the type of an input file.
+
+- It uses the `fingerprint` function to detect the file type.
+- If the detected type doesn't match the desired type, it throws an error.
+
+@param guessOptions - An object with the file data and filename.
+                      The `data` property is the file content as a string.
+                      The `filename` property is the file name.
+@param desiredType - A string for the desired file type.
+                     This is compared with the detected file type.
+@param desiredFormat - A string for the desired file format.
+                       This is included in the error message if the detected type doesn't match the desired type.
+
+@throws {Error} If the detected file type doesn't match the desired type,
+                an error is thrown. The error message includes the detected type,
+                the desired format, and a prompt for the user to ensure the input
+                is a valid file of the desired format.
+
+@returns {void} This function doesn't return a value. Its purpose is to validate
+                the file type and throw an error if the validation fails.
+*/
 export function checkInput(guessOptions: { data: string; filename: string }, desiredType: INPUT_TYPES, desiredFormat: string): void {
   const detectedType = fingerprint({ data: guessOptions.data, filename: basename(guessOptions.filename) });
   if (!(detectedType === desiredType)) {
@@ -373,15 +373,15 @@ export function checkInput(guessOptions: { data: string; filename: string }, des
 }
 
 /**
- * Retrieves the error message from an unknown error object.
- *
- * @param error - The error object to extract the message from (any type).
- * @returns The error message as a string. If the error is an instance of
- *          `Error`, it returns the error's message. If the error is not an
- *          instance of `Error`, it attempts to stringify the error object.
- *          If stringification fails (e.g., due to circular references), it
- *          falls back to converting the error to a string.
- */
+Retrieves the error message from an unknown error object.
+
+@param error - The error object to extract the message from (any type).
+@returns The error message as a string. If the error is an instance of
+         `Error`, it returns the error's message. If the error is not an
+         instance of `Error`, it attempts to stringify the error object.
+         If stringification fails (e.g., due to circular references), it
+         falls back to converting the error to a string.
+*/
 export function getErrorMessage(error: unknown): string {
   if (error instanceof Error) {
     return error.message;
@@ -394,13 +394,13 @@ export function getErrorMessage(error: unknown): string {
 }
 
 /**
- * Downloads a file from the specified URL and saves it to the given output path.
- *
- * @param url - The URL of the file to download. If undefined, an error is thrown.
- * @param outputPath - The path where the downloaded file will be saved.
- * @returns A promise that resolves when the file has been successfully downloaded and saved.
- * @throws Will throw an error if the URL is undefined or if there is an error during the download or file writing process.
- */
+Downloads a file from the specified URL and saves it to the given output path.
+
+@param url - The URL of the file to download. If undefined, an error is thrown.
+@param outputPath - The path where the downloaded file will be saved.
+@returns A promise that resolves when the file has been successfully downloaded and saved.
+@throws Will throw an error if the URL is undefined or if there is an error during the download or file writing process.
+*/
 export async function downloadFile(url: string | undefined, outputPath: string): Promise<void> {
   if (url === undefined) {
     throw new Error('XCCDF URL not defined');
@@ -433,12 +433,12 @@ export async function downloadFile(url: string | undefined, outputPath: string):
 }
 
 /**
- * Extracts a specific file from a ZIP archive.
- *
- * @param zipPath - The path to the ZIP archive.
- * @param fileName - The name of the file to extract from the ZIP archive.
- * @returns The content of the extracted file as a Buffer, or null if the file is not found or an error occurs.
- */
+Extracts a specific file from a ZIP archive.
+
+@param zipPath - The path to the ZIP archive.
+@param fileName - The name of the file to extract from the ZIP archive.
+@returns The content of the extracted file as a Buffer, or null if the file is not found or an error occurs.
+*/
 export function extractFileFromZip(zipPath: string, fileName: string): [Buffer | null, string] {
   try {
     const zip = new AdmZip(zipPath);
@@ -458,21 +458,21 @@ export function extractFileFromZip(zipPath: string, fileName: string): [Buffer |
 }
 
 /**
- * Retrieves example JSON metadata based on the specified endpoint.
- *
- * @param endpoint - The endpoint identifier to determine the type of metadata to return.
- *                   Supported values:
- *                   - `'ckl-one-metadata'`: Returns metadata with a single profile.
- *                   - `'ckl-multiple-metadata'`: Returns metadata with multiple profiles.
- *                   If no endpoint is provided or the endpoint is not recognized, an empty array is returned.
- *
- * @returns An array of strings representing the JSON metadata examples for the specified endpoint.
- *          If the endpoint is `'ckl-one-metadata'`, a single profile metadata is returned.
- *          If the endpoint is `'ckl-multiple-metadata'`, multiple profiles metadata is returned.
- *          Returns an empty array if the endpoint is not recognized.
- *
- * @throws {SyntaxError} If the constructed JSON data is malformed and cannot be parsed.
- */
+Retrieves example JSON metadata based on the specified endpoint.
+
+@param endpoint - The endpoint identifier to determine the type of metadata to return.
+                  Supported values:
+                  - `'ckl-one-metadata'`: Returns metadata with a single profile.
+                  - `'ckl-multiple-metadata'`: Returns metadata with multiple profiles.
+                  If no endpoint is provided or the endpoint is not recognized, an empty array is returned.
+
+@returns An array of strings representing the JSON metadata examples for the specified endpoint.
+         If the endpoint is `'ckl-one-metadata'`, a single profile metadata is returned.
+         If the endpoint is `'ckl-multiple-metadata'`, multiple profiles metadata is returned.
+         Returns an empty array if the endpoint is not recognized.
+
+@throws {SyntaxError} If the constructed JSON data is malformed and cannot be parsed.
+*/
 export function getJsonMetaDataExamples(endpoint?: string): string[] {
   const profile = '{ '
     + '"name:": "The benchmark name (must match with profile name listed in HDF)",'

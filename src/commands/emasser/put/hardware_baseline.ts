@@ -14,31 +14,31 @@ import {
 } from '../../../utils/emasser/utilities';
 
 /**
- * Represents the hardware baseline configuration for an asset.
- *
- * @interface Hardware
- * Required properties
- * @property {string} [assetName] - The name of the asset.
- * @property {string} [hardwareId] - The unique identifier for the hardware.
- * Conditional properties
- * @property {string} [publicFacingFqdn] - The fully qualified domain name if the asset is public-facing.
- * @property {string} [publicFacingIpAddress] - The IP address if the asset is public-facing.
- * @property {string} [publicFacingUrls] - The URLs if the asset is public-facing.
- * Optional properties
- * @property {string} [componentType] - The type of the component.
- * @property {string} [nickname] - The nickname for the asset.
- * @property {string} [assetIpAddress] - The IP address of the asset.
- * @property {boolean} [publicFacing] - Indicates if the asset is public-facing.
- * @property {boolean} [virtualAsset] - Indicates if the asset is virtual.
- * @property {string} [manufacturer] - The manufacturer of the hardware.
- * @property {string} [modelNumber] - The model number of the hardware.
- * @property {string} [serialNumber] - The serial number of the hardware.
- * @property {string} [osIosFwVersion] - The operating system, iOS, or firmware version of the hardware.
- * @property {string} [memorySizeType] - The size and type of the memory.
- * @property {string} [location] - The physical location of the hardware.
- * @property {string} [approvalStatus] - The approval status of the hardware.
- * @property {boolean} [criticalAsset] - Indicates if the asset is critical.
- */
+Represents the hardware baseline configuration for an asset.
+
+@interface Hardware
+Required properties
+@property {string} [assetName] - The name of the asset.
+@property {string} [hardwareId] - The unique identifier for the hardware.
+Conditional properties
+@property {string} [publicFacingFqdn] - The fully qualified domain name if the asset is public-facing.
+@property {string} [publicFacingIpAddress] - The IP address if the asset is public-facing.
+@property {string} [publicFacingUrls] - The URLs if the asset is public-facing.
+Optional properties
+@property {string} [componentType] - The type of the component.
+@property {string} [nickname] - The nickname for the asset.
+@property {string} [assetIpAddress] - The IP address of the asset.
+@property {boolean} [publicFacing] - Indicates if the asset is public-facing.
+@property {boolean} [virtualAsset] - Indicates if the asset is virtual.
+@property {string} [manufacturer] - The manufacturer of the hardware.
+@property {string} [modelNumber] - The model number of the hardware.
+@property {string} [serialNumber] - The serial number of the hardware.
+@property {string} [osIosFwVersion] - The operating system, iOS, or firmware version of the hardware.
+@property {string} [memorySizeType] - The size and type of the memory.
+@property {string} [location] - The physical location of the hardware.
+@property {string} [approvalStatus] - The approval status of the hardware.
+@property {boolean} [criticalAsset] - Indicates if the asset is critical.
+*/
 type Hardware = {
   // Required field
   assetName?: string;
@@ -72,12 +72,12 @@ function getAllJsonExamples(): Record<string, unknown> {
 }
 
 /**
- * Asserts that a required parameter exists.
- *
- * @param object - The name of the parameter or field being checked.
- * @param value - The value of the parameter or field. Can be a string, undefined, or null.
- * @throws Will throw an error if the value is undefined.
- */
+Asserts that a required parameter exists.
+
+@param object - The name of the parameter or field being checked.
+@param value - The value of the parameter or field. Can be a string, undefined, or null.
+@throws Will throw an error if the value is undefined.
+*/
 function assertParamExists(object: string, value: string | undefined | null): void {
   if (value === undefined) {
     printRedMsg(`Missing required parameter/field: ${object}`);
@@ -86,16 +86,16 @@ function assertParamExists(object: string, value: string | undefined | null): vo
 }
 
 /**
- * Adds required fields to the request body for a hardware object.
- *
- * This function ensures that the required fields `hardwareId` and `assetName`
- * are present in the provided `dataObj`. If any of these fields are missing,
- * an error is thrown and an example JSON structure is logged.
- *
- * @param dataObj - The hardware object containing the data to be validated and added to the request body.
- * @returns A new hardware object containing only the required fields.
- * @throws Will throw an error if `hardwareId` or `assetName` are missing from `dataObj`.
- */
+Adds required fields to the request body for a hardware object.
+
+This function ensures that the required fields `hardwareId` and `assetName`
+are present in the provided `dataObj`. If any of these fields are missing,
+an error is thrown and an example JSON structure is logged.
+
+@param dataObj - The hardware object containing the data to be validated and added to the request body.
+@returns A new hardware object containing only the required fields.
+@throws Will throw an error if `hardwareId` or `assetName` are missing from `dataObj`.
+*/
 function addRequiredFieldsToRequestBody(dataObj: Hardware): Hardware {
   const bodyObj: Hardware = {};
 
@@ -116,11 +116,11 @@ function addRequiredFieldsToRequestBody(dataObj: Hardware): Hardware {
 }
 
 /**
- * Adds conditional fields from the `dataObj` to the `bodyObject` if they exist.
- *
- * @param bodyObject - The target object to which fields will be added.
- * @param dataObj - The source object from which fields will be copied if they exist.
- */
+Adds conditional fields from the `dataObj` to the `bodyObject` if they exist.
+
+@param bodyObject - The target object to which fields will be added.
+@param dataObj - The source object from which fields will be copied if they exist.
+*/
 function addConditionalFields(bodyObject: Hardware, dataObj: Hardware): void {
   if (Object.hasOwn(dataObj, 'publicFacingFqdn')) {
     bodyObject.publicFacingFqdn = dataObj.publicFacingFqdn;
@@ -136,11 +136,11 @@ function addConditionalFields(bodyObject: Hardware, dataObj: Hardware): void {
 }
 
 /**
- * Adds optional fields from the data object to the body object if they exist.
- *
- * @param bodyObject - The target object to which optional fields will be added.
- * @param dataObj - The source object containing optional fields.
- */
+Adds optional fields from the data object to the body object if they exist.
+
+@param bodyObject - The target object to which optional fields will be added.
+@param dataObj - The source object containing optional fields.
+*/
 function addOptionalFields(bodyObject: Hardware, dataObj: Hardware): void {
   if (Object.hasOwn(dataObj, 'componentType')) {
     bodyObject.componentType = dataObj.componentType;
@@ -196,12 +196,12 @@ function addOptionalFields(bodyObject: Hardware, dataObj: Hardware): void {
 }
 
 /**
- * Generates a body object for a hardware request by adding required, conditional, and optional fields.
- *
- * @param dataObject - The hardware data object to be processed.
- * @returns The generated body object with the necessary fields.
- * @throws Will exit the process with code 1 if an error occurs during the generation.
- */
+Generates a body object for a hardware request by adding required, conditional, and optional fields.
+
+@param dataObject - The hardware data object to be processed.
+@returns The generated body object with the necessary fields.
+@throws Will exit the process with code 1 if an error occurs during the generation.
+*/
 function generateBodyObj(dataObject: Hardware): Hardware {
   let bodyObj: Hardware = {};
 

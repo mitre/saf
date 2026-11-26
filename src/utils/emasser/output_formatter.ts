@@ -2,11 +2,11 @@ import _ from 'lodash';
 import { ApiConfig } from './api_config';
 
 /**
- * Removes all properties with null values from the given object.
- *
- * @param dataObject - The object from which null properties should be removed.
- * @returns A new object with all null properties removed.
- */
+Removes all properties with null values from the given object.
+
+@param dataObject - The object from which null properties should be removed.
+@returns A new object with all null properties removed.
+*/
 function removeNullsFromObject(dataObject: object): object {
   const jsonData: Record<string, any> = {};
 
@@ -20,15 +20,15 @@ function removeNullsFromObject(dataObject: object): object {
 }
 
 /**
- * Converts epoch timestamps to Date objects in a given data object.
- *
- * This function recursively processes an object, converting any epoch timestamps
- * (values that are numeric and likely represent a date) to JavaScript Date objects.
- * It handles nested objects and arrays, ensuring all applicable timestamps are converted.
- *
- * @param dataObject - The input object containing potential epoch timestamps.
- * @returns A new object with epoch timestamps converted to Date objects.
- */
+Converts epoch timestamps to Date objects in a given data object.
+
+This function recursively processes an object, converting any epoch timestamps
+(values that are numeric and likely represent a date) to JavaScript Date objects.
+It handles nested objects and arrays, ensuring all applicable timestamps are converted.
+
+@param dataObject - The input object containing potential epoch timestamps.
+@returns A new object with epoch timestamps converted to Date objects.
+*/
 function convertEpochToDateTime(dataObject: object): object {
   const jsonData: Record<string, any> = {};
   for (const key of (Object.keys(dataObject) as (keyof typeof dataObject)[])) {
@@ -62,22 +62,22 @@ function convertEpochToDateTime(dataObject: object): object {
 }
 
 /**
- * Formats the given data object based on the configuration settings.
- *
- * @param data - The data object to be formatted.
- * @param doConversion - A boolean flag indicating whether to perform data conversion. Defaults to true.
- * @returns The formatted data as a JSON string.
- *
- * The function performs the following operations based on the configuration:
- * - If debugging is enabled, it logs the entire data object.
- * - If the data object contains headers, it extracts the data property.
- * - If doConversion is true, it processes the data object to remove null values and convert epoch times to human-readable dates.
- * - If hideNulls is true, it removes null values from the data object.
- * - If showEpoch is true, it converts epoch times to human-readable dates.
- *
- * The function handles different structures of the data object, including arrays and nested objects.
- * It merges the processed data into a new object and returns it as a formatted JSON string.
- */
+Formats the given data object based on the configuration settings.
+
+@param data - The data object to be formatted.
+@param doConversion - A boolean flag indicating whether to perform data conversion. Defaults to true.
+@returns The formatted data as a JSON string.
+
+The function performs the following operations based on the configuration:
+- If debugging is enabled, it logs the entire data object.
+- If the data object contains headers, it extracts the data property.
+- If doConversion is true, it processes the data object to remove null values and convert epoch times to human-readable dates.
+- If hideNulls is true, it removes null values from the data object.
+- If showEpoch is true, it converts epoch times to human-readable dates.
+
+The function handles different structures of the data object, including arrays and nested objects.
+It merges the processed data into a new object and returns it as a formatted JSON string.
+*/
 export function outputFormat(data: object, doConversion = true): string {
   const conf = new ApiConfig();
   const hideNulls = !conf.displayNulls;
