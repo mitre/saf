@@ -401,10 +401,9 @@ If no `.env` file is found, creates a new configuration file and prompts the use
 export async function generateConfig() {
   if (fse.existsSync('.env')) {
     console.log(colors.yellow('A configuration file already exists, updating - Press Enter to accept the current value(s), otherwise provide new value'));
-    await processPrompt();
   } else {
     console.log(colors.yellow('No configuration file found, creating - Provide the environment variables values'));
     generateNewdotEnv();
-    await processPrompt();
   }
+  await processPrompt();
 }

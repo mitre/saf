@@ -530,22 +530,17 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         isXccdf = false;
       }
     } catch (error: unknown) {
+      let message: string;
       if (error instanceof Error) {
         const errorCode = (error as { code?: string }).code; // Type-safe access to `code`
-        if (errorCode === 'ENOENT') {
-          const err = `  ERROR: File not found: ${xccdfXmlFile}. Run the --help command for more information on expected input files.`;
-          GenerateDelta.logger.error(err);
-          this.logger.info(err);
-        } else {
-          const err = `  ERROR: Unable to process the XCCDF XML file ${xccdfXmlFile} because: ${error.message}`;
-          GenerateDelta.logger.error(err);
-          this.logger.info(err);
-        }
+        message = errorCode === 'ENOENT'
+          ? `  ERROR: File not found: ${xccdfXmlFile}. Run the --help command for more information on expected input files.`
+          : `  ERROR: Unable to process the XCCDF XML file ${xccdfXmlFile} because: ${error.message}`;
       } else {
-        const err = `ERROR: An unexpected error occurred: ${getErrorMessage(error)}`;
-        GenerateDelta.logger.error(err);
-        this.logger.info(err);
+        message = `ERROR: An unexpected error occurred: ${getErrorMessage(error)}`;
       }
+      GenerateDelta.logger.error(message);
+      this.logger.info(message);
       isXccdf = false;
     }
     return isXccdf;
@@ -708,17 +703,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           await this.sleep(2000).then(() => process.exit(1));
         }
       } catch (error: any) {
-        if (error.code === 'ENOENT') {
-          this.saveLogs(
-            `  ERROR: File (entity) not found: ${inspecJsonFile}.\n  Run the --help command for more information on expected input files.`,
-          );
-          await this.sleep(2000).then(() => process.exit(1));
-        } else {
-          this.saveLogs(
-            `  ERROR: Unable to process Input execution/profile JSON ${inspecJsonFile}\n  ${error}`,
-          );
-          await this.sleep(2000).then(() => process.exit(1));
-        }
+        const message = error.code === 'ENOENT'
+          ? `  ERROR: File (entity) not found: ${inspecJsonFile}.\n  Run the --help command for more information on expected input files.`
+          : `  ERROR: Unable to process Input execution/profile JSON ${inspecJsonFile}\n  ${error}`;
+        this.saveLogs(message);
+        await this.sleep(2000).then(() => process.exit(1));
       }
     } else {
       // Shorten the controls directory to show the 'controls' directory and its parent
@@ -770,15 +759,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         this.logThis('  An OVAL XML file was not provided', 'debug');
       }
     } catch (error: any) {
-      if (error.code === 'ENOENT') {
-        this.saveLogs(
-          `  ERROR: File (entity) not found: ${ovalXmlFile}.\n  Run the --help command to more information on expected input files.`,
-        );
-        await this.sleep(2000).then(() => process.exit(1));
-      } else {
-        this.saveLogs(`  ERROR: Unable to process the OVAL XML file: ${ovalXmlFile}\n  ${error}`);
-        await this.sleep(2000).then(() => process.exit(1));
-      }
+      const message = error.code === 'ENOENT'
+        ? `  ERROR: File (entity) not found: ${ovalXmlFile}.\n  Run the --help command to more information on expected input files.`
+        : `  ERROR: Unable to process the OVAL XML file: ${ovalXmlFile}\n  ${error}`;
+      this.saveLogs(message);
+      await this.sleep(2000).then(() => process.exit(1));
     }
 
     // -------------------------------------------------------------------------

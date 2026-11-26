@@ -132,7 +132,6 @@ export function outputFormat(data: object, shouldConvert = true): string {
                 }
 
                 _.merge(newData, { data: hash_array });
-                formatDataObj = newData;
               // data: is NOT an array of objects, it is a simple object
               } else {
                 const jsonData: Record<string, any> = {};
@@ -159,10 +158,9 @@ export function outputFormat(data: object, shouldConvert = true): string {
                   const dataObj: Record<string, any> = { data: jsonData };
                   _.merge(newData, dataObj);
                 }
-
-                formatDataObj = newData;
               }
 
+              formatDataObj = newData;
               break;
             }
 
