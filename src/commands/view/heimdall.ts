@@ -40,7 +40,7 @@ export default class Heimdall extends Command {
     let parsedJSONs: Record<string, unknown>[] = [];
     // If we were passed a file, does it exist? Can it convert to JSON correctly?
     if (flags.files && flags.files.length > 0) {
-      if (!flags.files.every((file: string) => fs.statSync(file).isFile())) {
+      if (flags.files.some((file: string) => !fs.statSync(file).isFile())) {
         console.log('An option passed as a file was not a file');
         return;
       }
