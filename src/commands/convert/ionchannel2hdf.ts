@@ -19,15 +19,15 @@ export default class IonChannel2HDF extends BaseCommand<typeof IonChannel2HDF> {
 
   static readonly examples = [
     {
-      description: '\u001B[93mUsing Input IonChannel JSON file\u001B[0m',
+      description: '\u{1B}[93mUsing Input IonChannel JSON file\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -o output-folder-name -i ion-channel-file.json',
     },
     {
-      description: '\u001B[93mUsing IonChannel API Key (pull one project)\u001B[0m',
+      description: '\u{1B}[93mUsing IonChannel API Key (pull one project)\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -o output-folder-name -a ion-channel-apikey -t team-name -p project-name-to-pull --raw',
     },
     {
-      description: '\u001B[93mUsing IonChannel API Key (pull all project)\u001B[0m',
+      description: '\u{1B}[93mUsing IonChannel API Key (pull all project)\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -o output-folder-name -a ion-channel-apikey -t team-name -A --raw',
     },
 

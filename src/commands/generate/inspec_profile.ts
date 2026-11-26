@@ -20,11 +20,11 @@ export default class InspecProfile extends BaseCommand<typeof InspecProfile> {
 
   static readonly examples = [
     {
-      description: '\u001B[93mBase Command\u001B[0m',
+      description: '\u{1B}[93mBase Command\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -X ./U_RHEL_6_STIG_V2R2_Manual-xccdf.xml',
     },
     {
-      description: '\u001B[93mSpecifying OVAL and Output location\u001B[0m',
+      description: '\u{1B}[93mSpecifying OVAL and Output location\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -X ./U_RHEL_9_STIG_V1R2_Manual-xccdf.xml -O ./RHEL_9_Benchmark-oval.xml -o ./output/directory',
     },
   ];

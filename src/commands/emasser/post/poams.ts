@@ -483,7 +483,7 @@ function generateBodyObj(dataObject: Poams): Poams {
 
 const CMD_HELP = 'saf emasser post poams -h or --help';
 export default class EmasserPostPoams extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command usages\u001B[0m';
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u{1B}[93m NOTE: see EXAMPLES for command usages\u{1B}[0m';
 
   static readonly description = 'Add a Plan of Action and Milestones (POA&M) into a systems.\n'
     + 'This CLI expects an input file containing the necessary fields to add a POA&M. The content\n'
@@ -492,15 +492,15 @@ export default class EmasserPostPoams extends Command {
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing the POA&M information based on defined business rules.',
-    '\u001B[1mRequired JSON parameter/fields are:\u001B[0m',
+    '\u{1B}[1mRequired JSON parameter/fields are:\u{1B}[0m',
     colorize(JSON.stringify(getJsonExamples('poams-post-required'), null, 2)),
-    '\u001B[1mRequired for VA but Conditional for Army and USCG JSON parameters/fields are:\u001B[0m',
+    '\u{1B}[1mRequired for VA but Conditional for Army and USCG JSON parameters/fields are:\u{1B}[0m',
     colorize(JSON.stringify(getJsonExamples('poams-post-put-required-va'), null, 2)),
-    '\u001B[1mConditional JSON parameters/fields are:\u001B[0m',
+    '\u{1B}[1mConditional JSON parameters/fields are:\u{1B}[0m',
     colorize(JSON.stringify(getJsonExamples('poams-post-conditional'), null, 2)),
-    '\u001B[1mOptional JSON parameters/fields are:\u001B[0m',
+    '\u{1B}[1mOptional JSON parameters/fields are:\u{1B}[0m',
     colorize(JSON.stringify(getJsonExamples('poams-post-put-optional'), null, 2)),
-    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
+    '\u{1B}[1m\u{1B}[32mAll accepted parameters/fields are:\u{1B}[0m',
     colorize(getAllJsonExamples()),
   ];
 
@@ -522,8 +522,8 @@ export default class EmasserPostPoams extends Command {
       try {
         data = JSON.parse(await readFile(flags.dataFile, 'utf8'));
       } catch (error: unknown) {
-        console.error('\u001B[91m» Error reading POA&Ms data file, possible malformed json. Please use the -h flag for help.\u001B[0m');
-        console.error('\u001B[93m→ Error message was:', getErrorMessage(error), '\u001B[0m');
+        console.error('\u{1B}[91m» Error reading POA&Ms data file, possible malformed json. Please use the -h flag for help.\u{1B}[0m');
+        console.error('\u{1B}[93m→ Error message was:', getErrorMessage(error), '\u{1B}[0m');
         process.exit(1);
       }
 
@@ -537,7 +537,7 @@ export default class EmasserPostPoams extends Command {
         requestBodyArray.push(generateBodyObj(dataObject));
       }
     } else {
-      console.error('\u001B[91m» POA&M(s) data file (.json) not found or invalid:', flags.dataFile, '\u001B[0m');
+      console.error('\u{1B}[91m» POA&M(s) data file (.json) not found or invalid:', flags.dataFile, '\u{1B}[0m');
       process.exit(1);
     }
 
@@ -553,7 +553,7 @@ export default class EmasserPostPoams extends Command {
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
+      this.warn(err.message.replace('with --help', `with: \u{1B}[93m${CMD_HELP}\u{1B}[0m`));
     } else {
       this.warn(err);
     }

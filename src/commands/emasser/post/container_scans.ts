@@ -297,7 +297,7 @@ function isValidContainerResource(obj: unknown): obj is ContainerResource {
 
 const CMD_HELP = 'saf emasser post container_scans -h or --help';
 export default class EmasserContainerScans extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command usages\u001B[0m';
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u{1B}[93m NOTE: see EXAMPLES for command usages\u{1B}[0m';
 
   static readonly description = 'Upload containers and their scan results in the assets module for a system';
 
@@ -308,7 +308,7 @@ export default class EmasserContainerScans extends Command {
     colorize(JSON.stringify(getJsonExamples('container_scans-required'), null, 2)),
     'Optional JSON parameters/fields are:',
     colorize(JSON.stringify(getJsonExamples('container_scans-optional'), null, 2)),
-    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
+    '\u{1B}[1m\u{1B}[32mAll accepted parameters/fields are:\u{1B}[0m',
     colorize(getAllJsonExamples()),
   ];
 
@@ -326,7 +326,7 @@ export default class EmasserContainerScans extends Command {
 
     // Check if a Container Scans json file was provided
     if (!fs.existsSync(flags.dataFile)) {
-      console.error(`\u001B[91m» Container Scan Results data file (.json) not found or invalid: ${flags.dataFile}\u001B[0m`);
+      console.error(`\u{1B}[91m» Container Scan Results data file (.json) not found or invalid: ${flags.dataFile}\u{1B}[0m`);
       process.exit(1);
     }
 
@@ -339,22 +339,22 @@ export default class EmasserContainerScans extends Command {
           if (isValidContainerResource(item)) {
             processContainerResource(item);
           } else {
-            console.error('\u001B[91m» Invalid container resource format detected.\u001B[0m');
+            console.error('\u{1B}[91m» Invalid container resource format detected.\u{1B}[0m');
             process.exit(1);
           }
         }
       } else if (typeof data === 'object' && data !== null && isValidContainerResource(data)) {
         processContainerResource(data);
       } else {
-        console.error('\u001B[91m» Invalid data format in Container Scan Results JSON file.\u001B[0m');
+        console.error('\u{1B}[91m» Invalid data format in Container Scan Results JSON file.\u{1B}[0m');
         process.exit(1);
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error('\u001B[91m» Error reading Container Scan Results data file, possible malformed JSON. Please use the -h flag for help.\u001B[0m');
-        console.error('\u001B[93m→ Error message was:', error.message, '\u001B[0m');
+        console.error('\u{1B}[91m» Error reading Container Scan Results data file, possible malformed JSON. Please use the -h flag for help.\u{1B}[0m');
+        console.error('\u{1B}[93m→ Error message was:', error.message, '\u{1B}[0m');
       } else {
-        console.error('\u001B[91m» Unknown error occurred while reading the file.\u001B[0m');
+        console.error('\u{1B}[91m» Unknown error occurred while reading the file.\u{1B}[0m');
       }
       process.exit(1);
     }
@@ -368,7 +368,7 @@ export default class EmasserContainerScans extends Command {
         addOptionalFields(bodyObj, dataObject);
         requestBodyArray.push(bodyObj);
       } catch {
-        console.error('\u001B[91m» Error processing container resource.\u001B[0m');
+        console.error('\u{1B}[91m» Error processing container resource.\u{1B}[0m');
         process.exit(1);
       }
     }
@@ -385,7 +385,7 @@ export default class EmasserContainerScans extends Command {
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
+      this.warn(err.message.replace('with --help', `with: \u{1B}[93m${CMD_HELP}\u{1B}[0m`));
     } else {
       this.warn(err);
     }

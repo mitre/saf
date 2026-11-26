@@ -25,11 +25,11 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
 
   static readonly examples = [
     {
-      description: '\u001B[93mProviding a threshold template file\u001B[0m',
+      description: '\u{1B}[93mProviding a threshold template file\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -T threshold.yaml',
     },
     {
-      description: '\u001B[93mSpecifying the threshold inline\u001B[0m',
+      description: '\u{1B}[93mSpecifying the threshold inline\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -I "{compliance.min: 80}, {passed.total.min: 18}, {failed.total.max: 2}"',
     },
   ];

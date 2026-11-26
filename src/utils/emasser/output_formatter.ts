@@ -88,15 +88,15 @@ export function outputFormat(data: object, doConversion = true): string {
   if (debugging) {
     // When debugging is on, output the entire content returned from
     // the server. Output text in yellow and revert back to default
-    console.log('\u001B[93m', 'Debugging is on', '\u001B[0m');
-    console.log('\u001B[96m', 'Start Debug =================================================================', '\u001B[0m');
+    console.log('\u{1B}[93m', 'Debugging is on', '\u{1B}[0m');
+    console.log('\u{1B}[96m', 'Start Debug =================================================================', '\u{1B}[0m');
     try {
       console.log(JSON.stringify(data, null, 2));
     } catch {
       console.log(data);
     }
 
-    console.log('\u001B[96m', 'End Debug ===============================================================', '\u001B[0m');
+    console.log('\u{1B}[96m', 'End Debug ===============================================================', '\u{1B}[0m');
   }
 
   try {

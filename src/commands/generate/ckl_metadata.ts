@@ -32,9 +32,9 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
     '<%= config.bin %> <%= command.id %> -o rhel_metadata.json',
     'The metadata file contains checklist supplemental data.',
     'The metadata file is composed of "profile(s)" and "asset" data.',
-    '\u001B[1mExample of "One Profile" metadata:\u001B[0m',
+    '\u{1B}[1mExample of "One Profile" metadata:\u{1B}[0m',
     colorize(JSON.stringify(getJsonMetaDataExamples('ckl-one-metadata'), null, 2)),
-    '\u001B[1mExample of "Multiple Profiles" metadata:\u001B[0m',
+    '\u{1B}[1mExample of "Multiple Profiles" metadata:\u{1B}[0m',
     colorize(JSON.stringify(getJsonMetaDataExamples('ckl-multiple-metadata'), null, 2)),
   ];
 
@@ -42,7 +42,7 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
     output: Flags.string({
       char: 'o',
       exclusive: ['interactive'],
-      description: '\u001B[31m(required -o or --interactive)\u001B[34mThe Output metadata JSON File to be generate',
+      description: '\u{1B}[31m(required -o or --interactive)\u{1B}[34mThe Output metadata JSON File to be generate',
     }),
   };
 
@@ -51,7 +51,7 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
 
     // If not interactive must provide -o 0r --output
     if (!flags.interactive && !flags.output) {
-      this.error('\u001B[31mIf not interactive you must specify the metadata output json file [-o]\u001B[0m');
+      this.error('\u{1B}[31mIf not interactive you must specify the metadata output json file [-o]\u{1B}[0m');
     }
     // Flag variables
     let metadataJsonFile = '';

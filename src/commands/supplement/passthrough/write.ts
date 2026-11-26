@@ -12,11 +12,11 @@ export default class WritePassthrough extends BaseCommand<typeof WritePassthroug
 
   static readonly examples = [
     {
-      description: '\u001B[93mProviding passthrough-data\u001B[0m',
+      description: '\u{1B}[93mProviding passthrough-data\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i hdf.json -d \'{"a": 5}\'',
     },
     {
-      description: '\u001B[93mUsing passthrough-data file\u001B[0m',
+      description: '\u{1B}[93mUsing passthrough-data file\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i hdf.json -f passthrough.json -o new-hdf.json',
     },
   ];

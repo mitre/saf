@@ -21,15 +21,15 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
 
   static readonly examples = [
     {
-      description: '\u001B[93mSend output to local file system\u001B[0m',
+      description: '\u{1B}[93mSend output to local file system\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i rhel7-scan_02032022A.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7.asff',
     },
     {
-      description: '\u001B[93mUpload findings to AWS Security Hub\u001B[0m',
+      description: '\u{1B}[93mUpload findings to AWS Security Hub\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i rds_mysql_i123456789scan_03042022A.json -a 987654321 -r us-west-1 -t Instance_i123456789 -u',
     },
     {
-      description: '\u001B[93mUpload findings to AWS Security Hub and Send output to local file system\u001B[0m',
+      description: '\u{1B}[93mUpload findings to AWS Security Hub and Send output to local file system\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i snyk_acme_project5_hdf_04052022A.json -a 2143658798 -r us-east-1 -t acme_project5 -o snyk_acme_project5 -u',
     },
   ];

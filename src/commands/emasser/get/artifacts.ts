@@ -24,7 +24,7 @@ type ApiResponse = {
 const endpoint = 'artifacts';
 
 export default class EmasserGetArtifacts extends Command {
-  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n \u001B[93m NOTE: see EXAMPLES for argument case format\u001B[0m';
+  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n \u{1B}[93m NOTE: see EXAMPLES for argument case format\u{1B}[0m';
 
   static readonly description = getDescriptionForEndpoint(process.argv, endpoint);
 
@@ -68,17 +68,17 @@ export default class EmasserGetArtifacts extends Command {
         try {
           if (_.isString(response.data)) {
             const conf = new ApiConfig();
-            console.log(`\u001B[33mOutput file: ${fileName} saved to directory: ${conf.downloadDir}\u001B[0m`);
+            console.log(`\u{1B}[33mOutput file: ${fileName} saved to directory: ${conf.downloadDir}\u{1B}[0m`);
             saveFile(conf.downloadDir, fileName, response.data);
           } else if (flags.printToStdOut) {
             console.log(colorize(JSON.stringify(response.data, null, 2)));
           } else {
             const conf = new ApiConfig();
-            console.log(`\u001B[33mOutput file: ${fileName} saved to directory: ${conf.downloadDir}\u001B[0m`);
+            console.log(`\u{1B}[33mOutput file: ${fileName} saved to directory: ${conf.downloadDir}\u{1B}[0m`);
             saveFile(conf.downloadDir, fileName, JSON.stringify(response.data));
           }
         } catch (error: unknown) {
-          console.error(`\u001B[31mSave File Error: ${getErrorMessage(error)}\u001B[0m`);
+          console.error(`\u{1B}[31mSave File Error: ${getErrorMessage(error)}\u{1B}[0m`);
         }
       } catch (error: unknown) {
         displayError(error, 'Artifacts');

@@ -332,7 +332,7 @@ function generateBodyObj(dataObject: Software): Software {
 
 const CMD_HELP = 'saf emasser post software_baseline -h or --help';
 export default class EmasserSoftwareBaseline extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command usages\u001B[0m';
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u{1B}[93m NOTE: see EXAMPLES for command usages\u{1B}[0m';
 
   static readonly description = 'Add one or many software assets to a system.\n'
     + 'The CLI expects an input JSON file containing the required, conditional\n'
@@ -341,13 +341,13 @@ export default class EmasserSoftwareBaseline extends Command {
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing Software Assets.',
-    '\u001B[1mRequired JSON parameter/field is:\u001B[0m',
+    '\u{1B}[1mRequired JSON parameter/field is:\u{1B}[0m',
     colorize(JSON.stringify(getJsonExamples('software-post-required'), null, 2)),
-    '\u001B[1mConditional JSON parameters/fields are:\u001B[0m',
+    '\u{1B}[1mConditional JSON parameters/fields are:\u{1B}[0m',
     colorize(JSON.stringify(getJsonExamples('software-post-put-conditional'), null, 2)),
-    '\u001B[1mOptional JSON parameters/fields are:\u001B[0m',
+    '\u{1B}[1mOptional JSON parameters/fields are:\u{1B}[0m',
     colorize(JSON.stringify(getJsonExamples('software-post-put-optional'), null, 2)),
-    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
+    '\u{1B}[1m\u{1B}[32mAll accepted parameters/fields are:\u{1B}[0m',
     colorize(getAllJsonExamples()),
   ];
 
@@ -369,8 +369,8 @@ export default class EmasserSoftwareBaseline extends Command {
       try {
         data = JSON.parse(await readFile(flags.dataFile, 'utf8'));
       } catch (error: unknown) {
-        console.error('\u001B[91m» Error reading Software data file, possible malformed json. Please use the -h flag for help.\u001B[0m');
-        console.error('\u001B[93m→ Error message was:', getErrorMessage(error), '\u001B[0m');
+        console.error('\u{1B}[91m» Error reading Software data file, possible malformed json. Please use the -h flag for help.\u{1B}[0m');
+        console.error('\u{1B}[93m→ Error message was:', getErrorMessage(error), '\u{1B}[0m');
         process.exit(1);
       }
 
@@ -384,7 +384,7 @@ export default class EmasserSoftwareBaseline extends Command {
         requestBodyArray.push(generateBodyObj(dataObject));
       }
     } else {
-      console.error('\u001B[91m» Software data file (.json) not found or invalid:', flags.dataFile, '\u001B[0m');
+      console.error('\u{1B}[91m» Software data file (.json) not found or invalid:', flags.dataFile, '\u{1B}[0m');
       process.exit(1);
     }
 
@@ -400,7 +400,7 @@ export default class EmasserSoftwareBaseline extends Command {
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
+      this.warn(err.message.replace('with --help', `with: \u{1B}[93m${CMD_HELP}\u{1B}[0m`));
     } else {
       this.warn(err);
     }

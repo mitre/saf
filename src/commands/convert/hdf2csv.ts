@@ -28,11 +28,11 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
 
   static readonly examples = [
     {
-      description: '\u001B[93mRunning the CLI interactively\u001B[0m',
+      description: '\u{1B}[93mRunning the CLI interactively\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> --interactive',
     },
     {
-      description: '\u001B[93mProviding flags at the command line\u001B[0m',
+      description: '\u{1B}[93mProviding flags at the command line\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"',
     },
   ];
@@ -51,13 +51,13 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       char: 'i',
       required: false,
       exclusive: ['interactive'],
-      description: '\u001B[31m(required if not --interactive)\u001B[34m Input HDF file',
+      description: '\u{1B}[31m(required if not --interactive)\u{1B}[34m Input HDF file',
     }),
     output: Flags.string({
       char: 'o',
       required: false,
       exclusive: ['interactive'],
-      description: '\u001B[31m(required if not --interactive)\u001B[34m Output CSV file',
+      description: '\u{1B}[31m(required if not --interactive)\u{1B}[34m Output CSV file',
     }),
     fields: Flags.string({
       char: 'f',

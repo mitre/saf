@@ -84,30 +84,30 @@ export default class Summary extends Command {
 
   static readonly examples = [
     // Basic usage
-    "\u001B[93mSummarize 'input.hdf' single HDF file\n"
-    + '\u001B[93m  $\u001B[34m saf summary -i input.hdf',
+    "\u{1B}[93mSummarize 'input.hdf' single HDF file\n"
+    + '\u{1B}[93m  $\u{1B}[34m saf summary -i input.hdf',
 
     // Specify output format
-    '\u001B[93mSpecify Formats\n'
-    + '\u001B[93m  $\u001B[34m saf summary -i input.hdf input.json --format=json',
+    '\u{1B}[93mSpecify Formats\n'
+    + '\u{1B}[93m  $\u{1B}[34m saf summary -i input.hdf input.json --format=json',
 
-    '\u001B[93mOutput GitHub Flavored Markdown Table, skip the console, and save to \'output.md\n'
-    + '\u001B[93m  $\u001B[34m saf summary -i input.hdf input.json --format=markdown --no-stdout -o output.md',
+    '\u{1B}[93mOutput GitHub Flavored Markdown Table, skip the console, and save to \'output.md\n'
+    + '\u{1B}[93m  $\u{1B}[34m saf summary -i input.hdf input.json --format=markdown --no-stdout -o output.md',
 
     // Multiple input files
-    '\u001B[93mSummarize multiple HDF files\n'
-    + '\u001B[93m  $\u001B[34m saf summary --input input1.hdf --input input2.hdf\n'
-    + '\u001B[93m  $\u001B[34m saf summary --input input1.hdf input2.hdf',
+    '\u{1B}[93mSummarize multiple HDF files\n'
+    + '\u{1B}[93m  $\u{1B}[34m saf summary --input input1.hdf --input input2.hdf\n'
+    + '\u{1B}[93m  $\u{1B}[34m saf summary --input input1.hdf input2.hdf',
 
     // Specify output file
-    "\u001B[93mSave summary to 'output.json' and print to the console\n"
-    + '\u001B[93m  $\u001B[34m saf summary -i input.hdf --output output.json',
+    "\u{1B}[93mSave summary to 'output.json' and print to the console\n"
+    + '\u{1B}[93m  $\u{1B}[34m saf summary -i input.hdf --output output.json',
 
     // Enable and disable flags
-    '\u001B[93mEnable human-readable output\n'
-    + '\u001B[93m  $\u001B[34m saf summary --input input.hdf --pretty-print',
-    '\u001B[93mUseful for scripts or data-processing (RAW yaml/json/etc.)\n'
-    + '\u001B[93m  $\u001B[34m saf summary -i input.hdf --no-pretty-print',
+    '\u{1B}[93mEnable human-readable output\n'
+    + '\u{1B}[93m  $\u{1B}[34m saf summary --input input.hdf --pretty-print',
+    '\u{1B}[93mUseful for scripts or data-processing (RAW yaml/json/etc.)\n'
+    + '\u{1B}[93m  $\u{1B}[34m saf summary -i input.hdf --no-pretty-print',
   ];
 
   /**

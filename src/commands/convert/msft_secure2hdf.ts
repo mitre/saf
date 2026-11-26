@@ -61,15 +61,15 @@ export default class MsftSecure2HDF extends BaseCommand<typeof MsftSecure2HDF> {
 
   static readonly examples = [
     {
-      description: '\u001B[93mUsing input files\u001B[0m',
+      description: '\u{1B}[93mUsing input files\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -p secureScore.json -r secureScoreControlProfiles -o output-hdf-name.json [-w]',
     },
     {
-      description: '\u001B[93mUsing Azure tenant ID\u001B[0m',
+      description: '\u{1B}[93mUsing Azure tenant ID\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -t "12345678-1234-1234-1234-1234567890abcd" -a "12345678-1234-1234-1234-1234567890abcd" -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" -o output-hdf-name.json [-I | -C <certificate>]',
     },
     {
-      description: '\u001B[93mUsing combined inputs\u001B[0m',
+      description: '\u{1B}[93mUsing combined inputs\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i <(jq \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json)> -o output-hdf-name.json [-w]',
     },
   ];

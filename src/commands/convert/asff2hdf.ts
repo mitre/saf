@@ -30,15 +30,15 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
 
   static readonly examples = [
     {
-      description: '\u001B[93mUsing ASFF JSON file\u001B[0m',
+      description: '\u{1B}[93mUsing ASFF JSON file\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i asff-findings.json -o output-folder-name',
     },
     {
-      description: '\u001B[93mUsing ASFF JSON file with additional input files\u001B[0m',
+      description: '\u{1B}[93mUsing ASFF JSON file with additional input files\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i asff-findings.json --securityHub standard-1.json standard-2.json -o output-folder-name',
     },
     {
-      description: '\u001B[93mUsing AWS to pull ASFF JSON findings\u001B[0m',
+      description: '\u{1B}[93mUsing AWS to pull ASFF JSON findings\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> --aws -o out -r us-west-2 --target rhel7',
     },
 
@@ -48,7 +48,7 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
     input: Flags.string({
       char: 'i',
       required: false,
-      description: '\u001B[31m(required if not using AWS)\u001B[34m Input ASFF JSON file',
+      description: '\u{1B}[31m(required if not using AWS)\u{1B}[34m Input ASFF JSON file',
       exclusive: ['aws', 'region', 'insecure', 'certificate', 'target'],
     }),
     aws: Flags.boolean({

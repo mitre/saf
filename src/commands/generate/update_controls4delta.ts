@@ -48,11 +48,11 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
 
   static readonly examples = [
     {
-      description: '\u001B[93mProviding an XCCDF File\u001B[0m',
+      description: '\u{1B}[93mProviding an XCCDF File\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -X ./the_xccdf_guidance_file.xml [-J <profile_json_file.json> | -I </path/to/inspec-or-cinc-auditor>] [-c the_controls_directory --no-backupControls --no-formatControls -P <V or SV> -g -L debug]',
     },
     {
-      description: '\u001B[93mProviding an URL point to an ZIP XCCDF (from DISA STIG downloads)\u001B[0m',
+      description: '\u{1B}[93mProviding an URL point to an ZIP XCCDF (from DISA STIG downloads)\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -U <URL to DISA STIGs downloads> [-J <profile_json_file.json> | -I </path/to/inspec-or-cinc-auditor>] [-c the_controls_directory --no-backupControls --no-formatControls -P <V or SV> -g -L debug]',
     },
   ];
@@ -60,25 +60,25 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
   static readonly flags = {
     xccdfXmlFile: Flags.string({
       char: 'X',
-      description: '\u001B[31m(required [-X or -U])\u001B[34m The XCCDF XML file containing the new guidance - in the form of .xml file',
+      description: '\u{1B}[31m(required [-X or -U])\u{1B}[34m The XCCDF XML file containing the new guidance - in the form of .xml file',
       exclusive: ['xccdfUrl'],
     }),
     xccdfUrl: Flags.url({
       char: 'U',
-      description: '\u001B[31m(required [-X or -U])\u001B[34m The URL pointing to the XCCDF file containing the new guidance (DISA STIG downloads)',
+      description: '\u{1B}[31m(required [-X or -U])\u{1B}[34m The URL pointing to the XCCDF file containing the new guidance (DISA STIG downloads)',
       exclusive: ['xccdfXmlFile'],
     }),
     inspecJsonFile: Flags.string({
       char: 'J',
       required: false,
       exactlyOne: ['inspecPath'],
-      description: '\u001B[31m(required [-J or -I])\u001B[34m InSpec Profiles JSON summary file - can be generated using the "[cinc-auditor or inspec] json <profile path> > profile.json" command',
+      description: '\u{1B}[31m(required [-J or -I])\u{1B}[34m InSpec Profiles JSON summary file - can be generated using the "[cinc-auditor or inspec] json <profile path> > profile.json" command',
     }),
     inspecPath: Flags.string({
       char: 'I',
       required: false,
       exactlyOne: ['inspecJsonFile'],
-      description: '\u001B[31m(required [-J or -I])\u001B[34m Absolute or known relative path to the inspec or cinc-auditor executable',
+      description: '\u{1B}[31m(required [-J or -I])\u{1B}[34m Absolute or known relative path to the inspec or cinc-auditor executable',
     }),
     controlsDir: Flags.string({
       char: 'c',
@@ -122,11 +122,11 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     const { flags } = await this.parse(GenerateUpdateControls);
 
     if (!flags.xccdfXmlFile && !flags.xccdfUrl) {
-      this.error('\u001B[31mYou must specify either [-X, --xccdfXmlFile or -U --xccdfUrl]\u001B[0m');
+      this.error('\u{1B}[31mYou must specify either [-X, --xccdfXmlFile or -U --xccdfUrl]\u{1B}[0m');
     }
 
     if (!flags.inspecJsonFile && !flags.inspecPath) {
-      this.error('\u001B[31mYou must specify either [-J, --inspecJsonFile or -I, --inspecPath]\u001B[0m');
+      this.error('\u{1B}[31mYou must specify either [-J, --inspecJsonFile or -I, --inspecPath]\u{1B}[0m');
     }
 
     const logger = createWinstonLogger({ module: 'generate:update_controls', level: flags.logLevel });
@@ -449,7 +449,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
 
           // Process the control
           if (baselineYControls.has(currentControlNumber)) {
-            logger.debug('  \u001B[32mUpdating Control metadata with XCCDF content\u001B[0m');
+            logger.debug('  \u{1B}[32mUpdating Control metadata with XCCDF content\u{1B}[0m');
             updatedControl = baselineYControls.get(currentControlNumber);
             // Save file
             saveControl(currentFileFullPath, currentControlNumber, currentControlNumber, updatedControl, flags.backupControls, false);
@@ -461,10 +461,10 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
 
           // Change the V or SV Id to the SV Id based on format flag
           if (baselineYControls.has(currentControlNumber)) {
-            logger.debug('  \u001B[32mUpdating Control metadata with XCCDF content\u001B[0m');
+            logger.debug('  \u{1B}[32mUpdating Control metadata with XCCDF content\u{1B}[0m');
             updatedControl = baselineYControls.get(currentControlNumber);
           } else {
-            logger.debug('  \u001B[31mKeeping Control metadata content - Updating Control name\u001B[0m');
+            logger.debug('  \u{1B}[31mKeeping Control metadata content - Updating Control name\u{1B}[0m');
             notInProfileJSON++;
             skipMetadataUpdate.push(`(${currentControlNumber} wasn't updated with metadata from: ${newXCCDFControlNumber})`);
             updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, newXCCDFControlNumber);

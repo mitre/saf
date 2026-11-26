@@ -136,26 +136,26 @@ function addApplicationFindingsFields(bodyObject: StaticCodeRequest, dataObj: St
 
 const CMD_HELP = 'saf emasser post static_code_scans -h or --help';
 export default class EmasserPostStaticCodeScans extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command usages\u001B[0m';
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u{1B}[93m NOTE: see EXAMPLES for command usages\u{1B}[0m';
 
   static readonly description = "Upload application scan findings into a system's assets module";
 
   static readonly examples = [
     '<%= config.bin %> <%= command.id %> [-s,--systemId] [-f,--dataFile]',
     'The input file should be a well formed JSON containing static code scan findings.',
-    '\u001B[1m\u001B[46mAdd Findings\u001B[0m',
+    '\u{1B}[1m\u{1B}[46mAdd Findings\u{1B}[0m',
     'Required "application" JSON object parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('scan_findings-application'), null, 2)),
     'Required "applicationFindings" JSON array parameters/fields are:',
     colorize(JSON.stringify(getJsonExamples('scan_findings-applicationFindings'), null, 2)),
-    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
+    '\u{1B}[1m\u{1B}[32mAll accepted parameters/fields are:\u{1B}[0m',
     colorize(getAllJsonExamples('add')),
-    '\u001B[1m\u001B[46mClear Findings\u001B[0m \u001B[33m(can only be used on a single application with a single finding)\u001B[0m',
+    '\u{1B}[1m\u{1B}[46mClear Findings\u{1B}[0m \u{1B}[33m(can only be used on a single application with a single finding)\u{1B}[0m',
     'Required "application" JSON object parameter/fields are: ',
     colorize(JSON.stringify(getJsonExamples('scan_findings-application'), null, 2)),
     'Required "applicationFindings" JSON array object field(s):',
     colorize(JSON.stringify(getJsonExamples('scan_findings-clearFindings'), null, 2)),
-    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
+    '\u{1B}[1m\u{1B}[32mAll accepted parameters/fields are:\u{1B}[0m',
     colorize(getAllJsonExamples('clear')),
   ];
 
@@ -179,17 +179,17 @@ export default class EmasserPostStaticCodeScans extends Command {
         data = JSON.parse(fileContent);
       } catch (error: unknown) {
         if (error instanceof Error) {
-          console.error('\u001B[91m» Error reading Static Code Scans data file, possible malformed JSON. Please use the -h flag for help.\u001B[0m');
-          console.error('\u001B[93m→ Error message was:', error.message, '\u001B[0m');
+          console.error('\u{1B}[91m» Error reading Static Code Scans data file, possible malformed JSON. Please use the -h flag for help.\u{1B}[0m');
+          console.error('\u{1B}[93m→ Error message was:', error.message, '\u{1B}[0m');
         } else {
-          console.error('\u001B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\u001B[0m');
+          console.error('\u{1B}[91m» Unknown error occurred while reading the file:', flags.dataFile, '\u{1B}[0m');
         }
         process.exit(1);
       }
 
       // Ensure `data` is either an array or object before using it
       if (!data || (typeof data !== 'object' && !Array.isArray(data))) {
-        console.error('\u001B[91m» Invalid data format: Expected an object or array.\u001B[0m');
+        console.error('\u{1B}[91m» Invalid data format: Expected an object or array.\u{1B}[0m');
         process.exit(1);
       }
 
@@ -197,7 +197,7 @@ export default class EmasserPostStaticCodeScans extends Command {
       if (Array.isArray(data)) {
         for (const item of data) {
           if (typeof item !== 'object' || item === null) {
-            console.error('\u001B[91m» Invalid item in array: Expected an object.\u001B[0m');
+            console.error('\u{1B}[91m» Invalid item in array: Expected an object.\u{1B}[0m');
             process.exit(1);
           }
 
@@ -223,7 +223,7 @@ export default class EmasserPostStaticCodeScans extends Command {
         }
       }
     } else {
-      console.error('\u001B[91m» Static Code Scans data file (.json) not found or invalid:', flags.dataFile, '\u001B[0m');
+      console.error('\u{1B}[91m» Static Code Scans data file (.json) not found or invalid:', flags.dataFile, '\u{1B}[0m');
       process.exit(1);
     }
 
@@ -239,7 +239,7 @@ export default class EmasserPostStaticCodeScans extends Command {
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
+      this.warn(err.message.replace('with --help', `with: \u{1B}[93m${CMD_HELP}\u{1B}[0m`));
     } else {
       this.warn(err);
     }

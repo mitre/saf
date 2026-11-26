@@ -11,7 +11,7 @@ import { displayError, getFlagsForEndpoint } from '../../../utils/emasser/utilit
 
 const CMD_HELP = 'saf emasser post artifacts -h or --help';
 export default class EmasserPostArtifacts extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command options\u001B[0m';
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u{1B}[93m NOTE: see EXAMPLES for command options\u{1B}[0m';
 
   static readonly description = 'Uploads a single or multiple artifacts to a system.\n'
     + 'The single file can be an individual artifact or a .zip\n'
@@ -56,7 +56,7 @@ export default class EmasserPostArtifacts extends Command {
           displayError(error, 'Artifacts');
         }
       } else {
-        console.error('\u001B[91m» Artifact file not found:', flags.fileName[0], '\u001B[0m');
+        console.error('\u{1B}[91m» Artifact file not found:', flags.fileName[0], '\u{1B}[0m');
       }
 
     // Multiple files, create a zip file
@@ -69,7 +69,7 @@ export default class EmasserPostArtifacts extends Command {
         if (fs.existsSync(inputFile)) {
           zip.addLocalFile(inputFile);
         } else {
-          console.error('\u001B[91m» Artifact file not found:', inputFile, '\u001B[0m');
+          console.error('\u{1B}[91m» Artifact file not found:', inputFile, '\u{1B}[0m');
           process.exit(1);
         }
       }
@@ -93,7 +93,7 @@ export default class EmasserPostArtifacts extends Command {
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
+      this.warn(err.message.replace('with --help', `with: \u{1B}[93m${CMD_HELP}\u{1B}[0m`));
     } else {
       this.warn(err);
     }

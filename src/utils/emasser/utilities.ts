@@ -1769,7 +1769,7 @@ export function saveFile(dir: string, filename: string, data: any): void {
  * @param msg - The help message to be printed.
  */
 export function printHelpMsg(msg: string) {
-  console.log('\u001B[93m\n→', msg, '\u001B[0m');
+  console.log('\u{1B}[93m\n→', msg, '\u{1B}[0m');
 }
 
 /**
@@ -1778,7 +1778,7 @@ export function printHelpMsg(msg: string) {
  * @param msg - The message to be printed.
  */
 export function printRedMsg(msg: string) {
-  console.log('\u001B[91m»', msg, '\u001B[0m');
+  console.log('\u{1B}[91m»', msg, '\u{1B}[0m');
 }
 
 /**
@@ -1795,6 +1795,6 @@ export function displayError(error: unknown, endpoint: string) {
   if (error instanceof Error) {
     console.error(colorize(outputError(error)));
   } else {
-    console.error(`\u001B[91mError calling the ${endpoint} endpoint: ${String(error)}\u001B[0m`);
+    console.error(`\u{1B}[91mError calling the ${endpoint} endpoint: ${String(error)}\u{1B}[0m`);
   }
 }

@@ -20,8 +20,8 @@ import type { Hook } from '@oclif/core';
  * This hook is not called
  */
 const commandNotFound: Hook<'command_not_found'> = (opts: { id: string }) => {
-  console.error(`\u001B[91m» Command "${opts.id}" not found.\u001B[0m`);
-  console.error(`\u001B[93m→ Try this 👉 \u001B[92m"${opts.id.split(':')[0]} [-h or --help]" \u001B[93mfor additional help with the command.\u001B[0m`);
+  console.error(`\u{1B}[91m» Command "${opts.id}" not found.\u{1B}[0m`);
+  console.error(`\u{1B}[93m→ Try this 👉 \u{1B}[92m"${opts.id.split(':')[0]} [-h or --help]" \u{1B}[93mfor additional help with the command.\u{1B}[0m`);
   process.exit(1);
 };
 

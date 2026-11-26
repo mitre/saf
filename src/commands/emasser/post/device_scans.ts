@@ -71,7 +71,7 @@ export default class EmasserPostDeviceScans extends Command {
         throw new CLIError(`If the scan type is "acasAsrArf" or "policyAuditor" a .zip file is expected not a ${path.extname(flags.filename)} file`);
       }
     } catch (error) {
-      console.error(`\u001B[91m » ${String(error)} \u001B[0m`);
+      console.error(`\u{1B}[91m » ${String(error)} \u{1B}[0m`);
       process.exit(1);
     }
 
@@ -88,7 +88,7 @@ export default class EmasserPostDeviceScans extends Command {
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display what fields are required, otherwise show the error
     if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
+      this.warn(err.message.replace('with --help', `with: \u{1B}[93m${CMD_HELP}\u{1B}[0m`));
     } else {
       this.warn(err);
     }

@@ -44,29 +44,29 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       char: 'J',
       required: false,
       exclusive: ['interactive'],
-      description: '\u001B[31m(required [-J or -I])\u001B[34m InSpec Profile Controls JSON summary file - can be generated using the "[cinc-auditor or inspec] json <profile path> | jq . > profile.json" command',
+      description: '\u{1B}[31m(required [-J or -I])\u{1B}[34m InSpec Profile Controls JSON summary file - can be generated using the "[cinc-auditor or inspec] json <profile path> | jq . > profile.json" command',
     }),
     inspecPath: Flags.string({
       char: 'I',
       required: false,
       exclusive: ['interactive'],
-      description: '\u001B[31m(required [-J or -I], and also with -M)\u001B[34m Absolute or known relative path to the inspec or cinc-auditor executable',
+      description: '\u{1B}[31m(required [-J or -I], and also with -M)\u{1B}[34m Absolute or known relative path to the inspec or cinc-auditor executable',
     }),
     xccdfXmlFile: Flags.string({
       char: 'X',
       exclusive: ['interactive', 'xccdfUrl'],
-      description: '\u001B[31m(required [-X or -U] or --interactive)\u001B[34m The XCCDF File containing the new guidance (.xml or .zip)',
+      description: '\u{1B}[31m(required [-X or -U] or --interactive)\u{1B}[34m The XCCDF File containing the new guidance (.xml or .zip)',
     }),
     xccdfUrl: Flags.url({
       char: 'U',
       exclusive: ['interactive', 'xccdfXmlFile'],
-      description: '\u001B[31m(required [-X or -U] or --interactive)\u001B[34m The URL for the XCCDF package containing the new guidance (.zip, e.g., DISA STIG downloads)',
+      description: '\u{1B}[31m(required [-X or -U] or --interactive)\u{1B}[34m The URL for the XCCDF package containing the new guidance (.zip, e.g., DISA STIG downloads)',
     }),
     deltaOutputDir: Flags.string({
       char: 'o',
       required: false,
       exclusive: ['interactive'],
-      description: '\u001B[31m(required if not --interactive)\u001B[34m The output folder for the updated profile (this will contain the new controls modified by delta) - if it is not empty, it will be overwritten.',
+      description: '\u{1B}[31m(required if not --interactive)\u{1B}[34m The output folder for the updated profile (this will contain the new controls modified by delta) - if it is not empty, it will be overwritten.',
     }),
     ovalXmlFile: Flags.string({
       char: 'O',
@@ -100,29 +100,29 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       char: 'c',
       required: false,
       exclusive: ['interactive'],
-      description: '\u001B[31m(required with -M or -J not provided)\u001B[34m The InSpec profile directory containing the controls to update (controls Delta is processing)',
+      description: '\u{1B}[31m(required with -M or -J not provided)\u{1B}[34m The InSpec profile directory containing the controls to update (controls Delta is processing)',
     }),
   };
 
   static readonly examples = [
     {
-      description: '\u001B[93mRunning the CLI interactively\u001B[0m',
+      description: '\u{1B}[93mRunning the CLI interactively\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> --interactive',
     },
     {
-      description: '\u001B[93mProviding a XCCDF (File), a Profile Controls Summary, and no Fuzzy matching)\u001B[0m',
+      description: '\u{1B}[93mProviding a XCCDF (File), a Profile Controls Summary, and no Fuzzy matching)\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -X <xccdf_benchmarks.[xml, zip]>, -J <profile_summary.json> -c <current-controls-dir> -o <updated_controls_dir>, [options]',
     },
     {
-      description: '\u001B[93mProviding a XCCDF (URL), a Profile Controls Summary, and no Fuzzy matching)\u001B[0m',
+      description: '\u{1B}[93mProviding a XCCDF (URL), a Profile Controls Summary, and no Fuzzy matching)\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -U <URL-to-benchmark.zip>, -J <profile_summary.json> -c <current-controls-dir> -o <updated_controls_dir>, [options]',
     },
     {
-      description: '\u001B[93mProviding a XCCDF (File), a Profile Controls Summary, with Fuzzy matching)\u001B[0m',
+      description: '\u{1B}[93mProviding a XCCDF (File), a Profile Controls Summary, with Fuzzy matching)\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -X <xccdf_benchmarks.[xml, zip]>, -J <profile_summary.json> -I </path/to/inspec-or-cinc-auditor> -c <current-controls-dir> -o <updated_controls_dir>, -M, [options]',
     },
     {
-      description: '\u001B[93mProviding a XCCDF (URL), a Profile Controls Summary, with Fuzzy matching)\u001B[0m',
+      description: '\u{1B}[93mProviding a XCCDF (URL), a Profile Controls Summary, with Fuzzy matching)\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -U <URL-to-benchmark.zip>, -J <profile_summary.json> -I </path/to/inspec-or-cinc-auditor> -c <current-controls-dir> -o <updated_controls_dir>, -M, [options]',
     },
   ];
@@ -152,26 +152,26 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
     // If not interactive must provide either -X or -U
     if (!flags.interactive && !flags.xccdfXmlFile && !flags.xccdfUrl) {
-      this.error('\u001B[31mIf not interactive you must specify either [-X, --xccdfXmlFile or -U --xccdfUrl]\u001B[0m');
+      this.error('\u{1B}[31mIf not interactive you must specify either [-X, --xccdfXmlFile or -U --xccdfUrl]\u{1B}[0m');
     }
 
     // If not interactive, one input source is required for the initial profile load.
     // When -M is used, -I is also required later to regenerate the mapped profile summary.
     if (!flags.interactive && !flags.inspecJsonFile && !flags.inspecPath) {
-      this.error('\u001B[31mIf not interactive you must specify either [-J, --inspecJsonFile or -I, --inspecPath]\u001B[0m');
+      this.error('\u{1B}[31mIf not interactive you must specify either [-J, --inspecJsonFile or -I, --inspecPath]\u{1B}[0m');
     }
 
     // If not interactive and -J not provided the -c must be provided
     if (!flags.interactive && !flags.inspecJsonFile && !flags.controlsDir) {
-      this.error('\u001B[31mIf not interactive and -J not provided the Controls Directory (-c) must be provided\u001B[0m');
+      this.error('\u{1B}[31mIf not interactive and -J not provided the Controls Directory (-c) must be provided\u{1B}[0m');
     }
 
     if (flags.runMapControls && !flags.controlsDir) {
-      this.error('\u001B[31mIf not interactive and -M is provided the Controls Directory (-c) must be provided\u001B[0m');
+      this.error('\u{1B}[31mIf not interactive and -M is provided the Controls Directory (-c) must be provided\u{1B}[0m');
     }
 
     if (!flags.interactive && flags.runMapControls && !flags.inspecPath) {
-      this.error('\u001B[31mIf not interactive and -M is provided the inspecPath (-I) must be provided\u001B[0m');
+      this.error('\u{1B}[31mIf not interactive and -M is provided the inspecPath (-I) must be provided\u{1B}[0m');
     }
 
     // Statics live for the process lifetime; explicitly reset them so that
