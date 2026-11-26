@@ -252,7 +252,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
 
         if (isSingularResult) {
           fs.writeFileSync(
-            `${checkSuffix(flags.output)}`,
+            checkSuffix(flags.output),
             JSON.stringify(result, null, 2),
           );
         }
@@ -340,7 +340,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
 
         if (isSingularResult) {
           fs.writeFileSync(
-            `${checkSuffix(flags.output)}`,
+            checkSuffix(flags.output),
             JSON.stringify(result, null, 2),
           );
         }

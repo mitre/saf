@@ -822,13 +822,13 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           const sourceControlFile = resolveSafeChild(controlsDir, controlFilename);
           const mappedControlFile = resolveSafeChild(mappedDir, controlFilename);
 
-          this.logger.info(`${'Mapping (From --> To): '}  ${`${value} --> ${key}`}`);
+          this.logger.info(`Mapping (From --> To):   ${value} --> ${key}`);
 
           let lines;
           if (fs.existsSync(sourceControlFile)) {
             lines = fs.readFileSync(sourceControlFile, 'utf8').split('\n');
           } else {
-            this.logger.error(`${'    File not found at:'}  ${` ${sourceControlFile}\n`}`);
+            this.logger.error(`    File not found at:   ${sourceControlFile}\n`);
             this.logger.error('╔═══════════════════════════════════════════════════════════════════════════════╗');
             this.logger.error('║ Make sure the appropriate Input execution/profile JSON file is being used (-J)║');
             this.logger.error('╚═══════════════════════════════════════════════════════════════════════════════╝');
@@ -839,28 +839,28 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           // and the controls were properly updated to the proper control number and name.
           if (value === key) {
             // The controls are up to date with the xccdf
-            this.logger.info(`${'   Control is Current: '}  ${`${sourceShortControlFile}`}`);
+            this.logger.info(`   Control is Current:   ${sourceShortControlFile}`);
             // Saved processed control to the 'mapped_controls' directory
-            this.logger.info(`${'    Processed control: '}  ${`${mappedShortControlFile}\n`}`);
+            this.logger.info(`    Processed control:   ${mappedShortControlFile}\n`);
             fs.writeFileSync(mappedControlFile, lines.join('\n'));
           } else {
-            this.logger.info(`${'   Processing control: '}  ${`${sourceShortControlFile}`}`);
+            this.logger.info(`   Processing control:   ${sourceShortControlFile}`);
             // Find the line with the control name and replace it with the new control name
             // single or double quotes are used on this line, check for both
             // Template literals (`${value}`) must be used with dynamically created regular expression (RegExp() not / ... /)
             const controlLineIndex = lines.findIndex(line => new RegExp(`control ['"]${value}['"] do`).test(line));
             if (controlLineIndex === -1) {
-              this.logger.error(`${'    Control not found:'}  ${` ${sourceControlFile}\n`}`);
+              this.logger.error(`    Control not found:   ${sourceControlFile}\n`);
             } else {
               lines[controlLineIndex] = lines[controlLineIndex].replace(new RegExp(`control ['"]${value}['"] do`), () => `control '${key}' do`);
 
               // Saved processed control to the 'mapped_controls' directory
-              this.logger.info(`${'    Processed control: '}  ${`${mappedShortControlFile}`}`);
+              this.logger.info(`    Processed control:   ${mappedShortControlFile}`);
               fs.writeFileSync(mappedControlFile, lines.join('\n'));
 
               // TODO: Maybe copy files from the source directory and rename for duplicates and to preserve source files // skipcq: JS-0099
-              this.logger.info(`${'  Mapped control file: '}  ${`${sourceShortControlFile} to reference ID ${key}`}`);
-              this.logger.info(`${'     New control name: '}  ${`${key}.rb\n`}`);
+              this.logger.info(`  Mapped control file:   ${sourceShortControlFile} to reference ID ${key}`);
+              this.logger.info(`     New control name:   ${key}.rb\n`);
             }
           }
         }
