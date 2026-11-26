@@ -365,7 +365,7 @@ The `checkInput` function validates the type of an input file.
 */
 export function checkInput(guessOptions: { data: string; filename: string }, desiredType: INPUT_TYPES, desiredFormat: string): void {
   const detectedType = fingerprint({ data: guessOptions.data, filename: basename(guessOptions.filename) });
-  if (!(detectedType === desiredType)) {
+  if (detectedType !== desiredType) {
     throw new Error(`Unable to process input file\
       \nDetected input type: ${detectedType === INPUT_TYPES.NOT_FOUND ? 'unknown or none' : `${detectedType} - did you mean to run the ${detectedType} to HDF converter instead?`}\
       \nPlease ensure the input is a valid ${desiredFormat}`);
