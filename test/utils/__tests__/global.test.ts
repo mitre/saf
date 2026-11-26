@@ -91,7 +91,7 @@ describe('basename', () => {
   });
 
   it('should return the empty string if trimEnd leaves an empty string', () => {
-    const result = basename('   ');
+    const result = basename(' '.repeat(3));
     expect(result).toBe('');
   });
 
@@ -108,7 +108,7 @@ describe('safeFilename', () => {
   });
 
   it('should throw when the basename is empty', () => {
-    expect(() => safeFilename('   ')).toThrow(/Unsafe filename/);
+    expect(() => safeFilename(' '.repeat(3))).toThrow(/Unsafe filename/);
   });
 
   it('should throw when the filename contains reserved characters', () => {
