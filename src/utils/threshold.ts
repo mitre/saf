@@ -116,11 +116,13 @@ It is the responsibility of the caller to catch the error and exit accordingly.
 @returns - does not return, it simply trows an error if condition is satisfied (true)
 */
 export function exitNonZeroIfTrue(isConditionMet: boolean, reason?: string) {
-  if (isConditionMet) {
-    // eslint-disable-next-line no-constant-binary-expression
-    console.error(`Error: ${reason}` || 'Error: Compliance levels were not met'); // skipcq: JS-W1043
-    throw new Error(reason || 'Compliance levels were not met');
+  if (!isConditionMet) {
+    return;
   }
+
+  // eslint-disable-next-line no-constant-binary-expression
+  console.error(`Error: ${reason}` || 'Error: Compliance levels were not met'); // skipcq: JS-W1043
+  throw new Error(reason || 'Compliance levels were not met');
 }
 
 export function renameStatusName(statusName: string): string {

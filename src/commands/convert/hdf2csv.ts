@@ -107,38 +107,40 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       return;
     }
 
-    if (this.validFileFlags(inputFile, outputFile)) {
-      const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(inputFile, 'utf8')));
+    if (!this.validFileFlags(inputFile, outputFile)) {
+      return;
+    }
 
-      // Convert all controls from a file to ControlSetRows
-      let rows: ControlSetRows = this.convertRows(contextualizedEvaluation, basename(inputFile), includeFields.split(','));
-      rows = rows.map((row, index) => {
-        const cleanedRow: Record<string, string> = {};
-        for (const [key, value] of Object.entries(row)) {
-          if (value !== undefined) {
-            if (value.length > 32_767 && shouldTruncateFields) {
-              if ('ID' in row) {
-                console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
-              } else {
-                console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
-              }
+    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(inputFile, 'utf8')));
 
-              cleanedRow[key] = _.truncate(value, { length: 32_757, omission: 'TRUNCATED' });
+    // Convert all controls from a file to ControlSetRows
+    let rows: ControlSetRows = this.convertRows(contextualizedEvaluation, basename(inputFile), includeFields.split(','));
+    rows = rows.map((row, index) => {
+      const cleanedRow: Record<string, string> = {};
+      for (const [key, value] of Object.entries(row)) {
+        if (value !== undefined) {
+          if (value.length > 32_767 && shouldTruncateFields) {
+            if ('ID' in row) {
+              console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
             } else {
-              cleanedRow[key] = value;
+              console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
             }
+
+            cleanedRow[key] = _.truncate(value, { length: 32_757, omission: 'TRUNCATED' });
+          } else {
+            cleanedRow[key] = value;
           }
         }
-        return cleanedRow;
-      });
-
-      try {
-        await this.saveCSV(outputFile, rows);
-        this.logger.info('\nTranslation completed successfully\n');
-      } catch (error: any) {
-        const error_ = error.code === 'EISDIR' ? new Error('The CSV output file name was not provided.') : error;
-        this.logger.error(`\nTranslation failed: ${error_}\n`);
       }
+      return cleanedRow;
+    });
+
+    try {
+      await this.saveCSV(outputFile, rows);
+      this.logger.info('\nTranslation completed successfully\n');
+    } catch (error: any) {
+      const error_ = error.code === 'EISDIR' ? new Error('The CSV output file name was not provided.') : error;
+      this.logger.error(`\nTranslation failed: ${error_}\n`);
     }
   }
 

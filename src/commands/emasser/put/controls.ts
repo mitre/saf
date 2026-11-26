@@ -52,10 +52,12 @@ function getAllJsonExamples(): Record<string, unknown> {
 }
 
 function assertParamExists(object: string, value: string | number | undefined | null): void {
-  if (value === undefined) {
-    printRedMsg(`Missing required parameter/field: ${object}`);
-    throw new Error('Value not defined');
+  if (value !== undefined) {
+    return;
   }
+
+  printRedMsg(`Missing required parameter/field: ${object}`);
+  throw new Error('Value not defined');
 }
 
 function addRequiredFieldsToRequestBody(dataObj: Controls): Controls {
@@ -188,95 +190,97 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
   // "Inherited"          Only the following fields can be updated:
   //                      controlDesignation, commonnControlProvider
   // ----------------------------------------------------------------------------------------
-  const HELP_MSG = 'Invoke saf emasser put controls [-h, --help] for additional help';
   // Only process if we have an Implementation Status (optional field)
-  if (Object.hasOwn(dataObj, 'implementationStatus')) {
-    // The implementation Status is always required in any of these cases
-    bodyObject.implementationStatus = dataObj.implementationStatus;
+  if (!Object.hasOwn(dataObj, 'implementationStatus')) {
+    return;
+  }
 
-    switch (dataObj.implementationStatus) {
-      case 'Planned':
-      case 'Implemented': {
-        // No need to check for controlDesignation and estimatedCompletionDate, they are required fields
-        if (!(Object.hasOwn(dataObj, 'responsibleEntities')) || !(Object.hasOwn(dataObj, 'slcmCriticality'))
-          || !(Object.hasOwn(dataObj, 'slcmFrequency')) || !(Object.hasOwn(dataObj, 'slcmMethod'))
-          || !(Object.hasOwn(dataObj, 'slcmReporting')) || !(Object.hasOwn(dataObj, 'slcmTracking'))
-          || !(Object.hasOwn(dataObj, 'slcmComments'))) {
-          printRedMsg('Missing one of these parameters/fields:');
-          printRedMsg('    responsibleEntities, slcmCriticality, slcmFrequency,');
-          printRedMsg('    slcmMethod,slcmReporting, slcmTracking, slcmComments');
-          printHelpMsg(HELP_MSG);
-          process.exit(1);
-        }
-        bodyObject.responsibleEntities = dataObj.responsibleEntities;
-        bodyObject.slcmCriticality = dataObj.slcmCriticality;
-        bodyObject.slcmFrequency = dataObj.slcmFrequency;
-        bodyObject.slcmMethod = dataObj.slcmMethod;
-        bodyObject.slcmReporting = dataObj.slcmReporting;
-        bodyObject.slcmTracking = dataObj.slcmTracking;
-        bodyObject.slcmComments = dataObj.slcmComments;
+  const HELP_MSG = 'Invoke saf emasser put controls [-h, --help] for additional help';
+  // The implementation Status is always required in any of these cases
+  bodyObject.implementationStatus = dataObj.implementationStatus;
 
-        break;
-      }
-
-      case 'Not Applicable': {
-        // No need to check for controlDesignation, it is a required field
-        if ((Object.hasOwn(dataObj, 'naJustification') && Object.hasOwn(dataObj, 'responsibleEntities'))) {
-          bodyObject.naJustification = dataObj.naJustification;
-          bodyObject.responsibleEntities = dataObj.responsibleEntities;
-        } else {
-          printRedMsg('Missing one of these parameters/fields:');
-          printRedMsg('    naJustification, responsibleEntities');
-          printHelpMsg(HELP_MSG);
-          process.exit(1);
-        }
-
-        break;
-      }
-
-      case 'Manually Inherited': {
-        // No need to check for controlDesignation and estimatedCompletionDate, they are required fields
-        if (!(Object.hasOwn(dataObj, 'commonControlProvider')) || !(Object.hasOwn(dataObj, 'responsibleEntities'))
-          || !(Object.hasOwn(dataObj, 'slcmCriticality')) || !(Object.hasOwn(dataObj, 'slcmFrequency'))
-          || !(Object.hasOwn(dataObj, 'slcmMethod')) || !(Object.hasOwn(dataObj, 'slcmReporting'))
-          || !(Object.hasOwn(dataObj, 'slcmTracking')) || !(Object.hasOwn(dataObj, 'slcmComments'))) {
-          printRedMsg('Missing one of these parameters/fields:');
-          printRedMsg('    commonControlProvider, responsibleEntities, slcmCriticality,');
-          printRedMsg('    slcmFrequency, slcmMethod, slcmReporting, slcmTracking, slcmComments');
-          printHelpMsg(HELP_MSG);
-          process.exit(1);
-        }
-        bodyObject.commonControlProvider = dataObj.commonControlProvider;
-        bodyObject.responsibleEntities = dataObj.responsibleEntities;
-        bodyObject.slcmCriticality = dataObj.slcmCriticality;
-        bodyObject.slcmFrequency = dataObj.slcmFrequency;
-        bodyObject.slcmMethod = dataObj.slcmMethod;
-        bodyObject.slcmReporting = dataObj.slcmReporting;
-        bodyObject.slcmTracking = dataObj.slcmTracking;
-        bodyObject.slcmComments = dataObj.slcmComments;
-
-        break;
-      }
-
-      case 'Inherited': {
-        // No need to check for controlDesignation, it is a required field
-        if ((Object.hasOwn(dataObj, 'commonControlProvider'))) {
-          bodyObject.commonControlProvider = dataObj.commonControlProvider;
-        } else {
-          printRedMsg('When implementationStatus value is "Inherited" the following field is required: commonControlProvider');
-          printHelpMsg(HELP_MSG);
-          process.exit(1);
-        }
-
-        break;
-      }
-
-      default: {
-        printRedMsg('The "implementationStatus" field must one of the following:');
-        printRedMsg('    Planned, Implemented, Not Applicable, Inherited, or Manually Inherited');
-        printRedMsg(`Status provided was: ${dataObj.implementationStatus}`);
+  switch (dataObj.implementationStatus) {
+    case 'Planned':
+    case 'Implemented': {
+      // No need to check for controlDesignation and estimatedCompletionDate, they are required fields
+      if (!(Object.hasOwn(dataObj, 'responsibleEntities')) || !(Object.hasOwn(dataObj, 'slcmCriticality'))
+        || !(Object.hasOwn(dataObj, 'slcmFrequency')) || !(Object.hasOwn(dataObj, 'slcmMethod'))
+        || !(Object.hasOwn(dataObj, 'slcmReporting')) || !(Object.hasOwn(dataObj, 'slcmTracking'))
+        || !(Object.hasOwn(dataObj, 'slcmComments'))) {
+        printRedMsg('Missing one of these parameters/fields:');
+        printRedMsg('    responsibleEntities, slcmCriticality, slcmFrequency,');
+        printRedMsg('    slcmMethod,slcmReporting, slcmTracking, slcmComments');
+        printHelpMsg(HELP_MSG);
         process.exit(1);
       }
+      bodyObject.responsibleEntities = dataObj.responsibleEntities;
+      bodyObject.slcmCriticality = dataObj.slcmCriticality;
+      bodyObject.slcmFrequency = dataObj.slcmFrequency;
+      bodyObject.slcmMethod = dataObj.slcmMethod;
+      bodyObject.slcmReporting = dataObj.slcmReporting;
+      bodyObject.slcmTracking = dataObj.slcmTracking;
+      bodyObject.slcmComments = dataObj.slcmComments;
+
+      break;
+    }
+
+    case 'Not Applicable': {
+      // No need to check for controlDesignation, it is a required field
+      if ((Object.hasOwn(dataObj, 'naJustification') && Object.hasOwn(dataObj, 'responsibleEntities'))) {
+        bodyObject.naJustification = dataObj.naJustification;
+        bodyObject.responsibleEntities = dataObj.responsibleEntities;
+      } else {
+        printRedMsg('Missing one of these parameters/fields:');
+        printRedMsg('    naJustification, responsibleEntities');
+        printHelpMsg(HELP_MSG);
+        process.exit(1);
+      }
+
+      break;
+    }
+
+    case 'Manually Inherited': {
+      // No need to check for controlDesignation and estimatedCompletionDate, they are required fields
+      if (!(Object.hasOwn(dataObj, 'commonControlProvider')) || !(Object.hasOwn(dataObj, 'responsibleEntities'))
+        || !(Object.hasOwn(dataObj, 'slcmCriticality')) || !(Object.hasOwn(dataObj, 'slcmFrequency'))
+        || !(Object.hasOwn(dataObj, 'slcmMethod')) || !(Object.hasOwn(dataObj, 'slcmReporting'))
+        || !(Object.hasOwn(dataObj, 'slcmTracking')) || !(Object.hasOwn(dataObj, 'slcmComments'))) {
+        printRedMsg('Missing one of these parameters/fields:');
+        printRedMsg('    commonControlProvider, responsibleEntities, slcmCriticality,');
+        printRedMsg('    slcmFrequency, slcmMethod, slcmReporting, slcmTracking, slcmComments');
+        printHelpMsg(HELP_MSG);
+        process.exit(1);
+      }
+      bodyObject.commonControlProvider = dataObj.commonControlProvider;
+      bodyObject.responsibleEntities = dataObj.responsibleEntities;
+      bodyObject.slcmCriticality = dataObj.slcmCriticality;
+      bodyObject.slcmFrequency = dataObj.slcmFrequency;
+      bodyObject.slcmMethod = dataObj.slcmMethod;
+      bodyObject.slcmReporting = dataObj.slcmReporting;
+      bodyObject.slcmTracking = dataObj.slcmTracking;
+      bodyObject.slcmComments = dataObj.slcmComments;
+
+      break;
+    }
+
+    case 'Inherited': {
+      // No need to check for controlDesignation, it is a required field
+      if ((Object.hasOwn(dataObj, 'commonControlProvider'))) {
+        bodyObject.commonControlProvider = dataObj.commonControlProvider;
+      } else {
+        printRedMsg('When implementationStatus value is "Inherited" the following field is required: commonControlProvider');
+        printHelpMsg(HELP_MSG);
+        process.exit(1);
+      }
+
+      break;
+    }
+
+    default: {
+      printRedMsg('The "implementationStatus" field must one of the following:');
+      printRedMsg('    Planned, Implemented, Not Applicable, Inherited, or Manually Inherited');
+      printRedMsg(`Status provided was: ${dataObj.implementationStatus}`);
+      process.exit(1);
     }
   }
 }

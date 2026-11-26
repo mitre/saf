@@ -86,10 +86,12 @@ Asserts that a required parameter exists and is not undefined.
 @throws Will throw an error if the value is undefined.
 */
 function assertParamExists(object: string, value: string | undefined | null): void {
-  if (value === undefined) {
-    printRedMsg(`Missing required parameter/field: ${object}`);
-    throw new Error('Value not defined');
+  if (value !== undefined) {
+    return;
   }
+
+  printRedMsg(`Missing required parameter/field: ${object}`);
+  throw new Error('Value not defined');
 }
 
 /**

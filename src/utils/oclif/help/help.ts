@@ -40,10 +40,12 @@ export default class MyHelpClass extends Help {
     if (hasArgs) {
       const argNamesMap = new Map<string, string>();
       _.forOwn(command.args, (value, key) => {
-        if (key !== 'name') {
-          const argName = _.get(command.args[key], 'name');
-          argNamesMap.set(argName.toUpperCase(), argName);
+        if (key === 'name') {
+          return;
         }
+
+        const argName = _.get(command.args[key], 'name');
+        argNamesMap.set(argName.toUpperCase(), argName);
       });
       this.logModify(argNamesMap, this.formatCommand(command));
     } else {

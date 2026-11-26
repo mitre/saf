@@ -70,12 +70,14 @@ describe('generateMarkdownTable', () => {
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
-    if (tableToken?.type === 'table') {
-      const headers = tableToken.header;
-      const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
-      expect(Array.isArray(headers)).toBe(true);
-      expect(Array.isArray(rows)).toBe(true);
+    if (tableToken?.type !== 'table') {
+      return;
     }
+
+    const headers = tableToken.header;
+    const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
+    expect(Array.isArray(headers)).toBe(true);
+    expect(Array.isArray(rows)).toBe(true);
   });
 
   it('each row matches a row in `testTableRows`', () => {
@@ -83,14 +85,16 @@ describe('generateMarkdownTable', () => {
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
-    if (tableToken?.type === 'table') {
-      const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
+    if (tableToken?.type !== 'table') {
+      return;
+    }
 
-      for (const row of rows) {
-        expect(Array.isArray(row)).toBe(true);
-        const matchedRowIndex = testTableRows.findIndex(testRow => JSON.stringify(testRow) === JSON.stringify(row));
-        expect(matchedRowIndex).not.toBe(-1);
-      }
+    const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
+
+    for (const row of rows) {
+      expect(Array.isArray(row)).toBe(true);
+      const matchedRowIndex = testTableRows.findIndex(testRow => JSON.stringify(testRow) === JSON.stringify(row));
+      expect(matchedRowIndex).not.toBe(-1);
     }
   });
 
@@ -99,12 +103,14 @@ describe('generateMarkdownTable', () => {
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
-    if (tableToken?.type === 'table') {
-      const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
+    if (tableToken?.type !== 'table') {
+      return;
+    }
 
-      for (const [index, row] of rows.entries()) {
-        expect(row[0]).toBe(expectedRowOrder[index]);
-      }
+    const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
+
+    for (const [index, row] of rows.entries()) {
+      expect(row[0]).toBe(expectedRowOrder[index]);
     }
   });
 
@@ -113,21 +119,23 @@ describe('generateMarkdownTable', () => {
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
-    if (tableToken?.type === 'table') {
-      const headers = tableToken.header;
+    if (tableToken?.type !== 'table') {
+      return;
+    }
 
-      const headerTexts = headers.map((header, index) => {
-        if (index === 0) {
-          // Special case for the first element
-          return header.text.split(': ')[0];
-        }
+    const headers = tableToken.header;
 
-        return header.text.split('<br>')[0];
-      });
-
-      for (const [index, headerText] of headerTexts.entries()) {
-        expect(headerText).toBe(expectedColumnOrder[index]);
+    const headerTexts = headers.map((header, index) => {
+      if (index === 0) {
+        // Special case for the first element
+        return header.text.split(': ')[0];
       }
+
+      return header.text.split('<br>')[0];
+    });
+
+    for (const [index, headerText] of headerTexts.entries()) {
+      expect(headerText).toBe(expectedColumnOrder[index]);
     }
   });
 
@@ -136,22 +144,24 @@ describe('generateMarkdownTable', () => {
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
-    if (tableToken?.type === 'table') {
-      const headers = tableToken.header;
+    if (tableToken?.type !== 'table') {
+      return;
+    }
 
-      const headerTexts = headers.map((header, index) => {
-        if (index === 0) {
-        // Special case for the first element
-          return header.text.split(': ')[0];
-        }
+    const headers = tableToken.header;
 
-        return header.text.split('<br>')[0];
-      });
-
-      for (const headerText of headerTexts) {
-        const matchedColumnIndex = expectedColumnOrder.indexOf(headerText);
-        expect(matchedColumnIndex).not.toBe(-1);
+    const headerTexts = headers.map((header, index) => {
+      if (index === 0) {
+      // Special case for the first element
+        return header.text.split(': ')[0];
       }
+
+      return header.text.split('<br>')[0];
+    });
+
+    for (const headerText of headerTexts) {
+      const matchedColumnIndex = expectedColumnOrder.indexOf(headerText);
+      expect(matchedColumnIndex).not.toBe(-1);
     }
   });
 });

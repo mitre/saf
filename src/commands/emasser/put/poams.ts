@@ -131,10 +131,12 @@ Asserts that a required parameter exists and is not undefined.
 @throws {Error} Throws an error if the value is undefined.
 */
 function assertParamExists(object: string, value: string | number | undefined | null): void {
-  if (value === undefined) {
-    printRedMsg(`Missing required parameter/field: ${object}`);
-    throw new Error('Value not defined');
+  if (value !== undefined) {
+    return;
   }
+
+  printRedMsg(`Missing required parameter/field: ${object}`);
+  throw new Error('Value not defined');
 }
 
 /**
@@ -472,12 +474,14 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void {
     missingFields += (missingFields === '') ? 'pocPhoneNumber' : ', pocPhoneNumber';
   }
   const totalPocMissingFields = missingFields.split(',').length;
-  if ((totalPocMissingFields >= 1 && totalPocMissingFields < 4) && missingFields !== '') {
-    printRedMsg('If any POC fields are provided (pocFirstName, pocLastName, pocEmail, pocPhoneNumber) than all POC fields are required:');
-    printRedMsg(`    Missing field(s): ${missingFields}`);
-    printHelpMsg(HELP_MSG);
-    process.exit(1);
+  if (totalPocMissingFields < 1 || totalPocMissingFields >= 4 || missingFields === '') {
+    return;
   }
+
+  printRedMsg('If any POC fields are provided (pocFirstName, pocLastName, pocEmail, pocPhoneNumber) than all POC fields are required:');
+  printRedMsg(`    Missing field(s): ${missingFields}`);
+  printHelpMsg(HELP_MSG);
+  process.exit(1);
 }
 
 /**

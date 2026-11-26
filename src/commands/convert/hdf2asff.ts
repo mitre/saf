@@ -127,92 +127,94 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
       }
     }
 
-    if (flags.upload) {
-      const profileInfoFinding = converted.pop();
-      const convertedSlices = _.chunk(converted, 100) as AwsSecurityFinding[][];
+    if (!flags.upload) {
+      return;
+    }
 
-      if (flags.insecure) {
-        console.warn(
-          'WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate',
-        );
-      }
+    const profileInfoFinding = converted.pop();
+    const convertedSlices = _.chunk(converted, 100) as AwsSecurityFinding[][];
 
-      const clientOptions: SecurityHubClientConfig = {
-        region: flags.region,
-        requestHandler: new NodeHttpHandler({
-          httpsAgent: new https.Agent({
-            // Disable HTTPS verification if requested
-            rejectUnauthorized: !flags.insecure,
-            // Pass an SSL certificate to trust
-            ca: flags.certificate
-              ? fs.readFileSync(flags.certificate, 'utf8')
-              : undefined,
-          }),
+    if (flags.insecure) {
+      console.warn(
+        'WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate',
+      );
+    }
+
+    const clientOptions: SecurityHubClientConfig = {
+      region: flags.region,
+      requestHandler: new NodeHttpHandler({
+        httpsAgent: new https.Agent({
+          // Disable HTTPS verification if requested
+          rejectUnauthorized: !flags.insecure,
+          // Pass an SSL certificate to trust
+          ca: flags.certificate
+            ? fs.readFileSync(flags.certificate, 'utf8')
+            : undefined,
         }),
-      };
-      const client = new SecurityHub(clientOptions);
+      }),
+    };
+    const client = new SecurityHub(clientOptions);
 
-      try {
-        await Promise.all(
-          convertedSlices.map(async (chunk) => {
-            try {
-              const result = await client.batchImportFindings({
-                Findings: chunk,
-              });
-              console.log(
-                `Uploaded ${chunk.length} controls. Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
+    try {
+      await Promise.all(
+        convertedSlices.map(async (chunk) => {
+          try {
+            const result = await client.batchImportFindings({
+              Findings: chunk,
+            });
+            console.log(
+              `Uploaded ${chunk.length} controls. Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
+            );
+            if (result.FailedFindings?.length) {
+              console.error(
+                `Failed to upload ${result.FailedCount} Findings`,
               );
-              if (result.FailedFindings?.length) {
-                console.error(
-                  `Failed to upload ${result.FailedCount} Findings`,
-                );
-                console.log(result.FailedFindings);
-              }
-            } catch (error) {
-              if (
-                _.isObject(error)
-                && _.get(error, 'code') === 'NetworkingError'
-              ) {
-                console.error(
-                  `Failed to upload controls: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}; Using --certificate to provide your own SSL intermediary certificate (in .crt format) or use the flag --insecure to ignore SSL might resolve this issue`,
-                );
-              } else {
-                console.error(`Failed to upload controls: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}`);
-              }
+              console.log(result.FailedFindings);
             }
-          }),
+          } catch (error) {
+            if (
+              _.isObject(error)
+              && _.get(error, 'code') === 'NetworkingError'
+            ) {
+              console.error(
+                `Failed to upload controls: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}; Using --certificate to provide your own SSL intermediary certificate (in .crt format) or use the flag --insecure to ignore SSL might resolve this issue`,
+              );
+            } else {
+              console.error(`Failed to upload controls: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}`);
+            }
+          }
+        }),
+      );
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error('Unexpected error', error);
+      }
+    }
+
+    try {
+      if (profileInfoFinding) {
+        profileInfoFinding.UpdatedAt = new Date().toISOString();
+        const result = await client.batchImportFindings({
+          Findings: [profileInfoFinding as unknown] as AwsSecurityFinding[],
+        });
+        console.info(`Statistics: ${profileInfoFinding.Description}`);
+        console.info(
+          `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
         );
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message);
-        } else {
-          console.error('Unexpected error', error);
+        if (result.FailedFindings?.length) {
+          console.error(
+            `Failed to upload ${result.FailedCount} Results Set Info Finding`,
+          );
+          console.log(result.FailedFindings);
         }
       }
-
-      try {
-        if (profileInfoFinding) {
-          profileInfoFinding.UpdatedAt = new Date().toISOString();
-          const result = await client.batchImportFindings({
-            Findings: [profileInfoFinding as unknown] as AwsSecurityFinding[],
-          });
-          console.info(`Statistics: ${profileInfoFinding.Description}`);
-          console.info(
-            `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
-          );
-          if (result.FailedFindings?.length) {
-            console.error(
-              `Failed to upload ${result.FailedCount} Results Set Info Finding`,
-            );
-            console.log(result.FailedFindings);
-          }
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message);
-        } else {
-          console.error('Unexpected error', error);
-        }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error('Unexpected error', error);
       }
     }
   }

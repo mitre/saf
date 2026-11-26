@@ -113,10 +113,12 @@ If the value is undefined, it prints an error message and throws an error.
 @throws {Error} Throws an error if the value is undefined.
 */
 function assertParamExists(object: string, value: string | boolean | number | undefined | null): void {
-  if (value === undefined) {
-    printRedMsg(`Missing required parameter/field: ${object}`);
-    throw new Error('Value not defined');
+  if (value !== undefined) {
+    return;
   }
+
+  printRedMsg(`Missing required parameter/field: ${object}`);
+  throw new Error('Value not defined');
 }
 
 /**

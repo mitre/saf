@@ -17,10 +17,12 @@ function getAllJsonExamples(): Record<string, unknown> {
 }
 
 function assertParamExists(object: string, value: string | number | boolean | undefined | null): void {
-  if (value === undefined) {
-    printRedMsg(`Missing required parameter/field: ${object}`);
-    throw new Error('Value not defined');
+  if (value !== undefined) {
+    return;
   }
+
+  printRedMsg(`Missing required parameter/field: ${object}`);
+  throw new Error('Value not defined');
 }
 
 function addRequiredFieldsToRequestBody(dataObj: Artifacts): Artifacts {

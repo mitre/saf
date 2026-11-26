@@ -515,10 +515,12 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       log.info(`\nSkipped control(s) (not included in XCCDF guidance):  ${skippedControls.toString()}`);
       log.info(`\n  New control(s) found (included in XCCDF guidance):  ${newControlsFound.toString()}`);
 
-      if (notInProfileJSON > 0) {
-        log.error(`\nTotal skipped metadata update (not found in Input execution/profile JSON file):  ${notInProfileJSON.toString().padStart(3)}`);
-        log.error(`Control(s) skipped metadata update:  ${skipMetadataUpdate.toString()}`);
+      if (notInProfileJSON <= 0) {
+        return;
       }
+
+      log.error(`\nTotal skipped metadata update (not found in Input execution/profile JSON file):  ${notInProfileJSON.toString().padStart(3)}`);
+      log.error(`Control(s) skipped metadata update:  ${skipMetadataUpdate.toString()}`);
     });
 
     // Signal that you're done logging - emits a finish event
