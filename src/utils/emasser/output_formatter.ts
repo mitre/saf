@@ -82,7 +82,7 @@ export function outputFormat(data: object, shouldConvert = true): string {
   const shouldHideNulls = !conf.displayNulls;
   const shouldFormatDates = conf.displayDateTime;
   const isDebugging = conf.debugging;
-  let formatDataObj: object = data;
+  let formatDataObj: Record<string, any> = data;
 
   if (isDebugging) {
     // When debugging is on, output the entire content returned from
@@ -110,7 +110,7 @@ export function outputFormat(data: object, shouldConvert = true): string {
       if (shouldHideNulls) {
         const newData: Record<string, any> = {};
 
-        for (const key1 of (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[])) {
+        const mergeWithoutNulls = (key1: string) => {
           switch (key1) {
             // Process the 'meta' content
             case 'meta': {
@@ -141,11 +141,10 @@ export function outputFormat(data: object, shouldConvert = true): string {
                 } else {
                   for (const key2 of (Object.keys(obj) as (keyof typeof obj)[])) {
                     if (Array.isArray(obj[key2])) {
-                      let jsonObj: Record<string, any> = {};
                       const data_array: object[] = Object.values(obj[key2]);
                       const hash_array: object[] = [];
                       for (const dataObject of data_array) {
-                        jsonObj = removeNullsFromObject(dataObject);
+                        const jsonObj = removeNullsFromObject(dataObject);
                         hash_array.push(jsonObj);
                       }
 
@@ -176,13 +175,18 @@ export function outputFormat(data: object, shouldConvert = true): string {
               break;
             }
           }
+        };
+
+        for (const key1 of Object.keys(formatDataObj)) {
+          mergeWithoutNulls(key1);
         }
       }
 
       if (shouldFormatDates) {
         const newData: Record<string, any> = {};
         const dataObj: Record<string, any> = {};
-        for (const key1 of (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[])) {
+
+        const mergeFormattedDates = (key1: string) => {
           const jsonData: Record<string, any> = {};
           switch (key1) {
             case 'meta': {
@@ -206,11 +210,10 @@ export function outputFormat(data: object, shouldConvert = true): string {
                 const obj: object = formatDataObj[key1];
                 for (const key2 of (Object.keys(obj) as (keyof typeof obj)[])) {
                   if (Array.isArray(obj[key2])) {
-                    let jsonObj: Record<string, any> = {};
                     const data_array: object[] = Object.values(obj[key2]);
                     const hash_array: object[] = [];
                     for (const dataObject of data_array) {
-                      jsonObj = removeNullsFromObject(dataObject);
+                      const jsonObj = removeNullsFromObject(dataObject);
                       hash_array.push(jsonObj);
                     }
 
@@ -240,6 +243,10 @@ export function outputFormat(data: object, shouldConvert = true): string {
               break;
             }
           }
+        };
+
+        for (const key1 of Object.keys(formatDataObj)) {
+          mergeFormattedDates(key1);
         }
         formatDataObj = newData;
       }

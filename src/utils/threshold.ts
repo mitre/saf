@@ -1,4 +1,4 @@
-import type { ContextualizedControl, ContextualizedProfile, ControlStatus, ExecJSON, Severity } from 'inspecjs';
+import type { ContextualizedControl, ContextualizedProfile, ControlStatus, ExecJSON, HDFControlSegment, Severity } from 'inspecjs';
 import _ from 'lodash';
 import type { StatusHash, ThresholdValues } from '../types/threshold';
 
@@ -270,6 +270,34 @@ function controlFindingDetails(control: { message: string[] }, controlCKLStatus:
   }
 }
 
+function addSegmentMessage(segment: HDFControlSegment, messages: string[]): void {
+  switch (segment.status) {
+    case 'skipped': {
+      messages.push(`SKIPPED -- Test: ${segment.code_desc}\nMessage: ${segment.skip_message}\n`);
+      break;
+    }
+
+    case 'failed': {
+      messages.push(`FAILED -- Test: ${segment.code_desc}\nMessage: ${segment.message}\n`);
+      break;
+    }
+
+    case 'passed': {
+      messages.push(`PASS -- ${segment.code_desc}\n`);
+      break;
+    }
+
+    case 'error': {
+      messages.push(`PROFILE_ERROR -- Test: ${segment.code_desc}\nMessage: ${segment.code_desc}\n`);
+      break;
+    }
+
+    default: {
+      break;
+    }
+  }
+}
+
 export function extractControlSummariesBySeverity(profile: ContextualizedProfile): Record<string, Record<string, Record<string, string | string[] | number | undefined>>> {
   const result: Record<string, Record<string, Record<string, string | string[] | number | undefined>>> = {
     failed: {},
@@ -307,31 +335,7 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
     };
     if (control.hdf.segments) {
       for (const segment of control.hdf.segments) {
-        switch (segment.status) {
-          case 'skipped': {
-            extracted.message.push(`SKIPPED -- Test: ${segment.code_desc}\nMessage: ${segment.skip_message}\n`);
-            break;
-          }
-
-          case 'failed': {
-            extracted.message.push(`FAILED -- Test: ${segment.code_desc}\nMessage: ${segment.message}\n`);
-            break;
-          }
-
-          case 'passed': {
-            extracted.message.push(`PASS -- ${segment.code_desc}\n`);
-            break;
-          }
-
-          case 'error': {
-            extracted.message.push(`PROFILE_ERROR -- Test: ${segment.code_desc}\nMessage: ${segment.code_desc}\n`);
-            break;
-          }
-
-          default: {
-            break;
-          }
-        }
+        addSegmentMessage(segment, extracted.message);
       }
     }
     if (control.data.impact === 0) {

@@ -141,7 +141,7 @@ export function getHDFSummary(hdf: ExecJSON.Execution): string {
   const controls: readonly ContextualizedControl[] = contextualizedEvaluation.contains.flatMap(
     profile => profile.contains,
   );
-  for (const control of controls) {
+  const countControlStatus = (control: ContextualizedControl) => {
     switch (control.hdf.status) {
       case 'Passed': {
         summaryObject.passedCount += 1;
@@ -170,6 +170,10 @@ export function getHDFSummary(hdf: ExecJSON.Execution): string {
 
       default:
     }
+  };
+
+  for (const control of controls) {
+    countControlStatus(control);
   }
   summary += `Profiles: [Profile<${summaryObject.profileNames.join('> Profile<')}>], Passed=${summaryObject.passedCount}, Failed=${summaryObject.failedCount}, Not Applicable=${summaryObject.notApplicableCount}, Not Reviewed=${summaryObject.notReviewedCount}>`;
   return summary;

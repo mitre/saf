@@ -203,6 +203,24 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     }
   }
 
+  private static findMatchingControl(controls: Control[], controlId: string): Control | undefined {
+    // Control IDs can use V- or SV- prefixes. Match the full ID or its numeric part.
+    const numericId = controlId.split('-')[1];
+    for (const existingControl of controls) {
+      const code = existingControl.code;
+      if (typeof code !== 'string') {
+        continue;
+      }
+
+      const newline = code.indexOf('\n');
+      const controlLine = newline === -1 ? code : code.slice(0, newline);
+      if (controlLine.includes(controlId) || controlLine.includes(numericId)) {
+        return existingControl;
+      }
+    }
+    return undefined;
+  }
+
   private readonly logger: Logger = createWinstonLogger({
     logFile: 'CliProcessOutput.log',
     plainText: true,
@@ -953,33 +971,21 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       this.logThis('  Computed the delta between the existing profile and updated benchmark.', 'debug');
 
       if (updatedResult) {
+        const controls: Control[] = existingProfile.controls;
         for (const control of updatedResult.profile.controls) {
-          const controls = existingProfile.controls;
-
-          let index = -1;
-
-          for (const [i, c] of controls.entries()) {
-            const newline = c.code.indexOf('\n');
-            const controlLine = newline === -1 ? c.code : c.code.slice(0, newline);
-            // NOTE: The control.id can be in the form of V-123456 or SV-123456
-            //       check the entire value or just the numeric value for a match
-            if (controlLine.includes(control.id) || controlLine.includes(control.id.split('-')[1])) {
-              index = i;
-              break;
-            }
-          }
+          const matchingControl = GenerateDelta.findMatchingControl(controls, control.id);
 
           // Call the .toRuby verbose if the log level is debug or verbose
           const isVerboseLogging = Boolean(logLevel === 'debug' || logLevel === 'verbose');
-          if (index >= 0) {
-            // We found a mapping for this control (aka index >=0)
+          if (matchingControl) {
+            // We found a mapping for this control.
             // The new control (control) has the new metadata but doesn't have
             // the describe block (code). Using the updateControl method with the new
             // control so we can get the code with the new metadata.
 
-            // NOTE: Can use the getExistingDescribeFromControl(existingProfile.controls[index])
+            // NOTE: Can use the getExistingDescribeFromControl(matchingControl)
             //       method from inspect-objects
-            const newControl = updateControl(existingProfile.controls[index], control, thisLogger);
+            const newControl = updateControl(matchingControl, control, thisLogger);
             this.logThis(`Writing updated control with code block for: ${control.id}.`, 'info');
             const controlFilename = safeFilename(`${basename(control.id)}.rb`);
             fs.writeFileSync(
