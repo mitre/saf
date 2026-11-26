@@ -408,7 +408,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void {
 
       // Add the milestone object
       // isActive is used to prevent uploading duplicate/undesired milestones via the POA&M PUT call and must be set to false, otherwise a new milestone is created
-      bodyObject.milestones = dataObj.milestones?.map(milestone => ({ description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: Object.hasOwn(milestone, 'isActive') ? milestone.isActive : false })) || [];
+      bodyObject.milestones = dataObj.milestones?.map(milestone => ({ description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: Object.hasOwn(milestone, 'isActive') && milestone.isActive })) || [];
 
       break;
     }
@@ -433,7 +433,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void {
 
       // Add the milestone object
       // isActive is used to prevent uploading duplicate/undesired milestones via the POA&M PUT call and must be set to false, otherwise a new milestone is created
-      bodyObject.milestones = dataObj.milestones?.map(milestone => ({ description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: Object.hasOwn(milestone, 'isActive') ? milestone.isActive : false })) || [];
+      bodyObject.milestones = dataObj.milestones?.map(milestone => ({ description: milestone.description, scheduledCompletionDate: milestone.scheduledCompletionDate, isActive: Object.hasOwn(milestone, 'isActive') && milestone.isActive })) || [];
 
       break;
     }
