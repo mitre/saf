@@ -558,7 +558,8 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           let index = -1;
 
           for (const [i, c] of controls.entries()) {
-            const controlLine = c.code.split('\n')[0];
+            const newline = c.code.indexOf('\n');
+            const controlLine = newline === -1 ? c.code : c.code.slice(0, newline);
             // NOTE: The control.id can be in the form of V-123456 or SV-123456
             //       check the entire value or just the numeric value for a match
             if (controlLine.includes(control.id) || controlLine.includes(control.id.split('-')[1])) {
