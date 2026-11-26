@@ -1309,12 +1309,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   }
 
   updateTitle(str: string): string { // skipcq: JS-0105
-    return str
-      .replaceAll('\n', String.raw``)
-      .replaceAll('\r', String.raw``)
-      .replaceAll('\t', String.raw``)
-      .replaceAll('\f', String.raw``)
-      .replaceAll('\v', String.raw``);
+    return str.replaceAll(/[\n\r\t\f\v]/g, '');
   }
 
   /**
