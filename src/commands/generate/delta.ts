@@ -917,10 +917,9 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       if (fs.existsSync(reportFile) && fs.lstatSync(reportFile).isDirectory()) {
         // Not a file - directory provided
         markDownFile = resolveSafeChild(reportFile, 'delta.md');
-      } else if (fs.existsSync(reportFile) && fs.lstatSync(reportFile).isFile()) {
-        // File name provided and exists - will be overwritten
-        markDownFile = reportFile;
-      } else if (path.extname(reportFile) === '.md') {
+      } else if ((fs.existsSync(reportFile) && fs.lstatSync(reportFile).isFile()) || path.extname(reportFile) === '.md') {
+        // Use the supplied path for an existing file or a .md filename.
+        // Writing the report overwrites any existing file at that path.
         markDownFile = reportFile;
       } else {
         markDownFile = resolveSafeChild(outputProfileFolderPath, 'delta.md');

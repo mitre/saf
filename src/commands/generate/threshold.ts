@@ -43,9 +43,8 @@ export default class GenerateThreshold extends BaseCommand<typeof GenerateThresh
       for (const severityTarget of severityTargets) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const [statusName, _total, thresholdType] = severityTarget.split('.');
-        if ((statusName === 'passed' && thresholdType === 'min') || flags.exact) {
-          _.set(thresholds, severityTarget, _.get(severityStatusCounts, renameStatusName(statusName)));
-        } else if ((statusName !== 'passed' && thresholdType === 'max') || flags.exact) {
+        const defaultThresholdType = statusName === 'passed' ? 'min' : 'max';
+        if (thresholdType === defaultThresholdType || flags.exact) {
           _.set(thresholds, severityTarget, _.get(severityStatusCounts, renameStatusName(statusName)));
         }
       }
