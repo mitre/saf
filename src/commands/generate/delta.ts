@@ -619,7 +619,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     // Process variables
     let existingProfile: any | null = null;
     let ovalDefinitions: any = {};
-    let processedXCCDF: any;
     let markDownFile = '';
     let outputProfileFolderPath = '';
     let mappedControls: any = {};
@@ -775,7 +774,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         this.logThis('  Mapping controls (using fuzzy logic - lower value = best match) from the old profile to the new profile', 'info');
         this.logger.info('Mapping controls (using fuzzy logic - lower value = best match) from the old profile to the new profile\n');
         // Process XCCDF of new profile to get controls
-        processedXCCDF = processXCCDF(xccdfContent, false, idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions);
+        const processedXCCDF = processXCCDF(xccdfContent, false, idType as 'cis' | 'version' | 'rule' | 'group', ovalDefinitions);
         // Create a dictionary mapping new control GIDs to their old control counterparts
         mappedControls = this.mapControls(existingProfile, processedXCCDF);
 

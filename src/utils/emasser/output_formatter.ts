@@ -33,14 +33,13 @@ function convertEpochToDateTime(dataObject: object): object {
   const jsonData: Record<string, any> = {};
   for (const key of (Object.keys(dataObject) as (keyof typeof dataObject)[])) {
     if (Array.isArray(dataObject[key])) {
-      let jsonObj: Record<string, any>;
       const hash_array: object[] = [];
       const data_array: object[] = Object.values(dataObject[key]);
       for (const dataObj of data_array) {
         if (typeof data_array[0] === 'string') {
           hash_array.push(dataObj);
         } else {
-          jsonObj = convertEpochToDateTime(dataObj);
+          const jsonObj = convertEpochToDateTime(dataObj);
           hash_array.push(jsonObj);
         }
       }

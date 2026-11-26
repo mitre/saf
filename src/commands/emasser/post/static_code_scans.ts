@@ -204,9 +204,8 @@ export default class EmasserPostStaticCodeScans extends Command {
             process.exit(1);
           }
 
-          let bodyObj: StaticCodeRequest;
           try {
-            bodyObj = addApplicationToRequestBody(item as StaticCodeRequest);
+            const bodyObj = addApplicationToRequestBody(item as StaticCodeRequest);
             addApplicationFindingsFields(bodyObj, item as StaticCodeRequest);
             requestBodyArray.push(bodyObj);
           } catch {
@@ -216,9 +215,8 @@ export default class EmasserPostStaticCodeScans extends Command {
       } else if (typeof data === 'object') {
         // Ensure it's a valid object
         const dataObject = data as StaticCodeRequest;
-        let bodyObj: StaticCodeRequest;
         try {
-          bodyObj = addApplicationToRequestBody(dataObject);
+          const bodyObj = addApplicationToRequestBody(dataObject);
           addApplicationFindingsFields(bodyObj, dataObject);
           requestBodyArray.push(bodyObj);
         } catch {
