@@ -280,7 +280,7 @@ export default class HDF2CKL extends Command {
         const parsedVersion = version
           .split(/\D+/)
           .filter(Boolean)
-          .map(s => Number.parseInt(s, 10));
+          .map(Number);
         profile = { version: parsedVersion[0], releasenumber: parsedVersion[1] };
       } else {
         profile = {};

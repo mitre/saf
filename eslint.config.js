@@ -57,6 +57,7 @@ export default defineConfig([
       'unicorn/no-null': 'off',
       'unicorn/no-process-exit': 'off',
       'unicorn/prefer-node-protocol': 'off',
+      'unicorn/prefer-number-coercion': 'off',
       'unicorn/prefer-split-limit': 'off',
       'unicorn/prevent-abbreviations': 'off',
     },

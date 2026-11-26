@@ -981,7 +981,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             // NOTE: The control.id can be in the form of V-123456 or SV-123456
             //       check the entire value or just the numeric value for a match
             if (controlLine.includes(control.id) || controlLine.includes(control.id.split('-')[1])) {
-              index = Number.parseInt(i, 10);
+              index = i;
               break;
             }
           }
