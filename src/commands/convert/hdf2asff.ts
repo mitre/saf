@@ -6,7 +6,7 @@ import {
   type SecurityHubClientConfig,
 } from '@aws-sdk/client-securityhub';
 import { FromHdfToAsffMapper as Mapper } from '@mitre/hdf-converters';
-import { Flags } from '@oclif/core';
+import { Constraints, Flags } from '@oclif/core';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import _ from 'lodash';
 import { basename, checkSuffix, resolveSafeChild, safeFilename } from '../../utils/global';
@@ -14,7 +14,7 @@ import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
   static readonly usage
-    = '<%= command.id %> -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] (-u [-I -C <certificate>] | [-o <asff-output-folder>])';
+    = '<%= command.id %> -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] [-u [-I] [-C <certificate>]] [-o <asff-output-folder>]';
 
   static readonly description
     = 'Translate a Heimdall Data Format JSON file into AWS Security Findings Format JSON file(s) and/or upload to AWS Security Hub';
@@ -70,11 +70,11 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
       char: 'o',
       required: false,
       description: 'Output ASFF JSON Folder',
+      parse: value => Promise.resolve(value || undefined),
     }),
     insecure: Flags.boolean({
       char: 'I',
       required: false,
-      default: false,
       description: 'Disable SSL verification, this is insecure.',
     }),
     certificate: Flags.string({
@@ -83,6 +83,11 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
       description: 'Trusted signing certificate file',
     }),
   };
+
+  static readonly constraints: typeof BaseCommand.constraints = [
+    Constraints.flags('upload', 'output').are.requiredAny(),
+    Constraints.flags('insecure', 'certificate').are.dependentOn('upload'),
+  ];
 
   async run() {
     const { flags } = await this.parse(HDF2ASFF);
