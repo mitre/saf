@@ -3,6 +3,7 @@ import path from 'path';
 import { CciNistMappingData } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
 import { parse } from 'csv-parse/sync';
+import { LinkifyIt } from 'linkify-it';
 import _ from 'lodash';
 import XlsxPopulate from 'xlsx-populate';
 import YAML from 'yaml';
@@ -32,12 +33,16 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
     output: Flags.string({ char: 'o', required: true, description: 'Output InSpec profile folder' }),
   };
 
+  private static readonly referenceLinkifier = new LinkifyIt({ fuzzyLink: false, fuzzyEmail: false });
+
   // Extract URLs for references
   matchReferences(control: Partial<InSpecControl>): Partial<InSpecControl> {
     if (control.ref) {
-      const urlMatches = control.ref.replaceAll(/[\r\n]/g, '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g);
-      if (urlMatches) {
-        control.refs = urlMatches;
+      const referenceText = control.ref.replaceAll(/[\r\n]/g, '');
+      const urlMatches = (Spreadsheet2HDF.referenceLinkifier.match(referenceText) ?? [])
+        .filter(({ schema }) => ['http:', 'https:'].includes(schema));
+      if (urlMatches.length > 0) {
+        control.refs = urlMatches.map(({ raw }) => raw);
       }
 
       control.ref = undefined;
