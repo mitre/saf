@@ -48,11 +48,7 @@ const syslogColors = {
 
 const colorizer = format.colorize({ colors: syslogColors });
 
-const plainMessage = format.printf(info =>
-  typeof info.message === 'string'
-    ? info.message
-    : JSON.stringify(info.message),
-);
+const plainMessage = format.printf(info => typeof info.message === 'string' ? info.message : JSON.stringify(info.message));
 
 const plainConsoleFormat = format.combine(
   format(info => ({

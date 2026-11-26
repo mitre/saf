@@ -117,15 +117,9 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
       try {
         const convertedJson = JSON.parse(data);
         if (Array.isArray(convertedJson)) {
-          findings.push(
-            ...convertedJson.map(finding => JSON.stringify(finding)),
-          );
+          findings.push(...convertedJson.map(finding => JSON.stringify(finding)));
         } else if ('Findings' in convertedJson) {
-          findings.push(
-            ...convertedJson.Findings.map((finding: Record<string, unknown>) =>
-              JSON.stringify(finding),
-            ),
-          );
+          findings.push(...convertedJson.Findings.map((finding: Record<string, unknown>) => JSON.stringify(finding)));
         } else if ('Controls' in convertedJson) {
           throw new Error(
             'Invalid ASFF findings format - a standards standards was passed to --input instead of --securityHub',
@@ -157,9 +151,7 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
 
       // If we've been passed any Security Standards JSONs
       if (flags.securityHub) {
-        securityHub = flags.securityHub.map((file: string) =>
-          fs.readFileSync(file, 'utf8'),
-        );
+        securityHub = flags.securityHub.map((file: string) => fs.readFileSync(file, 'utf8'));
       }
     } else if (flags.aws) {
       // Flag to pull findings from AWS Security Hub
@@ -208,11 +200,7 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
           `Received: ${getFindingsResult.Findings?.length} findings`,
         );
         if (getFindingsResult.Findings) {
-          findings.push(
-            ...getFindingsResult.Findings.map(finding =>
-              JSON.stringify(finding),
-            ),
-          );
+          findings.push(...getFindingsResult.Findings.map(finding => JSON.stringify(finding)));
         }
 
         nextToken = getFindingsResult.NextToken;

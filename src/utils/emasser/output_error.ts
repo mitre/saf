@@ -17,8 +17,7 @@ import _ from 'lodash';
  * 'Unknown' and an error message of 'Unable to access error message(s)'.
  */
 export function outputError(data: object): string {
-  let result: object = { meta: { code: (_.has(data, 'status')) ? _.get(data, 'status') : 'Unknown',
-    errorMessage: (_.has(data, 'code')) ? _.get(data, 'code') : 'Unable to access error message(s)' } };
+  let result: object = { meta: { code: (_.has(data, 'status')) ? _.get(data, 'status') : 'Unknown', errorMessage: (_.has(data, 'code')) ? _.get(data, 'code') : 'Unable to access error message(s)' } };
 
   if (_.has(data, 'response.data')) {
     result = _.get(data, 'response.data') || result;

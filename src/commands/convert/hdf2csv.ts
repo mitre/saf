@@ -51,12 +51,14 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       char: 'i',
       required: false,
       exclusive: ['interactive'],
-      description: '\u001B[31m(required if not --interactive)\u001B[34m Input HDF file' }),
+      description: '\u001B[31m(required if not --interactive)\u001B[34m Input HDF file',
+    }),
     output: Flags.string({
       char: 'o',
       required: false,
       exclusive: ['interactive'],
-      description: '\u001B[31m(required if not --interactive)\u001B[34m Output CSV file' }),
+      description: '\u001B[31m(required if not --interactive)\u001B[34m Output CSV file',
+    }),
     fields: Flags.string({
       char: 'f',
       required: false,
@@ -69,7 +71,8 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       required: false,
       exclusive: ['interactive'],
       default: false,
-      description: 'Do not truncate fields longer than 32,767 characters (the cell limit in Excel)' }),
+      description: 'Do not truncate fields longer than 32,767 characters (the cell limit in Excel)',
+    }),
   };
 
   async run() {

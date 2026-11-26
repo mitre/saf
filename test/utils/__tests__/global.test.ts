@@ -9,7 +9,8 @@ import {
   getProfileInfo,
   extractValueViaPathOrNumber,
   dataURLtoU8Array,
-  getDescription, arrayNeededPaths,
+  getDescription,
+  arrayNeededPaths,
   resolveSafeChild,
   safeFilename,
 } from '../../../src/utils/global';

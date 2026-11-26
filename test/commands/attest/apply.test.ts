@@ -38,9 +38,11 @@ describe('Test attest apply', () => {
     await runAndValidate(
       [
         'attest apply',
-        '-i', path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus.json'),
+        '-i',
+        path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus.json'),
         path.resolve('./test/sample_data/attestations/attestations_jsonFormat.json'),
-        '-o', `${tmpobj.name}/rhel8_attestations_jsonOutput.json`,
+        '-o',
+        `${tmpobj.name}/rhel8_attestations_jsonOutput.json`,
       ],
       `${tmpobj.name}/rhel8_attestations_jsonOutput.json`,
       path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json'),
@@ -51,9 +53,11 @@ describe('Test attest apply', () => {
     await runAndValidate(
       [
         'attest apply',
-        '-i', path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus.json'),
+        '-i',
+        path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus.json'),
         path.resolve('./test/sample_data/attestations/attestations_xlsxFormat.xlsx'),
-        '-o', `${tmpobj.name}/rhel8_attestations_xlsxOutput.json`,
+        '-o',
+        `${tmpobj.name}/rhel8_attestations_xlsxOutput.json`,
       ],
       `${tmpobj.name}/rhel8_attestations_xlsxOutput.json`,
       path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json'),
@@ -64,9 +68,11 @@ describe('Test attest apply', () => {
     await runAndValidate(
       [
         'attest apply',
-        '-i', path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus.json'),
+        '-i',
+        path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus.json'),
         path.resolve('./test/sample_data/attestations/attestations_yamlFormat.yaml'),
-        '-o', `${tmpobj.name}/rhel8_attestations_yamlOutput.json`,
+        '-o',
+        `${tmpobj.name}/rhel8_attestations_yamlOutput.json`,
       ],
       `${tmpobj.name}/rhel8_attestations_yamlOutput.json`,
       path.resolve('./test/sample_data/attestations/rhel8_sample_oneOfEachControlStatus_output.json'),
@@ -77,9 +83,11 @@ describe('Test attest apply', () => {
     await runAndValidate(
       [
         'attest apply',
-        '-i', path.resolve('./test/sample_data/HDF/input/triple_overlay_profile_sample.json'),
+        '-i',
+        path.resolve('./test/sample_data/HDF/input/triple_overlay_profile_sample.json'),
         path.resolve('./test/sample_data/attestations/triple_overlay_example-attestations.json'),
-        '-o', `${tmpobj.name}/triple_overlay_attested.json`,
+        '-o',
+        `${tmpobj.name}/triple_overlay_attested.json`,
       ],
       `${tmpobj.name}/triple_overlay_attested.json`,
       path.resolve('./test/sample_data/attestations/triple_overlay_attested.json'),
@@ -90,9 +98,11 @@ describe('Test attest apply', () => {
     await runAndValidate(
       [
         'attest apply',
-        '-i', path.resolve('./test/sample_data/HDF/input/triple_overlay_profile_sample.json'),
+        '-i',
+        path.resolve('./test/sample_data/HDF/input/triple_overlay_profile_sample.json'),
         path.resolve('./test/sample_data/attestations/triple_overlay_example-attestations.yml'),
-        '-o', `${tmpobj.name}/triple_overlay_attested_with_yml.json`,
+        '-o',
+        `${tmpobj.name}/triple_overlay_attested_with_yml.json`,
       ],
       `${tmpobj.name}/triple_overlay_attested_with_yml.json`,
       path.resolve('./test/sample_data/attestations/triple_overlay_attested.json'),
