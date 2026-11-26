@@ -179,10 +179,7 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       value: string;
       checked: boolean;
     };
-    const choices: ChoiceItems[] = [];
-    for (const str of csvExportFields) {
-      choices.push({ name: str, value: str, checked: true });
-    }
+    const choices: ChoiceItems[] = csvExportFields.map(fieldName => ({ name: fieldName, value: fieldName, checked: true }));
 
     const fileSelectorTheme = {
       style: {
