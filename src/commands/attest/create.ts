@@ -72,7 +72,7 @@ export default class CreateAttestations extends BaseCommand<typeof CreateAttesta
     if (flags.input) {
       const evaluation = JSON.parse(fs.readFileSync(flags.input, 'utf8')) as ExecJSON.Execution;
       const search = new AccurateSearch();
-      const controls: Record<string, ExecJSON.Control> = {};
+      const controls: Record<string, ExecJSON.Control> = Object.create(null);
       for (const profile of evaluation.profiles) {
         for (const control of profile.controls) {
           controls[control.id] = control;
@@ -85,7 +85,7 @@ export default class CreateAttestations extends BaseCommand<typeof CreateAttesta
         if (input.trim().toLowerCase() === 'q') {
           break;
         }
-        if (input in controls) {
+        if (Object.hasOwn(controls, input)) {
           attestations.push(this.promptForAttestation(controls[input].id));
         } else {
           const ids = search.search(input).slice(0, MAX_SEARCH_RESULTS);

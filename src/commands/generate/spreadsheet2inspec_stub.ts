@@ -87,7 +87,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
           const mappedCISControlsByVersion: Record<string, string[]> = {};
           for (const cisControlMatch of cisControlMatches) {
             const [revision, cisControl] = cisControlMatch.replace(/\r?\n/, '').split(' ');
-            if (revision === 'v7' && cisControl in CISNistMappings) {
+            if (revision === 'v7' && Object.hasOwn(CISNistMappings, cisControl)) {
               control.tags?.nist?.push(_.get(CISNistMappings, cisControl));
             }
 
@@ -311,7 +311,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
         if (newControl.tags?.cci) {
           newControl.tags.nist = [];
           for (const cci of newControl.tags.cci) {
-            if (cci in CciNistMappingData.data) {
+            if (Object.hasOwn(CciNistMappingData.data, cci)) {
               newControl.tags?.nist?.push(_.get(CciNistMappingData.data, cci));
             }
           }

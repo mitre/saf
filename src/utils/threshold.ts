@@ -412,15 +412,11 @@ export function unflattenThreshold(threshold: Record<string, number>): Threshold
   const ret: Record<string, Record<string, number | Record<string, number>>> = {};
   for (const [key, value] of Object.entries(threshold)) {
     const [left, middle, right] = key.split('.');
-    if (!ret[left]) {
-      ret[left] = {};
+    if (!Object.hasOwn(ret, left)) {
+      Object.defineProperty(ret, left, { value: {}, enumerable: true, writable: true, configurable: true });
     }
-    if (right) {
-      ret[left][middle] = {};
-      ret[left][middle][right] = value;
-    } else {
-      ret[left][middle] = value;
-    }
+    const thresholdValue = right ? { [right]: value } : value;
+    Object.defineProperty(ret[left], middle, { value: thresholdValue, enumerable: true, writable: true, configurable: true });
   }
   return ret;
 }

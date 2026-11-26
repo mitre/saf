@@ -237,7 +237,7 @@ function isValidCloudResource(obj: unknown): obj is CloudResource {
     return false;
   }
   const requiredFields = ['provider', 'resourceId', 'resourceName', 'resourceType', 'complianceResults'];
-  return requiredFields.every(field => field in obj);
+  return requiredFields.every(field => Object.hasOwn(obj, field));
 }
 
 const CMD_HELP = 'saf emasser post cloud_resources -h or --help';

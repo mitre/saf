@@ -193,7 +193,7 @@ export function extractSolution(findingDetails: string): string | undefined {
 
 export function cci2nist(cci: string) {
   if (typeof cci === 'string') {
-    if (cci in CciNistMappingData.data) {
+    if (Object.hasOwn(CciNistMappingData.data, cci)) {
       return (CciNistMappingData.data as unknown as Record<string, string>)[cci].replace(' ', '');
     }
 
