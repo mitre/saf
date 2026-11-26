@@ -25,8 +25,8 @@ const mkControl = (
   id,
   title,
   tags: {
-    ...(gtitle === undefined ? {} : { gtitle }),
-    ...(ccis.length > 0 ? { cci: ccis } : {}),
+    ...(gtitle !== undefined && { gtitle }),
+    ...(ccis.length > 0 && { cci: ccis }),
   },
 });
 
