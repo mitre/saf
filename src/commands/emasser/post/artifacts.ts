@@ -46,7 +46,7 @@ export default class EmasserPostArtifacts extends Command {
     // Check if we have a single file, could be a zip file
     if (flags.fileName.length === 1 || flags.fileName[0].endsWith('.zip')) {
       if (fs.existsSync(flags.fileName[0])) {
-        const isBulk = Boolean(flags.fileName[0].endsWith('.zip'));
+        const isBulk = flags.fileName[0].endsWith('.zip');
         const fileStream: fs.ReadStream = fs.createReadStream(flags.fileName[0]);
 
         try {
