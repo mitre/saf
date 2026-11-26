@@ -344,7 +344,7 @@ export default class EmasserPutControls extends Command {
       if (Array.isArray(data)) {
         // Generate the put request object based on business logic
         requestBodyArray.push(...data.map(dataObject => generateBodyObj(dataObject)));
-      } else if (_.isObject(data) && data !== null) {
+      } else if (data !== null && _.isObject(data)) {
         const dataObject: Controls = data;
         // Generate the put request object based on business logic
         requestBodyArray.push(generateBodyObj(dataObject));

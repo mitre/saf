@@ -311,7 +311,7 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       const cleanedRow: Record<string, string> = {};
       for (const [key, value] of Object.entries(row)) {
         if (value !== undefined) {
-          if (value.length > 32_767 && shouldTruncateFields) {
+          if (shouldTruncateFields && value.length > 32_767) {
             if ('ID' in row) {
               console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
             } else {

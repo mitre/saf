@@ -265,7 +265,7 @@ export default class EmasserHardwareBaseline extends Command {
       if (Array.isArray(data)) {
         // Generate the put request object
         requestBodyArray.push(...data.map(dataObject => generateBodyObj(dataObject)));
-      } else if (_.isObject(data) && data !== null) {
+      } else if (data !== null && _.isObject(data)) {
         const dataObject: Hardware = data;
         // Generate the put request object
         requestBodyArray.push(generateBodyObj(dataObject));

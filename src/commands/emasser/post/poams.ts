@@ -459,7 +459,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void {
     missingFields += (missingFields === '') ? 'pocPhoneNumber' : ', pocPhoneNumber';
   }
   const totalPocMissingFields = missingFields.split(',').length;
-  if (totalPocMissingFields < 1 || totalPocMissingFields >= 4 || missingFields === '') {
+  if (missingFields === '' || totalPocMissingFields < 1 || totalPocMissingFields >= 4) {
     return;
   }
 

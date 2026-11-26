@@ -103,7 +103,7 @@ export function createWinstonLogger(options: WinstonLoggerOptions = {}): Logger 
     }),
   ];
 
-  if (alwaysPrintToConsole || ((process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test') || level === 'verbose')) {
+  if (alwaysPrintToConsole || level === 'verbose' || (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'test')) {
     transportList.push(new transports.Console({
       format: plainText ? plainConsoleFormat : undefined,
     }));

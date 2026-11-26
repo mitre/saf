@@ -222,7 +222,7 @@ function cklControlStatus(control: ContextualizedControl, isForSummary?: boolean
     return 'Not_Applicable';
   }
 
-  if (statuses?.includes('error') || (statuses?.length === 0 && isForSummary)) {
+  if (statuses?.includes('error') || (isForSummary && statuses?.length === 0)) {
     return 'Profile_Error';
   }
 

@@ -474,7 +474,7 @@ function processBusinessLogic(bodyObject: Poams, dataObj: Poams): void {
     missingFields += (missingFields === '') ? 'pocPhoneNumber' : ', pocPhoneNumber';
   }
   const totalPocMissingFields = missingFields.split(',').length;
-  if (totalPocMissingFields < 1 || totalPocMissingFields >= 4 || missingFields === '') {
+  if (missingFields === '' || totalPocMissingFields < 1 || totalPocMissingFields >= 4) {
     return;
   }
 
@@ -559,7 +559,7 @@ export default class EmasserPutPoams extends Command {
       if (Array.isArray(data)) {
         // Generate the put request object based on business logic
         requestBodyArray.push(...data.map(dataObject => generateBodyObj(dataObject)));
-      } else if (_.isObject(data) && data !== null) {
+      } else if (data !== null && _.isObject(data)) {
         const dataObject: Poams = data;
         // Generate the put request object based on business logic
         requestBodyArray.push(generateBodyObj(dataObject));

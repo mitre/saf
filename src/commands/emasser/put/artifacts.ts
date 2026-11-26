@@ -135,7 +135,7 @@ export default class EmasserPutArtifacts extends Command {
       if (Array.isArray(data)) {
         // Generate the PUT request object based on business logic
         requestBodyArray.push(...data.map(dataObject => generateBodyObj(dataObject)));
-      } else if (_.isObject(data) && data !== null) {
+      } else if (data !== null && _.isObject(data)) {
         const dataObject: Artifacts = data;
         // Generate the PUT request object based on business logic
         requestBodyArray.push(generateBodyObj(dataObject));
