@@ -100,7 +100,8 @@ function addApplicationFindingsFields(bodyObject: StaticCodeRequest, dataObj: St
   try {
     let findingsObj: StaticCodeApplicationPost = {};
     let i = 0;
-    for (const appFindings of (dataObj.applicationFindings || [])) {
+    const inputFindings = dataObj.applicationFindings || [];
+    for (const appFindings of inputFindings) {
       // If clearing findings
       if (Object.hasOwn(appFindings, 'clearFindings')) {
         findingsObj.clearFindings = appFindings.clearFindings;
