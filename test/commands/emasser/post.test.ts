@@ -43,7 +43,7 @@ describe('Test eMASSer API CLI (POST) commands', () => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
       const errorMsg = getErrorMessage(error);
-      if (errorMsg.includes('unexpected end of file') === false) {
+      if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
@@ -59,7 +59,7 @@ describe('Test eMASSer API CLI (POST) commands', () => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
       const errorMsg = getErrorMessage(error);
-      if (errorMsg.includes('unexpected end of file') === false) {
+      if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
@@ -75,7 +75,7 @@ describe('Test eMASSer API CLI (POST) commands', () => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
       const errorMsg = getErrorMessage(error);
-      if (errorMsg.includes('unexpected end of file') === false) {
+      if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
@@ -91,7 +91,7 @@ describe('Test eMASSer API CLI (POST) commands', () => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
       const errorMsg = getErrorMessage(error);
-      if (errorMsg.includes('unexpected end of file') === false) {
+      if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
@@ -107,7 +107,7 @@ describe('Test eMASSer API CLI (POST) commands', () => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
       const errorMsg = getErrorMessage(error);
-      if (errorMsg.includes('unexpected end of file') === false) {
+      if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
@@ -123,7 +123,7 @@ describe('Test eMASSer API CLI (POST) commands', () => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
       const errorMsg = getErrorMessage(error);
-      if (errorMsg.includes('unexpected end of file') === false) {
+      if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
@@ -139,7 +139,7 @@ describe('Test eMASSer API CLI (POST) commands', () => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
       const errorMsg = getErrorMessage(error);
-      if (errorMsg.includes('unexpected end of file') === false) {
+      if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
@@ -155,7 +155,7 @@ describe('Test eMASSer API CLI (POST) commands', () => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
       const errorMsg = getErrorMessage(error);
-      if (errorMsg.includes('unexpected end of file') === false) {
+      if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
@@ -171,7 +171,7 @@ describe('Test eMASSer API CLI (POST) commands', () => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
       const errorMsg = getErrorMessage(error);
-      if (errorMsg.includes('unexpected end of file') === false) {
+      if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
@@ -187,7 +187,7 @@ describe('Test eMASSer API CLI (POST) commands', () => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
       const errorMsg = getErrorMessage(error);
-      if (errorMsg.includes('unexpected end of file') === false) {
+      if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
@@ -203,7 +203,7 @@ describe('Test eMASSer API CLI (POST) commands', () => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
       const errorMsg = getErrorMessage(error);
-      if (errorMsg.includes('unexpected end of file') === false) {
+      if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
@@ -219,7 +219,7 @@ describe('Test eMASSer API CLI (POST) commands', () => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
       const errorMsg = getErrorMessage(error);
-      if (errorMsg.includes('unexpected end of file') === false) {
+      if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
@@ -235,7 +235,7 @@ describe('Test eMASSer API CLI (POST) commands', () => {
       responseDataObj = new Map(Object.entries(response));
     }).catch((error: unknown) => {
       const errorMsg = getErrorMessage(error);
-      if (errorMsg.includes('unexpected end of file') === false) {
+      if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
