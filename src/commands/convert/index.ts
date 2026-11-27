@@ -52,6 +52,8 @@ export default class Convert extends BaseCommand<typeof Convert> {
 
   static readonly examples = ['<%= config.bin %> <%= command.id %> -i input -o output'];
 
+  private static detectedType: string;
+
   static readonly flags = {
     input: Flags.string({
       char: 'i',
@@ -66,17 +68,14 @@ export default class Convert extends BaseCommand<typeof Convert> {
     ...Convert.getFlagsForInputFile(getInputFilename()),
   };
 
-  static detectedType: string;
-
   static getFlagsForInputFile(filePath: string) {
     if (filePath) {
-      Convert.detectedType = fingerprint({
+      const detectedType: string = fingerprint({
         data: fs.readFileSync(filePath, 'utf8'),
         filename: basename(filePath),
       });
-      switch (
-        Convert.detectedType
-      ) {
+      Convert.detectedType = detectedType;
+      switch (detectedType) {
         case 'asff': {
           return ASFF2HDF.flags;
         }
