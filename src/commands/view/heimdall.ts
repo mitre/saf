@@ -30,7 +30,6 @@ export default class Heimdall extends Command {
     const open = openDynamicImport.default;
 
     const { flags } = await this.parse(Heimdall);
-    let parsedJSONs: Record<string, unknown>[] = [];
 
     // Is the defined port valid?
     if (Number.isNaN(flags.port) || flags.port < 1 || flags.port >= 65_536) {
@@ -38,9 +37,10 @@ export default class Heimdall extends Command {
       return;
     }
 
+    let parsedJSONs: Record<string, unknown>[] = [];
     // If we were passed a file, does it exist? Can it convert to JSON correctly?
     if (flags.files && flags.files.length > 0) {
-      if (!flags.files.every((file: string) => fs.statSync(file).isFile())) {
+      if (flags.files.some((file: string) => !fs.statSync(file).isFile())) {
         console.log('An option passed as a file was not a file');
         return;
       }
@@ -63,11 +63,8 @@ export default class Heimdall extends Command {
       next();
     };
 
-    if (flags.files) {
-      console.log(`Serving Heimdall at http://localhost:${flags.port}/?predefinedLoad=true`);
-    } else {
-      console.log(`Serving Heimdall at http://localhost:${flags.port}`);
-    }
+    const predefinedLoadPath = flags.files ? '/?predefinedLoad=true' : '';
+    console.log(`Serving Heimdall at http://localhost:${flags.port}${predefinedLoadPath}`);
 
     // Open the browser
     if (!flags.noOpenBrowser) {

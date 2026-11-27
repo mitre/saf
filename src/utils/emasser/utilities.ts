@@ -6,12 +6,12 @@ import { outputError } from './output_error';
 import { resolveSafeChild, safeFilename } from '../global';
 
 /**
- * Interface representing the command line arguments.
- *
- * @property {string} requestType - The type of request to be made.
- * @property {string} endpoint - The endpoint to which the request is directed.
- * @property {string} argument - Additional argument for the request.
- */
+Interface representing the command line arguments.
+
+@property {string} requestType - The type of request to be made.
+@property {string} endpoint - The endpoint to which the request is directed.
+@property {string} argument - Additional argument for the request.
+*/
 type CliArgs = {
   requestType: string;
   endpoint: string;
@@ -19,10 +19,10 @@ type CliArgs = {
 };
 
 /**
- * Interface representing various flag options used in the application.
- * Property are listed here as optional but are set to required based
- * on what endpoint being supported (see getFlagsForEndpoint)
- */
+Interface representing various flag options used in the application.
+Property are listed here as optional but are set to required based
+on what endpoint being supported (see getFlagsForEndpoint)
+*/
 export type FlagOptions = {
   systemId?: OptionFlag<number>;
   poamId?: OptionFlag<number>;
@@ -87,14 +87,14 @@ export type FlagOptions = {
 };
 
 /**
- * Parses command line arguments to extract the request type, endpoint, and additional argument.
- *
- * @param argv - An array of command line arguments.
- * @param endpointValue - An optional endpoint value to override the one in the command line arguments.
- * @returns An object containing the request type, endpoint, and additional argument.
- */
+Parses command line arguments to extract the request type, endpoint, and additional argument.
+
+@param argv - An array of command line arguments.
+@param endpointValue - An optional endpoint value to override the one in the command line arguments.
+@returns An object containing the request type, endpoint, and additional argument.
+*/
 function getArgs(argv: string[], endpointValue?: string): CliArgs {
-  const requestTypeIndex = argv.findIndex(arg => (arg === 'get' || arg === 'post' || arg === 'put' || arg === 'delete'));
+  const requestTypeIndex = argv.findIndex(arg => ['get', 'post', 'put', 'delete'].includes(arg));
   return {
     requestType: argv[requestTypeIndex],
     endpoint: endpointValue || argv[requestTypeIndex + 1],
@@ -103,30 +103,29 @@ function getArgs(argv: string[], endpointValue?: string): CliArgs {
 }
 
 /**
- * Generates flag options for a given endpoint based on the provided command line arguments.
- *
- * @param argv - The command line arguments.
- * @returns An object containing the flag options for the specified endpoint.
- *
- * The function processes different request types (`get`, `post`, `put`, `delete`) and endpoints
- * to generate the appropriate flag options. Each endpoint has its own set of flags with specific
- * descriptions and requirements.
- *
- * Example usage:
- * ```typescript
- * const flags = getFlagsForEndpoint(['get', 'system']);
- * ```
- *
- * The returned `FlagOptions` object will vary based on the endpoint and request type.
- */
-// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
-export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS-0044
+Generates flag options for a given endpoint based on the provided command line arguments.
+
+@param argv - The command line arguments.
+@returns An object containing the flag options for the specified endpoint.
+
+The function processes different request types (`get`, `post`, `put`, `delete`) and endpoints
+to generate the appropriate flag options. Each endpoint has its own set of flags with specific
+descriptions and requirements.
+
+Example usage:
+```typescript
+const flags = getFlagsForEndpoint(['get', 'system']);
+```
+
+The returned `FlagOptions` object will vary based on the endpoint and request type.
+*/
+export function getFlagsForEndpoint(argv: string[]): FlagOptions {
   const args: CliArgs = getArgs(argv);
   let flagObj: FlagOptions = {};
 
-  switch (args.requestType) { // skipcq: JS-0047
+  switch (args.requestType) {
     case 'get': {
-      switch (args.endpoint) { // skipcq: JS-0047
+      switch (args.endpoint) {
         case 'system': {
           flagObj = {
             systemId: Flags.integer({ char: 's', description: 'The system identification number', required: true }),
@@ -137,8 +136,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
 
         case 'systems': {
           flagObj = {
-            registrationType: Flags.string({ char: 'r', description: 'Filter on registration type',
-              options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false }),
+            registrationType: Flags.string({ char: 'r', description: 'Filter on registration type', options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false }),
             ditprId: Flags.string({ char: 't', description: 'DoD Information Technology (IT) Portfolio Repository (DITPR) string Id', required: false }),
             coamsId: Flags.string({ char: 'c', description: 'Cyber Operational Attributes Management System (COAMS) string Id', required: false }),
             policy: Flags.string({ char: 'p', description: 'Filter on policy', options: ['diacap', 'rmf', 'reporting'], required: false }),
@@ -270,8 +268,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'workflow_definitions': {
           flagObj = {
             includeInactive: Flags.boolean({ char: 'I', description: 'Boolean - Include inactive workflows', allowNo: true, required: false }),
-            registrationType: Flags.string({ char: 'r', description: 'The registration type - must be a valid type',
-              options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false }),
+            registrationType: Flags.string({ char: 'r', description: 'The registration type - must be a valid type', options: ['assessAndAuthorize', 'assessOnly', 'guest', 'regular', 'functional', 'cloudServiceProvider', 'commonControlProvider'], required: false }),
           };
           break;
         }
@@ -316,7 +313,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
     }
 
     case 'post': {
-      switch (args.endpoint) { // skipcq: JS-0047
+      switch (args.endpoint) {
         case 'test_results': {
           flagObj = {
             systemId: Flags.integer({ char: 's', description: 'The system identification number', required: true }),
@@ -324,8 +321,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
             testedBy: Flags.string({ char: 'b', description: 'The person that conducted the test (Last Name, First)', required: true }),
             testDate: Flags.string({ char: 't', description: 'The date test was conducted, Unix time format', required: true }),
             description: Flags.string({ char: 'd', description: 'The description of test result. 4000 Characters', required: true }),
-            complianceStatus: Flags.string({ char: 'S', description: 'The compliance status of the test result',
-              options: ['Compliant', 'Non-Compliant', 'Not Applicable'], required: true }),
+            complianceStatus: Flags.string({ char: 'S', description: 'The compliance status of the test result', options: ['Compliant', 'Non-Compliant', 'Not Applicable'], required: true }),
           };
           break;
         }
@@ -363,8 +359,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
         case 'pac': {
           flagObj = {
             systemId: Flags.integer({ char: 's', description: 'The system identification number', required: true }),
-            workflow: Flags.string({ char: 'w', description: 'The appropriate workflow',
-              options: ['Assess and Authorize', 'Assess Only', 'Security Plan Approval'], required: true }),
+            workflow: Flags.string({ char: 'w', description: 'The appropriate workflow', options: ['Assess and Authorize', 'Assess Only', 'Security Plan Approval'], required: true }),
             name: Flags.string({ char: 'n', description: 'The control package name', required: true }),
             comments: Flags.string({ char: 'c', description: 'The control approval chain comments', required: true }),
           };
@@ -389,7 +384,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
     }
 
     case 'put': {
-      switch (args.endpoint) { // skipcq: JS-0047
+      switch (args.endpoint) {
         case 'milestones': {
           flagObj = {
             systemId: Flags.integer({ char: 's', description: 'The system identification number', required: true }),
@@ -418,7 +413,7 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
     }
 
     case 'delete': {
-      switch (args.endpoint) { // skipcq: JS-0047
+      switch (args.endpoint) {
         case 'artifacts': {
           flagObj = {
             systemId: Flags.integer({ char: 's', description: 'The system identification number', required: true }),
@@ -485,19 +480,18 @@ export function getFlagsForEndpoint(argv: string[]): FlagOptions { // skipcq: JS
 }
 
 /**
- * Retrieves a description for a given endpoint based on the provided arguments.
- *
- * @param argv - The command line arguments passed to the function.
- * @param endpoint - The endpoint for which the description is to be retrieved.
- * @returns A string description for the specified endpoint and arguments.
- */
-// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
-export function getDescriptionForEndpoint(argv: string[], endpoint: string): string { // skipcq: JS-0044
+Retrieves a description for a given endpoint based on the provided arguments.
+
+@param argv - The command line arguments passed to the function.
+@param endpoint - The endpoint for which the description is to be retrieved.
+@returns A string description for the specified endpoint and arguments.
+*/
+export function getDescriptionForEndpoint(argv: string[], endpoint: string): string {
   const args: CliArgs = getArgs(argv, endpoint);
   let description = '';
 
   if (args.requestType === 'get') {
-    switch (args.endpoint) { // skipcq: JS-0047
+    switch (args.endpoint) {
       case 'roles': {
         switch (args.argument) {
           case 'all': {
@@ -905,14 +899,13 @@ export function getDescriptionForEndpoint(argv: string[], endpoint: string): str
 }
 
 /**
- * Generates example command strings for a given endpoint and arguments.
- *
- * @param argv - The array of command-line arguments.
- * @param endpoint - The optional endpoint to generate examples for.
- * @returns An array of example command strings.
- */
-// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
-export function getExamplesForEndpoint(argv: string[], endpoint?: string): string[] { // skipcq: JS-0044
+Generates example command strings for a given endpoint and arguments.
+
+@param argv - The array of command-line arguments.
+@param endpoint - The optional endpoint to generate examples for.
+@returns An array of example command strings.
+*/
+export function getExamplesForEndpoint(argv: string[], endpoint?: string): string[] {
   const args: CliArgs = getArgs(argv, endpoint);
   // <%= config.bin %> resolves to the executable name
   // <%= command.id %> resolves to the command name
@@ -920,7 +913,7 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
   const exampleArray: string[] = [];
 
   if (args.requestType === 'get') {
-    switch (args.endpoint) { // skipcq: JS-0047
+    switch (args.endpoint) {
       case 'roles': {
         switch (args.argument) {
           case 'all': {
@@ -1331,36 +1324,35 @@ export function getExamplesForEndpoint(argv: string[], endpoint?: string): strin
 }
 
 /**
- * Retrieves JSON examples based on the specified endpoint.
- *
- * @param {string} [endpoint] - The endpoint for which to retrieve JSON examples.
- * @returns {string[]} An array of JSON examples corresponding to the specified endpoint.
- *
- * The following endpoints are supported:
- * - 'poams-post-required': Returns JSON example for POA&M post required fields.
- * - 'poams-post-put-required-va': Returns JSON example for POA&M post required fields specific to VA.
- * - 'poams-post-conditional': Returns JSON example for POA&M post conditional fields.
- * - 'poams-put-required': Returns JSON example for POA&M put required fields.
- * - 'poams-put-conditional': Returns JSON example for POA&M put conditional fields.
- * - 'poams-post-put-optional': Returns JSON example for POA&M post/put optional fields.
- * - 'controls-required': Returns JSON example for controls required fields.
- * - 'controls-conditional': Returns JSON example for controls conditional fields.
- * - 'controls-optional': Returns JSON example for controls optional fields.
- * - 'hardware-post-required': Returns JSON example for hardware post required fields.
- * - 'hardware-post-put-conditional': Returns JSON example for hardware post/put conditional fields.
- * - 'hardware-post-put-optional': Returns JSON example for hardware post/put optional fields.
- * - 'software-post-required': Returns JSON example for software post required fields.
- * - 'software-post-put-conditional': Returns JSON example for software post/put conditional fields.
- * - 'software-post-put-optional': Returns JSON example for software post/put optional fields.
- * - 'cloud_resources-required': Returns JSON example for cloud resources required fields.
- * - 'cloud_resources-optional': Returns JSON example for cloud resources optional fields.
- * - 'scan_findings-application': Returns JSON example for scan findings application fields.
- * - 'scan_findings-applicationFindings': Returns JSON example for scan findings application findings fields.
- * - 'scan_findings-clearFindings': Returns JSON example for clearing scan findings.
- * - 'container_scans-required': Returns JSON example for container scans required fields.
- * - 'container_scans-optional': Returns JSON example for container scans optional fields.
- */
-// skipcq: JS-R1005 - Ignore Function cyclomatic complexity high threshold
+Retrieves JSON examples based on the specified endpoint.
+
+@param {string} [endpoint] - The endpoint for which to retrieve JSON examples.
+@returns {string[]} An array of JSON examples corresponding to the specified endpoint.
+
+The following endpoints are supported:
+- 'poams-post-required': Returns JSON example for POA&M post required fields.
+- 'poams-post-put-required-va': Returns JSON example for POA&M post required fields specific to VA.
+- 'poams-post-conditional': Returns JSON example for POA&M post conditional fields.
+- 'poams-put-required': Returns JSON example for POA&M put required fields.
+- 'poams-put-conditional': Returns JSON example for POA&M put conditional fields.
+- 'poams-post-put-optional': Returns JSON example for POA&M post/put optional fields.
+- 'controls-required': Returns JSON example for controls required fields.
+- 'controls-conditional': Returns JSON example for controls conditional fields.
+- 'controls-optional': Returns JSON example for controls optional fields.
+- 'hardware-post-required': Returns JSON example for hardware post required fields.
+- 'hardware-post-put-conditional': Returns JSON example for hardware post/put conditional fields.
+- 'hardware-post-put-optional': Returns JSON example for hardware post/put optional fields.
+- 'software-post-required': Returns JSON example for software post required fields.
+- 'software-post-put-conditional': Returns JSON example for software post/put conditional fields.
+- 'software-post-put-optional': Returns JSON example for software post/put optional fields.
+- 'cloud_resources-required': Returns JSON example for cloud resources required fields.
+- 'cloud_resources-optional': Returns JSON example for cloud resources optional fields.
+- 'scan_findings-application': Returns JSON example for scan findings application fields.
+- 'scan_findings-applicationFindings': Returns JSON example for scan findings application findings fields.
+- 'scan_findings-clearFindings': Returns JSON example for clearing scan findings.
+- 'container_scans-required': Returns JSON example for container scans required fields.
+- 'container_scans-optional': Returns JSON example for container scans optional fields.
+*/
 export function getJsonExamples(endpoint?: string): string[] {
   if (endpoint === 'controls-required') {
     const data = '{ '
@@ -1738,17 +1730,17 @@ export function getJsonExamples(endpoint?: string): string[] {
 }
 
 /**
- * Saves data to a specified file within a given directory. If the directory does not exist, it will be created.
- *
- * @param dir - The directory where the file will be saved.
- * @param filename - The name of the file to save the data to.
- * @param data - The data to be saved in the file.
- *
- * @remarks
- * This function checks if the specified directory exists, and if not, it creates the directory.
- * It then writes the provided data to a file within that directory. If an error occurs during
- * the file writing process, an error message is logged to the console.
- */
+Saves data to a specified file within a given directory. If the directory does not exist, it will be created.
+
+@param dir - The directory where the file will be saved.
+@param filename - The name of the file to save the data to.
+@param data - The data to be saved in the file.
+
+@remarks
+This function checks if the specified directory exists, and if not, it creates the directory.
+It then writes the provided data to a file within that directory. If an error occurs during
+the file writing process, an error message is logged to the console.
+*/
 export function saveFile(dir: string, filename: string, data: any): void {
   if (!fs.existsSync(dir)) {
     fs.mkdirSync(dir);
@@ -1766,39 +1758,38 @@ export function saveFile(dir: string, filename: string, data: any): void {
 }
 
 /**
- * Prints a help message to the console with a specific format.
- *
- * The message is prefixed with an arrow (→) and displayed in yellow color.
- *
- * @param msg - The help message to be printed.
- */
+Prints a help message to the console with a specific format.
+
+The message is prefixed with an arrow (→) and displayed in yellow color.
+
+@param msg - The help message to be printed.
+*/
 export function printHelpMsg(msg: string) {
-  console.log('\u001B[93m\n→', msg, '\u001B[0m');
+  console.log('\u{1B}[93m\n→', msg, '\u{1B}[0m');
 }
 
 /**
- * Prints a message to the console in red color.
- *
- * @param msg - The message to be printed.
- */
+Prints a message to the console in red color.
+
+@param msg - The message to be printed.
+*/
 export function printRedMsg(msg: string) {
-  console.log('\u001B[91m»', msg, '\u001B[0m');
+  console.log('\u{1B}[91m»', msg, '\u{1B}[0m');
 }
 
 /**
- * Displays an error message to the console.
- *
- * If the error is an instance of `Error`, it will be formatted and colorized
- * before being logged. Otherwise, a generic error message will be displayed,
- * indicating the endpoint that caused the error.
- *
- * @param error - The error to display. Can be of any type.
- * @param endpoint - The endpoint that was being called when the error occurred.
- */
+Displays an error message to the console.
+
+If the error is an instance of `Error`, it will be formatted and colorized
+before being logged. Otherwise, a generic error message will be displayed,
+indicating the endpoint that caused the error.
+
+@param error - The error to display. Can be of any type.
+@param endpoint - The endpoint that was being called when the error occurred.
+*/
 export function displayError(error: unknown, endpoint: string) {
-  if (error instanceof Error) {
-    console.error(colorize(outputError(error)));
-  } else {
-    console.error(`\u001B[91mError calling the ${endpoint} endpoint: ${String(error)}\u001B[0m`);
-  }
+  const message = error instanceof Error
+    ? colorize(outputError(error))
+    : `\u{1B}[91mError calling the ${endpoint} endpoint: ${String(error)}\u{1B}[0m`;
+  console.error(message);
 }

@@ -2,6 +2,23 @@ import { format } from 'util';
 import { type Command, Help } from '@oclif/core';
 import _ from 'lodash';
 
+/**
+A wrapper around process.stdout and process.stderr that allows us to mock out the streams for testing.
+*/
+class Stream {
+  public channel: 'stdout' | 'stderr';
+
+  constructor(channel: 'stdout' | 'stderr') {
+    this.channel = channel;
+  }
+
+  public write(data: string): boolean {
+    return process[this.channel].write(data);
+  }
+}
+export const stdout = new Stream('stdout');
+export const stderr = new Stream('stderr');
+
 /*
   Override the showCommandHelp (called directly for single-command CLIs) method defined in the oclif Help class.
   This is done to modify how the arguments are displayed (uppercase), which obscures how to use
@@ -24,6 +41,20 @@ import _ from 'lodash';
   For additional information, reference the oclif Help Classes (https://oclif.io/docs/help_classes)
 */
 export default class MyHelpClass extends Help {
+  protected logModify(argNamesMap: Map<string, string>, ...args: string[]): void {
+    // Iterate over the argNamesMap using object destructuring
+    // Replace the uppercase values with its natural format value
+    for (const [key, value] of argNamesMap) {
+      args[0] = args[0].replace(key, () => value);
+    }
+
+    stdout.write(format.apply(this, args) + '\n');
+  }
+
+  protected log(...args: string[]): void {
+    stdout.write(format.apply(this, args) + '\n');
+  }
+
   public showCommandHelp(command: Command.Loadable): Promise<void> {
     const name = command.id;
     const depth = name.split(':').length;
@@ -40,10 +71,12 @@ export default class MyHelpClass extends Help {
     if (hasArgs) {
       const argNamesMap = new Map<string, string>();
       _.forOwn(command.args, (value, key) => {
-        if (key !== 'name') {
-          const argName = _.get(command.args[key], 'name');
-          argNamesMap.set(argName.toUpperCase(), argName);
+        if (key === 'name') {
+          return;
         }
+
+        const argName = _.get(command.args[key], 'name');
+        argNamesMap.set(argName.toUpperCase(), argName);
       });
       this.logModify(argNamesMap, this.formatCommand(command));
     } else {
@@ -69,35 +102,4 @@ export default class MyHelpClass extends Help {
 
     return Promise.resolve();
   }
-
-  protected logModify(argNamesMap: Map<string, string>, ...args: string[]): void {
-    // Iterate over the argNamesMap using object destructuring
-    // Replace the uppercase values with its natural format value
-    for (const [key, value] of argNamesMap) {
-      args[0] = args[0].replace(key, value);
-    }
-
-    stdout.write(format.apply(this, args) + '\n'); // skipcq: JS-0357
-  }
-
-  protected log(...args: string[]): void {
-    stdout.write(format.apply(this, args) + '\n'); // skipcq: JS-0357
-  }
 }
-
-/**
- * A wrapper around process.stdout and process.stderr that allows us to mock out the streams for testing.
- */
-class Stream {
-  public channel: 'stdout' | 'stderr';
-
-  constructor(channel: 'stdout' | 'stderr') {
-    this.channel = channel;
-  }
-
-  public write(data: string): boolean {
-    return process[this.channel].write(data);
-  }
-}
-export const stdout = new Stream('stdout');
-export const stderr = new Stream('stderr');

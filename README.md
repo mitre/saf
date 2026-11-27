@@ -351,7 +351,7 @@ convert hdf2asff              Translate a Heimdall Data Format JSON file into
                               AWS Security Findings Format JSON file(s) and/or
                               upload to AWS Security Hub
   USAGE
-    $ saf convert hdf2asff -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] (-u [-I -C <certificate>] | [-o <asff-output-folder>])
+    $ saf convert hdf2asff -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] [-u [-I] [-C <certificate>]] [-o <asff-output-folder>]
 
   FLAGS
     -C, --certificate=<certificate>         Trusted signing certificate file
@@ -359,6 +359,7 @@ convert hdf2asff              Translate a Heimdall Data Format JSON file into
     -R, --specifyRegionAttribute            Manually specify the top-level `Region` attribute - SecurityHub
                                             populates this attribute automatically and prohibits one from
                                             updating it using `BatchImportFindings` or `BatchUpdateFindings`
+    -a, --accountId=<account-id>            (required) AWS Account ID
     -i, --input=<hdf-scan-results-json>     (required) Input HDF JSON File
     -o, --output=<asff-output-folder>       Output ASFF JSON Folder
     -r, --region=<region>                   (required) SecurityHub Region
@@ -1225,13 +1226,13 @@ convert sonarqube2hdf         Pull SonarQube vulnerabilities for the specified
                               request ID name from an API and convert into a
                               Heimdall Data Format JSON file
   USAGE
-    $ saf convert sonarqube2hdf -n <sonar-project-key> -u <http://your.sonar.instance:9000> -a <your-sonar-api-key> [ -b <target-branch> | -p <pull-request-id> ] [-s <statuses-to-exclude>] -o <hdf-scan-results-json>
+    $ saf convert sonarqube2hdf -n <sonar-project-key> -u <sonarqube-url> -a <your-sonar-api-key> [-b <target-branch> | -p <pull-request-id>] [-g <organization-name>] -o <hdf-scan-results-json> [-h] [-w] [-s <statuses-to-exclude>]
 
   FLAGS
     -a, --auth=<your-sonar-api-key>               (required) SonarQube API Key / User Token - please ensure that the user has permissions for the project (including seeing the code)
     -n, --projectKey=<sonar-project-key>          (required) SonarQube Project Key
     -o, --output=<hdf-scan-results-json>          (required) Output HDF JSON File
-    -u, --url=<http://your.sonar.instance:9000>   (required) SonarQube Base URL (excluding '/api')       
+    -u, --url=<sonarqube-url>                     (required) SonarQube Base URL (excluding '/api')
     -b, --branch=<target-branch>                  Requires Sonarqube Developer Edition or above
     -p, --pullRequestID=<pull-request-id>         Requires Sonarqube Developer Edition or above
     -g, --organization=<value>                    SonarQube organization name - used as a default when necessary to access rule descriptions

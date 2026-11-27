@@ -4,26 +4,26 @@ import { describe, expect, it } from 'vitest';
 import {
   applyRequirementFirstPipeline,
   type LinkRecord,
-} from '../../../src/utils/delta_matching';
+} from '../../src/utils/delta_matching';
 
 /**
- * Integration-style test locking in the requirement-first pipeline's
- * cross-vendor behavior against hand-crafted mini profiles. Fixtures
- * simulate the RHEL 9 -> Amazon Linux 2023 derivation scenario: same
- * SRG-OS ids, same CCIs, same core requirements with the vendor
- * prefix swapped. Plus three deliberate edge cases:
- *
- *   - 1:N split on a Tier-1 single-candidate SRG block (one `related`)
- *   - Tier-3 Fuse rescue across different SRGs ("vendor-supported release")
- *   - one CCI-zero Tier-2 primary (flagged as potentialMismatch)
- *   - one genuinely novel AL2023 requirement with no ancestor (no-match)
- *
- * Contract: >=90% of target rules end up mapped (primary + related);
- * tier counts and specific mappings are pinned here so future pipeline
- * tweaks cannot silently regress this scenario.
- */
+Integration-style test locking in the requirement-first pipeline's
+cross-vendor behavior against hand-crafted mini profiles. Fixtures
+simulate the RHEL 9 -> Amazon Linux 2023 derivation scenario: same
+SRG-OS ids, same CCIs, same core requirements with the vendor
+prefix swapped. Plus three deliberate edge cases:
 
-const fixtureDir = path.resolve(__dirname, '../../sample_data/delta-matching');
+  - 1:N split on a Tier-1 single-candidate SRG block (one `related`)
+  - Tier-3 Fuse rescue across different SRGs ("vendor-supported release")
+  - one CCI-zero Tier-2 primary (flagged as potentialMismatch)
+  - one genuinely novel AL2023 requirement with no ancestor (no-match)
+
+Contract: >=90% of target rules end up mapped (primary + related);
+tier counts and specific mappings are pinned here so future pipeline
+tweaks cannot silently regress this scenario.
+*/
+
+const fixtureDir = path.resolve(__dirname, '../sample_data/delta-matching');
 
 function loadFixture(file: string): { controls: Record<string, unknown>[] } {
   return JSON.parse(fs.readFileSync(path.join(fixtureDir, file), 'utf8'));

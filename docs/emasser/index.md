@@ -13,7 +13,7 @@ Place the file on the  path where the `emasser` command is executed.
 ### Required Environment Variables
 The following environment variables are required:
 * EMASSER_API_KEY=`<API key>`
-* EMASSER_HOST_URL=`<FQDN of the eMASS server>`
+* EMASSER_HOST_URL=`<The eMASS API base URL>`
 * EMASSER_KEY_FILE_PATH=`<<The eMASS key.pem private key file in PEM format (if provided, the CERT is required)>>`
 * EMASSER_CERT_FILE_PATH=`<The eMASS client.pem certificate file in PEM format (if provided, the KEY is required)>`
 * EMASSER_CA_FILE_PATH=`<The eMASS CA certificate (if provided no Key or Client PEM is needed)>`
@@ -122,7 +122,7 @@ DESCRIPTION
 
   Required eMASS configuration variables:
         EMASSER_API_KEY           <The eMASS API key (api-key) - valid key is > 30 alpha numeric characters>
-        EMASSER_HOST_URL          <The Full Qualified Domain Name (FQDN) for the eMASS server>
+        EMASSER_HOST_URL          <The eMASS API base URL>
         EMASSER_KEY_FILE_PATH     <The eMASS key.pem private key file in PEM format (if provided the CERT is required)>
         EMASSER_CERT_FILE_PATH    <The eMASS client.pem certificate file in PEM format (if provided the KEY is required)>
         EMASSER_CA_FILE_PATH      <The eMASS CA certificate (if provided no Key or Client PEM is needed)>

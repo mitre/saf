@@ -25,29 +25,36 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
 
   static readonly examples = [
     {
-      description: '\u001B[93mProviding a threshold template file\u001B[0m',
+      description: '\u{1B}[93mProviding a threshold template file\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -T threshold.yaml',
     },
     {
-      description: '\u001B[93mSpecifying the threshold inline\u001B[0m',
+      description: '\u{1B}[93mSpecifying the threshold inline\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -I "{compliance.min: 80}, {passed.total.min: 18}, {failed.total.max: 2}"',
     },
   ];
 
   static readonly flags = {
     input: Flags.string({
-      char: 'i', required: true, description: 'The HDF JSON File to be validated by the threshold values' }),
+      char: 'i',
+      required: true,
+      description: 'The HDF JSON File to be validated by the threshold values',
+    }),
     templateInline: Flags.string({
-      char: 'I', required: false, exclusive: ['templateFile'],
+      char: 'I',
+      required: false,
+      exclusive: ['templateFile'],
       description: 'An inline (on the command line) flattened JSON containing the validation thresholds (Intended for backwards compatibility with InSpec Tools)',
     }),
     templateFile: Flags.string({
-      char: 'T', required: false, exclusive: ['templateInline'],
+      char: 'T',
+      required: false,
+      exclusive: ['templateInline'],
       description: 'A threshold YAML file containing expected threshold values. Generate it using the "saf generate threshold" command',
     }),
   };
 
-  async run() { // skipcq: JS-R1005
+  async run() {
     const { flags } = await this.parse(Threshold);
     let thresholds: ThresholdValues;
     // inline does not seem to support the controls array option
@@ -89,12 +96,13 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
       const [statusName] = statusThreshold.split('.');
       if (_.get(thresholds, statusThreshold) !== undefined && typeof _.get(thresholds, statusThreshold) !== 'object') {
         try {
+          const actualCount = _.get(overallStatusCounts, renameStatusName(statusName));
           exitNonZeroIfTrue(
             Boolean(
-              _.get(overallStatusCounts, renameStatusName(statusName))
+              actualCount
               !== _.get(thresholds, statusThreshold),
             ),
-            `${statusThreshold}: Threshold not met. Number of received total ${statusThreshold.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is not equal to your set threshold for the number of ${statusThreshold.split('.')[0]} controls (${_.get(thresholds, statusThreshold)})`,
+            `${statusThreshold}: Threshold not met. Number of received total ${statusThreshold.split('.')[0]} controls (${actualCount}) is not equal to your set threshold for the number of ${statusThreshold.split('.')[0]} controls (${_.get(thresholds, statusThreshold)})`,
           );
         } catch {
           process.exitCode = 1;
@@ -107,12 +115,13 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
       const [statusName] = totalMinimum.split('.');
       if (_.get(thresholds, totalMinimum) !== undefined) {
         try {
+          const actualCount = _.get(overallStatusCounts, renameStatusName(statusName));
           exitNonZeroIfTrue(
             Boolean(
-              _.get(overallStatusCounts, renameStatusName(statusName))
+              actualCount
               < _.get(thresholds, totalMinimum),
             ),
-            `${totalMinimum}: Threshold not met. Number of received total ${totalMinimum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${totalMinimum.split('.')[0]} controls (${_.get(thresholds, totalMinimum)})`,
+            `${totalMinimum}: Threshold not met. Number of received total ${totalMinimum.split('.')[0]} controls (${actualCount}) is less than your set threshold for the number of ${totalMinimum.split('.')[0]} controls (${_.get(thresholds, totalMinimum)})`,
           );
         } catch {
           process.exitCode = 1;
@@ -125,12 +134,13 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
       const [statusName] = totalMaximum.split('.');
       if (_.get(thresholds, totalMaximum) !== undefined) {
         try {
+          const actualCount = _.get(overallStatusCounts, renameStatusName(statusName));
           exitNonZeroIfTrue(
             Boolean(
-              _.get(overallStatusCounts, renameStatusName(statusName))
+              actualCount
               > _.get(thresholds, totalMaximum),
             ),
-            `${totalMaximum}: Threshold not met. Number of received total ${totalMaximum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${totalMaximum.split('.')[0]} controls (${_.get(thresholds, totalMaximum)})`,
+            `${totalMaximum}: Threshold not met. Number of received total ${totalMaximum.split('.')[0]} controls (${actualCount}) is greater than your set threshold for the number of ${totalMaximum.split('.')[0]} controls (${_.get(thresholds, totalMaximum)})`,
           );
         } catch {
           process.exitCode = 1;
@@ -146,11 +156,12 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
         const [statusName, , thresholdType] = statusCountThreshold.split('.');
         if (thresholdType === 'min' && _.get(thresholds, statusCountThreshold) !== undefined) {
           try {
+            const actualCount = _.get(criticalStatusCounts, renameStatusName(statusName));
             exitNonZeroIfTrue(
               Boolean(
-                _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold),
+                actualCount < _.get(thresholds, statusCountThreshold),
               ),
-              `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
+              `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${actualCount}) is less than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
             );
           } catch {
             process.exitCode = 1;
@@ -158,11 +169,12 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
           }
         } else if (thresholdType === 'max' && _.get(thresholds, statusCountThreshold) !== undefined) {
           try {
+            const actualCount = _.get(criticalStatusCounts, renameStatusName(statusName));
             exitNonZeroIfTrue(
               Boolean(
-                _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold),
+                actualCount > _.get(thresholds, statusCountThreshold),
               ),
-              `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
+              `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${actualCount}) is greater than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
             );
           } catch {
             process.exitCode = 1;
@@ -174,33 +186,35 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
 
     // Expect Control IDs to match placed severities
     const controlIdMap = getControlIdMap(parsedExecJSON.contains[0] as ContextualizedProfile);
-    for (const [, targetPaths] of Object.entries(statusSeverityPaths)) {
+    for (const targetPaths of Object.values(statusSeverityPaths)) {
       for (const targetPath of targetPaths) {
         const expectedControlIds: string[] | undefined = _.get(thresholds, targetPath);
-        const actualControlIds: string[] = _.get(controlIdMap, targetPath, []);
-        if (expectedControlIds) {
-          const actualControlsDescription = actualControlIds.length > 0 ? `only contained [${actualControlIds.join(', ')}]` : 'contained no controls';
-          for (const expectedControlId of expectedControlIds) {
-            try {
-              exitNonZeroIfTrue(
-                !actualControlIds.includes(expectedControlId),
-                `Expected ${targetPath} to contain control ${expectedControlId} but it ${actualControlsDescription}`,
-              );
-            } catch {
-              process.exitCode = 1;
-              return;
-            }
-          }
+        if (!expectedControlIds) {
+          continue;
+        }
 
+        const actualControlIds: string[] = _.get(controlIdMap, targetPath, []);
+        const actualControlsDescription = actualControlIds.length > 0 ? `only contained [${actualControlIds.join(', ')}]` : 'contained no controls';
+        for (const expectedControlId of expectedControlIds) {
           try {
             exitNonZeroIfTrue(
-              expectedControlIds.length !== actualControlIds.length,
-              `Expected ${targetPath} to contain ${expectedControlIds.length} controls but it contained ${actualControlIds.length}`,
+              !actualControlIds.includes(expectedControlId),
+              `Expected ${targetPath} to contain control ${expectedControlId} but it ${actualControlsDescription}`,
             );
           } catch {
             process.exitCode = 1;
             return;
           }
+        }
+
+        try {
+          exitNonZeroIfTrue(
+            expectedControlIds.length !== actualControlIds.length,
+            `Expected ${targetPath} to contain ${expectedControlIds.length} controls but it contained ${actualControlIds.length}`,
+          );
+        } catch {
+          process.exitCode = 1;
+          return;
         }
       }
     }

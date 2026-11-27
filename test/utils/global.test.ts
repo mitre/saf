@@ -9,10 +9,11 @@ import {
   getProfileInfo,
   extractValueViaPathOrNumber,
   dataURLtoU8Array,
-  getDescription, arrayNeededPaths,
+  getDescription,
+  arrayNeededPaths,
   resolveSafeChild,
   safeFilename,
-} from '../../../src/utils/global';
+} from '../../src/utils/global';
 
 const UTF8_ENCODING = 'utf8';
 
@@ -90,7 +91,7 @@ describe('basename', () => {
   });
 
   it('should return the empty string if trimEnd leaves an empty string', () => {
-    const result = basename('   ');
+    const result = basename(' '.repeat(3));
     expect(result).toBe('');
   });
 
@@ -107,7 +108,7 @@ describe('safeFilename', () => {
   });
 
   it('should throw when the basename is empty', () => {
-    expect(() => safeFilename('   ')).toThrow(/Unsafe filename/);
+    expect(() => safeFilename(' '.repeat(3))).toThrow(/Unsafe filename/);
   });
 
   it('should throw when the filename contains reserved characters', () => {
@@ -115,7 +116,7 @@ describe('safeFilename', () => {
   });
 
   it('should throw when the filename contains control characters', () => {
-    expect(() => safeFilename('bad\u0000name.txt')).toThrow(/Unsafe filename/);
+    expect(() => safeFilename('bad\u{0}name.txt')).toThrow(/Unsafe filename/);
   });
 
   it('should throw when the filename is a Windows reserved name', () => {
@@ -142,11 +143,12 @@ describe.sequential('safeExecFileSync', () => {
         ...actual,
         default: Object.create(actual.default, {
           platform: { value: platform, enumerable: true },
+          env: { value: { ...actual.default.env, SystemRoot: String.raw`D:\Windows` }, enumerable: true },
         }),
       };
     });
 
-    return import('../../../src/utils/global');
+    return import('../../src/utils/global');
   }
 
   afterEach(() => {
@@ -172,14 +174,15 @@ describe.sequential('safeExecFileSync', () => {
 
     const result = safeExecFileSync(String.raw`C:\Program Files\InSpec\inspec.bat`, [
       'json',
-      String.raw`C:\tmp\profile\control $psOnly#chars`,
+      'C:\\tmp\\profile\\control $psOnly#chars\\',
+      '',
     ], { encoding: 'utf8', maxBuffer: 1024 });
 
     expect(result).toBe('stdout');
-    expect(execFileSyncMock).toHaveBeenCalledWith(String.raw`C:\Program Files\InSpec\inspec.bat`, [
-      'json',
-      String.raw`C:\tmp\profile\control $psOnly#chars`,
-    ], { encoding: 'utf8', maxBuffer: 1024, shell: true });
+    expect(execFileSyncMock).toHaveBeenCalledWith(
+      String.raw`"C:\Program Files\InSpec\inspec.bat" json "C:\tmp\profile\control $psOnly#chars\\" ""`,
+      { encoding: 'utf8', maxBuffer: 1024, shell: String.raw`D:\Windows\System32\cmd.exe` },
+    );
   });
 
   it('rejects cmd.exe metacharacters and BatBadBut argument parsing cases on Windows', async () => {
@@ -265,7 +268,7 @@ describe.sequential('getInstalledPath', () => {
       },
     }));
 
-    const { getInstalledPath } = await import('../../../src/utils/global');
+    const { getInstalledPath } = await import('../../src/utils/global');
     const { getInstalledPathSync } = await import('get-installed-path');
 
     const result = getInstalledPath('module-name');
@@ -286,7 +289,7 @@ describe.sequential('getInstalledPath', () => {
       },
     }));
 
-    const { getInstalledPath } = await import('../../../src/utils/global');
+    const { getInstalledPath } = await import('../../src/utils/global');
     const { getInstalledPathSync } = await import('get-installed-path');
 
     const result = getInstalledPath('module-name');
@@ -462,7 +465,7 @@ describe.sequential('checkInput', () => {
     const { fingerprint } = await import('@mitre/hdf-converters');
     fingerprint.mockReturnValue('text');
 
-    const { checkInput } = await import('../../../src/utils/global');
+    const { checkInput } = await import('../../src/utils/global');
 
     const guessOptions = { data: 'file data', filename: 'file.txt' };
     const desiredType = 'text';
@@ -475,7 +478,7 @@ describe.sequential('checkInput', () => {
     const { fingerprint } = await import('@mitre/hdf-converters');
     fingerprint.mockReturnValue('image');
 
-    const { checkInput } = await import('../../../src/utils/global');
+    const { checkInput } = await import('../../src/utils/global');
 
     const guessOptions = { data: 'file data', filename: 'file.txt' };
     const desiredType = 'text';
@@ -488,7 +491,7 @@ describe.sequential('checkInput', () => {
     const { fingerprint } = await import('@mitre/hdf-converters');
     fingerprint.mockReturnValue(null);
 
-    const { checkInput } = await import('../../../src/utils/global');
+    const { checkInput } = await import('../../src/utils/global');
 
     const guessOptions = { data: 'file data', filename: 'file.txt' };
     const desiredType = 'text';

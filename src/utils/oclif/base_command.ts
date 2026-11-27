@@ -21,7 +21,7 @@ export abstract class InteractiveBaseCommand extends Command {
       aliases: ['interactive', 'ask-me'],
       // Show this flag under a separate GLOBAL section in help.
       helpGroup: 'GLOBAL',
-      description: 'Collect input tags interactively \u001B[31m(not available on all CLI commands)\u001B[0m',
+      description: 'Collect input tags interactively \u{1B}[31m(not available on all CLI commands)\u{1B}[0m',
     }),
   };
 }
@@ -36,7 +36,7 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
       default: 'info',
       helpGroup: 'GLOBAL',
       options: ['info', 'warn', 'debug', 'verbose'] as const,
-      description: 'Specify level for logging \u001B[31m(if implemented by the CLI command)\u001B[0m',
+      description: 'Specify level for logging \u{1B}[31m(if implemented by the CLI command)\u{1B}[0m',
     })(),
   };
 
@@ -58,11 +58,10 @@ export abstract class BaseCommand<T extends typeof Command> extends Command {
 
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display what fields are required, otherwise show the error
-    if (err?.message?.includes('See more help with --help')) {
-      this.warn(err.message.replace('--help', `\u001B[93m${process.argv.at(-2)} ${process.argv.at(-1)} -h or --help\u001B[0m`));
-    } else {
-      this.warn(err);
-    }
+    const warning = err?.message?.includes('See more help with --help')
+      ? err.message.replace('--help', () => `\u{1B}[93m${process.argv.at(-2)} ${process.argv.at(-1)} -h or --help\u{1B}[0m`)
+      : err;
+    this.warn(warning);
     return Promise.resolve();
   }
 

@@ -1,13 +1,12 @@
 import * as marked from 'marked';
-import { beforeEach, describe, expect, it } from 'vitest';
-import { generateMarkdownTable, generateMarkdownTableRow, prettyPrintColumnTitle, prettyPrintRowTitle } from '../../../../src/utils/ohdf/output_generator';
-import type { PrintableSummary } from '../../../../src/utils/ohdf/types';
+import { describe, expect, it } from 'vitest';
+import { generateMarkdownTable, generateMarkdownTableRow, prettyPrintColumnTitle, prettyPrintRowTitle } from '../../../src/utils/ohdf/output_generator';
+import type { PrintableSummary } from '../../../src/utils/ohdf/types';
 
-let item: PrintableSummary;
-const titleTables = true;
+const shouldIncludeTableTitles = true;
 
-beforeEach(() => {
-  item = {
+function createSummary(): PrintableSummary {
+  return {
     profileName: 'redhat-enterprise-linux-8-stig-baseline',
     resultSets: ['rhel-8_hardened.json'],
     compliance: 66,
@@ -17,7 +16,7 @@ beforeEach(() => {
     error: { critical: 0, high: 0, medium: 0, low: 0, total: 0 },
     no_impact: { none: 33, total: 33 },
   };
-});
+}
 
 const testTableRows = [
   ['Total', '227', '112', '3', '33', '0'],
@@ -34,7 +33,7 @@ describe('outputGenerator', () => {
   describe('generateMarkdownTableRow', () => {
     it('should generate a row for the Markdown table', () => {
       const row = 'high';
-      const result = generateMarkdownTableRow(row, item);
+      const result = generateMarkdownTableRow(row, createSummary());
       expect(result).toEqual(['11', '6', '1', '0', '0']);
     });
   });
@@ -66,92 +65,96 @@ describe('outputGenerator', () => {
 
 describe('generateMarkdownTable', () => {
   it('generates a table with both columns and rows', () => {
-    const result = generateMarkdownTable(item, titleTables);
+    const result = generateMarkdownTable(createSummary(), shouldIncludeTableTitles);
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
-    if (tableToken?.type === 'table') {
-      const headers = tableToken.header;
-      const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
-      expect(Array.isArray(headers)).toBe(true);
-      expect(Array.isArray(rows)).toBe(true);
+    if (tableToken?.type !== 'table') {
+      return;
     }
+
+    const headers = tableToken.header;
+    const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
+    expect(Array.isArray(headers)).toBe(true);
+    expect(Array.isArray(rows)).toBe(true);
   });
 
   it('each row matches a row in `testTableRows`', () => {
-    const result = generateMarkdownTable(item, titleTables);
+    const result = generateMarkdownTable(createSummary(), shouldIncludeTableTitles);
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
-    if (tableToken?.type === 'table') {
-      const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
+    if (tableToken?.type !== 'table') {
+      return;
+    }
 
-      for (const row of rows) {
-        expect(Array.isArray(row)).toBe(true);
-        const matchedRowIndex = testTableRows.findIndex(testRow => JSON.stringify(testRow) === JSON.stringify(row));
-        expect(matchedRowIndex).not.toBe(-1);
-      }
+    const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
+
+    for (const row of rows) {
+      expect(Array.isArray(row)).toBe(true);
+      const matchedRowIndex = testTableRows.findIndex(testRow => JSON.stringify(testRow) === JSON.stringify(row));
+      expect(matchedRowIndex).not.toBe(-1);
     }
   });
 
   it(`rows are in the expected order: ${expectedRowOrder.join(',')}`, () => {
-    const result = generateMarkdownTable(item, titleTables);
+    const result = generateMarkdownTable(createSummary(), shouldIncludeTableTitles);
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
-    if (tableToken?.type === 'table') {
-      const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
+    if (tableToken?.type !== 'table') {
+      return;
+    }
 
-      for (const [index, row] of rows.entries()) {
-        expect(row[0]).toBe(expectedRowOrder[index]);
-      }
+    const rows = tableToken.rows.map(rowToken => rowToken.map(cellToken => cellToken.text));
+
+    for (const [index, row] of rows.entries()) {
+      expect(row[0]).toBe(expectedRowOrder[index]);
     }
   });
 
   it(`columns are in the expected order: ${expectedColumnOrder.join(',')}`, () => {
-    const result = generateMarkdownTable(item, titleTables);
+    const result = generateMarkdownTable(createSummary(), shouldIncludeTableTitles);
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
-    if (tableToken?.type === 'table') {
-      const headers = tableToken.header;
+    if (tableToken?.type !== 'table') {
+      return;
+    }
 
-      const headerTexts = headers.map((header, index) => {
-        if (index === 0) {
-          // Special case for the first element
-          return header.text.split(': ')[0];
-        }
+    const headers = tableToken.header;
 
-        return header.text.split('<br>')[0];
-      });
+    const headerTexts = headers.map((header, index) => {
+      // Special case for the first element
+      const separator = index === 0 ? ': ' : '<br>';
+      return header.text.split(separator)[0];
+    });
 
-      for (const [index, headerText] of headerTexts.entries()) {
-        expect(headerText).toBe(expectedColumnOrder[index]);
-      }
+    for (const [index, headerText] of headerTexts.entries()) {
+      expect(headerText).toBe(expectedColumnOrder[index]);
     }
   });
 
   it(`each column matches a column in ${expectedColumnOrder.join(',')}`, () => {
-    const result = generateMarkdownTable(item, titleTables);
+    const result = generateMarkdownTable(createSummary(), shouldIncludeTableTitles);
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
-    if (tableToken?.type === 'table') {
-      const headers = tableToken.header;
+    if (tableToken?.type !== 'table') {
+      return;
+    }
 
-      const headerTexts = headers.map((header, index) => {
-        if (index === 0) {
-        // Special case for the first element
-          return header.text.split(': ')[0];
-        }
+    const headers = tableToken.header;
 
-        return header.text.split('<br>')[0];
-      });
+    const headerTexts = headers.map((header, index) => {
+      // Special case for the first element
+      const separator = index === 0 ? ': ' : '<br>';
+      return header.text.split(separator)[0];
+    });
 
-      for (const headerText of headerTexts) {
-        const matchedColumnIndex = expectedColumnOrder.indexOf(headerText);
-        expect(matchedColumnIndex).not.toBe(-1);
-      }
+    for (const headerText of headerTexts) {
+      const matchedColumnIndex = expectedColumnOrder.indexOf(headerText);
+      expect(matchedColumnIndex).not.toBe(-1);
     }
   });
 });

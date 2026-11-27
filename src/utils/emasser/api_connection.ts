@@ -4,19 +4,19 @@ import { ApiConfig } from './api_config';
 import { InitConnections } from './init_connection';
 
 /**
- * Class representing an API connection.
- *
- * @remarks
- * This class initializes the API connection using the provided configuration and axios instances.
- *
- * @example
- * ```typescript
- * const apiConnection = new ApiConnection();
- * console.log(apiConnection.configuration);
- * console.log(apiConnection.basePath);
- * console.log(apiConnection.axiosInstances);
- * ```
- */
+Class representing an API connection.
+
+@remarks
+This class initializes the API connection using the provided configuration and axios instances.
+
+@example
+```typescript
+const apiConnection = new ApiConnection();
+console.log(apiConnection.configuration);
+console.log(apiConnection.basePath);
+console.log(apiConnection.axiosInstances);
+```
+*/
 export class ApiConnection {
   public configuration: Configuration;
   public basePath: Configuration['basePath'];

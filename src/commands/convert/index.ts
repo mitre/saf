@@ -38,11 +38,7 @@ function getInputFilename(): string {
   const inputFileIndex = process.argv.findIndex(
     param => param.toLowerCase() === '-i' || param.toLowerCase() === '--input',
   );
-  if (inputFileIndex === -1) {
-    return process.env.INPUT_FILE ?? '';
-  }
-
-  return process.argv[inputFileIndex + 1];
+  return inputFileIndex === -1 ? process.env.INPUT_FILE ?? '' : process.argv[inputFileIndex + 1];
 }
 
 // export default class Convert extends Command {
@@ -52,7 +48,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
 
   static readonly examples = ['<%= config.bin %> <%= command.id %> -i input -o output'];
 
-  static detectedType: string;
+  private static detectedType: string;
 
   static readonly flags = {
     input: Flags.string({
@@ -70,13 +66,12 @@ export default class Convert extends BaseCommand<typeof Convert> {
 
   static getFlagsForInputFile(filePath: string) {
     if (filePath) {
-      Convert.detectedType = fingerprint({
+      const detectedType: string = fingerprint({
         data: fs.readFileSync(filePath, 'utf8'),
         filename: basename(filePath),
       });
-      switch (
-        Convert.detectedType
-      ) {
+      Convert.detectedType = detectedType;
+      switch (detectedType) {
         case 'asff': {
           return ASFF2HDF.flags;
         }
@@ -99,9 +94,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
     return {};
   }
 
-  // skipcq: JS-R1005
   async run() {
-    // skipcq: JS-0044
     const { flags } = await this.parse(Convert);
     let converter;
     switch (Convert.detectedType) {
@@ -246,7 +239,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         converter = new NessusResults(fs.readFileSync(flags.input, 'utf8'));
         const result = await converter.toHdf();
         const pluralResults = Array.isArray(result) ? result : [];
-        const singularResult = pluralResults.length === 0;
+        const isSingularResult = pluralResults.length === 0;
         const outputBase = path.dirname(flags.output);
         const outputPrefix = safeFilename(flags.output.replaceAll(/\.json/gi, ''));
         for (const element of pluralResults) {
@@ -256,9 +249,9 @@ export default class Convert extends BaseCommand<typeof Convert> {
           );
         }
 
-        if (singularResult) {
+        if (isSingularResult) {
           fs.writeFileSync(
-            `${checkSuffix(flags.output)}`,
+            checkSuffix(flags.output),
             JSON.stringify(result, null, 2),
           );
         }
@@ -334,7 +327,7 @@ export default class Convert extends BaseCommand<typeof Convert> {
         converter = new SnykResults(fs.readFileSync(flags.input, 'utf8'));
         const result = converter.toHdf();
         const pluralResults = Array.isArray(result) ? result : [];
-        const singularResult = pluralResults.length === 0;
+        const isSingularResult = pluralResults.length === 0;
         const outputBase = path.dirname(flags.output);
         const outputPrefix = safeFilename(flags.output.replaceAll(/\.json/gi, ''));
         for (const element of pluralResults) {
@@ -344,9 +337,9 @@ export default class Convert extends BaseCommand<typeof Convert> {
           );
         }
 
-        if (singularResult) {
+        if (isSingularResult) {
           fs.writeFileSync(
-            `${checkSuffix(flags.output)}`,
+            checkSuffix(flags.output),
             JSON.stringify(result, null, 2),
           );
         }

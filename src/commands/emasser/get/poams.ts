@@ -13,7 +13,7 @@ import {
 const endpoint = 'poams';
 
 export default class EmasserGetPoams extends Command {
-  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for argument case format\u001B[0m';
+  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n\u{1B}[93m NOTE: see EXAMPLES for argument case format\u{1B}[0m';
 
   static readonly description = getDescriptionForEndpoint(process.argv, endpoint);
 

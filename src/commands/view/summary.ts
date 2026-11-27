@@ -4,32 +4,32 @@ import { calculateSummariesForExecJSONs, calculateTotalCountsForSummaries, calcu
 import { loadExecJSONs } from '../../utils/ohdf/data_loader';
 import { createPrintableSummary, printAndWriteOutput } from '../../utils/ohdf/output_generator';
 
-/** The prefix used for logging messages in this command */
+// The prefix used for logging messages in this command
 const VIEW_SUMMARY = 'view summary:';
 
-/** The help group for input/output related flags */
+// The help group for input/output related flags
 const IO_GROUP = 'I/O';
 
-/** The help group for formatting related flags */
+// The help group for formatting related flags
 const FORMATTING_GROUP = 'formatting';
 
-/** The default log level for this command */
+// The default log level for this command
 const DEFAULT_LOG_LEVEL = 'info';
 
-/** The available format options for the output */
+// The available format options for the output
 const FORMAT_OPTIONS = ['json', 'yaml', 'markdown'];
 
 /**
- * CommandFlags interface represents the flags that can be passed to the command.
- * @property {string[]} input - An array of input file paths.
- * @property {string} [output] - The output file path. This is optional.
- * @property {string} format - The format of the output (e.g., 'json', 'yaml').
- * @property {boolean} stdout - If true, the output will be printed to the console.
- * @property {boolean} 'print-pretty' - If true, the output will be formatted for human readability.
- * @property {boolean} [title-table] - If true, the output will include a title table. This is optional.
- * @property {string} [logLevel] - The level of logging to use (e.g., 'info', 'debug'). This is optional.
- * @property {unknown} help - The help flag. The type is unknown because it can be a boolean or a string depending on the command line library used.
- */
+CommandFlags interface represents the flags that can be passed to the command.
+@property {string[]} input - An array of input file paths.
+@property {string} [output] - The output file path. This is optional.
+@property {string} format - The format of the output (e.g., 'json', 'yaml').
+@property {boolean} stdout - If true, the output will be printed to the console.
+@property {boolean} 'print-pretty' - If true, the output will be formatted for human readability.
+@property {boolean} [title-table] - If true, the output will include a title table. This is optional.
+@property {string} [logLevel] - The level of logging to use (e.g., 'info', 'debug'). This is optional.
+@property {unknown} help - The help flag. The type is unknown because it can be a boolean or a string depending on the command line library used.
+*/
 type CommandFlags = {
   input: string[];
   output?: string;
@@ -42,32 +42,27 @@ type CommandFlags = {
 };
 
 /**
- * Summary Class
- *
- * This class represents a command in the CLI that provides a quick compliance
- * overview of an HDF file.
- *
- * It includes methods to convert the data to different formats (JSON, YAML,
- * Markdown) and to print the data to the console or write it to a file.
- *
- * @class
- * @public
- * @property {string[]} aliases - The aliases for this command. Users can invoke this command by typing 'summary'.
- */
+Summary Class
+
+This class represents a command in the CLI that provides a quick compliance
+overview of an HDF file.
+
+It includes methods to convert the data to different formats (JSON, YAML,
+Markdown) and to print the data to the console or write it to a file.
+
+@class
+@public
+@property {string[]} aliases - The aliases for this command. Users can invoke this command by typing 'summary'.
+*/
 export default class Summary extends Command {
   /**
-   * @property {string[]} aliases - Alternative command name.
-   */
+  @property {string[]} aliases - Alternative command name.
+  */
   static readonly aliases = ['summary'];
 
   /**
-   * @property {ReturnType<typeof createWinstonLogger>} logger - Winston logger for this command.
-   */
-  private logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger({ module: 'View Summary' });
-
-  /**
-   * @property {string} description - Command description displayed in the help message.
-   */
+  @property {string} description - Command description displayed in the help message.
+  */
   static readonly description = 'Generate a comprehensive summary of compliance data, including totals and counts, from your HDF files.\n'
     + 'The output can be displayed in the console, or exported as YAML, JSON, or a GitHub-flavored Markdown table.';
 
@@ -84,53 +79,58 @@ export default class Summary extends Command {
 
   static readonly examples = [
     // Basic usage
-    "\u001B[93mSummarize 'input.hdf' single HDF file\n"
-    + '\u001B[93m  $\u001B[34m saf summary -i input.hdf',
+    "\u{1B}[93mSummarize 'input.hdf' single HDF file\n"
+    + '\u{1B}[93m  $\u{1B}[34m saf summary -i input.hdf',
 
     // Specify output format
-    '\u001B[93mSpecify Formats\n'
-    + '\u001B[93m  $\u001B[34m saf summary -i input.hdf input.json --format=json',
+    '\u{1B}[93mSpecify Formats\n'
+    + '\u{1B}[93m  $\u{1B}[34m saf summary -i input.hdf input.json --format=json',
 
-    '\u001B[93mOutput GitHub Flavored Markdown Table, skip the console, and save to \'output.md\n'
-    + '\u001B[93m  $\u001B[34m saf summary -i input.hdf input.json --format=markdown --no-stdout -o output.md',
+    '\u{1B}[93mOutput GitHub Flavored Markdown Table, skip the console, and save to \'output.md\n'
+    + '\u{1B}[93m  $\u{1B}[34m saf summary -i input.hdf input.json --format=markdown --no-stdout -o output.md',
 
     // Multiple input files
-    '\u001B[93mSummarize multiple HDF files\n'
-    + '\u001B[93m  $\u001B[34m saf summary --input input1.hdf --input input2.hdf\n'
-    + '\u001B[93m  $\u001B[34m saf summary --input input1.hdf input2.hdf',
+    '\u{1B}[93mSummarize multiple HDF files\n'
+    + '\u{1B}[93m  $\u{1B}[34m saf summary --input input1.hdf --input input2.hdf\n'
+    + '\u{1B}[93m  $\u{1B}[34m saf summary --input input1.hdf input2.hdf',
 
     // Specify output file
-    "\u001B[93mSave summary to 'output.json' and print to the console\n"
-    + '\u001B[93m  $\u001B[34m saf summary -i input.hdf --output output.json',
+    "\u{1B}[93mSave summary to 'output.json' and print to the console\n"
+    + '\u{1B}[93m  $\u{1B}[34m saf summary -i input.hdf --output output.json',
 
     // Enable and disable flags
-    '\u001B[93mEnable human-readable output\n'
-    + '\u001B[93m  $\u001B[34m saf summary --input input.hdf --pretty-print',
-    '\u001B[93mUseful for scripts or data-processing (RAW yaml/json/etc.)\n'
-    + '\u001B[93m  $\u001B[34m saf summary -i input.hdf --no-pretty-print',
+    '\u{1B}[93mEnable human-readable output\n'
+    + '\u{1B}[93m  $\u{1B}[34m saf summary --input input.hdf --pretty-print',
+    '\u{1B}[93mUseful for scripts or data-processing (RAW yaml/json/etc.)\n'
+    + '\u{1B}[93m  $\u{1B}[34m saf summary -i input.hdf --no-pretty-print',
   ];
 
   /**
-   * @private
-   * Holds the parsed command line flags.
-   * @type {CommandFlags}
-   */
+  @property {ReturnType<typeof createWinstonLogger>} logger - Winston logger for this command.
+  */
+  private logger: ReturnType<typeof createWinstonLogger> = createWinstonLogger({ module: 'View Summary' });
+
+  /**
+  @private
+  Holds the parsed command line flags.
+  @type {CommandFlags}
+  */
   private parsedFlags!: CommandFlags;
 
   /**
-   * This is the main function that runs when the 'summary' command is invoked.
-   * It performs the following steps:
-   * 1. Parses the command line flags.
-   * 2. Loads the execution JSONs from the provided input files.
-   * 3. Calculates the summaries for each execution JSON.
-   * 4. Calculates the total counts for each summary.
-   * 5. Calculates the compliance scores for each execution JSON.
-   * 6. Creates a printable summary for each profile using the total counts and compliance scores.
-   * 7. Prints the printable summaries to the console and optionally writes them to an output file.
-   *
-   * @throws {Error} If there's an error during the execution, it will be logged and the process will exit.
-   * @returns {Promise<void>} A promise that resolves when the command has finished executing.
-   */
+  This is the main function that runs when the 'summary' command is invoked.
+  It performs the following steps:
+  1. Parses the command line flags.
+  2. Loads the execution JSONs from the provided input files.
+  3. Calculates the summaries for each execution JSON.
+  4. Calculates the total counts for each summary.
+  5. Calculates the compliance scores for each execution JSON.
+  6. Creates a printable summary for each profile using the total counts and compliance scores.
+  7. Prints the printable summaries to the console and optionally writes them to an output file.
+
+  @throws {Error} If there's an error during the execution, it will be logged and the process will exit.
+  @returns {Promise<void>} A promise that resolves when the command has finished executing.
+  */
   async run() {
     try {
       const { flags } = await this.parse(Summary);
@@ -154,12 +154,10 @@ export default class Summary extends Command {
       printAndWriteOutput({ printableSummaries, titleTable, format, printPretty, stdout, output });
       this.logger.verbose('Printed and wrote the output');
     } catch (error) {
-      if (error instanceof Error) {
-        this.logger.error(`Error occurred: ${error.message}`);
-      } else {
-        this.logger.error(`An unknown error occurred: ${String(error)}`);
-      }
-
+      const message = error instanceof Error
+        ? `Error occurred: ${error.message}`
+        : `An unknown error occurred: ${String(error)}`;
+      this.logger.error(message);
       process.exit(1);
     }
   }

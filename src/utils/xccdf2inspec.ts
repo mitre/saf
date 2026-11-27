@@ -36,19 +36,19 @@ export function severityStringToImpact(string: string): number {
     return 0;
   }
 
-  if (/low|cat(egory)?\s*(iii|3)/i.test(string)) { // skipcq: JS-0113
+  if (/low|cat(egory)?\s*(iii|3)/i.test(string)) {
     return 0.3;
   }
 
-  if (/med(ium)?|cat(egory)?\s*(ii|2)/i.test(string)) { // skipcq: JS-0113
+  if (/med(ium)?|cat(egory)?\s*(ii|2)/i.test(string)) {
     return 0.5;
   }
 
-  if (/high|cat(egory)?\s*(i|1)/i.test(string)) { // skipcq: JS-0113
+  if (/high|cat(egory)?\s*(i|1)/i.test(string)) {
     return 0.7;
   }
 
-  if (/crit(ical)?|severe/i.test(string)) { // skipcq: JS-0113
+  if (/crit(ical)?|severe/i.test(string)) {
     return 1;
   }
 
@@ -59,29 +59,28 @@ export function impactNumberToSeverityString(impact: number): string {
   // Impact must be 0.0 - 1.0
   if (impact < 0 || impact > 1) {
     throw new Error('Impact cannot be less than 0.0 or greater than 1.0');
-  } else {
-    if (impact >= 0.9) {
-      return 'critical';
-    }
-
-    if (impact >= 0.7) {
-      return 'high';
-    }
-
-    if (impact >= 0.4) {
-      return 'medium';
-    }
-
-    if (impact >= 0.1) {
-      return 'low';
-    }
-
-    return 'none';
   }
+  if (impact >= 0.9) {
+    return 'critical';
+  }
+
+  if (impact >= 0.7) {
+    return 'high';
+  }
+
+  if (impact >= 0.4) {
+    return 'medium';
+  }
+
+  if (impact >= 0.1) {
+    return 'low';
+  }
+
+  return 'none';
 }
 
-export function inspecControlToRubyCode(control: InSpecControl, lineLength?: number, showUtfEncoding?: boolean): string {
-  let result = showUtfEncoding ? '# encoding: UTF-8\n\n' : '';
+export function inspecControlToRubyCode(control: InSpecControl, lineLength?: number, shouldShowUtfEncoding?: boolean): string {
+  let result = shouldShowUtfEncoding ? '# encoding: UTF-8\n\n' : '';
 
   result += `control "${control.id}" do\n`;
   if (control.title) {

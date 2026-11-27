@@ -11,7 +11,7 @@ export default class EmasserSayHello extends Command {
     try {
       user = os.userInfo().username;
     } finally {
-      console.log('\u001B[96m', `Hello ${user} - enjoy using ${name} ${version}!`, '\u001B[0m');
+      console.log('\u{1B}[96m', `Hello ${user} - enjoy using ${name} ${version}!`, '\u{1B}[0m');
     }
     return Promise.resolve();
   }

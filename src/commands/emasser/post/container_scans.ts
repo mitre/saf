@@ -9,19 +9,19 @@ import { outputFormat } from '../../../utils/emasser/output_formatter';
 import { displayError, getFlagsForEndpoint, getJsonExamples, printRedMsg } from '../../../utils/emasser/utilities';
 
 /**
- * Represents a container resource with associated metadata and benchmarks.
- *
- * @interface ContainerResource
- *
- * @property {string} containerId - The unique identifier of the container. (Required)
- * @property {string} containerName - The name of the container. (Required)
- * @property {number} time - The timestamp associated with the container resource. (Required)
- * @property {Benchmarks[]} benchmarks - An array of benchmark results for the container. (Required)
- * @property {string} [podName] - The name of the pod in which the container is running. (Optional)
- * @property {string} [podIp] - The IP address of the pod in which the container is running. (Optional)
- * @property {string} [namespace] - The namespace in which the container is running. (Optional)
- * @property {Tags|any} [tags] - Additional tags or metadata associated with the container. (Optional)
- */
+Represents a container resource with associated metadata and benchmarks.
+
+@interface ContainerResource
+
+@property {string} containerId - The unique identifier of the container. (Required)
+@property {string} containerName - The name of the container. (Required)
+@property {number} time - The timestamp associated with the container resource. (Required)
+@property {Benchmarks[]} benchmarks - An array of benchmark results for the container. (Required)
+@property {string} [podName] - The name of the pod in which the container is running. (Optional)
+@property {string} [podIp] - The IP address of the pod in which the container is running. (Optional)
+@property {string} [namespace] - The namespace in which the container is running. (Optional)
+@property {Tags|any} [tags] - Additional tags or metadata associated with the container. (Optional)
+*/
 type ContainerResource = {
   // Required
   containerId: string;
@@ -36,14 +36,14 @@ type ContainerResource = {
 };
 
 /**
- * Represents a collection of tags where each tag is a key-value pair.
- * The key is a string representing the tag name, and the value is a string representing the tag value.
- */
+Represents a collection of tags where each tag is a key-value pair.
+The key is a string representing the tag name, and the value is a string representing the tag value.
+*/
 type Tags = Record<string, string>;
 
 /**
- * Represents the benchmarks for a container scan.
- */
+Represents the benchmarks for a container scan.
+*/
 type Benchmarks = {
   // Required
   benchmark: string;
@@ -55,8 +55,8 @@ type Benchmarks = {
 };
 
 /**
- * Represents the results of a container scan.
- */
+Represents the results of a container scan.
+*/
 type Results = {
   // Required
   ruleId: string;
@@ -67,17 +67,17 @@ type Results = {
 };
 
 /**
- * Enum representing the status of a container scan.
- *
- * @readonly
- * @enum {string}
- * @property {string} Pass - The scan passed.
- * @property {string} Fail - The scan failed.
- * @property {string} Other - The scan has a status other than pass or fail.
- * @property {string} NotReviewed - The scan has not been reviewed.
- * @property {string} NotChecked - The scan has not been checked.
- * @property {string} NotApplicable - The scan is not applicable.
- */
+Enum representing the status of a container scan.
+
+@readonly
+@enum {string}
+@property {string} Pass - The scan passed.
+@property {string} Fail - The scan failed.
+@property {string} Other - The scan has a status other than pass or fail.
+@property {string} NotReviewed - The scan has not been reviewed.
+@property {string} NotChecked - The scan has not been checked.
+@property {string} NotApplicable - The scan is not applicable.
+*/
 export declare const StatusEnum: {
   readonly Pass: 'Pass';
   readonly Fail: 'Fail';
@@ -87,54 +87,51 @@ export declare const StatusEnum: {
   readonly NotApplicable: 'Not Applicable';
 };
 /**
- * Represents the possible status values for the StatusEnum type.
- * This type is derived from the keys of the StatusEnum object.
- */
+Represents the possible status values for the StatusEnum type.
+This type is derived from the keys of the StatusEnum object.
+*/
 
 export declare type StatusEnum = typeof StatusEnum[keyof typeof StatusEnum];
 
 /**
- * Combines JSON examples from 'container_scans-required' and
- * 'container_scans-optional' into a single JSON string.
- *
- * @returns {string} A JSON string that merges the required and
- *                   optional container scan examples.
- */
+Combines JSON examples from 'container_scans-required' and
+'container_scans-optional' into a single JSON string.
+
+@returns {string} A JSON string that merges the required and
+                  optional container scan examples.
+*/
 function getAllJsonExamples(): string {
-  return JSON.stringify(
-    _.merge({},
-      getJsonExamples('container_scans-required'),
-      getJsonExamples('container_scans-optional'),
-    ),
-  );
+  return JSON.stringify(_.merge({}, getJsonExamples('container_scans-required'), getJsonExamples('container_scans-optional')));
 }
 
 /**
- * Asserts that a parameter exists by checking if the value is not undefined.
- * If the value is undefined, it prints an error message and throws an error.
- *
- * @param object - The name of the parameter or field being checked.
- * @param value - The value of the parameter or field which can be of type string, boolean, number, undefined, or null.
- * @throws {Error} Throws an error if the value is undefined.
- */
+Asserts that a parameter exists by checking if the value is not undefined.
+If the value is undefined, it prints an error message and throws an error.
+
+@param object - The name of the parameter or field being checked.
+@param value - The value of the parameter or field which can be of type string, boolean, number, undefined, or null.
+@throws {Error} Throws an error if the value is undefined.
+*/
 function assertParamExists(object: string, value: string | boolean | number | undefined | null): void {
-  if (value === undefined) {
-    printRedMsg(`Missing required parameter/field: ${object}`);
-    throw new Error('Value not defined');
+  if (value !== undefined) {
+    return;
   }
+
+  printRedMsg(`Missing required parameter/field: ${object}`);
+  throw new Error('Value not defined');
 }
 
 /**
- * Adds required fields to the request body for a container resource.
- *
- * This function ensures that the required fields are present in the input data object
- * and constructs a new container resource object with the required fields populated.
- * If any required field is missing, an error is thrown and the required fields are logged.
- *
- * @param {ContainerResource} dataObj - The input container resource object.
- * @returns {ContainerResource} - The new container resource object with required fields populated.
- * @throws Will throw an error if any required field is missing in the input data object.
- */
+Adds required fields to the request body for a container resource.
+
+This function ensures that the required fields are present in the input data object
+and constructs a new container resource object with the required fields populated.
+If any required field is missing, an error is thrown and the required fields are logged.
+
+@param {ContainerResource} dataObj - The input container resource object.
+@returns {ContainerResource} - The new container resource object with required fields populated.
+@throws Will throw an error if any required field is missing in the input data object.
+*/
 function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerResource {
   const bodyObj: ContainerResource = {
     containerId: '',
@@ -151,13 +148,10 @@ function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerRe
 
     let i = 0;
     let j = 0;
-    // disabling these eslint rules since I don't want to touch the logic as I'm confused by the same resultsArray being appended to even between benchmarks without being reset in the middle
-    // eslint-disable-next-line unicorn/no-array-for-each
-    dataObj.benchmarks.forEach((entryObject: Benchmarks) => {
+    for (const entryObject of dataObj.benchmarks) {
       assertParamExists(`benchmarks[${i}].benchmark`, entryObject.benchmark);
 
-      // eslint-disable-next-line unicorn/no-array-for-each
-      entryObject.results.forEach((resultObj: Results) => {
+      for (const resultObj of entryObject.results) {
         assertParamExists(`benchmarks.results[${j}].ruleId`, resultObj.ruleId);
         assertParamExists(`benchmarks.results[${j}].lastSeen`, resultObj.lastSeen);
         assertParamExists(`benchmarks.results[${j}].status`, resultObj.status);
@@ -165,7 +159,7 @@ function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerRe
 
         const resultsObj: Results = { ruleId: resultObj.ruleId, lastSeen: resultObj.lastSeen, status: resultObj.status };
         resultsArray.push(resultsObj);
-      });
+      }
 
       i++;
       const benchMarksObj: Benchmarks = {
@@ -173,7 +167,7 @@ function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerRe
         results: resultsArray,
       };
       benchmarksArray.push(benchMarksObj);
-    });
+    }
   } catch (error) {
     console.log('Required JSON fields are:');
     console.log(colorize(JSON.stringify(getJsonExamples('container_scans-required'), null, 2)));
@@ -189,27 +183,27 @@ function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerRe
 }
 
 /**
- * Adds optional fields from the `dataObj` to the `bodyObject`.
- *
- * @param bodyObject - The target object to which optional fields will be added.
- * @param dataObj - The source object containing optional fields.
- *
- * The function performs the following operations:
- * - Adds `namespace`, `podIp`, and `podName` fields if they exist in `dataObj`.
- * - Adds `tags` object if it exists in `dataObj`.
- * - Adds `benchmarks` array if it exists in `dataObj`, including optional fields within each benchmark and its results.
- *
- * The `benchmarks` array in `dataObj` is expected to contain objects with the following structure:
- * - `benchmark` (required)
- * - `isBaseline` (optional)
- * - `version` (optional)
- * - `release` (optional)
- * - `results` (required array) containing objects with the following structure:
- *   - `ruleId` (required)
- *   - `status` (required)
- *   - `lastSeen` (required)
- *   - `message` (optional)
- */
+Adds optional fields from the `dataObj` to the `bodyObject`.
+
+@param bodyObject - The target object to which optional fields will be added.
+@param dataObj - The source object containing optional fields.
+
+The function performs the following operations:
+- Adds `namespace`, `podIp`, and `podName` fields if they exist in `dataObj`.
+- Adds `tags` object if it exists in `dataObj`.
+- Adds `benchmarks` array if it exists in `dataObj`, including optional fields within each benchmark and its results.
+
+The `benchmarks` array in `dataObj` is expected to contain objects with the following structure:
+- `benchmark` (required)
+- `isBaseline` (optional)
+- `version` (optional)
+- `release` (optional)
+- `results` (required array) containing objects with the following structure:
+  - `ruleId` (required)
+  - `status` (required)
+  - `lastSeen` (required)
+  - `message` (optional)
+*/
 function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerResource): void {
   // Add object optional entries
   if (Object.hasOwn(dataObj, 'namespace')) {
@@ -236,9 +230,7 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
   const benchmarksArray: Benchmarks[] = [];
   const resultsArray: Results[] = [];
   // Add the optional benchmark entries
-  // disabling these eslint rules since I don't want to touch the logic as I'm confused by the same resultsArray being appended to even between benchmarks without being reset in the middle
-  // eslint-disable-next-line unicorn/no-array-for-each
-  dataObj.benchmarks.forEach((entryObject: Benchmarks) => {
+  for (const entryObject of dataObj.benchmarks) {
     const benchmarksObj: Benchmarks = { benchmark: entryObject.benchmark, results: [] };
     // These are required
     // Check for the optional entry (isBaseline, version, and release)
@@ -255,8 +247,7 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
     }
 
     // Add the optional Results entries
-    // eslint-disable-next-line unicorn/no-array-for-each
-    entryObject.results.forEach((resultObj: Results) => {
+    for (const resultObj of entryObject.results) {
       // These are required
       const resultsObj: Results = { ruleId: resultObj.ruleId, status: resultObj.status, lastSeen: resultObj.lastSeen };
       // Check for the optional entry
@@ -265,28 +256,28 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
       }
 
       resultsArray.push(resultsObj);
-    });
+    }
     benchmarksObj.results = resultsArray;
     benchmarksArray.push(benchmarksObj);
-  });
+  }
 
   bodyObject.benchmarks = benchmarksArray;
 }
 
 /**
- * Checks if the given object is a valid ContainerResource.
- *
- * A valid ContainerResource is an object that:
- * - Is of type 'object' and not null.
- * - Contains the properties 'containerId', 'containerName', 'time', and 'benchmarks'.
- * - The 'containerId' property is a string.
- * - The 'containerName' property is a string.
- * - The 'time' property is a number.
- * - The 'benchmarks' property is an array.
- *
- * @param obj - The object to check.
- * @returns True if the object is a valid ContainerResource, false otherwise.
- */
+Checks if the given object is a valid ContainerResource.
+
+A valid ContainerResource is an object that:
+- Is of type 'object' and not null.
+- Contains the properties 'containerId', 'containerName', 'time', and 'benchmarks'.
+- The 'containerId' property is a string.
+- The 'containerName' property is a string.
+- The 'time' property is a number.
+- The 'benchmarks' property is an array.
+
+@param obj - The object to check.
+@returns True if the object is a valid ContainerResource, false otherwise.
+*/
 function isValidContainerResource(obj: unknown): obj is ContainerResource {
   return typeof obj === 'object'
     && obj !== null
@@ -302,7 +293,7 @@ function isValidContainerResource(obj: unknown): obj is ContainerResource {
 
 const CMD_HELP = 'saf emasser post container_scans -h or --help';
 export default class EmasserContainerScans extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command usages\u001B[0m';
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u{1B}[93m NOTE: see EXAMPLES for command usages\u{1B}[0m';
 
   static readonly description = 'Upload containers and their scan results in the assets module for a system';
 
@@ -313,7 +304,7 @@ export default class EmasserContainerScans extends Command {
     colorize(JSON.stringify(getJsonExamples('container_scans-required'), null, 2)),
     'Optional JSON parameters/fields are:',
     colorize(JSON.stringify(getJsonExamples('container_scans-optional'), null, 2)),
-    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
+    '\u{1B}[1m\u{1B}[32mAll accepted parameters/fields are:\u{1B}[0m',
     colorize(getAllJsonExamples()),
   ];
 
@@ -331,36 +322,7 @@ export default class EmasserContainerScans extends Command {
 
     // Check if a Container Scans json file was provided
     if (!fs.existsSync(flags.dataFile)) {
-      console.error(`\u001B[91m» Container Scan Results data file (.json) not found or invalid: ${flags.dataFile}\u001B[0m`);
-      process.exit(1);
-    }
-
-    try {
-      const fileContent = await readFile(flags.dataFile, 'utf8');
-      const data: unknown = JSON.parse(fileContent);
-
-      if (Array.isArray(data)) {
-        for (const item of data) {
-          if (isValidContainerResource(item)) {
-            processContainerResource(item);
-          } else {
-            console.error('\u001B[91m» Invalid container resource format detected.\u001B[0m');
-            process.exit(1);
-          }
-        }
-      } else if (typeof data === 'object' && data !== null && isValidContainerResource(data)) {
-        processContainerResource(data);
-      } else {
-        console.error('\u001B[91m» Invalid data format in Container Scan Results JSON file.\u001B[0m');
-        process.exit(1);
-      }
-    } catch (error: unknown) {
-      if (error instanceof Error) {
-        console.error('\u001B[91m» Error reading Container Scan Results data file, possible malformed JSON. Please use the -h flag for help.\u001B[0m');
-        console.error('\u001B[93m→ Error message was:', error.message, '\u001B[0m');
-      } else {
-        console.error('\u001B[91m» Unknown error occurred while reading the file.\u001B[0m');
-      }
+      console.error(`\u{1B}[91m» Container Scan Results data file (.json) not found or invalid: ${flags.dataFile}\u{1B}[0m`);
       process.exit(1);
     }
 
@@ -373,9 +335,38 @@ export default class EmasserContainerScans extends Command {
         addOptionalFields(bodyObj, dataObject);
         requestBodyArray.push(bodyObj);
       } catch {
-        console.error('\u001B[91m» Error processing container resource.\u001B[0m');
+        console.error('\u{1B}[91m» Error processing container resource.\u{1B}[0m');
         process.exit(1);
       }
+    }
+
+    try {
+      const fileContent = await readFile(flags.dataFile, 'utf8');
+      const data: unknown = JSON.parse(fileContent);
+
+      if (Array.isArray(data)) {
+        for (const item of data) {
+          if (isValidContainerResource(item)) {
+            processContainerResource(item);
+          } else {
+            console.error('\u{1B}[91m» Invalid container resource format detected.\u{1B}[0m');
+            process.exit(1);
+          }
+        }
+      } else if (typeof data === 'object' && data !== null && isValidContainerResource(data)) {
+        processContainerResource(data);
+      } else {
+        console.error('\u{1B}[91m» Invalid data format in Container Scan Results JSON file.\u{1B}[0m');
+        process.exit(1);
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error('\u{1B}[91m» Error reading Container Scan Results data file, possible malformed JSON. Please use the -h flag for help.\u{1B}[0m');
+        console.error('\u{1B}[93m→ Error message was:', error.message, '\u{1B}[0m');
+      } else {
+        console.error('\u{1B}[91m» Unknown error occurred while reading the file.\u{1B}[0m');
+      }
+      process.exit(1);
     }
 
     // Call the API endpoint
@@ -389,11 +380,10 @@ export default class EmasserContainerScans extends Command {
 
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display what fields are required, otherwise show the error
-    if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
-    } else {
-      this.warn(err);
-    }
+    const warning = err.message.includes('See more help with --help')
+      ? err.message.replace('with --help', () => `with: \u{1B}[93m${CMD_HELP}\u{1B}[0m`)
+      : err;
+    this.warn(warning);
     return Promise.resolve();
   }
 }

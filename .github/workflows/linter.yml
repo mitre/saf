@@ -25,7 +25,7 @@ jobs:
          persist-credentials: false
 
      - name: Check workflow security with zizmor
-       uses: zizmorcore/zizmor-action@cc914d7f3750a2d13d75c7f184a1060aa0e9d482 # v0.6.4
+       uses: zizmorcore/zizmor-action@45d7276c9ca790aabd705e31ca99c6185c3e76dd # v0.8.1
        with:
          inputs: .github
          advanced-security: false
@@ -34,7 +34,7 @@ jobs:
      - name: Check workflow syntax and expressions with actionlint
        # Use this fork for better ergonomics and updates while upstream maintenance is inactive.
        if: ${{ !cancelled() && steps.checkout.outcome == 'success' }}
-       uses: kjanat/actionlint@722799fa4b8cc6734debb97bae24aca9e0dbaf59 # v1.17
+       uses: kjanat/actionlint@220b76cfa568e00ed8b3c476898f849a722b88e2 # v1.17.1
 
      - name: Set up Node.js and install locked dependencies
        id: setup

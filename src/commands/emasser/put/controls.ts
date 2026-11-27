@@ -52,10 +52,12 @@ function getAllJsonExamples(): Record<string, unknown> {
 }
 
 function assertParamExists(object: string, value: string | number | undefined | null): void {
-  if (value === undefined) {
-    printRedMsg(`Missing required parameter/field: ${object}`);
-    throw new Error('Value not defined');
+  if (value !== undefined) {
+    return;
   }
+
+  printRedMsg(`Missing required parameter/field: ${object}`);
+  throw new Error('Value not defined');
 }
 
 function addRequiredFieldsToRequestBody(dataObj: Controls): Controls {
@@ -173,7 +175,7 @@ function addOptionalFields(bodyObject: Controls, dataObj: Controls): void {
   }
 }
 
-function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { // skipcq: JS-0044
+function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void {
   // ----------------------------------------------------------------------------------------
   // Conditional fields that are required based on the "implementationStatus" value
   // "Planned" or       estimatedCompletionDate, responsibleEntities, slcmCriticality,
@@ -188,97 +190,97 @@ function processBusinessLogic(bodyObject: Controls, dataObj: Controls): void { /
   // "Inherited"          Only the following fields can be updated:
   //                      controlDesignation, commonnControlProvider
   // ----------------------------------------------------------------------------------------
-  const HELP_MSG = 'Invoke saf emasser put controls [-h, --help] for additional help';
   // Only process if we have an Implementation Status (optional field)
-  if (Object.hasOwn(dataObj, 'implementationStatus')) {
-    // The implementation Status is always required in any of these cases
-    bodyObject.implementationStatus = dataObj.implementationStatus;
+  if (!Object.hasOwn(dataObj, 'implementationStatus')) {
+    return;
+  }
 
-    switch (dataObj.implementationStatus) {
-      case 'Planned':
-      case 'Implemented': {
-        // No need to check for controlDesignation and estimatedCompletionDate, they are required fields
-        if (!(Object.hasOwn(dataObj, 'responsibleEntities')) || !(Object.hasOwn(dataObj, 'slcmCriticality'))
-          || !(Object.hasOwn(dataObj, 'slcmFrequency')) || !(Object.hasOwn(dataObj, 'slcmMethod'))
-          || !(Object.hasOwn(dataObj, 'slcmReporting')) || !(Object.hasOwn(dataObj, 'slcmTracking'))
-          || !(Object.hasOwn(dataObj, 'slcmComments'))) {
-          printRedMsg('Missing one of these parameters/fields:');
-          printRedMsg('    responsibleEntities, slcmCriticality, slcmFrequency,');
-          printRedMsg('    slcmMethod,slcmReporting, slcmTracking, slcmComments');
-          printHelpMsg(HELP_MSG);
-          process.exit(1);
-        } else {
-          bodyObject.responsibleEntities = dataObj.responsibleEntities;
-          bodyObject.slcmCriticality = dataObj.slcmCriticality;
-          bodyObject.slcmFrequency = dataObj.slcmFrequency;
-          bodyObject.slcmMethod = dataObj.slcmMethod;
-          bodyObject.slcmReporting = dataObj.slcmReporting;
-          bodyObject.slcmTracking = dataObj.slcmTracking;
-          bodyObject.slcmComments = dataObj.slcmComments;
-        }
+  const HELP_MSG = 'Invoke saf emasser put controls [-h, --help] for additional help';
+  // The implementation Status is always required in any of these cases
+  bodyObject.implementationStatus = dataObj.implementationStatus;
 
-        break;
-      }
-
-      case 'Not Applicable': {
-        // No need to check for controlDesignation, it is a required field
-        if ((Object.hasOwn(dataObj, 'naJustification') && Object.hasOwn(dataObj, 'responsibleEntities'))) {
-          bodyObject.naJustification = dataObj.naJustification;
-          bodyObject.responsibleEntities = dataObj.responsibleEntities;
-        } else {
-          printRedMsg('Missing one of these parameters/fields:');
-          printRedMsg('    naJustification, responsibleEntities');
-          printHelpMsg(HELP_MSG);
-          process.exit(1);
-        }
-
-        break;
-      }
-
-      case 'Manually Inherited': {
-        // No need to check for controlDesignation and estimatedCompletionDate, they are required fields
-        if (!(Object.hasOwn(dataObj, 'commonControlProvider')) || !(Object.hasOwn(dataObj, 'responsibleEntities'))
-          || !(Object.hasOwn(dataObj, 'slcmCriticality')) || !(Object.hasOwn(dataObj, 'slcmFrequency'))
-          || !(Object.hasOwn(dataObj, 'slcmMethod')) || !(Object.hasOwn(dataObj, 'slcmReporting'))
-          || !(Object.hasOwn(dataObj, 'slcmTracking')) || !(Object.hasOwn(dataObj, 'slcmComments'))) {
-          printRedMsg('Missing one of these parameters/fields:');
-          printRedMsg('    commonControlProvider, responsibleEntities, slcmCriticality,');
-          printRedMsg('    slcmFrequency, slcmMethod, slcmReporting, slcmTracking, slcmComments');
-          printHelpMsg(HELP_MSG);
-          process.exit(1);
-        } else {
-          bodyObject.commonControlProvider = dataObj.commonControlProvider;
-          bodyObject.responsibleEntities = dataObj.responsibleEntities;
-          bodyObject.slcmCriticality = dataObj.slcmCriticality;
-          bodyObject.slcmFrequency = dataObj.slcmFrequency;
-          bodyObject.slcmMethod = dataObj.slcmMethod;
-          bodyObject.slcmReporting = dataObj.slcmReporting;
-          bodyObject.slcmTracking = dataObj.slcmTracking;
-          bodyObject.slcmComments = dataObj.slcmComments;
-        }
-
-        break;
-      }
-
-      case 'Inherited': {
-        // No need to check for controlDesignation, it is a required field
-        if ((Object.hasOwn(dataObj, 'commonControlProvider'))) {
-          bodyObject.commonControlProvider = dataObj.commonControlProvider;
-        } else {
-          printRedMsg('When implementationStatus value is "Inherited" the following field is required: commonControlProvider');
-          printHelpMsg(HELP_MSG);
-          process.exit(1);
-        }
-
-        break;
-      }
-
-      default: {
-        printRedMsg('The "implementationStatus" field must one of the following:');
-        printRedMsg('    Planned, Implemented, Not Applicable, Inherited, or Manually Inherited');
-        printRedMsg(`Status provided was: ${dataObj.implementationStatus}`);
+  switch (dataObj.implementationStatus) {
+    case 'Planned':
+    case 'Implemented': {
+      // No need to check for controlDesignation and estimatedCompletionDate, they are required fields
+      if (!(Object.hasOwn(dataObj, 'responsibleEntities')) || !(Object.hasOwn(dataObj, 'slcmCriticality'))
+        || !(Object.hasOwn(dataObj, 'slcmFrequency')) || !(Object.hasOwn(dataObj, 'slcmMethod'))
+        || !(Object.hasOwn(dataObj, 'slcmReporting')) || !(Object.hasOwn(dataObj, 'slcmTracking'))
+        || !(Object.hasOwn(dataObj, 'slcmComments'))) {
+        printRedMsg('Missing one of these parameters/fields:');
+        printRedMsg('    responsibleEntities, slcmCriticality, slcmFrequency,');
+        printRedMsg('    slcmMethod,slcmReporting, slcmTracking, slcmComments');
+        printHelpMsg(HELP_MSG);
         process.exit(1);
       }
+      bodyObject.responsibleEntities = dataObj.responsibleEntities;
+      bodyObject.slcmCriticality = dataObj.slcmCriticality;
+      bodyObject.slcmFrequency = dataObj.slcmFrequency;
+      bodyObject.slcmMethod = dataObj.slcmMethod;
+      bodyObject.slcmReporting = dataObj.slcmReporting;
+      bodyObject.slcmTracking = dataObj.slcmTracking;
+      bodyObject.slcmComments = dataObj.slcmComments;
+
+      break;
+    }
+
+    case 'Not Applicable': {
+      // No need to check for controlDesignation, it is a required field
+      if ((Object.hasOwn(dataObj, 'naJustification') && Object.hasOwn(dataObj, 'responsibleEntities'))) {
+        bodyObject.naJustification = dataObj.naJustification;
+        bodyObject.responsibleEntities = dataObj.responsibleEntities;
+      } else {
+        printRedMsg('Missing one of these parameters/fields:');
+        printRedMsg('    naJustification, responsibleEntities');
+        printHelpMsg(HELP_MSG);
+        process.exit(1);
+      }
+
+      break;
+    }
+
+    case 'Manually Inherited': {
+      // No need to check for controlDesignation and estimatedCompletionDate, they are required fields
+      if (!(Object.hasOwn(dataObj, 'commonControlProvider')) || !(Object.hasOwn(dataObj, 'responsibleEntities'))
+        || !(Object.hasOwn(dataObj, 'slcmCriticality')) || !(Object.hasOwn(dataObj, 'slcmFrequency'))
+        || !(Object.hasOwn(dataObj, 'slcmMethod')) || !(Object.hasOwn(dataObj, 'slcmReporting'))
+        || !(Object.hasOwn(dataObj, 'slcmTracking')) || !(Object.hasOwn(dataObj, 'slcmComments'))) {
+        printRedMsg('Missing one of these parameters/fields:');
+        printRedMsg('    commonControlProvider, responsibleEntities, slcmCriticality,');
+        printRedMsg('    slcmFrequency, slcmMethod, slcmReporting, slcmTracking, slcmComments');
+        printHelpMsg(HELP_MSG);
+        process.exit(1);
+      }
+      bodyObject.commonControlProvider = dataObj.commonControlProvider;
+      bodyObject.responsibleEntities = dataObj.responsibleEntities;
+      bodyObject.slcmCriticality = dataObj.slcmCriticality;
+      bodyObject.slcmFrequency = dataObj.slcmFrequency;
+      bodyObject.slcmMethod = dataObj.slcmMethod;
+      bodyObject.slcmReporting = dataObj.slcmReporting;
+      bodyObject.slcmTracking = dataObj.slcmTracking;
+      bodyObject.slcmComments = dataObj.slcmComments;
+
+      break;
+    }
+
+    case 'Inherited': {
+      // No need to check for controlDesignation, it is a required field
+      if ((Object.hasOwn(dataObj, 'commonControlProvider'))) {
+        bodyObject.commonControlProvider = dataObj.commonControlProvider;
+      } else {
+        printRedMsg('When implementationStatus value is "Inherited" the following field is required: commonControlProvider');
+        printHelpMsg(HELP_MSG);
+        process.exit(1);
+      }
+
+      break;
+    }
+
+    default: {
+      printRedMsg('The "implementationStatus" field must one of the following:');
+      printRedMsg('    Planned, Implemented, Not Applicable, Inherited, or Manually Inherited');
+      printRedMsg(`Status provided was: ${dataObj.implementationStatus}`);
+      process.exit(1);
     }
   }
 }
@@ -299,7 +301,7 @@ function generateBodyObj(dataObject: Controls): Controls {
 
 const CMD_HELP = 'saf emasser put controls -h or --help';
 export default class EmasserPutControls extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command usages\u001B[0m';
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u{1B}[93m NOTE: see EXAMPLES for command usages\u{1B}[0m';
 
   static readonly description = 'Update Security Control information of a system for both the Implementation Plan and Risk Assessment.';
 
@@ -312,28 +314,27 @@ export default class EmasserPutControls extends Command {
     colorize(JSON.stringify(getJsonExamples('controls-conditional'), null, 2)),
     'Optional JSON parameters/fields are:',
     colorize(JSON.stringify(getJsonExamples('controls-optional'), null, 2)),
-    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
+    '\u{1B}[1m\u{1B}[32mAll accepted parameters/fields are:\u{1B}[0m',
     colorize(getAllJsonExamples()),
   ];
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the PUT Controls command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
     const { flags } = await this.parse(EmasserPutControls);
-    const apiCxn = new ApiConnection();
-    const updateControl = new ControlsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
-
-    const requestBodyArray: Controls[] = [];
+    const { configuration, basePath, axiosInstances } = new ApiConnection();
 
     // Check if a Security Control information json file was provided
     if (!fs.existsSync(flags.dataFile)) {
-      console.error('\u001B[91m» Security Control(s) data file (.json) not found or invalid:', flags.dataFile, '\u001B[0m');
+      console.error('\u{1B}[91m» Security Control(s) data file (.json) not found or invalid:', flags.dataFile, '\u{1B}[0m');
       process.exit(1);
     }
 
+    const updateControl = new ControlsApi(configuration, basePath, axiosInstances);
+    const requestBodyArray: Controls[] = [];
     try {
       // Read and parse the JSON file
       const fileContent = await readFile(flags.dataFile, 'utf8');
@@ -343,20 +344,20 @@ export default class EmasserPutControls extends Command {
       if (Array.isArray(data)) {
         // Generate the put request object based on business logic
         requestBodyArray.push(...data.map(dataObject => generateBodyObj(dataObject)));
-      } else if (_.isObject(data) && data !== null) {
+      } else if (data !== null && _.isObject(data)) {
         const dataObject: Controls = data;
         // Generate the put request object based on business logic
         requestBodyArray.push(generateBodyObj(dataObject));
       } else {
-        console.error('\u001B[91m» Invalid data format in Security Controls file\u001B[0m');
+        console.error('\u{1B}[91m» Invalid data format in Security Controls file\u{1B}[0m');
         process.exit(1);
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error('\u001B[91m» Error reading Security Control(s) data file, possible malformed json. Please use the -h flag for help.\u001B[0m');
-        console.error('\u001B[93m→ Error message was:', error.message, '\u001B[0m');
+        console.error('\u{1B}[91m» Error reading Security Control(s) data file, possible malformed json. Please use the -h flag for help.\u{1B}[0m');
+        console.error('\u{1B}[93m→ Error message was:', error.message, '\u{1B}[0m');
       } else {
-        console.error('\u001B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\u001B[0m');
+        console.error('\u{1B}[91m» Unknown error occurred while reading the file:', flags.dataFile, '\u{1B}[0m');
       }
       process.exit(1);
     }
@@ -372,11 +373,10 @@ export default class EmasserPutControls extends Command {
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display
     // what fields are required, otherwise show the error
-    if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
-    } else {
-      this.warn(err);
-    }
+    const warning = err.message.includes('See more help with --help')
+      ? err.message.replace('with --help', () => `with: \u{1B}[93m${CMD_HELP}\u{1B}[0m`)
+      : err;
+    this.warn(warning);
     return Promise.resolve();
   }
 }

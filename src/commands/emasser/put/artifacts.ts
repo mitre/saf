@@ -17,10 +17,12 @@ function getAllJsonExamples(): Record<string, unknown> {
 }
 
 function assertParamExists(object: string, value: string | number | boolean | undefined | null): void {
-  if (value === undefined) {
-    printRedMsg(`Missing required parameter/field: ${object}`);
-    throw new Error('Value not defined');
+  if (value !== undefined) {
+    return;
   }
+
+  printRedMsg(`Missing required parameter/field: ${object}`);
+  throw new Error('Value not defined');
 }
 
 function addRequiredFieldsToRequestBody(dataObj: Artifacts): Artifacts {
@@ -92,7 +94,7 @@ function generateBodyObj(dataObject: Artifacts): Artifacts {
 
 const CMD_HELP = 'saf emasser put artifacts -h or --help';
 export default class EmasserPutArtifacts extends Command {
-  static readonly usage = '<%= command.id %> [FLAGS]\n\u001B[93m NOTE: see EXAMPLES for command usages\u001B[0m';
+  static readonly usage = '<%= command.id %> [FLAGS]\n\u{1B}[93m NOTE: see EXAMPLES for command usages\u{1B}[0m';
 
   static readonly description = 'Updates artifacts for a system with provided entries';
 
@@ -103,28 +105,27 @@ export default class EmasserPutArtifacts extends Command {
     colorize(JSON.stringify(getJsonExamples('artifacts-put-required'), null, 2)),
     'Optional JSON parameters/fields are:',
     colorize(JSON.stringify(getJsonExamples('artifacts-put-optional'), null, 2)),
-    '\u001B[1m\u001B[32mAll accepted parameters/fields are:\u001B[0m',
+    '\u{1B}[1m\u{1B}[32mAll accepted parameters/fields are:\u{1B}[0m',
     colorize(getAllJsonExamples()),
   ];
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show eMASSer CLI help for the PUT Artifacts command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
     const { flags } = await this.parse(EmasserPutArtifacts);
-    const apiCxn = new ApiConnection();
-    const artifactApi = new ArtifactsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
-
-    const requestBodyArray: Artifacts[] = [];
+    const { configuration, basePath, axiosInstances } = new ApiConnection();
 
     // Check if a Artifacts json file was provided
     if (!fs.existsSync(flags.dataFile)) {
-      console.error('\u001B[91m» Artifacts data file (.json) not found or invalid:', flags.dataFile, '\u001B[0m');
+      console.error('\u{1B}[91m» Artifacts data file (.json) not found or invalid:', flags.dataFile, '\u{1B}[0m');
       process.exit(1);
     }
 
+    const artifactApi = new ArtifactsApi(configuration, basePath, axiosInstances);
+    const requestBodyArray: Artifacts[] = [];
     try {
       // Read and parse the JSON file
       const fileContent = await readFile(flags.dataFile, 'utf8');
@@ -134,20 +135,20 @@ export default class EmasserPutArtifacts extends Command {
       if (Array.isArray(data)) {
         // Generate the PUT request object based on business logic
         requestBodyArray.push(...data.map(dataObject => generateBodyObj(dataObject)));
-      } else if (_.isObject(data) && data !== null) {
+      } else if (data !== null && _.isObject(data)) {
         const dataObject: Artifacts = data;
         // Generate the PUT request object based on business logic
         requestBodyArray.push(generateBodyObj(dataObject));
       } else {
-        console.error('\u001B[91m» Invalid data format in Artifacts file\u001B[0m');
+        console.error('\u{1B}[91m» Invalid data format in Artifacts file\u{1B}[0m');
         process.exit(1);
       }
     } catch (error: unknown) {
       if (error instanceof Error) {
-        console.error('\u001B[91m» Error reading Artifacts data file, possible malformed JSON. Please use the -h flag for help.\u001B[0m');
-        console.error('\u001B[93m→ Error message was:', error.message, '\u001B[0m');
+        console.error('\u{1B}[91m» Error reading Artifacts data file, possible malformed JSON. Please use the -h flag for help.\u{1B}[0m');
+        console.error('\u{1B}[93m→ Error message was:', error.message, '\u{1B}[0m');
       } else {
-        console.error('\u001B[91m» Unknown error occurred while reading the file:', flags.dataFile, '\u001B[0m');
+        console.error('\u{1B}[91m» Unknown error occurred while reading the file:', flags.dataFile, '\u{1B}[0m');
       }
       process.exit(1);
     }
@@ -163,11 +164,10 @@ export default class EmasserPutArtifacts extends Command {
 
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display what fields are required, otherwise show the error
-    if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
-    } else {
-      this.warn(err);
-    }
+    const warning = err.message.includes('See more help with --help')
+      ? err.message.replace('with --help', () => `with: \u{1B}[93m${CMD_HELP}\u{1B}[0m`)
+      : err;
+    this.warn(warning);
     return Promise.resolve();
   }
 }

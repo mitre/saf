@@ -13,17 +13,11 @@ import { Flags } from '@oclif/core';
 import { colorize } from 'json-colorizer';
 import { isEmpty } from 'lodash';
 import type { Logger } from 'winston';
-import { getJsonMetaDataExamples, resolveSafeChild, safeFilename } from '../../utils/global';
+import { getJsonMetadataExamples, resolveSafeChild, safeFilename } from '../../utils/global';
 import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLMetadata> {
-  private readonly logger: Logger = createWinstonLogger({
-    logFile: 'CliProcessOutput.log',
-    plainText: true,
-    alwaysPrintToConsole: true,
-  });
-
   static readonly usage = '<%= command.id %> [-h] [-L info|warn|debug|verbose] [-o <value> | --interactive]';
 
   static readonly description = 'Generate a checklist metadata template for use by the "saf convert hdf2ckl" CLI command';
@@ -32,62 +26,36 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
     '<%= config.bin %> <%= command.id %> -o rhel_metadata.json',
     'The metadata file contains checklist supplemental data.',
     'The metadata file is composed of "profile(s)" and "asset" data.',
-    '\u001B[1mExample of "One Profile" metadata:\u001B[0m',
-    colorize(JSON.stringify(getJsonMetaDataExamples('ckl-one-metadata'), null, 2)),
-    '\u001B[1mExample of "Multiple Profiles" metadata:\u001B[0m',
-    colorize(JSON.stringify(getJsonMetaDataExamples('ckl-multiple-metadata'), null, 2)),
+    '\u{1B}[1mExample of "One Profile" metadata:\u{1B}[0m',
+    colorize(JSON.stringify(getJsonMetadataExamples('ckl-one-metadata'), null, 2)),
+    '\u{1B}[1mExample of "Multiple Profiles" metadata:\u{1B}[0m',
+    colorize(JSON.stringify(getJsonMetadataExamples('ckl-multiple-metadata'), null, 2)),
   ];
 
   static readonly flags = {
     output: Flags.string({
-      char: 'o', exclusive: ['interactive'],
-      description: '\u001B[31m(required -o or --interactive)\u001B[34mThe Output metadata JSON File to be generate',
+      char: 'o',
+      exclusive: ['interactive'],
+      description: '\u{1B}[31m(required -o or --interactive)\u{1B}[34mThe Output metadata JSON File to be generate',
     }),
   };
 
-  async run() {
-    const { flags } = await this.parse(GenerateCKLMetadata);
-
-    // If not interactive must provide -o 0r --output
-    if (!flags.interactive && !flags.output) {
-      this.error('\u001B[31mIf not interactive you must specify the metadata output json file [-o]\u001B[0m');
-    }
-    // Flag variables
-    let metadataJsonFile = '';
-
-    if (flags.interactive) {
-      const interactiveFlags = await this.getFlags();
-      if ((interactiveFlags as { outputDirectory?: string }).outputDirectory) {
-        metadataJsonFile = resolveSafeChild(
-          (interactiveFlags as { outputDirectory: string }).outputDirectory,
-          safeFilename((interactiveFlags as { outputFileName: string }).outputFileName),
-        );
-      }
-    } else {
-      metadataJsonFile = flags.output || 'metadata.json';
-    }
-
-    const cklMetadata = await this.getCklMetaData();
-
-    const validationResults = validateChecklistMetadata(cklMetadata as ChecklistMetadata);
-    if (validationResults.ok) {
-      fs.writeFileSync(metadataJsonFile, JSON.stringify(cklMetadata, null, 2));
-      console.log(`Checklist metadata file written at: ${path.resolve(metadataJsonFile)}`);
-    } else {
-      console.error(`Unable to generate checklist metadata:\n${validationResults.error.message}`);
-    }
-  }
+  private readonly logger: Logger = createWinstonLogger({
+    logFile: 'CliProcessOutput.log',
+    plainText: true,
+    alwaysPrintToConsole: true,
+  });
 
   /**
-   * Asynchronously prompts the user to select an output directory and specify a
-   * metadata file name, validates input ends with a `.json` extension.
-   *
-   * @returns {Promise<unknown>} A promise that resolves to an object containing
-   * the user's input values.
-   * The object includes:
-   * - `outputDirectory`: The selected output directory for the metadata file.
-   * - `outputFileName`: The specified metadata file name with a `.json` extension.
-   */
+  Asynchronously prompts the user to select an output directory and specify a
+  metadata file name, validates input ends with a `.json` extension.
+
+  @returns {Promise<unknown>} A promise that resolves to an object containing
+  the user's input values.
+  The object includes:
+  - `outputDirectory`: The selected output directory for the metadata file.
+  - `outputFileName`: The specified metadata file name with a `.json` extension.
+  */
   private async getFlags(): Promise<unknown> {
     // Dynamically import inquirer-file-selector and chalk
     // Once we move the SAF CLI from a CommonJS to an ES modules we can use the regular import
@@ -121,10 +89,7 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
         message: 'Specify the output metadata filename (must have an extension of .json):',
         default: 'ckl_metadata.json',
         validate(input: string) {
-          if (/^[\w]+\.json$/i.test(input)) { // skipcq: JS-0113
-            return true;
-          }
-          return 'Please enter a metadata file name that ends with .json';
+          return /^[\w]+\.json$/i.test(input) ? true : 'Please enter a metadata file name that ends with .json';
         },
       }),
     };
@@ -139,15 +104,15 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
   }
 
   /**
-   * Collects metadata information necessary for generating a checklist
-   * used by the "saf convert hdf2ckl" command.
-   *
-   * This function prompts the user to provide various fields of information
-   * interactively. If a value is not available, the user can leave the field empty.
-   *
-   * @returns {Promise<unknown>} A promise that resolves to an object containing
-   * the collected metadata values.
-   */
+  Collects metadata information necessary for generating a checklist
+  used by the "saf convert hdf2ckl" command.
+
+  This function prompts the user to provide various fields of information
+  interactively. If a value is not available, the user can leave the field empty.
+
+  @returns {Promise<unknown>} A promise that resolves to an object containing
+  the collected metadata values.
+  */
   private async getCklMetaData(): Promise<unknown> {
     // Variable used to store the prompts (question and answers)
     const interactiveValues: Record<string, unknown> = {};
@@ -157,7 +122,7 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
     this.logger.info('Please fill in the following fields to the best of your ability, if you do not have a value, please leave the field empty.');
 
     // Collect the "profiles" metadata information
-    let addProfile = true;
+    let shouldAddProfile = true;
     const profiles: {
       name: string | undefined;
       title: string | undefined;
@@ -166,7 +131,7 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
       releasedate: string | undefined;
       showCalendar: boolean;
     }[] = [];
-    while (addProfile) {
+    while (shouldAddProfile) {
       const profile = {
         name: await input({
           message: 'What is the benchmark name? (Must match the profile name listed in HDF):',
@@ -186,16 +151,13 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
           message: 'What is the benchmark release date (dd mmm yyyy)?:',
           default: '01 Jan 2025',
           validate(input: string) {
-            if (/^\d{2} \w{3} \d{4}$/.test(input)) { // skipcq: JS-0113
-              return true;
-            }
-            return 'Please enter a date in the format dd mmm yyyy';
+            return /^\d{2} \w{3} \d{4}$/.test(input) ? true : 'Please enter a date in the format dd mmm yyyy';
           },
         }),
         showCalendar: await confirm({ message: 'Show the calendar?', default: true }),
       };
       profiles.push(profile);
-      addProfile = await confirm({ message: 'Do you want to add another profile?', default: false });
+      shouldAddProfile = await confirm({ message: 'Do you want to add another profile?', default: false });
     }
 
     interactiveValues.profiles = profiles;
@@ -225,37 +187,29 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
         message: 'What is the asset hostname?:',
         default: hostname(),
         validate(input: string) {
-          if (isEmpty(input) || /^[\w.-]+$/.test(input)) { // skipcq: JS-0113
-            return true;
-          }
-          return 'Please enter a valid hostname or leave blank';
+          return isEmpty(input) || /^[\w.-]+$/.test(input) ? true : 'Please enter a valid hostname or leave blank';
         },
       }),
       hostip: await input({
         message: 'What is the asset IP address?:',
         validate(input: string) {
-          if (isEmpty(input) || /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/.test(input)) { // skipcq: JS-0113
-            return true;
-          }
-          return 'Please enter a valid IP address or leave blank';
+          return isEmpty(input) || /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/.test(input)
+            ? true
+            : 'Please enter a valid IP address or leave blank';
         },
       }),
       hostmac: await input({
         message: 'What is the asset MAC address?:',
         validate(input: string) {
-          if (isEmpty(input) || /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(input)) { // skipcq: JS-0113
-            return true;
-          }
-          return 'Please enter a valid MAC address or leave blank';
+          return isEmpty(input) || /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(input)
+            ? true
+            : 'Please enter a valid MAC address or leave blank';
         },
       }),
       hostfqdn: await input({
         message: 'What is the asset FQDN?:',
         validate(input: string) {
-          if (isEmpty(input) || /^[\w.-]+\.[a-z]{2,}$/.test(input)) { // skipcq: JS-0113
-            return true;
-          }
-          return 'Please enter a valid FQDN or leave blank';
+          return isEmpty(input) || /^[\w.-]+\.[a-z]{2,}$/.test(input) ? true : 'Please enter a valid FQDN or leave blank';
         },
       }),
       targetcomment: await input({
@@ -307,5 +261,38 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
     }
 
     return interactiveValues;
+  }
+
+  async run() {
+    const { flags } = await this.parse(GenerateCKLMetadata);
+
+    // If not interactive must provide -o 0r --output
+    if (!flags.interactive && !flags.output) {
+      this.error('\u{1B}[31mIf not interactive you must specify the metadata output json file [-o]\u{1B}[0m');
+    }
+    // Flag variables
+    let metadataJsonFile = '';
+
+    if (flags.interactive) {
+      const interactiveFlags = await this.getFlags();
+      if ((interactiveFlags as { outputDirectory?: string }).outputDirectory) {
+        metadataJsonFile = resolveSafeChild(
+          (interactiveFlags as { outputDirectory: string }).outputDirectory,
+          safeFilename((interactiveFlags as { outputFileName: string }).outputFileName),
+        );
+      }
+    } else {
+      metadataJsonFile = flags.output || 'metadata.json';
+    }
+
+    const cklMetadata = await this.getCklMetaData();
+
+    const validationResults = validateChecklistMetadata(cklMetadata as ChecklistMetadata);
+    if (validationResults.ok) {
+      fs.writeFileSync(metadataJsonFile, JSON.stringify(cklMetadata, null, 2));
+      console.log(`Checklist metadata file written at: ${path.resolve(metadataJsonFile)}`);
+    } else {
+      console.error(`Unable to generate checklist metadata:\n${validationResults.error.message}`);
+    }
   }
 }

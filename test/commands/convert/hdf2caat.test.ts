@@ -21,10 +21,12 @@ describe('Test hdf2caat two RHEL HDF and a RHEL triple overlay HDF', () => {
   it('hdf-converter output test', async () => {
     await runCommand<{ name: string }>([
       'convert hdf2caat',
-      '-i', path.resolve('./test/sample_data/HDF/input/red_hat_good.json'),
+      '-i',
+      path.resolve('./test/sample_data/HDF/input/red_hat_good.json'),
       path.resolve('./test/sample_data/HDF/input/red_hat_good.json'),
       path.resolve('./test/sample_data/HDF/input/triple_overlay_profile_example.json'),
-      '-o', `${tmpobj.name}/caat.xlsx`,
+      '-o',
+      `${tmpobj.name}/caat.xlsx`,
     ]);
     const converted = XLSX.readFile(`${tmpobj.name}/caat.xlsx`, { type: 'file' });
     const sample = XLSX.readFile(path.resolve('./test/sample_data/HDF/output/caat/caat.xlsx'), { type: 'file' });
