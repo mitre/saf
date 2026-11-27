@@ -246,7 +246,7 @@ function cklControlStatus(control: ContextualizedControl, isForSummary?: boolean
 }
 
 function controlFindingDetails(control: { message: string[] }, controlCKLStatus: 'Not_Applicable' | 'Profile_Error' | 'Open' | 'NotAFinding' | 'Not_Reviewed') {
-  control.message.sort();
+  control.message.sort((first, second) => first.localeCompare(second, 'en'));
   switch (controlCKLStatus) {
     case 'Open': {
       return `One or more of the automated tests failed or was inconclusive for the control \n\n ${control.message.join('\n')}`;
