@@ -13,8 +13,10 @@ describe('Test generic convert command', () => {
     vi.stubEnv('INPUT_FILE', input);
     await runCommand<{ name: string }>([
       'convert',
-      '-i', input,
-      '-o', `${tmpobj.name}/burpsuite-generic.json`,
+      '-i',
+      input,
+      '-o',
+      `${tmpobj.name}/burpsuite-generic.json`,
     ]);
 
     const test = JSON.parse(fs.readFileSync(`${tmpobj.name}/burpsuite-generic.json`, 'utf8'));
