@@ -2,6 +2,10 @@ import fs from 'fs';
 import dotenv from 'dotenv';
 import { printHelpMsg, printRedMsg } from './utilities';
 
+class MissingEnvironmentVariableError extends Error {
+  override readonly name = 'MissingEnvironmentVariableError';
+}
+
 function printHelpMessage(shouldShowLocation: boolean) {
   printHelpMsg('Use the eMASSer CLI command "saf emasser configure" to generate or update an eMASS configuration file.');
   if (shouldShowLocation) {
@@ -85,7 +89,7 @@ export class ApiConfig {
       this.url = this.getRequiredEnv('EMASSER_HOST_URL');
       this.apiPassPhrase = this.getRequiredEnv('EMASSER_KEY_FILE_PASSWORD');
     } catch (error: unknown) {
-      if (error instanceof Error && error.name === 'EVNF') {
+      if (error instanceof MissingEnvironmentVariableError) {
         printHelpMessage(false);
       } else if (error instanceof Error) {
         console.error(error.message);
@@ -118,8 +122,7 @@ export class ApiConfig {
 
   @param key - The environment variable key to retrieve.
   @returns The value of the specified environment variable key.
-  @throws {Error} If the environment variable is not found or its value is not a string.
-  The error will have a name property set to 'EVNF'.
+  @throws {MissingEnvironmentVariableError} If the environment variable is not found or its value is not a string.
   */
   getRequiredEnv(key: string): string {
     if (this.envConfig && Object.hasOwn(this.envConfig, key)) {
@@ -131,9 +134,7 @@ export class ApiConfig {
     }
 
     printRedMsg(`No configuration was provided for variable: ${key}`);
-    const err = new Error('Environment variable not found');
-    err.name = 'EVNF';
-    throw err;
+    throw new MissingEnvironmentVariableError('Environment variable not found');
   }
 
   /**
