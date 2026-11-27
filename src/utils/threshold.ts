@@ -224,13 +224,13 @@ export function getDescriptionContentsOrUndefined(
   return undefined;
 }
 
-function cklControlStatus(control: ContextualizedControl, isForSummary?: boolean): 'Not_Applicable' | 'Profile_Error' | 'Open' | 'NotAFinding' | 'Not_Reviewed' {
+function cklControlStatus(control: ContextualizedControl): 'Not_Applicable' | 'Profile_Error' | 'Open' | 'NotAFinding' | 'Not_Reviewed' {
   const statuses = control.hdf.segments?.map(segment => segment.status);
   if (control.data.impact === 0) {
     return 'Not_Applicable';
   }
 
-  if (statuses?.includes('error') || (isForSummary && statuses?.length === 0)) {
+  if (statuses?.length === 0 || statuses?.includes('error')) {
     return 'Profile_Error';
   }
 
@@ -331,7 +331,7 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
       profile_shasum: profile.data.sha256,
       status: control.hdf.segments?.map(segment => segment.status),
       message: [],
-      control_status: cklControlStatus(control, true),
+      control_status: cklControlStatus(control),
     };
     if (control.hdf.segments) {
       for (const segment of control.hdf.segments) {
@@ -342,7 +342,7 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
       extracted.message.push(`NOT_APPLICABLE -- Description: ${control.data.desc}\n\n`);
     }
 
-    extracted.finding_details = controlFindingDetails(extracted, cklControlStatus(control, true));
+    extracted.finding_details = controlFindingDetails(extracted, cklControlStatus(control));
     result[reverseStatusName(status)][control.data.id] = extracted;
   }
 
