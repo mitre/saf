@@ -363,7 +363,7 @@ function makeLink(args: {
   };
 }
 
-/** Emit a no-match link — same shape across all tier-miss paths. */
+// Emit a no-match link — same shape across all tier-miss paths.
 function makeNoMatch(newControl: ControlLike, srg: string | null): LinkRecord {
   return {
     oldId: null,

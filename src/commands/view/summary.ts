@@ -4,19 +4,19 @@ import { calculateSummariesForExecJSONs, calculateTotalCountsForSummaries, calcu
 import { loadExecJSONs } from '../../utils/ohdf/data_loader';
 import { createPrintableSummary, printAndWriteOutput } from '../../utils/ohdf/output_generator';
 
-/** The prefix used for logging messages in this command */
+// The prefix used for logging messages in this command
 const VIEW_SUMMARY = 'view summary:';
 
-/** The help group for input/output related flags */
+// The help group for input/output related flags
 const IO_GROUP = 'I/O';
 
-/** The help group for formatting related flags */
+// The help group for formatting related flags
 const FORMATTING_GROUP = 'formatting';
 
-/** The default log level for this command */
+// The default log level for this command
 const DEFAULT_LOG_LEVEL = 'info';
 
-/** The available format options for the output */
+// The available format options for the output
 const FORMAT_OPTIONS = ['json', 'yaml', 'markdown'];
 
 /**
