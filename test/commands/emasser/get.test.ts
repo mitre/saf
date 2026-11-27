@@ -45,25 +45,6 @@ import {
   VASystemDashboardsApi,
   CMMCAssessmentDashboardsApi,
 } from '@mitre/emass_client';
-import type {
-  PoamResponseGetPoams,
-  PoamResponseGetSystems,
-  SystemResponse,
-  SystemRolesResponse,
-  SystemsResponse,
-  CacResponseGet,
-  PacResponseGet,
-  MilestoneResponseGetMilestone,
-  MilestoneResponseGet,
-  TestResultsResponseGet,
-  ArtifactsResponseGet,
-  HwBaselineResponseGet,
-  SwBaselineResponseGet,
-  WorkflowDefinitionResponseGet,
-  WorkflowInstancesResponseGet,
-  WorkflowInstanceResponseGet,
-  CmmcResponseGet,
-} from '@mitre/emass_client/dist/api';
 import { describe, expect, it } from 'vitest';
 import { getErrorMessage } from '../../../src/utils/global';
 import { InitMockServer } from './mock.server';
@@ -75,16 +56,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - Test Connection', async () => {
     const getTestApi = new TestApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await getTestApi.testConnection().then((response: SystemResponse) => {
+    try {
+      const response = await getTestApi.testConnection();
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -92,16 +74,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - System', async () => {
     const getSystems = new SystemsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await getSystems.getSystem(123).then((response: SystemResponse) => {
+    try {
+      const response = await getSystems.getSystem(123);
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -109,16 +92,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - Systems', async () => {
     const getSystems = new SystemsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await getSystems.getSystems().then((response: SystemsResponse) => {
+    try {
+      const response = await getSystems.getSystems();
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -126,16 +110,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - Roles', async () => {
     const getSystemRoles = new SystemRolesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await getSystemRoles.getSystemRoles().then((response: SystemRolesResponse) => {
+    try {
+      const response = await getSystemRoles.getSystemRoles();
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -143,16 +128,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - Controls', async () => {
     const getControls = new ControlsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await getControls.getSystemControls(34, 'acronym').then((response: CacResponseGet) => {
+    try {
+      const response = await getControls.getSystemControls(34, 'acronym');
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -160,16 +146,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - Test Results', async () => {
     const getControls = new TestResultsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await getControls.getSystemTestResults(34, 'acronym').then((response: TestResultsResponseGet) => {
+    try {
+      const response = await getControls.getSystemTestResults(34, 'acronym');
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -177,16 +164,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - POA&Ms (for system)', async () => {
     const getPoams = new POAMApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await getPoams.getSystemPoams(34, 56).then((response: PoamResponseGetSystems) => {
+    try {
+      const response = await getPoams.getSystemPoams(34, 56);
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -194,16 +182,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - POA&Ms (for poam Id)', async () => {
     const getPoams = new POAMApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await getPoams.getSystemPoamsByPoamId(34, 56).then((response: PoamResponseGetPoams) => {
+    try {
+      const response = await getPoams.getSystemPoamsByPoamId(34, 56);
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -211,16 +200,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - Milestones (for poam Id', async () => {
     const getMilestones = new MilestonesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await getMilestones.getSystemMilestonesByPoamId(36, 76, 89).then((response: MilestoneResponseGet) => {
+    try {
+      const response = await getMilestones.getSystemMilestonesByPoamId(36, 76, 89);
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -228,16 +218,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - Milestones (for poamId & milestone Id', async () => {
     const getMilestones = new MilestonesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await getMilestones.getSystemMilestonesByPoamIdAndMilestoneId(36, 76, 89).then((response: MilestoneResponseGetMilestone) => {
+    try {
+      const response = await getMilestones.getSystemMilestonesByPoamIdAndMilestoneId(36, 76, 89);
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -245,16 +236,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - Artifacts', async () => {
     const getArtifacs = new ArtifactsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await getArtifacs.getSystemArtifacts(34, 56).then((response: ArtifactsResponseGet) => {
+    try {
+      const response = await getArtifacs.getSystemArtifacts(34, 56);
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -262,20 +254,21 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - Artifacts (export)', async () => {
     const getArtifacs = new ArtifactsExportApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await getArtifacs.getSystemArtifactsExport(34, 'thisfile', false).then((response: unknown) => {
+    try {
+      const response: unknown = await getArtifacs.getSystemArtifactsExport(34, 'thisfile', false);
       if (typeof response === 'object' && response !== null) {
         responseDataObj = new Map(Object.entries(response as Record<string, unknown>));
       } else {
         throw new Error('Unexpected response type');
       }
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -283,16 +276,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - CAC', async () => {
     const getCac = new CACApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await getCac.getSystemCac(34, 'acronym').then((response: CacResponseGet) => {
+    try {
+      const response = await getCac.getSystemCac(34, 'acronym');
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -300,16 +294,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - PAC', async () => {
     const getPac = new PACApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await getPac.getSystemPac(34).then((response: PacResponseGet) => {
+    try {
+      const response = await getPac.getSystemPac(34);
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -317,16 +312,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - Hardware Baseline', async () => {
     const hardware = new HardwareBaselineApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await hardware.getSystemHwBaseline(1, 2, 3).then((response: HwBaselineResponseGet) => {
+    try {
+      const response = await hardware.getSystemHwBaseline(1, 2, 3);
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -334,16 +330,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - Software Baseline', async () => {
     const software = new SoftwareBaselineApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await software.getSystemSwBaseline(34).then((response: SwBaselineResponseGet) => {
+    try {
+      const response = await software.getSystemSwBaseline(34);
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -351,16 +348,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - Workflow Definitions', async () => {
     const apiCon = new WorkflowDefinitionsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await apiCon.getWorkflowDefinitions(false, 'type').then((response: WorkflowDefinitionResponseGet) => {
+    try {
+      const response = await apiCon.getWorkflowDefinitions(false, 'type');
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -368,16 +366,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - Workflow Instances (all)', async () => {
     const apiCon = new WorkflowInstancesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await apiCon.getSystemWorkflowInstances(false, false, 1, 2).then((response: WorkflowInstancesResponseGet) => {
+    try {
+      const response = await apiCon.getSystemWorkflowInstances(false, false, 1, 2);
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -385,16 +384,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - Workflow Instances (for workflow Id)', async () => {
     const apiCon = new WorkflowInstancesApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await apiCon.getSystemWorkflowInstancesByWorkflowInstanceId(2).then((response: WorkflowInstanceResponseGet) => {
+    try {
+      const response = await apiCon.getSystemWorkflowInstancesByWorkflowInstanceId(2);
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -402,16 +402,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
   it('Successfully tested endpoint - CMMC Assessment', async () => {
     const apiCon = new CMMCAssessmentsApi(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
     let responseDataObj: Map<string, unknown>;
-    await apiCon.getCmmcAssessments(34).then((response: CmmcResponseGet) => {
+    try {
+      const response = await apiCon.getCmmcAssessments(34);
       responseDataObj = new Map(Object.entries(response));
-    }).catch((error: unknown) => {
+    } catch (error: unknown) {
       const errorMsg = getErrorMessage(error);
       if (!errorMsg.includes('unexpected end of file')) {
         console.error(errorMsg);
       }
 
       responseDataObj = new Map(Object.entries(testOk));
-    });
+    }
     expect(responseDataObj.get('status')).to.equal(200);
     expect(responseDataObj.get('statusText')).to.equal('OK');
   });
@@ -482,16 +483,17 @@ describe('Test eMASSer API CLI (GET) commands', () => {
       const DashboardClass = eval(values[0]);
       const getDashboard = new DashboardClass(mocServer.configuration, mocServer.basePath, mocServer.axiosInstances);
       let responseDataObj: Map<string, unknown>;
-      await getDashboard[values[1]](45, false, 1, 2000).then((response: object) => {
+      try {
+        const response: object = await getDashboard[values[1]](45, false, 1, 2000);
         responseDataObj = new Map(Object.entries(response));
-      }).catch((error: unknown) => {
+      } catch (error: unknown) {
         const errorMsg = getErrorMessage(error);
         if (!errorMsg.includes('unexpected end of file')) {
           console.error(errorMsg);
         }
 
         responseDataObj = new Map(Object.entries(testOk));
-      });
+      }
       expect(responseDataObj.get('status')).to.equal(200);
       expect(responseDataObj.get('statusText')).to.equal('OK');
     });

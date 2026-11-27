@@ -100,7 +100,8 @@ export default class IonChannel2HDF extends BaseCommand<typeof IonChannel2HDF> {
         let json;
         if (flags.raw) {
           filename = project.name + '_raw.json';
-          json = await apiClient.getAnalysis().then(({ analysis }) => analysis);
+          const { analysis } = await apiClient.getAnalysis();
+          json = analysis;
         } else {
           filename = project.name + '.json';
           json = await apiClient.toHdf();
@@ -127,7 +128,8 @@ export default class IonChannel2HDF extends BaseCommand<typeof IonChannel2HDF> {
         let json;
         if (flags.raw) {
           filename = projectName + '_raw.json';
-          json = await apiClient.getAnalysis().then(({ analysis }) => analysis);
+          const { analysis } = await apiClient.getAnalysis();
+          json = analysis;
         } else {
           filename = projectName + '.json';
           json = await apiClient.toHdf();

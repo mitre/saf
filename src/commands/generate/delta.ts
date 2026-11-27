@@ -578,6 +578,11 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     });
   }
 
+  private async exitAfterDelay(): Promise<never> {
+    await this.sleep(2000);
+    process.exit(1);
+  }
+
   async run() {
     const { flags } = await this.parse(GenerateDelta);
 
@@ -717,14 +722,14 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           this.logThis(`  Loaded ${inspecJsonFile} as Profile JSON/Execution JSON`, 'debug');
         } else {
           this.saveLogs(`  ERROR: An InSpec Profile JSON file was not provided ${inspecJsonFile}`);
-          await this.sleep(2000).then(() => process.exit(1));
+          await this.exitAfterDelay();
         }
       } catch (error: any) {
         const message = error.code === 'ENOENT'
           ? `  ERROR: File (entity) not found: ${inspecJsonFile}.\n  Run the --help command for more information on expected input files.`
           : `  ERROR: Unable to process Input execution/profile JSON ${inspecJsonFile}\n  ${error}`;
         this.saveLogs(message);
-        await this.sleep(2000).then(() => process.exit(1));
+        await this.exitAfterDelay();
       }
     } else {
       // Shorten the controls directory to show the 'controls' directory and its parent
@@ -764,13 +769,13 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             this.logThis(`  Loaded ${ovalXmlFile} as OVAL`, 'debug');
           } else {
             this.saveLogs(`  ERROR: Unable to load OVAL file: ${ovalXmlFile}\n  Ensure it is an OVAL file`);
-            await this.sleep(2000).then(() => process.exit(1));
+            await this.exitAfterDelay();
           }
         } else {
           this.saveLogs(
             `  ERROR: An OVAL flag option was detected, but no file was provided\n  Ensure ${ovalXmlFile} is an OVAL file`,
           );
-          await this.sleep(2000).then(() => process.exit(1));
+          await this.exitAfterDelay();
         }
       } else {
         this.logThis('  An OVAL XML file was not provided', 'debug');
@@ -780,7 +785,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         ? `  ERROR: File (entity) not found: ${ovalXmlFile}.\n  Run the --help command to more information on expected input files.`
         : `  ERROR: Unable to process the OVAL XML file: ${ovalXmlFile}\n  ${error}`;
       this.saveLogs(message);
-      await this.sleep(2000).then(() => process.exit(1));
+      await this.exitAfterDelay();
     }
 
     // -------------------------------------------------------------------------
@@ -880,7 +885,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           existingProfile = processInSpecProfile(inspecJsonFileNew);
         } catch (error: unknown) {
           this.saveLogs(`  ERROR: Unable to generate the profile json summary for the updated controls.  \n ${getErrorMessage(error)}`);
-          await this.sleep(2000).then(() => process.exit(1));
+          await this.exitAfterDelay();
         }
       }
     } catch (error: unknown) {
@@ -889,7 +894,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         + 'information on the deltaOutputDir(-o) or controlsDir(-c) flags.\n'
         + `  ${getErrorMessage(error)}`,
       );
-      await this.sleep(2000).then(() => process.exit(1));
+      await this.exitAfterDelay();
     }
 
     // -------------------------------------------------------------------------
@@ -923,7 +928,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       this.saveLogs(
         `  ERROR: Unable to process delta output directory: ${deltaOutputDir}\n  Check the --help command for more information on the -o flag.\n  ${error}`,
       );
-      await this.sleep(2000).then(() => process.exit(1));
+      await this.exitAfterDelay();
     }
 
     // -------------------------------------------------------------------------
@@ -965,7 +970,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         this.saveLogs(
           `  ERROR: Invalid ID Type: ${idType}. Check the --help command for the available ID Type options.`,
         );
-        await this.sleep(2000).then(() => process.exit(1));
+        await this.exitAfterDelay();
       }
 
       this.logThis('  Computed the delta between the existing profile and updated benchmark.', 'debug');
@@ -1041,13 +1046,14 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
         // Print the process output report to current directory
         this.logger.info('Update Results ===========================================================================\n');
         this.logger.info(updatedResult.markdown);
-        await this.sleep(2000).then(() => this.logger.info('\nDelta Process completed successfully\n'));
+        await this.sleep(2000);
+        this.logger.info('\nDelta Process completed successfully\n');
       } else {
         this.logger.error('\nDelta Process failed\n');
         this.saveLogs(
           `  ERROR: The updateProfileUsingXCCDF process failed to provide updated profiles, received: ${updatedResult}.`,
         );
-        await this.sleep(2000).then(() => process.exit(1));
+        await this.exitAfterDelay();
       }
     } else {
       if (!existingProfile) {
@@ -1268,12 +1274,12 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
             }
           } catch (error) {
             this.saveLogs(`Processing File failed.', ${error instanceof Error ? error : String(error)}`);
-            await this.sleep(2000).then(() => process.exit(1));
+            await this.exitAfterDelay();
           }
         }
       } else {
         this.saveLogs('Processing XCCDF JSON Summary file failed.');
-        await this.sleep(2000).then(() => process.exit(1));
+        await this.exitAfterDelay();
       }
     } else {
       this.logThis(`Verifying that the URL contains a valid XCCDF: ${xccdfInput}...`, 'info');
@@ -1281,7 +1287,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
 
       if (xccdfInput === undefined) {
         this.saveLogs('URL flag is undefined or invalid.');
-        await this.sleep(2000).then(() => process.exit(1));
+        await this.exitAfterDelay();
       }
 
       const url = xccdfInput;
@@ -1306,7 +1312,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
           }
         } catch (error) {
           this.saveLogs(`Processing URL failed.', ${error instanceof Error ? error : String(error)}`);
-          await this.sleep(2000).then(() => process.exit(1));
+          await this.exitAfterDelay();
         }
       })();
       tmp.setGracefulCleanup();
