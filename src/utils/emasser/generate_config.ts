@@ -2,6 +2,7 @@ import { input, confirm, password, select } from '@inquirer/prompts';
 import colors from 'colors';
 import dotenv from 'dotenv';
 import fse from 'fs-extra';
+import { isNaN, isString } from 'lodash';
 
 const PROMPT_MESSAGE = [
   'Provide the eMASS API key (EMASSER_API_KEY) - valid key is > 30 alpha numeric characters:',
@@ -86,19 +87,6 @@ function generateNewdotEnv() {
 }
 
 /**
-Checks if the given value is numeric.
-
-This function tests whether the provided value is a number or a string that represents a number.
-It supports both integer and floating-point numbers, including negative values.
-
-@param value - The value to be checked. It can be a string or a number.
-@returns `true` if the value is numeric, otherwise `false`.
-*/
-function isNumeric(value: unknown): boolean {
-  return typeof value === 'number' || (!Number.isNaN(Number(value)) && typeof value === 'string');
-}
-
-/**
 Updates key-value pairs in a file based on the provided updates object.
 
 @param filePath - The path to the file to be updated.
@@ -129,12 +117,11 @@ function updateKeyValuePairs(filePath: fse.PathOrFileDescriptor, updates: Record
 
       // If the key exists in the updates object, update the value
       if (Object.hasOwn(updates, key)) {
-        // wrap string values with single-quotes
-        return isNumeric(updates[key])
-          ? `${key}=${updates[key]}`
-          : ((typeof updates[key] === 'string')
-            ? `${key}='${updates[key]}'`
-            : `${key}=${updates[key]}`);
+        const value = updates[key];
+        // Wrap non-numeric strings with single quotes.
+        return isString(value) && isNaN(Number(value))
+          ? `${key}='${value}'`
+          : `${key}=${value}`;
       }
 
       // Return the original line if no update is needed
