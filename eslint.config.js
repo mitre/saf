@@ -63,7 +63,6 @@ export default defineConfig([
       'unicorn/prefer-number-coercion': 'off',
       'unicorn/prefer-smaller-scope': ['error', { checkTypeAliases: false }],
       'unicorn/prefer-split-limit': 'off',
-      'unicorn/prevent-abbreviations': 'off',
     },
   },
 ]);
