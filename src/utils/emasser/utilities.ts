@@ -94,7 +94,7 @@ Parses command line arguments to extract the request type, endpoint, and additio
 @returns An object containing the request type, endpoint, and additional argument.
 */
 function getArgs(argv: string[], endpointValue?: string): CliArgs {
-  const requestTypeIndex = argv.findIndex(arg => (arg === 'get' || arg === 'post' || arg === 'put' || arg === 'delete'));
+  const requestTypeIndex = argv.findIndex(arg => ['get', 'post', 'put', 'delete'].includes(arg));
   return {
     requestType: argv[requestTypeIndex],
     endpoint: endpointValue || argv[requestTypeIndex + 1],
