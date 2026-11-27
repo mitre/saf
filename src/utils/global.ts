@@ -114,7 +114,7 @@ export function safeExecFileSync(command: string, args: string[], options: ExecF
 
     const shouldQuote = value === '' || /\s/.test(value);
     // Double trailing backslashes so a Windows executable reads the closing quote as a delimiter.
-    return shouldQuote ? `"${value.replace(/\\+$/, '$&$&')}"` : value;
+    return shouldQuote ? `"${value.replace(/(?<!\\)\\+$/, '$&$&')}"` : value;
   }).join(' ');
 
   const shell = path.win32.join(process.env.SystemRoot ?? String.raw`C:\Windows`, 'System32', 'cmd.exe');
