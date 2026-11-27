@@ -241,8 +241,7 @@ export default class HDF2CKL extends Command {
       webdbsite: '',
     };
     const inputHDF = JSON.parse(fs.readFileSync(flags.input, 'utf8'));
-    let flagMetadata;
-    flagMetadata = flags.metadata
+    let flagMetadata = flags.metadata
       ? JSON.parse(fs.readFileSync(flags.metadata, 'utf8'))
       : {
         profiles: [
