@@ -223,7 +223,7 @@ async function processPrompt() {
   const certTypes = {
     certType: await select({
       message: 'What type of certificate to use with eMASS!',
-      default: 'Key_Cert',
+      default: 'key_cert',
       choices: [
         { name: 'Key/Client Certificate', value: 'key_cert' },
         { name: 'Single CA Certificate', value: 'CA' },
