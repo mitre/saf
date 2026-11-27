@@ -158,6 +158,9 @@
       "supplement": {
         "description": "[Supplement]   Supplement (ex. read or modify) elements that provide contextual information in the Heimdall Data Format results JSON file such as `passthrough` or `target`"
       },
+      "upload": {
+        "description": "[Upload]       Upload Heimdall Data Format results JSON file(s) to a running Heimdall2 instance"
+      },
       "supplement:passthrough": {
         "description": "Supplement (ex. read or modify) the `passthrough` element, which provides contextual information in the Heimdall Data Format results JSON file"
       },
