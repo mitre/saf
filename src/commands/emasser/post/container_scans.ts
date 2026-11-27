@@ -148,13 +148,10 @@ function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerRe
 
     let i = 0;
     let j = 0;
-    // disabling these eslint rules since I don't want to touch the logic as I'm confused by the same resultsArray being appended to even between benchmarks without being reset in the middle
-    // eslint-disable-next-line unicorn/no-for-each
-    dataObj.benchmarks.forEach((entryObject: Benchmarks) => {
+    for (const entryObject of dataObj.benchmarks) {
       assertParamExists(`benchmarks[${i}].benchmark`, entryObject.benchmark);
 
-      // eslint-disable-next-line unicorn/no-for-each
-      entryObject.results.forEach((resultObj: Results) => {
+      for (const resultObj of entryObject.results) {
         assertParamExists(`benchmarks.results[${j}].ruleId`, resultObj.ruleId);
         assertParamExists(`benchmarks.results[${j}].lastSeen`, resultObj.lastSeen);
         assertParamExists(`benchmarks.results[${j}].status`, resultObj.status);
@@ -162,7 +159,7 @@ function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerRe
 
         const resultsObj: Results = { ruleId: resultObj.ruleId, lastSeen: resultObj.lastSeen, status: resultObj.status };
         resultsArray.push(resultsObj);
-      });
+      }
 
       i++;
       const benchMarksObj: Benchmarks = {
@@ -170,7 +167,7 @@ function addRequiredFieldsToRequestBody(dataObj: ContainerResource): ContainerRe
         results: resultsArray,
       };
       benchmarksArray.push(benchMarksObj);
-    });
+    }
   } catch (error) {
     console.log('Required JSON fields are:');
     console.log(colorize(JSON.stringify(getJsonExamples('container_scans-required'), null, 2)));
@@ -233,9 +230,7 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
   const benchmarksArray: Benchmarks[] = [];
   const resultsArray: Results[] = [];
   // Add the optional benchmark entries
-  // disabling these eslint rules since I don't want to touch the logic as I'm confused by the same resultsArray being appended to even between benchmarks without being reset in the middle
-  // eslint-disable-next-line unicorn/no-for-each
-  dataObj.benchmarks.forEach((entryObject: Benchmarks) => {
+  for (const entryObject of dataObj.benchmarks) {
     const benchmarksObj: Benchmarks = { benchmark: entryObject.benchmark, results: [] };
     // These are required
     // Check for the optional entry (isBaseline, version, and release)
@@ -252,8 +247,7 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
     }
 
     // Add the optional Results entries
-    // eslint-disable-next-line unicorn/no-for-each
-    entryObject.results.forEach((resultObj: Results) => {
+    for (const resultObj of entryObject.results) {
       // These are required
       const resultsObj: Results = { ruleId: resultObj.ruleId, status: resultObj.status, lastSeen: resultObj.lastSeen };
       // Check for the optional entry
@@ -262,10 +256,10 @@ function addOptionalFields(bodyObject: ContainerResource, dataObj: ContainerReso
       }
 
       resultsArray.push(resultsObj);
-    });
+    }
     benchmarksObj.results = resultsArray;
     benchmarksArray.push(benchmarksObj);
-  });
+  }
 
   bodyObject.benchmarks = benchmarksArray;
 }
