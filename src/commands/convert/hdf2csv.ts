@@ -2,8 +2,10 @@ import fs, { promises as fse } from 'fs';
 import path from 'path';
 import { checkbox, input, select } from '@inquirer/prompts';
 import { Flags } from '@oclif/core';
+import chalk from 'chalk';
 import * as stringify from 'csv-stringify';
 import { EventEmitter } from 'events';
+import fileSelector from 'inquirer-file-selector';
 import { contextualizeEvaluation, type ContextualizedEvaluation } from 'inspecjs';
 import _ from 'lodash';
 import type { Logger } from 'winston';
@@ -144,7 +146,6 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   /**
   Prompts the user to provide necessary information for converting an HDF file to a CSV file.
 
-  This function dynamically imports `inquirer-file-selector` and `chalk` to facilitate user input.
   It sets the `defaultMaxListeners` to 20 to accommodate the number of listeners required by the inquire checkbox.
 
   The user is prompted to provide:
@@ -161,11 +162,6 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     // listener for each entry it displays, we are providing 16 entries,
     // does using 16 listeners. Need to increase the defaultMaxListeners.
     EventEmitter.defaultMaxListeners = 20;
-
-    // Dynamically import inquirer-file-selector and chalk
-    // Once we move the SAF CLI from a CommonJS to an ES modules we can use the regular import
-    const { default: fileSelector } = await import('inquirer-file-selector');
-    const { default: chalk } = await import('chalk');
 
     this.logger.info('Provide the necessary information:');
     this.logger.info('  Required flag - HDF file to convert to a CSV formatted file');
