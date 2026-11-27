@@ -96,12 +96,13 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
       const [statusName] = statusThreshold.split('.');
       if (_.get(thresholds, statusThreshold) !== undefined && typeof _.get(thresholds, statusThreshold) !== 'object') {
         try {
+          const actualCount = _.get(overallStatusCounts, renameStatusName(statusName));
           exitNonZeroIfTrue(
             Boolean(
-              _.get(overallStatusCounts, renameStatusName(statusName))
+              actualCount
               !== _.get(thresholds, statusThreshold),
             ),
-            `${statusThreshold}: Threshold not met. Number of received total ${statusThreshold.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is not equal to your set threshold for the number of ${statusThreshold.split('.')[0]} controls (${_.get(thresholds, statusThreshold)})`,
+            `${statusThreshold}: Threshold not met. Number of received total ${statusThreshold.split('.')[0]} controls (${actualCount}) is not equal to your set threshold for the number of ${statusThreshold.split('.')[0]} controls (${_.get(thresholds, statusThreshold)})`,
           );
         } catch {
           process.exitCode = 1;
@@ -114,12 +115,13 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
       const [statusName] = totalMinimum.split('.');
       if (_.get(thresholds, totalMinimum) !== undefined) {
         try {
+          const actualCount = _.get(overallStatusCounts, renameStatusName(statusName));
           exitNonZeroIfTrue(
             Boolean(
-              _.get(overallStatusCounts, renameStatusName(statusName))
+              actualCount
               < _.get(thresholds, totalMinimum),
             ),
-            `${totalMinimum}: Threshold not met. Number of received total ${totalMinimum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${totalMinimum.split('.')[0]} controls (${_.get(thresholds, totalMinimum)})`,
+            `${totalMinimum}: Threshold not met. Number of received total ${totalMinimum.split('.')[0]} controls (${actualCount}) is less than your set threshold for the number of ${totalMinimum.split('.')[0]} controls (${_.get(thresholds, totalMinimum)})`,
           );
         } catch {
           process.exitCode = 1;
@@ -132,12 +134,13 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
       const [statusName] = totalMaximum.split('.');
       if (_.get(thresholds, totalMaximum) !== undefined) {
         try {
+          const actualCount = _.get(overallStatusCounts, renameStatusName(statusName));
           exitNonZeroIfTrue(
             Boolean(
-              _.get(overallStatusCounts, renameStatusName(statusName))
+              actualCount
               > _.get(thresholds, totalMaximum),
             ),
-            `${totalMaximum}: Threshold not met. Number of received total ${totalMaximum.split('.')[0]} controls (${_.get(overallStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${totalMaximum.split('.')[0]} controls (${_.get(thresholds, totalMaximum)})`,
+            `${totalMaximum}: Threshold not met. Number of received total ${totalMaximum.split('.')[0]} controls (${actualCount}) is greater than your set threshold for the number of ${totalMaximum.split('.')[0]} controls (${_.get(thresholds, totalMaximum)})`,
           );
         } catch {
           process.exitCode = 1;
@@ -153,11 +156,12 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
         const [statusName, , thresholdType] = statusCountThreshold.split('.');
         if (thresholdType === 'min' && _.get(thresholds, statusCountThreshold) !== undefined) {
           try {
+            const actualCount = _.get(criticalStatusCounts, renameStatusName(statusName));
             exitNonZeroIfTrue(
               Boolean(
-                _.get(criticalStatusCounts, renameStatusName(statusName)) < _.get(thresholds, statusCountThreshold),
+                actualCount < _.get(thresholds, statusCountThreshold),
               ),
-              `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is less than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
+              `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${actualCount}) is less than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
             );
           } catch {
             process.exitCode = 1;
@@ -165,11 +169,12 @@ export default class Threshold extends BaseCommand<typeof Threshold> {
           }
         } else if (thresholdType === 'max' && _.get(thresholds, statusCountThreshold) !== undefined) {
           try {
+            const actualCount = _.get(criticalStatusCounts, renameStatusName(statusName));
             exitNonZeroIfTrue(
               Boolean(
-                _.get(criticalStatusCounts, renameStatusName(statusName)) > _.get(thresholds, statusCountThreshold),
+                actualCount > _.get(thresholds, statusCountThreshold),
               ),
-              `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${_.get(criticalStatusCounts, renameStatusName(statusName))}) is greater than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
+              `${statusCountThreshold}: Threshold not met. Number of received total ${statusCountThreshold.split('.')[0]} controls (${actualCount}) is greater than your set threshold for the number of ${statusCountThreshold.split('.')[0]} controls (${_.get(thresholds, statusCountThreshold)})`,
             );
           } catch {
             process.exitCode = 1;

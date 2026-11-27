@@ -55,6 +55,7 @@ export default defineConfig([
       '@typescript-eslint/prefer-nullish-coalescing': 'off',
       'unicorn/consistent-boolean-name': ['error', { prefixes: { with: true } }],
       'unicorn/filename-case': ['error', { case: 'snakeCase' }],
+      'unicorn/max-nested-calls': 'off',
       'unicorn/no-null': 'off',
       'unicorn/no-process-exit': 'off',
       'unicorn/prefer-node-protocol': 'off',

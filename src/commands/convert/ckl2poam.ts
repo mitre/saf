@@ -199,9 +199,9 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
       // The current row we are on
       let currentRow = STARTING_ROW;
       // The scheduled completion date, default of one year from today
-      const aYearFromNow = moment(
-        new Date(new Date().setFullYear(new Date().getFullYear() + 1)),
-      ).format('M/DD/YYYY');
+      const completionDate = new Date();
+      completionDate.setFullYear(new Date().getFullYear() + 1);
+      const aYearFromNow = moment(completionDate).format('M/DD/YYYY');
       // For each vulnerability
       for (const vulnerability of vulnerabilities) {
         if (vulnerability.STATUS === 'NotAFinding' || vulnerability.STATUS === 'Not_Reviewed') {
