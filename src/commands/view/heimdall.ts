@@ -2,8 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import { Command, Flags } from '@oclif/core';
 import express, { type Request, type Response, type NextFunction } from 'express';
-import { dynamicImport } from 'tsimportlib';
-import { getInstalledPath } from '../../utils/global';
+import open from 'open';
+import { getErrorMessage, getInstalledPath } from '../../utils/global';
 
 export default class Heimdall extends Command {
   static readonly aliases = ['heimdall'];
@@ -21,14 +21,6 @@ export default class Heimdall extends Command {
   };
 
   async run() {
-    // NOTE: The npm open package is native ESM and no longer provides a CommonJS export
-    // The SAF CLI is a CommonJS project and needs to dynamic import the open package
-    // Doing a normal dynamic import in typescript doesn't work because typescript will
-    // still translate the import into a require.  This library works around that issue
-    // by preventing that translation from occurring.
-    const openDynamicImport = await dynamicImport('open', module);
-    const open = openDynamicImport.default;
-
     const { flags } = await this.parse(Heimdall);
 
     // Is the defined port valid?
@@ -64,20 +56,8 @@ export default class Heimdall extends Command {
     };
 
     const predefinedLoadPath = flags.files ? '/?predefinedLoad=true' : '';
-    console.log(`Serving Heimdall at http://localhost:${flags.port}${predefinedLoadPath}`);
-
-    // Open the browser
-    if (!flags.noOpenBrowser) {
-      if (flags.port && flags.files) {
-        open(`http://localhost:${flags.port}/?predefinedLoad=true`);
-      } else if (flags.port && !flags.files) {
-        open(`http://localhost:${flags.port}/`);
-      } else if (!flags.port && flags.files) {
-        open('http://localhost:3000/?predefinedLoad=true');
-      } else {
-        open('http://localhost:3000/');
-      }
-    }
+    const serverUrl = `http://localhost:${flags.port}`;
+    console.log(`Serving Heimdall at ${serverUrl}${predefinedLoadPath}`);
 
     const installedPath = getInstalledPath('@mitre/saf');
 
@@ -87,5 +67,13 @@ export default class Heimdall extends Command {
       .listen(flags.port, () => {
         console.log(`Server running on port ${flags.port}`);
       });
+
+    if (!flags.noOpenBrowser) {
+      try {
+        await open(`${serverUrl}${predefinedLoadPath || '/'}`);
+      } catch (error) {
+        console.error('Could not open the default browser.', getErrorMessage(error));
+      }
+    }
   }
 }
