@@ -6,7 +6,7 @@ import { isNaN, isString } from 'lodash';
 
 const PROMPT_MESSAGE = [
   'Provide the eMASS API key (EMASSER_API_KEY) - valid key is > 30 alpha numeric characters:',
-  'Provide the eMASS server FQDN (EMASSER_HOST_URL) :',
+  'Provide the eMASS API base URL (EMASSER_HOST_URL):',
   'Provide the eMASS private encrypting file (key.pem) - include the path (EMASSER_KEY_FILE_PATH)):',
   'Provide the eMASS client certificate file (cert.pem) - include the path (EMASSER_CERT_FILE_PATH):',
   'Provide the eMASS CA certificate file (.cer, crt, or .pem) - include the path (EMASSER_CA_FILE_PATH):',
@@ -196,10 +196,15 @@ async function processPrompt() {
       default: envConfig.EMASSER_HOST_URL,
       required: true,
       validate: (input: string) => {
-        // eslint-disable-next-line no-useless-escape
-        return /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/g.test(input)
-          ? true
-          : 'Invalid eMASS FQDN (URL). Format: [protocol]://[hostname].[...].[domain].';
+        const invalidUrl = 'Enter an eMASS API base URL starting with http:// or https://, without credentials, a query, a fragment, or a trailing slash.';
+        const url = URL.parse(input);
+        if (!url || input.endsWith('/') || (url.protocol !== 'http:' && url.protocol !== 'https:') || !input.toLowerCase().startsWith(`${url.protocol}//`)) {
+          return invalidUrl;
+        }
+
+        const [authority] = input.slice(url.protocol.length + 2).split('/', 1);
+        const hasInvalidCharacters = [...input].some(character => character <= ' ' || character.trim() === '' || '\\?#'.includes(character));
+        return !hasInvalidCharacters && authority && !authority.includes('@') ? true : invalidUrl;
       },
     }),
     EMASSER_KEY_FILE_PASSWORD: await password({
