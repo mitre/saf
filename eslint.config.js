@@ -56,6 +56,7 @@ export default defineConfig([
       'unicorn/consistent-boolean-name': ['error', { prefixes: { with: true } }],
       'unicorn/filename-case': ['error', { case: 'snakeCase' }],
       'unicorn/max-nested-calls': 'off',
+      'unicorn/name-replacements': 'off',
       'unicorn/no-null': 'off',
       'unicorn/no-process-exit': 'off',
       'unicorn/prefer-node-protocol': 'off',
