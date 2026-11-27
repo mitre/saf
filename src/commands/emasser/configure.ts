@@ -13,7 +13,7 @@ export default class EmasserBuildConfig extends Command {
     = `
    ${colors.yellow('Required eMASS configuration variables 👇')}
    ${colors.blue('\tEMASSER_API_KEY') + colors.green('           <The eMASS API key (api-key) - valid key is > 30 alpha numeric characters>\b')}
-   ${colors.blue('\tEMASSER_HOST_URL') + colors.green('          <The Full Qualified Domain Name (FQDN) for the eMASS server>')}
+   ${colors.blue('\tEMASSER_HOST_URL') + colors.green('          <The eMASS API base URL>')}
    ${colors.blue('\tEMASSER_KEY_FILE_PATH') + colors.green('     <The eMASS key.pem private key file in PEM format (if provided, the CERT is required)>')}
    ${colors.blue('\tEMASSER_CERT_FILE_PATH') + colors.green('    <The eMASS client.pem certificate file in PEM format (if provided, the KEY is required)>')}
    ${colors.blue('\tEMASSER_CA_FILE_PATH') + colors.green('      <The eMASS CA certificate (if provided no Key or Client PEM is needed)>')}

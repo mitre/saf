@@ -12,11 +12,11 @@ export default class WriteTarget extends BaseCommand<typeof WriteTarget> {
 
   static examples = [
     {
-      description: '\u001B[93mProviding target-data\u001B[0m',
+      description: '\u{1B}[93mProviding target-data\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i hdf.json -d \'{"a": 5}\'',
     },
     {
-      description: '\u001B[93mUsing target-data file\u001B[0m',
+      description: '\u{1B}[93mUsing target-data file\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i hdf.json -f target.json -o new-hdf.json',
     },
   ];

@@ -7,7 +7,7 @@ export default class EmasserGetVersion extends Command {
   static examples = ['<%= config.bin %> <%= command.id %>'];
 
   run(): Promise<void> {
-    console.log('\u001B[93m', name + ': ' + version, '\u001B[0m');
+    console.log('\u{1B}[93m', name + ': ' + version, '\u{1B}[0m');
     return Promise.resolve();
   }
 }

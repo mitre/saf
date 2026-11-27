@@ -14,12 +14,6 @@ import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
-  private readonly logger: Logger = createWinstonLogger({
-    logFile: 'CliProcessOutput.log',
-    plainText: true,
-    alwaysPrintToConsole: true,
-  });
-
   static readonly usage
     = '<%= command.id %> [-i <hdf-json>|--interactive] [-o <csv-file>|--interactive] '
       + ' [-f <header-fields>|--interactive] [-t|--interactive] [-L info|warn|debug|verbose]';
@@ -28,11 +22,11 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
 
   static readonly examples = [
     {
-      description: '\u001B[93mRunning the CLI interactively\u001B[0m',
+      description: '\u{1B}[93mRunning the CLI interactively\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> --interactive',
     },
     {
-      description: '\u001B[93mProviding flags at the command line\u001B[0m',
+      description: '\u{1B}[93mProviding flags at the command line\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -o rhel7.csv --fields "Results Set,Status,ID,Title,Severity"',
     },
   ];
@@ -51,13 +45,13 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       char: 'i',
       required: false,
       exclusive: ['interactive'],
-      description: '\u001B[31m(required if not --interactive)\u001B[34m Input HDF file',
+      description: '\u{1B}[31m(required if not --interactive)\u{1B}[34m Input HDF file',
     }),
     output: Flags.string({
       char: 'o',
       required: false,
       exclusive: ['interactive'],
-      description: '\u001B[31m(required if not --interactive)\u001B[34m Output CSV file',
+      description: '\u{1B}[31m(required if not --interactive)\u{1B}[34m Output CSV file',
     }),
     fields: Flags.string({
       char: 'f',
@@ -75,122 +69,39 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     }),
   };
 
-  async run() {
-    const { flags } = await this.parse(HDF2CSV);
-
-    this.logger.info('================== HDF2CSV CLI Process ===================');
-    this.logger.info(`Date: ${new Date().toISOString()}\n`);
-
-    let inputFile;
-    let outputFile;
-    let includeFields;
-    let truncateFields = false;
-
-    if (flags.interactive) {
-      const interactiveFlags = await this.getFlags();
-      inputFile = interactiveFlags.inputFile;
-      outputFile = resolveSafeChild(interactiveFlags.outputDirectory, safeFilename(interactiveFlags.outputFileName));
-      includeFields = interactiveFlags.fields.join(',');
-      truncateFields = Boolean(interactiveFlags.truncateFields);
-    } else if (this.requiredFlagsProvided(flags)) {
-      inputFile = flags.input!;
-      outputFile = flags.output!;
-      includeFields = flags.fields;
-      truncateFields = flags.noTruncate;
-
-      // Save the flags to the log object
-      this.logger.info('Process Flags ============================================');
-      for (const [key, value] of Object.entries(flags)) {
-        this.logger.info(`${key}=${String(value)}`);
-      }
-    } else {
-      return;
-    }
-
-    if (this.validFileFlags(inputFile, outputFile)) {
-      const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(inputFile, 'utf8')));
-
-      // Convert all controls from a file to ControlSetRows
-      let rows: ControlSetRows = this.convertRows(contextualizedEvaluation, basename(inputFile), includeFields.split(','));
-      rows = rows.map((row, index) => {
-        const cleanedRow: Record<string, string> = {};
-        for (const [key, value] of Object.entries(row)) {
-          if (value !== undefined) {
-            if (value.length > 32_767 && truncateFields) {
-              if ('ID' in row) {
-                console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
-              } else {
-                console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
-              }
-
-              cleanedRow[key] = _.truncate(value, { length: 32_757, omission: 'TRUNCATED' });
-            } else {
-              cleanedRow[key] = value;
-            }
-          }
-        }
-        return cleanedRow;
-      });
-
-      try {
-        await this.saveCSV(outputFile, rows);
-        this.logger.info('\nTranslation completed successfully\n');
-      } catch (error: any) {
-        const error_ = error.code === 'EISDIR' ? new Error('The CSV output file name was not provided.') : error;
-        this.logger.error(`\nTranslation failed: ${error_}\n`);
-      }
-    }
-  }
-
-  requiredFlagsProvided(flags: { input: any; output: any }): boolean {
-    let missingFlags = false;
-    let strMsg = 'Warning: The following errors occurred:\n';
-
-    if (!flags.input) {
-      strMsg += '  Missing required flag input (HDF file)\n';
-      missingFlags = true;
-    }
-
-    if (!flags.output) {
-      strMsg += '  Missing required flag output (CSV file)\n';
-      missingFlags = true;
-    }
-
-    if (missingFlags) {
-      strMsg += 'See more help with -h or --help';
-      this.warn(strMsg);
-    }
-
-    return !missingFlags;
-  }
+  private readonly logger: Logger = createWinstonLogger({
+    logFile: 'CliProcessOutput.log',
+    plainText: true,
+    alwaysPrintToConsole: true,
+  });
 
   /**
-   * Converts the rows of a given evaluation into a ControlSetRows format.
-   *
-   * @param evaluation - The contextualized evaluation containing profiles and controls.
-   * @param filename - The name of the file to be used in the conversion.
-   * @param fieldsToAdd - An array of additional fields to include in the conversion.
-   * @returns An array of ControlSetRows representing the converted controls.
-   */
+  Converts the rows of a given evaluation into a ControlSetRows format.
+
+  @param evaluation - The contextualized evaluation containing profiles and controls.
+  @param filename - The name of the file to be used in the conversion.
+  @param fieldsToAdd - An array of additional fields to include in the conversion.
+  @returns An array of ControlSetRows representing the converted controls.
+  */
   private convertRows(evaluation: ContextualizedEvaluation, filename: string, fieldsToAdd: string[]): ControlSetRows {
     const controls = evaluation.contains.flatMap(profile => profile.contains) || [];
     return controls.map(ctrl => convertRow(filename, ctrl, fieldsToAdd));
   }
 
   /**
-   * Asynchronously saves data to a CSV file.
-   *
-   * @param filename - The path or file descriptor where the CSV file will be saved.
-   * @param data - The data to be converted to CSV format.
-   *
-   * @remarks
-   * The function converts the provided data to CSV format using specified options,
-   * including column headers, consistent column order, and a customizable delimiter.
-   * It then writes the CSV data to the specified file.
-   *
-   * @returns A promise that resolves when the CSV file has been written or rejects with an error.
-   * @throws Will print an error message if there is an issue writing the CSV file or processing the data.
-   */
+  Asynchronously saves data to a CSV file.
+
+  @param filename - The path or file descriptor where the CSV file will be saved.
+  @param data - The data to be converted to CSV format.
+
+  @remarks
+  The function converts the provided data to CSV format using specified options,
+  including column headers, consistent column order, and a customizable delimiter.
+  It then writes the CSV data to the specified file.
+
+  @returns A promise that resolves when the CSV file has been written or rejects with an error.
+  @throws Will print an error message if there is an issue writing the CSV file or processing the data.
+  */
   private async saveCSV(filename: fs.PathLike | fs.promises.FileHandle, data: stringify.Input) {
     // CSV options
     const options = {
@@ -212,12 +123,12 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   }
 
   /**
-   * Converts the given data to a CSV string using the specified options.
-   *
-   * @param data - The input data to be converted to CSV format.
-   * @param options - Optional configuration options for the CSV stringification process.
-   * @returns A promise that resolves to the CSV string output or rejects with an error.
-   */
+  Converts the given data to a CSV string using the specified options.
+
+  @param data - The input data to be converted to CSV format.
+  @param options - Optional configuration options for the CSV stringification process.
+  @returns A promise that resolves to the CSV string output or rejects with an error.
+  */
   private convertToCSV(data: stringify.Input, options: stringify.Options | undefined): Promise<string> {
     return new Promise((resolve, reject) => {
       stringify.stringify(data, options, (err, output: string | PromiseLike<string>) => {
@@ -231,20 +142,20 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   }
 
   /**
-   * Prompts the user to provide necessary information for converting an HDF file to a CSV file.
-   *
-   * This function dynamically imports `inquirer-file-selector` and `chalk` to facilitate user input.
-   * It sets the `defaultMaxListeners` to 20 to accommodate the number of listeners required by the inquire checkbox.
-   *
-   * The user is prompted to provide:
-   * - The HDF file to convert to a CSV formatted file.
-   * - The output directory where the CSV file will be written.
-   * - The output file name for the CSV (default is `hdf2csv.csv`).
-   * - The fields to include in the output CSV (at least one field is required).
-   * - An optional flag to truncate fields that exceed the Excel cell limit of 32,767 characters.
-   *
-   * @returns {Promise<any>} A promise that resolves to an object containing the user's input.
-   */
+  Prompts the user to provide necessary information for converting an HDF file to a CSV file.
+
+  This function dynamically imports `inquirer-file-selector` and `chalk` to facilitate user input.
+  It sets the `defaultMaxListeners` to 20 to accommodate the number of listeners required by the inquire checkbox.
+
+  The user is prompted to provide:
+  - The HDF file to convert to a CSV formatted file.
+  - The output directory where the CSV file will be written.
+  - The output file name for the CSV (default is `hdf2csv.csv`).
+  - The fields to include in the output CSV (at least one field is required).
+  - An optional flag to truncate fields that exceed the Excel cell limit of 32,767 characters.
+
+  @returns {Promise<any>} A promise that resolves to an object containing the user's input.
+  */
   private async getFlags(): Promise<any> {
     // The default max listeners is set to 10. The inquire checkbox sets a
     // listener for each entry it displays, we are providing 16 entries,
@@ -268,10 +179,7 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       value: string;
       checked: boolean;
     };
-    const choices: ChoiceItems[] = [];
-    for (const str of csvExportFields) {
-      choices.push({ name: str, value: str, checked: true });
-    }
+    const choices: ChoiceItems[] = csvExportFields.map(fieldName => ({ name: fieldName, value: fieldName, checked: true }));
 
     const fileSelectorTheme = {
       style: {
@@ -335,13 +243,13 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
   }
 
   /**
-   * Validates the input and output file paths for the HDF to CSV conversion.
-   *
-   * @param input - The path to the input HDF json file.
-   * @param output - The path to the output CSV file.
-   * @returns A boolean indicating whether the file paths are valid.
-   * @throws Will throw an error if the input file is not valid or if the output directory is invalid.
-   */
+  Validates the input and output file paths for the HDF to CSV conversion.
+
+  @param input - The path to the input HDF json file.
+  @param output - The path to the output CSV file.
+  @returns A boolean indicating whether the file paths are valid.
+  @throws Will throw an error if the input file is not valid or if the output directory is invalid.
+  */
   private validFileFlags(input: string, output: string): boolean {
     // Do we have a file. Note that this check only ensures that a file was
     // provided, not necessary an HDF json file
@@ -357,5 +265,93 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
     }
 
     return true;
+  }
+
+  async run() {
+    const { flags } = await this.parse(HDF2CSV);
+
+    this.logger.info('================== HDF2CSV CLI Process ===================');
+    this.logger.info(`Date: ${new Date().toISOString()}\n`);
+
+    let inputFile;
+    let outputFile;
+    let includeFields;
+    let shouldTruncateFields = false;
+
+    if (flags.interactive) {
+      const interactiveFlags = await this.getFlags();
+      inputFile = interactiveFlags.inputFile;
+      outputFile = resolveSafeChild(interactiveFlags.outputDirectory, safeFilename(interactiveFlags.outputFileName));
+      includeFields = interactiveFlags.fields.join(',');
+      shouldTruncateFields = Boolean(interactiveFlags.truncateFields);
+    } else if (this.requiredFlagsProvided(flags)) {
+      inputFile = flags.input!;
+      outputFile = flags.output!;
+      includeFields = flags.fields;
+      shouldTruncateFields = flags.noTruncate;
+
+      // Save the flags to the log object
+      this.logger.info('Process Flags ============================================');
+      for (const [key, value] of Object.entries(flags)) {
+        this.logger.info(`${key}=${String(value)}`);
+      }
+    } else {
+      return;
+    }
+
+    if (!this.validFileFlags(inputFile, outputFile)) {
+      return;
+    }
+
+    const contextualizedEvaluation = contextualizeEvaluation(JSON.parse(fs.readFileSync(inputFile, 'utf8')));
+
+    // Convert all controls from a file to ControlSetRows
+    let rows: ControlSetRows = this.convertRows(contextualizedEvaluation, basename(inputFile), includeFields.split(','));
+    rows = rows.map((row, index) => {
+      const cleanedRow: Record<string, string> = {};
+      for (const [key, value] of Object.entries(row)) {
+        if (value !== undefined) {
+          if (shouldTruncateFields && value.length > 32_767) {
+            const controlLabel = 'ID' in row ? row.ID : `at index ${index}`;
+            console.error(`Field ${key} of control ${controlLabel} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
+
+            cleanedRow[key] = _.truncate(value, { length: 32_757, omission: 'TRUNCATED' });
+          } else {
+            cleanedRow[key] = value;
+          }
+        }
+      }
+      return cleanedRow;
+    });
+
+    try {
+      await this.saveCSV(outputFile, rows);
+      this.logger.info('\nTranslation completed successfully\n');
+    } catch (error: any) {
+      const error_ = error.code === 'EISDIR' ? new Error('The CSV output file name was not provided.') : error;
+      this.logger.error(`\nTranslation failed: ${error_}\n`);
+    }
+  }
+
+  requiredFlagsProvided(flags: { input: any; output: any }): boolean {
+    let hasMissingFlags = false;
+    let strMsg = 'Warning: The following errors occurred:\n';
+
+    if (!flags.input) {
+      strMsg += '  Missing required flag input (HDF file)\n';
+      hasMissingFlags = true;
+    }
+
+    if (!flags.output) {
+      strMsg += '  Missing required flag output (CSV file)\n';
+      hasMissingFlags = true;
+    }
+
+    if (hasMissingFlags) {
+      strMsg += 'See more help with -h or --help';
+      this.warn(strMsg);
+    }
+
+    return !hasMissingFlags;
   }
 }

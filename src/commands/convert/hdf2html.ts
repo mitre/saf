@@ -20,7 +20,7 @@ export default class HDF2HTML extends Command {
   async run() {
     const { flags } = await this.parse(HDF2HTML);
 
-    const files = flags.input.map((file, i) => ({ data: fs.readFileSync(file, 'utf8'), fileName: basename(file), fileID: `${i}` }));
+    const files = flags.input.map((file, i) => ({ data: fs.readFileSync(file, 'utf8'), fileName: basename(file), fileID: String(i) }));
 
     const converter = await new Mapper(files, FileExportTypes[flags.type as keyof typeof FileExportTypes]).toHTML();
     fs.writeFileSync(flags.output, converter);

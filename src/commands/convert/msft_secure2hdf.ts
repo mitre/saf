@@ -61,15 +61,15 @@ export default class MsftSecure2HDF extends BaseCommand<typeof MsftSecure2HDF> {
 
   static readonly examples = [
     {
-      description: '\u001B[93mUsing input files\u001B[0m',
+      description: '\u{1B}[93mUsing input files\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -p secureScore.json -r secureScoreControlProfiles -o output-hdf-name.json [-w]',
     },
     {
-      description: '\u001B[93mUsing Azure tenant ID\u001B[0m',
+      description: '\u{1B}[93mUsing Azure tenant ID\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -t "12345678-1234-1234-1234-1234567890abcd" -a "12345678-1234-1234-1234-1234567890abcd" -s "aaaaa~bbbbbbbbbbbbbbbbbbbbbbbbb-cccccccc" -o output-hdf-name.json [-I | -C <certificate>]',
     },
     {
-      description: '\u001B[93mUsing combined inputs\u001B[0m',
+      description: '\u{1B}[93mUsing combined inputs\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i <(jq \'{"secureScore": .[0], "profiles": .[1]}\' secureScore.json secureScoreControlProfiles.json)> -o output-hdf-name.json [-w]',
     },
   ];
@@ -146,6 +146,8 @@ export default class MsftSecure2HDF extends BaseCommand<typeof MsftSecure2HDF> {
 
   async run() {
     const { flags } = await this.parse(MsftSecure2HDF);
+    const { tenantId, appId, appSecret } = flags;
+    const hasGraphCredentials = tenantId !== undefined && appId !== undefined && appSecret !== undefined;
     let scoreDoc: SecureScore;
     let profilesDoc: { value: SecureScoreControlProfile[] };
 
@@ -164,15 +166,8 @@ export default class MsftSecure2HDF extends BaseCommand<typeof MsftSecure2HDF> {
       const scoreDoc = combined.secureScore;
       const profilesDoc = combined.profiles;
       processInputs(scoreDoc, profilesDoc, flags.output, flags.includeRaw);
-    } else if (
-      flags.tenantId !== undefined
-      && flags.appId !== undefined
-      && flags.appSecret !== undefined
-    ) {
+    } else if (hasGraphCredentials) {
       // attempt to use the Graph API to pull files
-      const tenantId = flags.tenantId;
-      const appId = flags.appId;
-      const appSecret = flags.appSecret;
       const creds = new ClientSecretCredential(tenantId, appId, appSecret);
       const graphClientOpts: ClientOptions = {
         authProvider: new TokenCredentialAuthenticationProvider(creds, {

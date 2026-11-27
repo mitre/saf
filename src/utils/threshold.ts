@@ -1,4 +1,4 @@
-import type { ContextualizedControl, ContextualizedProfile, ControlStatus, ExecJSON, Severity } from 'inspecjs';
+import type { ContextualizedControl, ContextualizedProfile, ControlStatus, ExecJSON, HDFControlSegment, Severity } from 'inspecjs';
 import _ from 'lodash';
 import type { StatusHash, ThresholdValues } from '../types/threshold';
 
@@ -69,25 +69,31 @@ export function extractStatusCounts(profile: ContextualizedProfile, severity?: s
     Waived: 0,
   };
 
-  for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
+  for (const c of profile.contains) {
+    if (c.extendedBy.length > 0) {
+      continue;
+    }
+
     const control = c.root;
     const status: ControlStatus = control.hdf.status;
     const controlSeverity: Severity = control.hdf.severity;
 
-    if (!severity || (controlSeverity === severity)) {
-      ++hash[status];
-      if (status === 'Passed') {
-        hash.PassedTests += (control.hdf.segments || []).length;
-      } else if (status === 'Failed') {
-        hash.PassingTestsFailedControl += (control.hdf.segments || []).filter(
-          s => s.status === 'passed',
-        ).length;
-        hash.FailedTests += (control.hdf.segments || []).filter(
-          s => s.status === 'failed',
-        ).length;
-      } else if (status === 'Not Applicable' && control.hdf.waived) {
-        hash.Waived += control.hdf.segments?.length || 0;
-      }
+    if (severity && controlSeverity !== severity) {
+      continue;
+    }
+
+    ++hash[status];
+    if (status === 'Passed') {
+      hash.PassedTests += (control.hdf.segments || []).length;
+    } else if (status === 'Failed') {
+      hash.PassingTestsFailedControl += (control.hdf.segments || []).filter(
+        s => s.status === 'passed',
+      ).length;
+      hash.FailedTests += (control.hdf.segments || []).filter(
+        s => s.status === 'failed',
+      ).length;
+    } else if (status === 'Not Applicable' && control.hdf.waived) {
+      hash.Waived += control.hdf.segments?.length || 0;
     }
   }
 
@@ -96,31 +102,29 @@ export function extractStatusCounts(profile: ContextualizedProfile, severity?: s
 
 export function calculateCompliance(statusHash: StatusHash): number {
   const total = statusHash.Passed + statusHash.Failed + statusHash['Not Reviewed'] + statusHash['Profile Error'];
-  if (total === 0) {
-    return 0;
-  }
-
-  return Math.round((100 * statusHash.Passed) / total);
+  return total === 0 ? 0 : Math.round((100 * statusHash.Passed) / total);
 }
 
 /**
- * This function does not exit the process, it rather evaluates if an error occurred
- * logs an error message to the console and throws an error with the provided reason.
- *
- * It is the responsibility of the caller to catch the error and exit accordingly.
- *
- * @param condition - The condition to evaluate. If true, the process will exit with an error.
- * @param reason - Optional. The reason for the error. If not provided, a default message will be used.
- * @throws Will throw an error with the provided reason or a default message if the condition is true.
- *
- * @returns - does not return, it simply trows an error if condition is satisfied (true)
- */
-export function exitNonZeroIfTrue(condition: boolean, reason?: string) {
-  if (condition) {
-    // eslint-disable-next-line no-constant-binary-expression
-    console.error(`Error: ${reason}` || 'Error: Compliance levels were not met'); // skipcq: JS-W1043
-    throw new Error(reason || 'Compliance levels were not met');
+This function does not exit the process, it rather evaluates if an error occurred
+logs an error message to the console and throws an error with the provided reason.
+
+It is the responsibility of the caller to catch the error and exit accordingly.
+
+@param isConditionMet - The condition to evaluate. If true, the process will exit with an error.
+@param reason - Optional. The reason for the error. If not provided, a default message will be used.
+@throws Will throw an error with the provided reason or a default message if the condition is true.
+
+@returns - does not return, it simply trows an error if condition is satisfied (true)
+*/
+export function exitNonZeroIfTrue(isConditionMet: boolean, reason?: string) {
+  if (!isConditionMet) {
+    return;
   }
+
+  const message = reason || 'Compliance levels were not met';
+  console.error(`Error: ${message}`);
+  throw new Error(message);
 }
 
 export function renameStatusName(statusName: string): string {
@@ -182,7 +186,11 @@ export function reverseStatusName(statusName: string): 'passed' | 'failed' | 'sk
 export function getControlIdMap(profile: ContextualizedProfile, thresholds?: ThresholdValues) {
   thresholds ??= {};
 
-  for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
+  for (const c of profile.contains) {
+    if (c.extendedBy.length > 0) {
+      continue;
+    }
+
     const control = c.root;
     const severity = c.root.hdf.severity;
     const path = `${reverseStatusName(control.hdf.status)}.${severity}.controls`;
@@ -212,13 +220,13 @@ export function getDescriptionContentsOrUndefined(
   return undefined;
 }
 
-function cklControlStatus(control: ContextualizedControl, for_summary?: boolean): 'Not_Applicable' | 'Profile_Error' | 'Open' | 'NotAFinding' | 'Not_Reviewed' {
+function cklControlStatus(control: ContextualizedControl): 'Not_Applicable' | 'Profile_Error' | 'Open' | 'NotAFinding' | 'Not_Reviewed' {
   const statuses = control.hdf.segments?.map(segment => segment.status);
   if (control.data.impact === 0) {
     return 'Not_Applicable';
   }
 
-  if (statuses?.includes('error') || (statuses?.length === 0 && for_summary)) {
+  if (statuses?.length === 0 || statuses?.includes('error')) {
     return 'Profile_Error';
   }
 
@@ -234,7 +242,7 @@ function cklControlStatus(control: ContextualizedControl, for_summary?: boolean)
 }
 
 function controlFindingDetails(control: { message: string[] }, controlCKLStatus: 'Not_Applicable' | 'Profile_Error' | 'Open' | 'NotAFinding' | 'Not_Reviewed') {
-  control.message.sort();
+  control.message.sort((first, second) => first.localeCompare(second, 'en'));
   switch (controlCKLStatus) {
     case 'Open': {
       return `One or more of the automated tests failed or was inconclusive for the control \n\n ${control.message.join('\n')}`;
@@ -258,6 +266,34 @@ function controlFindingDetails(control: { message: string[] }, controlCKLStatus:
   }
 }
 
+function addSegmentMessage(segment: HDFControlSegment, messages: string[]): void {
+  switch (segment.status) {
+    case 'skipped': {
+      messages.push(`SKIPPED -- Test: ${segment.code_desc}\nMessage: ${segment.skip_message}\n`);
+      break;
+    }
+
+    case 'failed': {
+      messages.push(`FAILED -- Test: ${segment.code_desc}\nMessage: ${segment.message}\n`);
+      break;
+    }
+
+    case 'passed': {
+      messages.push(`PASS -- ${segment.code_desc}\n`);
+      break;
+    }
+
+    case 'error': {
+      messages.push(`PROFILE_ERROR -- Test: ${segment.code_desc}\nMessage: ${segment.code_desc}\n`);
+      break;
+    }
+
+    default: {
+      break;
+    }
+  }
+}
+
 export function extractControlSummariesBySeverity(profile: ContextualizedProfile): Record<string, Record<string, Record<string, string | string[] | number | undefined>>> {
   const result: Record<string, Record<string, Record<string, string | string[] | number | undefined>>> = {
     failed: {},
@@ -266,7 +302,11 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
     skipped: {},
     error: {},
   };
-  for (const c of profile.contains.filter(control => control.extendedBy.length === 0)) {
+  for (const c of profile.contains) {
+    if (c.extendedBy.length > 0) {
+      continue;
+    }
+
     const control = c.root;
     const status: ControlStatus = control.hdf.status;
     const extracted: Record<string, string | string[] | undefined> & { message: string[] } = {
@@ -287,42 +327,18 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
       profile_shasum: profile.data.sha256,
       status: control.hdf.segments?.map(segment => segment.status),
       message: [],
-      control_status: cklControlStatus(control, true),
+      control_status: cklControlStatus(control),
     };
     if (control.hdf.segments) {
       for (const segment of control.hdf.segments) {
-        switch (segment.status) {
-          case 'skipped': {
-            extracted.message.push(`SKIPPED -- Test: ${segment.code_desc}\nMessage: ${segment.skip_message}\n`);
-            break;
-          }
-
-          case 'failed': {
-            extracted.message.push(`FAILED -- Test: ${segment.code_desc}\nMessage: ${segment.message}\n`);
-            break;
-          }
-
-          case 'passed': {
-            extracted.message.push(`PASS -- ${segment.code_desc}\n`);
-            break;
-          }
-
-          case 'error': {
-            extracted.message.push(`PROFILE_ERROR -- Test: ${segment.code_desc}\nMessage: ${segment.code_desc}\n`);
-            break;
-          }
-
-          default: {
-            break;
-          }
-        }
+        addSegmentMessage(segment, extracted.message);
       }
     }
     if (control.data.impact === 0) {
       extracted.message.push(`NOT_APPLICABLE -- Description: ${control.data.desc}\n\n`);
     }
 
-    extracted.finding_details = controlFindingDetails(extracted, cklControlStatus(control, true));
+    extracted.finding_details = controlFindingDetails(extracted, cklControlStatus(control));
     result[reverseStatusName(status)][control.data.id] = extracted;
   }
 
@@ -330,81 +346,77 @@ export function extractControlSummariesBySeverity(profile: ContextualizedProfile
 }
 
 /**
- * Flattens a profile summary.
- * {
- *   passed: { critical: 0, high: 11, medium: 208, low: 8, total: 227 },
- *   failed: { critical: 0, high: 6, medium: 87, low: 19, total: 112 },
- *   skipped: { critical: 0, high: 1, medium: 1, low: 1, total: 3 },
- *   error: { critical: 0, high: 0, medium: 0, low: 0, total: 0 },
- *   no_impact: { critical: 0, high: 3, medium: 30, low: 0, none: 0, total: 33 }
- * }
- * is turned into
- * {
- *   'passed.critical': 0,
- *   'passed.high': 11,
- *   'passed.medium': 208,
- *   'passed.low': 8,
- *   'passed.total': 227,
- *   'failed.critical': 0,
- *   'failed.high': 6,
- *   'failed.medium': 87,
- *   'failed.low': 19,
- *   'failed.total': 112,
- *   'skipped.critical': 0,
- *   'skipped.high': 1,
- *   'skipped.medium': 1,
- *   'skipped.low': 1,
- *   'skipped.total': 3,
- *   'error.critical': 0,
- *   'error.high': 0,
- *   'error.medium': 0,
- *   'error.low': 0,
- *   'error.total': 0,
- *   'no_impact.critical': 0,
- *   'no_impact.high': 3,
- *   'no_impact.medium': 30,
- *   'no_impact.low': 0,
- *   'no_impact.none': 0,
- *   'no_impact.total': 33
- * }
- */
+Flattens a profile summary.
+{
+  passed: { critical: 0, high: 11, medium: 208, low: 8, total: 227 },
+  failed: { critical: 0, high: 6, medium: 87, low: 19, total: 112 },
+  skipped: { critical: 0, high: 1, medium: 1, low: 1, total: 3 },
+  error: { critical: 0, high: 0, medium: 0, low: 0, total: 0 },
+  no_impact: { critical: 0, high: 3, medium: 30, low: 0, none: 0, total: 33 }
+}
+is turned into
+{
+  'passed.critical': 0,
+  'passed.high': 11,
+  'passed.medium': 208,
+  'passed.low': 8,
+  'passed.total': 227,
+  'failed.critical': 0,
+  'failed.high': 6,
+  'failed.medium': 87,
+  'failed.low': 19,
+  'failed.total': 112,
+  'skipped.critical': 0,
+  'skipped.high': 1,
+  'skipped.medium': 1,
+  'skipped.low': 1,
+  'skipped.total': 3,
+  'error.critical': 0,
+  'error.high': 0,
+  'error.medium': 0,
+  'error.low': 0,
+  'error.total': 0,
+  'no_impact.critical': 0,
+  'no_impact.high': 3,
+  'no_impact.medium': 30,
+  'no_impact.low': 0,
+  'no_impact.none': 0,
+  'no_impact.total': 33
+}
+*/
 export function flattenProfileSummary(threshold: Record<string, Record<string, number>>): Record<string, number> {
   const ret: Record<string, number> = {};
-  for (const status of Object.keys(threshold)) {
-    for (const severity of Object.keys(threshold[status])) {
-      ret[`${status}.${severity}`] = threshold[status][severity];
+  for (const [status, severities] of Object.entries(threshold)) {
+    for (const [severity, count] of Object.entries(severities)) {
+      ret[`${status}.${severity}`] = count;
     }
   }
   return ret;
 }
 
 /**
- * Unflattens an inline threshold.
- * {
- *   'compliance.min': 66,
- *   'passed.critical.min': 0,
- *   'failed.medium.min': 0
- * }
- * is turned into
- * {
- *   compliance: { min: 66 },
- *   passed: { critical: { min: 0 } },
- *   failed: { medium: { min: 0 } }
- * }
- */
+Unflattens an inline threshold.
+{
+  'compliance.min': 66,
+  'passed.critical.min': 0,
+  'failed.medium.min': 0
+}
+is turned into
+{
+  compliance: { min: 66 },
+  passed: { critical: { min: 0 } },
+  failed: { medium: { min: 0 } }
+}
+*/
 export function unflattenThreshold(threshold: Record<string, number>): ThresholdValues {
   const ret: Record<string, Record<string, number | Record<string, number>>> = {};
-  for (const key of Object.keys(threshold)) {
+  for (const [key, value] of Object.entries(threshold)) {
     const [left, middle, right] = key.split('.');
-    if (!ret[left]) {
-      ret[left] = {};
+    if (!Object.hasOwn(ret, left)) {
+      Object.defineProperty(ret, left, { value: {}, enumerable: true, writable: true, configurable: true });
     }
-    if (right) {
-      ret[left][middle] = {};
-      ret[left][middle][right] = threshold[key];
-    } else {
-      ret[left][middle] = threshold[key];
-    }
+    const thresholdValue = right ? { [right]: value } : value;
+    Object.defineProperty(ret[left], middle, { value: thresholdValue, enumerable: true, writable: true, configurable: true });
   }
   return ret;
 }

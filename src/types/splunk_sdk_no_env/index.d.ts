@@ -71,16 +71,16 @@ declare module '@mitre/splunk-sdk-no-env' {
   }
 
   class Service {
+    requestOptions: {
+      strictSSL: boolean;
+    };
+
     constructor(config: SplunkConfig);
     constructor(httpInstance: any, config: SplunkConfig);
 
     login(callback: (error: any, success: any) => void): boolean;
     indexes(): Indexs;
     jobs(): Jobs;
-
-    requestOptions: {
-      strictSSL: boolean;
-    };
   }
 }
 

@@ -15,31 +15,31 @@ import { createWinstonLogger } from '../../utils/logging';
 import { BaseCommand } from '../../utils/oclif/base_command';
 
 /**
- * This class is used to prepare profile controls from one SRG or STIG baseline
- * to another. The controls are updated based on guidances provided by the
- * Extensible Configuration Checklist Description Format (XCCDF) document.
- *
- * The XCCDF document is an XML formatted file that containing the updated
- * structured collection of security configuration rules for a specific target
- * system.
- *
- * How are profile controls updated from baseline X to baseline Y
- * 1 - The directory where baseline X controls are located is provided
- * 2 - An InSpec json formatted file containing all baseline X controls is
- *     provided or generated
- *     a - The json file is generated using the inspec json CLI command
- * 3 - A XCCDF file containing the new baseline guidances is provided. The file
- *     is obtained from the DISA site
- *
- * Process:
- * 1 - Housekeeping is done to ensure required data is provided
- * 2 - The InSpec json object is processed - it is converted into a
- *     Profile object (baseline X)
- * 3 - The XCCDF XML data is converted into a json Profile (includes controls)
- *     (baseline Y)
- * 4 - The baseline Y metadata is combined with baseline X code
- * 5 - New controls are written to provided output directory
- */
+This class is used to prepare profile controls from one SRG or STIG baseline
+to another. The controls are updated based on guidances provided by the
+Extensible Configuration Checklist Description Format (XCCDF) document.
+
+The XCCDF document is an XML formatted file that containing the updated
+structured collection of security configuration rules for a specific target
+system.
+
+How are profile controls updated from baseline X to baseline Y
+1 - The directory where baseline X controls are located is provided
+2 - An InSpec json formatted file containing all baseline X controls is
+    provided or generated
+    a - The json file is generated using the inspec json CLI command
+3 - A XCCDF file containing the new baseline guidances is provided. The file
+    is obtained from the DISA site
+
+Process:
+1 - Housekeeping is done to ensure required data is provided
+2 - The InSpec json object is processed - it is converted into a
+    Profile object (baseline X)
+3 - The XCCDF XML data is converted into a json Profile (includes controls)
+    (baseline Y)
+4 - The baseline Y metadata is combined with baseline X code
+5 - New controls are written to provided output directory
+*/
 
 export default class GenerateUpdateControls extends BaseCommand<typeof GenerateUpdateControls> {
   // static readonly usage = '<%= command.id %> [ARGUMENTS]'
@@ -48,11 +48,11 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
 
   static readonly examples = [
     {
-      description: '\u001B[93mProviding an XCCDF File\u001B[0m',
+      description: '\u{1B}[93mProviding an XCCDF File\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -X ./the_xccdf_guidance_file.xml [-J <profile_json_file.json> | -I </path/to/inspec-or-cinc-auditor>] [-c the_controls_directory --no-backupControls --no-formatControls -P <V or SV> -g -L debug]',
     },
     {
-      description: '\u001B[93mProviding an URL point to an ZIP XCCDF (from DISA STIG downloads)\u001B[0m',
+      description: '\u{1B}[93mProviding an URL point to an ZIP XCCDF (from DISA STIG downloads)\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -U <URL to DISA STIGs downloads> [-J <profile_json_file.json> | -I </path/to/inspec-or-cinc-auditor>] [-c the_controls_directory --no-backupControls --no-formatControls -P <V or SV> -g -L debug]',
     },
   ];
@@ -60,25 +60,25 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
   static readonly flags = {
     xccdfXmlFile: Flags.string({
       char: 'X',
-      description: '\u001B[31m(required [-X or -U])\u001B[34m The XCCDF XML file containing the new guidance - in the form of .xml file',
+      description: '\u{1B}[31m(required [-X or -U])\u{1B}[34m The XCCDF XML file containing the new guidance - in the form of .xml file',
       exclusive: ['xccdfUrl'],
     }),
     xccdfUrl: Flags.url({
       char: 'U',
-      description: '\u001B[31m(required [-X or -U])\u001B[34m The URL pointing to the XCCDF file containing the new guidance (DISA STIG downloads)',
+      description: '\u{1B}[31m(required [-X or -U])\u{1B}[34m The URL pointing to the XCCDF file containing the new guidance (DISA STIG downloads)',
       exclusive: ['xccdfXmlFile'],
     }),
     inspecJsonFile: Flags.string({
       char: 'J',
       required: false,
       exactlyOne: ['inspecPath'],
-      description: '\u001B[31m(required [-J or -I])\u001B[34m InSpec Profiles JSON summary file - can be generated using the "[cinc-auditor or inspec] json <profile path> > profile.json" command',
+      description: '\u{1B}[31m(required [-J or -I])\u{1B}[34m InSpec Profiles JSON summary file - can be generated using the "[cinc-auditor or inspec] json <profile path> > profile.json" command',
     }),
     inspecPath: Flags.string({
       char: 'I',
       required: false,
       exactlyOne: ['inspecJsonFile'],
-      description: '\u001B[31m(required [-J or -I])\u001B[34m Absolute or known relative path to the inspec or cinc-auditor executable',
+      description: '\u{1B}[31m(required [-J or -I])\u{1B}[34m Absolute or known relative path to the inspec or cinc-auditor executable',
     }),
     controlsDir: Flags.string({
       char: 'c',
@@ -118,15 +118,82 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
   // Class common variables
   static backupDir = '';
 
+  private static isXccdfFile(xccdfXmlFile: string, logger: Logger): boolean {
+    let isXccdf = true;
+    try {
+      if (fs.lstatSync(xccdfXmlFile).isFile()) {
+        // logger.debug(`Processing the ${xccdfXmlFile} XCCDF file`)
+        const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8');
+        const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase();
+        if (inputFirstLine.includes('xccdf')) {
+          logger.debug('  Valid XCCDF file provided');
+        } else {
+          logger.error(`ERROR: Unable to load ${xccdfXmlFile} as XCCDF`);
+          isXccdf = false;
+        }
+      } else {
+        logger.error('No benchmark (XCCDF) file was provided.');
+        isXccdf = false;
+      }
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        const errorCode = (error as { code?: string }).code; // Type-safe access to `code`
+        if (errorCode === 'ENOENT') {
+          logger.error(
+            `ERROR: No entity found for: ${xccdfXmlFile}. Run the --help command for more information on expected input files.`,
+          );
+        }
+        logger.error(
+          `ERROR: Unable to process the XCCDF XML file ${xccdfXmlFile} because: ${error.message}`,
+        );
+      } else {
+        logger.error(`ERROR: An unexpected error occurred: ${getErrorMessage(error)}`);
+      }
+      isXccdf = false;
+    }
+    return isXccdf;
+  }
+
+  private static getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: string, newControlNumber: string) {
+    // Read the control content
+    const controlData = fs.readFileSync(path, { encoding: 'utf8', flag: 'r' });
+    if (newControlNumber !== undefined) {
+      controlData.replace(currentControlNumber, () => newControlNumber);
+    }
+
+    return controlData;
+  }
+
+  private static saveControl(filePath: string, newXCCDFControlNumber: string, currentControlNumber: string, updatedControl: string, shouldBackUpControls: boolean, shouldRenameControl: boolean) {
+    const newFileName = resolveSafeChild(path.dirname(filePath), safeFilename(`${basename(newXCCDFControlNumber)}.rb`));
+
+    // Move processed (old) control to oldControls folder
+    if (shouldBackUpControls) {
+      const destFilePath = resolveSafeChild(this.backupDir, safeFilename(`${basename(currentControlNumber)}.rb`));
+      if (shouldRenameControl) {
+        fs.renameSync(filePath, destFilePath);
+      } else {
+        fs.copyFileSync(filePath, destFilePath);
+      }
+
+    // Delete processed (old) file
+    } else if (shouldRenameControl) {
+      fs.unlinkSync(filePath);
+    }
+
+    // Save new file
+    fs.writeFileSync(newFileName, updatedControl);
+  }
+
   async run(): Promise<any> {
     const { flags } = await this.parse(GenerateUpdateControls);
 
     if (!flags.xccdfXmlFile && !flags.xccdfUrl) {
-      this.error('\u001B[31mYou must specify either [-X, --xccdfXmlFile or -U --xccdfUrl]\u001B[0m');
+      this.error('\u{1B}[31mYou must specify either [-X, --xccdfXmlFile or -U --xccdfUrl]\u{1B}[0m');
     }
 
     if (!flags.inspecJsonFile && !flags.inspecPath) {
-      this.error('\u001B[31mYou must specify either [-J, --inspecJsonFile or -I, --inspecPath]\u001B[0m');
+      this.error('\u{1B}[31mYou must specify either [-J, --inspecJsonFile or -I, --inspecPath]\u{1B}[0m');
     }
 
     const logger = createWinstonLogger({ module: 'generate:update_controls', level: flags.logLevel });
@@ -135,7 +202,6 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     logger.warn('║ Profile controls are formatted using Rubocop  ║');
     logger.warn('╚═══════════════════════════════════════════════╝');
 
-    let inspecProfile: Profile;
     GenerateUpdateControls.backupDir = path.join(path.dirname(flags.controlsDir), 'oldControls');
 
     // User-facing CLI output + file log. Writes to CliProcessOutput.log
@@ -157,7 +223,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     if (flags.xccdfXmlFile) {
       xccdfXmlFile = basename(flags.xccdfXmlFile);
       logger.info(`Verifying that the XCCDF file is valid: ${xccdfXmlFile}...`);
-      if (isXccdfFile(flags.xccdfXmlFile, logger)) {
+      if (GenerateUpdateControls.isXccdfFile(flags.xccdfXmlFile, logger)) {
         xccdfContent = fs.readFileSync(flags.xccdfXmlFile, 'utf8');
       } else {
         return;
@@ -165,16 +231,14 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     // XCCDF is an URL
     } else {
       logger.info(`Verifying that the URL contains a valid XCCDF: ${flags.xccdfUrl instanceof URL ? flags.xccdfUrl.toString() : String(flags.xccdfUrl)}...`);
-      const tmpobj = tmp.dirSync({ unsafeCleanup: true });
-      let fileBuffer: Buffer | null = null;
-      let url;
 
       if (flags.xccdfUrl === undefined) {
         logger.error('URL flag is undefined or invalid');
         return;
-      } else {
-        url = flags.xccdfUrl?.toString();
       }
+      const tmpobj = tmp.dirSync({ unsafeCleanup: true });
+      let fileBuffer: Buffer | null = null;
+      const url = flags.xccdfUrl?.toString();
       await (async () => {
         const zipFile = url.split('/').pop(); // Extracts the last segment
 
@@ -230,10 +294,9 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
         if (error instanceof Error) {
           logger.error(`ERROR: Checking if controls directory is empty, received: ${error.message}`);
           throw new Error(`Error checking controls directory, error: ${error.message}`, { cause: error });
-        } else {
-          logger.error('ERROR: An unknown error occurred while checking the controls directory.');
-          throw new Error('Error checking controls directory. Unknown error encountered.', { cause: error });
         }
+        logger.error('ERROR: An unknown error occurred while checking the controls directory.');
+        throw new Error('Error checking controls directory. Unknown error encountered.', { cause: error });
       }
     } else {
       logger.error(`Profile Controls directory (folder) not specified or does not exist: ${flags.controlsDir}`);
@@ -247,6 +310,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     // -------------------------------------------------------------------------
     // Check if we have an InSpec json file, generate if not provided
     // Process the InSpec json content, convert entries into a Profile object
+    let inspecProfile: Profile;
     logger.info('Processing the Input execution/profile JSON summary...');
     if (flags.inspecJsonFile) {
       logger.info(`  Using execution/profile summary file: ${basename(flags.inspecJsonFile)}`);
@@ -325,7 +389,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     //  xccdfControlsMap -> maps new control Ids, used to identify new controls
     //    (key and value are the new control Id)
     //
-    //  xccdfNewControlsMetaDataMap -> Contains baseline Y metadata indexed by old control Id
+    //  xccdfNewControlsMetadataMap -> Contains baseline Y metadata indexed by old control Id
     //    (key = legacy Id (V or SV number) and value = new control metadata)
     //
     // The xccdfLegacyControlsMap and xccdfControlsMap are used so we can invoke the .has(key)
@@ -334,7 +398,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     const xccdfLegacyToControlMap = new Map();
     const xccdfLegacyControlsMap = new Map();
     const xccdfControlsMap = new Map();
-    const xccdfNewControlsMetaDataMap = new Map();
+    const xccdfNewControlsMetadataMap = new Map();
     for (const control of xccdfProfile.controls) {
       let controlId;
       const newControlId = basename(control.id); // Ensure there aren't any leading or trailing slashes
@@ -362,14 +426,14 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       xccdfLegacyToControlMap.set(controlId, newControlId);
       xccdfLegacyControlsMap.set(controlId, controlId);
       xccdfControlsMap.set(newControlId, newControlId);
-      xccdfNewControlsMetaDataMap.set(controlId, control);
+      xccdfNewControlsMetadataMap.set(controlId, control);
     }
 
     // -------------------------------------------------------------------------
     // Generate a map data type containing the XCCDF metadata (all content minus the code)
     // and add the code from the old control (in InSpec json object)
     //
-    //  The xccdfNewControlsMetaDataMap contains the metadata generated from
+    //  The xccdfNewControlsMetadataMap contains the metadata generated from
     //  the XCCDF file (baseline Y)
     //  The InSpec JSON file contains the controls and associated code block generated
     //  from the existing controls (baseline X)
@@ -392,18 +456,20 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       // metadata (aka tags) from the source onto the new control. Need to add
       // a new function that simply retrieves the describe block (code) from
       // the source and adds to the destination (update) control)
-      if (xccdfNewControlsMetaDataMap.has(control.id)) {
-        const newControl = xccdfNewControlsMetaDataMap.get(control.id);
-        const existingDescribeBlock = getExistingDescribeFromControl(control);
-        newControl.describe = existingDescribeBlock;
+      if (!xccdfNewControlsMetadataMap.has(control.id)) {
+        continue;
+      }
 
-        if (flags.formatControls) {
-          logger.debug('  Formatted the same way `generate delta` will write controls.');
-          baselineYControls.set(control.id, newControl.toRuby(false));
-        } else {
-          logger.debug('  Did not formatted the same way `generate delta` will write controls.');
-          baselineYControls.set(control.id, newControl.toString());
-        }
+      const newControl = xccdfNewControlsMetadataMap.get(control.id);
+      const existingDescribeBlock = getExistingDescribeFromControl(control);
+      newControl.describe = existingDescribeBlock;
+
+      if (flags.formatControls) {
+        logger.debug('  Formatted the same way `generate delta` will write controls.');
+        baselineYControls.set(control.id, newControl.toRuby(false));
+      } else {
+        logger.debug('  Did not formatted the same way `generate delta` will write controls.');
+        baselineYControls.set(control.id, newControl.toString());
       }
     }
 
@@ -417,7 +483,7 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     const ext = '.rb';
     let skipped = 0;
     let processed = 0;
-    let isCorrectControl = 0;
+    let correctControlCount = 0;
     let notInProfileJSON = 0;
     const controlsDir = flags.controlsDir;
     const files = await readdir(controlsDir);
@@ -425,74 +491,78 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
     // Iterate trough all files processing ony control files, have a .rb extension
     const skippedControls: string[] = [];
     const skipMetadataUpdate: string[] = [];
-    const isCorrectControlMap = new Map();
+    const correctControlMap = new Map();
     const controlsProcessedMap = new Map();
 
     for (const file of files) {
       const fileExt = path.extname(file);
-      if (fileExt === ext) {
-        logger.info(`Processing Control (file): ${file}`);
-        const currentFileFullPath = resolveSafeChild(controlsDir, safeFilename(file));
-        const currentControlNumber = basename(path.parse(file).name);
-        const newXCCDFControlNumber = xccdfLegacyToControlMap.get(currentControlNumber); // old control Id to new control Id
-        const xccdfNewControlNumber = xccdfControlsMap.get(currentControlNumber); // new control Id to new control Id
-        const xccdfLegacyControlNumber = xccdfLegacyControlsMap.get(currentControlNumber); // old control Id to old control Id
-        let updatedControl;
+      if (fileExt !== ext) {
+        continue;
+      }
 
-        // FILE = XCCDF (new control Id)
-        if (currentControlNumber === xccdfNewControlNumber) {
-          logger.debug(`  Baseline X Control is current: ${currentControlNumber} `);
+      logger.info(`Processing Control (file): ${file}`);
+      const currentFileFullPath = resolveSafeChild(controlsDir, safeFilename(file));
+      const currentControlNumber = basename(path.parse(file).name);
+      const newXCCDFControlNumber = xccdfLegacyToControlMap.get(currentControlNumber); // old control Id to new control Id
+      const xccdfNewControlNumber = xccdfControlsMap.get(currentControlNumber); // new control Id to new control Id
+      const xccdfLegacyControlNumber = xccdfLegacyControlsMap.get(currentControlNumber); // old control Id to old control Id
+      let updatedControl;
 
-          // Update statistics (value does not matter)
-          isCorrectControl++;
-          isCorrectControlMap.set(currentControlNumber, currentControlNumber);
+      // FILE = XCCDF (new control Id)
+      if (currentControlNumber === xccdfNewControlNumber) {
+        logger.debug(`  Baseline X Control is current: ${currentControlNumber} `);
 
-          // Process the control
-          if (baselineYControls.has(currentControlNumber)) {
-            logger.debug('  \u001B[32mUpdating Control metadata with XCCDF content\u001B[0m');
-            updatedControl = baselineYControls.get(currentControlNumber);
-            // Save file
-            saveControl(currentFileFullPath, currentControlNumber, currentControlNumber, updatedControl, flags.backupControls, false);
-          }
+        // Update statistics (value does not matter)
+        correctControlCount++;
+        correctControlMap.set(currentControlNumber, currentControlNumber);
 
-        // FILE = LEGACY NUMBER (old control Id)
-        } else if (currentControlNumber === xccdfLegacyControlNumber) {
-          logger.debug(`  Baseline X Control Id is not the same as baseline Y, changing From: ${currentControlNumber} To: ${newXCCDFControlNumber}`);
-
-          // Change the V or SV Id to the SV Id based on format flag
-          if (baselineYControls.has(currentControlNumber)) {
-            logger.debug('  \u001B[32mUpdating Control metadata with XCCDF content\u001B[0m');
-            updatedControl = baselineYControls.get(currentControlNumber);
-          } else {
-            logger.debug('  \u001B[31mKeeping Control metadata content - Updating Control name\u001B[0m');
-            notInProfileJSON++;
-            skipMetadataUpdate.push(`(${currentControlNumber} wasn't updated with metadata from: ${newXCCDFControlNumber})`);
-            updatedControl = getUpdatedControl(currentFileFullPath, currentControlNumber, newXCCDFControlNumber);
-          }
-
-          saveControl(currentFileFullPath, newXCCDFControlNumber, currentControlNumber, updatedControl, flags.backupControls, true);
-          processed++;
-          controlsProcessedMap.set(newXCCDFControlNumber, 'processed');
-
-        // FILE ≠ XCCDF
-        } else if (xccdfNewControlNumber === undefined) {
-          logger.warn(`  Control skipped updating (not in the XCCDF guidance): ${currentControlNumber}`);
-          skipped++;
-          skippedControls.push(currentControlNumber);
-        // FILE ≠ XCCDF ≠ LEGACY NUMBER
-        } else {
-          logger.error('  No logic found processing Control (not current, or in the XCCDF guidance, or a legacy Control)');
+        // Process the control
+        if (baselineYControls.has(currentControlNumber)) {
+          logger.debug('  \u{1B}[32mUpdating Control metadata with XCCDF content\u{1B}[0m');
+          updatedControl = baselineYControls.get(currentControlNumber);
+          // Save file
+          GenerateUpdateControls.saveControl(currentFileFullPath, currentControlNumber, currentControlNumber, updatedControl, flags.backupControls, false);
         }
+
+      // FILE = LEGACY NUMBER (old control Id)
+      } else if (currentControlNumber === xccdfLegacyControlNumber) {
+        logger.debug(`  Baseline X Control Id is not the same as baseline Y, changing From: ${currentControlNumber} To: ${newXCCDFControlNumber}`);
+
+        // Change the V or SV Id to the SV Id based on format flag
+        if (baselineYControls.has(currentControlNumber)) {
+          logger.debug('  \u{1B}[32mUpdating Control metadata with XCCDF content\u{1B}[0m');
+          updatedControl = baselineYControls.get(currentControlNumber);
+        } else {
+          logger.debug('  \u{1B}[31mKeeping Control metadata content - Updating Control name\u{1B}[0m');
+          notInProfileJSON++;
+          skipMetadataUpdate.push(`(${currentControlNumber} wasn't updated with metadata from: ${newXCCDFControlNumber})`);
+          updatedControl = GenerateUpdateControls.getUpdatedControl(currentFileFullPath, currentControlNumber, newXCCDFControlNumber);
+        }
+
+        GenerateUpdateControls.saveControl(currentFileFullPath, newXCCDFControlNumber, currentControlNumber, updatedControl, flags.backupControls, true);
+        processed++;
+        controlsProcessedMap.set(newXCCDFControlNumber, 'processed');
+
+      // FILE ≠ XCCDF
+      } else if (xccdfNewControlNumber === undefined) {
+        logger.warn(`  Control skipped updating (not in the XCCDF guidance): ${currentControlNumber}`);
+        skipped++;
+        skippedControls.push(currentControlNumber);
+      // FILE ≠ XCCDF ≠ LEGACY NUMBER
+      } else {
+        logger.error('  No logic found processing Control (not current, or in the XCCDF guidance, or a legacy Control)');
       }
     }
 
     let newControls = 0;
     const newControlsFound: unknown[] = [];
     for (const newControl of xccdfControlsMap.values()) {
-      if (!controlsProcessedMap.has(newControl) && !isCorrectControlMap.has(newControl)) {
-        newControls++;
-        newControlsFound.push(newControl);
+      if (controlsProcessedMap.has(newControl) || correctControlMap.has(newControl)) {
+        continue;
       }
+
+      newControls++;
+      newControlsFound.push(newControl);
     }
 
     // listen for the logger finish event to know when logging has completely finished
@@ -512,86 +582,21 @@ export default class GenerateUpdateControls extends BaseCommand<typeof GenerateU
       log.info(`\n     Total skipped files (no mapping to new control Id): ${skipped.toString().padStart(4)}`);
       log.info(`Total processed files (found mapping to new control Id):  ${processed.toString().padStart(3)}`);
 
-      log.info(`\n    Total controls with correct identification:  ${isCorrectControl.toString().padStart(3)}`);
+      log.info(`\n    Total controls with correct identification:  ${correctControlCount.toString().padStart(3)}`);
       log.info(`Total new controls found in the XCCDF guidance:  ${newControls.toString().padStart(3)}`);
 
       log.info(`\nSkipped control(s) (not included in XCCDF guidance):  ${skippedControls.toString()}`);
       log.info(`\n  New control(s) found (included in XCCDF guidance):  ${newControlsFound.toString()}`);
 
-      if (notInProfileJSON > 0) {
-        log.error(`\nTotal skipped metadata update (not found in Input execution/profile JSON file):  ${notInProfileJSON.toString().padStart(3)}`);
-        log.error(`Control(s) skipped metadata update:  ${skipMetadataUpdate.toString()}`);
+      if (notInProfileJSON <= 0) {
+        return;
       }
+
+      log.error(`\nTotal skipped metadata update (not found in Input execution/profile JSON file):  ${notInProfileJSON.toString().padStart(3)}`);
+      log.error(`Control(s) skipped metadata update:  ${skipMetadataUpdate.toString()}`);
     });
 
     // Signal that you're done logging - emits a finish event
     logger.end();
   }
-}
-
-function isXccdfFile(xccdfXmlFile: string, logger: Logger): boolean {
-  let isXccdf = true;
-  try {
-    if (fs.lstatSync(xccdfXmlFile).isFile()) {
-      // logger.debug(`Processing the ${xccdfXmlFile} XCCDF file`)
-      const inputFile = fs.readFileSync(xccdfXmlFile, 'utf8');
-      const inputFirstLine = inputFile.split('\n').slice(0, 10).join('').toLowerCase();
-      if (inputFirstLine.includes('xccdf')) {
-        logger.debug('  Valid XCCDF file provided');
-      } else {
-        logger.error(`ERROR: Unable to load ${xccdfXmlFile} as XCCDF`);
-        isXccdf = false;
-      }
-    } else {
-      logger.error('No benchmark (XCCDF) file was provided.');
-      isXccdf = false;
-    }
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      const errorCode = (error as { code?: string }).code; // Type-safe access to `code`
-      if (errorCode === 'ENOENT') {
-        logger.error(
-          `ERROR: No entity found for: ${xccdfXmlFile}. Run the --help command for more information on expected input files.`,
-        );
-      }
-      logger.error(
-        `ERROR: Unable to process the XCCDF XML file ${xccdfXmlFile} because: ${error.message}`,
-      );
-    } else {
-      logger.error(`ERROR: An unexpected error occurred: ${getErrorMessage(error)}`);
-    }
-    isXccdf = false;
-  }
-  return isXccdf;
-}
-
-function getUpdatedControl(path: fs.PathOrFileDescriptor, currentControlNumber: string, newControlNumber: string) {
-  // Read the control content
-  const controlData = fs.readFileSync(path, { encoding: 'utf8', flag: 'r' });
-  if (newControlNumber !== undefined) {
-    controlData.replace(currentControlNumber, newControlNumber);
-  }
-
-  return controlData;
-}
-
-function saveControl(filePath: string, newXCCDFControlNumber: string, currentControlNumber: string, updatedControl: string, backupControls: boolean, renamedControl: boolean) {
-  const newFileName = resolveSafeChild(path.dirname(filePath), safeFilename(`${basename(newXCCDFControlNumber)}.rb`));
-
-  // Move processed (old) control to oldControls folder
-  if (backupControls) {
-    const destFilePath = resolveSafeChild(GenerateUpdateControls.backupDir, safeFilename(`${basename(currentControlNumber)}.rb`));
-    if (renamedControl) {
-      fs.renameSync(filePath, destFilePath);
-    } else {
-      fs.copyFileSync(filePath, destFilePath);
-    }
-
-  // Delete processed (old) file
-  } else if (renamedControl) {
-    fs.unlinkSync(filePath);
-  }
-
-  // Save new file
-  fs.writeFileSync(newFileName, updatedControl);
 }

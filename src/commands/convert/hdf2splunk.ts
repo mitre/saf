@@ -14,11 +14,11 @@ export default class HDF2Splunk extends BaseCommand<typeof HDF2Splunk> {
 
   static readonly examples = [
     {
-      description: '\u001B[93mUser name/password Authentication\u001B[0m',
+      description: '\u{1B}[93mUser name/password Authentication\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -H 127.0.0.1 -u admin -p Valid_password! -I hdf',
     },
     {
-      description: '\u001B[93mToken Authentication\u001B[0m',
+      description: '\u{1B}[93mToken Authentication\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i rhel7-results.json -H 127.0.0.1 -t your.splunk.token -I hdf',
     },
   ];

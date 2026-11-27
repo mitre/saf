@@ -10,7 +10,7 @@ export default class Scan extends Command {
   };
 
   run() {
-    console.log('\u001B[93mVisit https://saf.mitre.org/#/validate to explore and run inspec profiles\u001B[0m');
+    console.log('\u{1B}[93mVisit https://saf.mitre.org/#/validate to explore and run inspec profiles\u{1B}[0m');
     return Promise.resolve();
   }
 }

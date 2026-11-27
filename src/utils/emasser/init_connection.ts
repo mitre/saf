@@ -6,36 +6,36 @@ import FormData from 'form-data';
 import type { ApiConfig } from './api_config';
 
 /**
- * Initializes and configures Axios instances for making HTTP requests.
- *
- * @class InitConnections
- *
- * @property {AxiosRequestConfig} axiosRequestConfig - The Axios request configuration.
- * @property {Configuration} configuration - The configuration for the API.
- * @property {AxiosInstance} axiosInstances - The Axios instance used for making HTTP requests.
- *
- * @constructor
- * @param {ApiConfig} conf - The API configuration object.
- *
- * @example
- * const apiConfig: ApiConfig = {
- *   url: 'https://api.example.com',
- *   reqCert: true,
- *   sslVerify: true,
- *   keyCert: '/path/to/keyCert',
- *   clientCert: '/path/to/clientCert',
- *   apiPassPhrase: 'yourPassPhrase',
- *   port: 443,
- *   apiKey: 'yourApiKey',
- *   userUid: 'yourUserUid',
- *   caCert: '/path/to/caCert'
- * };
- * const initConnections = new InitConnections(apiConfig);
- *
- * @remarks
- * This class handles the creation of an Axios instance with custom HTTPS agent settings.
- * It supports client certificate authentication and allows configuring SSL verification.
- */
+Initializes and configures Axios instances for making HTTP requests.
+
+@class InitConnections
+
+@property {AxiosRequestConfig} axiosRequestConfig - The Axios request configuration.
+@property {Configuration} configuration - The configuration for the API.
+@property {AxiosInstance} axiosInstances - The Axios instance used for making HTTP requests.
+
+@constructor
+@param {ApiConfig} conf - The API configuration object.
+
+@example
+const apiConfig: ApiConfig = {
+  url: 'https://api.example.com',
+  reqCert: true,
+  sslVerify: true,
+  keyCert: '/path/to/keyCert',
+  clientCert: '/path/to/clientCert',
+  apiPassPhrase: 'yourPassPhrase',
+  port: 443,
+  apiKey: 'yourApiKey',
+  userUid: 'yourUserUid',
+  caCert: '/path/to/caCert'
+};
+const initConnections = new InitConnections(apiConfig);
+
+@remarks
+This class handles the creation of an Axios instance with custom HTTPS agent settings.
+It supports client certificate authentication and allows configuring SSL verification.
+*/
 export class InitConnections {
   private readonly axiosRequestConfig: AxiosRequestConfig;
   public configuration: Configuration;
@@ -57,28 +57,21 @@ export class InitConnections {
     // requestCert <boolean> true to specify whether a server should request a certificate from a connecting client. Only applies when isServer is true.
     // rejectUnauthorized <boolean> If not false a server automatically reject clients with invalid certificates. Only applies when isServer is true.
 
-    this.axiosRequestConfig = conf.caCert === undefined
-      ? {
-        httpsAgent: new https.Agent({
-          keepAlive: true,
-          requestCert: conf.reqCert,
-          rejectUnauthorized: conf.sslVerify,
-          key: conf.keyCert ? fs.readFileSync(conf.keyCert) : undefined,
-          cert: conf.clientCert ? fs.readFileSync(conf.clientCert) : undefined,
-          passphrase: conf.apiPassPhrase,
-          port: conf.port,
-        }),
-      }
-      : {
-        httpsAgent: new https.Agent({
-          keepAlive: true,
-          requestCert: conf.reqCert,
-          rejectUnauthorized: conf.sslVerify,
-          ca: fs.readFileSync(conf.caCert),
-          passphrase: conf.apiPassPhrase,
-          port: conf.port,
-        }),
-      };
+    this.axiosRequestConfig = {
+      httpsAgent: new https.Agent({
+        keepAlive: true,
+        requestCert: conf.reqCert,
+        rejectUnauthorized: conf.sslVerify,
+        ...(conf.caCert === undefined
+          ? {
+            key: conf.keyCert ? fs.readFileSync(conf.keyCert) : undefined,
+            cert: conf.clientCert ? fs.readFileSync(conf.clientCert) : undefined,
+          }
+          : { ca: fs.readFileSync(conf.caCert) }),
+        passphrase: conf.apiPassPhrase,
+        port: conf.port,
+      }),
+    };
 
     this.axiosInstances = globalAxios.create(this.axiosRequestConfig);
     this.axiosInstances.defaults.headers.common = {

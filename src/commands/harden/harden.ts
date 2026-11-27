@@ -10,7 +10,7 @@ export default class Harden extends Command {
   };
 
   run() {
-    console.log('\u001B[93mVisit https://saf.mitre.org/#/harden to explore and run hardening scripts\u001B[0m');
+    console.log('\u{1B}[93mVisit https://saf.mitre.org/#/harden to explore and run hardening scripts\u{1B}[0m');
     return Promise.resolve();
   }
 }

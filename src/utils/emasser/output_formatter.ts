@@ -2,11 +2,11 @@ import _ from 'lodash';
 import { ApiConfig } from './api_config';
 
 /**
- * Removes all properties with null values from the given object.
- *
- * @param dataObject - The object from which null properties should be removed.
- * @returns A new object with all null properties removed.
- */
+Removes all properties with null values from the given object.
+
+@param dataObject - The object from which null properties should be removed.
+@returns A new object with all null properties removed.
+*/
 function removeNullsFromObject(dataObject: object): object {
   const jsonData: Record<string, any> = {};
 
@@ -20,27 +20,26 @@ function removeNullsFromObject(dataObject: object): object {
 }
 
 /**
- * Converts epoch timestamps to Date objects in a given data object.
- *
- * This function recursively processes an object, converting any epoch timestamps
- * (values that are numeric and likely represent a date) to JavaScript Date objects.
- * It handles nested objects and arrays, ensuring all applicable timestamps are converted.
- *
- * @param dataObject - The input object containing potential epoch timestamps.
- * @returns A new object with epoch timestamps converted to Date objects.
- */
+Converts epoch timestamps to Date objects in a given data object.
+
+This function recursively processes an object, converting any epoch timestamps
+(values that are numeric and likely represent a date) to JavaScript Date objects.
+It handles nested objects and arrays, ensuring all applicable timestamps are converted.
+
+@param dataObject - The input object containing potential epoch timestamps.
+@returns A new object with epoch timestamps converted to Date objects.
+*/
 function convertEpochToDateTime(dataObject: object): object {
   const jsonData: Record<string, any> = {};
   for (const key of (Object.keys(dataObject) as (keyof typeof dataObject)[])) {
     if (Array.isArray(dataObject[key])) {
-      let jsonObj: Record<string, any>;
       const hash_array: object[] = [];
       const data_array: object[] = Object.values(dataObject[key]);
       for (const dataObj of data_array) {
         if (typeof data_array[0] === 'string') {
           hash_array.push(dataObj);
         } else {
-          jsonObj = convertEpochToDateTime(dataObj);
+          const jsonObj = convertEpochToDateTime(dataObj);
           hash_array.push(jsonObj);
         }
       }
@@ -62,41 +61,41 @@ function convertEpochToDateTime(dataObject: object): object {
 }
 
 /**
- * Formats the given data object based on the configuration settings.
- *
- * @param data - The data object to be formatted.
- * @param doConversion - A boolean flag indicating whether to perform data conversion. Defaults to true.
- * @returns The formatted data as a JSON string.
- *
- * The function performs the following operations based on the configuration:
- * - If debugging is enabled, it logs the entire data object.
- * - If the data object contains headers, it extracts the data property.
- * - If doConversion is true, it processes the data object to remove null values and convert epoch times to human-readable dates.
- * - If hideNulls is true, it removes null values from the data object.
- * - If showEpoch is true, it converts epoch times to human-readable dates.
- *
- * The function handles different structures of the data object, including arrays and nested objects.
- * It merges the processed data into a new object and returns it as a formatted JSON string.
- */
-export function outputFormat(data: object, doConversion = true): string {
-  const conf = new ApiConfig();
-  const hideNulls = !conf.displayNulls;
-  const showEpoch = conf.displayDateTime;
-  const debugging = conf.debugging;
-  let formatDataObj: object = data;
+Formats the given data object based on the configuration settings.
 
-  if (debugging) {
+@param data - The data object to be formatted.
+@param shouldConvert - A boolean flag indicating whether to perform data conversion. Defaults to true.
+@returns The formatted data as a JSON string.
+
+The function performs the following operations based on the configuration:
+- If debugging is enabled, it logs the entire data object.
+- If the data object contains headers, it extracts the data property.
+- If shouldConvert is true, it processes the data object to remove null values and convert epoch times to human-readable dates.
+- If shouldHideNulls is true, it removes null values from the data object.
+- If shouldFormatDates is true, it converts epoch times to human-readable dates.
+
+The function handles different structures of the data object, including arrays and nested objects.
+It merges the processed data into a new object and returns it as a formatted JSON string.
+*/
+export function outputFormat(data: object, shouldConvert = true): string {
+  const conf = new ApiConfig();
+  const shouldHideNulls = !conf.displayNulls;
+  const shouldFormatDates = conf.displayDateTime;
+  const isDebugging = conf.debugging;
+  let formatDataObj: Record<string, any> = data;
+
+  if (isDebugging) {
     // When debugging is on, output the entire content returned from
     // the server. Output text in yellow and revert back to default
-    console.log('\u001B[93m', 'Debugging is on', '\u001B[0m');
-    console.log('\u001B[96m', 'Start Debug =================================================================', '\u001B[0m');
+    console.log('\u{1B}[93m', 'Debugging is on', '\u{1B}[0m');
+    console.log('\u{1B}[96m', 'Start Debug =================================================================', '\u{1B}[0m');
     try {
       console.log(JSON.stringify(data, null, 2));
     } catch {
       console.log(data);
     }
 
-    console.log('\u001B[96m', 'End Debug ===============================================================', '\u001B[0m');
+    console.log('\u{1B}[96m', 'End Debug ===============================================================', '\u{1B}[0m');
   }
 
   try {
@@ -105,13 +104,13 @@ export function outputFormat(data: object, doConversion = true): string {
       formatDataObj = _.get(data, 'data') || {};
     }
 
-    if (doConversion) {
+    if (shouldConvert) {
       const paginationObj = { pagination: _.get(formatDataObj, 'pagination') };
 
-      if (hideNulls) {
+      if (shouldHideNulls) {
         const newData: Record<string, any> = {};
 
-        for (const key1 of (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[])) {
+        const mergeWithoutNulls = (key1: string) => {
           switch (key1) {
             // Process the 'meta' content
             case 'meta': {
@@ -132,7 +131,6 @@ export function outputFormat(data: object, doConversion = true): string {
                 }
 
                 _.merge(newData, { data: hash_array });
-                formatDataObj = newData;
               // data: is NOT an array of objects, it is a simple object
               } else {
                 const jsonData: Record<string, any> = {};
@@ -143,11 +141,10 @@ export function outputFormat(data: object, doConversion = true): string {
                 } else {
                   for (const key2 of (Object.keys(obj) as (keyof typeof obj)[])) {
                     if (Array.isArray(obj[key2])) {
-                      let jsonObj: Record<string, any> = {};
                       const data_array: object[] = Object.values(obj[key2]);
                       const hash_array: object[] = [];
                       for (const dataObject of data_array) {
-                        jsonObj = removeNullsFromObject(dataObject);
+                        const jsonObj = removeNullsFromObject(dataObject);
                         hash_array.push(jsonObj);
                       }
 
@@ -159,10 +156,9 @@ export function outputFormat(data: object, doConversion = true): string {
                   const dataObj: Record<string, any> = { data: jsonData };
                   _.merge(newData, dataObj);
                 }
-
-                formatDataObj = newData;
               }
 
+              formatDataObj = newData;
               break;
             }
 
@@ -179,13 +175,18 @@ export function outputFormat(data: object, doConversion = true): string {
               break;
             }
           }
+        };
+
+        for (const key1 of Object.keys(formatDataObj)) {
+          mergeWithoutNulls(key1);
         }
       }
 
-      if (showEpoch) {
+      if (shouldFormatDates) {
         const newData: Record<string, any> = {};
         const dataObj: Record<string, any> = {};
-        for (const key1 of (Object.keys(formatDataObj) as (keyof typeof formatDataObj)[])) {
+
+        const mergeFormattedDates = (key1: string) => {
           const jsonData: Record<string, any> = {};
           switch (key1) {
             case 'meta': {
@@ -209,11 +210,10 @@ export function outputFormat(data: object, doConversion = true): string {
                 const obj: object = formatDataObj[key1];
                 for (const key2 of (Object.keys(obj) as (keyof typeof obj)[])) {
                   if (Array.isArray(obj[key2])) {
-                    let jsonObj: Record<string, any> = {};
                     const data_array: object[] = Object.values(obj[key2]);
                     const hash_array: object[] = [];
                     for (const dataObject of data_array) {
-                      jsonObj = removeNullsFromObject(dataObject);
+                      const jsonObj = removeNullsFromObject(dataObject);
                       hash_array.push(jsonObj);
                     }
 
@@ -243,21 +243,17 @@ export function outputFormat(data: object, doConversion = true): string {
               break;
             }
           }
+        };
+
+        for (const key1 of Object.keys(formatDataObj)) {
+          mergeFormattedDates(key1);
         }
         formatDataObj = newData;
       }
     }
 
-    if (typeof formatDataObj === 'string') {
-      return formatDataObj;
-    }
-
-    return JSON.stringify(formatDataObj, null, 2);
+    return typeof formatDataObj === 'string' ? formatDataObj : JSON.stringify(formatDataObj, null, 2);
   } catch {
-    if (typeof formatDataObj === 'string') {
-      return formatDataObj;
-    }
-
-    return JSON.stringify(formatDataObj, null, 2);
+    return typeof formatDataObj === 'string' ? formatDataObj : JSON.stringify(formatDataObj, null, 2);
   }
 }

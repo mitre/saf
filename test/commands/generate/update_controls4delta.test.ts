@@ -9,7 +9,7 @@ const itOnWindows = process.platform === 'win32' ? it : it.skip;
 function createTempWorkspace() {
   return tmp.dirSync({
     unsafeCleanup: true,
-    ...(process.platform === 'win32' ? { tmpdir: process.cwd() } : {}),
+    ...(process.platform === 'win32' && { tmpdir: process.cwd() }),
   });
 }
 

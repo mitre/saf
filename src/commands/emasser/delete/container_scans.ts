@@ -15,7 +15,7 @@ export default class EmasserContainerScans extends Command {
 
   static readonly flags = {
     help: Flags.help({ char: 'h', description: 'Show help for the SAF CLI eMASSer DELETE Container Scans command' }),
-    ...getFlagsForEndpoint(process.argv), // skipcq: JS-0349
+    ...getFlagsForEndpoint(process.argv),
   };
 
   async run(): Promise<void> {
@@ -36,11 +36,10 @@ export default class EmasserContainerScans extends Command {
 
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display what fields are required, otherwise show the error
-    if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
-    } else {
-      this.warn(err);
-    }
+    const warning = err.message.includes('See more help with --help')
+      ? err.message.replace('with --help', () => `with: \u{1B}[93m${CMD_HELP}\u{1B}[0m`)
+      : err;
+    this.warn(warning);
     return Promise.resolve();
   }
 }

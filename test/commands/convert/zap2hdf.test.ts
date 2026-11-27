@@ -5,6 +5,11 @@ import tmp from 'tmp';
 import { describe, expect, it } from 'vitest';
 import { omitHDFChangingFields } from '../utils';
 
+// eslint-disable-next-line unicorn/prefer-https -- Match the test fixture.
+const webgoatSiteName = 'http://mymac.com:8191';
+// eslint-disable-next-line unicorn/prefer-https -- Match the test fixture.
+const webappsecuritySiteName = 'http://zero.webappsecurity.com';
+
 describe('Test zap', () => {
   const tmpobj = tmp.dirSync({ unsafeCleanup: true });
 
@@ -14,7 +19,7 @@ describe('Test zap', () => {
       '-i',
       path.resolve('./test/sample_data/zap/sample_input_report/webgoat.json'),
       '-n',
-      'http://mymac.com:8191',
+      webgoatSiteName,
       '-o',
       `${tmpobj.name}/zaptest-webgoat.json`,
     ]);
@@ -29,7 +34,7 @@ describe('Test zap', () => {
       '-i',
       path.resolve('./test/sample_data/zap/sample_input_report/zero.webappsecurity.json'),
       '-n',
-      'http://zero.webappsecurity.com',
+      webappsecuritySiteName,
       '-o',
       `${tmpobj.name}/zaptest-webappsecurity.json`,
     ]);
@@ -48,7 +53,7 @@ describe('Test zap using withraw flag', () => {
       '-i',
       path.resolve('./test/sample_data/zap/sample_input_report/webgoat.json'),
       '-n',
-      'http://mymac.com:8191',
+      webgoatSiteName,
       '-o',
       `${tmpobj.name}/zaptest-webgoat.json`,
       '-w',
@@ -64,7 +69,7 @@ describe('Test zap using withraw flag', () => {
       '-i',
       path.resolve('./test/sample_data/zap/sample_input_report/zero.webappsecurity.json'),
       '-n',
-      'http://zero.webappsecurity.com',
+      webappsecuritySiteName,
       '-o',
       `${tmpobj.name}/zaptest-webappsecurity.json`,
       '-w',

@@ -45,33 +45,35 @@ export default class EmasserPostDeviceScans extends Command {
     const addDeviceScans = new DeviceScanResultsApi(apiCxn.configuration, apiCxn.basePath, apiCxn.axiosInstances);
 
     /**
-     * Upload device scans (delivery method can be a file or a zip file)
-     * Specific file extensions are expected depending upon the scanType parameter.
-     *
-     * Scan Type                    File Type
-     * ───────────────────────────  ─────────────
-     * disaStigViewerCklCklb        .ckl or .cklb
-     * acasAsrArf or policyAuditor  .zip
-     *
-     * Single files are expected for all other scan types as this endpoint
-     * requires files to be uploaded consecutively as opposed to in bulk.
-     *
-     * Current scan types that are supported:
-     *   ACAS: acasAsrArf or acasNessus
-     *   DISA STIG Viewer: disaStigViewerCklCklb or disaStigViewerCmrs
-     *   Policy Auditor: policyAuditor
-     *   SCAP Compliance Checker: scapComplianceChecker
-     */
+    Upload device scans (delivery method can be a file or a zip file)
+    Specific file extensions are expected depending upon the scanType parameter.
+
+    Scan Type                    File Type
+    ───────────────────────────  ─────────────
+    disaStigViewerCklCklb        .ckl or .cklb
+    acasAsrArf or policyAuditor  .zip
+
+    Single files are expected for all other scan types as this endpoint
+    requires files to be uploaded consecutively as opposed to in bulk.
+
+    Current scan types that are supported:
+      ACAS: acasAsrArf or acasNessus
+      DISA STIG Viewer: disaStigViewerCklCklb or disaStigViewerCmrs
+      Policy Auditor: policyAuditor
+      SCAP Compliance Checker: scapComplianceChecker
+    */
     try {
       if (!fs.existsSync(flags.filename)) {
         throw new CLIError(`The file ${flags.filename} does not exist. Please provide a valid file path.`);
-      } else if (flags.scanType === 'disaStigViewerCklCklb' && !flags.filename.includes('.ckl')) {
+      }
+      if (flags.scanType === 'disaStigViewerCklCklb' && !flags.filename.includes('.ckl')) {
         throw new CLIError(`If the scan type is "disaStigViewerCklCklb" a .ckl or .cklb file is expected not a ${path.extname(flags.filename)} file`);
-      } else if ((flags.scanType === 'acasAsrArf' || flags.scanType === 'policyAuditor') && !flags.filename.includes('.zip')) {
+      }
+      if ((flags.scanType === 'acasAsrArf' || flags.scanType === 'policyAuditor') && !flags.filename.includes('.zip')) {
         throw new CLIError(`If the scan type is "acasAsrArf" or "policyAuditor" a .zip file is expected not a ${path.extname(flags.filename)} file`);
       }
     } catch (error) {
-      console.error(`\u001B[91m » ${String(error)} \u001B[0m`);
+      console.error(`\u{1B}[91m » ${String(error)} \u{1B}[0m`);
       process.exit(1);
     }
 
@@ -87,11 +89,10 @@ export default class EmasserPostDeviceScans extends Command {
 
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display what fields are required, otherwise show the error
-    if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('with --help', `with: \u001B[93m${CMD_HELP}\u001B[0m`));
-    } else {
-      this.warn(err);
-    }
+    const warning = err.message.includes('See more help with --help')
+      ? err.message.replace('with --help', () => `with: \u{1B}[93m${CMD_HELP}\u{1B}[0m`)
+      : err;
+    this.warn(warning);
     return Promise.resolve();
   }
 }

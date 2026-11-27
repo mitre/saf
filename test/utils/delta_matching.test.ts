@@ -12,7 +12,7 @@ import {
   TIER2_COMPOSITE_TITLE_WEIGHT,
   tokenJaccard,
   type LinkRecord,
-} from '../../../src/utils/delta_matching';
+} from '../../src/utils/delta_matching';
 
 // Minimal Control-shaped test fixtures. The real inspec-objects Control has
 // many more fields; these tests exercise only the fields our matcher reads.
@@ -25,8 +25,8 @@ const mkControl = (
   id,
   title,
   tags: {
-    ...(gtitle === undefined ? {} : { gtitle }),
-    ...(ccis.length > 0 ? { cci: ccis } : {}),
+    ...(gtitle !== undefined && { gtitle }),
+    ...(ccis.length > 0 && { cci: ccis }),
   },
 });
 
@@ -198,22 +198,22 @@ describe('tokenJaccard', () => {
 
 describe('cciJaccard', () => {
   it('returns 1.0 for identical sets', () => {
-    const setA = new Set(['CCI-1', 'CCI-2']);
-    const setB = new Set(['CCI-1', 'CCI-2']);
-    expect(cciJaccard(setA, setB)).toBe(1);
+    const firstSet = new Set(['CCI-1', 'CCI-2']);
+    const secondSet = new Set(['CCI-1', 'CCI-2']);
+    expect(cciJaccard(firstSet, secondSet)).toBe(1);
   });
 
   it('returns 0.0 for disjoint sets', () => {
-    const setA = new Set(['CCI-1']);
-    const setB = new Set(['CCI-2']);
-    expect(cciJaccard(setA, setB)).toBe(0);
+    const firstSet = new Set(['CCI-1']);
+    const secondSet = new Set(['CCI-2']);
+    expect(cciJaccard(firstSet, secondSet)).toBe(0);
   });
 
   it('returns the correct fraction for partial overlap', () => {
     // {1,2,3} vs {2,3,4} -> intersect = {2,3} (2), union = {1,2,3,4} (4) -> 0.5
-    const setA = new Set(['CCI-1', 'CCI-2', 'CCI-3']);
-    const setB = new Set(['CCI-2', 'CCI-3', 'CCI-4']);
-    expect(cciJaccard(setA, setB)).toBe(0.5);
+    const firstSet = new Set(['CCI-1', 'CCI-2', 'CCI-3']);
+    const secondSet = new Set(['CCI-2', 'CCI-3', 'CCI-4']);
+    expect(cciJaccard(firstSet, secondSet)).toBe(0.5);
   });
 
   it('returns 0.0 when both sets are empty (cannot differentiate)', () => {

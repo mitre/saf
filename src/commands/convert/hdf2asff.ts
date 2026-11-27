@@ -6,7 +6,7 @@ import {
   type SecurityHubClientConfig,
 } from '@aws-sdk/client-securityhub';
 import { FromHdfToAsffMapper as Mapper } from '@mitre/hdf-converters';
-import { Flags } from '@oclif/core';
+import { Constraints, Flags } from '@oclif/core';
 import { NodeHttpHandler } from '@smithy/node-http-handler';
 import _ from 'lodash';
 import { basename, checkSuffix, resolveSafeChild, safeFilename } from '../../utils/global';
@@ -14,22 +14,22 @@ import { BaseCommand } from '../../utils/oclif/base_command';
 
 export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
   static readonly usage
-    = '<%= command.id %> -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] (-u [-I -C <certificate>] | [-o <asff-output-folder>])';
+    = '<%= command.id %> -a <account-id> -r <region> -i <hdf-scan-results-json> -t <target> [-h] [-R] [-u [-I] [-C <certificate>]] [-o <asff-output-folder>]';
 
   static readonly description
     = 'Translate a Heimdall Data Format JSON file into AWS Security Findings Format JSON file(s) and/or upload to AWS Security Hub';
 
   static readonly examples = [
     {
-      description: '\u001B[93mSend output to local file system\u001B[0m',
+      description: '\u{1B}[93mSend output to local file system\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i rhel7-scan_02032022A.json -a 123456789 -r us-east-1 -t rhel7_example_host -o rhel7.asff',
     },
     {
-      description: '\u001B[93mUpload findings to AWS Security Hub\u001B[0m',
+      description: '\u{1B}[93mUpload findings to AWS Security Hub\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i rds_mysql_i123456789scan_03042022A.json -a 987654321 -r us-west-1 -t Instance_i123456789 -u',
     },
     {
-      description: '\u001B[93mUpload findings to AWS Security Hub and Send output to local file system\u001B[0m',
+      description: '\u{1B}[93mUpload findings to AWS Security Hub and Send output to local file system\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i snyk_acme_project5_hdf_04052022A.json -a 2143658798 -r us-east-1 -t acme_project5 -o snyk_acme_project5 -u',
     },
   ];
@@ -70,11 +70,11 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
       char: 'o',
       required: false,
       description: 'Output ASFF JSON Folder',
+      parse: value => Promise.resolve(value || undefined),
     }),
     insecure: Flags.boolean({
       char: 'I',
       required: false,
-      default: false,
       description: 'Disable SSL verification, this is insecure.',
     }),
     certificate: Flags.string({
@@ -83,6 +83,11 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
       description: 'Trusted signing certificate file',
     }),
   };
+
+  static readonly constraints: typeof BaseCommand.constraints = [
+    Constraints.flags('upload', 'output').are.requiredAny(),
+    Constraints.flags('insecure', 'certificate').are.dependentOn('upload'),
+  ];
 
   async run() {
     const { flags } = await this.parse(HDF2ASFF);
@@ -122,92 +127,94 @@ export default class HDF2ASFF extends BaseCommand<typeof HDF2ASFF> {
       }
     }
 
-    if (flags.upload) {
-      const profileInfoFinding = converted.pop();
-      const convertedSlices = _.chunk(converted, 100) as AwsSecurityFinding[][];
+    if (!flags.upload) {
+      return;
+    }
 
-      if (flags.insecure) {
-        console.warn(
-          'WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate',
-        );
-      }
+    const profileInfoFinding = converted.pop();
+    const convertedSlices = _.chunk(converted, 100) as AwsSecurityFinding[][];
 
-      const clientOptions: SecurityHubClientConfig = {
-        region: flags.region,
-        requestHandler: new NodeHttpHandler({
-          httpsAgent: new https.Agent({
-            // Disable HTTPS verification if requested
-            rejectUnauthorized: !flags.insecure,
-            // Pass an SSL certificate to trust
-            ca: flags.certificate
-              ? fs.readFileSync(flags.certificate, 'utf8')
-              : undefined,
-          }),
+    if (flags.insecure) {
+      console.warn(
+        'WARNING: Using --insecure will make all connections to AWS open to MITM attacks, if possible pass a certificate file with --certificate',
+      );
+    }
+
+    const clientOptions: SecurityHubClientConfig = {
+      region: flags.region,
+      requestHandler: new NodeHttpHandler({
+        httpsAgent: new https.Agent({
+          // Disable HTTPS verification if requested
+          rejectUnauthorized: !flags.insecure,
+          // Pass an SSL certificate to trust
+          ca: flags.certificate
+            ? fs.readFileSync(flags.certificate, 'utf8')
+            : undefined,
         }),
-      };
-      const client = new SecurityHub(clientOptions);
+      }),
+    };
+    const client = new SecurityHub(clientOptions);
 
-      try {
-        await Promise.all(
-          convertedSlices.map(async (chunk) => {
-            try {
-              const result = await client.batchImportFindings({
-                Findings: chunk,
-              });
-              console.log(
-                `Uploaded ${chunk.length} controls. Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
+    try {
+      await Promise.all(
+        convertedSlices.map(async (chunk) => {
+          try {
+            const result = await client.batchImportFindings({
+              Findings: chunk,
+            });
+            console.log(
+              `Uploaded ${chunk.length} controls. Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
+            );
+            if (result.FailedFindings?.length) {
+              console.error(
+                `Failed to upload ${result.FailedCount} Findings`,
               );
-              if (result.FailedFindings?.length) {
-                console.error(
-                  `Failed to upload ${result.FailedCount} Findings`,
-                );
-                console.log(result.FailedFindings);
-              }
-            } catch (error) {
-              if (
-                _.isObject(error)
-                && _.get(error, 'code') === 'NetworkingError'
-              ) {
-                console.error(
-                  `Failed to upload controls: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}; Using --certificate to provide your own SSL intermediary certificate (in .crt format) or use the flag --insecure to ignore SSL might resolve this issue`,
-                );
-              } else {
-                console.error(`Failed to upload controls: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}`);
-              }
+              console.log(result.FailedFindings);
             }
-          }),
+          } catch (error) {
+            if (
+              _.isObject(error)
+              && _.get(error, 'code') === 'NetworkingError'
+            ) {
+              console.error(
+                `Failed to upload controls: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}; Using --certificate to provide your own SSL intermediary certificate (in .crt format) or use the flag --insecure to ignore SSL might resolve this issue`,
+              );
+            } else {
+              console.error(`Failed to upload controls: ${error instanceof Error ? error.message : JSON.stringify(error, null, 2)}`);
+            }
+          }
+        }),
+      );
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error('Unexpected error', error);
+      }
+    }
+
+    try {
+      if (profileInfoFinding) {
+        profileInfoFinding.UpdatedAt = new Date().toISOString();
+        const result = await client.batchImportFindings({
+          Findings: [profileInfoFinding as unknown] as AwsSecurityFinding[],
+        });
+        console.info(`Statistics: ${profileInfoFinding.Description}`);
+        console.info(
+          `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
         );
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message);
-        } else {
-          console.error('Unexpected error', error);
+        if (result.FailedFindings?.length) {
+          console.error(
+            `Failed to upload ${result.FailedCount} Results Set Info Finding`,
+          );
+          console.log(result.FailedFindings);
         }
       }
-
-      try {
-        if (profileInfoFinding) {
-          profileInfoFinding.UpdatedAt = new Date().toISOString();
-          const result = await client.batchImportFindings({
-            Findings: [profileInfoFinding as unknown] as AwsSecurityFinding[],
-          });
-          console.info(`Statistics: ${profileInfoFinding.Description}`);
-          console.info(
-            `Uploaded Results Set Info Finding(s) - Success: ${result.SuccessCount}, Fail: ${result.FailedCount}`,
-          );
-          if (result.FailedFindings?.length) {
-            console.error(
-              `Failed to upload ${result.FailedCount} Results Set Info Finding`,
-            );
-            console.log(result.FailedFindings);
-          }
-        }
-      } catch (error) {
-        if (error instanceof Error) {
-          console.error(error.message);
-        } else {
-          console.error('Unexpected error', error);
-        }
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error.message);
+      } else {
+        console.error('Unexpected error', error);
       }
     }
   }

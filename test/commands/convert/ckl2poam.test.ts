@@ -14,7 +14,7 @@ describe('Test ckl2POAM RHEL8 example', () => {
       '-i',
       path.resolve('./test/sample_data/checklist/sample_input_report/converted-RHEL8V1R3.ckl'),
       '-o',
-      `${tmpobj.name}`,
+      tmpobj.name,
       '-d test',
       '-O testOrg',
     ]);

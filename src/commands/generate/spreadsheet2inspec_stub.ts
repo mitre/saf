@@ -3,13 +3,14 @@ import path from 'path';
 import { CciNistMappingData } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
 import { parse } from 'csv-parse/sync';
+import { LinkifyIt } from 'linkify-it';
 import _ from 'lodash';
 import XlsxPopulate from 'xlsx-populate';
 import YAML from 'yaml';
 import CISNistMappings from '../../resources/cis2nist.json';
 import files from '../../resources/files.json';
 import type { CSVControl } from '../../types/csv';
-import type { InSpecControl, InSpecMetaData } from '../../types/inspec';
+import type { InSpecControl, InSpecMetadata } from '../../types/inspec';
 import { basename, extractValueViaPathOrNumber, resolveSafeChild, safeFilename } from '../../utils/global';
 import { BaseCommand } from '../../utils/oclif/base_command';
 import { impactNumberToSeverityString, inspecControlToRubyCode, severityStringToImpact } from '../../utils/xccdf2inspec';
@@ -32,12 +33,16 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
     output: Flags.string({ char: 'o', required: true, description: 'Output InSpec profile folder' }),
   };
 
+  private static readonly referenceLinkifier = new LinkifyIt({ fuzzyLink: false, fuzzyEmail: false });
+
   // Extract URLs for references
   matchReferences(control: Partial<InSpecControl>): Partial<InSpecControl> {
     if (control.ref) {
-      const urlMatches = control.ref.replaceAll('\r', '').replaceAll('\n', '').match(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/g);
-      if (urlMatches) {
-        control.refs = urlMatches;
+      const referenceText = control.ref.replaceAll(/[\r\n]/g, '');
+      const urlMatches = (Spreadsheet2HDF.referenceLinkifier.match(referenceText) ?? [])
+        .filter(({ schema }) => ['http:', 'https:'].includes(schema));
+      if (urlMatches.length > 0) {
+        control.refs = urlMatches.map(({ raw }) => raw);
       }
 
       control.ref = undefined;
@@ -64,7 +69,8 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
       if (cisControlMatches) {
         control.tags.cis_controls = [];
         const mappedCISControlsByVersion: Record<string, string[]> = {};
-        for (const [revision, cisControl] of cisControlMatches.map(cisControl => cisControl.split(' '))) {
+        for (const cisControlMatch of cisControlMatches) {
+          const [revision, cisControl] = cisControlMatch.split(' ');
           const controlRevision = revision.split('CONTROL:v')[1];
           const existingControls = _.get(mappedCISControlsByVersion, controlRevision) || [];
           existingControls.push(cisControl);
@@ -84,8 +90,9 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
         if (cisControlMatches && control.tags) {
           control.tags.cis_controls = [];
           const mappedCISControlsByVersion: Record<string, string[]> = {};
-          for (const [revision, cisControl] of cisControlMatches.map(cisControl => cisControl.replace(/\r?\n/, '').split(' '))) {
-            if (revision === 'v7' && cisControl in CISNistMappings) {
+          for (const cisControlMatch of cisControlMatches) {
+            const [revision, cisControl] = cisControlMatch.replace(/\r?\n/, '').split(' ');
+            if (revision === 'v7' && Object.hasOwn(CISNistMappings, cisControl)) {
               control.tags?.nist?.push(_.get(CISNistMappings, cisControl));
             }
 
@@ -137,13 +144,12 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
     if (fs.existsSync(flags.output)) {
       // Folder should not exist already
       throw new Error('Profile output folder already exists, please specify a new folder');
-    } else {
-      fs.mkdirSync(flags.output);
-      fs.mkdirSync(path.join(flags.output, 'controls'));
-      fs.mkdirSync(path.join(flags.output, 'libraries'));
     }
+    fs.mkdirSync(flags.output);
+    fs.mkdirSync(path.join(flags.output, 'controls'));
+    fs.mkdirSync(path.join(flags.output, 'libraries'));
 
-    let metadata: InSpecMetaData = {};
+    let metadata: InSpecMetadata = {};
     let mappings: Record<string, string | string[] | number>;
 
     // Read metadata file if passed
@@ -198,64 +204,66 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
 
       for (const sheet of workBook.sheets()) {
         const usedRange = sheet.usedRange();
-        if (usedRange) {
-          // Get data from the spreadsheet into a 2D array
-          const extractedData: (string | number)[][] = usedRange.value();
-          // Map the data into an object array
-          const headers = extractedData[0].map(String);
-          const mappedRecords = extractedData.slice(1).map((row) => {
-            const mappedRecord: Record<string, string> = {};
-            for (const [index, cellValue] of row.entries()) {
-              if (_.isString(cellValue)) {
-                mappedRecord[headers[index]] = cellValue;
-              } else if (_.isNumber(cellValue)) {
-                mappedRecord[headers[index]] = cellValue.toString();
-              }
-            }
-            return mappedRecord;
-          });
-          // Convert the mapped objects into controls
-          for (const [index, record] of mappedRecords.entries()) {
-            // Get the control ID
-            let controlId = extractValueViaPathOrNumber('mappings.id', mappings.id, record);
-            if (controlId) {
-              // Prevent controls that get parsed from 1.10 to 1.1 from being over-written, this assumes the controls are in order
-              while (completedIds.includes(controlId)) {
-                controlId += '0';
-              }
+        if (!usedRange) {
+          continue;
+        }
 
-              completedIds.push(controlId);
-              let newControl: Partial<InSpecControl> = {
-                refs: [],
-                tags: {
-                  nist: [],
-                  severity: impactNumberToSeverityString(extractValueViaPathOrNumber('mappings.impact', mappings.impact, record)),
-                },
-              };
-              for (const mapping of Object.entries(mappings)) {
-                if (mapping[0] === 'id' && flags.controlNamePrefix) {
-                  _.set(
-                    newControl,
-                    mapping[0].toLowerCase().replace('desc.', 'descs.'),
-                    `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${extractValueViaPathOrNumber(mapping[0], mapping[1], record)}`,
-                  );
-                } else {
-                  _.set(
-                    newControl,
-                    mapping[0].toLowerCase().replace('desc.', 'descs.'),
-                    extractValueViaPathOrNumber(mapping[0], mapping[1], record),
-                  );
-                }
-              }
-              newControl = this.matchReferences(newControl);
-              newControl = this.matchCISControls(newControl, flags);
-              newControl = this.matchImpactFromSeverityIfImpactNotSet(newControl);
-              newControl = this.extractCCIsFromText(newControl);
-              inspecControls.push(newControl as unknown as InSpecControl);
-            } else {
-              // Possibly a section divider, possibly a bad mapping. Let the user know to verify
-              console.error(`Control at index "${index}" has no ID... skipping`);
+        // Get data from the spreadsheet into a 2D array
+        const extractedData: (string | number)[][] = usedRange.value();
+        // Map the data into an object array
+        const headers = extractedData[0].map(String);
+        const mappedRecords = extractedData.slice(1).map((row) => {
+          const mappedRecord: Record<string, string> = {};
+          for (const [index, cellValue] of row.entries()) {
+            if (_.isString(cellValue)) {
+              mappedRecord[headers[index]] = cellValue;
+            } else if (_.isNumber(cellValue)) {
+              mappedRecord[headers[index]] = cellValue.toString();
             }
+          }
+          return mappedRecord;
+        });
+        // Convert the mapped objects into controls
+        for (const [index, record] of mappedRecords.entries()) {
+          // Get the control ID
+          let controlId = extractValueViaPathOrNumber('mappings.id', mappings.id, record);
+          if (controlId) {
+            // Prevent controls that get parsed from 1.10 to 1.1 from being over-written, this assumes the controls are in order
+            while (completedIds.includes(controlId)) {
+              controlId += '0';
+            }
+
+            completedIds.push(controlId);
+            let newControl: Partial<InSpecControl> = {
+              refs: [],
+              tags: {
+                nist: [],
+                severity: impactNumberToSeverityString(extractValueViaPathOrNumber('mappings.impact', mappings.impact, record)),
+              },
+            };
+            for (const mapping of Object.entries(mappings)) {
+              if (mapping[0] === 'id' && flags.controlNamePrefix) {
+                _.set(
+                  newControl,
+                  mapping[0].toLowerCase().replace('desc.', 'descs.'),
+                  `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${extractValueViaPathOrNumber(mapping[0], mapping[1], record)}`,
+                );
+              } else {
+                _.set(
+                  newControl,
+                  mapping[0].toLowerCase().replace('desc.', 'descs.'),
+                  extractValueViaPathOrNumber(mapping[0], mapping[1], record),
+                );
+              }
+            }
+            newControl = this.matchReferences(newControl);
+            newControl = this.matchCISControls(newControl, flags);
+            newControl = this.matchImpactFromSeverityIfImpactNotSet(newControl);
+            newControl = this.extractCCIsFromText(newControl);
+            inspecControls.push(newControl as unknown as InSpecControl);
+          } else {
+            // Possibly a section divider, possibly a bad mapping. Let the user know to verify
+            console.error(`Control at index "${index}" has no ID... skipping`);
           }
         }
       }
@@ -280,7 +288,7 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
       });
 
       for (const [index, record] of records.entries()) {
-        let skipControlDueToError = false;
+        let shouldSkipControlDueToError = false;
         let newControl: Partial<InSpecControl> = {
           refs: [],
           tags: {
@@ -295,20 +303,20 @@ export default class Spreadsheet2HDF extends BaseCommand<typeof Spreadsheet2HDF>
               _.set(newControl, mapping[0], `${flags.controlNamePrefix ? flags.controlNamePrefix + '-' : ''}${value}`);
             } else {
               console.error(`Control at index ${index} has no mapped control ID... skipping`);
-              skipControlDueToError = true;
+              shouldSkipControlDueToError = true;
             }
           } else {
             _.set(newControl, mapping[0].toLowerCase().replace('desc.', 'descs.'), extractValueViaPathOrNumber(mapping[0], mapping[1], record));
           }
         }
-        if (skipControlDueToError) {
+        if (shouldSkipControlDueToError) {
           continue;
         }
 
         if (newControl.tags?.cci) {
           newControl.tags.nist = [];
           for (const cci of newControl.tags.cci) {
-            if (cci in CciNistMappingData.data) {
+            if (Object.hasOwn(CciNistMappingData.data, cci)) {
               newControl.tags?.nist?.push(_.get(CciNistMappingData.data, cci));
             }
           }

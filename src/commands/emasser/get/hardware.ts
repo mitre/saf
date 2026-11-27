@@ -6,17 +6,17 @@ import { outputFormat } from '../../../utils/emasser/output_formatter';
 import { displayError, getFlagsForEndpoint } from '../../../utils/emasser/utilities';
 
 export default class EmasserGetHardwareBaseline extends Command {
-  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n \u001B[93m NOTE: see EXAMPLES for argument case format\u001B[0m';
+  static readonly usage = '<%= command.id %> [ARGUMENT] [FLAGS]\n \u{1B}[93m NOTE: see EXAMPLES for argument case format\u{1B}[0m';
 
   static readonly description = 'View all hardware baseline for a system available on the eMASS instance';
 
   static readonly examples = [
     {
-      description: '\u001B[93mRetrieve baselines without pagination\u001B[0m',
+      description: '\u{1B}[93mRetrieve baselines without pagination\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> baseline [-s, --systemId] <value> [options]',
     },
     {
-      description: '\u001B[93mRetrieve baselines with pagination\u001B[0m',
+      description: '\u{1B}[93mRetrieve baselines with pagination\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> baseline [-s, --systemId] <value> [-S, --pageSize]=<value> [-i, --pageIndex]=<value>',
     },
   ];

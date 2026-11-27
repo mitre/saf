@@ -30,15 +30,15 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
 
   static readonly examples = [
     {
-      description: '\u001B[93mUsing ASFF JSON file\u001B[0m',
+      description: '\u{1B}[93mUsing ASFF JSON file\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i asff-findings.json -o output-folder-name',
     },
     {
-      description: '\u001B[93mUsing ASFF JSON file with additional input files\u001B[0m',
+      description: '\u{1B}[93mUsing ASFF JSON file with additional input files\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> -i asff-findings.json --securityHub standard-1.json standard-2.json -o output-folder-name',
     },
     {
-      description: '\u001B[93mUsing AWS to pull ASFF JSON findings\u001B[0m',
+      description: '\u{1B}[93mUsing AWS to pull ASFF JSON findings\u{1B}[0m',
       command: '<%= config.bin %> <%= command.id %> --aws -o out -r us-west-2 --target rhel7',
     },
 
@@ -48,7 +48,7 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
     input: Flags.string({
       char: 'i',
       required: false,
-      description: '\u001B[31m(required if not using AWS)\u001B[34m Input ASFF JSON file',
+      description: '\u{1B}[31m(required if not using AWS)\u{1B}[34m Input ASFF JSON file',
       exclusive: ['aws', 'region', 'insecure', 'certificate', 'target'],
     }),
     aws: Flags.boolean({
@@ -102,13 +102,13 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
   async run() {
     const { flags } = await this.parse(ASFF2HDF);
     const logger = createWinstonLogger({ module: 'asff2hdf', level: flags.logLevel });
-    let securityHub;
 
     // Check if output folder already exists
     if (fs.existsSync(flags.output)) {
       throw new Error(`Output folder ${flags.output} already exists`);
     }
 
+    let securityHub;
     const findings: string[] = [];
     // If we've been passed an input file
     if (flags.input) {
@@ -126,7 +126,7 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
           );
         } else {
           checkInput(
-            { data: data, filename: flags.input }, // skipcq: JS-0240
+            { data: data, filename: flags.input },
             INPUT_TYPES.ASFF,
             'AWS Security Finding Format JSON',
           );
@@ -172,7 +172,7 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
       const client = new SecurityHub(clientOptions);
       // Pagination
       let nextToken;
-      let first = true;
+      let isFirstPage = true;
       let filters: AwsSecurityFindingFilters = {};
 
       // Filter by target name
@@ -190,48 +190,48 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
         MaxResults: API_MAX_RESULTS,
       };
       // Get findings
-      while (first || nextToken !== undefined) {
-        first = false;
+      while (isFirstPage || nextToken !== undefined) {
+        isFirstPage = false;
         logger.debug(`Querying for NextToken: ${nextToken}`);
         _.set(queryParams, 'NextToken', nextToken);
 
-        const getFindingsResult = await client.getFindings(queryParams);
+        const findingsResult = await client.getFindings(queryParams);
         logger.debug(
-          `Received: ${getFindingsResult.Findings?.length} findings`,
+          `Received: ${findingsResult.Findings?.length} findings`,
         );
-        if (getFindingsResult.Findings) {
-          findings.push(...getFindingsResult.Findings.map(finding => JSON.stringify(finding)));
+        if (findingsResult.Findings) {
+          findings.push(...findingsResult.Findings.map(finding => JSON.stringify(finding)));
         }
 
-        nextToken = getFindingsResult.NextToken;
+        nextToken = findingsResult.NextToken;
       }
 
       nextToken = undefined;
-      first = true;
+      isFirstPage = true;
 
       logger.info('Starting collection of enabled security standards');
       const enabledStandards: StandardsSubscription[] = [];
 
       // Get active security standards subscriptions (enabled standards)
-      while (first || nextToken !== undefined) {
-        first = false;
+      while (isFirstPage || nextToken !== undefined) {
+        isFirstPage = false;
         logger.debug(`Querying for NextToken: ${nextToken}`);
         // type system seems to think that this call / the result is from the callback variant of the function instead of the promise based one and throwing fits
-        const getEnabledStandardsResult: GetEnabledStandardsCommandOutput
+        const enabledStandardsResult: GetEnabledStandardsCommandOutput
           = await client.getEnabledStandards({
             NextToken: nextToken,
           });
 
         logger.debug(
-          `Received: ${getEnabledStandardsResult.StandardsSubscriptions?.length} standards`,
+          `Received: ${enabledStandardsResult.StandardsSubscriptions?.length} standards`,
         );
-        if (getEnabledStandardsResult.StandardsSubscriptions) {
+        if (enabledStandardsResult.StandardsSubscriptions) {
           enabledStandards.push(
-            ...getEnabledStandardsResult.StandardsSubscriptions,
+            ...enabledStandardsResult.StandardsSubscriptions,
           );
         }
 
-        nextToken = getEnabledStandardsResult.NextToken;
+        nextToken = enabledStandardsResult.NextToken;
       }
 
       securityHub = [];
@@ -239,26 +239,26 @@ export default class ASFF2HDF extends BaseCommand<typeof ASFF2HDF> {
       // Describe the controls to give context to the mapper
       for (const standard of enabledStandards) {
         nextToken = undefined;
-        first = true;
+        isFirstPage = true;
         const standardsControls: StandardsControl[] = [];
 
-        while (first || nextToken !== undefined) {
-          first = false;
+        while (isFirstPage || nextToken !== undefined) {
+          isFirstPage = false;
           logger.debug(`Querying for NextToken: ${nextToken}`);
-          const getEnabledStandardsResult: DescribeStandardsControlsCommandOutput
+          const standardsControlsResult: DescribeStandardsControlsCommandOutput
             = await client.describeStandardsControls({
               StandardsSubscriptionArn: standard.StandardsSubscriptionArn,
               NextToken: nextToken || '',
             });
           logger.info(
-            `Received: ${getEnabledStandardsResult.Controls?.length} Controls`,
+            `Received: ${standardsControlsResult.Controls?.length} Controls`,
           );
 
-          if (getEnabledStandardsResult.Controls) {
-            standardsControls.push(...getEnabledStandardsResult.Controls);
+          if (standardsControlsResult.Controls) {
+            standardsControls.push(...standardsControlsResult.Controls);
           }
 
-          nextToken = getEnabledStandardsResult.NextToken;
+          nextToken = standardsControlsResult.NextToken;
         }
 
         securityHub.push(JSON.stringify({ Controls: standardsControls }));

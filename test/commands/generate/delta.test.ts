@@ -17,7 +17,7 @@ describe.sequential('Test generate delta command', () => {
       '-X',
       path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o',
-      `${tmpobj.name}`,
+      tmpobj.name,
       '-T',
       'rule',
     ]);
@@ -34,7 +34,7 @@ describe.sequential('Test generate delta command', () => {
       '-X',
       path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o',
-      `${tmpobj.name}`,
+      tmpobj.name,
       '-T',
       'group',
     ]);
@@ -51,7 +51,7 @@ describe.sequential('Test generate delta command', () => {
       '-X',
       path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o',
-      `${tmpobj.name}`,
+      tmpobj.name,
       '-T',
       'cis',
     ]);
@@ -119,9 +119,9 @@ describe.sequential('Test generate delta command', () => {
       '-X',
       path.resolve('./test/sample_data/xccdf/stigs/rhel-7-v3r8-mini-sample-xxcdf.xml'),
       '-o',
-      `${tmpobj.name}`,
+      tmpobj.name,
       '-r',
-      `${tmpobj.name}`,
+      tmpobj.name,
     ]);
     const isFile = fs.lstatSync((`${tmpobj.name}/delta.md`)).isFile();
     assert.isTrue(isFile);
@@ -135,7 +135,7 @@ describe.sequential('Test generate delta command', () => {
       '-X',
       path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2022_V2R1_mini-sample-xccdf.xml'),
       '-o',
-      `${tmpobj.name}`,
+      tmpobj.name,
       '-M',
       '-c',
       path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls/'),
@@ -155,7 +155,7 @@ describe.sequential('Test generate delta command', () => {
       '-X',
       path.resolve('./test/sample_data/xccdf/stigs/Windows_Server_2022_V2R1_mini-sample-xccdf.xml'),
       '-o',
-      `${tmpobj.name}`,
+      tmpobj.name,
       '-M',
       '-c',
       path.resolve('./test/sample_data/inspec/json/profile_and_controls/windows_server_2019_v1r3_mini_controls/'),

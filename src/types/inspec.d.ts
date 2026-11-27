@@ -35,7 +35,7 @@ export type InSpecControl = {
   };
 };
 
-export type InSpecMetaData = {
+export type InSpecMetadata = {
   maintainer?: string;
   copyright?: string;
   copyright_email?: string;
