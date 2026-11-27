@@ -122,9 +122,9 @@ export function exitNonZeroIfTrue(isConditionMet: boolean, reason?: string) {
     return;
   }
 
-  // eslint-disable-next-line no-constant-binary-expression
-  console.error(`Error: ${reason}` || 'Error: Compliance levels were not met');
-  throw new Error(reason || 'Compliance levels were not met');
+  const message = reason || 'Compliance levels were not met';
+  console.error(`Error: ${message}`);
+  throw new Error(message);
 }
 
 export function renameStatusName(statusName: string): string {
