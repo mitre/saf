@@ -116,7 +116,7 @@ describe('safeFilename', () => {
   });
 
   it('should throw when the filename contains control characters', () => {
-    expect(() => safeFilename('bad\u0000name.txt')).toThrow(/Unsafe filename/);
+    expect(() => safeFilename('bad\u{0}name.txt')).toThrow(/Unsafe filename/);
   });
 
   it('should throw when the filename is a Windows reserved name', () => {
