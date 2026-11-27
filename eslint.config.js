@@ -7,7 +7,7 @@ import n from 'eslint-plugin-n';
 
 export default defineConfig([
   {
-    ignores: ['node_modules/**', 'lib/**', 'dist/**', 'test/sample_data/**'],
+    ignores: ['lib/**', 'dist/**', 'test/sample_data/**'],
   },
   js.configs.recommended,
   tseslint.configs.recommendedTypeChecked,
