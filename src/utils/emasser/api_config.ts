@@ -156,13 +156,13 @@ export class ApiConfig {
   getOptionalEnv<T>(key: string, defaultValue: T): T {
     if (this.envConfig && Object.hasOwn(this.envConfig, key)) {
       const envValue = this.envConfig[key];
-      const value = envValue === 'true'
-        ? true
-        : envValue === 'false'
-          ? false
-          : Number.isNaN(Number(envValue)) // eslint-disable-line unicorn/no-nested-ternary
-            ? envValue
-            : Number(envValue);
+      let value: string | number | boolean | undefined;
+      if (envValue === 'true' || envValue === 'false') {
+        value = envValue === 'true';
+      } else {
+        const numericValue = Number(envValue);
+        value = Number.isNaN(numericValue) ? envValue : numericValue;
+      }
 
       const isNotZeroOrEmpty = (value: string | number | boolean | undefined): boolean => {
         return value !== 0 && value !== '';
