@@ -1,13 +1,12 @@
 import * as marked from 'marked';
-import { beforeEach, describe, expect, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { generateMarkdownTable, generateMarkdownTableRow, prettyPrintColumnTitle, prettyPrintRowTitle } from '../../../../src/utils/ohdf/output_generator';
 import type { PrintableSummary } from '../../../../src/utils/ohdf/types';
 
-let item: PrintableSummary;
 const shouldIncludeTableTitles = true;
 
-beforeEach(() => {
-  item = {
+function createSummary(): PrintableSummary {
+  return {
     profileName: 'redhat-enterprise-linux-8-stig-baseline',
     resultSets: ['rhel-8_hardened.json'],
     compliance: 66,
@@ -17,7 +16,7 @@ beforeEach(() => {
     error: { critical: 0, high: 0, medium: 0, low: 0, total: 0 },
     no_impact: { none: 33, total: 33 },
   };
-});
+}
 
 const testTableRows = [
   ['Total', '227', '112', '3', '33', '0'],
@@ -34,7 +33,7 @@ describe('outputGenerator', () => {
   describe('generateMarkdownTableRow', () => {
     it('should generate a row for the Markdown table', () => {
       const row = 'high';
-      const result = generateMarkdownTableRow(row, item);
+      const result = generateMarkdownTableRow(row, createSummary());
       expect(result).toEqual(['11', '6', '1', '0', '0']);
     });
   });
@@ -66,7 +65,7 @@ describe('outputGenerator', () => {
 
 describe('generateMarkdownTable', () => {
   it('generates a table with both columns and rows', () => {
-    const result = generateMarkdownTable(item, shouldIncludeTableTitles);
+    const result = generateMarkdownTable(createSummary(), shouldIncludeTableTitles);
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
@@ -81,7 +80,7 @@ describe('generateMarkdownTable', () => {
   });
 
   it('each row matches a row in `testTableRows`', () => {
-    const result = generateMarkdownTable(item, shouldIncludeTableTitles);
+    const result = generateMarkdownTable(createSummary(), shouldIncludeTableTitles);
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
@@ -99,7 +98,7 @@ describe('generateMarkdownTable', () => {
   });
 
   it(`rows are in the expected order: ${expectedRowOrder.join(',')}`, () => {
-    const result = generateMarkdownTable(item, shouldIncludeTableTitles);
+    const result = generateMarkdownTable(createSummary(), shouldIncludeTableTitles);
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
@@ -115,7 +114,7 @@ describe('generateMarkdownTable', () => {
   });
 
   it(`columns are in the expected order: ${expectedColumnOrder.join(',')}`, () => {
-    const result = generateMarkdownTable(item, shouldIncludeTableTitles);
+    const result = generateMarkdownTable(createSummary(), shouldIncludeTableTitles);
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
@@ -140,7 +139,7 @@ describe('generateMarkdownTable', () => {
   });
 
   it(`each column matches a column in ${expectedColumnOrder.join(',')}`, () => {
-    const result = generateMarkdownTable(item, shouldIncludeTableTitles);
+    const result = generateMarkdownTable(createSummary(), shouldIncludeTableTitles);
     const tokens = marked.lexer(result);
     const tableToken = tokens.find(token => token.type === 'table') as marked.Tokens.Table;
 
