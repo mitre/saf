@@ -5,7 +5,7 @@ import tmp from 'tmp';
 import { describe, expect, it } from 'vitest';
 import { omitHDFChangingFields } from '../utils';
 
-describe.sequential('Test ckl2hdf', () => {
+describe('Test ckl2hdf', { concurrent: false }, () => {
   describe('RHEL8 example', () => {
     const tmpobj = tmp.dirSync({ unsafeCleanup: true });
 
