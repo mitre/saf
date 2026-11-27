@@ -2,6 +2,7 @@ generatedMD.md
 *-debug.log
 *-error.log
 /.nyc_output
+/.vitest/
 /dist
 /lib
 /tmp
