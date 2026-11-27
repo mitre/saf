@@ -1,7 +1,7 @@
 import * as marked from 'marked';
 import { describe, expect, it } from 'vitest';
-import { generateMarkdownTable, generateMarkdownTableRow, prettyPrintColumnTitle, prettyPrintRowTitle } from '../../../../src/utils/ohdf/output_generator';
-import type { PrintableSummary } from '../../../../src/utils/ohdf/types';
+import { generateMarkdownTable, generateMarkdownTableRow, prettyPrintColumnTitle, prettyPrintRowTitle } from '../../../src/utils/ohdf/output_generator';
+import type { PrintableSummary } from '../../../src/utils/ohdf/types';
 
 const shouldIncludeTableTitles = true;
 

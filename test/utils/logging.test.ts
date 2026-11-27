@@ -5,7 +5,7 @@ import path from 'path';
 import { describe, expect, it, vi } from 'vitest';
 import * as winston from 'winston';
 import type { Logger } from 'winston';
-import { createWinstonLogger } from '../../../src/utils/logging';
+import { createWinstonLogger } from '../../src/utils/logging';
 
 vi.mock('winston', { spy: true });
 

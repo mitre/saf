@@ -4,7 +4,7 @@ import { describe, expect, it } from 'vitest';
 import {
   applyRequirementFirstPipeline,
   type LinkRecord,
-} from '../../../src/utils/delta_matching';
+} from '../../src/utils/delta_matching';
 
 /**
 Integration-style test locking in the requirement-first pipeline's
@@ -23,7 +23,7 @@ tier counts and specific mappings are pinned here so future pipeline
 tweaks cannot silently regress this scenario.
 */
 
-const fixtureDir = path.resolve(__dirname, '../../sample_data/delta-matching');
+const fixtureDir = path.resolve(__dirname, '../sample_data/delta-matching');
 
 function loadFixture(file: string): { controls: Record<string, unknown>[] } {
   return JSON.parse(fs.readFileSync(path.join(fixtureDir, file), 'utf8'));
