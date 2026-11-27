@@ -13,7 +13,9 @@ import {
   type UpdatedProfileReturn,
 } from '@mitre/inspec-objects';
 import { Flags } from '@oclif/core';
+import chalk from 'chalk';
 import fse from 'fs-extra';
+import fileSelector from 'inquirer-file-selector';
 import tmp from 'tmp';
 import type winston from 'winston';
 import type { Logger } from 'winston';
@@ -252,8 +254,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
   - `logLevel`: The selected log level for the process.
 
   @remarks
-  - The function uses `inquirer` for interactive prompts and dynamically imports
-    `inquirer-file-selector` and `chalk` for enhanced user experience.
   - It adjusts the `defaultMaxListeners` of the `EventEmitter` to accommodate
     the number of listeners required by the prompts.
   - The function logs user selections to a process log for debugging or auditing purposes.
@@ -267,11 +267,6 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
     // listener for each entry it displays, we are providing 16 entries,
     // does using 16 listeners. Need to increase the defaultMaxListeners.
     EventEmitter.defaultMaxListeners = 20;
-
-    // Dynamically import inquirer-file-selector and chalk
-    // Once we move the SAF CLI from a CommonJS to an ES modules we can use the regular import
-    const { default: fileSelector } = await import('inquirer-file-selector');
-    const { default: chalk } = await import('chalk');
 
     const fileSelectorTheme = {
       style: {

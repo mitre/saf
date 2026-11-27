@@ -10,6 +10,8 @@ import {
   validateChecklistMetadata,
 } from '@mitre/hdf-converters';
 import { Flags } from '@oclif/core';
+import chalk from 'chalk';
+import fileSelector from 'inquirer-file-selector';
 import { colorize } from 'json-colorizer';
 import { isEmpty } from 'lodash';
 import type { Logger } from 'winston';
@@ -57,11 +59,6 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
   - `outputFileName`: The specified metadata file name with a `.json` extension.
   */
   private async getFlags(): Promise<unknown> {
-    // Dynamically import inquirer-file-selector and chalk
-    // Once we move the SAF CLI from a CommonJS to an ES modules we can use the regular import
-    const { default: fileSelector } = await import('inquirer-file-selector');
-    const { default: chalk } = await import('chalk');
-
     const fileSelectorTheme = {
       style: {
         file: (text: unknown) => chalk.green(text),

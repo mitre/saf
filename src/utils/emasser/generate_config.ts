@@ -1,7 +1,9 @@
 import { input, confirm, password, select } from '@inquirer/prompts';
+import chalk from 'chalk';
 import colors from 'colors';
 import dotenv from 'dotenv';
 import fse from 'fs-extra';
+import fileSelector from 'inquirer-file-selector';
 import { isNaN, isString } from 'lodash';
 
 const PROMPT_MESSAGE = [
@@ -145,15 +147,14 @@ Asynchronously processes user prompts to generate and update an eMASS configurat
 
 This function performs the following steps:
 1. Parses the `.env` file to retrieve existing environment variables.
-2. Dynamically imports `inquirer-file-selector` and `chalk` modules.
-3. Initializes a theme for the file selector prompts.
-4. Prompts the user for required eMASS configuration variables such as API key, host URL, and key file password.
-5. Prompts the user to select the type of certificate to use (Key/Client Certificate or Single CA Certificate).
-6. Based on the selected certificate type, prompts the user to select the appropriate certificate files.
-7. Optionally prompts the user to add a unique user identifier.
-8. Prompts the user for optional eMASS configuration variables such as port, request certificate, reject unauthorized, debugging, CLI display null, epoch to datetime, and download directory.
-9. Updates the `.env` file with the collected configuration variables.
-10. Outputs the content of the updated `.env` file to the console.
+2. Initializes a theme for the file selector prompts.
+3. Prompts the user for required eMASS configuration variables such as API key, host URL, and key file password.
+4. Prompts the user to select the type of certificate to use (Key/Client Certificate or Single CA Certificate).
+5. Based on the selected certificate type, prompts the user to select the appropriate certificate files.
+6. Optionally prompts the user to add a unique user identifier.
+7. Prompts the user for optional eMASS configuration variables such as port, request certificate, reject unauthorized, debugging, CLI display null, epoch to datetime, and download directory.
+8. Updates the `.env` file with the collected configuration variables.
+9. Outputs the content of the updated `.env` file to the console.
 
 @async
 @function processPrompt
@@ -161,11 +162,6 @@ This function performs the following steps:
 */
 async function processPrompt() {
   const envConfig = dotenv.parse(fse.readFileSync('.env'));
-
-  // Dynamically import inquirer-file-selector and chalk
-  // Once we move the SAF CLI from a CommonJS to an ES modules we can use the regular import
-  const { default: fileSelector } = await import('inquirer-file-selector');
-  const { default: chalk } = await import('chalk');
 
   const fileSelectorTheme = {
     style: {
@@ -223,7 +219,7 @@ async function processPrompt() {
   const certTypes = {
     certType: await select({
       message: 'What type of certificate to use with eMASS!',
-      default: 'Key_Cert',
+      default: 'key_cert',
       choices: [
         { name: 'Key/Client Certificate', value: 'key_cert' },
         { name: 'Single CA Certificate', value: 'CA' },
