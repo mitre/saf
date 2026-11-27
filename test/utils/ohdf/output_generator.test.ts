@@ -125,12 +125,9 @@ describe('generateMarkdownTable', () => {
     const headers = tableToken.header;
 
     const headerTexts = headers.map((header, index) => {
-      if (index === 0) {
-        // Special case for the first element
-        return header.text.split(': ')[0];
-      }
-
-      return header.text.split('<br>')[0];
+      // Special case for the first element
+      const separator = index === 0 ? ': ' : '<br>';
+      return header.text.split(separator)[0];
     });
 
     for (const [index, headerText] of headerTexts.entries()) {
@@ -150,12 +147,9 @@ describe('generateMarkdownTable', () => {
     const headers = tableToken.header;
 
     const headerTexts = headers.map((header, index) => {
-      if (index === 0) {
       // Special case for the first element
-        return header.text.split(': ')[0];
-      }
-
-      return header.text.split('<br>')[0];
+      const separator = index === 0 ? ': ' : '<br>';
+      return header.text.split(separator)[0];
     });
 
     for (const headerText of headerTexts) {

@@ -70,11 +70,10 @@ export default class ApplyAttestation extends BaseCommand<typeof ApplyAttestatio
 
     for (const [originalFilename, execution] of Object.entries(executions)) {
       const applied = addAttestationToHDF(execution, attestations);
-      if (Object.entries(executions).length <= 1) {
-        fs.writeFileSync(flags.output, JSON.stringify(applied, null, 2));
-      } else {
-        fs.writeFileSync(resolveSafeChild(flags.output, safeFilename(originalFilename)), JSON.stringify(applied, null, 2));
-      }
+      const outputPath = Object.entries(executions).length <= 1
+        ? flags.output
+        : resolveSafeChild(flags.output, safeFilename(originalFilename));
+      fs.writeFileSync(outputPath, JSON.stringify(applied, null, 2));
     }
   }
 }

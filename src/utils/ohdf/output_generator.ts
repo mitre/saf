@@ -98,11 +98,7 @@ export function generateValue(item: PrintableSummary, column: string, key: strin
 
   logger.debug('columnData:', columnData);
 
-  if (columnData && Object.hasOwn(columnData, key)) {
-    return columnData[key].toString();
-  }
-
-  return '0';
+  return columnData && Object.hasOwn(columnData, key) ? columnData[key].toString() : '0';
 }
 
 /**

@@ -154,12 +154,10 @@ export default class Summary extends Command {
       printAndWriteOutput({ printableSummaries, titleTable, format, printPretty, stdout, output });
       this.logger.verbose('Printed and wrote the output');
     } catch (error) {
-      if (error instanceof Error) {
-        this.logger.error(`Error occurred: ${error.message}`);
-      } else {
-        this.logger.error(`An unknown error occurred: ${String(error)}`);
-      }
-
+      const message = error instanceof Error
+        ? `Error occurred: ${error.message}`
+        : `An unknown error occurred: ${String(error)}`;
+      this.logger.error(message);
       process.exit(1);
     }
   }

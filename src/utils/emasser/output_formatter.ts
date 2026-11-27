@@ -252,16 +252,8 @@ export function outputFormat(data: object, shouldConvert = true): string {
       }
     }
 
-    if (typeof formatDataObj === 'string') {
-      return formatDataObj;
-    }
-
-    return JSON.stringify(formatDataObj, null, 2);
+    return typeof formatDataObj === 'string' ? formatDataObj : JSON.stringify(formatDataObj, null, 2);
   } catch {
-    if (typeof formatDataObj === 'string') {
-      return formatDataObj;
-    }
-
-    return JSON.stringify(formatDataObj, null, 2);
+    return typeof formatDataObj === 'string' ? formatDataObj : JSON.stringify(formatDataObj, null, 2);
   }
 }

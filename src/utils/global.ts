@@ -16,11 +16,7 @@ export type SpreadsheetTypes = 'cis' | 'disa' | 'general';
 export const knownInspecMetadataKeys = ['control', 'title', 'desc', 'description', 'rationale', 'impact', 'references', 'tag'];
 
 export function checkSuffix(input: string, suffix = '.json') {
-  if (input.endsWith(suffix)) {
-    return input;
-  }
-
-  return `${input}${suffix}`;
+  return input.endsWith(suffix) ? input : `${input}${suffix}`;
 }
 
 /**
@@ -116,11 +112,9 @@ export function safeExecFileSync(command: string, args: string[], options: ExecF
       throw new Error('Unsafe cmd.exe shell characters detected; refusing to run command through the Windows shell.');
     }
 
-    if (value !== '' && !/\s/.test(value)) {
-      return value;
-    }
+    const shouldQuote = value === '' || /\s/.test(value);
     // Double trailing backslashes so a Windows executable reads the closing quote as a delimiter.
-    return `"${value.replace(/\\+$/, '$&$&')}"`;
+    return shouldQuote ? `"${value.replace(/\\+$/, '$&$&')}"` : value;
   }).join(' ');
 
   const shell = path.win32.join(process.env.SystemRoot ?? String.raw`C:\Windows`, 'System32', 'cmd.exe');

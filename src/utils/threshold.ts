@@ -102,11 +102,7 @@ export function extractStatusCounts(profile: ContextualizedProfile, severity?: s
 
 export function calculateCompliance(statusHash: StatusHash): number {
   const total = statusHash.Passed + statusHash.Failed + statusHash['Not Reviewed'] + statusHash['Profile Error'];
-  if (total === 0) {
-    return 0;
-  }
-
-  return Math.round((100 * statusHash.Passed) / total);
+  return total === 0 ? 0 : Math.round((100 * statusHash.Passed) / total);
 }
 
 /**

@@ -63,11 +63,8 @@ export default class Heimdall extends Command {
       next();
     };
 
-    if (flags.files) {
-      console.log(`Serving Heimdall at http://localhost:${flags.port}/?predefinedLoad=true`);
-    } else {
-      console.log(`Serving Heimdall at http://localhost:${flags.port}`);
-    }
+    const predefinedLoadPath = flags.files ? '/?predefinedLoad=true' : '';
+    console.log(`Serving Heimdall at http://localhost:${flags.port}${predefinedLoadPath}`);
 
     // Open the browser
     if (!flags.noOpenBrowser) {

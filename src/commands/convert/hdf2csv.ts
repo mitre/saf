@@ -312,11 +312,8 @@ export default class HDF2CSV extends BaseCommand<typeof HDF2CSV> {
       for (const [key, value] of Object.entries(row)) {
         if (value !== undefined) {
           if (shouldTruncateFields && value.length > 32_767) {
-            if ('ID' in row) {
-              console.error(`Field ${key} of control ${row.ID} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
-            } else {
-              console.error(`Field ${key} of control at index ${index} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
-            }
+            const controlLabel = 'ID' in row ? row.ID : `at index ${index}`;
+            console.error(`Field ${key} of control ${controlLabel} is longer than 32,767 characters and has been truncated for compatibility with Excel. To disable this behavior use the option --noTruncate`);
 
             cleanedRow[key] = _.truncate(value, { length: 32_757, omission: 'TRUNCATED' });
           } else {

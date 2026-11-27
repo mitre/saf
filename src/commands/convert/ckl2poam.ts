@@ -124,10 +124,7 @@ export default class CKL2POAM extends BaseCommand<typeof CKL2POAM> {
         },
         trimValues: false,
         tagValueProcessor: (_tagName, tagValue) => {
-          if (typeof tagValue === 'string' && tagValue.includes('\n') && tagValue.trim().length === 0) {
-            return '';
-          }
-          return tagValue;
+          return typeof tagValue === 'string' && tagValue.includes('\n') && tagValue.trim().length === 0 ? '' : tagValue;
         },
       });
       try {

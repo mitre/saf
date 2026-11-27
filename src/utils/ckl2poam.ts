@@ -113,11 +113,9 @@ export function cklSeverityToResidualRiskLevel(severity: string) {
 }
 
 export function createCVD(vulnerability: Vulnerability): string {
-  if (vulnerability.FINDING_DETAILS?.includes('Solution :')) {
-    return `Rule Title: ${vulnerability.Rule_Title}\r\n\r\n${vulnerability.FINDING_DETAILS?.split('Solution :')[0]}`;
-  }
-
-  return `Rule Title: ${vulnerability.Rule_Title}\r\n\r\n${vulnerability.FINDING_DETAILS}`;
+  return vulnerability.FINDING_DETAILS?.includes('Solution :')
+    ? `Rule Title: ${vulnerability.Rule_Title}\r\n\r\n${vulnerability.FINDING_DETAILS?.split('Solution :')[0]}`
+    : `Rule Title: ${vulnerability.Rule_Title}\r\n\r\n${vulnerability.FINDING_DETAILS}`;
 }
 
 export function convertToRawSeverity(severity: string) {
@@ -166,11 +164,9 @@ function cleanComments(comments: string): string {
 }
 
 export function combineComments(vulnerability: Vulnerability, host: string) {
-  if (vulnerability.STATUS === 'Open') {
-    return `${vulnerability.Rule_ID} failed on ${host}\r\n${cleanComments(vulnerability.COMMENTS || '')}`;
-  }
-
-  return `${vulnerability.Rule_ID} not applicable on ${host}\r\n${cleanComments(vulnerability.COMMENTS || '')}\r\n\r\n${vulnerability.FINDING_DETAILS}`;
+  return vulnerability.STATUS === 'Open'
+    ? `${vulnerability.Rule_ID} failed on ${host}\r\n${cleanComments(vulnerability.COMMENTS || '')}`
+    : `${vulnerability.Rule_ID} not applicable on ${host}\r\n${cleanComments(vulnerability.COMMENTS || '')}\r\n\r\n${vulnerability.FINDING_DETAILS}`;
 }
 
 export function extractSolution(findingDetails: string): string | undefined {
@@ -178,11 +174,7 @@ export function extractSolution(findingDetails: string): string | undefined {
     const matches = findingDetails.match(/Solution(.*)Message/gs);
     if (matches && matches.length > 0) {
       const text = matches.join('').split('Solution : ')[1].trim();
-      if (text.includes('Message:')) {
-        return text.split('Message:')[0].trim();
-      }
-
-      return text;
+      return text.includes('Message:') ? text.split('Message:')[0].trim() : text;
     }
 
     return '';
@@ -193,11 +185,9 @@ export function extractSolution(findingDetails: string): string | undefined {
 
 export function cci2nist(cci: string) {
   if (typeof cci === 'string') {
-    if (Object.hasOwn(CciNistMappingData.data, cci)) {
-      return (CciNistMappingData.data as unknown as Record<string, string>)[cci].replace(' ', '');
-    }
-
-    return prompt(`What is the NIST ID for CCI ${cci}? `);
+    return Object.hasOwn(CciNistMappingData.data, cci)
+      ? (CciNistMappingData.data as unknown as Record<string, string>)[cci].replace(' ', '')
+      : prompt(`What is the NIST ID for CCI ${cci}? `);
   }
 
   return 'UM-1';

@@ -89,10 +89,7 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
         message: 'Specify the output metadata filename (must have an extension of .json):',
         default: 'ckl_metadata.json',
         validate(input: string) {
-          if (/^[\w]+\.json$/i.test(input)) {
-            return true;
-          }
-          return 'Please enter a metadata file name that ends with .json';
+          return /^[\w]+\.json$/i.test(input) ? true : 'Please enter a metadata file name that ends with .json';
         },
       }),
     };
@@ -154,10 +151,7 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
           message: 'What is the benchmark release date (dd mmm yyyy)?:',
           default: '01 Jan 2025',
           validate(input: string) {
-            if (/^\d{2} \w{3} \d{4}$/.test(input)) {
-              return true;
-            }
-            return 'Please enter a date in the format dd mmm yyyy';
+            return /^\d{2} \w{3} \d{4}$/.test(input) ? true : 'Please enter a date in the format dd mmm yyyy';
           },
         }),
         showCalendar: await confirm({ message: 'Show the calendar?', default: true }),
@@ -193,37 +187,29 @@ export default class GenerateCKLMetadata extends BaseCommand<typeof GenerateCKLM
         message: 'What is the asset hostname?:',
         default: hostname(),
         validate(input: string) {
-          if (isEmpty(input) || /^[\w.-]+$/.test(input)) {
-            return true;
-          }
-          return 'Please enter a valid hostname or leave blank';
+          return isEmpty(input) || /^[\w.-]+$/.test(input) ? true : 'Please enter a valid hostname or leave blank';
         },
       }),
       hostip: await input({
         message: 'What is the asset IP address?:',
         validate(input: string) {
-          if (isEmpty(input) || /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/.test(input)) {
-            return true;
-          }
-          return 'Please enter a valid IP address or leave blank';
+          return isEmpty(input) || /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/.test(input)
+            ? true
+            : 'Please enter a valid IP address or leave blank';
         },
       }),
       hostmac: await input({
         message: 'What is the asset MAC address?:',
         validate(input: string) {
-          if (isEmpty(input) || /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(input)) {
-            return true;
-          }
-          return 'Please enter a valid MAC address or leave blank';
+          return isEmpty(input) || /^([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})$/.test(input)
+            ? true
+            : 'Please enter a valid MAC address or leave blank';
         },
       }),
       hostfqdn: await input({
         message: 'What is the asset FQDN?:',
         validate(input: string) {
-          if (isEmpty(input) || /^[\w.-]+\.[a-z]{2,}$/.test(input)) {
-            return true;
-          }
-          return 'Please enter a valid FQDN or leave blank';
+          return isEmpty(input) || /^[\w.-]+\.[a-z]{2,}$/.test(input) ? true : 'Please enter a valid FQDN or leave blank';
         },
       }),
       targetcomment: await input({

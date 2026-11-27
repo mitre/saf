@@ -186,11 +186,9 @@ async function processPrompt() {
       default: envConfig.EMASSER_API_KEY,
       required: true,
       validate: (input: string) => {
-        if (/([a-zA-Z0-9-]{30,})/g.test(input)) {
-          return true;
-        }
-
-        return 'Invalid API key. Must have more than 30 alpha numeric characters, no special keys other than a dash(-)';
+        return /([a-zA-Z0-9-]{30,})/g.test(input)
+          ? true
+          : 'Invalid API key. Must have more than 30 alpha numeric characters, no special keys other than a dash(-)';
       },
     }),
     EMASSER_HOST_URL: await input({
@@ -199,11 +197,9 @@ async function processPrompt() {
       required: true,
       validate: (input: string) => {
         // eslint-disable-next-line no-useless-escape
-        if (/((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/g.test(input)) {
-          return true;
-        }
-
-        return 'Invalid eMASS FQDN (URL). Format: [protocol]://[hostname].[...].[domain].';
+        return /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/g.test(input)
+          ? true
+          : 'Invalid eMASS FQDN (URL). Format: [protocol]://[hostname].[...].[domain].';
       },
     }),
     EMASSER_KEY_FILE_PASSWORD: await password({
@@ -295,11 +291,9 @@ async function processPrompt() {
       message: PROMPT_MESSAGE[7],
       default: envConfig.EMASSER_PORT,
       validate(input: string) {
-        if (/(^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$)/g.test(input)) {
-          return true;
-        }
-
-        return 'Invalid port provided. Must be a Well-known (0-1023), or Registered (1024-49151), or Private (49152-65535) port number';
+        return /(^([1-9][0-9]{0,3}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$)/g.test(input)
+          ? true
+          : 'Invalid port provided. Must be a Well-known (0-1023), or Registered (1024-49151), or Private (49152-65535) port number';
       },
     }),
     EMASSER_REQUEST_CERT: await select({

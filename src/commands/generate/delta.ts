@@ -328,10 +328,7 @@ export default class GenerateDelta extends BaseCommand<typeof GenerateDelta> {
       const xccdfUrl = await input({
         message: 'Provide an URL pointing to the XCCDF benchmark (.zip) package:',
         validate(input: string) {
-          if (/^(https?|ftp):\/\/[^\s/$.?#].[^\s]*\.zip$/i.test(input)) {
-            return true;
-          }
-          return 'Please enter a valid URL that ends with .zip';
+          return /^(https?|ftp):\/\/[^\s/$.?#].[^\s]*\.zip$/i.test(input) ? true : 'Please enter a valid URL that ends with .zip';
         },
       });
 

@@ -1788,9 +1788,8 @@ indicating the endpoint that caused the error.
 @param endpoint - The endpoint that was being called when the error occurred.
 */
 export function displayError(error: unknown, endpoint: string) {
-  if (error instanceof Error) {
-    console.error(colorize(outputError(error)));
-  } else {
-    console.error(`\u{1B}[91mError calling the ${endpoint} endpoint: ${String(error)}\u{1B}[0m`);
-  }
+  const message = error instanceof Error
+    ? colorize(outputError(error))
+    : `\u{1B}[91mError calling the ${endpoint} endpoint: ${String(error)}\u{1B}[0m`;
+  console.error(message);
 }

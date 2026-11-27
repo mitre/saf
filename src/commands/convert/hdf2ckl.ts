@@ -319,11 +319,10 @@ export default class HDF2CKL extends Command {
 
   protected catch(err: Error & { exitCode?: number }): Promise<void> {
     // If error message is for missing flags, display what fields are required, otherwise show the error
-    if (err.message.includes('See more help with --help')) {
-      this.warn(err.message.replace('--help', '\u{1B}[93m<cli-command> -h or --help\u{1B}[0m'));
-    } else {
-      this.warn(err);
-    }
+    const warning = err.message.includes('See more help with --help')
+      ? err.message.replace('--help', '\u{1B}[93m<cli-command> -h or --help\u{1B}[0m')
+      : err;
+    this.warn(warning);
     return Promise.resolve();
   }
 }

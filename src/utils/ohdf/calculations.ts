@@ -43,11 +43,8 @@ export function calculateTotalCountsForSummaries(summaries: Record<string, Recor
       const flattened: Record<string, number> = flattenProfileSummary(profileSummary);
       for (const [key, value] of Object.entries(flattened)) {
         const existingValue = _.get(totals, `${profileName}.${key}`, 0);
-        if (typeof existingValue === 'number') {
-          _.set(totals, `["${profileName.replaceAll('"', String.raw`\"`)}"].${key}`, existingValue + value);
-        } else {
-          _.set(totals, `["${profileName.replaceAll('"', String.raw`\"`)}"].${key}`, value);
-        }
+        const total = typeof existingValue === 'number' ? existingValue + value : value;
+        _.set(totals, `["${profileName.replaceAll('"', String.raw`\"`)}"].${key}`, total);
       }
     }
   }

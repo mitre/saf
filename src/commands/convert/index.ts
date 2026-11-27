@@ -38,11 +38,7 @@ function getInputFilename(): string {
   const inputFileIndex = process.argv.findIndex(
     param => param.toLowerCase() === '-i' || param.toLowerCase() === '--input',
   );
-  if (inputFileIndex === -1) {
-    return process.env.INPUT_FILE ?? '';
-  }
-
-  return process.argv[inputFileIndex + 1];
+  return inputFileIndex === -1 ? process.env.INPUT_FILE ?? '' : process.argv[inputFileIndex + 1];
 }
 
 // export default class Convert extends Command {
