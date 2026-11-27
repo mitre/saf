@@ -124,7 +124,7 @@ describe('safeFilename', () => {
   });
 });
 
-describe.sequential('safeExecFileSync', () => {
+describe('safeExecFileSync', { concurrent: false }, () => {
   const execFileSyncMock = vi.fn();
 
   async function importGlobalWithPlatform(platform: NodeJS.Platform) {
@@ -253,7 +253,7 @@ describe('getDescription', () => {
   });
 });
 
-describe.sequential('getInstalledPath', () => {
+describe('getInstalledPath', { concurrent: false }, () => {
   beforeEach(() => {
     vi.resetModules();
   });
@@ -456,7 +456,7 @@ describe('getDescription', () => {
 
 vi.mock('@mitre/hdf-converters', { spy: true });
 
-describe.sequential('checkInput', () => {
+describe('checkInput', { concurrent: false }, () => {
   beforeEach(() => {
     vi.resetModules();
   });

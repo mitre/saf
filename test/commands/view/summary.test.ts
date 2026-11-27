@@ -4,7 +4,7 @@ import { load } from 'js-yaml';
 import path from 'path';
 import { describe, expect, it } from 'vitest';
 
-describe.sequential('Summary command', () => {
+describe('Summary command', { concurrent: false }, () => {
   const hdfFilePath = path.resolve('./test/sample_data/HDF/input/rhel-8_hardened.json');
   const JSON_reference = path.resolve('./test/sample_data/HDF/output/summary/rhel-8_hardened_output.json');
   const YAML_reference = path.resolve('./test/sample_data/HDF/output/summary/rhel-8_hardened_output.yml');

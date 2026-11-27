@@ -5,7 +5,7 @@ import path from 'path';
 import tmp from 'tmp';
 import YAML from 'yaml';
 
-describe.sequential('Test validate threshold', () => {
+describe('Test validate threshold', { concurrent: false }, () => {
   describe('Using template file', () => {
     it('Validate threshold test - Triple Overlay Valid Counts', async () => {
       const { stdout, stderr } = await runCommand<{ name: string }>([

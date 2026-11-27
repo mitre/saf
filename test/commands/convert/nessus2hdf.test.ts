@@ -5,7 +5,7 @@ import tmp from 'tmp';
 import { describe, expect, it } from 'vitest';
 import { omitHDFChangingFields } from '../utils';
 
-describe.sequential('Test Nessus', () => {
+describe('Test Nessus', { concurrent: false }, () => {
   it('hdf-converter output test', async () => {
     const tmpobj = tmp.dirSync({ unsafeCleanup: true });
     await runCommand<{ name: string }>([

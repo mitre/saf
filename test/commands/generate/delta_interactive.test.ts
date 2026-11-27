@@ -82,7 +82,7 @@ function inputMessages(): string[] {
   return inputMock.mock.calls.map(([question]) => question.message);
 }
 
-describe.sequential('Test generate delta interactive prompt flow', () => {
+describe('Test generate delta interactive prompt flow', { concurrent: false }, () => {
   beforeEach(() => {
     confirmMock.mockReset();
     fileSelectorMock.mockReset();
